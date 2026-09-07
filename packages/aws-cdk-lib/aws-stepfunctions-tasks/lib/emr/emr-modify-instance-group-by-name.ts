@@ -47,7 +47,7 @@ export interface EmrModifyInstanceGroupByNameJsonataProps extends sfn.TaskStateJ
 export interface EmrModifyInstanceGroupByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceGroupByNameOptions {}
 
 /**
- * A Step Functions Task to to modify an InstanceGroup on an EMR Cluster.
+ * A Step Functions Task to modify an InstanceGroup on an EMR Cluster.
  *
  */
 export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {

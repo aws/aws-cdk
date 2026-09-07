@@ -1501,21 +1501,115 @@ describe('Runtime metrics and grant methods tests', () => {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
       Statistic: 'Sum',
+      // Dimensions synth in alphabetical order by Name. Assert each dimension
+      // in its own arrayWith, not in one ordered array.
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
         Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
       ]),
     });
+    // Regression guard: the buggy shape emitted a `Service` dimension.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
   });
 
-  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
+  test('metricLatency() emits per-resource Operation/Name/Resource dimensions and no Service', () => {
+    alarmForMetric('LatencyDimAlarm', runtime.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() produces Invocations with only the AggregateOperation dimension', () => {
     alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      // Aggregated metrics carry one dimension: AggregateOperation.
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() merges a caller-supplied dimension onto the AggregateOperation path', () => {
+    alarmForMetric('InvocAggOverrideAlarm', runtime.metricInvocationsAggregated({
+      dimensionsMap: { Foo: 'bar' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // The caller dimension merges onto the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Foo', Value: 'bar' }),
+      ]),
+    });
+    // The AggregateOperation dimension stays present with the override.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }),
       ]),
     });
   });
@@ -1586,15 +1680,83 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
+  test('metricSessionsAggregated() produces Sessions with only the AggregateOperation dimension', () => {
     alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Sessions',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('caller-supplied dimensionsMap overrides the per-resource defaults', () => {
+    alarmForMetric('OverrideAlarm', runtime.metricInvocations({
+      dimensionsMap: { Operation: 'CustomOp', Resource: 'custom-resource' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // Overridden dimensions win (order-independent per-dimension assertions).
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Operation', Value: 'CustomOp' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: 'custom-resource' }),
+      ]),
+    });
+    // The un-overridden default (Name) is still present.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+  });
+
+  test('unnamed runtime resolves Name to a concrete synth string ending ::DEFAULT', () => {
+    // A runtime without runtimeName gets a Lazy token (Names.uniqueResourceName)
+    // that resolves at synth to a plain string, NOT an Fn::Join.
+    const repository = new ecr.Repository(stack, 'TokenRepository', {
+      repositoryName: 'token-agent-runtime',
+    });
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const unnamed = new Runtime(stack, 'unnamed-runtime', {
+      agentRuntimeArtifact,
+    });
+
+    alarmForMetric('TokenNameAlarm', unnamed.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('^[^{]*::DEFAULT$') }),
       ]),
     });
   });
@@ -2257,6 +2419,8 @@ describe('Runtime role validation tests', () => {
     // Should not throw, just add warning
     expect(runtime.role).toBe(crossAccountRole);
 
+    cdk.Validations.of(app).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'Testing hardcoded ARN for cross-account role' });
+
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
@@ -2552,7 +2716,7 @@ describe('Runtime request header configuration tests', () => {
           allowlistedHeaders: ['Invalid-Header@Name'],
         },
       });
-    }).toThrow(/Request header must contain only letters, numbers, and hyphens/);
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
   });
 
   test('Should throw error for empty header name', () => {
@@ -2565,6 +2729,59 @@ describe('Runtime request header configuration tests', () => {
         },
       });
     }).toThrow(/The field Request header is 0 characters long but must be at least 1 characters/);
+  });
+
+  test('Should accept headers beyond the X-Amzn-Bedrock-AgentCore-Runtime-Custom- prefix', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: [
+            'X-Custom-Auth',
+            'X-Request-Signature',
+            'X-Amzn-Bedrock-AgentCore-Runtime-Custom-MyHeader',
+            'Authorization',
+          ],
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should throw error for header with spaces', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['Invalid Header With Spaces'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should throw error for header starting with a number', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['123-invalid'],
+        },
+      });
+    }).toThrow(/Request header must start with a letter and contain only letters, numbers, underscores, and hyphens/);
+  });
+
+  test('Should accept headers with underscores', () => {
+    expect(() => {
+      new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: agentRuntimeArtifact,
+        requestHeaderConfiguration: {
+          allowlistedHeaders: ['X-Custom_Header', 'My_Header_Name'],
+        },
+      });
+    }).not.toThrow();
   });
 });
 
@@ -3260,28 +3477,241 @@ describe('Runtime observability tests', () => {
       ],
     });
   });
-});
 
-describe('ProtocolType.of() escape hatch', () => {
-  let stack: cdk.Stack;
-
-  beforeEach(() => {
-    stack = new cdk.Stack();
-  });
-
-  test('renders custom protocol value in the template', () => {
-    new Runtime(stack, 'TestRuntime', {
-      runtimeName: 'test_protocol',
-      agentRuntimeArtifact: AgentRuntimeArtifact.fromCodeAsset({
-        path: path.join(__dirname, 'testArtifact'),
-        runtime: AgentCoreRuntime.PYTHON_3_12,
-        entrypoint: ['main.py'],
-      }),
-      protocolConfiguration: ProtocolType.of('CUSTOM_PROTOCOL'),
+  test('Should not create X-Ray resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoXRayPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
-      ProtocolConfiguration: 'CUSTOM_PROTOCOL',
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    // X-Ray resource policy should NOT be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+  });
+
+  test('Should not create CloudWatch Logs resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoCwlPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedLogGroupArn = stack.resolve(logGroup.logGroupArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: resolvedLogGroupArn,
+    });
+
+    // CloudWatch Logs resource policy should NOT be created
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
+  });
+
+  test('Should not create any delivery resource policies when manageDeliveryResourcePolicy is false with both tracing and logging', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoPoliciesStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    new Runtime(stack, 'FullObservabilityRuntime', {
+      runtimeName: 'full_observability_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Neither X-Ray nor CloudWatch Logs resource policies should be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
+  });
+});
+
+describe('Runtime applicationLogGroup tests', () => {
+  test('Should expose applicationLogGroup pointing at the default endpoint log group', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    // Log group name resolves the AgentRuntimeId attribute
+    const resolvedName = stack.resolve(runtime.applicationLogGroup.logGroupName);
+    expect(resolvedName).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/aws/bedrock-agentcore/runtimes/',
+          { 'Fn::GetAtt': [expect.stringMatching(/^testruntime/), 'AgentRuntimeId'] },
+          '-DEFAULT',
+        ],
+      ],
+    });
+
+    // ARN includes the stack region/account and uses the COLON_RESOURCE_NAME format with :*
+    const resolvedArn = stack.resolve(runtime.applicationLogGroup.logGroupArn);
+    expect(resolvedArn).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/',
+          { 'Fn::GetAtt': [expect.stringMatching(/^testruntime/), 'AgentRuntimeId'] },
+          '-DEFAULT:*',
+        ],
+      ],
+    });
+  });
+
+  test('Should accept the log group as the target of a MetricFilter without hardcoding its name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    new logs.MetricFilter(stack, 'ToolErrors', {
+      logGroup: runtime.applicationLogGroup,
+      filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+      metricNamespace: 'MyApp',
+      metricName: 'ToolExecutionErrors',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/bedrock-agentcore/runtimes/',
+            { 'Fn::GetAtt': [Match.stringLikeRegexp('^testruntime'), 'AgentRuntimeId'] },
+            '-DEFAULT',
+          ],
+        ],
+      },
+      MetricTransformations: Match.arrayWith([
+        Match.objectLike({
+          MetricNamespace: 'MyApp',
+          MetricName: 'ToolExecutionErrors',
+        }),
+      ]),
+    });
+  });
+
+  test('Should memoize the imported log group across repeated accesses', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    expect(runtime.applicationLogGroup).toBe(runtime.applicationLogGroup);
+  });
+
+  test('Should expose applicationLogGroup on imported runtimes', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/runtime-abc123',
+      agentRuntimeId: 'runtime-abc123',
+      agentRuntimeName: 'imported-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+    });
+
+    expect(imported.applicationLogGroup.logGroupName)
+      .toBe('/aws/bedrock-agentcore/runtimes/runtime-abc123-DEFAULT');
+    expect(stack.resolve(imported.applicationLogGroup.logGroupArn)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/runtime-abc123-DEFAULT:*',
+        ],
+      ],
     });
   });
 });
+

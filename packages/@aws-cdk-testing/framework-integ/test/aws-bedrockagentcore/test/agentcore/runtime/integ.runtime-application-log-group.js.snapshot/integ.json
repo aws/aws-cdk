@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeApplicationLogGroupTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-application-log-group"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeApplicationLogGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeApplicationLogGroupTestDefaultTestDeployAssertB5F52AE2"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

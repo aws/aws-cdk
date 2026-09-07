@@ -19,6 +19,7 @@
  * `bedrock-agentcore` data-plane actions and read access to the backing secret.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/security-iam-awsmanpol.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS = [
   'secretsmanager:GetSecretValue',
@@ -31,6 +32,7 @@ export const TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS = [
  * Create and Update control plane operations (e.g. CreateApiKeyCredentialProvider,
  * UpdateApiKeyCredentialProvider) store/update the credential in Secrets Manager,
  * requiring PutSecretValue on the backing secret.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS = [
   'secretsmanager:PutSecretValue',
@@ -40,6 +42,7 @@ export const TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS = [
  * IAM actions for AgentCore API key credential providers (Token Vault).
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiKeyCredentialProviderIdentityPerms {
   /**
@@ -86,6 +89,7 @@ export class ApiKeyCredentialProviderIdentityPerms {
  * IAM actions for AgentCore OAuth2 credential providers (Token Vault).
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class OAuth2CredentialProviderIdentityPerms {
   /**
@@ -135,6 +139,7 @@ export class OAuth2CredentialProviderIdentityPerms {
  * IAM actions for AgentCore workload identities.
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class WorkloadIdentityPerms {
   /**

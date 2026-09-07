@@ -47,6 +47,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Other configuration](#other-configuration)
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
+      - [Application log group](#application-log-group)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -149,6 +150,9 @@ to production by simply updating the endpoint to point to the newer version.
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 | `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
 | `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
+| `tracingEnabled` | `boolean` | No | Whether to enable X-Ray tracing for this runtime. When enabled, traces will be delivered to AWS X-Ray. Defaults to `false` |
+| `loggingConfigs` | `LoggingConfig[]` | No | Logging configuration for the runtime. Allows sending APPLICATION_LOGS and USAGE_LOGS to CloudWatch Logs, S3, or Kinesis Data Firehose. Defaults to no logging configured |
+| `manageDeliveryResourcePolicy` | `boolean` | No | Whether to create resource policies for log/trace delivery. When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy` are not created. This is useful when deploying many runtimes per account/Region, as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10, X-Ray: lower). For same-account `/aws/vendedlogs/` delivery, the log-delivery service-linked role provides the necessary write access without an explicit policy. Defaults to `true` |
 
 ### Runtime Endpoint Properties
 
@@ -802,8 +806,45 @@ You can configure:
 
 - tracingEnabled: Enable X-Ray tracing for the runtime
 - loggingConfigs: Send APPLICATION_LOGS (agent runtime invocations) and USAGE_LOGS (session-level resource consumption) to CloudWatch Logs, S3, or Kinesis Data Firehose
+- manageDeliveryResourcePolicy: Control whether resource policies are created for log/trace delivery. Defaults to `true`
 
 For additional information, please refer to the [Set up logging and tracing for AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html).
+
+##### Opting out of resource policy management
+
+When deploying many AgentCore Runtime constructs per account/Region, the per-stack `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy` created by the observability delivery consume account-level quota slots (CloudWatch Logs: 10, X-Ray: lower). Set `manageDeliveryResourcePolicy: false` to skip resource policy creation while still provisioning delivery sources, destinations, and deliveries.
+
+**Important**: Setting `false` means you own the delivery permission. There are two safe ways to use it:
+- Same-account delivery to a `/aws/vendedlogs/` log group, where the log-delivery service-linked role grants write access implicitly.
+- Attaching the delivery resource policy yourself.
+
+Otherwise delivery silently fails: synthesis and deploy succeed, but nothing is delivered. Per the [vended-logs delivery docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html), a resource policy is required for CloudWatch Logs delivery outside the `/aws/vendedlogs/` same-account case.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+// Use a /aws/vendedlogs/ log group for same-account delivery without explicit resource policy
+const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup', {
+  logGroupName: '/aws/vendedlogs/bedrock-agentcore/my-runtime',
+});
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  tracingEnabled: true,
+  loggingConfigs: [
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.cloudWatchLogs(logGroup),
+    },
+  ],
+  manageDeliveryResourcePolicy: false,
+});
+```
 
 ```typescript fixture=default
 const repository = new ecr.Repository(this, 'TestRepository', {
@@ -839,6 +880,27 @@ new agentcore.Runtime(this, 'test-runtime', {
   ],
 });
 ```
+
+#### Application log group
+
+Every Runtime has a default endpoint whose stdout is written to the AgentCore-managed log group at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. The Runtime construct exposes this log group as `applicationLogGroup` so you can attach metric filters, subscription filters, or alarms without hardcoding the path:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository');
+
+const runtime = new agentcore.Runtime(this, 'Runtime', {
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+});
+
+new logs.MetricFilter(this, 'ToolErrors', {
+  logGroup: runtime.applicationLogGroup,
+  filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+  metricNamespace: 'MyApp',
+  metricName: 'ToolExecutionErrors',
+});
+```
+
+The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
 
 ## Browser
 
@@ -1002,8 +1064,13 @@ const browser = new agentcore.BrowserCustom(this, "MyBrowser", {
   },
 });
 
-// The browser construct automatically grants S3 permissions to the execution role
-// when recording is enabled, so no additional IAM configuration is needed
+// When recording is enabled with an S3 location, the browser construct grants the
+// execution role least-privilege access to write recordings: s3:PutObject,
+// s3:ListMultipartUploadParts, and s3:AbortMultipartUpload, scoped to the recording
+// prefix objects (bucket/prefix/*). No additional IAM configuration is needed. If the
+// recording bucket is encrypted with a customer managed KMS key, grant the execution
+// role kms:GenerateDataKey and kms:Decrypt on that key separately, since the bucket is
+// imported by name.
 ```
 
 ### Browser with Browser signing
@@ -1687,8 +1754,16 @@ and authorized during Inbound Auth.
 
 AgentCore Gateway supports the following types of outbound authorization:
 
-**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default
- and most common approach for Lambda targets and AWS service integrations.
+**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default and most common approach for Lambda targets and AWS service integrations. Use `GatewayCredentialProvider.fromIamRole()`; by default the gateway infers the SigV4 signing service and region from the target endpoint. For **MCP Server** and **OpenAPI** targets, you can override the service, and optionally the region too — useful for cross-region calls or when the service can't be inferred from the URL:
+
+```typescript fixture=default
+agentcore.GatewayCredentialProvider.fromIamRole({
+  service: 'bedrock-runtime', // SigV4 signing name (typically the endpoint prefix); see the AWS service authorization reference
+  region: 'us-east-1',         // defaults to the gateway's region
+});
+```
+
+The Bedrock AgentCore service only accepts `IamCredentialProvider` with explicit `service` / `region` for MCP Server and OpenAPI targets. Lambda, API Gateway and Smithy targets must use the bare `GatewayCredentialProvider.fromIamRole()` (with no arguments); the CDK enforces this with a synth-time validation.
 
 **2-legged OAuth (OAuth 2LO)** – Use OAuth 2.0 two-legged flow (2LO) for targets that require OAuth authentication.
 The gateway authenticates on its own behalf, not on behalf of a user.
@@ -2696,6 +2771,81 @@ const memory = new agentcore.Memory(this, "test-memory", {
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
 ```
+
+### Memory with Stream Delivery
+
+You can configure stream delivery resources to enable real-time push-based streaming of memory record lifecycle events (created, updated, deleted) to Amazon Kinesis Data Streams. This allows you to react to memory changes in real-time, build event-driven architectures, or feed memory events into downstream analytics pipelines.
+
+Delivery targets are created with the static factory methods on `StreamDeliveryResource`, one per target type. Kinesis Data Streams is currently the only supported target:
+
+```typescript fixture=default
+// Create a Kinesis Data Stream
+const stream = new kinesis.Stream(this, 'MemoryEventStream', {
+  streamName: 'memory-events',
+});
+
+const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream',
+  description: 'Memory with Kinesis stream delivery',
+  expirationDuration: cdk.Duration.days(90),
+  streamDeliveryResources: [
+    agentcore.StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+        },
+      ],
+    }),
+  ],
+});
+```
+
+There is no default content level — you must choose one explicitly. `METADATA_ONLY` delivers only the record ID, timestamps, and event type. `FULL_CONTENT` delivers the complete memory record body, which can contain personally identifiable information and other sensitive conversation content, so make sure the destination stream and its consumers are an appropriate place for that data:
+
+```typescript fixture=default
+const stream = new kinesis.Stream(this, 'MemoryEventStream');
+
+const memory = new agentcore.Memory(this, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream',
+  streamDeliveryResources: [
+    agentcore.StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          // Streams complete memory record bodies, which may include sensitive data
+          level: agentcore.StreamDeliveryContentLevel.FULL_CONTENT,
+        },
+      ],
+    }),
+  ],
+});
+```
+
+You can also add stream delivery resources after instantiation using the `addStreamDeliveryResource()` method:
+
+```typescript fixture=default
+const memory = new agentcore.Memory(this, 'MyMemory', {
+  memoryName: 'my_memory',
+});
+
+const stream = new kinesis.Stream(this, 'EventStream');
+
+memory.addStreamDeliveryResource(agentcore.StreamDeliveryResource.kinesis(stream, {
+  contentConfigurations: [
+    {
+      type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+      level: agentcore.StreamDeliveryContentLevel.METADATA_ONLY,
+    },
+  ],
+}));
+```
+
+Only one stream delivery resource is currently supported (a CloudFormation maximum); providing more than one fails at synth with `TooManyStreamDeliveryResources`.
+
+The memory execution role is automatically granted write permissions (`kinesis:PutRecord`, `kinesis:PutRecords`, `kinesis:ListShards`, `kinesis:DescribeStream`) to each configured Kinesis stream. If the stream uses a customer-managed KMS key, encryption permissions are also granted automatically.
+
+Encryption permissions can only be granted when the stream's key is known to CDK — that is, for streams you create and for streams imported with `Stream.fromStreamAttributes({ encryptionKey })`. A stream imported with `Stream.fromStreamArn()` carries no key reference, so grant the key permissions yourself in that case.
 
 ## Online Evaluation
 

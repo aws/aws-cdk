@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "54.0.0",
   "testCases": {
     "integ.backup": {
       "stacks": [
@@ -11,5 +11,5 @@
   },
   "synthContext": {},
   "enableLookups": false,
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1129.0"
 }

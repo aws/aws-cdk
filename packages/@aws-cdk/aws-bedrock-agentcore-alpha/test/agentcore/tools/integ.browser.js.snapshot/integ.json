@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "BedrockAgentCoreBrowser/DefaultTest": {
       "stacks": [
@@ -25,5 +25,5 @@
       "assertionStackName": "BedrockAgentCoreBrowserDefaultTestDeployAssertB840FB3F"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1123.0"
 }

@@ -16,6 +16,13 @@ export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 export const ANALYTICS_REPORTING_ENABLED_CONTEXT = 'aws:cdk:version-reporting';
 
 /**
+ * Disable the collection and reporting of performance information.
+ *
+ * (Set to `false` to disable).
+ */
+export const PERFORMANCE_REPORTING_ENABLED_CONTEXT = 'aws:cdk:performance-reporting';
+
+/**
  * Disable asset staging (for use with SAM CLI).
  *
  * Disabling asset staging means that copyable assets will not be copied to the
