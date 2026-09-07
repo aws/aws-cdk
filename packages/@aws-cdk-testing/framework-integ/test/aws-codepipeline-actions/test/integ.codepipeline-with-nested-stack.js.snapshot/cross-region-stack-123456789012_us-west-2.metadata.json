@@ -1,0 +1,273 @@
+{
+  "/cross-region-stack-123456789012:us-west-2": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.createSupportResourcesForRegion (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:722:32)",
+        "WrappedClass.obtainCrossRegionSupportFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:690:43)",
+        "WrappedClass.ensureReplicationResourcesExistFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:670:45)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:617:42)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "new Stage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:45:18)",
+        "WrappedClass.addStage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:503:27)",
+        "WrappedClass.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:473:22)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "enableKeyRotation": "*"
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "targetKey": "*",
+        "aliasName": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucketName": "*",
+        "encryption": "KMS",
+        "encryptionKey": "*",
+        "enforceSSL": true,
+        "blockPublicAccess": "*",
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.ts:113:19)",
+        "new AutoDeleteObjectsProvider (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.ts:25:5)",
+        "Function.getOrCreateProvider (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.ts:21:24)",
+        "BucketAutoDeleteObjects.applyTo (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2088:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1405:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.ts:137:20)",
+        "new AutoDeleteObjectsProvider (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.ts:25:5)",
+        "Function.getOrCreateProvider (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.ts:21:24)",
+        "BucketAutoDeleteObjects.applyTo (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2088:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1405:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionSupportConstruct (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:108:35)",
+        "new CrossRegionSupportStack (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:151:45)",
+        "WrappedClass.createSupportResourcesForRegion (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:722:32)",
+        "WrappedClass.obtainCrossRegionSupportFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:690:43)",
+        "WrappedClass.ensureReplicationResourcesExistFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:670:45)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:617:42)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucketEncryptionAlias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-kms/lib/alias.js:357:29)",
+        "new Alias (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AliasWithShorterGeneratedName (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionSupportConstruct (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:112:31)",
+        "new CrossRegionSupportStack (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:151:45)",
+        "WrappedClass.createSupportResourcesForRegion (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:722:32)",
+        "WrappedClass.obtainCrossRegionSupportFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:690:43)",
+        "WrappedClass.ensureReplicationResourcesExistFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:670:45)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:617:42)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)"
+      ]
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionCodePipelineReplicationBucketFC3227F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1333:30)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionSupportConstruct (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:119:34)",
+        "new CrossRegionSupportStack (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:151:45)",
+        "WrappedClass.createSupportResourcesForRegion (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:722:32)",
+        "WrappedClass.obtainCrossRegionSupportFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:690:43)",
+        "WrappedClass.ensureReplicationResourcesExistFor (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:670:45)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:617:42)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionCodePipelineReplicationBucketPolicyB7BA2BCA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1495:18)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1364:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionSupportConstruct (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:119:34)",
+        "new CrossRegionSupportStack (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/cross-region-support-stack.js:151:45)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/cross-region-stack-123456789012:us-west-2/Default/CrossRegionCodePipelineReplicationBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionCodePipelineReplicationBucketAutoDeleteObjectsCustomResource3DE7628E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2088:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1405:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ]
+}

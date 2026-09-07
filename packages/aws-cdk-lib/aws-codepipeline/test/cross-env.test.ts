@@ -4,7 +4,8 @@ import { FakeSourceAction } from './fake-source-action';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { Stack, App, Stage as CdkStage } from '../../core';
+import { Stack, App, Stage as CdkStage, LegacyStackSynthesizer } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as codepipeline from '../lib';
 
 describe.each([
@@ -126,10 +127,11 @@ describe.each([
         let asm = app.synth();
         asm = inStage ? asm.getNestedAssembly('assembly-MyStage') : asm;
         const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
+        const supportStackTemplate = Template.fromJSON(supportStack.template);
 
         // THEN
-        Template.fromJSON(supportStack.template).resourceCountIs('AWS::KMS::Key', 0);
-        Template.fromJSON(supportStack.template).hasResourceProperties('AWS::S3::Bucket', {
+        supportStackTemplate.resourceCountIs('AWS::KMS::Key', 0);
+        supportStackTemplate.hasResourceProperties('AWS::S3::Bucket', {
           PublicAccessBlockConfiguration: {
             BlockPublicAcls: true,
             BlockPublicPolicy: true,
@@ -137,6 +139,11 @@ describe.each([
             RestrictPublicBuckets: true,
           },
         });
+        supportStackTemplate.hasResource('AWS::S3::Bucket', {
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        });
+        supportStackTemplate.resourceCountIs('Custom::S3AutoDeleteObjects', 0);
       });
 
       test('when twiddling another stack', () => {
@@ -155,6 +162,61 @@ describe.each([
       });
     });
   });
+});
+
+test('cross-region support bucket is destroyed when feature flag is enabled', () => {
+  const app = new App({
+    context: {
+      [cxapi.CODEPIPELINE_CROSS_REGION_REPLICATION_BUCKET_DESTROY]: true,
+    },
+  });
+  const stack = new Stack(app, 'PipelineStack', {
+    env: { account: '2222', region: 'us-east-1' },
+    synthesizer: new LegacyStackSynthesizer(),
+  });
+  const sourceArtifact = new codepipeline.Artifact();
+  const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+    crossAccountKeys: false,
+    stages: [
+      {
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'Source',
+          output: sourceArtifact,
+        })],
+      },
+      {
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'Build',
+          input: sourceArtifact,
+        })],
+      },
+    ],
+  });
+  pipeline.addStage({
+    stageName: 'Deploy',
+    actions: [new FakeBuildAction({
+      actionName: 'Deploy',
+      input: sourceArtifact,
+      region: 'eu-west-1',
+    })],
+  });
+
+  const asm = app.synth();
+  const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
+  const supportStackTemplate = Template.fromJSON(supportStack.template);
+
+  supportStackTemplate.hasResource('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+  supportStackTemplate.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+    BucketName: {
+      Ref: 'CrossRegionCodePipelineReplicationBucketFC3227F2',
+    },
+  });
+  supportStackTemplate.resourceCountIs('Custom::S3AutoDeleteObjects', 1);
 });
 
 describe('cross-environment CodePipeline', function () {
