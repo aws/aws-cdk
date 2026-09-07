@@ -208,6 +208,7 @@ describe('bucket', () => {
 
   test('bucket with custom blockedEncryptionTypes', () => {
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'Bogus encryption types are only for tests' });
 
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
@@ -1973,6 +1974,11 @@ describe('bucket', () => {
     });
 
     test('allows importing a BucketPolicy that references a Bucket', () => {
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
         policyDocument: {
           'Statement': [

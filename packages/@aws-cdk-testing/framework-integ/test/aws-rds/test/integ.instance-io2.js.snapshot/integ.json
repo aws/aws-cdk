@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "InstanceIo2Test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "InstanceIo2TestDefaultTestDeployAssert183D49C3"
     }
   },
-  "minimumCliVersion": "2.1125.0"
+  "minimumCliVersion": "2.1126.0"
 }

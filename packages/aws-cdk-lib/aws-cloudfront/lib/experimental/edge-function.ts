@@ -309,7 +309,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
         tags: parentStack.tags.tagValues(),
       });
     }
-    this.stack.addDependency(edgeStack);
+    this.stack.addStackDependency(edgeStack);
     return edgeStack;
   }
 }
