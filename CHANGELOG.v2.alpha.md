@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.268.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.267.0-alpha.0...v2.268.0-alpha.0) (2026-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `DataQualityTargetTable`'s constructor is removed — use `DataQualityTargetTable.fromTable(database, table)` or `fromTableName(database, tableName)`; `IDatabase` now extends `IDatabaseRef`.
+* **glue-alpha**: `DataQualityRulesetProps.clientToken` is removed; use the `CfnDataQualityRuleset` L1 for request-level idempotency.
+* **glue-alpha:** S3Table.clientSideEncryptionKey is now kms.IKeyRef instead of kms.IKey.
+* **glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
+
+### Features
+
+* **glue-alpha:** reference-typed DataQualityTargetTable and remove clientToken ([#38730](https://github.com/aws/aws-cdk/issues/38730)) ([c8fafbd](https://github.com/aws/aws-cdk/commit/c8fafbddbf651176f02f7d9b6cc8a8707a959339))
+
+
+### Code Refactoring
+
+* **glue-alpha:** use kms.IKeyRef for KMS key inputs where possible ([#38725](https://github.com/aws/aws-cdk/issues/38725)) ([604ac23](https://github.com/aws/aws-cdk/commit/604ac236ed6d80d3f2fc03f7882414ed61ab8f3a))
+
+## [2.267.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.266.0-alpha.0...v2.267.0-alpha.0) (2026-08-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** schema `Type` is now an opaque class; construct column types via the `Schema` factories or `Schema.custom(...)` rather than `{ isPrimitive, inputString }` literals. `StorageParameter.custom(key, value)` requires a `string` value, and `StorageParameter.writeKmsKeyId` takes a `kms.IKey` instead of a string.
+* **glue-alpha:** `S3TableProps.bucket`/`encryption`/`encryptionKey` are removed. Use `storage: S3TableStorage.managedBucket(S3TableEncryption.kms(key?))` / `S3TableStorage.fromBucket(bucket)` and `clientSideEncryption: TableClientSideEncryption.kms(key?)`. `S3Table.encryption`/`encryptionKey` are removed (`clientSideEncryptionKey` exposes the client-side key; read `bucket.encryptionKey` for server-side). The `TableEncryption` enum and the deprecated `Table`/`TableProps` are removed — use `S3Table`.
+
+### Features
+
+* **glue-alpha:** add a typed secret input to Connection ([#38585](https://github.com/aws/aws-cdk/issues/38585)) ([ede4a1c](https://github.com/aws/aws-cdk/commit/ede4a1c730af62df4df4b58496cdc37668ca3ad5))
+* **glue-alpha:** add subnet selection to `Connection` ([#38561](https://github.com/aws/aws-cdk/issues/38561)) ([f9d7eac](https://github.com/aws/aws-cdk/commit/f9d7eaca850773a16deb39cd2a2a789bb898264a))
+* **glue-alpha:** model S3Table storage/encryption as value objects ([#38591](https://github.com/aws/aws-cdk/issues/38591)) ([9990e16](https://github.com/aws/aws-cdk/commit/9990e16da78f19ce3bd5a015c3b67c31bbaf2881))
+* **glue-alpha:** opaque Schema Type with Schema.custom, and stronger StorageParameter types ([#38592](https://github.com/aws/aws-cdk/issues/38592)) ([5c45eb0](https://github.com/aws/aws-cdk/commit/5c45eb0ae65cc0f0bfe4fd6d248b62bd4c398868))
+* **msk-alpha:** support Kafka 4.2 ([#38323](https://github.com/aws/aws-cdk/issues/38323)) ([97b181c](https://github.com/aws/aws-cdk/commit/97b181c58367e38bced08c031c5d0bbeb98dd84b))
+* **s3tables-alpha:** add storage class configuration support  ([#37339](https://github.com/aws/aws-cdk/issues/37339)) ([63ccf6d](https://github.com/aws/aws-cdk/commit/63ccf6d0248b353dc240c91a907d9ff27487b92d))
+
+
+### Bug Fixes
+
+* **glue-alpha:** validate that DATE partition projection interval is set when required ([#38594](https://github.com/aws/aws-cdk/issues/38594)) ([0e2b582](https://github.com/aws/aws-cdk/commit/0e2b582af1c5ac478e36cccc55523873302bf866))
+* **lambda-python-alpha:** escape Docker bundling command arguments ([#38583](https://github.com/aws/aws-cdk/issues/38583)) ([f7ce07b](https://github.com/aws/aws-cdk/commit/f7ce07beb41b7fd0214a647b5a009f8706339105))
+
 ## [2.266.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.265.0-alpha.0...v2.266.0-alpha.0) (2026-08-19)
 
 

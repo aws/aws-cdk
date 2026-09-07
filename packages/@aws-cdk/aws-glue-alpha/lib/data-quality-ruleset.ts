@@ -1,27 +1,49 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnDataQualityRuleset } from 'aws-cdk-lib/aws-glue';
+import { CfnDataQualityRuleset, type IDatabaseRef } from 'aws-cdk-lib/aws-glue';
 import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
 import { Resource } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
+import type { ITable } from './table-base';
 
 /**
- * Properties of a DataQualityTargetTable.
+ * The Glue table a `DataQualityRuleset` evaluates.
  */
 export class DataQualityTargetTable {
   /**
+   * Target an L2 table in a database.
+   *
+   * @param database the database that holds the table.
+   * @param table the table to evaluate.
+   */
+  public static fromTable(database: IDatabaseRef, table: ITable): DataQualityTargetTable {
+    return new DataQualityTargetTable(database.databaseRef.databaseName, table.tableName);
+  }
+
+  /**
+   * Target a table by name in a database. Use this when the table is not
+   * modeled as an L2 construct (e.g. it is imported or created elsewhere).
+   *
+   * @param database the database that holds the table.
+   * @param tableName the name of the table to evaluate.
+   */
+  public static fromTableName(database: IDatabaseRef, tableName: string): DataQualityTargetTable {
+    return new DataQualityTargetTable(database.databaseRef.databaseName, tableName);
+  }
+
+  /**
    * The database name of the target table.
    */
-  readonly databaseName: string;
+  public readonly databaseName: string;
 
   /**
    * The table name of the target table.
    */
-  readonly tableName: string;
+  public readonly tableName: string;
 
-  constructor(databaseName: string, tableName: string) {
+  private constructor(databaseName: string, tableName: string) {
     this.databaseName = databaseName;
     this.tableName = tableName;
   }
@@ -77,15 +99,8 @@ export interface IDataQualityRuleset extends IResource {
 export interface DataQualityRulesetProps {
   /**
    * The name of the ruleset
-   * @default cloudformation generated name
    */
-  readonly rulesetName?: string;
-
-  /**
-   * The client token of the ruleset
-   * @attribute
-   */
-  readonly clientToken?: string;
+  readonly rulesetName: string;
 
   /**
    * The description of the ruleset
@@ -164,7 +179,6 @@ export class DataQualityRuleset extends Resource implements IDataQualityRuleset 
     addConstructMetadata(this, props);
 
     this.resource = new CfnDataQualityRuleset(this, 'Resource', {
-      clientToken: props.clientToken,
       description: props.description,
       name: props.rulesetName,
       ruleset: props.dqdl._render(),
