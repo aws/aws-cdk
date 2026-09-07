@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "b730958727aa95a7141ac15f16bd6b86bb4ad8fd8bf8ff7aa490a0e297836fe9": {
+      "displayName": "aws-cdk-subscriptionfilter-sequencing-integ Template",
+      "source": {
+        "path": "aws-cdk-subscriptionfilter-sequencing-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-66687289": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b730958727aa95a7141ac15f16bd6b86bb4ad8fd8bf8ff7aa490a0e297836fe9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
