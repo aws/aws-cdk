@@ -2,6 +2,7 @@ import type { Construct, IConstruct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
 import { ComputeEnvironmentBase } from './compute-environment-base';
+import { ComputeEnvironmentType } from './private/compute-environment-type';
 import * as ec2 from '../../aws-ec2';
 import type * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
@@ -1398,6 +1399,7 @@ function validateVCpus(scope: Construct, minvCpus: number, maxvCpus: number): vo
 }
 
 function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnvironmentBase, subnetIds: string[]) {
+  const isUppercase = FeatureFlags.of(baseComputeEnvironment).isEnabled(cxapi.BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE);
   return {
     serviceRole: baseComputeEnvironment.serviceRole?.roleArn,
     state: baseComputeEnvironment.enabled ? 'ENABLED' : 'DISABLED',
@@ -1413,7 +1415,7 @@ function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnv
       jobExecutionTimeoutMinutes: baseComputeEnvironment.updateTimeout?.toMinutes(),
     },
     replaceComputeEnvironment: baseComputeEnvironment.replaceComputeEnvironment,
-    type: 'managed',
+    type: isUppercase ? ComputeEnvironmentType.MANAGED : 'managed',
   };
 }
 

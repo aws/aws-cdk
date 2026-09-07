@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE = '@aws-cdk/aws-batch:computeEnvironmentTypeUppercase';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1927,6 +1928,25 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this flag is explicitly set to \`true\`, violations are treated as errors and will
       fail synthesis. When unconfigured, violations are reported as warnings only.`,
     introducedIn: { v2: '2.262.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE]: {
+    type: FlagType.BugFix,
+    summary: 'Use uppercase MANAGED/UNMANAGED for Batch ComputeEnvironment type to avoid CloudFormation drift',
+    detailsMd: `
+      When enabled, the \`Type\` property of \`AWS::Batch::ComputeEnvironment\` is set to uppercase
+      \`MANAGED\` or \`UNMANAGED\` instead of lowercase \`managed\` or \`unmanaged\`.
+
+      CloudFormation returns the uppercase value in drift detection, so using lowercase causes
+      false positive drift results. Enabling this flag fixes the drift issue.
+
+      **Warning**: Enabling this flag on existing stacks will cause the \`Type\` property value to
+      change from lowercase to uppercase in the synthesized template, which may trigger a
+      compute environment replacement during deployment.`,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },

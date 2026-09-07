@@ -118,6 +118,7 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-batch:computeEnvironmentTypeUppercase](#aws-cdkaws-batchcomputeenvironmenttypeuppercase) | Use uppercase MANAGED/UNMANAGED for Batch ComputeEnvironment type to avoid CloudFormation drift | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -136,6 +137,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/aws-batch:computeEnvironmentTypeUppercase": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
@@ -2549,6 +2551,29 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-batch:computeEnvironmentTypeUppercase
+
+*Use uppercase MANAGED/UNMANAGED for Batch ComputeEnvironment type to avoid CloudFormation drift*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the `Type` property of `AWS::Batch::ComputeEnvironment` is set to uppercase
+`MANAGED` or `UNMANAGED` instead of lowercase `managed` or `unmanaged`.
+
+CloudFormation returns the uppercase value in drift detection, so using lowercase causes
+false positive drift results. Enabling this flag fixes the drift issue.
+
+**Warning**: Enabling this flag on existing stacks will cause the `Type` property value to
+change from lowercase to uppercase in the synthesized template, which may trigger a
+compute environment replacement during deployment.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

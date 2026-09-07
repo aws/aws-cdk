@@ -2,11 +2,13 @@ import type { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
 import { ComputeEnvironmentBase } from './compute-environment-base';
+import { ComputeEnvironmentType } from './private/compute-environment-type';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
-import { ArnFormat, Stack } from '../../core';
+import { ArnFormat, FeatureFlags, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents an UnmanagedComputeEnvironment. Batch will not provision instances on your behalf
@@ -93,8 +95,9 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
     addConstructMetadata(this, props);
 
     this.unmanagedvCPUs = props?.unmanagedvCpus;
+    const isUppercase = FeatureFlags.of(this).isEnabled(cxapi.BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE);
     this.resource = new CfnComputeEnvironment(this, 'Resource', {
-      type: 'unmanaged',
+      type: isUppercase ? ComputeEnvironmentType.UNMANAGED : 'unmanaged',
       state: this.enabled ? 'ENABLED' : 'DISABLED',
       computeEnvironmentName: props?.computeEnvironmentName,
       unmanagedvCpus: this.unmanagedvCPUs,
