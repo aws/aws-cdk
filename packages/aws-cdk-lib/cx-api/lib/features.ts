@@ -158,6 +158,7 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS = '@aws-cdk/core:scopedValidationPluginAcknowledgments';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1929,6 +1930,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [SCOPED_VALIDATION_PLUGIN_ACKNOWLEDGMENTS]: {
+    type: FlagType.BugFix,
+    summary: 'Scope validation plugin acknowledgments to the construct where they are declared',
+    detailsMd: `
+      When enabled, validation plugin violations are suppressed only when every violating resource
+      is the acknowledged construct or one of its descendants. Acknowledging a rule on one construct
+      no longer suppresses violations of the same rule on unrelated constructs or stacks.
+
+      When disabled, acknowledgments continue to suppress matching rule IDs across the entire app.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to suppress validation plugin violations by rule ID across the entire app.',
   },
 };
 
