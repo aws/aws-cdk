@@ -2,6 +2,7 @@ import child_process from 'child_process';
 import path from 'path';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -799,6 +800,15 @@ describe('code', () => {
           ]),
         },
       });
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Fn/Resource',
+        'To avoid a circular dependency between the S3 bucket policy and the Lambda resource during deployment, ' +
+        'a wildcard is used in the aws:SourceArn condition to match all Lambda functions in this account ' +
+        '(access is still limited to this account via aws:SourceAccount).\n' +
+        'It is strongly recommended to further scope down the policy by specifying an explicit functionName, ' +
+        'following the guidance in the "Self-managed S3 code storage" section of the module README. ' +
+        '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceWildcardSourceArn]',
+      );
     });
 
     test('fromBucketV2 grants a named layer read access to the referenced object', () => {
@@ -836,6 +846,161 @@ describe('code', () => {
           ]),
         },
       });
+    });
+
+    test('fromBucketV2 grants an unnamed layer read access before CloudFormation generates its name', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: {
+          account: '123456789012',
+          region: 'us-east-1',
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      new lambda.LayerVersion(stack, 'Layer', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Condition: {
+                ArnLike: {
+                  'aws:SourceArn': stack.resolve(stack.formatArn({
+                    service: 'lambda',
+                    resource: 'layer',
+                    resourceName: '*',
+                    arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+                  })),
+                },
+              },
+            }),
+          ]),
+        },
+      });
+      Annotations.fromStack(stack).hasWarning(
+        '/Default/Layer/Resource',
+        'To avoid a circular dependency between the S3 bucket policy and the Lambda resource during deployment, ' +
+        'a wildcard is used in the aws:SourceArn condition to match all Lambda layers in this account ' +
+        '(access is still limited to this account via aws:SourceAccount).\n' +
+        'It is strongly recommended to further scope down the policy by specifying an explicit layerVersionName, ' +
+        'following the guidance in the "Self-managed S3 code storage" section of the module README. ' +
+        '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceWildcardSourceArn]',
+      );
+    });
+
+    test('fromBucketV2 warns when the referenced bucket policy cannot be updated', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-east-1',
+        },
+      });
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'imported-bucket');
+
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+        }),
+        functionName: 'my-function',
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Fn/Resource',
+        'Cannot update the policy of an imported bucket for S3ObjectStorageMode.REFERENCE. ' +
+        'Grant the lambda.amazonaws.com service principal s3:GetObject and s3:GetObjectVersion on the referenced object manually. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy. ' +
+        '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedBucketPolicy]',
+      );
+    });
+
+    test('fromBucketV2 grants Lambda decrypt access to the source KMS key', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: {
+          account: '123456789012',
+          region: 'us-east-1',
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+      const key = new kms.Key(stack, 'Key');
+
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+          sourceKMSKey: key,
+        }),
+        functionName: 'my-function',
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 'kms:Decrypt',
+              Condition: {
+                ArnLike: {
+                  'aws:SourceArn': stack.resolve(stack.formatArn({
+                    service: 'lambda',
+                    resource: 'function',
+                    resourceName: 'my-function',
+                    arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+                  })),
+                },
+                StringEquals: {
+                  'aws:SourceAccount': '123456789012',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+              Resource: '*',
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('fromBucketV2 warns when the source KMS key policy cannot be updated', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-east-1',
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+      const key = kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/imported-key');
+
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromBucketV2(bucket, 'Object', {
+          objectVersion: 'v1',
+          s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
+          sourceKMSKey: key,
+        }),
+        functionName: 'my-function',
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      Annotations.fromStack(stack).hasWarning(
+        '/Stack/Fn/Resource',
+        'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
+        'Grant the lambda.amazonaws.com service principal kms:Decrypt on the source KMS key manually. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy. ' +
+        '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy]',
+      );
     });
 
     test.each([

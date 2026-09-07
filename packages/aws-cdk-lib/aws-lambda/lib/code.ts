@@ -1,10 +1,10 @@
 import { spawnSync } from 'child_process';
-import type { Construct } from 'constructs';
+import { Dependable, type Construct } from 'constructs';
 import { CfnFunction, CfnLayerVersion } from './lambda.generated';
 import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
-import type { IKeyRef } from '../../aws-kms';
+import { KeyGrants, type IKeyRef } from '../../aws-kms';
 import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
@@ -383,44 +383,105 @@ export class S3CodeV2 extends Code {
 
     const stack = cdk.Stack.of(resource);
     let sourceArn: string;
+    let usesWildcardSourceArn: boolean;
+    let resourceType: string;
+    let nameProperty: string;
 
     if (CfnFunction.isCfnFunction(resource)) {
       const functionName = resource.functionName;
+      usesWildcardSourceArn = functionName === undefined || cdk.Token.isUnresolved(functionName);
+      resourceType = 'functions';
+      nameProperty = 'functionName';
       sourceArn = stack.formatArn({
         service: 'lambda',
         resource: 'function',
-        resourceName: functionName === undefined || cdk.Token.isUnresolved(functionName) ? '*' : functionName,
+        resourceName: usesWildcardSourceArn ? '*' : functionName,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       });
     } else if (CfnLayerVersion.isCfnLayerVersion(resource)) {
       const layerName = resource.layerName;
+      usesWildcardSourceArn = layerName === undefined || cdk.Token.isUnresolved(layerName);
+      resourceType = 'layers';
+      nameProperty = 'layerVersionName';
       sourceArn = stack.formatArn({
         service: 'lambda',
         resource: 'layer',
-        resourceName: layerName === undefined || cdk.Token.isUnresolved(layerName) ? '*' : `${layerName}:*`,
+        resourceName: usesWildcardSourceArn ? '*' : `${layerName}:*`,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       });
     } else {
       return;
     }
 
-    const grant = iam.Grant.addToPrincipalOrResource({
+    if (usesWildcardSourceArn) {
+      // The bucket policy must exist before Lambda creates the resource, so using its generated ARN would create a cycle.
+      cdk.Annotations.of(resource).addWarningV2(
+        '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceWildcardSourceArn',
+        'To avoid a circular dependency between the S3 bucket policy and the Lambda resource during deployment, ' +
+        `a wildcard is used in the aws:SourceArn condition to match all Lambda ${resourceType} in this account ` +
+        '(access is still limited to this account via aws:SourceAccount).\n' +
+        `It is strongly recommended to further scope down the policy by specifying an explicit ${nameProperty}, ` +
+        'following the guidance in the "Self-managed S3 code storage" section of the module README.',
+      );
+    }
+
+    const lambdaServicePrincipal = new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
+      StringEquals: {
+        'aws:SourceAccount': stack.account,
+      },
+      ArnLike: {
+        'aws:SourceArn': sourceArn,
+      },
+    });
+    const bucketGrant = iam.Grant.addToPrincipalOrResource({
       actions: [
         's3:GetObject',
         's3:GetObjectVersion',
       ],
-      grantee: new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
-        StringEquals: {
-          'aws:SourceAccount': stack.account,
-        },
-        ArnLike: {
-          'aws:SourceArn': sourceArn,
-        },
-      }),
+      grantee: lambdaServicePrincipal,
       resourceArns: [this.bucket.arnForObjects(this.key)],
       resource: this.bucket,
     });
-    grant.applyBefore(resource);
+    if (!this.grantWasApplied(bucketGrant)) {
+      cdk.Annotations.of(resource).addWarningV2(
+        '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedBucketPolicy',
+        'Cannot update the policy of an imported bucket for S3ObjectStorageMode.REFERENCE. ' +
+        'Grant the lambda.amazonaws.com service principal s3:GetObject and s3:GetObjectVersion on the referenced object manually. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
+      );
+    } else {
+      bucketGrant.applyBefore(resource);
+    }
+
+    if (this.options.sourceKMSKey) {
+      const keyGrant = KeyGrants.fromKey(this.options.sourceKMSKey).decrypt(lambdaServicePrincipal);
+      if (!this.keyGrantWasApplied(keyGrant, this.options.sourceKMSKey)) {
+        cdk.Annotations.of(resource).addWarningV2(
+          '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy',
+          'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
+          'Grant the lambda.amazonaws.com service principal kms:Decrypt on the source KMS key manually. ' +
+          'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
+        );
+      }
+    }
+  }
+
+  private grantWasApplied(grant: iam.Grant): boolean {
+    // Grant.success includes attempted resource statements even when an imported resource declines the policy update.
+    // A resource-policy grant only creates dependency roots when the statement was actually applied.
+    return grant.success && Dependable.of(grant).dependencyRoots.length > 0;
+  }
+
+  private keyGrantWasApplied(grant: iam.Grant, key: IKeyRef): boolean {
+    const policyResource = iam.ResourceWithPolicies.of(key);
+    const resourceStatement = grant.resourceStatement ?? grant.principalStatement;
+
+    // Grant.success records the generated statement even when an imported key declines the policy update.
+    // Re-adding the same statement is deduplicated during synthesis and exposes the actual policy result.
+    return grant.success
+      && policyResource !== undefined
+      && resourceStatement !== undefined
+      && policyResource.addToResourcePolicy(resourceStatement).statementAdded;
   }
 }
 
