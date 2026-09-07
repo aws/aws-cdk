@@ -71,7 +71,7 @@ export abstract class Action {
    * @param job the job to run when the trigger fires.
    * @param options additional options for the action.
    */
-  public static job(job: IJobRef, options: CrawlerActionOptions = {}): Action {
+  public static job(job: IJobRef, options: JobActionOptions = {}): Action {
     return new JobAction(job, options);
   }
 
@@ -81,7 +81,7 @@ export abstract class Action {
    * @param crawler the crawler to run when the trigger fires.
    * @param options additional options for the action.
    */
-  public static crawler(crawler: ICrawlerRef, options: JobActionOptions = {}): Action {
+  public static crawler(crawler: ICrawlerRef, options: CrawlerActionOptions = {}): Action {
     return new CrawlerAction(crawler, options);
   }
 
@@ -97,7 +97,7 @@ export abstract class Action {
  * An action that runs a job.
  */
 class JobAction extends Action {
-  constructor(private readonly job: IJobRef, private readonly options: CrawlerActionOptions) {
+  constructor(private readonly job: IJobRef, private readonly options: JobActionOptions) {
     super();
   }
 
