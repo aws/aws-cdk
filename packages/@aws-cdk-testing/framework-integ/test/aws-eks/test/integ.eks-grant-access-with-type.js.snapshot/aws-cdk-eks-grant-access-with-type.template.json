@@ -897,7 +897,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/8d43c991fcfa6ef07d25d24c3023d9d4fea8370d28f8ccac250bc2dfc3947a60.json"
+       "/1d8618090937859e23dd8e82e684088e7fb87b38be8de05e7de5becf506c4cce.json"
       ]
      ]
     }
@@ -947,7 +947,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/03c0aa8b9bf73415da862cecb7197dcb4a3aa98ea9ca4659a92bcf6986e1ddaf.json"
+       "/aaf52020db806e9618dacb6bb291561c9c480d425d8dbe881909c7d3c9f85d2c.json"
       ]
      ]
     }
@@ -1094,6 +1094,57 @@
      ],
      "Version": "2012-10-17"
     }
+   }
+  },
+  "EC2AutoNodeRoleC9A6A37A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EC2AccessWithPolicyD4A5AB73": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSAutoNodePolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "EC2AutoNodeRoleC9A6A37A",
+      "Arn"
+     ]
+    },
+    "Type": "EC2"
    }
   }
  },
