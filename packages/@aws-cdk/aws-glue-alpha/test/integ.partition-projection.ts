@@ -50,8 +50,7 @@ new glue.S3Table(stack, 'TableDate', {
       min: '2020-01-01',
       max: '2023-12-31',
       format: 'yyyy-MM-dd',
-      interval: 1,
-      intervalUnit: glue.DateIntervalUnit.DAYS,
+      step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
     }),
   },
 });

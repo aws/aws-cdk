@@ -13,14 +13,14 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { isPluginFailure, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -57,7 +57,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   // When the default validation plugin is not explicitly opted-in, downgrade
   // its errors to warnings so synthesis does not fail.
-  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
+  const validateFlagExplicitlyEnabled = getBooleanContext(root, cxapi.VALIDATE_AGAINST_DEFAULT_RULES, false);
   let warningifiedAnyErrors = false;
   if (!validateFlagExplicitlyEnabled) {
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
@@ -329,41 +329,60 @@ function doInvokeValidationPlugins(
   plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
   root: App,
 ) {
-  const preExistingFileHashes = snapshotFileHashes(outdir);
+  const untrustedPlugins = new Set(Array.from(plugins.values())
+    .map(p => p[0])
+    .filter(p => !isTrustedPlugin(p)));
 
-  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+
+  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+
+  if (preExistingFileHashes) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      const pluginNames = Array.from(untrustedPlugins).map(p => p.name);
+      throw new AssumptionError(lit`IllegalPluginOperation`, `One of the validation plugins (${pluginNames.join(', ')}) modified the cloud assembly`);
+    }
+  }
+
+  return ret;
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
     stackArtifacts: private_cxapi.CloudFormationStackArtifact[],
   ): NamedValidationPluginReport[] {
-    const stacksByEnv = groupStacksByEnvironment(stackArtifacts);
+    // Nothing to validate; also keeps external plugins symmetric with the
+    // per-environment path, which produces no invocations for zero stacks.
+    if (stackArtifacts.length === 0) {
+      return [];
+    }
 
-    const reports = stacksByEnv.map(({ accountId, region, stacks }) => {
-      try {
-        const report = makeTemplatePathsRelative(plugin.validate({
-          // path.resolve() because templateFullPath might not be as full as you'd expect
-          templatePaths: stacks.map(s => s.templateFullPath),
-          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
-          appConstruct: root,
-          accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
-          region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
-        }));
+    const stackTemplates = stackArtifacts.map((s) => ({
+      stackConstructPath: s.hierarchicalId,
+      templatePath: s.templateFullPath,
+      accountId: s.environment.account !== cxapi.UNKNOWN_ACCOUNT ? s.environment.account : undefined,
+      region: s.environment.region !== cxapi.UNKNOWN_REGION ? s.environment.region : undefined,
+    } satisfies PolicyValidationStack));
 
-        if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-          throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-        }
+    // Global account and region
+    const accountId = stackTemplates.every(s => s.accountId === stackTemplates[0].accountId) ? stackTemplates[0].accountId : undefined;
+    const region = stackTemplates.every(s => s.region === stackTemplates[0].region) ? stackTemplates[0].region : undefined;
 
-        return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
-      } catch (e: any) {
-        if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
-          throw e;
-        }
-        return mkPluginFailure(plugin, e);
+    try {
+      const report = makeTemplatePathsRelative(plugin.validate({
+        templatePaths: stackTemplates.map(s => s.templatePath),
+        stackTemplates,
+        appConstruct: root,
+        accountId,
+        region,
+      }));
+
+      return [{ ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport];
+    } catch (e: any) {
+      if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
+        throw e;
       }
-    });
-
-    return mergeReports(reports);
+      return [mkPluginFailure(plugin, e)];
+    }
   }
 
   /**
@@ -388,24 +407,11 @@ function doInvokeValidationPlugins(
   }
 }
 
-interface StacksByEnvironment {
-  readonly accountId: string | undefined;
-  readonly region: string | undefined;
-  readonly stacks: private_cxapi.CloudFormationStackArtifact[];
-}
-
-function groupStacksByEnvironment(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment[] {
-  const ret = new Map<string, StacksByEnvironment>();
-
-  for (const stack of stacks) {
-    const key = `${stack.environment.account || ''}::${stack.environment.region || ''}`;
-    if (!ret.has(key)) {
-      ret.set(key, { accountId: stack.environment.account, region: stack.environment.region, stacks: [] });
-    }
-    ret.get(key)!.stacks.push(stack);
-  }
-
-  return Array.from(ret.values());
+/**
+ * A plugin for which we don't need to validate that it didn't modify the assembly
+ */
+function isTrustedPlugin(x: IPolicyValidationPlugin) {
+  return x instanceof CloudFormationValidatePlugin;
 }
 
 /**
@@ -517,41 +523,6 @@ function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolea
 
 function mutable<A extends object>(obj: A): { -readonly [P in keyof A]: A[P] } {
   return obj as any;
-}
-
-/**
- * Merge the reports from multiple invocations of the same plugin into a single report.
- *
- * All non-errors are combined into a single report, and errors are combined by error message.
- */
-function mergeReports(reports: NamedValidationPluginReport[]): NamedValidationPluginReport[] {
-  const nonErrors = reports.filter(r => isPluginFailure(r) === undefined);
-  const errors = reports.filter(r => isPluginFailure(r) !== undefined);
-
-  const ret: NamedValidationPluginReport[] = [];
-  if (nonErrors.length > 0) {
-    const merged: NamedValidationPluginReport = nonErrors[0];
-    for (const candidate of nonErrors.slice(1)) {
-      merged.violations.push(...candidate.violations);
-      mutable(merged).metadata = { ...merged.metadata, ...candidate.metadata };
-      mutable(merged).success = merged.success && candidate.success;
-    }
-    ret.push(merged);
-  }
-
-  if (errors.length > 0) {
-    const errorMap = new Map<string, NamedValidationPluginReport>();
-    for (const candidate of errors) {
-      const errorMessage = isPluginFailure(candidate);
-      if (!errorMessage) continue;
-      if (!errorMap.has(errorMessage)) {
-        errorMap.set(errorMessage, candidate);
-      }
-    }
-    ret.push(...errorMap.values());
-  }
-
-  return ret;
 }
 
 function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {

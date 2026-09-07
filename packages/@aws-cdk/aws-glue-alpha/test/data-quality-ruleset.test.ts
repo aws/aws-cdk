@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 import * as glue from '../lib';
 
 test('a data quality ruleset', () => {
@@ -7,33 +8,11 @@ test('a data quality ruleset', () => {
   new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
     description: 'description',
     rulesetName: 'ruleset_name',
-    rulesetDqdl: 'ruleset_dqdl',
-    targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
+    dqdl: glue.Dqdl.fromString('ruleset_dqdl'),
+    targetTable: glue.DataQualityTargetTable.fromTableName(CfnDatabase.fromDatabaseName(stack, 'Db', 'database_name'), 'table_name'),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataQualityRuleset', {
-    Description: 'description',
-    Name: 'ruleset_name',
-    Ruleset: 'ruleset_dqdl',
-    TargetTable: {
-      DatabaseName: 'database_name',
-      TableName: 'table_name',
-    },
-  });
-});
-
-test('a data quality ruleset with a client token', () => {
-  const stack = new cdk.Stack();
-  new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
-    clientToken: 'client_token',
-    description: 'description',
-    rulesetName: 'ruleset_name',
-    rulesetDqdl: 'ruleset_dqdl',
-    targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataQualityRuleset', {
-    ClientToken: 'client_token',
     Description: 'description',
     Name: 'ruleset_name',
     Ruleset: 'ruleset_dqdl',
@@ -47,19 +26,17 @@ test('a data quality ruleset with a client token', () => {
 test('a data quality ruleset with tags', () => {
   const stack = new cdk.Stack();
   new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
-    clientToken: 'client_token',
     description: 'description',
     rulesetName: 'ruleset_name',
-    rulesetDqdl: 'ruleset_dqdl',
+    dqdl: glue.Dqdl.fromString('ruleset_dqdl'),
     tags: {
       key1: 'value1',
       key2: 'value2',
     },
-    targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
+    targetTable: glue.DataQualityTargetTable.fromTableName(CfnDatabase.fromDatabaseName(stack, 'Db', 'database_name'), 'table_name'),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::DataQualityRuleset', {
-    ClientToken: 'client_token',
     Description: 'description',
     Name: 'ruleset_name',
     Ruleset: 'ruleset_dqdl',
@@ -77,8 +54,9 @@ test('a data quality ruleset with tags', () => {
 test('removalPolicy can be overridden to DESTROY', () => {
   const stack = new cdk.Stack();
   new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
-    rulesetDqdl: 'ruleset_dqdl',
-    targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
+    rulesetName: 'ruleset_name',
+    dqdl: glue.Dqdl.fromString('ruleset_dqdl'),
+    targetTable: glue.DataQualityTargetTable.fromTableName(CfnDatabase.fromDatabaseName(stack, 'Db', 'database_name'), 'table_name'),
     removalPolicy: cdk.RemovalPolicy.DESTROY,
   });
 
@@ -117,8 +95,8 @@ test('exposes the ruleset name and ARN of a created ruleset', () => {
   const stack = new cdk.Stack();
   const ruleset = new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
     rulesetName: 'ruleset_name',
-    rulesetDqdl: 'ruleset_dqdl',
-    targetTable: new glue.DataQualityTargetTable('database_name', 'table_name'),
+    dqdl: glue.Dqdl.fromString('ruleset_dqdl'),
+    targetTable: glue.DataQualityTargetTable.fromTableName(CfnDatabase.fromDatabaseName(stack, 'Db', 'database_name'), 'table_name'),
   });
 
   // The name getter returns an environment-sensitive token, so the ARN getter

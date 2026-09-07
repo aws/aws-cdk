@@ -159,7 +159,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 1024
    */
   readonly memoryLimit?: number;
 
@@ -385,6 +385,13 @@ export class BucketDeployment extends Construct {
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
+      // The deployment handler is CDK-managed internal code, not user code, so the architecture is
+      // fixed rather than configurable. Both the handler and the bundled AWS CLI v1 layer are
+      // architecture-independent Python: the layer's only native extension is PyYAML's optional C
+      // accelerator, which is built for a different Python ABI than this runtime and is therefore
+      // never loaded (PyYAML falls back to its pure-Python implementation). So we always run the
+      // handler on ARM_64 (Graviton), which costs less per millisecond of execution.
+      architecture: lambda.Architecture.ARM_64,
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
@@ -395,7 +402,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 1024,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
