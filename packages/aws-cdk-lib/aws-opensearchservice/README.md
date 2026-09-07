@@ -149,7 +149,39 @@ const domain = new Domain(this, 'Domain', {
 
 This sets up the domain with node to node encryption and encryption at
 rest. You can also choose to supply your own KMS key to use for encryption at
-rest.
+rest:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const encryptionKey = new kms.Key(this, 'EncryptionKey');
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  encryptionAtRest: {
+    kmsKey: encryptionKey,
+  },
+});
+```
+
+The construct also supports using cross-account KMS keys for encryption at rest:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const crossAccountKey = kms.Key.fromKeyArn(
+  this,
+  'CrossAccountKey',
+  'arn:aws:kms:us-east-1:111111111111:key/12345678-1234-1234-1234-123456789012',
+);
+
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  encryptionAtRest: {
+    kmsKey: crossAccountKey,
+  },
+});
+```
 
 ## VPC Support
 
@@ -324,7 +356,6 @@ domain.addAccessPolicies(
 );
 ```
 
-
 ## Audit logs
 
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
@@ -410,6 +441,30 @@ const domain = new Domain(this, 'Domain', {
     warmInstanceType: 'ultrawarm1.medium.search',
   },
   coldStorageEnabled: true,
+});
+```
+
+## S3 Vectors Engine
+
+Amazon OpenSearch Service offers [the ability to use Amazon S3 as a vector engine for vector indexes](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html).
+This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
+
+Requirements:
+
+- OpenSearch version 2.19 or later
+- OpenSearch Optimized instance types (OR1, OR2, OM2, OI2) for data nodes
+- Encryption at rest must be enabled
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_19,
+  s3VectorsEngineEnabled: true,
+  capacity: {
+    dataNodeInstanceType: 'or1.medium.search',
+  },
+  encryptionAtRest: {
+    enabled: true,
+  },
 });
 ```
 

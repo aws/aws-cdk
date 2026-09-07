@@ -1,5 +1,5 @@
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
-import { CfnBucket } from 'aws-cdk-lib/aws-s3';
+import type { CfnBucket } from 'aws-cdk-lib/aws-s3';
 import { Stack, App } from 'aws-cdk-lib';
 import { ROUTE53_PATTERNS_USE_DISTRIBUTION } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';

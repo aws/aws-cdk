@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
-import { StackDeployment } from '../blueprint/stack-deployment';
-import { GraphNode } from '../helpers-internal/graph';
+import type { StackDeployment } from '../blueprint/stack-deployment';
+import type { GraphNode } from '../helpers-internal/graph';
 
 export function hash<A>(obj: A) {
   const d = crypto.createHash('sha256');

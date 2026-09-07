@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { PackageJson, PKGLINT_IGNORES } from './packagejson';
+import type { PackageJson } from './packagejson';
+import { PKGLINT_IGNORES } from './packagejson';
 
 /**
  * Expect a particular JSON key to be a given value

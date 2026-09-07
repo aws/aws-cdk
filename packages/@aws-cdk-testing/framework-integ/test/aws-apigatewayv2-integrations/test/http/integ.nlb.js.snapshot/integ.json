@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-nlb-integration-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-nlb-integration-test/DefaultTest/DeployAssert",
       "assertionStackName": "integnlbintegrationtestDefaultTestDeployAssert2961C4CC"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

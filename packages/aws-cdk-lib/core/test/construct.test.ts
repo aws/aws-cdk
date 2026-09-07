@@ -1,5 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, ConstructOrder } from 'constructs';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, Names } from '../lib';

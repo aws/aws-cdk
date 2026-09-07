@@ -14,35 +14,26 @@ import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, AwsServiceName, IpCidr, Ipam, IpamPoolPublicIpSource, SubnetV2 } from '../lib';
 import * as vpc_v2 from '../lib/vpc-v2';
 
-/**
- * Integ test for VPC with IPAM pool to be run with --no-clean
- */
-
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-integ-ipam');
 
-const ipam = new Ipam(stack, 'IpamTest', {
-  operatingRegions: ['us-west-2'],
-});
-
-/** Test Ipam Pool Ipv4 */
+const ipam = new Ipam(stack, 'IpamTest');
 
 const pool1 = ipam.privateScope.addPool('PrivatePool0', {
   addressFamily: AddressFamily.IP_V4,
   ipv4ProvisionedCidrs: ['10.2.0.0/16'],
-  locale: 'us-west-2',
+  locale: stack.region,
 });
 
 const pool2 = ipam.publicScope.addPool('PublicPool0', {
   addressFamily: AddressFamily.IP_V6,
   awsService: AwsServiceName.EC2,
-  locale: 'us-west-2',
+  locale: stack.region,
   publicIpSource: IpamPoolPublicIpSource.AMAZON,
 });
-pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 } );
+pool2.provisionCidr('PublicPool0Cidr', { netmaskLength: 52 });
 
-/** Test Ipv4 Primary and Secondary address IpvIPAM */
 const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
@@ -61,24 +52,21 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC-integ-test-1', {
   enableDnsSupport: true,
 });
 
-/**
- * Since source for IPAM IPv6 is set to amazonProvidedIPAM CIDR,
- * can assign IPv6 address only after the allocation
- * uncomment ipv6CidrBlock and provide valid IPv6 range
- */
 new SubnetV2(stack, 'testsbubnet', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.0.0.0/24'),
-  // defined on the basis of allocation done in IPAM console
-  // ipv6CidrBlock: new Ipv6Cidr('2a05:d02c:25:4000::/60'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-/**
- * Integ test for VPC with IPAM pool to be run with --no-clean
- *  due to dependency on de-allocation of provisioned ipv6 CIDR
- */
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
+  // IPAM pool CIDR deprovisioning is async — CloudFormation may attempt to
+  // delete the pool before the VPC CIDR allocation is fully released, causing
+  // DELETE_FAILED. Tolerate destroy errors to avoid flaky test teardown.
+  cdkCommandOptions: {
+    destroy: {
+      expectError: true,
+    },
+  },
 });

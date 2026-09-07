@@ -5,7 +5,8 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { validateFlags } from './validate-flags';
 import * as feats from '../lib/features';
-import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
+import type { FlagInfo } from '../lib/private/flag-modeling';
+import { FlagType, compareVersions } from '../lib/private/flag-modeling';
 
 async function main() {
   validateFlags();
@@ -124,9 +125,12 @@ function oldBehavior(flag: FlagInfo): string | undefined {
 }
 
 function recommendedJson() {
+  const sortedFlags = Object.fromEntries(
+    Object.entries(feats.CURRENTLY_RECOMMENDED_FLAGS).sort(([a], [b]) => a.localeCompare(b)),
+  );
   return [
     '```json',
-    JSON.stringify({ context: feats.CURRENTLY_RECOMMENDED_FLAGS }, undefined, 2),
+    JSON.stringify({ context: sortedFlags }, undefined, 2),
     '```',
   ].join('\n');
 }

@@ -21,6 +21,7 @@ rule S3_SECURE_TRANSPORT when %s3_bucket_policies !empty {
                     when Condition.Bool exists {
                         Condition.Bool["aws:SecureTransport"] exists
                         Condition.Bool["aws:SecureTransport"] == "false"
+                            <<##ERROR:S3 bucket policy must enforce HTTPS. Add a Deny statement with Condition {"Bool": {"aws:SecureTransport": "false"}}.##>>
                     }
                 }
             }

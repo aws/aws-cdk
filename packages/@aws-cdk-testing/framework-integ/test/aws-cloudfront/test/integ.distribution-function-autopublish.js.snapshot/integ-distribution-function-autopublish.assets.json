@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "92bbf4f2b55d6d4871b14bcd12a633dafab0271bab4b1ce746c5305ae7400665": {
+      "displayName": "integ-distribution-function-autopublish Template",
+      "source": {
+        "path": "integ-distribution-function-autopublish.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c31c0d99": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "92bbf4f2b55d6d4871b14bcd12a633dafab0271bab4b1ce746c5305ae7400665.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

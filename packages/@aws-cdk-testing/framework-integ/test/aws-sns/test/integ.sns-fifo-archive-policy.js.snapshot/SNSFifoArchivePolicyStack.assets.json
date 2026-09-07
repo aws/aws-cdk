@@ -1,15 +1,30 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
-    "53e28b8a9139dc66425377550ef9098cfa5a92484bfb13294ace9606a2f4ecc9": {
+    "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-05d1bcb6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9a66e657bccbe701882f6c00746068418d9ffcdd2ffd1eab97b602f070b7bdad": {
+      "displayName": "SNSFifoArchivePolicyStack Template",
       "source": {
         "path": "SNSFifoArchivePolicyStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-2866cffa": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "53e28b8a9139dc66425377550ef9098cfa5a92484bfb13294ace9606a2f4ecc9.json",
+          "objectKey": "9a66e657bccbe701882f6c00746068418d9ffcdd2ffd1eab97b602f070b7bdad.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as core from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import type * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -189,11 +189,11 @@ describe('Application', () => {
   test('providing a custom runtime', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      runtime: flink.Runtime.of('custom'),
+      runtime: flink.Runtime.of('ZEPPELIN-FLINK-2_0'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'custom',
+      RuntimeEnvironment: 'ZEPPELIN-FLINK-2_0',
     });
   });
 

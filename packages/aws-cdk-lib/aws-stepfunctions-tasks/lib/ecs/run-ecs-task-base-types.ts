@@ -1,4 +1,4 @@
-import { ContainerDefinition } from '../../../aws-ecs';
+import type { ContainerDefinition } from '../../../aws-ecs';
 
 /**
  * A list of container overrides that specify the name of a container

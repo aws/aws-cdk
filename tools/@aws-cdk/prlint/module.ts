@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';

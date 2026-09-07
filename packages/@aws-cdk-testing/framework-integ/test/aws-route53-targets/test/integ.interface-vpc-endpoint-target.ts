@@ -15,10 +15,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
 const interfaceVpcEndpoint = new ec2.InterfaceVpcEndpoint(stack, 'InterfaceEndpoint', {
   vpc,
-  service: {
-    name: 'com.amazonaws.us-west-2.sms',
-    port: 80,
-  },
+  service: ec2.InterfaceVpcEndpointAwsService.APIGATEWAY,
   privateDnsEnabled: false,
   subnets: {
     subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,

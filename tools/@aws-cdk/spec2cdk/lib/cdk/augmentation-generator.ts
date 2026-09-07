@@ -1,4 +1,5 @@
-import { Resource, ResourceAugmentation, ResourceMetric, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Resource, ResourceAugmentation, ResourceMetric, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { MemberType } from '@cdklabs/typewriter';
 import {
   $E,
   ClassType,
@@ -7,12 +8,11 @@ import {
   Module,
   MonkeyPatchedType,
   Splat,
-  MemberType,
   stmt,
   Type,
 } from '@cdklabs/typewriter';
 import { CDK_CLOUDWATCH, CONSTRUCTS } from './cdk';
-import { ResourceClass } from './resource-class';
+import type { ResourceClass } from './resource-class';
 
 /**
  * Generate augmentation methods for the given types

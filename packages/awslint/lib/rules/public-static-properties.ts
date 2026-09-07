@@ -1,4 +1,4 @@
-import { Property } from 'jsii-reflect';
+import type { Property } from 'jsii-reflect';
 import { Linter } from '../linter';
 
 const UPPER_SNAKE_CASE_ALLOWED_PATTERN = new RegExp('^[A-Z0-9][A-Z0-9_]*[A-Z0-9]+$');

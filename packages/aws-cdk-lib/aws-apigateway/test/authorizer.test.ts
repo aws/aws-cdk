@@ -1,5 +1,6 @@
 import { Stack } from '../../core';
-import { Authorizer, IRestApi } from '../lib';
+import type { IRestApi } from '../lib';
+import { Authorizer } from '../lib';
 
 describe('authorizer', () => {
   test('isAuthorizer correctly detects an instance of type Authorizer', () => {

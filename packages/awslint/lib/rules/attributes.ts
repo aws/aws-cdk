@@ -1,4 +1,5 @@
-import { Attribute, ResourceReflection } from './resource';
+import type { Attribute } from './resource';
+import { ResourceReflection } from './resource';
 import { Linter } from '../linter';
 
 export const attributesLinter = new Linter(a => {

@@ -1,4 +1,4 @@
-import { Resolution } from './util';
+import type { Resolution } from './util';
 
 /**
  * Rendition selection mode.

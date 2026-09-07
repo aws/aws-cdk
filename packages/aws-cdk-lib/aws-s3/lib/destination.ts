@@ -1,5 +1,5 @@
-import { Construct, IDependable } from 'constructs';
-import { IBucketRef } from './s3.generated';
+import type { Construct, IDependable } from 'constructs';
+import type { IBucketRef } from './s3.generated';
 
 /**
  * Implemented by constructs that can be used as bucket notification destinations.

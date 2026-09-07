@@ -1,15 +1,25 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
-import { IComputeEnvironment } from './compute-environment-base';
-import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { toISchedulingPolicy } from './private/ref-utils';
+import type { ISchedulingPolicy } from './scheduling-policy';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type {
+  IComputeEnvironmentRef,
+  IJobQueueRef,
+  ISchedulingPolicyRef,
+  JobQueueReference,
+} from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobQueue
  */
-export interface IJobQueue extends IResource {
+export interface IJobQueue extends IResource, IJobQueueRef {
   /**
    * The name of the job queue. It can be up to 128 letters long.
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
@@ -65,7 +75,7 @@ export interface IJobQueue extends IResource {
    * Add a `ComputeEnvironment` to this Queue.
    * The Queue will prefer lower-order `ComputeEnvironment`s.
    */
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void;
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void;
 }
 
 /**
@@ -118,7 +128,7 @@ export interface JobQueueProps {
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy;
+  readonly schedulingPolicy?: ISchedulingPolicyRef;
 
   /**
    * The set of actions that AWS Batch perform on jobs that remain at the head of the job queue in
@@ -137,7 +147,7 @@ export interface OrderedComputeEnvironment {
   /**
    * The ComputeEnvironment to link to this JobQueue
    */
-  readonly computeEnvironment: IComputeEnvironment;
+  readonly computeEnvironment: IComputeEnvironmentRef;
 
   /**
    * The order associated with `computeEnvironment`
@@ -249,21 +259,57 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-      public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
-        throw new ValidationError(`cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
+      public get jobQueueRef(): JobQueueReference {
+        return {
+          jobQueueArn: this.jobQueueArn,
+        };
+      }
+
+      public addComputeEnvironment(_computeEnvironment: IComputeEnvironmentRef, _order: number): void {
+        throw new ValidationError(lit`CannotAddComputeEnvironmentsImported`, `cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
 
     return new Import(scope, id);
   }
 
-  public readonly computeEnvironments: OrderedComputeEnvironment[];
+  private readonly _computeEnvironments: IArrayBox<OrderedComputeEnvironment>;
   public readonly priority: number;
   public readonly enabled?: boolean;
-  public readonly schedulingPolicy?: ISchedulingPolicy;
+  private readonly _schedulingPolicy?: ISchedulingPolicyRef;
 
-  public readonly jobQueueArn: string;
-  public readonly jobQueueName: string;
+  private readonly resource: CfnJobQueue;
+
+  @memoizedGetter
+  public get jobQueueArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrJobQueueArn, {
+      service: 'batch',
+      resource: 'job-queue',
+      resourceName: this.physicalName,
+    });
+  }
+
+  public get computeEnvironments(): OrderedComputeEnvironment[] {
+    return this._computeEnvironments.getMutable();
+  }
+
+  @memoizedGetter
+  public get jobQueueName(): string {
+    return Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+  }
+
+  /**
+   * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
+   */
+  public get schedulingPolicy(): ISchedulingPolicy | undefined {
+    return this._schedulingPolicy ? toISchedulingPolicy(this._schedulingPolicy) : undefined;
+  }
+
+  public get jobQueueRef(): JobQueueReference {
+    return {
+      jobQueueArn: this.jobQueueArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props?: JobQueueProps) {
     super(scope, id, {
@@ -272,39 +318,30 @@ export class JobQueue extends Resource implements IJobQueue {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.computeEnvironments = props?.computeEnvironments ?? [];
+    this._computeEnvironments = Box.fromArray(props?.computeEnvironments ?? []);
     this.priority = props?.priority ?? 1;
     this.enabled = props?.enabled;
-    this.schedulingPolicy = props?.schedulingPolicy;
+    this._schedulingPolicy = props?.schedulingPolicy;
 
-    const resource = new CfnJobQueue(this, 'Resource', {
-      computeEnvironmentOrder: Lazy.any({
-        produce: () => this.computeEnvironments.map((ce) => {
-          return {
-            computeEnvironment: ce.computeEnvironment.computeEnvironmentArn,
-            order: ce.order,
-          };
-        }),
+    this.resource = new CfnJobQueue(this, 'Resource', {
+      computeEnvironmentOrder: this._computeEnvironments.map((ce) => {
+        return {
+          computeEnvironment: ce.computeEnvironment.computeEnvironmentRef.computeEnvironmentArn,
+          order: ce.order,
+        };
       }),
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-      schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
+      schedulingPolicyArn: this._schedulingPolicy?.schedulingPolicyRef.schedulingPolicyArn,
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
 
-    this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
-      service: 'batch',
-      resource: 'job-queue',
-      resourceName: this.physicalName,
-    });
-    this.jobQueueName = Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-
-    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
+    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this._computeEnvironments.get()) });
   }
 
-  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
-    this.computeEnvironments.push({
+  addComputeEnvironment(computeEnvironment: IComputeEnvironmentRef, order: number): void {
+    this._computeEnvironments.push({
       computeEnvironment,
       order,
     });
@@ -327,7 +364,7 @@ export class JobQueue extends Resource implements IJobQueue {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new ValidationError(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
+        throw new ValidationError(lit`MaxTimeSeconds`, `maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
       }
 
       return {
@@ -340,7 +377,7 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 }
 
-function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
+function validateOrderedComputeEnvironments(computeEnvironments: readonly OrderedComputeEnvironment[]): string[] {
   const seenOrders: number[] = [];
 
   for (const ce of computeEnvironments) {

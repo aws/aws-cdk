@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Archive, CfnArchive, EventBus } from 'aws-cdk-lib/aws-events';
+import type { CfnArchive } from 'aws-cdk-lib/aws-events';
+import { Archive, EventBus } from 'aws-cdk-lib/aws-events';
 
 const app = new App();
 

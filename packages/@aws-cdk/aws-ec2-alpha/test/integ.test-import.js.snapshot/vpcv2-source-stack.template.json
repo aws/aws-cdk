@@ -1,0 +1,292 @@
+{
+ "Resources": {
+  "SourceVpc8330E39E": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "vpcv2-source-stack/SourceVpc"
+     }
+    ]
+   }
+  },
+  "SourceVpcSecondary150C583EF": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.2.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SourceVpcSecondary28FC2BEBF": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.3.0.0/16",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "SourceVpcAmazonIpv646F1B529": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "IsolatedSubnetD991348F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.2.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "IsolatedSubnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  },
+  "IsolatedSubnetRouteTableDB336C09": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  },
+  "IsolatedSubnetRouteTableAssociationB1356BA9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "IsolatedSubnetRouteTableDB336C09",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "IsolatedSubnetD991348F"
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  },
+  "PublicSubnet1C95672B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.3.0.0/24",
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "PublicSubnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  },
+  "PublicSubnetRouteTable0E6A0E9F": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "DefaultCDKRouteTable"
+     }
+    ],
+    "VpcId": {
+     "Fn::GetAtt": [
+      "SourceVpc8330E39E",
+      "VpcId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  },
+  "PublicSubnetRouteTableAssociation0984B11D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Fn::GetAtt": [
+      "PublicSubnetRouteTable0E6A0E9F",
+      "RouteTableId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "PublicSubnet1C95672B"
+    }
+   },
+   "DependsOn": [
+    "SourceVpcAmazonIpv646F1B529",
+    "SourceVpcSecondary150C583EF",
+    "SourceVpcSecondary28FC2BEBF"
+   ]
+  }
+ },
+ "Outputs": {
+  "VpcId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SourceVpc8330E39E",
+     "VpcId"
+    ]
+   },
+   "Export": {
+    "Name": "SourceVpcId"
+   }
+  },
+  "IsolatedSubnetId": {
+   "Value": {
+    "Ref": "IsolatedSubnetD991348F"
+   },
+   "Export": {
+    "Name": "IsolatedSubnetId"
+   }
+  },
+  "IsolatedSubnetRtId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "IsolatedSubnetRouteTableDB336C09",
+     "RouteTableId"
+    ]
+   },
+   "Export": {
+    "Name": "IsolatedSubnetRtId"
+   }
+  },
+  "PublicSubnetId": {
+   "Value": {
+    "Ref": "PublicSubnet1C95672B"
+   },
+   "Export": {
+    "Name": "PublicSubnetId"
+   }
+  },
+  "PublicSubnetRtId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PublicSubnetRouteTable0E6A0E9F",
+     "RouteTableId"
+    ]
+   },
+   "Export": {
+    "Name": "PublicSubnetRtId"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

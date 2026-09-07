@@ -1,9 +1,9 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
-import { ExportReaderCRProps, CrossRegionExports } from '../types';
+import type { ExportReaderCRProps, CrossRegionExports } from '../types';
 // Must use a require() otherwise esbuild complains
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
 const pLimit: typeof import('p-limit') = require('p-limit');
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {

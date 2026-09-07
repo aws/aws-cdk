@@ -1,6 +1,7 @@
 import * as path from 'path';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Match, Template } from '../../assertions';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as core from '../../core';
 import * as cxapi from '../../cx-api';
 import * as inc from '../lib';
@@ -14,6 +15,7 @@ describe('CDK Include for nested stacks', () => {
 
   beforeEach(() => {
     const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    acknowledgeTestWarnings(app);
     stack = new core.Stack(app);
   });
 
@@ -507,6 +509,7 @@ describe('CDK Include for nested stacks', () => {
 
     beforeAll(() => {
       const app = new core.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+      acknowledgeTestWarnings(app);
       assetStack = new core.Stack(app);
       parentTemplate = new inc.CfnInclude(assetStack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-one-child.json'),
@@ -690,6 +693,7 @@ describe('CDK Include for nested stacks', () => {
 
     beforeAll(() => {
       parentStack = new core.Stack();
+      acknowledgeTestWarnings(parentStack);
       const parentTemplate = new inc.CfnInclude(parentStack, 'ParentStack', {
         templateFile: testTemplateFilePath('parent-two-parameters.json'),
         loadNestedStacks: {
@@ -750,6 +754,7 @@ describe('CDK Include for nested stacks', () => {
 
     beforeEach(() => {
       parentStack = new core.Stack();
+      acknowledgeTestWarnings(parentStack);
     });
 
     test('dehydrated resources are included in child templates, even if they are otherwise invalid', () => {

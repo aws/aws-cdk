@@ -1,7 +1,9 @@
-import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from '../../../aws-apigatewayv2';
-import { IUserPool, IUserPoolClient } from '../../../aws-cognito';
+import type { HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from '../../../aws-apigatewayv2';
+import { HttpAuthorizer, HttpAuthorizerType } from '../../../aws-apigatewayv2';
+import type { IUserPool, IUserPoolClient } from '../../../aws-cognito';
 import { Stack } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Properties to initialize HttpUserPoolAuthorizer.
@@ -61,6 +63,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   public get authorizerId(): string {
     if (!this.authorizer) {
       throw new UnscopedValidationError(
+        lit`AuthorizerNotAttached`,
         'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }

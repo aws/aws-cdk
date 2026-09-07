@@ -62,7 +62,7 @@ describe.each([
     }(stack, 'Group'));
 
     // WHEN
-    newRule(stack, asgEvents.eC2InstanceLaunchUnsuccessfulPattern({
+    newRule(stack, asgEvents.ec2InstanceLaunchUnsuccessfulPattern({
       cause: ['explosion'],
     }));
 

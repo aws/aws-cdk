@@ -12,12 +12,13 @@
  */
 
 import * as cdk from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Location } from 'aws-cdk-lib/aws-s3';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import { IConstruct } from 'constructs';
-import { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
+import type { Location } from 'aws-cdk-lib/aws-s3';
+import type * as sns from 'aws-cdk-lib/aws-sns';
+import type { IConstruct } from 'constructs';
+import type { IMemoryStrategy, MemoryStrategyCommonProps, MemoryStrategyType } from '../memory-strategy';
+import { MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -87,6 +88,7 @@ const DEFAULT_TOKEN_BASED_TRIGGER = 100;
 /**
  * Trigger conditions for self managed memory strategy
  * When first condition is met, batched payloads are sent to specified S3 bucket.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface TriggerConditions {
   /**
@@ -109,6 +111,7 @@ export interface TriggerConditions {
 
 /**
  * Invocation configuration for self managed memory strategy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface InvocationConfiguration {
   /**
@@ -124,6 +127,7 @@ export interface InvocationConfiguration {
 /**
  * Configuration parameters for a self managed memory strategy
  * existing built-in default prompts/models
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
   /**
@@ -144,6 +148,7 @@ export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
 
 /**
  * Use AgentCore memory for event storage with custom triggers. Define memory processing logic in your own environment.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class SelfManagedMemoryStrategy implements IMemoryStrategy {
   public readonly name: string;
@@ -220,6 +225,9 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
 
   /**
    * Grants the necessary permissions to the role
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee - The grantee to grant permissions to
    * @returns The Grant object for chaining
    */
@@ -288,6 +296,10 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
   private _validateHistoricalContextWindowSize = (historicalContextWindowSize: number): string[] => {
     let errors: string[] = [];
 
+    if (cdk.Token.isUnresolved(historicalContextWindowSize)) {
+      return errors;
+    }
+
     if (historicalContextWindowSize < HISTORICAL_CONTEXT_WINDOW_SIZE_MIN
         || historicalContextWindowSize > HISTORICAL_CONTEXT_WINDOW_SIZE_MAX) {
       errors.push(`Historical context window size must be between ${HISTORICAL_CONTEXT_WINDOW_SIZE_MIN} and ${HISTORICAL_CONTEXT_WINDOW_SIZE_MAX}, got ${historicalContextWindowSize}`);
@@ -305,7 +317,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     let errors: string[] = [];
 
     // Validate message-based trigger
-    if (triggerConditions.messageBasedTrigger !== undefined) {
+    if (triggerConditions.messageBasedTrigger !== undefined && !cdk.Token.isUnresolved(triggerConditions.messageBasedTrigger)) {
       if (triggerConditions.messageBasedTrigger < MESSAGE_BASED_TRIGGER_MIN
         || triggerConditions.messageBasedTrigger > MESSAGE_BASED_TRIGGER_MAX) {
         errors.push(`Message-based trigger must be between ${MESSAGE_BASED_TRIGGER_MIN} and ${MESSAGE_BASED_TRIGGER_MAX}, got ${triggerConditions.messageBasedTrigger}`);
@@ -313,7 +325,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     }
 
     // Validate time-based trigger
-    if (triggerConditions.timeBasedTrigger !== undefined) {
+    if (triggerConditions.timeBasedTrigger !== undefined && !triggerConditions.timeBasedTrigger.isUnresolved()) {
       const seconds = triggerConditions.timeBasedTrigger.toSeconds();
       if (seconds < TIME_BASED_TRIGGER_MIN || seconds > TIME_BASED_TRIGGER_MAX) {
         errors.push(`Time-based trigger must be between ${TIME_BASED_TRIGGER_MIN} and ${TIME_BASED_TRIGGER_MAX} seconds, got ${seconds}`);
@@ -321,7 +333,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     }
 
     // Validate token-based trigger
-    if (triggerConditions.tokenBasedTrigger !== undefined) {
+    if (triggerConditions.tokenBasedTrigger !== undefined && !cdk.Token.isUnresolved(triggerConditions.tokenBasedTrigger)) {
       if (triggerConditions.tokenBasedTrigger < TOKEN_BASED_TRIGGER_MIN || triggerConditions.tokenBasedTrigger > TOKEN_BASED_TRIGGER_MAX) {
         errors.push(`Token-based trigger must be between ${TOKEN_BASED_TRIGGER_MIN} and ${TOKEN_BASED_TRIGGER_MAX}, got ${triggerConditions.tokenBasedTrigger}`);
       }

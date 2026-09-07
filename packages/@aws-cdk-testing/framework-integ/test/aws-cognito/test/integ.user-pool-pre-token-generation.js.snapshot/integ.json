@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "52.0.0",
   "testCases": {
     "PreTokenGenerationIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "PreTokenGenerationIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "PreTokenGenerationIntegTestDefaultTestDeployAssert5121EE60"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

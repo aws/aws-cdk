@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
+import { QueueGrants } from '../lib';
 import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
 /* eslint-disable @stylistic/quote-props */
@@ -93,7 +94,7 @@ test('message retention period can be provided as a parameter', () => {
   const stack = new Stack();
   const parameter = new CfnParameter(stack, 'my-retention-period', {
     type: 'Number',
-    default: 30,
+    default: 60,
   });
 
   // WHEN
@@ -106,7 +107,7 @@ test('message retention period can be provided as a parameter', () => {
     'Parameters': {
       'myretentionperiod': {
         'Type': 'Number',
-        'Default': 30,
+        'Default': 60,
       },
     },
     'Resources': {
@@ -500,6 +501,62 @@ describe('grants', () => {
       },
     });
   });
+
+  test('grant on CfnQueue with KMS key grants key permissions', () => {
+    const stack = new Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Resource: '*',
+            Principal: { 'AWS': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grant on CfnQueue adds statement to queue policy', () => {
+    const stack = new Stack();
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue');
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: { 'Fn::GetAtt': ['Queue', 'Arn'] },
+          }),
+        ]),
+      },
+      Queues: [{ 'Ref': 'Queue' }],
+    });
+  });
 });
 
 describe('queue encryption', () => {
@@ -837,6 +894,110 @@ test('test metrics', () => {
     metricName: 'SentMessageSize',
     period: Duration.minutes(5),
     statistic: 'Average',
+  });
+});
+
+describe('metricApproximateNumberOfMessagesOutstanding', () => {
+  test('sums the visible and not visible message counts', () => {
+    // GIVEN
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    const metric = queue.metricApproximateNumberOfMessagesOutstanding();
+
+    // THEN
+    expect(metric.expression).toEqual('visible + notVisible');
+    expect(metric.label).toEqual('Approximate number of messages outstanding');
+    expect(metric.period).toEqual(Duration.minutes(5));
+    expect(stack.resolve(metric.usingMetrics.visible)).toEqual({
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
+      namespace: 'AWS/SQS',
+      metricName: 'ApproximateNumberOfMessagesVisible',
+      period: Duration.minutes(5),
+      statistic: 'Maximum',
+    });
+    expect(stack.resolve(metric.usingMetrics.notVisible)).toEqual({
+      dimensions: { QueueName: { 'Fn::GetAtt': ['Queue4A7E3555', 'QueueName'] } },
+      namespace: 'AWS/SQS',
+      metricName: 'ApproximateNumberOfMessagesNotVisible',
+      period: Duration.minutes(5),
+      statistic: 'Maximum',
+    });
+  });
+
+  test('applies statistic and period to both underlying metrics', () => {
+    // GIVEN
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    const metric = queue.metricApproximateNumberOfMessagesOutstanding({
+      statistic: 'Average',
+      period: Duration.minutes(1),
+      label: 'Outstanding work',
+    });
+
+    // THEN
+    expect(metric.label).toEqual('Outstanding work');
+    expect(metric.period).toEqual(Duration.minutes(1));
+    for (const id of ['visible', 'notVisible']) {
+      expect(stack.resolve(metric.usingMetrics[id])).toEqual(expect.objectContaining({
+        period: Duration.minutes(1),
+        statistic: 'Average',
+      }));
+    }
+    // Both metrics already carry the expression's period, so nothing gets overridden
+    expect(metric.warningsV2).toBeUndefined();
+  });
+
+  test('can be alarmed on', () => {
+    // GIVEN
+    const stack = new Stack();
+    const queue = new sqs.Queue(stack, 'Queue');
+
+    // WHEN
+    queue.metricApproximateNumberOfMessagesOutstanding().createAlarm(stack, 'Alarm', {
+      threshold: 100,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      EvaluationPeriods: 3,
+      Threshold: 100,
+      Metrics: Match.arrayWith([
+        Match.objectLike({
+          Id: 'expr_1',
+          Expression: 'visible + notVisible',
+          Label: 'Approximate number of messages outstanding',
+        }),
+        Match.objectLike({
+          Id: 'visible',
+          MetricStat: Match.objectLike({
+            Metric: Match.objectLike({
+              Namespace: 'AWS/SQS',
+              MetricName: 'ApproximateNumberOfMessagesVisible',
+            }),
+            Period: 300,
+            Stat: 'Maximum',
+          }),
+          ReturnData: false,
+        }),
+        Match.objectLike({
+          Id: 'notVisible',
+          MetricStat: Match.objectLike({
+            Metric: Match.objectLike({
+              Namespace: 'AWS/SQS',
+              MetricName: 'ApproximateNumberOfMessagesNotVisible',
+            }),
+            Period: 300,
+            Stat: 'Maximum',
+          }),
+          ReturnData: false,
+        }),
+      ]),
+    });
   });
 });
 

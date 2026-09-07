@@ -1,7 +1,9 @@
 import { Grant } from './grant';
-import { IRoleRef } from './iam.generated';
-import { AccountPrincipal, IPrincipal, ServicePrincipal } from './principals';
+import type { IRoleRef } from './iam.generated';
+import type { IPrincipal } from './principals';
+import { AccountPrincipal, ServicePrincipal } from './principals';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Collection of grant methods for a IRoleRef
@@ -23,7 +25,7 @@ export class RoleGrants {
   public assumeRole(identity: IPrincipal): Grant {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
-      throw new ValidationError('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this.role);
+      throw new ValidationError(lit`CannotServiceAccountPrincipalGrant`, 'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this.role);
     }
     return Grant.addToPrincipal({
       grantee: identity,

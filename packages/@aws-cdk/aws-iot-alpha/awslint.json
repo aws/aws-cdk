@@ -2,6 +2,13 @@
   "exclude": [
     "no-unused-type:@aws-cdk/aws-iot-alpha.ActionConfig",
     "props-physical-name:@aws-cdk/aws-iot-alpha.LoggingProps",
-    "props-physical-name:@aws-cdk/aws-iot-alpha.AccountAuditConfigurationProps"
+    "props-physical-name:@aws-cdk/aws-iot-alpha.AccountAuditConfigurationProps",
+    "prefer-ref-interface:@aws-cdk/aws-iot-alpha.AccountAuditConfigurationProps.targetTopic",
+    "prefer-ref-interface:aws-cdk-lib.aws_sns.ITopicSubscription.bind.topic",
+    "prefer-ref-interface:@aws-cdk/aws-iot-alpha.ScheduledAuditProps.accountAuditConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-iot-alpha.IAccountAuditConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-iot-alpha.ILogging",
+    "interface-extends-ref:@aws-cdk/aws-iot-alpha.IScheduledAudit",
+    "interface-extends-ref:@aws-cdk/aws-iot-alpha.ITopicRule"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "cdk-integ-alb-extended-log/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-alb-extended-log/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegalbextendedlogDefaultTestDeployAssertAEFAB19B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

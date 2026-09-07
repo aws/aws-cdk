@@ -2,8 +2,8 @@ import { CfnStreamKey } from 'aws-cdk-lib/aws-ivs';
 import * as core from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IChannel } from './channel';
+import type { Construct } from 'constructs';
+import type { IChannel } from './channel';
 
 /**
  * Represents an IVS Stream Key

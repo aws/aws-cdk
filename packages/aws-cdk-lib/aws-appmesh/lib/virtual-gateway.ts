@@ -1,13 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { VirtualGatewayGrants } from './appmesh-grants.generated';
-import { CfnVirtualGateway, IVirtualGatewayRef, VirtualGatewayReference } from './appmesh.generated';
-import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
-import { IMesh, Mesh } from './mesh';
+import type { IVirtualGatewayRef, VirtualGatewayReference } from './appmesh.generated';
+import { CfnVirtualGateway } from './appmesh.generated';
+import type { GatewayRouteBaseProps } from './gateway-route';
+import { GatewayRoute } from './gateway-route';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderTlsClientPolicy, renderMeshOwner } from './private/utils';
-import { AccessLog, BackendDefaults } from './shared-interfaces';
-import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
-import * as iam from '../../aws-iam';
+import type { AccessLog, BackendDefaults } from './shared-interfaces';
+import type { VirtualGatewayListenerConfig } from './virtual-gateway-listener';
+import { VirtualGatewayListener } from './virtual-gateway-listener';
+import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -41,6 +46,7 @@ export interface IVirtualGateway extends cdk.IResource, IVirtualGatewayRef {
 
   /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
+   * [disable-awslint:no-grants]
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
@@ -175,12 +181,22 @@ export class VirtualGateway extends VirtualGatewayBase {
   /**
    * The name of the VirtualGateway
    */
-  public readonly virtualGatewayName: string;
+  @memoizedGetter
+  public get virtualGatewayName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualGatewayName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the VirtualGateway
    */
-  public readonly virtualGatewayArn: string;
+  @memoizedGetter
+  public get virtualGatewayArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualGateway`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh that the VirtualGateway belongs to
@@ -188,6 +204,7 @@ export class VirtualGateway extends VirtualGatewayBase {
   public readonly mesh: IMesh;
 
   protected readonly listeners = new Array<VirtualGatewayListenerConfig>();
+  private readonly resource: CfnVirtualGateway;
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
@@ -207,7 +224,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualGateway(this, 'Resource', {
+    this.resource = new CfnVirtualGateway(this, 'Resource', {
       virtualGatewayName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
@@ -224,13 +241,6 @@ export class VirtualGateway extends VirtualGatewayBase {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualGatewayName = this.getResourceNameAttribute(node.attrVirtualGatewayName);
-    this.virtualGatewayArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualGateway`,
-      resourceName: this.physicalName,
     });
   }
 }

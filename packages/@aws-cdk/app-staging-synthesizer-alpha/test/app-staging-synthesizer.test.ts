@@ -4,8 +4,8 @@ import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } fr
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import * as cxapi from 'aws-cdk-lib/cx-api';
+import type * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import type * as cxapi from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, getAssetManifest, isAssetManifest, last, readAssetManifest } from './util';
 import { AppStagingSynthesizer, DEPLOY_TIME_PREFIX } from '../lib';

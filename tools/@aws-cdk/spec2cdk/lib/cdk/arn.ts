@@ -1,4 +1,4 @@
-import { Resource } from '@aws-cdk/service-spec-types';
+import type { Resource } from '@aws-cdk/service-spec-types';
 
 /**
  * Find an ARN property for a given resource

@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as glue from '../lib';
 
@@ -44,15 +43,6 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJobNoMetrics', {
   enableObservabilityMetrics: false,
 });
 
-// Test Ray Job with both metrics disabled
-new glue.RayJob(stack, 'RayJobNoMetrics', {
-  script: script,
-  role: role,
-  jobName: 'RayJobNoMetrics',
-  enableMetrics: false,
-  enableObservabilityMetrics: false,
-});
-
 // Test selective metrics control (keep observability, disable profiling)
 new glue.PySparkEtlJob(stack, 'PySparkETLJobSelectiveMetrics', {
   script: script,
@@ -66,64 +56,19 @@ const integTest = new integ.IntegTest(app, 'aws-glue-job-metrics-disabled-integ-
   testCases: [stack],
 });
 
-// Validate that PySpark job with disabled metrics doesn't have metrics arguments
-const pySparkJobNoMetrics = integTest.assertions.awsApiCall('Glue', 'getJob', {
-  JobName: 'PySparkETLJobNoMetrics',
-});
-
-// Validate the entire DefaultArguments object to ensure metrics arguments are not present
-pySparkJobNoMetrics.expect(integ.ExpectedResult.objectLike({
-  Job: {
-    // DefaultArguments should not contain metrics arguments
-    DefaultArguments: Match.not(Match.objectLike({
-      '--enable-metrics': Match.anyValue(),
-    })),
-  },
-}));
-
-pySparkJobNoMetrics.expect(integ.ExpectedResult.objectLike({
-  Job: {
-    // DefaultArguments should not contain observability metrics arguments
-    DefaultArguments: Match.not(Match.objectLike({
-      '--enable-observability-metrics': Match.anyValue(),
-    })),
-  },
-}));
-
-// Validate that Ray job with disabled metrics doesn't have metrics arguments
-const rayJobNoMetrics = integTest.assertions.awsApiCall('Glue', 'getJob', {
-  JobName: 'RayJobNoMetrics',
-});
-
-rayJobNoMetrics.expect(integ.ExpectedResult.objectLike({
-  Job: {
-    DefaultArguments: Match.not(Match.objectLike({
-      '--enable-metrics': Match.anyValue(),
-      '--enable-observability-metrics': Match.anyValue(),
-    })),
-  },
-}));
-
 // Validate that job with selective metrics control has correct arguments
 const pySparkJobSelective = integTest.assertions.awsApiCall('Glue', 'getJob', {
   JobName: 'PySparkETLJobSelectiveMetrics',
 });
 
-// Should NOT have --enable-metrics (disabled)
+// Verify --enable-observability-metrics is present when enabled.
+// Absence of metrics args when disabled is validated by unit tests
+// (integ test framework does not support negative assertions).
 pySparkJobSelective.expect(integ.ExpectedResult.objectLike({
   Job: {
-    DefaultArguments: Match.not(Match.objectLike({
-      '--enable-metrics': Match.anyValue(),
-    })),
-  },
-}));
-
-// Should HAVE --enable-observability-metrics (enabled by default)
-pySparkJobSelective.expect(integ.ExpectedResult.objectLike({
-  Job: {
-    DefaultArguments: Match.objectLike({
+    DefaultArguments: {
       '--enable-observability-metrics': 'true',
-    }),
+    },
   },
 }));
 

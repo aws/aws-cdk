@@ -1,8 +1,10 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface CallSite {
   getThis(): any;
@@ -80,9 +82,9 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     if (proc.stdout || proc.stderr) {
-      throw new UnscopedValidationError(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new UnscopedValidationError(lit`ProcessExitedWithNonZeroStatus`, `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
-    throw new UnscopedValidationError(`${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
+    throw new UnscopedValidationError(lit`CommandExitedWithNonZeroStatus`, `${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
   }
 
   return proc;
@@ -140,7 +142,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
     const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
       ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
-      throw new UnscopedValidationError(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+      throw new UnscopedValidationError(lit`CannotExtractModuleVersion`, `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
     dependencies[mod] = version;
   }
@@ -189,11 +191,59 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
         compilerOptionsString += option + ' ' + value.join(',') + ' ';
       }
     } else {
-      throw new UnscopedValidationError(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+      throw new UnscopedValidationError(lit`UnsupportedCompilerOption`, `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
     }
   });
 
   return compilerOptionsString.trim();
+}
+
+/**
+ * Returns tsconfig compiler options as an array of CLI arguments for direct spawn.
+ */
+export function getTsconfigCompilerOptionsArray(tsconfigPath: string): string[] {
+  const compilerOptions = extractTsConfig(tsconfigPath);
+  const excludedCompilerOptions = [
+    'composite',
+    'charset',
+    'noEmit',
+    'tsBuildInfoFile',
+  ];
+
+  const options: Record<string, any> = {
+    ...compilerOptions,
+    incremental: false,
+    rootDir: './',
+    outDir: './',
+  };
+
+  const args: string[] = [];
+  Object.keys(options).sort().forEach((key: string) => {
+    if (excludedCompilerOptions.includes(key)) {
+      return;
+    }
+
+    const value = options[key];
+    const option = '--' + key;
+    const type = typeof value;
+
+    if (type === 'boolean') {
+      args.push(option);
+      if (!value) {
+        args.push('false');
+      }
+    } else if (type === 'string') {
+      args.push(option, value);
+    } else if (type === 'object') {
+      if (Array.isArray(value)) {
+        args.push(option, value.join(','));
+      }
+    } else {
+      throw new UnscopedValidationError(lit`UnsupportedCompilerOption`, `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+    }
+  });
+
+  return args;
 }
 
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {

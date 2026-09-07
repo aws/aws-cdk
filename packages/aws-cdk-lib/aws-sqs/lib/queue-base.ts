@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
 import { QueueGrants } from './sqs-grants.generated';
-import { IQueueRef, QueueReference } from './sqs.generated';
+import type { IQueueRef, QueueReference } from './sqs.generated';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, Resource, ResourceProps } from '../../core';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { IResource, ResourceProps } from '../../core';
+import { Resource } from '../../core';
 
 /**
  * Represents an SQS queue
@@ -102,6 +104,21 @@ export interface IQueue extends IResource, IQueueRef {
    * @param queueActions The actions to grant
    */
   grant(grantee: iam.IGrantable, ...queueActions: string[]): iam.Grant;
+
+  /**
+   * The number of messages waiting to be picked up plus the number in flight
+   *
+   * `ApproximateNumberOfMessagesVisible + ApproximateNumberOfMessagesNotVisible`, as a metric math
+   * expression. Prefer this over `metricApproximateNumberOfMessagesVisible` when scaling consumers
+   * in: receiving a message lowers `Visible`, so a policy watching only `Visible` cannot tell a
+   * consumer that just picked up work from one that finished it.
+   *
+   * `statistic`, `unit` and dimensions apply to both underlying metrics, `label`, `color` and
+   * `period` to the expression.
+   *
+   * Maximum over 5 minutes
+   */
+  metricApproximateNumberOfMessagesOutstanding(props?: cloudwatch.MetricOptions): cloudwatch.MathExpression;
 }
 
 /**
@@ -209,6 +226,11 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *
    *   - kms:Decrypt
    *
+   *
+   * The use of this method is discouraged. Please use `grants.consumeMessages()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant consume rights to
    */
   public grantConsumeMessages(grantee: iam.IGrantable) {
@@ -233,6 +255,11 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - kms:ReEncrypt*
    *  - kms:GenerateDataKey*
    *
+   *
+   * The use of this method is discouraged. Please use `grants.sendMessages()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant send rights to
    */
   public grantSendMessages(grantee: iam.IGrantable) {
@@ -248,6 +275,11 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
    *
+   *
+   * The use of this method is discouraged. Please use `grants.purge()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant send rights to
    */
   public grantPurge(grantee: iam.IGrantable) {
@@ -258,6 +290,8 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    * Grant the actions defined in queueActions to the identity Principal given
    * on this SQS queue resource.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant
    */
@@ -267,6 +301,19 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
       actions,
       resourceArns: [this.queueArn],
       resource: this,
+    });
+  }
+
+  public metricApproximateNumberOfMessagesOutstanding(props?: cloudwatch.MetricOptions): cloudwatch.MathExpression {
+    return new cloudwatch.MathExpression({
+      expression: 'visible + notVisible',
+      usingMetrics: {
+        visible: this.metricApproximateNumberOfMessagesVisible(props),
+        notVisible: this.metricApproximateNumberOfMessagesNotVisible(props),
+      },
+      label: props?.label ?? 'Approximate number of messages outstanding',
+      color: props?.color,
+      period: props?.period,
     });
   }
 }

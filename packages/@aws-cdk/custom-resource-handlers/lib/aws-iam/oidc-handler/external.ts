@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { X509Certificate } from 'node:crypto';
+import type { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
 import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies

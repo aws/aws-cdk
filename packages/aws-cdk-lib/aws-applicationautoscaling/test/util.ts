@@ -1,16 +1,22 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as fc from 'fast-check';
 import * as scalingcommon from '../../aws-autoscaling-common';
+import { Validations } from '../../core';
 import * as appscaling from '../lib';
 
 export function createScalableTarget(scope: constructs.Construct) {
-  return new appscaling.ScalableTarget(scope, 'Target', {
+  const ret = new appscaling.ScalableTarget(scope, 'Target', {
     serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
     scalableDimension: 'test:TestCount',
     resourceId: 'test:this/test',
     minCapacity: 1,
     maxCapacity: 20,
   });
+  Validations.of(ret).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'The validator would otherwise complain about test:TestCount',
+  });
+  return ret;
 }
 
 export class ArbitraryInputIntervals extends fc.Arbitrary<appscaling.ScalingInterval[]> {

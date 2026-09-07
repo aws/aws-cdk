@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "50.0.0",
   "testCases": {
     "ImportedRoleTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "ImportedRoleTestAssertions",
       "assertionStackName": "ImportedRoleTestAssertions"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

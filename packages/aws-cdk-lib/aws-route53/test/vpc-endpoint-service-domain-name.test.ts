@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
-import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '../../aws-ec2';
+import type { IVpcEndpointServiceLoadBalancer } from '../../aws-ec2';
+import { VpcEndpointService } from '../../aws-ec2';
 import { Stack } from '../../core';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';
 

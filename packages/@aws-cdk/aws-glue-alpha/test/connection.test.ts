@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as glue from '../lib';
 
 test('a connection with connection properties', () => {
@@ -39,7 +40,7 @@ test('a connection with a subnet and security group', () => {
   new glue.Connection(stack, 'Connection', {
     type: glue.ConnectionType.NETWORK,
     securityGroups: [securityGroup],
-    subnet,
+    network: glue.ConnectionNetwork.subnet(subnet),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
@@ -55,6 +56,65 @@ test('a connection with a subnet and security group', () => {
       },
     },
   });
+});
+
+test('a connection with a vpc selects a subnet automatically', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    network: glue.ConnectionNetwork.vpc(vpc),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
+    ConnectionInput: {
+      ConnectionType: 'NETWORK',
+      PhysicalConnectionRequirements: {
+        AvailabilityZone: { 'Fn::Select': [0, { 'Fn::GetAZs': '' }] },
+        SubnetId: { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+      },
+    },
+  });
+});
+
+test('a connection with a vpc and explicit subnet selection', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PUBLIC }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
+    ConnectionInput: {
+      ConnectionType: 'NETWORK',
+      PhysicalConnectionRequirements: {
+        SubnetId: { Ref: 'VpcPublicSubnet1Subnet5C2D37C4' },
+      },
+    },
+  });
+});
+
+test('fails with a clear message when vpcSubnets selects no subnets', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+
+  expect(() => new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    network: glue.ConnectionNetwork.vpc(vpc, { subnets: [] }),
+  })).toThrow(/`vpcSubnets` selected no subnets from the provided `vpc`/);
+});
+
+test('does not fail on an empty selection while the vpc lookup is pending', () => {
+  const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+  // Before the context lookup resolves, `selectSubnets` returns an empty set
+  // with `isPendingLookup: true`; this is expected and must not throw.
+  const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
+
+  expect(() => new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+    network: glue.ConnectionNetwork.vpc(vpc, { subnetGroupName: 'DoesNotExist' }),
+  })).not.toThrow();
 });
 
 test('a connection with a name and description', () => {
@@ -133,6 +193,69 @@ test('addProperty', () => {
       },
     },
   });
+});
+
+test('a secret is wired to the SECRET_ID connection property', () => {
+  const stack = new cdk.Stack();
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.JDBC,
+    properties: { JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection' },
+    secret,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
+    ConnectionInput: {
+      ConnectionProperties: {
+        JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
+        SECRET_ID: stack.resolve(secret.secretRef.secretId),
+      },
+    },
+  });
+});
+
+test('setting both `secret` and a SECRET_ID property throws', () => {
+  const stack = new cdk.Stack();
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.JDBC,
+    secret,
+    properties: { SECRET_ID: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:other' },
+  });
+
+  expect(() => Template.fromStack(stack)).toThrow('cannot set both `secret` and a `SECRET_ID` connection property');
+});
+
+test('setting `secret` and adding a SECRET_ID via addProperty throws', () => {
+  const stack = new cdk.Stack();
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+
+  const connection = new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.JDBC,
+    secret,
+  });
+  connection.addProperty('SECRET_ID', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:other');
+
+  expect(() => Template.fromStack(stack)).toThrow('cannot set both `secret` and a `SECRET_ID` connection property');
+});
+
+test('referencing a secret does not trigger the plaintext-secret warning', () => {
+  const stack = new cdk.Stack();
+  // An imported secret has a literal ARN; the SECRET_ID it populates is a
+  // reference, not a credential, so it must not be flagged.
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(
+    stack, 'Secret', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:creds-AbCdEf');
+
+  new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.JDBC,
+    secret,
+  });
+
+  Annotations.fromStack(stack).hasNoWarning(
+    '/Default/Connection',
+    Match.stringLikeRegexp('.*plaintext secret.*'));
 });
 
 test('fromConnectionName', () => {

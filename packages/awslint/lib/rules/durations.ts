@@ -1,4 +1,4 @@
-import { Property } from 'jsii-reflect';
+import type { Property } from 'jsii-reflect';
 import { Linter } from '../linter';
 
 const DURATION_FQN = 'aws-cdk-lib.Duration';

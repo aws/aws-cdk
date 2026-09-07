@@ -1,13 +1,14 @@
 import { Construct, Node } from 'constructs';
-import { FullActionDescriptor } from './full-action-descriptor';
+import type { FullActionDescriptor } from './full-action-descriptor';
 import * as validation from './validation';
 import * as events from '../../../aws-events';
 import * as cdk from '../../../core';
 import { Token } from '../../../core';
-import { IAction, IPipeline, IStage } from '../action';
-import { Artifact } from '../artifact';
-import { CfnPipeline } from '../codepipeline.generated';
-import { Conditions, FailureConditions, Pipeline, StageProps } from '../pipeline';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IAction, IPipeline, IStage } from '../action';
+import type { Artifact } from '../artifact';
+import type { CfnPipeline } from '../codepipeline.generated';
+import type { Conditions, FailureConditions, Pipeline, StageProps } from '../pipeline';
 
 /**
  * A Stage in a Pipeline.
@@ -105,7 +106,7 @@ export class Stage implements IStage {
 
     // check for duplicate Actions and names
     if (this._actions.find(a => a.actionName === actionName)) {
-      throw new cdk.ValidationError(`Stage ${this.stageName} already contains an action with name '${actionName}'`, this.scope);
+      throw new cdk.ValidationError(lit`DuplicateActionName`, `Stage ${this.stageName} already contains an action with name '${actionName}'`, this.scope);
     }
 
     this._actions.push(this.attachActionToPipeline(action));

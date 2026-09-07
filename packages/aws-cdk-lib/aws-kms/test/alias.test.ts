@@ -5,7 +5,8 @@ import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 import { Alias } from '../lib/alias';
-import { IKey, Key } from '../lib/key';
+import type { IKey } from '../lib/key';
+import { Key } from '../lib/key';
 
 test('default alias', () => {
   const app = new App();

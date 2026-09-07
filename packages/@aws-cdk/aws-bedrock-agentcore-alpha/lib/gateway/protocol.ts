@@ -1,4 +1,4 @@
-import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /******************************************************************************
  *                                 Enums
@@ -6,6 +6,7 @@ import { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 /**
  * The type of protocols
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayProtocolType {
   /**
@@ -20,6 +21,7 @@ export enum GatewayProtocolType {
 
 /**
  * Abstract interface for gateway protocol configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IGatewayProtocolConfig {
   /**
@@ -36,6 +38,7 @@ export interface IGatewayProtocolConfig {
 
 /**
  * Factory class for instantiating Gateway Protocols
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayProtocol {
   /**
@@ -56,6 +59,7 @@ export abstract class GatewayProtocol {
  * The Model Context Protocol uses string-based version identifiers following the format YYYY-MM-DD,
  * to indicate the last date backwards incompatible changes were made.
  * Versions are available at https://github.com/modelcontextprotocol/modelcontextprotocol/releases
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum MCPProtocolVersion {
   /**
@@ -68,6 +72,7 @@ export enum MCPProtocolVersion {
 
 /**
  * Search types supported by MCP gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum McpGatewaySearchType {
   /**
@@ -82,6 +87,7 @@ export enum McpGatewaySearchType {
  * MCP protocol configuration
  * The configuration for the Model Context Protocol (MCP).
  * This protocol enables communication between Amazon Bedrock Agent and external tools.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface McpConfiguration {
   /**
@@ -111,6 +117,7 @@ export interface McpConfiguration {
 
 /**
  * MCP (Model Context Protocol) configuration implementation
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class McpProtocolConfiguration implements IGatewayProtocolConfig {
   public readonly protocolType: string;

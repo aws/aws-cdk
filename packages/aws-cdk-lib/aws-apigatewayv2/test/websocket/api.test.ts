@@ -1,13 +1,15 @@
 import { Match, Template } from '../../../assertions';
 import { User } from '../../../aws-iam';
 import { Stack } from '../../../core';
+import type {
+  WebSocketRouteIntegrationBindOptions,
+  WebSocketRouteIntegrationConfig,
+} from '../../lib';
 import {
   WebSocketRouteIntegration,
   WebSocketApi,
   WebSocketApiKeySelectionExpression,
   WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions,
-  WebSocketRouteIntegrationConfig,
   IpAddressType,
 } from '../../lib';
 

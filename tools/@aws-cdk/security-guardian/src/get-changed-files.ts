@@ -7,7 +7,7 @@ export async function detectChangedTemplates(baseSha: string, headSha: string, w
   core.info(`Detecting changed .template.json files from ${baseSha} to ${headSha}`);
 
   let stdout = '';
-  await exec.exec('git', ['diff', '--name-status', `${baseSha}..${headSha}`], {
+  await exec.exec('git', ['diff', '--name-status', `${baseSha}...${headSha}`], {
     listeners: {
       stdout: (data: Buffer) => {
         stdout += data.toString();

@@ -1,13 +1,14 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "files": {
     "70267cb4d71000f9402304c37f8f7f27be51a2639cc15153bf93abab53fc60cd": {
+      "displayName": "cdk-table-with-customized-role Template",
       "source": {
         "path": "cdk-table-with-customized-role.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-3d07d9cf": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "70267cb4d71000f9402304c37f8f7f27be51a2639cc15153bf93abab53fc60cd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

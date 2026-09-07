@@ -1,5 +1,6 @@
-import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 
 class TestStack extends Stack {

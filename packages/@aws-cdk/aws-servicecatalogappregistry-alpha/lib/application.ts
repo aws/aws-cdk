@@ -3,10 +3,12 @@ import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } 
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
-import { AttributeGroup, IAttributeGroup } from './attribute-group';
-import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
+import type { IAttributeGroup } from './attribute-group';
+import { AttributeGroup } from './attribute-group';
+import type { ShareOptions } from './common';
+import { getPrincipalsforSharing, hashValues, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 
@@ -198,7 +200,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 
       this.associatedResources.add(stack.node.addr);
       if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack) && !stack.nested) {
-        stack.addDependency(cdk.Stack.of(this));
+        stack.addStackDependency(cdk.Stack.of(this));
       }
     }
   }
@@ -289,6 +291,7 @@ export class Application extends ApplicationBase {
     const applicationId = arn.resourceName;
 
     if (!applicationId) {
+      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Missing required Application ID from Application ARN: ' + applicationArn);
     }
 

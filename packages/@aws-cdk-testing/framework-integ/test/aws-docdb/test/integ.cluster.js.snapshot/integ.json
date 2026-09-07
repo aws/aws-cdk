@@ -1,14 +1,13 @@
 {
-  "version": "30.1.0",
+  "version": "50.0.0",
   "testCases": {
-    "integ.cluster": {
+    "DocdbClusterInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-docdb-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "DocdbClusterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DocdbClusterIntegDefaultTestDeployAssertA8ADD8C2"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1105.0"
 }

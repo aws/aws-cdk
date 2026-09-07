@@ -4,10 +4,11 @@
  *
  * Overriding should work.
  */
-import { App, Stack, IAspect, Aspects } from 'aws-cdk-lib';
+import type { IAspect } from 'aws-cdk-lib';
+import { App, Stack, Aspects } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { CfnRole, ManagedPolicy, PermissionsBoundary, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 
 class CustomAspect implements IAspect {
   public visit(node: IConstruct): void {

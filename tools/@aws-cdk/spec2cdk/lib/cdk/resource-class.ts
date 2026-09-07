@@ -1,25 +1,29 @@
-
-import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type {
+  Expression,
+  Initializer,
+  IScope,
+  Property,
+  Statement,
+} from '@cdklabs/typewriter';
 import {
   $E,
   $T,
+  $this,
   AnonymousInterfaceImplementation,
   Block,
   ClassType,
   code,
   DummyScope,
   expr,
-  Expression,
-  Initializer,
   InterfaceType,
-  IScope,
   IsNotNullish,
   Lambda,
   MemberVisibility,
   Module,
   ObjectLiteral,
+  SelectiveModuleImport,
   Stability,
-  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -27,12 +31,9 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  Property,
-  SelectiveModuleImport,
-  $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
-import { ImportPaths } from './aws-cdk-lib';
+import type { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -50,7 +51,7 @@ import {
   staticRequiredTransform,
   staticResourceTypeName,
 } from '../naming';
-import { isDefined, splitDocumentation, maybeDeprecated } from '../util';
+import { isDefined, maybeDeprecated, splitDocumentation } from '../util';
 import { RelationshipDecider } from './relationship-decider';
 
 export interface ITypeHost {
@@ -214,18 +215,40 @@ export class ResourceClass extends ClassType implements Referenceable {
       });
     }
 
-    for (const prop of this.decider.classAttributeProperties) {
-      this.addProperty(prop.propertySpec);
-    }
-
     for (const prop of this.decider.classProperties) {
-      this.addProperty(prop.propertySpec);
+      const spec = prop.propertySpec;
+      if (spec.immutable) {
+        this.addProperty(spec);
+      } else {
+        // For mutable properties, generate getter and setter
+        const backingFieldName = `_${spec.name}`;
+        this.addProperty({
+          name: backingFieldName,
+          type: spec.type,
+          optional: spec.optional,
+          visibility: MemberVisibility.Private,
+          docs: spec.docs,
+        });
+        this.addProperty({
+          name: spec.name,
+          type: spec.type,
+          optional: spec.optional,
+          docs: spec.docs,
+          getterBody: Block.with(stmt.ret($this[backingFieldName])),
+          setterBody: (value: Expression) => Block.with(
+            CDK_CORE.traceProperty($this.node, expr.lit(prop.cfnName)),
+            stmt.assign($this[backingFieldName], value),
+          ),
+        });
+      }
     }
 
     // Copy properties onto class and props type
     this.makeConstructor();
+    this.makeAttributeGetters();
     this.makeInspectMethod();
     this.makeCfnProperties();
+    this.makeCfnPropertyNames();
     this.makeRenderProperties();
 
     // Make converter functions for the props type
@@ -233,6 +256,17 @@ export class ResourceClass extends ClassType implements Referenceable {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  private makeAttributeGetters() {
+    for (const prop of this.decider.classAttributeProperties) {
+      this.addProperty({
+        ...prop.propertySpec,
+        // Turn initializer into a getter
+        initializer: undefined,
+        getterBody: Block.with(stmt.ret(prop.initializer)),
+      });
+    }
   }
 
   /**
@@ -467,20 +501,24 @@ export class ResourceClass extends ClassType implements Referenceable {
    * Generates a static method that returns the ARN of the provided resource.
    * If the resource's ref interface already has an ARN, that's what's returned:
    *
+   * ```
    *     public static arnForTable(resource: ITableRef): string {
    *       return resource.tableRef.tableArn;
    *     }
+   * ```
    *
    * Otherwise, we fall back to using the ARN template:
    *
+   * ```
    *    public static arnForRestApi(resource: IRestApiRef): string {
    *       return new cfn_parse.TemplateString("arn:${Partition}:apigateway:${Region}::/restapis/${RestApiId}").interpolate({
-   *         "Partition": cdk.Stack.of(resource).partition,
-   *         "Region": cdk.Stack.of(resource).region,
-   *         "Account": cdk.Stack.of(resource).account,
+   *         "Partition": cdk.Stack.of(resource).partition, // Always same partition as our current one, but might be beautified by Stack
+   *         "Region": resource.env.region,
+   *         "Account": resource.env.account,
    *         "RestApiId": resource.restApiRef.restApiId
    *       });
    *     }
+   * ```
    */
   private addArnForResourceMethod(): void {
     // The resource cannot provide us with its ARN
@@ -518,14 +556,13 @@ export class ResourceClass extends ClassType implements Referenceable {
     // Case 2: Interpolate from template
     } else {
       const method = doAddMethod();
-      const resourceIdentifier = expr.ident('resource');
-      const stackOfResource = $T(CDK_CORE.Stack).of(resourceIdentifier);
+      const resourceIdentifier = $E(expr.ident('resource'));
 
       const interpolationVars = {
-        Partition: stackOfResource.prop('partition'),
-        Region: stackOfResource.prop('region'),
-        Account: stackOfResource.prop('account'),
-        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => $E(resourceIdentifier)[refAttributeName][propName]),
+        Partition: $T(CDK_CORE.Stack).of(resourceIdentifier).prop('partition'),
+        Region: resourceIdentifier.env.region,
+        Account: resourceIdentifier.env.account,
+        ...mapValues(this.decider.resourceReference.arnVariables!, (propName) => resourceIdentifier[refAttributeName][propName]),
       };
 
       const interpolateArn = CDK_CORE.helpers.TemplateString
@@ -667,7 +704,7 @@ export class ResourceClass extends ClassType implements Referenceable {
       stmt.constVar(propsResult, reverseMapper.call(resourceProperties)),
       stmt
         .if_(CDK_CORE.isResolvableObject(propsResult.value))
-        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.lit('Unexpected IResolvable'), scope)))),
+        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.directCode('cfn_parse.lit`UnexpectedIResolvable`'), expr.lit('Unexpected IResolvable'), scope)))),
       stmt.constVar(ret, this.newInstance(scope, id, propsResult.value)),
     );
 
@@ -731,14 +768,9 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
 
     init.addBody(
-      // Attributes
-      ...this.decider.classAttributeProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer),
-      ),
-
       // Props
-      ...this.decider.classProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer(props)),
+      ...this.decider.classProperties.map(({ propertySpec: { name, immutable }, initializer }) =>
+        stmt.assign($this[immutable ? name : `_${name}`], initializer(props)),
       ),
     );
 
@@ -766,6 +798,10 @@ export class ResourceClass extends ClassType implements Referenceable {
         expr.lit('aws:cdk:cloudformation:type'),
         $E(expr.sym(this.symbol))[staticResourceTypeName()],
       ),
+      $inspector.addAttribute(
+        expr.lit('aws:cdk:cloudformation:logicalId'),
+        $E(expr.this_())._synthesizeLogicalId(),
+      ),
       $inspector.addAttribute(expr.lit('aws:cdk:cloudformation:props'), $E(expr.this_()).cfnProperties),
     );
   }
@@ -786,6 +822,27 @@ export class ResourceClass extends ClassType implements Referenceable {
             Object.fromEntries(
               this.decider.classProperties.flatMap(({ cfnValueToRender }) => Object.entries(cfnValueToRender)),
             ),
+          ),
+        ),
+      ),
+    });
+  }
+
+  /**
+   * Make the cfnPropertyNames override
+   *
+   * This maps CDK property names to their corresponding CloudFormation property names.
+   */
+  private makeCfnPropertyNames() {
+    this.addProperty({
+      name: 'cfnPropertyNames',
+      type: Type.mapOf(Type.STRING),
+      visibility: MemberVisibility.Protected,
+      immutable: true,
+      initializer: expr.object(
+        Object.fromEntries(
+          this.decider.classProperties.flatMap(({ cfnName, cfnValueToRender }) =>
+            Object.keys(cfnValueToRender).map(cdkName => [cdkName, expr.lit(cfnName)]),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { BuildSpec, IBuildImage, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
+import type { Construct } from 'constructs';
+import type { IBuildImage } from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class ImageTestStack extends Stack {

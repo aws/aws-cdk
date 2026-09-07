@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-mediapackagev2-cloudfront/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-cloudfront"
+      ],
+      "assertionStack": "cdk-integ-mediapackagev2-cloudfront/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagev2cloudfrontDefaultTestDeployAssert169511FE"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

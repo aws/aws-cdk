@@ -1,24 +1,16 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as cdk from 'aws-cdk-lib/core';
+import type * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Code } from '../code';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
- * Flex Jobs class
- *
- * Flex jobs supports Python and Scala language.
- * The flexible execution class is appropriate for non-urgent jobs such as
- * pre-production jobs, testing, and one-time data loads.
- * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and G.1X or
- * G.2X worker types but will default to the latest version of Glue (currently Glue 3.0.)
- *
- * Similar to ETL, we’ll enable these features: —enable-metrics, —enable-spark-ui,
- * —enable-continuous-cloudwatch-log
- *
+ * Properties for a `ScalaSparkFlexEtlJob`.
  */
 export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
   /**
@@ -62,23 +54,23 @@ export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
 }
 
 /**
- * Spark ETL Jobs class
+ * Scala Spark Flex ETL Jobs class
  *
- * ETL jobs support pySpark and Scala languages, for which there are separate
- * but similar constructors. ETL jobs default to the G2 worker type, but you
- * can override this default with other supported worker type values
- * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- * override to 3.0. The following ETL features are enabled by default:
- * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- * You can find more details about version, worker type and other features
- * in Glue's public documentation.
+ * Flex jobs support Python and Scala languages.
+ * The flexible execution class is appropriate for non-urgent jobs such as
+ * pre-production jobs, testing, and one-time data loads.
+ * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and `G_1X` or
+ * `G_2X` worker types but will default to the latest version of Glue (currently Glue 5.0).
+ *
+ * Similar to ETL, we’ll enable these features: --enable-metrics,
+ * --enable-continuous-cloudwatch-log. The Spark UI (--enable-spark-ui) is off by
+ * default; enable it by setting the `sparkUI` prop.
  */
 @propertyInjectable
 export class ScalaSparkFlexEtlJob extends SparkJob {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ScalaSparkFlexEtlJob';
-  public readonly jobArn: string;
-  public readonly jobName: string;
+  private resource: CfnJob;
 
   /**
    * ScalaSparkFlexEtlJob constructor
@@ -94,7 +86,7 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -102,9 +94,9 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
-      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V3_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V5_0,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
@@ -116,10 +108,16 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
       jobRunQueuingEnabled: false,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

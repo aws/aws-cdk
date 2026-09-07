@@ -3,6 +3,8 @@
 // module so we couldn't standardize the structs in the right way.
 
 import { UnscopedValidationError } from '../../core';
+import type { Size } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Block device
@@ -30,7 +32,7 @@ export interface BlockDevice {
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
    *
    * @default true - device mapping is left untouched
-   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping.
+   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to suppress a mapping.
    *
    */
   readonly mappingEnabled?: boolean;
@@ -76,6 +78,18 @@ export interface EbsDeviceOptionsBase {
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
   readonly throughput?: number;
+
+  /**
+   * The Amazon EBS Provisioned Rate for Volume Initialization, at which to download
+   * the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -156,14 +170,14 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new UnscopedValidationError(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(lit`VolumeIndexMustBeNonNegative`, `volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);
   }
 
   /**
-   * Supresses a volume mapping
+   * Suppresses a volume mapping
    */
   public static noDevice() {
     return this._NO_DEVICE;

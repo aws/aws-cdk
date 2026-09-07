@@ -41,7 +41,6 @@
   "RecordingBucket03AEF6D2": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "test-browser-recordings",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -163,7 +162,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -274,7 +273,7 @@
       "Arn"
      ]
     },
-    "Name": "browser_recording",
+    "Name": "browser_recording_integ",
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },

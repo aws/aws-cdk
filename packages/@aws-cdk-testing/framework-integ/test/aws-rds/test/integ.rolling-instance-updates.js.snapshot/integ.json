@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "testCases": {
     "InstanceUpdateBehaviorTests/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "InstanceUpdateBehaviorTests/DefaultTest/DeployAssert",
       "assertionStackName": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

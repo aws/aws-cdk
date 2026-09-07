@@ -477,7 +477,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+       "Ref": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
       },
       "Type": "forward"
      }
@@ -489,7 +489,7 @@
     "Protocol": "HTTP"
    }
   },
-  "ServiceLBPublicListenerECSGroup0CC8688C": {
+  "ServiceLBPublicListenerECSPrivateGroup93D5832E": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -524,7 +524,7 @@
       "ContainerName": "nginx",
       "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "ServiceLBPublicListenerECSGroup0CC8688C"
+       "Ref": "ServiceLBPublicListenerECSPrivateGroup93D5832E"
       }
      }
     ],
@@ -554,7 +554,7 @@
     }
    },
    "DependsOn": [
-    "ServiceLBPublicListenerECSGroup0CC8688C",
+    "ServiceLBPublicListenerECSPrivateGroup93D5832E",
     "ServiceLBPublicListener46709EAA",
     "TaskTaskRoleE98524A1"
    ]
@@ -619,6 +619,14 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NlbSecurityGroupC8F7EAB3",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
@@ -635,6 +643,24 @@
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
+  },
+  "NlbSecurityGroupC8F7EAB3": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB TestStackNlb4ACFEA4C",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
   },
   "NlblistenerBE297616": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -674,7 +700,7 @@
     }
    },
    "DependsOn": [
-    "ServiceLBPublicListenerECSGroup0CC8688C",
+    "ServiceLBPublicListenerECSPrivateGroup93D5832E",
     "ServiceLBPublicListener46709EAA"
    ]
   }

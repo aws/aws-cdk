@@ -1,6 +1,8 @@
-import { ConventionalCommit } from '../lib/conventional-commits';
-import { changelog, ChangelogOptions, writeChangelogs } from '../lib/lifecycles/changelog';
-import { ExperimentalChangesTreatment, PackageInfo, Versions } from '../lib/types';
+import type { ConventionalCommit } from '../lib/conventional-commits';
+import type { ChangelogOptions } from '../lib/lifecycles/changelog';
+import { changelog, writeChangelogs } from '../lib/lifecycles/changelog';
+import type { PackageInfo, Versions } from '../lib/types';
+import { ExperimentalChangesTreatment } from '../lib/types';
 
 const args: ChangelogOptions = {
   changelogFile: 'CHANGELOG.md',
@@ -187,6 +189,7 @@ function buildCommit(commit: PartialCommit): ConventionalCommit {
   return {
     notes: [],
     references: [],
+    // eslint-disable-next-line @cdklabs/no-evaluating-typeguard
     header: `${commit.type}${commit.scope ? '(' + commit.scope + ')' : ''}: ${commit.subject}`,
     ...commit,
   };

@@ -1,13 +1,19 @@
-import { Construct } from 'constructs';
-import { IpAddressType } from './api';
-import { CfnDomainName, CfnDomainNameProps } from '.././index';
-import { ICertificate } from '../../../aws-certificatemanager';
-import { IBucket } from '../../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IpAddressType } from './api';
+import type { CfnDomainNameProps } from '.././index';
+import { CfnDomainName } from '.././index';
+import type { IBucket } from '../../../aws-s3';
+import type { IResource } from '../../../core';
+import { ArnFormat, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
+import type { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -102,7 +108,7 @@ export interface EndpointOptions {
    * The ACM certificate for this domain name.
    * Certificate can be both ACM issued or imported.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
@@ -128,7 +134,7 @@ export interface EndpointOptions {
    * for `certificate`. The ownership certificate validates that you have permissions to use the domain name.
    * @default - only required when configuring mTLS
    */
-  readonly ownershipCertificate?: ICertificate;
+  readonly ownershipCertificate?: ICertificateRef;
 
   /**
    * The IP address types that can invoke the API.
@@ -165,6 +171,7 @@ export interface MTLSConfig {
  * Custom domain resource for the API
  */
 @propertyInjectable
+@noBoxStackTraces
 export class DomainName extends Resource implements IDomainName {
   /**
    * Uniquely identifies this class.
@@ -180,12 +187,12 @@ export class DomainName extends Resource implements IDomainName {
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
       public readonly name = attrs.name;
       public readonly domainNameRef: DomainNameReference = {
-        domainName: attrs.regionalDomainName,
+        domainName: attrs.name,
         domainNameArn: Stack.of(this).formatArn({
           service: 'apigateway',
           arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
           resource: 'domainnames',
-          resourceName: attrs.regionalDomainName,
+          resourceName: attrs.name,
         }),
       };
     }
@@ -193,10 +200,8 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly name: string;
-  public readonly regionalDomainName: string;
-  public readonly regionalHostedZoneId: string;
-  private readonly domainNameArn: string;
-  private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
+  private readonly domainNameConfigurations: IArrayBox<CfnDomainName.DomainNameConfigurationProperty>;
+  private readonly resource: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -204,25 +209,24 @@ export class DomainName extends Resource implements IDomainName {
     addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new ValidationError('empty string for domainName not allowed', scope);
+      throw new ValidationError(lit`EmptyStringDomainNameAllowed`, 'empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new ValidationError('ownership certificate can only be used with mtls domains', scope);
+      throw new ValidationError(lit`OwnershipCertificateMtlsDomains`, 'ownership certificate can only be used with mtls domains', scope);
     }
+
+    this.domainNameConfigurations = Box.fromArray([], { omitEmpty: false });
 
     const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
-      domainNameConfigurations: Lazy.any({ produce: () => this.domainNameConfigurations }),
+      domainNameConfigurations: this.domainNameConfigurations,
       mutualTlsAuthentication: mtlsConfig,
     };
-    const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.name = resource.ref;
-    this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
-    this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
-    this.domainNameArn = Token.asString(resource.getAtt('DomainNameArn'));
+    this.resource = new CfnDomainName(this, 'Resource', domainNameProps);
+    this.name = this.resource.ref;
 
     if (props.certificate) {
       this.addEndpoint(props);
@@ -244,10 +248,10 @@ export class DomainName extends Resource implements IDomainName {
   @MethodMetadata()
   public addEndpoint(options: EndpointOptions): void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
-      certificateArn: options.certificate.certificateArn,
+      certificateArn: options.certificate.certificateRef.certificateArn,
       certificateName: options.certificateName,
       endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
-      ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
+      ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateRef.certificateArn,
       securityPolicy: options.securityPolicy?.toString(),
       ipAddressType: options.ipAddressType,
     };
@@ -258,11 +262,26 @@ export class DomainName extends Resource implements IDomainName {
 
   // validates that the new domain name configuration has a unique endpoint
   private validateEndpointType(endpointType: string | undefined) : void {
-    for (let config of this.domainNameConfigurations) {
+    for (let config of this.domainNameConfigurations.get()) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
+        throw new ValidationError(lit`EndpointType`, `an endpoint with type ${endpointType} already exists`, this);
       }
     }
+  }
+
+  @memoizedGetter
+  public get regionalDomainName(): string {
+    return Token.asString(this.resource.getAtt('RegionalDomainName'));
+  }
+
+  @memoizedGetter
+  public get regionalHostedZoneId(): string {
+    return Token.asString(this.resource.getAtt('RegionalHostedZoneId'));
+  }
+
+  @memoizedGetter
+  private get domainNameArn(): string {
+    return Token.asString(this.resource.getAtt('DomainNameArn'));
   }
 
   public get domainNameRef(): DomainNameReference {

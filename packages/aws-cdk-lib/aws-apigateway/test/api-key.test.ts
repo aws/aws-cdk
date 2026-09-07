@@ -3,7 +3,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as apigateway from '../lib';
-import { CfnRestApi } from '../lib';
+import type { CfnRestApi } from '../lib';
 
 describe('api key', () => {
   test('default setup', () => {

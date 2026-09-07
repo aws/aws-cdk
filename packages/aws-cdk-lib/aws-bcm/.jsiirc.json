@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.bcm"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.BCM"
+    },
+    "python": {
+      "module": "aws_cdk.aws_bcm"
+    }
+  }
+}
