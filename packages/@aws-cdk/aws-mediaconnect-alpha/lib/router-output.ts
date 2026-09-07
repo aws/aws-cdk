@@ -5,6 +5,7 @@ import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import type { Grant } from 'aws-cdk-lib/aws-iam';
 import { CfnRouterOutput } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IRouterOutputRef, RouterOutputReference } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IInputRef } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -164,12 +165,12 @@ export interface RouterOutputProps {
    * @default - Generated automatically
    */
   readonly routerOutputName?: string;
-  /** Maximum bitrate in bits per second that the Router Output can handle */
+  /** The maximum bitrate for the router output. */
   readonly maximumBitrate: Bitrate;
-  /** Routing scope for the Router Output */
+  /** Indicates whether the router output is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Routing tier that determines the maximum number of outputs.
+   * Routing tier that determines the maximum bitrate (in Mbps) for this output.
    *
    * @default RouterOutputTier.OUTPUT_20
    */
@@ -182,7 +183,7 @@ export interface RouterOutputProps {
    */
   readonly maintenanceConfiguration?: MaintenanceConfiguration;
   /**
-   * AWS region where the Router Output will be created
+   * The AWS Region where the router output is located.
    * @default - Defaults to the same region as stack
    */
   readonly regionName?: string;
@@ -463,6 +464,12 @@ export interface StandardOutputConfigurationProps {
   readonly networkInterface: IRouterNetworkInterface;
   /** Protocol configuration for the output */
   readonly protocol: RouterOutputProtocol;
+  /**
+   * The availability zone where the router output is located.
+   *
+   * @default - assigned by the MediaConnect service
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -470,14 +477,11 @@ export interface StandardOutputConfigurationProps {
  */
 export interface MediaLiveInputConnectionProps {
   /**
-   * ARN of the MediaLive input to send output to.
-   *
-   * Note: This will change to accept an IInputRef (typed MediaLive Input reference)
-   * when the @aws-cdk/aws-medialive-alpha L2 construct is released.
+   * The MediaLive input to send output to (must be of type `medialive.InputConfiguration.mediaConnectRouter()`).
    */
-  readonly mediaLiveInputArn: string;
-  /** Pipeline ID for MediaLive input */
-  readonly mediaLivePipelineId: MediaLivePipeline;
+  readonly input: IInputRef;
+  /** MediaLive pipeline to send output to */
+  readonly pipeline: MediaLivePipeline;
   /**
    * Optional transit encryption configuration
    * @default - Automatic encryption will be used
@@ -555,20 +559,12 @@ export abstract class RouterOutputConfiguration {
    *
    * Use this when the MediaLive input already exists and you want to connect immediately.
    *
-   * @example
-   *
-   *    RouterOutputConfiguration.mediaLiveInput({
-   *      mediaLiveInputArn: 'arn:aws:medialive:us-east-1:123456789012:input:1234567',
-   *      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
-   *    });
-   *
    * @param props MediaLive input connection properties
-   * @returns RouterOutputConfiguration instance for MediaLive setup with input connection
    */
   public static mediaLiveInput(props: MediaLiveInputConnectionProps): RouterOutputConfiguration {
     return new MediaLiveInputRouterOutputConfig({
-      mediaLiveInputArn: props.mediaLiveInputArn,
-      mediaLivePipelineId: props.mediaLivePipelineId,
+      mediaLiveInputArn: props.input.inputRef.inputArn,
+      mediaLivePipelineId: props.pipeline,
       destinationTransitEncryption: props.destinationTransitEncryption,
     });
   }
@@ -578,14 +574,7 @@ export abstract class RouterOutputConfiguration {
    *
    * Use this when you want to set up the router output before the MediaLive input exists.
    *
-   * @example
-   *
-   *    RouterOutputConfiguration.mediaLiveInputWithoutConnection({
-   *      availabilityZone: 'us-east-1a',
-   *    });
-   *
    * @param props MediaLive no input connection properties
-   * @returns RouterOutputConfiguration instance for MediaLive setup without input connection
    */
   public static mediaLiveInputWithoutConnection(props: MediaLiveNoInputConnectionProps): RouterOutputConfiguration {
     return new MediaLiveInputRouterOutputConfig(
@@ -665,6 +654,7 @@ class StandardRouterOutputConfig extends RouterOutputConfiguration {
           protocolConfiguration: protocol.config,
         },
       },
+      availabilityZone: this.props.availabilityZone,
       grant: protocol.grant,
     };
   }
@@ -697,7 +687,7 @@ class MediaLiveInputRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaLiveInputRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaLiveInputRouterOutputConfig}.
  */
 interface MediaLiveInputRouterOutputOptions {
   readonly mediaLiveInputArn?: string;
@@ -732,7 +722,7 @@ class MediaConnectFlowRouterOutputConfig extends RouterOutputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaConnectFlowRouterOutputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaConnectFlowRouterOutputConfig}.
  */
 interface MediaConnectFlowRouterOutputOptions {
   readonly flow?: IFlow;
@@ -920,8 +910,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
       if (props.routerOutputName.length > 128) {
         throw new ValidationError(lit`RouterOutputNameLength`, `Router output name must be between 1 and 128 characters, got ${props.routerOutputName.length}`, this);
       }
-      if (!/^[a-zA-Z0-9-]+$/.test(props.routerOutputName)) {
-        throw new ValidationError(lit`RouterOutputNameFormat`, `Router output name must contain only alphanumeric characters and hyphens, got '${props.routerOutputName}'`, this);
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.routerOutputName)) {
+        throw new ValidationError(lit`RouterOutputNameFormat`, `Router output name must contain only alphanumeric characters, hyphens, and underscores, got '${props.routerOutputName}'`, this);
       }
     }
 
@@ -960,7 +950,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     const configBind = props.configuration._bind(this, routerOutputArn);
 
     // Check to see if region specified is also compatible with AZ configured for some of the Router Outputs configurations
-    if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
+    if (configBind.availabilityZone && !Token.isUnresolved(configBind.availabilityZone) && !Token.isUnresolved(targetRegion)
+      && !configBind.availabilityZone.startsWith(targetRegion)) {
       throw new ValidationError(lit`RouterOutputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 
@@ -969,7 +960,7 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
       maximumBitrate: props.maximumBitrate.toBps(),
       routingScope: props.routingScope.value,
       tier: (props.tier ?? RouterOutputTier.OUTPUT_20).value,
-      availabilityZone: configBind.availabilityZone, // Only specified for MediaConnect Flow and MediaLive inputs (with no connection).
+      availabilityZone: configBind.availabilityZone,
       maintenanceConfiguration: props.maintenanceConfiguration ? {
         preferredDayTime: props.maintenanceConfiguration,
       } : {
