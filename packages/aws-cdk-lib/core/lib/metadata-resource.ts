@@ -8,9 +8,9 @@ import { MetadataType } from './metadata-type';
 import { Token } from './token';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
 
-export function addConstructMetadata(scope: Construct, props: any): void {
+export function addConstructMetadata(construct: Construct, props: any): void {
   try {
-    addMetadata(scope, MetadataType.CONSTRUCT, props);
+    addPropsAsMetadata(construct, MetadataType.CONSTRUCT, props);
   } catch (e) {
     /**
      * Errors are ignored here.
@@ -20,13 +20,13 @@ export function addConstructMetadata(scope: Construct, props: any): void {
      * Without this, it will just fall back to the previous metadata
      * collection strategy.
      */
-    Annotations.of(scope).addWarningV2('@aws-cdk/core:addConstructMetadataFailed', `Failed to add construct metadata for node [${scope.node.id}]. Reason: ${e}`);
+    Annotations.of(construct).addWarningV2('@aws-cdk/core:addConstructMetadataFailed', `Failed to add construct metadata for node [${construct.node.id}]. Reason: ${e}`);
   }
 }
 
 export function addMethodMetadata(scope: Construct, methodName: string, props: any): void {
   try {
-    addMetadata(scope, MetadataType.METHOD, {
+    addPropsAsMetadata(scope, MetadataType.METHOD, {
       [methodName]: props,
     });
   } catch (e) {
@@ -63,13 +63,13 @@ export function MethodMetadata<This extends Construct>() {
   };
 }
 
-export function addMetadata(scope: Construct, type: MetadataType, props: any): void {
-  const telemetryEnabled = FeatureFlags.of(scope).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
+export function addPropsAsMetadata(construct: Construct, type: MetadataType, props: any): void {
+  const telemetryEnabled = FeatureFlags.of(construct).isEnabled(ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
   if (!telemetryEnabled) {
     return;
   }
-  const fqn: string = Object.getPrototypeOf(scope).constructor[JSII_RUNTIME_SYMBOL].fqn;
-  scope.node.addMetadata(type, redactMetadata(fqn, props));
+  const fqn: string = (construct.constructor as any)[JSII_RUNTIME_SYMBOL].fqn;
+  construct.node.addMetadata(type, redactMetadata(fqn, props));
 }
 
 /**

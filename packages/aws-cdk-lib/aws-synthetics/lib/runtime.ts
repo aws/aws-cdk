@@ -389,6 +389,35 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_0 = new Runtime('syn-nodejs-playwright-5.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-playwright-5.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.57.0
+   * - Chromium version 143.0.7499.169
+   * - Firefox version 142.0.1
+   *
+   * New Features:
+   * - Synthetics runtime namespace migration.
+   * - Type definition is available in npm Registry. Please ensure the type definition package version matches your canary's runtime version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-5.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_1 = new Runtime('syn-nodejs-playwright-5.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-playwright-6.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Playwright version 1.58.2
+   * - Chromium version 145.0.7632.77
+   * - Firefox version 146.0.1
+   *
+   * New Features:
+   * - Applied security patches and updated Playwright and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-6.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_6_0 = new Runtime('syn-nodejs-playwright-6.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-3.0` includes the following:
    * - Lambda runtime Node.js 20.x
    *
@@ -398,6 +427,18 @@ export class Runtime {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html
    */
   public static readonly SYNTHETICS_NODEJS_3_0 = new Runtime('syn-nodejs-3.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-3.1` includes the following:
+   * - Lambda runtime Node.js 20.x
+   *
+   * New Features:
+   * - **Synthetics runtime namespace migration**: Canary runtime namespace has been migrated from `@amzn/synthetics-core` to `@aws/synthetics-core`.
+   * - **Type definitions on npm**: Type definitions for the synthetics library are now published on npm. Ensure that the package version you install matches your canary's runtime version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-3.1
+   */
+  public static readonly SYNTHETICS_NODEJS_3_1 = new Runtime('syn-nodejs-3.1', RuntimeFamily.NODEJS);
 
   /**
    * `syn-python-selenium-1.0` includes the following:

@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "50.0.0",
   "files": {
     "363fcfee21919c2d1b81b2bce2345af9e946429f13cfaa0093b8342d674b6ae0": {
+      "displayName": "integ-apprunner-auto-scaling-configuration Template",
       "source": {
         "path": "integ-apprunner-auto-scaling-configuration.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-63856d49": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "363fcfee21919c2d1b81b2bce2345af9e946429f13cfaa0093b8342d674b6ae0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

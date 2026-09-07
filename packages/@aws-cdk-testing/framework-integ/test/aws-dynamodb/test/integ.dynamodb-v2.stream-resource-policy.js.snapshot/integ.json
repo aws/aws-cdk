@@ -1,0 +1,14 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "table-v2-stream-resource-policy-integ-test/DefaultTest": {
+      "stacks": [
+        "StreamResourcePolicyTest-v2"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "table-v2-stream-resource-policy-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "tablev2streamresourcepolicyintegtestDefaultTestDeployAssertB51F693F"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

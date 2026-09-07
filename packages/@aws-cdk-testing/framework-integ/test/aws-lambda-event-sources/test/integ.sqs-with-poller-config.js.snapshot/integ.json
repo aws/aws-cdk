@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "lambda-event-source-sqs-with-poller-config-integ/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-sqs-with-poller-config"
+      ],
+      "assertionStack": "lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaeventsourcesqswithpollerconfigintegDefaultTestDeployAssertFF632D60"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

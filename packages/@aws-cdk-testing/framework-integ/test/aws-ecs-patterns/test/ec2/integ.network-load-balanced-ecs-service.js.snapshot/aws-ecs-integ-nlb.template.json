@@ -665,7 +665,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "first-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlbFirstCapacityProvider5A960B68"
    }
   },
   "SecondAutoScalingGroupInstanceRoleB7DE61A1": {
@@ -890,7 +890,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "second-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlbSecondCapacityProvider6EB16547"
    }
   },
   "myServiceLB168895E1": {
@@ -908,6 +908,12 @@
      {
       "Fn::GetAtt": [
        "myServiceLBSecurityGroupFE0ED608",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSecurityGroup08F7DC4B",
        "GroupId"
       ]
      }
@@ -1140,6 +1146,36 @@
     "myServiceLBPublicListenerC78AE8A0",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
+  },
+  "NlbSecurityGroup08F7DC4B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb/NlbSecurityGroup",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSecurityGrouptoawsecsintegnlbSecurityGroupCF7458683276865535FAD7C1B4": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSecurityGroup08F7DC4B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
   }
  },
  "Parameters": {

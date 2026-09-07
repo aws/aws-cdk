@@ -99,7 +99,7 @@
   },
   "ImageUri9": {
    "Value": {
-    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7937f4f8197a9feee726dbb5f91b41ff615930260bf8e300bf64d070886e3183"
+    "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:45d9c33141aaec8b4e8355b12c95c89be6ee6ade9cd706ae7888988e35c77ba5"
    }
   }
  },

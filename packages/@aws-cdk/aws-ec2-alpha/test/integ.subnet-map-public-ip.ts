@@ -23,7 +23,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPC', {
 // Create a public subnet with mapPublicIpOnLaunch explicitly set to true
 new SubnetV2(stack, 'PublicSubnetWithIp', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.0.1.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnetWithIp',
@@ -33,7 +33,7 @@ new SubnetV2(stack, 'PublicSubnetWithIp', {
 // Create a public subnet with mapPublicIpOnLaunch explicitly set to false
 new SubnetV2(stack, 'PublicSubnetWithoutIp', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[1],
   ipv4CidrBlock: new IpCidr('10.0.2.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnetWithoutIp',
@@ -43,7 +43,7 @@ new SubnetV2(stack, 'PublicSubnetWithoutIp', {
 // Create a private subnet with default mapPublicIpOnLaunch (should be false)
 new SubnetV2(stack, 'PrivateSubnetDefault', {
   vpc,
-  availabilityZone: 'us-west-2c',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.0.3.0/24'),
   subnetType: SubnetType.PRIVATE_WITH_EGRESS,
   subnetName: 'PrivateSubnetDefault',
@@ -57,7 +57,7 @@ const integ = new IntegTest(app, 'SubnetMapPublicIpInteg', {
 const publicWithIpAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
   Filters: [
     {
-      Name: 'tag:Name',
+      Name: 'tag:aws-cdk:subnet-name',
       Values: ['PublicSubnetWithIp'],
     },
   ],
@@ -74,7 +74,7 @@ publicWithIpAssertion.expect(ExpectedResult.objectLike({
 const publicWithoutIpAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
   Filters: [
     {
-      Name: 'tag:Name',
+      Name: 'tag:aws-cdk:subnet-name',
       Values: ['PublicSubnetWithoutIp'],
     },
   ],
@@ -91,7 +91,7 @@ publicWithoutIpAssertion.expect(ExpectedResult.objectLike({
 const privateDefaultAssertion = integ.assertions.awsApiCall('ec2', 'describeSubnets', {
   Filters: [
     {
-      Name: 'tag:Name',
+      Name: 'tag:aws-cdk:subnet-name',
       Values: ['PrivateSubnetDefault'],
     },
   ],

@@ -2,9 +2,11 @@ import { EOL } from 'os';
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
+import type { WorkerType } from '../constants';
 import type { JobProps } from './job';
 import { Job } from './job';
 
@@ -90,9 +92,37 @@ export interface SparkUILoggingLocation {
 }
 
 /**
+ * The worker configuration for a Spark job.
+ *
+ * The worker type and the number of workers are set together: providing this
+ * configuration requires both values, so a Spark job can never be given one
+ * without the other.
+ */
+export interface WorkerConfiguration {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   *
+   * Enum options: Standard, G_1X, G_2X, G_025X, G_4X, G_8X, Z_2X
+   */
+  readonly workerType: WorkerType;
+
+  /**
+   * The number of workers of the given `workerType` that are allocated when a job runs.
+   */
+  readonly numberOfWorkers: number;
+}
+
+/**
  * Common properties for different types of Spark jobs.
  */
 export interface SparkJobProps extends JobProps {
+  /**
+   * The worker type and the number of workers allocated when a job runs.
+   *
+   * @default - the job runs with the G_1X worker type and 10 workers.
+   */
+  readonly workerConfiguration?: WorkerConfiguration;
+
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -219,7 +249,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new UnscopedValidationError(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(lit`InvalidSparkUiPrefix`, `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

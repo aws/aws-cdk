@@ -1,0 +1,1086 @@
+{
+ "Resources": {
+  "ApiKeyProvider7AFC53BE": {
+   "Type": "AWS::BedrockAgentCore::ApiKeyCredentialProvider",
+   "Properties": {
+    "ApiKey": "integ-placeholder-api-key",
+    "Name": "integ-grants-api-key",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity-grants"
+     }
+    ]
+   }
+  },
+  "OAuthProvider867E90F1": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "GithubOauth2",
+    "Name": "integ-grants-oauth",
+    "Oauth2ProviderConfigInput": {
+     "GithubOauth2ProviderConfig": {
+      "ClientId": "integ-github-client-id",
+      "ClientSecret": "integ-github-client-secret"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity-grants"
+     }
+    ]
+   }
+  },
+  "WorkloadIdentityC18104DE": {
+   "Type": "AWS::BedrockAgentCore::WorkloadIdentity",
+   "Properties": {
+    "Name": "integ-grants-workload-identity",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity-grants"
+     }
+    ]
+   }
+  },
+  "GrantReadFnServiceRole2BDB7895": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "GrantReadFnServiceRoleDefaultPolicy2D760BAD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:GetApiKeyCredentialProvider",
+        "bedrock-agentcore:ListApiKeyCredentialProviders"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ApiKeyProvider7AFC53BE",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/apikeycredentialprovider"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:GetOauth2CredentialProvider",
+        "bedrock-agentcore:ListOauth2CredentialProviders"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OAuthProvider867E90F1",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/oauth2credentialprovider"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:GetWorkloadIdentity",
+        "bedrock-agentcore:ListWorkloadIdentities"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WorkloadIdentityC18104DE",
+          "WorkloadIdentityArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GrantReadFnServiceRoleDefaultPolicy2D760BAD",
+    "Roles": [
+     {
+      "Ref": "GrantReadFnServiceRole2BDB7895"
+     }
+    ]
+   }
+  },
+  "GrantReadFnE0C69452": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    \n  function nameFromArn(arn) {\n    var parts = arn.split(':');\n    var resource = parts[5] || '';\n    var segments = resource.split('/');\n    var name = segments[segments.length - 1];\n    if (!name) throw new Error('Unable to parse resource name from ARN: ' + arn);\n    return name;\n  }\n\n  function isAccessDenied(error) {\n    var message = error instanceof Error ? error.message : String(error);\n    var name = typeof error === 'object' && error !== null && 'name' in error ? String(error.name) : '';\n    var httpStatus = typeof error === 'object' && error !== null && '$metadata' in error\n      ? (error.$metadata && error.$metadata.httpStatusCode) : 0;\n    return httpStatus === 403\n      || name.includes('AccessDenied')\n      || name.includes('Unauthorized')\n      || name.includes('Forbidden')\n      || message.includes('AccessDenied')\n      || message.includes('not authorized')\n      || message.includes('Not authorized');\n  }\n\n    \n  exports.handler = async () => {\n    try {\n      var controlSdk = await import('@aws-sdk/client-bedrock-agentcore-control');\n      var runtimeSdk = await import('@aws-sdk/client-bedrock-agentcore');\n      var controlClient = new controlSdk.BedrockAgentCoreControlClient({});\n      var runtimeClient = new runtimeSdk.BedrockAgentCoreClient({});\n\n      var apiKeyName = nameFromArn(process.env.API_KEY_PROVIDER_ARN);\n      var oauthName = nameFromArn(process.env.OAUTH_PROVIDER_ARN);\n      var workloadName = nameFromArn(process.env.WORKLOAD_IDENTITY_ARN);\n      var expectedDenied = JSON.parse(process.env.EXPECTED_DENIED || '[]');\n\n      var results = [];\n      var accessDenied = [];\n\n      // ---- Read probes ----\n      var readProbes = [\n        { category: 'read', type: 'read_api_key', cmd: new controlSdk.GetApiKeyCredentialProviderCommand({ name: apiKeyName }), client: controlClient },\n        { category: 'read', type: 'read_oauth', cmd: new controlSdk.GetOauth2CredentialProviderCommand({ name: oauthName }), client: controlClient },\n        { category: 'read', type: 'read_workload_identity', cmd: new controlSdk.GetWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Admin probes ----\n      var adminProbes = [\n        { category: 'admin', type: 'admin_api_key', cmd: new controlSdk.UpdateApiKeyCredentialProviderCommand({ name: apiKeyName, apiKey: 'integ-placeholder-api-key' }), client: controlClient },\n        {\n          category: 'admin', type: 'admin_oauth',\n          cmd: new controlSdk.UpdateOauth2CredentialProviderCommand({\n            name: oauthName,\n            credentialProviderVendor: 'GithubOauth2',\n            oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: 'integ-github-client-id', clientSecret: 'integ-github-client-secret' } },\n          }),\n          client: controlClient,\n        },\n        { category: 'admin', type: 'admin_workload_identity', cmd: new controlSdk.UpdateWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Use probes ----\n      // GetWorkloadAccessToken first (needed to call GetResourceApiKey)\n      var workloadIdentityToken = '';\n      try {\n        var tokenResp = await runtimeClient.send(\n          new runtimeSdk.GetWorkloadAccessTokenCommand({ workloadName: workloadName })\n        );\n        workloadIdentityToken = tokenResp.workloadAccessToken || '';\n        results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'succeeded' });\n      } catch (error) {\n        if (isAccessDenied(error)) {\n          accessDenied.push({ category: 'use', type: 'use_get_workload_access_token' });\n        } else {\n          results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n        }\n      }\n\n      // GetResourceApiKey - only attempt with a real token; with a placeholder token\n      // the service may return a validation error instead of AccessDenied, making the\n      // result ambiguous. When the token call was denied, we already know 'use' is denied.\n      if (workloadIdentityToken) {\n        try {\n          await runtimeClient.send(\n            new runtimeSdk.GetResourceApiKeyCommand({\n              resourceCredentialProviderName: apiKeyName,\n              workloadIdentityToken: workloadIdentityToken,\n            })\n          );\n          results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: 'use', type: 'use_get_resource_api_key' });\n          } else {\n            results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Run read and admin probes ----\n      var allProbes = readProbes.concat(adminProbes);\n      for (var p of allProbes) {\n        try {\n          await p.client.send(p.cmd);\n          results.push({ category: p.category, type: p.type, status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: p.category, type: p.type });\n          } else {\n            results.push({ category: p.category, type: p.type, status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Determine pass/fail ----\n      // unexpectedDenied: probes that got AccessDenied but should NOT have been denied\n      var unexpectedDenied = accessDenied.filter(function(d) { return expectedDenied.indexOf(d.category) === -1; });\n      // overPermissive: probes in expected-denied categories that were NOT denied\n      // (succeeded or got a non-access error, meaning IAM allowed the call)\n      var overPermissive = results.filter(function(r) { return expectedDenied.indexOf(r.category) !== -1; });\n      // missingDenied: expected-denied categories where no probe was even attempted\n      // (should not happen unless probes array is misconfigured)\n      var deniedCategories = accessDenied.map(function(d) { return d.category; });\n      var attemptedCategories = results.map(function(r) { return r.category; }).concat(deniedCategories);\n      var missingDenied = expectedDenied.filter(function(cat) { return attemptedCategories.indexOf(cat) === -1; });\n\n      var passed = unexpectedDenied.length === 0 && overPermissive.length === 0 && missingDenied.length === 0;\n\n      if (!passed) {\n        console.error('GRANT TEST FAILED:', JSON.stringify({ unexpectedDenied: unexpectedDenied, overPermissive: overPermissive, missingDenied: missingDenied }));\n      }\n\n      return {\n        results: results,\n        accessDenied: accessDenied,\n        unexpectedDenied: unexpectedDenied,\n        overPermissive: overPermissive,\n        missingDenied: missingDenied,\n        passed: passed,\n      };\n    } catch (fatal) {\n      console.error('FATAL:', fatal);\n      return { results: [], accessDenied: [], unexpectedDenied: [], overPermissive: [], missingDenied: [], passed: false, fatalError: fatal instanceof Error ? fatal.message : String(fatal) };\n    }\n  };\n\n  "
+    },
+    "Environment": {
+     "Variables": {
+      "API_KEY_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "ApiKeyProvider7AFC53BE",
+        "CredentialProviderArn"
+       ]
+      },
+      "OAUTH_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "OAuthProvider867E90F1",
+        "CredentialProviderArn"
+       ]
+      },
+      "WORKLOAD_IDENTITY_ARN": {
+       "Fn::GetAtt": [
+        "WorkloadIdentityC18104DE",
+        "WorkloadIdentityArn"
+       ]
+      },
+      "EXPECTED_DENIED": "[\"admin\",\"use\"]"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GrantReadFnServiceRole2BDB7895",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "GrantReadFnServiceRoleDefaultPolicy2D760BAD",
+    "GrantReadFnServiceRole2BDB7895"
+   ]
+  },
+  "GrantReadFnLogGroupCA43EA14": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GrantReadFnE0C69452"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "GrantAdminFnServiceRoleC7CF110A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "GrantAdminFnServiceRoleDefaultPolicy930D9FD6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:CreateApiKeyCredentialProvider",
+        "bedrock-agentcore:DeleteApiKeyCredentialProvider",
+        "bedrock-agentcore:GetApiKeyCredentialProvider",
+        "bedrock-agentcore:UpdateApiKeyCredentialProvider"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ApiKeyProvider7AFC53BE",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/apikeycredentialprovider"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "secretsmanager:PutSecretValue",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":secretsmanager:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":secret:bedrock-agentcore-identity!*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:CreateOauth2CredentialProvider",
+        "bedrock-agentcore:DeleteOauth2CredentialProvider",
+        "bedrock-agentcore:GetOauth2CredentialProvider",
+        "bedrock-agentcore:UpdateOauth2CredentialProvider"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OAuthProvider867E90F1",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/oauth2credentialprovider"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:CreateWorkloadIdentity",
+        "bedrock-agentcore:DeleteWorkloadIdentity",
+        "bedrock-agentcore:GetWorkloadIdentity",
+        "bedrock-agentcore:UpdateWorkloadIdentity"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WorkloadIdentityC18104DE",
+          "WorkloadIdentityArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GrantAdminFnServiceRoleDefaultPolicy930D9FD6",
+    "Roles": [
+     {
+      "Ref": "GrantAdminFnServiceRoleC7CF110A"
+     }
+    ]
+   }
+  },
+  "GrantAdminFn61A4D6B3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    \n  function nameFromArn(arn) {\n    var parts = arn.split(':');\n    var resource = parts[5] || '';\n    var segments = resource.split('/');\n    var name = segments[segments.length - 1];\n    if (!name) throw new Error('Unable to parse resource name from ARN: ' + arn);\n    return name;\n  }\n\n  function isAccessDenied(error) {\n    var message = error instanceof Error ? error.message : String(error);\n    var name = typeof error === 'object' && error !== null && 'name' in error ? String(error.name) : '';\n    var httpStatus = typeof error === 'object' && error !== null && '$metadata' in error\n      ? (error.$metadata && error.$metadata.httpStatusCode) : 0;\n    return httpStatus === 403\n      || name.includes('AccessDenied')\n      || name.includes('Unauthorized')\n      || name.includes('Forbidden')\n      || message.includes('AccessDenied')\n      || message.includes('not authorized')\n      || message.includes('Not authorized');\n  }\n\n    \n  exports.handler = async () => {\n    try {\n      var controlSdk = await import('@aws-sdk/client-bedrock-agentcore-control');\n      var runtimeSdk = await import('@aws-sdk/client-bedrock-agentcore');\n      var controlClient = new controlSdk.BedrockAgentCoreControlClient({});\n      var runtimeClient = new runtimeSdk.BedrockAgentCoreClient({});\n\n      var apiKeyName = nameFromArn(process.env.API_KEY_PROVIDER_ARN);\n      var oauthName = nameFromArn(process.env.OAUTH_PROVIDER_ARN);\n      var workloadName = nameFromArn(process.env.WORKLOAD_IDENTITY_ARN);\n      var expectedDenied = JSON.parse(process.env.EXPECTED_DENIED || '[]');\n\n      var results = [];\n      var accessDenied = [];\n\n      // ---- Read probes ----\n      var readProbes = [\n        { category: 'read', type: 'read_api_key', cmd: new controlSdk.GetApiKeyCredentialProviderCommand({ name: apiKeyName }), client: controlClient },\n        { category: 'read', type: 'read_oauth', cmd: new controlSdk.GetOauth2CredentialProviderCommand({ name: oauthName }), client: controlClient },\n        { category: 'read', type: 'read_workload_identity', cmd: new controlSdk.GetWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Admin probes ----\n      var adminProbes = [\n        { category: 'admin', type: 'admin_api_key', cmd: new controlSdk.UpdateApiKeyCredentialProviderCommand({ name: apiKeyName, apiKey: 'integ-placeholder-api-key' }), client: controlClient },\n        {\n          category: 'admin', type: 'admin_oauth',\n          cmd: new controlSdk.UpdateOauth2CredentialProviderCommand({\n            name: oauthName,\n            credentialProviderVendor: 'GithubOauth2',\n            oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: 'integ-github-client-id', clientSecret: 'integ-github-client-secret' } },\n          }),\n          client: controlClient,\n        },\n        { category: 'admin', type: 'admin_workload_identity', cmd: new controlSdk.UpdateWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Use probes ----\n      // GetWorkloadAccessToken first (needed to call GetResourceApiKey)\n      var workloadIdentityToken = '';\n      try {\n        var tokenResp = await runtimeClient.send(\n          new runtimeSdk.GetWorkloadAccessTokenCommand({ workloadName: workloadName })\n        );\n        workloadIdentityToken = tokenResp.workloadAccessToken || '';\n        results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'succeeded' });\n      } catch (error) {\n        if (isAccessDenied(error)) {\n          accessDenied.push({ category: 'use', type: 'use_get_workload_access_token' });\n        } else {\n          results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n        }\n      }\n\n      // GetResourceApiKey - only attempt with a real token; with a placeholder token\n      // the service may return a validation error instead of AccessDenied, making the\n      // result ambiguous. When the token call was denied, we already know 'use' is denied.\n      if (workloadIdentityToken) {\n        try {\n          await runtimeClient.send(\n            new runtimeSdk.GetResourceApiKeyCommand({\n              resourceCredentialProviderName: apiKeyName,\n              workloadIdentityToken: workloadIdentityToken,\n            })\n          );\n          results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: 'use', type: 'use_get_resource_api_key' });\n          } else {\n            results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Run read and admin probes ----\n      var allProbes = readProbes.concat(adminProbes);\n      for (var p of allProbes) {\n        try {\n          await p.client.send(p.cmd);\n          results.push({ category: p.category, type: p.type, status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: p.category, type: p.type });\n          } else {\n            results.push({ category: p.category, type: p.type, status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Determine pass/fail ----\n      // unexpectedDenied: probes that got AccessDenied but should NOT have been denied\n      var unexpectedDenied = accessDenied.filter(function(d) { return expectedDenied.indexOf(d.category) === -1; });\n      // overPermissive: probes in expected-denied categories that were NOT denied\n      // (succeeded or got a non-access error, meaning IAM allowed the call)\n      var overPermissive = results.filter(function(r) { return expectedDenied.indexOf(r.category) !== -1; });\n      // missingDenied: expected-denied categories where no probe was even attempted\n      // (should not happen unless probes array is misconfigured)\n      var deniedCategories = accessDenied.map(function(d) { return d.category; });\n      var attemptedCategories = results.map(function(r) { return r.category; }).concat(deniedCategories);\n      var missingDenied = expectedDenied.filter(function(cat) { return attemptedCategories.indexOf(cat) === -1; });\n\n      var passed = unexpectedDenied.length === 0 && overPermissive.length === 0 && missingDenied.length === 0;\n\n      if (!passed) {\n        console.error('GRANT TEST FAILED:', JSON.stringify({ unexpectedDenied: unexpectedDenied, overPermissive: overPermissive, missingDenied: missingDenied }));\n      }\n\n      return {\n        results: results,\n        accessDenied: accessDenied,\n        unexpectedDenied: unexpectedDenied,\n        overPermissive: overPermissive,\n        missingDenied: missingDenied,\n        passed: passed,\n      };\n    } catch (fatal) {\n      console.error('FATAL:', fatal);\n      return { results: [], accessDenied: [], unexpectedDenied: [], overPermissive: [], missingDenied: [], passed: false, fatalError: fatal instanceof Error ? fatal.message : String(fatal) };\n    }\n  };\n\n  "
+    },
+    "Environment": {
+     "Variables": {
+      "API_KEY_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "ApiKeyProvider7AFC53BE",
+        "CredentialProviderArn"
+       ]
+      },
+      "OAUTH_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "OAuthProvider867E90F1",
+        "CredentialProviderArn"
+       ]
+      },
+      "WORKLOAD_IDENTITY_ARN": {
+       "Fn::GetAtt": [
+        "WorkloadIdentityC18104DE",
+        "WorkloadIdentityArn"
+       ]
+      },
+      "EXPECTED_DENIED": "[\"use\"]"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GrantAdminFnServiceRoleC7CF110A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "GrantAdminFnServiceRoleDefaultPolicy930D9FD6",
+    "GrantAdminFnServiceRoleC7CF110A"
+   ]
+  },
+  "GrantAdminFnLogGroup6CF7EC6F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GrantAdminFn61A4D6B3"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "GrantFullAccessFnServiceRole8147BD37": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "GrantFullAccessFnServiceRoleDefaultPolicy8EEDD57B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:CreateApiKeyCredentialProvider",
+        "bedrock-agentcore:DeleteApiKeyCredentialProvider",
+        "bedrock-agentcore:GetApiKeyCredentialProvider",
+        "bedrock-agentcore:GetResourceApiKey",
+        "bedrock-agentcore:ListApiKeyCredentialProviders",
+        "bedrock-agentcore:UpdateApiKeyCredentialProvider"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ApiKeyProvider7AFC53BE",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/apikeycredentialprovider"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:PutSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":secretsmanager:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":secret:bedrock-agentcore-identity!*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:CompleteResourceTokenAuth",
+        "bedrock-agentcore:CreateOauth2CredentialProvider",
+        "bedrock-agentcore:DeleteOauth2CredentialProvider",
+        "bedrock-agentcore:GetOauth2CredentialProvider",
+        "bedrock-agentcore:GetResourceOauth2Token",
+        "bedrock-agentcore:ListOauth2CredentialProviders",
+        "bedrock-agentcore:UpdateOauth2CredentialProvider"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OAuthProvider867E90F1",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default/oauth2credentialprovider"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:CreateWorkloadIdentity",
+        "bedrock-agentcore:DeleteWorkloadIdentity",
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId",
+        "bedrock-agentcore:GetWorkloadIdentity",
+        "bedrock-agentcore:ListWorkloadIdentities",
+        "bedrock-agentcore:UpdateWorkloadIdentity"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WorkloadIdentityC18104DE",
+          "WorkloadIdentityArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GrantFullAccessFnServiceRoleDefaultPolicy8EEDD57B",
+    "Roles": [
+     {
+      "Ref": "GrantFullAccessFnServiceRole8147BD37"
+     }
+    ]
+   }
+  },
+  "GrantFullAccessFn15A36E8E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    \n  function nameFromArn(arn) {\n    var parts = arn.split(':');\n    var resource = parts[5] || '';\n    var segments = resource.split('/');\n    var name = segments[segments.length - 1];\n    if (!name) throw new Error('Unable to parse resource name from ARN: ' + arn);\n    return name;\n  }\n\n  function isAccessDenied(error) {\n    var message = error instanceof Error ? error.message : String(error);\n    var name = typeof error === 'object' && error !== null && 'name' in error ? String(error.name) : '';\n    var httpStatus = typeof error === 'object' && error !== null && '$metadata' in error\n      ? (error.$metadata && error.$metadata.httpStatusCode) : 0;\n    return httpStatus === 403\n      || name.includes('AccessDenied')\n      || name.includes('Unauthorized')\n      || name.includes('Forbidden')\n      || message.includes('AccessDenied')\n      || message.includes('not authorized')\n      || message.includes('Not authorized');\n  }\n\n    \n  exports.handler = async () => {\n    try {\n      var controlSdk = await import('@aws-sdk/client-bedrock-agentcore-control');\n      var runtimeSdk = await import('@aws-sdk/client-bedrock-agentcore');\n      var controlClient = new controlSdk.BedrockAgentCoreControlClient({});\n      var runtimeClient = new runtimeSdk.BedrockAgentCoreClient({});\n\n      var apiKeyName = nameFromArn(process.env.API_KEY_PROVIDER_ARN);\n      var oauthName = nameFromArn(process.env.OAUTH_PROVIDER_ARN);\n      var workloadName = nameFromArn(process.env.WORKLOAD_IDENTITY_ARN);\n      var expectedDenied = JSON.parse(process.env.EXPECTED_DENIED || '[]');\n\n      var results = [];\n      var accessDenied = [];\n\n      // ---- Read probes ----\n      var readProbes = [\n        { category: 'read', type: 'read_api_key', cmd: new controlSdk.GetApiKeyCredentialProviderCommand({ name: apiKeyName }), client: controlClient },\n        { category: 'read', type: 'read_oauth', cmd: new controlSdk.GetOauth2CredentialProviderCommand({ name: oauthName }), client: controlClient },\n        { category: 'read', type: 'read_workload_identity', cmd: new controlSdk.GetWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Admin probes ----\n      var adminProbes = [\n        { category: 'admin', type: 'admin_api_key', cmd: new controlSdk.UpdateApiKeyCredentialProviderCommand({ name: apiKeyName, apiKey: 'integ-placeholder-api-key' }), client: controlClient },\n        {\n          category: 'admin', type: 'admin_oauth',\n          cmd: new controlSdk.UpdateOauth2CredentialProviderCommand({\n            name: oauthName,\n            credentialProviderVendor: 'GithubOauth2',\n            oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: 'integ-github-client-id', clientSecret: 'integ-github-client-secret' } },\n          }),\n          client: controlClient,\n        },\n        { category: 'admin', type: 'admin_workload_identity', cmd: new controlSdk.UpdateWorkloadIdentityCommand({ name: workloadName }), client: controlClient },\n      ];\n\n      // ---- Use probes ----\n      // GetWorkloadAccessToken first (needed to call GetResourceApiKey)\n      var workloadIdentityToken = '';\n      try {\n        var tokenResp = await runtimeClient.send(\n          new runtimeSdk.GetWorkloadAccessTokenCommand({ workloadName: workloadName })\n        );\n        workloadIdentityToken = tokenResp.workloadAccessToken || '';\n        results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'succeeded' });\n      } catch (error) {\n        if (isAccessDenied(error)) {\n          accessDenied.push({ category: 'use', type: 'use_get_workload_access_token' });\n        } else {\n          results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n        }\n      }\n\n      // GetResourceApiKey - only attempt with a real token; with a placeholder token\n      // the service may return a validation error instead of AccessDenied, making the\n      // result ambiguous. When the token call was denied, we already know 'use' is denied.\n      if (workloadIdentityToken) {\n        try {\n          await runtimeClient.send(\n            new runtimeSdk.GetResourceApiKeyCommand({\n              resourceCredentialProviderName: apiKeyName,\n              workloadIdentityToken: workloadIdentityToken,\n            })\n          );\n          results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: 'use', type: 'use_get_resource_api_key' });\n          } else {\n            results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Run read and admin probes ----\n      var allProbes = readProbes.concat(adminProbes);\n      for (var p of allProbes) {\n        try {\n          await p.client.send(p.cmd);\n          results.push({ category: p.category, type: p.type, status: 'succeeded' });\n        } catch (error) {\n          if (isAccessDenied(error)) {\n            accessDenied.push({ category: p.category, type: p.type });\n          } else {\n            results.push({ category: p.category, type: p.type, status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });\n          }\n        }\n      }\n\n      // ---- Determine pass/fail ----\n      // unexpectedDenied: probes that got AccessDenied but should NOT have been denied\n      var unexpectedDenied = accessDenied.filter(function(d) { return expectedDenied.indexOf(d.category) === -1; });\n      // overPermissive: probes in expected-denied categories that were NOT denied\n      // (succeeded or got a non-access error, meaning IAM allowed the call)\n      var overPermissive = results.filter(function(r) { return expectedDenied.indexOf(r.category) !== -1; });\n      // missingDenied: expected-denied categories where no probe was even attempted\n      // (should not happen unless probes array is misconfigured)\n      var deniedCategories = accessDenied.map(function(d) { return d.category; });\n      var attemptedCategories = results.map(function(r) { return r.category; }).concat(deniedCategories);\n      var missingDenied = expectedDenied.filter(function(cat) { return attemptedCategories.indexOf(cat) === -1; });\n\n      var passed = unexpectedDenied.length === 0 && overPermissive.length === 0 && missingDenied.length === 0;\n\n      if (!passed) {\n        console.error('GRANT TEST FAILED:', JSON.stringify({ unexpectedDenied: unexpectedDenied, overPermissive: overPermissive, missingDenied: missingDenied }));\n      }\n\n      return {\n        results: results,\n        accessDenied: accessDenied,\n        unexpectedDenied: unexpectedDenied,\n        overPermissive: overPermissive,\n        missingDenied: missingDenied,\n        passed: passed,\n      };\n    } catch (fatal) {\n      console.error('FATAL:', fatal);\n      return { results: [], accessDenied: [], unexpectedDenied: [], overPermissive: [], missingDenied: [], passed: false, fatalError: fatal instanceof Error ? fatal.message : String(fatal) };\n    }\n  };\n\n  "
+    },
+    "Environment": {
+     "Variables": {
+      "API_KEY_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "ApiKeyProvider7AFC53BE",
+        "CredentialProviderArn"
+       ]
+      },
+      "OAUTH_PROVIDER_ARN": {
+       "Fn::GetAtt": [
+        "OAuthProvider867E90F1",
+        "CredentialProviderArn"
+       ]
+      },
+      "WORKLOAD_IDENTITY_ARN": {
+       "Fn::GetAtt": [
+        "WorkloadIdentityC18104DE",
+        "WorkloadIdentityArn"
+       ]
+      },
+      "EXPECTED_DENIED": "[]"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GrantFullAccessFnServiceRole8147BD37",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "GrantFullAccessFnServiceRoleDefaultPolicy8EEDD57B",
+    "GrantFullAccessFnServiceRole8147BD37"
+   ]
+  },
+  "GrantFullAccessFnLogGroup6B6F1B5A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GrantFullAccessFn15A36E8E"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefGrantReadFnE0C69452F3C669D5": {
+   "Value": {
+    "Ref": "GrantReadFnE0C69452"
+   },
+   "Export": {
+    "Name": "aws-cdk-bedrock-agentcore-identity-grants-1:ExportsOutputRefGrantReadFnE0C69452F3C669D5"
+   }
+  },
+  "ExportsOutputRefGrantAdminFn61A4D6B3748122D7": {
+   "Value": {
+    "Ref": "GrantAdminFn61A4D6B3"
+   },
+   "Export": {
+    "Name": "aws-cdk-bedrock-agentcore-identity-grants-1:ExportsOutputRefGrantAdminFn61A4D6B3748122D7"
+   }
+  },
+  "ExportsOutputRefGrantFullAccessFn15A36E8E4FA10F3E": {
+   "Value": {
+    "Ref": "GrantFullAccessFn15A36E8E"
+   },
+   "Export": {
+    "Name": "aws-cdk-bedrock-agentcore-identity-grants-1:ExportsOutputRefGrantFullAccessFn15A36E8E4FA10F3E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

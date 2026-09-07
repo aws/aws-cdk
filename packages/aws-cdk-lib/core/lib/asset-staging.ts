@@ -5,17 +5,20 @@ import * as fs from 'fs-extra';
 import type { AssetOptions } from './assets';
 import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
-import { BundlingFileAccess, BundlingOutput } from './bundling';
+import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
-import { FileSystem } from './fs';
+import { FileSystem, SymlinkFollowMode, IgnoreStrategy } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
-import { Stack } from './stack';
-import { Stage } from './stage';
+import { stackOf, stageOf } from './private/core-construct-finders';
+import { lit } from './private/literal-string';
+import { profileSpan } from './private/perf';
+import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
+import { isInternalPath, resolveLinkTarget } from './fs/utils';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -161,7 +164,7 @@ export class AssetStaging extends Construct {
 
   private readonly cacheKey: string;
 
-  private readonly sourceStats: fs.Stats;
+  private readonly _sourceStats?: fs.Stats;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
@@ -176,14 +179,20 @@ export class AssetStaging extends Construct {
     };
 
     if (!fs.existsSync(this.sourcePath)) {
-      throw new ValidationError(`Cannot find asset at ${this.sourcePath}`, this);
+      throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
     }
 
-    this.sourceStats = fs.statSync(this.sourcePath);
+    const ignoreStrategy = IgnoreStrategy.fromCopyOptions(props, this.sourcePath);
+    // look for invalid (external) symlinks
+    if (props.follow == SymlinkFollowMode.BLOCK_EXTERNAL && fs.statSync(this.sourcePath).isDirectory()) {
+      validateInternalSymlinks(this.sourcePath, scope, props.follow, ignoreStrategy);
+    }
 
-    const outdir = Stage.of(this)?.assetOutdir;
+    this._sourceStats = fs.statSync(this.sourcePath);
+
+    const outdir = stageOf(this)?.assetOutdir;
     if (!outdir) {
-      throw new ValidationError('unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
+      throw new ValidationError(lit`UnableToDetermineCloudAssembly`, 'unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
     }
     this.assetOutdir = outdir;
 
@@ -197,9 +206,9 @@ export class AssetStaging extends Construct {
     let skip = false;
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
-      skip = !Stack.of(this).bundlingRequired;
+      skip = !stackOf(this).bundlingRequired;
       const bundling = props.bundling;
-      stageThisAsset = () => this.stageByBundling(bundling, skip);
+      stageThisAsset = () => this.stageByBundling(bundling, skip, props);
     } else {
       stageThisAsset = () => this.stageByCopying();
     }
@@ -230,6 +239,21 @@ export class AssetStaging extends Construct {
     this.assetHash = staged.assetHash;
     this.packaging = staged.packaging;
     this.isArchive = staged.isArchive;
+
+    // Memory optimization: this._sourceStats is used as a field to covertly pass
+    // arguments between functions in the constructor, but the size of that object is 1.8kB
+    //
+    // That's holding on to a lot of unnecessary memory if there are a lot of assets (think 100k+).
+    //
+    // Release the object here, we don't need it again.
+    this._sourceStats = undefined;
+  }
+
+  private get sourceStats(): fs.Stats {
+    if (!this._sourceStats) {
+      throw new AssumptionError(lit`SourceStatusUnset`, '_sourceStats has been unset');
+    }
+    return this._sourceStats;
   }
 
   /**
@@ -264,7 +288,7 @@ export class AssetStaging extends Construct {
    * ```
    */
   public relativeStagedPath(stack: Stack) {
-    const asmManifestDir = Stage.of(stack)?.outdir;
+    const asmManifestDir = stageOf(stack)?.outdir;
     if (!asmManifestDir) { return this.stagedPath; }
 
     const isOutsideAssetDir = path.relative(this.assetOutdir, this.stagedPath).startsWith('..');
@@ -288,7 +312,7 @@ export class AssetStaging extends Construct {
     const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
 
     if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
-      throw new ValidationError(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
+      throw new ValidationError(lit`AssetExpectedDirectoryOrFile`, `Asset ${this.sourcePath} is expected to be either a directory or a regular file`, this);
     }
 
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
@@ -306,9 +330,9 @@ export class AssetStaging extends Construct {
    *
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
-  private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+  private stageByBundling(bundling: BundlingOptions, skip: boolean, props: AssetStagingProps): StagedAsset {
     if (!this.sourceStats.isDirectory()) {
-      throw new ValidationError(`Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
+      throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
     }
 
     if (skip) {
@@ -338,7 +362,8 @@ export class AssetStaging extends Construct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType);
+    const ignore = IgnoreStrategy.fromCopyOptions(props, bundleDir);
+    const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, ignore, props.follow);
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
@@ -408,7 +433,7 @@ export class AssetStaging extends Construct {
       fs.mkdirSync(targetPath);
       FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
     } else {
-      throw new ValidationError(`Unknown file type: ${sourcePath}`, this);
+      throw new ValidationError(lit`UnknownFileType`, `Unknown file type: ${sourcePath}`, this);
     }
   }
 
@@ -454,6 +479,8 @@ export class AssetStaging extends Construct {
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
+      using _span = timerSpanFromOptions(options);
+
       localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
         const assetStagingOptions = {
@@ -476,12 +503,12 @@ export class AssetStaging extends Construct {
       // Success, rename the tempDir into place
       fs.renameSync(tempDir, bundleDir);
     } catch (err) {
-      throw new ValidationError(`Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
+      throw new ValidationError(lit`FailedToBundleAsset`, `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
     }
 
     if (FileSystem.isEmpty(bundleDir)) {
       const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
-      throw new ValidationError(`Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
+      throw new ValidationError(lit`BundlingProducedNoOutput`, `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
     }
   }
 
@@ -509,11 +536,11 @@ export class AssetStaging extends Construct {
       case AssetHashType.BUNDLE:
       case AssetHashType.OUTPUT:
         if (!outputDir) {
-          throw new ValidationError(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`, this);
+          throw new ValidationError(lit`CannotUseHashTypeWithoutBundling`, `Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`, this);
         }
         return FileSystem.fingerprint(outputDir, this.fingerprintOptions);
       default:
-        throw new ValidationError('Unknown asset hash type.', this);
+        throw new ValidationError(lit`UnknownAssetHashType`, 'Unknown asset hash type.', this);
     }
   }
 
@@ -545,13 +572,53 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
     : (assetHashType ?? AssetHashType.SOURCE);
 
   if (customSourceFingerprint && hashType !== AssetHashType.CUSTOM) {
-    throw new ValidationError(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`, scope);
+    throw new ValidationError(lit`CannotSpecifyAssetHashTypeWithAssetHash`, `Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`, scope);
   }
   if (hashType === AssetHashType.CUSTOM && !customSourceFingerprint) {
-    throw new ValidationError('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.', scope);
+    throw new ValidationError(lit`MustBeSpecified`, '`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.', scope);
   }
 
   return hashType;
+}
+
+/**
+ * Walk the directory tree, throw if we find external symlinks
+ * @param root true root of the directory
+ * @param subRoot used for walking subdirectories
+ */
+function validateInternalSymlinks(
+  root: string,
+  scope: Construct,
+  followMode: SymlinkFollowMode,
+  ignoreStrat: IgnoreStrategy,
+  subRoot: string = root,
+) {
+  const entries = fs.readdirSync(subRoot, { withFileTypes: true });
+  for (const entry of entries) {
+    const childPath = path.join(subRoot, entry.name);
+    if (entry.isDirectory()) {
+      if (ignoreStrat.completelyIgnores(childPath)) {
+        continue;
+      }
+      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
+    } else if (!entry.isSymbolicLink()) {
+      continue;
+    } else { // we have a symlink
+      if (ignoreStrat.completelyIgnores(childPath)) {
+        continue;
+      }
+      // check whether this is internal or external
+      const linkPath = fs.readlinkSync(childPath);
+      const resolvedPath = resolveLinkTarget(childPath, linkPath);
+      if (!isInternalPath(root, resolvedPath)) {
+        throw new ValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${resolvedPath} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          scope,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -593,7 +660,7 @@ function sanitizeHashValue(key: string, value: any): any {
       }
     } catch (e: any) {
       if (e.name === 'TypeError') {
-        throw new AssumptionError(`${key} must be a valid URL, got ${value}.`);
+        throw new AssumptionError(lit`MustBeValid`, `${key} must be a valid URL, got ${value}.`);
       }
       throw e;
     }
@@ -606,17 +673,18 @@ function sanitizeHashValue(key: string, value: any): any {
  */
 function findSingleFile(scope: Construct, directory: string, archiveOnly: boolean): string | undefined {
   if (!fs.existsSync(directory)) {
-    throw new ValidationError(`Directory ${directory} does not exist.`, scope);
+    throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${directory} does not exist.`, scope);
   }
 
   if (!fs.statSync(directory).isDirectory()) {
-    throw new ValidationError(`${directory} is not a directory.`, scope);
+    throw new ValidationError(lit`PathIsNotDirectory`, `${directory} is not a directory.`, scope);
   }
 
   const content = fs.readdirSync(directory);
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
+
     if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
@@ -635,7 +703,13 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(scope: Construct, bundleDir: string, outputType: BundlingOutput): BundledAsset {
+function determineBundledAsset(
+  scope: Construct,
+  bundleDir: string,
+  outputType: BundlingOutput,
+  ignore: IgnoreStrategy,
+  followMode?: SymlinkFollowMode,
+): BundledAsset {
   const archiveFile = findSingleFile(scope, bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
 
   // auto-discover means that if there is an archive file, we take it as the
@@ -646,11 +720,16 @@ function determineBundledAsset(scope: Construct, bundleDir: string, outputType: 
 
   switch (outputType) {
     case BundlingOutput.NOT_ARCHIVED:
+      if (followMode == SymlinkFollowMode.BLOCK_EXTERNAL) {
+        validateInternalSymlinks(bundleDir, scope, followMode, ignore);
+      }
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
     case BundlingOutput.SINGLE_FILE:
       if (!archiveFile) {
-        throw new ValidationError('Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
+        throw new ValidationError(lit`BundlingOutputDirectoryExpectedSingleFile`, 'Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`', scope);
+      } else if (fs.lstatSync(archiveFile).isSymbolicLink()) {
+        throw new ValidationError(lit`SymlinkInBundlingOutput`, 'The output from bundling is not allowed to be a symlink.', scope);
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }
@@ -671,3 +750,17 @@ function getExtension(source: string): string {
   return path.extname(source);
 }
 
+function timerSpanFromOptions(x: any): Disposable | undefined {
+  const src = bundlingSourceFromOptions(x);
+  return src ? profileSpan(`bundle:${src}`, { telemetry: true }) : undefined;
+}
+
+/**
+ * Get the bundling source from the options object
+ *
+ * If this is a built-in CDK bundling source, it will have a value here we use to log a timer
+ */
+function bundlingSourceFromOptions(x: any): string | undefined {
+  const value = x[PERF_BUNDLING_SRC_SYM];
+  return typeof value === 'string' ? value : undefined;
+}

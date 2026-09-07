@@ -1,13 +1,21 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "testCases": {
     "linux-arm-lambda-codebuild/DefaultTest": {
       "stacks": [
         "codebuild-project-linux-arm-lambda"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
       "stackUpdateWorkflow": true,
       "assertionStack": "linux-arm-lambda-codebuild/DefaultTest/DeployAssert",
       "assertionStackName": "linuxarmlambdacodebuildDefaultTestDeployAssert131511F5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

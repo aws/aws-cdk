@@ -5,7 +5,8 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { FeatureFlags, Names, ValidationError } from '../../core';
 import * as cxapi from '../../cx-api';
-import { regionFromArn } from './private/util';
+import { regionFromArn, snsServicePrincipal } from './private/util';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an SQS subscription
@@ -35,20 +36,20 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.queue)) {
-      throw new ValidationError('The supplied Queue object must be an instance of Construct', topic);
+      throw new ValidationError(lit`SuppliedQueueObjectInstanceConstruct`, 'The supplied Queue object must be an instance of Construct', topic);
     }
-    const snsServicePrincipal = new iam.ServicePrincipal('sns.amazonaws.com');
+    const principal = snsServicePrincipal(topic, this.queue);
 
     // if the queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.queue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new ValidationError('SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription', topic);
+      throw new ValidationError(lit`QueueEncryptedManagedKeyCannot`, 'SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription', topic);
     }
 
     // if the dead-letter queue is encrypted by AWS managed KMS key (alias/aws/sqs),
     // throw error message
     if (this.props.deadLetterQueue && this.props.deadLetterQueue.encryptionType === sqs.QueueEncryption.KMS_MANAGED) {
-      throw new ValidationError('SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue', topic);
+      throw new ValidationError(lit`QueueEncryptedManagedKeyCannot`, 'SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue', topic);
     }
 
     // add a statement to the queue resource policy which allows this topic
@@ -56,7 +57,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     const queuePolicyDependable = this.queue.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.queue.queueArn],
       actions: ['sqs:SendMessage'],
-      principals: [snsServicePrincipal],
+      principals: [principal],
       conditions: {
         ArnEquals: { 'aws:SourceArn': topic.topicArn },
       },
@@ -68,7 +69,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       this.queue.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement({
         resources: ['*'],
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
-        principals: [snsServicePrincipal],
+        principals: [principal],
         conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
           ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
           : undefined,
@@ -78,7 +79,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     // if the topic and queue are created in different stacks
     // then we need to make sure the topic is created first
     if (topic instanceof sns.Topic && topic.stack !== this.queue.stack) {
-      this.queue.stack.addDependency(topic.stack);
+      this.queue.stack.addStackDependency(topic.stack);
     }
 
     return {

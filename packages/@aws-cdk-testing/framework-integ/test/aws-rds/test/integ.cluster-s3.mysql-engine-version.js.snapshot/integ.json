@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
     "aws-cdk-rds-s3-mysql-engine-version-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-rds-s3-mysql-engine-version-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkrdss3mysqlengineversionintegtestDefaultTestDeployAssert95FAB883"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

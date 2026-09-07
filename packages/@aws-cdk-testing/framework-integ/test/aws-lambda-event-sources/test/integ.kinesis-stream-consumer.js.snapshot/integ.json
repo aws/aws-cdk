@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "testCases": {
     "integ-lambda-event-source-kinesis-stream-consumer/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-lambda-event-source-kinesis-stream-consumer/DefaultTest/DeployAssert",
       "assertionStackName": "integlambdaeventsourcekinesisstreamconsumerDefaultTestDeployAssert4042E41C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

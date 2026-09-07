@@ -1,0 +1,503 @@
+{
+  "/volume-initialization-rate-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:8:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/Volume": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "size": "*",
+        "volumeType": "gp3",
+        "volumeInitializationRate": "*",
+        "snapshotId": "*"
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "entry": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "entry": "*"
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/volume-initialization-rate-stack/Volume/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VolumeA92988D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Volume (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/volume.js:364:30)",
+        "new Volume (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:21:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderHandler36BDD770"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:40:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderABC26AF9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:63:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderHandlerServiceRoleFF00CA3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:40:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderHandlerLogGroupCA728552"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:40:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderframeworkonEvent9E28A114"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:59:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderHandlerServiceRoleDefaultPolicy9829E406"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NodejsFunction.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:213:23)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:47:12)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderframeworkonEventServiceRoleBC575D66"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:59:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderframeworkonEventLogGroupC20E42B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SnapshotProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/snapshot-provider/index.js:59:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.volume-initialization-rate.js:18:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/volume-initialization-rate-stack/SnapshotProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshotProviderframeworkonEventServiceRoleDefaultPolicy93F4DFCE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "NodejsFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "NodejsFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+      ]
+    }
+  ]
+}

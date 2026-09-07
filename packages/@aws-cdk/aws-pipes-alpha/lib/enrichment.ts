@@ -5,7 +5,7 @@ import type { IPipe } from '.';
 /**
  * The parameters required to set up enrichment on your pipe.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
  */
 export interface EnrichmentParametersConfig {
 

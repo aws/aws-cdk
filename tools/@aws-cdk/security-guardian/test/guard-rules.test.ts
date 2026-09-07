@@ -288,7 +288,34 @@ describe('Guard Rules Validation', () => {
       // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('for Type: Failure Type');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.">');
+    });
+
+    test('should correctly post-process XML with enhanceXml disabled', async () => {
+      // Process templates to create files that will fail validation
+      preprocessTemplates(templatesDir, outputDir);
+      
+      const fileMapping = new Map([
+        [path.resolve(outputDir, 'CMCMK-Stack.template.json'), 'src/CMCMK-Stack.template.json'],
+        [path.resolve(outputDir, 'StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json'), 'src/StagingStack.template.json']
+      ]);
+
+      const success = await runCfnGuardValidation(
+        outputDir,
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
+        path.join(outputDir, 'xml-failure-test.xml'),
+        'Failure Type',
+        fileMapping,
+        false
+      );
+
+      expect(success).toBe(false);
+      
+      // Verify XML file exists and testsuite names are replaced
+      const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
+      expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM_ROLE_NO_BROAD_PRINCIPALS">');
+      expect(xmlContent).toContain('##ERROR:IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.##');
     });
   });
 });

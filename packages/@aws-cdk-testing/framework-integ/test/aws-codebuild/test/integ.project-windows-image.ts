@@ -28,6 +28,8 @@ new IntegTest(app, 'integ-project-windows-images', {
     new ImageTestStack(app, 'WinCore2019-3', WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0),
     new ImageTestStack(app, 'WinCore2022-3', WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0),
   ],
+  // WINDOWS_SERVER_2022_CONTAINER is not available in all regions
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
 });
 
 app.synth();

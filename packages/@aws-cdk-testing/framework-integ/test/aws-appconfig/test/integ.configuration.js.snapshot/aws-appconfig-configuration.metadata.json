@@ -1,0 +1,2319 @@
+{
+  "/aws-appconfig-configuration": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:30:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "applicationName": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyDeployStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyValidatorFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyParameter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyDocument": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDocument"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:99:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/aws-appconfig-configuration/DummyRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MySecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secretStringValue": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/MySecretWithKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secretStringValue": "*",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "crossAccountKeys": true,
+        "stages": [
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          },
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:441:47)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigB4B63E75"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:345:33)",
+        "new Application (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:32:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromJson": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/ParameterEnv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/DocumentEnv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/BucketEnv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/SecretEnv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/SecretEnvWithKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "application": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyDeployStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDeployStrategy062CAEA2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:35:28)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromFile/ConfigurationProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:250:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:42:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromFile/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFile943CF9F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:271:47)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:42:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfig/ConfigurationProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigConfigurationProfile2E1A2BBC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:250:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:49:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfig51D3877D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:271:47)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:49:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfig/Deployment8E5DB": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigDeployment8E5DB1FCC9183"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:73:53)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188:2)",
+        "Array.forEach (:)",
+        "HostedConfiguration.deployConfigToEnvironments (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:184:41)",
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:288:14)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:49:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromJson/ConfigurationProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:250:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:61:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromJson/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromJsonD8CF9BE4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:271:47)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:61:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromJson/Deployment3AC6E": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromJsonDeployment3AC6ED5A2933B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:73:53)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188:2)",
+        "Array.forEach (:)",
+        "HostedConfiguration.deployConfigToEnvironments (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:184:41)",
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:288:14)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:61:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromYaml/ConfigurationProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:250:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:68:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromYaml/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromYaml13C5BE35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:271:47)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:68:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromYaml/DeploymentD93A5": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromYamlDeploymentD93A5BDCCAAB2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:73:53)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188:2)",
+        "Array.forEach (:)",
+        "HostedConfiguration.deployConfigToEnvironments (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:184:41)",
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:288:14)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:68:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyValidatorFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyValidatorFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyValidatorFunctionA679CB3C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:75:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyValidatorFunction/AppConfigPermission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyValidatorFunctionAppConfigPermission77CD11AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "LambdaValidator.fromFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:555:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:92:41)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyParameter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyParameter18BA547D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StringParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:514:30)",
+        "new StringParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:81:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromParameter/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromParameter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromParameterDC204468"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:84:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromParameter/Deployment28051": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromParameterDeployment28051DE6185BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:73:53)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188:2)",
+        "Array.forEach (:)",
+        "SourcedConfiguration.deployConfigToEnvironments (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:184:41)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:357:14)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:84:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromDocument/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromDocument/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromDocument79E66ABA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:118:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromDocument/Deployment7A5BA": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromDocumentDeployment7A5BA9D7D69C3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:73:53)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:188:2)",
+        "Array.forEach (:)",
+        "SourcedConfiguration.deployConfigToEnvironments (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:184:41)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:357:14)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:118:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:127:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:133:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucket/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucket/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromBucket064B5420"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:138:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DummyRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DummyRoleA4B7EAF1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "generateDummyRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:224:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:145:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DummyRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucketWithRole/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucketWithRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromBucketWithRole625F4717"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:147:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MySecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecret8FE80B51"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:158:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecret/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecret/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecret42EED9DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:161:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyKey6AB29FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:168:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MySecretWithKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecretWithKey1F7B590B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:169:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecretWithKey/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecretWithKey/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecretWithKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecretWithKey6F08D343"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:173:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "enableKeyRotation": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKeyAlias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "targetKey": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucketName": "*",
+        "encryptionKey": "*",
+        "encryption": "KMS",
+        "enforceSSL": true,
+        "blockPublicAccess": "*",
+        "removalPolicy": "retain"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineAED38ECF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:449:33)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromPipeline/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromPipeline/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromPipelineEA8471A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:339:41)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:206:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigHostedEnvF39C847E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:48:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromJson/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigHostedEnvFromJson9E6E36C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:60:40)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigHostedEnvFromYaml82D3D1B2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:67:40)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/ParameterEnv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigParameterEnvD769FB19"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:80:35)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/DocumentEnv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigDocumentEnv34B10223"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:98:34)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/BucketEnv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigBucketEnvCBDFEF45"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:126:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/SecretEnv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigSecretEnvE1102B63"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:157:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyAppConfig/SecretEnvWithKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigSecretEnvWithKey9C93DA23"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/environment.js:293:30)",
+        "new Environment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addEnvironment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/application.js:78:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:167:39)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new HostedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:240:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:42:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyValidatorFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyValidatorFunctionServiceRole5CD02390"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:75:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromParameter/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromParameterRole4E40C8BC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "SourcedConfiguration.getRetrievalRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:374:20)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:338:59)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:84:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromDocument/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromDocumentRole29FB4D3D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "SourcedConfiguration.getRetrievalRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:374:20)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:338:59)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:118:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketPolicyE7FBAC7B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:127:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketAutoDeleteObjectsCustomResource2C28D565"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployConfigInBucketAwsCliLayerFC57D055"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:157:26)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:133:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/Asset1/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployConfigInBucketCustomResource91997C5B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:207:23)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:133:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/Asset2/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucket/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromBucketDeploymentStrategy59D68C4F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:324:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:138:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucket/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromBucketRole5749669F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "SourcedConfiguration.getRetrievalRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:374:20)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:338:59)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:138:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DummyRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DummyRoleDefaultPolicy68837380"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "generateDummyRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:227:10)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:145:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromBucketWithRole/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromBucketWithRoleDeploymentStrategy109EA62F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:324:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:147:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecret/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecretDeploymentStrategy7E7398AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:324:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:161:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecret/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecretRole77E11CE7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "SourcedConfiguration.getRetrievalRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:374:20)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:338:59)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:161:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecretWithKey/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecretWithKeyDeploymentStrategy9FAC9F62"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:324:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:173:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromSecretWithKey/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromSecretWithKeyRole3C7B494A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "SourcedConfiguration.getRetrievalRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:374:20)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:338:59)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:173:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:410:37)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/alias.js:357:29)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:417:21)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineArtifactsBucket727923DD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineRoleC0D47CA4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:435:39)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:193:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyConfigFromPipeline/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyConfigFromPipelineDeploymentStrategyF07EE763"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/deployment-strategy.js:207:30)",
+        "new DeploymentStrategy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ConfigurationBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:70:64)",
+        "new SourcedConfiguration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appconfig/lib/configuration.js:324:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:206:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineArtifactsBucketPolicyDFDA675B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1570:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1439:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineRoleDefaultPolicy34F09EFA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/beta/Source/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/prod/Deploy/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/beta/Source/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.getRoleForAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:792:30)",
+        "WrappedClass._attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:619:37)",
+        "Stage.attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:45:18)",
+        "WrappedClass.addStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:503:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:473:22)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/beta/Source/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/prod/Deploy/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineprodDeployCodePipelineActionRoleFAD07544"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.getRoleForAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:792:30)",
+        "WrappedClass._attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:619:37)",
+        "Stage.attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:45:18)",
+        "WrappedClass.addStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:503:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:473:22)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/prod/Deploy/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/beta/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelinebetaSourceCodePipelineActionRoleDefaultPolicy4F6DF82E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ],
+  "/aws-appconfig-configuration/MyPipeline/prod/Deploy/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPipelineprodDeployCodePipelineActionRoleDefaultPolicyF1913519"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ]
+}

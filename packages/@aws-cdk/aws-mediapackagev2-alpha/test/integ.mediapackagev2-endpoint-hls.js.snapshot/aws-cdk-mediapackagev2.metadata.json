@@ -1,0 +1,50 @@
+{
+  "/aws-cdk-mediapackagev2/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/origin": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/origin/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "origin7345F895"
+    }
+  ]
+}

@@ -674,7 +674,7 @@ describe('key policies', () => {
     const keyStack = new cdk.Stack(app, 'KeyStack');
     const key = new kms.Key(keyStack, 'Key');
 
-    principalStack.addDependency(keyStack);
+    principalStack.addStackDependency(keyStack);
 
     key.grants.encrypt(principal);
 
@@ -802,7 +802,7 @@ describe('key policies', () => {
 
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
     const key = new kms.Key(keyStack, 'Key');
-    principalStack.addDependency(keyStack);
+    principalStack.addStackDependency(keyStack);
     key.grants.encrypt(principal.withoutPolicyUpdates());
 
     Template.fromStack(keyStack).hasResourceProperties('AWS::KMS::Key', {

@@ -25,9 +25,11 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
                                         Resource[*] != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                 }
                             }
@@ -37,9 +39,11 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
                                         Resource[*] != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                 }
                             }
@@ -59,9 +63,11 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
                                         Resource[*] != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                 }
                             }
@@ -71,9 +77,11 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
                                         Resource[*] != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                 }
                             }

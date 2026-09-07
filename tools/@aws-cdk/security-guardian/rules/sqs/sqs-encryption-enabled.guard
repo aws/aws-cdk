@@ -17,5 +17,6 @@ rule SQS_ENCRYPTION_ENABLED when %sqs_queues !empty {
     %sqs_queues {
         Properties.KmsMasterKeyId exists or
         Properties.SqsManagedSseEnabled == true
+            <<##ERROR:SQS queue must have encryption enabled. Set 'KmsMasterKeyId' to a KMS key ARN or 'SqsManagedSseEnabled' to true.##>>
     }
 }

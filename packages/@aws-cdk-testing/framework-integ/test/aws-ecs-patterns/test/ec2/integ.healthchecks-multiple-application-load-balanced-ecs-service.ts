@@ -32,7 +32,6 @@ const provider = new AsgCapacityProvider(stack, 'MyProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'my-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider);
 
@@ -102,6 +101,14 @@ applicationMultipleTargetGroupsFargateService.targetGroups[1].configureHealthChe
   healthyHttpCodes: '200',
 });
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
+});
 
 app.synth();

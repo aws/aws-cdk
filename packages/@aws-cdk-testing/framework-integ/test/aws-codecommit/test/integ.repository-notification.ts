@@ -2,6 +2,7 @@
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -16,4 +17,6 @@ const target = new sns.Topic(stack, 'MyTopic');
 repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
 repository.notifyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
-app.synth();
+new IntegTest(app, 'codecommit-notification-test', {
+  testCases: [stack],
+});

@@ -19,7 +19,7 @@ const map = new sfn.Map(stack, 'Map', {
 map.itemProcessor(new sfn.Pass(stack, 'Pass State'));
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: map,
+  definitionBody: sfn.DefinitionBody.fromChainable(map),
   timeout: cdk.Duration.seconds(30),
 });
 

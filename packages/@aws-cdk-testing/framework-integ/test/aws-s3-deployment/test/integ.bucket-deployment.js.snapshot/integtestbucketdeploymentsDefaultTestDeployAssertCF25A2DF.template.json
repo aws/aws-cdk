@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1769016242569"
+    "salt": "1786496619229"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,12 +95,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -109,6 +109,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -133,7 +137,7 @@
      "Stacks.0.Outputs.0.OutputKey",
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1769016242569"
+    "salt": "1786496619229"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

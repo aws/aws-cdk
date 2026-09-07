@@ -1342,7 +1342,7 @@ describe('tests', () => {
       Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer', 0);
       expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188');
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
-      expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
+      expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-123456789012.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
       expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
       expect(loadBalancer.env.region).toEqual('us-west-2');
@@ -1517,6 +1517,53 @@ describe('tests', () => {
           ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
         });
       }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
+    });
+  });
+
+  describe('Drop Invalid Header Fields', () => {
+    test.each([true, false])('sets dropInvalidHeaderFields to %s', (dropInvalidHeaderFields) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        dropInvalidHeaderFields,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.arrayWith([
+          {
+            Key: 'routing.http.drop_invalid_header_fields.enabled',
+            Value: String(dropInvalidHeaderFields),
+          },
+        ]),
+      });
+    });
+
+    test('dropInvalidHeaderFields is not set when undefined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: Match.not(
+          Match.arrayWith([
+            {
+              Key: 'routing.http.drop_invalid_header_fields.enabled',
+              Value: Match.anyValue(),
+            },
+          ]),
+        ),
+      });
     });
   });
 });

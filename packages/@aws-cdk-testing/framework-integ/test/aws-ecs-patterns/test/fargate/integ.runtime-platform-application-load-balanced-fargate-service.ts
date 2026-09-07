@@ -30,6 +30,14 @@ new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
 });
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // ScheduledFargateTask keeps tasks running during deletion
+      expectError: true,
+    },
+  },
+});
 
 app.synth();
