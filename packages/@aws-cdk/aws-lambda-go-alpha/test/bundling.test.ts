@@ -341,6 +341,24 @@ test('POSIX local bundling preserves backslashes in output paths', () => {
   expect(command).toBe("go build -o '/tmp/my\\project/cdk.out/bootstrap' './cmd/api'");
 });
 
+test('Windows host Docker bundling normalizes output paths for Linux commands', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  try {
+    const bundler = new Bundling({
+      entry,
+      runtime: Runtime.PROVIDED_AL2023,
+      architecture: Architecture.X86_64,
+      moduleDir,
+    });
+
+    const command = bundler.createBundlingCommand('/asset-input', 'C:\\tmp\\my project\\cdk\'s.out');
+
+    expect(command).toBe("go build -o 'C:/tmp/my project/cdk'\\''s.out/bootstrap' './cmd/api'");
+  } finally {
+    osPlatformMock.mockRestore();
+  }
+});
+
 test('with Docker build args', () => {
   Bundling.bundle({
     entry,
