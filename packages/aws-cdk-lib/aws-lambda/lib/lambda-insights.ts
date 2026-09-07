@@ -108,6 +108,18 @@ export abstract class LambdaInsightsVersion {
   public static readonly VERSION_1_0_498_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.498.0');
 
   /**
+   * Version 1.0.660.0
+   */
+  public static readonly VERSION_1_0_660_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.660.0');
+
+  /**
+   * Version 1.0.776.0
+   *
+   * Only available for x86-64 platforms.
+   */
+  public static readonly VERSION_1_0_776_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.776.0');
+
+  /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated
    * with same region as your function
    *
