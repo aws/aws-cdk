@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
+import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
+import { AssemblyValidationReport } from '../../../assertions/lib/helpers-internal/assembly-validation-report';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 import type { App } from '../../lib';
@@ -1585,6 +1587,54 @@ describe('validations', () => {
       expect(output).toContain('Fake');
     });
   });
+
+  test('suppressions respect scope', () => {
+    const app = new NonStrictApp();
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins({
+      name: 'ValidationPlugin',
+      validate(context) {
+        const violations = context.stackTemplates.flatMap((s) => {
+          const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
+          return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
+            description: 'dummy violation for demonstration',
+            ruleName: 'MyRule-001',
+            violatingResources: [{
+              resourceLogicalId: logicalId,
+              templatePath: s.templatePath,
+              locations: [],
+            }],
+          } satisfies core.PolicyViolation));
+        });
+
+        return {
+          success: violations.length === 0,
+          violations,
+        };
+      },
+    });
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+    const stackB = new core.Stack(app, 'StackB');
+    new Construct(stackB, 'ScopeB');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA', 'StackB', 'StackB/ScopeB']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    // Only acknowledge the rule on StackA's resource.
+    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app);
+    expect(report.allViolations()).toHaveLength(3);
+  });
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
@@ -1729,4 +1779,19 @@ class NonStrictApp extends core.App {
 
 function loadJson(filePath: string): any {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
+
+function constructAt(root: IConstruct, constructPath: string) {
+  const parts = constructPath.split('/');
+
+  let current: IConstruct = root;
+  while (parts.length > 0) {
+    const part = parts.shift()!;
+    let next = current.node.tryFindChild(part);
+    if (!next) {
+      throw new Error(`At path ${current.node.path}: no child named ${part}`);
+    }
+    current = next;
+  }
+  return current;
 }
