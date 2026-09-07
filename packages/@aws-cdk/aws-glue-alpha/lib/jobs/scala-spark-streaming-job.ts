@@ -1,6 +1,5 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import { ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -66,9 +65,10 @@ export interface ScalaSparkStreamingJobProps extends SparkJobProps {
  * These jobs will default to use Python 3.9.
  *
  * Similar to ETL jobs, streaming job supports Scala and Python languages. Similar to ETL,
- * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G2 worker
+ * it supports G1 and G2 worker type and 2.0, 3.0 and 4.0 version. We’ll default to G1 worker
  * and 4.0 version for streaming jobs which developers can override.
- * We will enable —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * We will enable --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
+ * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  */
 @propertyInjectable
 export class ScalaSparkStreamingJob extends SparkJob {
@@ -90,10 +90,6 @@ export class ScalaSparkStreamingJob extends SparkJob {
       ...this.nonExecutableCommonArguments(props),
     };
 
-    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new ValidationError(lit`WorkerTypeAndNumberRequired`, 'Both workerType and numberOfWorkers must be set', this);
-    }
-
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -103,8 +99,8 @@ export class ScalaSparkStreamingJob extends SparkJob {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,

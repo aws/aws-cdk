@@ -538,6 +538,10 @@ describe('fargate service', () => {
         vpc,
       });
 
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; the test asserts it is passed through to HealthCheckCustomConfig unmodified' },
+      );
+
       new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
@@ -695,6 +699,10 @@ describe('fargate service', () => {
       taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
+
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; this test exercises every property, not valid value ranges' },
+      );
 
       const svc = new ecs.FargateService(stack, 'FargateService', {
         cluster,
@@ -1303,7 +1311,7 @@ describe('fargate service', () => {
         memoryLimitMiB: 512,
       });
 
-      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
       new ecs.FargateService(stack, 'ExternalService', {
         cluster,
