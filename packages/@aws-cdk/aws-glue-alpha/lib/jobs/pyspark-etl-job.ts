@@ -71,7 +71,7 @@ export interface PySparkEtlJobProps extends SparkJobProps {
  * PySpark ETL Jobs class
  *
  * ETL jobs support pySpark and Scala languages, for which there are separate
- * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * but similar constructors. ETL jobs default to the G1 worker type, but you
  * can override this default with other supported worker type values
  * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
  * override to 3.0. The following ETL features are enabled by default:
@@ -94,11 +94,10 @@ export class PySparkEtlJob extends SparkJob {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && props.maxRetries > 0) {
       Annotations.of(this).addWarningV2(lit`GlueMaxRetriesQueuingEnabled`,
@@ -140,14 +139,10 @@ export class PySparkEtlJob extends SparkJob {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: PySparkEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.PYTHON;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: PySparkEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.PYTHON);
+    this.setupExtraCodeArguments(props);
   }
 }

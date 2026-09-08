@@ -9,7 +9,7 @@ import { Grant, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-
 import type { IChannelRef, ChannelReference, IInputSecurityGroupRef, IClusterRef, IChannelPlacementGroupRef } from 'aws-cdk-lib/aws-medialive';
 import { CfnChannel } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { AvailBlankingState, BlackoutSlateState, NetworkEndBlackout, type AvailBlanking, type AvailSettings, type Scte35SegmentationScope, type BlackoutSlate } from './avail-settings';
@@ -1402,6 +1402,7 @@ export class Channel extends ChannelBase {
   /**
    * Attach an input to this channel.
    */
+  @MethodMetadata()
   public addInput(attachment: InputAttachment): void {
     this.attachments.push(attachment);
     this.inputAttachments.push(this.buildInputAttachment(attachment));
@@ -1520,6 +1521,7 @@ export class Channel extends ChannelBase {
    *
    * Outputs are declared up front via the `outputs` prop on the group configuration.
    */
+  @MethodMetadata()
   public addOutputGroup(config: OutputGroupConfiguration): void {
     const outputGroup = new OutputGroup(config);
     if (this.usesEpochLocking) {

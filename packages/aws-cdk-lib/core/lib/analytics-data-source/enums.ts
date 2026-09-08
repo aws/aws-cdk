@@ -379,6 +379,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AC-3",
     "EC-3"
   ],
+  "AudioCodecType": [
+    "AAC",
+    "AC3",
+    "EAC3",
+    "EAC3_ATMOS",
+    "MP2",
+    "WAV",
+    "PASSTHROUGH"
+  ],
   "AuditCheck": [
     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
     "CA_CERTIFICATE_EXPIRING_CHECK",
@@ -2720,6 +2729,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "autoscaling:EC2_INSTANCE_LAUNCHING",
     "autoscaling:EC2_INSTANCE_TERMINATING"
   ],
+  "LinkedChannelType": [
+    "PRIMARY_CHANNEL",
+    "FOLLOWING_CHANNEL"
+  ],
   "LoadBalancerGeneration": [
     0,
     1
@@ -3218,6 +3231,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "OutputFormat": [
     "cjs",
     "esm"
+  ],
+  "OutputLockingMode": [
+    "PIPELINE_LOCKING",
+    "EPOCH_LOCKING"
   ],
   "OutputType": [
     "JSON",
@@ -3913,6 +3930,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.2_2021",
     "TLSv1.2_2025",
     "TLSv1.3_2025"
+  ],
+  "SegmentLengthUnits": [
+    "MILLISECONDS",
+    "SECONDS"
   ],
   "SegmentTemplateFormat": [
     "NUMBER_WITH_TIMELINE"
@@ -4663,6 +4684,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "H264",
     "H265",
     "AV1"
+  ],
+  "VideoCodecType": [
+    "H264",
+    "H265",
+    "AV1",
+    "FRAME_CAPTURE"
   ],
   "VideoDynamicRange": [
     "dv",
