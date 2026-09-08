@@ -1828,7 +1828,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DataQualityRuleset': {
       'rulesetName': '*',
-      'clientToken': '*',
       'description': '*',
       'dqdl': '*',
       'tags': '*',
@@ -4022,6 +4021,282 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'time': '*'
       },
       'regionName': '*',
+      'tags': '*'
+    }
+  },
+  '@aws-cdk.aws-medialive-alpha': {
+    'ChannelPlacementGroup': {
+      'channelPlacementGroupName': '*',
+      'cluster': '*',
+      'nodes': '*',
+      'tags': '*'
+    },
+    'Channel': {
+      'channelName': '*',
+      'channelClass': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'inputs': {
+        'input': {
+          'inputArn': '*',
+          'inputId': '*',
+          'inputClass': '*',
+          'inputType': '*',
+          'inputDestinations': '*',
+          'inputSources': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'inputAttachmentName': '*',
+        'sourceEndBehavior': '*',
+        'inputFilter': '*',
+        'filterStrength': '*',
+        'deblockFilter': 'boolean',
+        'denoiseFilter': 'boolean',
+        'smpte2038DataPreference': '*',
+        'audioSelectors': '*',
+        'captionSelectors': '*',
+        'scte35Pid': '*',
+        'videoSelector': {
+          'colorSpace': '*',
+          'colorSpaceUsage': '*',
+          'hdr10': {
+            'maxContentLightLevel': '*',
+            'maxFrameAverageLightLevel': '*'
+          },
+          'selectBy': '*'
+        },
+        'networkInputSettings': {
+          'serverValidation': '*',
+          'hlsInputSettings': {
+            'bandwidth': '*',
+            'bufferSegments': '*',
+            'retries': '*',
+            'retryInterval': '*',
+            'scte35Source': '*'
+          },
+          'multicastSourceIp': '*'
+        },
+        'logicalInterfaceNames': '*',
+        'automaticInputFailover': {
+          'failoverConditions': '*',
+          'inputPreference': '*'
+        }
+      },
+      'outputGroups': '*',
+      'logLevel': '*',
+      'inputSpecification': '*',
+      'globalConfiguration': {
+        'initialAudioGain': '*',
+        'inputEndAction': '*',
+        'outputTimingSource': '*',
+        'supportLowFramerateInputs': 'boolean',
+        'inputLossBehavior': {
+          'blackFrame': '*',
+          'imageType': '*',
+          'imageColor': '*',
+          'imageSlate': '*'
+        },
+        'outputLocking': '*'
+      },
+      'tags': '*',
+      'maintenance': {
+        'day': '*',
+        'time': '*'
+      },
+      'timecodeConfig': {
+        'source': '*',
+        'syncThreshold': '*'
+      },
+      'vpc': {
+        'subnets': '*',
+        'securityGroups': '*',
+        'publicAddressAllocationIds': '*'
+      },
+      'availBlanking': {
+        'state': '*',
+        'image': '*'
+      },
+      'availSettings': '*',
+      'scte35SegmentationScope': '*',
+      'featureActivations': {
+        'inputPrepareScheduleActions': '*'
+      },
+      'motionGraphicsConfiguration': {
+        'motionGraphicsInsertion': '*'
+      },
+      'nielsenConfiguration': {
+        'distributorId': '*',
+        'nielsenPcmToId3Tagging': '*'
+      },
+      'thumbnailConfiguration': {
+        'state': '*'
+      },
+      'blackoutSlate': {
+        'state': '*',
+        'image': '*',
+        'networkEndBlackout': '*',
+        'networkId': '*'
+      },
+      'colorCorrections': {
+        'inputColorSpace': '*',
+        'lut': '*'
+      },
+      'anywhereSettings': {
+        'cluster': '*',
+        'channelPlacementGroup': '*'
+      },
+      'channelEngineVersion': '*',
+      'linkedChannelSettings': '*',
+      'channelSecurityGroups': '*',
+      'inferenceFeedArn': '*',
+      'addInput': [
+        {
+          'input': {
+            'inputArn': '*',
+            'inputId': '*',
+            'inputClass': '*',
+            'inputType': '*',
+            'inputDestinations': '*',
+            'inputSources': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'inputAttachmentName': '*',
+          'sourceEndBehavior': '*',
+          'inputFilter': '*',
+          'filterStrength': '*',
+          'deblockFilter': 'boolean',
+          'denoiseFilter': 'boolean',
+          'smpte2038DataPreference': '*',
+          'audioSelectors': '*',
+          'captionSelectors': '*',
+          'scte35Pid': '*',
+          'videoSelector': {
+            'colorSpace': '*',
+            'colorSpaceUsage': '*',
+            'hdr10': {
+              'maxContentLightLevel': '*',
+              'maxFrameAverageLightLevel': '*'
+            },
+            'selectBy': '*'
+          },
+          'networkInputSettings': {
+            'serverValidation': '*',
+            'hlsInputSettings': {
+              'bandwidth': '*',
+              'bufferSegments': '*',
+              'retries': '*',
+              'retryInterval': '*',
+              'scte35Source': '*'
+            },
+            'multicastSourceIp': '*'
+          },
+          'logicalInterfaceNames': '*',
+          'automaticInputFailover': {
+            'failoverConditions': '*',
+            'inputPreference': '*'
+          }
+        }
+      ],
+      'addOutputGroup': [
+        '*'
+      ]
+    },
+    'Cluster': {
+      'clusterName': '*',
+      'clusterType': '*',
+      'instanceRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'networkSettings': {
+        'defaultRoute': '*',
+        'interfaceMappings': {
+          'logicalInterfaceName': '*',
+          'networkId': '*'
+        }
+      },
+      'tags': '*'
+    },
+    'InputSecurityGroup': {
+      'allowlistRules': '*',
+      'tags': '*'
+    },
+    'Input': {
+      'inputName': '*',
+      'input': '*',
+      'inputNetworkLocation': '*',
+      'tags': '*',
+      '_grantPermissions': [
+        {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
+    },
+    'Network': {
+      'networkName': '*',
+      'ipPools': '*',
+      'routes': {
+        'cidr': '*',
+        'gateway': '*'
+      },
+      'tags': '*'
+    },
+    'SdiSource': {
+      'sdiSourceName': '*',
+      'type': '*',
+      'mode': '*',
       'tags': '*'
     }
   },
@@ -13110,6 +13385,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'mappingEnabled': 'boolean'
       },
       'cpuCredits': 'CpuCredits',
+      'cpuOptions': {
+        'amdSevSnp': 'boolean',
+        'coreCount': '*',
+        'nestedVirtualization': 'boolean',
+        'threadsPerCore': '*'
+      },
       'disableApiTermination': 'boolean',
       'ebsOptimized': 'boolean',
       'nitroEnclaveEnabled': 'boolean',

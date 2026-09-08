@@ -81,6 +81,17 @@ The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
 
+> **Note on continuous logging and encryption:** Because continuous logging is
+> enabled by default, job driver and executor stdout/stderr are streamed to
+> CloudWatch. Unless you attach a [`SecurityConfiguration`](#securityconfiguration)
+> with `cloudWatchEncryption`, these logs are written to the account-shared,
+> default Glue log group (`/aws-glue/jobs/logs-v2/`), which is **not** encrypted
+> with a customer-managed key. Since job logs can contain sensitive runtime data
+> (SQL statements, row values, error stack traces), attach a `SecurityConfiguration`
+> with `cloudWatchEncryption` for regulated workloads. The construct emits a
+> synthesis-time warning when continuous logging is on and no `SecurityConfiguration`
+> is attached.
+
 Reference the pyspark-etl-jobs.test.ts and scalaspark-etl-jobs.test.ts unit tests
 for examples of required-only and optional job parameters when creating these
 types of jobs.
@@ -256,8 +267,9 @@ Python shell jobs support a Python version that depends on the AWS Glue
 version you use. These can be used to schedule and run tasks that don't
 require an Apache Spark environment. Python shell jobs default to
 Python 3.9 and a MaxCapacity of `0.0625`. Python 3.9 supports pre-loaded
-analytics libraries using the `library-set=analytics` flag, which is
-enabled by default.
+analytics libraries, enabled by default (`librarySet: glue.LibrarySet.ANALYTICS`).
+Set `librarySet: glue.LibrarySet.NONE` when your libraries are custom or
+conflict with the pre-installed ones.
 
 Reference the pyspark-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.
@@ -342,6 +354,51 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
 
 This feature is available for all Spark job types (ETL, Streaming, Flex).
 
+### Job Arguments
+
+Glue jobs are configured through a map of name-value arguments (`DefaultArguments`). This construct
+manages several of these arguments on your behalf and exposes each one through a dedicated,
+strongly-typed prop:
+
+| Managed argument(s)                                                      | Prop                                                            |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------|
+| `--enable-continuous-cloudwatch-log`, `--continuous-log-*`               | `continuousLogging`                                             |
+| `--enable-metrics`                                                       | `enableMetrics`                                                 |
+| `--enable-observability-metrics`                                         | `enableObservabilityMetrics`                                    |
+| `--enable-spark-ui`, `--spark-event-logs-path`                           | `sparkUI`                                                       |
+| `--job-language`, `--class`                                              | job class / `className`                                         |
+| `--extra-jars`, `--user-jars-first`, `--extra-py-files`, `--extra-files` | `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles` |
+| `library-set`                                                            | `librarySet` (Python Shell)                                     |
+
+The `defaultArguments` prop is the escape hatch for arguments this construct does **not** model.
+Use it for any argument without a dedicated prop:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+  role,
+  script,
+  defaultArguments: {
+    // an argument this construct does not manage
+    '--enable-glue-datacatalog': 'true',
+  },
+});
+```
+
+To keep a single, unambiguous way to express each intent, setting a **construct-managed** argument
+(any argument in the table above) or a **Glue-reserved** argument (`--debug`, `--mode`,
+`--JOB_NAME`, `--endpoint`) through `defaultArguments` throws at synthesis time. This holds even
+when the feature is turned off — for example, `enableMetrics: false` combined with
+`defaultArguments: { '--enable-metrics': '' }` throws rather than silently re-enabling metrics.
+Configure managed arguments through their dedicated prop instead — for example, use
+`continuousLogging: { enabled: false }` rather than
+`defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`.
+
 ### Enable Job Run Queuing
 
 AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
@@ -405,7 +462,7 @@ const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
 // Create a workflow and add a trigger that runs the job
 const workflow = new glue.Workflow(stack, 'Workflow');
 workflow.addOnDemandTrigger('OnDemandTrigger', {
-  actions: [{ job }],
+  actions: [glue.Action.job(job)],
 });
 ```
 
@@ -418,21 +475,35 @@ actions list using the job or crawler objects using conditional types.
 
 #### **2. Scheduled Triggers**
 
-You can create scheduled triggers using cron expressions. This construct
-provides daily and weekly convenience functions,
-as well as a custom function that allows you to create your own
-custom timing using the [existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
-without having to build your own cron expressions. The L2 extracts
-the expression that Glue requires from the Schedule object. The constructor
-takes an optional description and a list of jobs or crawlers as actions.
+Use `addScheduledTrigger` with a `TriggerSchedule` to fire on a cron schedule.
+`TriggerSchedule.daily()` and `TriggerSchedule.weekly()` are convenience
+factories; `TriggerSchedule.cron(...)` lets you build any schedule from the
+[existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
+without writing raw cron expressions. The L2 extracts the expression that Glue
+requires from the `TriggerSchedule`.
 
-#### **3. Notify  Event Triggers**
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
+const workflow = new glue.Workflow(stack, 'Workflow');
 
-There are two types of notify event triggers: batching and non-batching.
-For batching triggers, you must specify `BatchSize`. For non-batching
-triggers, `BatchSize` defaults to 1. For both triggers, `BatchWindow`
-defaults to 900 seconds, but you can override the window to align with
-your workload's requirements.
+workflow.addScheduledTrigger('WeeklyTrigger', {
+  actions: [glue.Action.job(job)],
+  schedule: glue.TriggerSchedule.weekly(),
+});
+```
+
+#### **3. Event Triggers**
+
+Use `addEventTrigger` for EventBridge event-based triggers. There are two types:
+batching and non-batching. For batching triggers, you must specify `batchSize`.
+For non-batching triggers, `batchSize` defaults to 1. For both, `batchWindow`
+defaults to 900 seconds, but you can override the window to align with your
+workload's requirements.
 
 #### **4. Conditional Triggers**
 
@@ -451,13 +522,14 @@ certain types of data stores.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
 configuration**
-    You can specify the exact subnet of the Connection when it's defined, but
-    you are not required to. Instead, you can provide a `vpc` and, optionally, a
-    `vpcSubnets` selection, and the L2 leverages the existing
+    Configure VPC placement through the `network` property, built with
+    `ConnectionNetwork.subnet(subnet)` to pin a specific subnet, or
+    `ConnectionNetwork.vpc(vpc, vpcSubnets?)` to let the L2 select one via the
+    existing
     [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
-    library to make the best choice selection for the subnet. A Glue connection
-    targets a single subnet, so the first subnet of the selection is used.
-    `subnet` and `vpc` are mutually exclusive.
+    library. A Glue connection targets a single subnet, so the first subnet of
+    the selection is used. The two factories are mutually exclusive, so a subnet
+    and a VPC can never be combined.
 
 Pin the connection to a specific subnet:
 
@@ -469,7 +541,7 @@ new glue.Connection(this, 'MyConnection', {
   // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
 });
 ```
 
@@ -481,9 +553,8 @@ declare const vpc: ec2.Vpc;
 new glue.Connection(this, 'MyConnection', {
   type: glue.ConnectionType.NETWORK,
   securityGroups: [securityGroup],
-  vpc,
-  // Optional - defaults to private subnets
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  // vpcSubnets is optional - defaults to private subnets
+  network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
 });
 ```
 
@@ -496,7 +567,7 @@ declare const db: rds.DatabaseCluster;
 new glue.Connection(this, "RdsConnection", {
   type: glue.ConnectionType.JDBC,
   securityGroups: [securityGroup],
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
   secret: db.secret,
   properties: {
     JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
@@ -945,8 +1016,9 @@ new glue.S3Table(this, 'MyTable', {
       min: '2020-01-01',
       max: '2023-12-31',
       format: 'yyyy-MM-dd',
-      interval: 1,  // optional, defaults to 1
-      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+      // `step` bundles interval + unit (supply both or neither). Optional at day
+      // precision or coarser; required when the format is sub-day (e.g. hours).
+      step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
     }),
   },
 });
@@ -1098,10 +1170,11 @@ Data Quality Definition Language (DQDL) — that are evaluated against a table i
 the Data Catalog.
 
 ```ts
+declare const database: glue.IDatabase;
 new glue.DataQualityRuleset(this, 'MyRuleset', {
   rulesetName: 'my_ruleset',
   dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
-  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+  targetTable: glue.DataQualityTargetTable.fromTableName(database, 'my_table'),
 });
 ```
 
