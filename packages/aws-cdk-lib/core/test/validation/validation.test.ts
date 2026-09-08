@@ -1136,6 +1136,39 @@ describe('validations', () => {
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('cdk-nag warning identifiers can be acknowledged via Validations.acknowledge', () => {
+      // cdk-nag's warnings contain `::`, which Validations uses as a namespace separator.
+      const warningId = 'AwsSolutions-IAM4[Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole]';
+
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('AwsSolutions', [{
+          description: 'Something wrong with this resource',
+          ruleName: warningId,
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'MyBucket',
+            templatePath: 'Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: `AwsSolutions::${warningId}`, reason: 'Not needed for this bucket' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).not.toContain(warningId);
+    });
+
     test('suppressed violations appear in validation-report.json', () => {
       const app = new NonStrictApp({
         context: {

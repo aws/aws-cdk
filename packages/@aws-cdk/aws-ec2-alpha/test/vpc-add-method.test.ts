@@ -1,12 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnEIP, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
 import * as route from '../lib/route';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
 import * as vpc from '../lib/vpc-v2';
 
+let stack: Stack;
+
 describe('Vpc V2 with full control', () => {
-  let stack: cdk.Stack;
   let myVpc: vpc.VpcV2;
   let mySubnet: SubnetV2;
   let routeTable1: route.RouteTable;
@@ -14,12 +17,7 @@ describe('Vpc V2 with full control', () => {
   let testSubnet2: SubnetV2;
 
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-    stack = new cdk.Stack(app);
+    stack = testStack();
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6( { cidrBlockName: 'AmazonProvided' })],
