@@ -2046,6 +2046,13 @@
       }
     ]
   },
+  "aws-supportauthz": {
+    "scopes": [
+      {
+        "namespace": "AWS::SupportAuthZ"
+      }
+    ]
+  },
   "aws-synthetics": {
     "scopes": [
       {

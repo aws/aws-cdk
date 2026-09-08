@@ -1,5 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
+import type { IJobRef, JobReference } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
@@ -15,7 +16,7 @@ import type { ISecurityConfiguration } from '../security-configuration';
 /**
  * Interface representing a new or an imported Glue Job
  */
-export interface IJob extends cdk.IResource, iam.IGrantable {
+export interface IJob extends cdk.IResource, iam.IGrantable, IJobRef {
   /**
    * The name of the job.
    * @attribute
@@ -137,6 +138,13 @@ export abstract class JobBase extends cdk.Resource implements IJob {
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to this Job resource, for use with the generated L1 ref interface.
+   */
+  public get jobRef(): JobReference {
+    return { jobName: this.jobName };
+  }
 
   /**
    * Create a CloudWatch Event Rule for this Glue Job when it's in a given state
