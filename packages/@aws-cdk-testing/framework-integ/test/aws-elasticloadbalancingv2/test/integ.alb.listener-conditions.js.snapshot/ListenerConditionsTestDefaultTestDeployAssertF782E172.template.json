@@ -1,4 +1,113 @@
 {
+ "Resources": {
+  "AwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284": {
+   "Type": "Custom::DeployAssert@SdkCallelastic-load-balancing-v2describ",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "elastic-load-balancing-v2",
+    "api": "describeRules",
+    "expected": "{\"$ObjectLike\":{\"Rules\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Priority\":\"15\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"host-header\",\"HostHeaderConfig\":{\"RegexValues\":[\".*\\\\.example\\\\.com\"]}}}]}},{\"$ObjectLike\":{\"Priority\":\"25\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"http-header\",\"HttpHeaderConfig\":{\"HttpHeaderName\":\"User-Agent\",\"RegexValues\":[\"^Mozilla/.*Chrome.*$\"]}}}]}},{\"$ObjectLike\":{\"Priority\":\"50\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"path-pattern\",\"PathPatternConfig\":{\"RegexValues\":[\"/images/.*\\\\.(jpg|png|gif)\",\"/docs/.*\\\\.pdf\"]}}}]}}]}}}",
+    "parameters": {
+     "ListenerArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListener49E825B45EB41560"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1788909475740"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "elasticloadbalancing:DescribeRules"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e0bc3fbc08cc3480f4c3881324c1cbbd3d52a00bb8547363b104906683a9e268.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284",
+     "assertion"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

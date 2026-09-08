@@ -19,6 +19,8 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
  *    9. source-ip
  */
 class TestStack extends cdk.Stack {
+  public readonly listenerArn: string;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -150,12 +152,49 @@ class TestStack extends cdk.Stack {
         messageBody: 'Source IP matched',
       }),
     });
+
+    this.listenerArn = listener.listenerArn;
   }
 }
 
 const app = new cdk.App();
 const stack = new TestStack(app, 'aws-cdk-elbv2-alb-listener-conditions-integ');
 
-new integ.IntegTest(app, 'ListenerConditionsTest', {
+const test = new integ.IntegTest(app, 'ListenerConditionsTest', {
   testCases: [stack],
 });
+
+// Verify the regex conditions round-trip through the service, i.e. that they are
+// stored as `RegexValues` rather than as plain `Values`.
+test.assertions.awsApiCall('elastic-load-balancing-v2', 'describeRules', {
+  ListenerArn: stack.listenerArn,
+}).expect(integ.ExpectedResult.objectLike({
+  Rules: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Priority: '15',
+      Conditions: [integ.Match.objectLike({
+        Field: 'host-header',
+        HostHeaderConfig: { RegexValues: ['.*\\.example\\.com'] },
+      })],
+    }),
+    integ.Match.objectLike({
+      Priority: '25',
+      Conditions: [integ.Match.objectLike({
+        Field: 'http-header',
+        HttpHeaderConfig: {
+          HttpHeaderName: 'User-Agent',
+          RegexValues: ['^Mozilla/.*Chrome.*$'],
+        },
+      })],
+    }),
+    integ.Match.objectLike({
+      Priority: '50',
+      Conditions: [integ.Match.objectLike({
+        Field: 'path-pattern',
+        PathPatternConfig: {
+          RegexValues: ['/images/.*\\.(jpg|png|gif)', '/docs/.*\\.pdf'],
+        },
+      })],
+    }),
+  ]),
+}));
