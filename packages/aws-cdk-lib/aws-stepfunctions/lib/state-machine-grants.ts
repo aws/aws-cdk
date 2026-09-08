@@ -1,6 +1,7 @@
 import * as stepfunctions from './stepfunctions.generated';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, Stack } from '../../core';
+import { Arn, ArnFormat, FeatureFlags, Stack } from '../../core';
+import { STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES } from '../../cx-api';
 
 /**
  * Properties for StateMachineGrants
@@ -60,13 +61,43 @@ export class StateMachineGrants {
    * machine.
    */
   public read(grantee: iam.IGrantable): iam.Grant {
+    const stateMachineArn = stepfunctions.CfnStateMachine.arnForStateMachine(this.resource);
+    const hasCorrectResourceScopes = FeatureFlags.of(this.resource)
+      .isEnabled(STEPFUNCTIONS_GRANT_READ_CORRECT_RESOURCE_SCOPES);
+
+    if (hasCorrectResourceScopes) {
+      // `states:ListStateMachines` has no resource type, so it only authorizes on '*'.
+      iam.Grant.addToPrincipal({
+        grantee: grantee,
+        actions: ['states:ListStateMachines'],
+        resourceArns: ['*'],
+      });
+      iam.Grant.addToPrincipal({
+        grantee: grantee,
+        actions: [
+          'states:ListExecutions',
+          'states:DescribeStateMachine',
+        ],
+        resourceArns: [stateMachineArn],
+      });
+      return iam.Grant.addToPrincipal({
+        grantee: grantee,
+        actions: [
+          'states:DescribeExecution',
+          'states:DescribeStateMachineForExecution',
+          'states:GetExecutionHistory',
+        ],
+        resourceArns: [this.executionArn() + ':*'],
+      });
+    }
+
     iam.Grant.addToPrincipal({
       grantee: grantee,
       actions: [
         'states:ListExecutions',
         'states:ListStateMachines',
       ],
-      resourceArns: [stepfunctions.CfnStateMachine.arnForStateMachine(this.resource)],
+      resourceArns: [stateMachineArn],
     });
     iam.Grant.addToPrincipal({
       grantee: grantee,
