@@ -422,6 +422,13 @@
       "UDP"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/catalog.ts": {
+    "CatalogEncryptionMode": [
+      "DISABLED",
+      "SSE-KMS",
+      "SSE-KMS-WITH-SERVICE-ROLE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/constants.ts": {
     "WorkerType": [
       "Standard",
@@ -519,24 +526,10 @@
       "SECONDS"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
-    "TableEncryption": [
-      "SSE-S3",
-      "SSE-KMS",
-      "SSE-KMS-MANAGED",
-      "CSE-KMS"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts": {
     "S3EncryptionMode": [
       "SSE-S3",
       "SSE-KMS"
-    ],
-    "CloudWatchEncryptionMode": [
-      "SSE-KMS"
-    ],
-    "JobBookmarksEncryptionMode": [
-      "CSE-KMS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/storage-parameter.ts": {
@@ -976,6 +969,131 @@
       "Here"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-entitlement.ts": {
+    "EntitlementStatus": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.ts": {
+    "FlowOutputProtocol": [
+      "zixi-push",
+      "rtp-fec",
+      "rtp",
+      "zixi-pull",
+      "rist",
+      "srt-listener",
+      "srt-caller",
+      "ndi-speed-hq"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.ts": {
+    "EncodingProfile": [
+      "CONTRIBUTION_H264_DEFAULT",
+      "DISTRIBUTION_H264_DEFAULT"
+    ],
+    "MediaStreamType": [
+      "video",
+      "audio",
+      "ancillary-data"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.ts": {
+    "ForwardErrorCorrection": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "PrimarySource": [
+      0,
+      1
+    ],
+    "SourcePriorityMode": [
+      "NO_PRIORITY",
+      "PRIMARY_SECONDARY"
+    ],
+    "ProtocolConfigType": [
+      "failover",
+      "merge"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.ts": {
+    "State": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "MaintenanceDay": [
+      "MONDAY",
+      "TUESDAY",
+      "WEDNESDAY",
+      "THURSDAY",
+      "FRIDAY",
+      "SATURDAY",
+      "SUNDAY"
+    ],
+    "MediaLivePipeline": [
+      "PIPELINE_0",
+      "PIPELINE_1"
+    ],
+    "EncryptionKeyType": [
+      "SECRETS_MANAGER",
+      "AUTOMATIC"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-codec-settings.ts": {
+    "AudioCodecType": [
+      "AAC",
+      "AC3",
+      "EAC3",
+      "EAC3_ATMOS",
+      "MP2",
+      "WAV",
+      "PASSTHROUGH"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel.ts": {
+    "OutputLockingMode": [
+      "PIPELINE_LOCKING",
+      "EPOCH_LOCKING"
+    ],
+    "LinkedChannelType": [
+      "PRIMARY_CHANNEL",
+      "FOLLOWING_CHANNEL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/enums.ts": {
+    "SegmentLengthUnits": [
+      "MILLISECONDS",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input.ts": {
+    "InputType": [
+      "UDP_PUSH",
+      "RTP_PUSH",
+      "RTMP_PUSH",
+      "RTMP_PULL",
+      "URL_PULL",
+      "MP4_FILE",
+      "MEDIACONNECT",
+      "INPUT_DEVICE",
+      "AWS_CDI",
+      "TS_FILE",
+      "SRT_CALLER",
+      "SRT_LISTENER",
+      "MULTICAST",
+      "SMPTE_2110_RECEIVER_GROUP",
+      "SDI",
+      "MEDIACONNECT_ROUTER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-codec-settings.ts": {
+    "VideoCodecType": [
+      "H264",
+      "H265",
+      "AV1",
+      "FRAME_CAPTURE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
     "InputType": [
       "CMAF",
@@ -1308,6 +1426,10 @@
     "RequestMetricsStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "StorageClass": [
+      "STANDARD",
+      "INTELLIGENT_TIERING"
     ],
     "TableBucketEncryption": [
       "aws:kms",
@@ -1936,6 +2058,20 @@
       "capacity-optimized-prioritized",
       "price-capacity-optimized"
     ],
+    "InstanceRefreshStrategy": [
+      "Rolling",
+      "ReplaceRootVolume"
+    ],
+    "ScaleInProtectedInstances": [
+      "Refresh",
+      "Ignore",
+      "Wait"
+    ],
+    "StandbyInstances": [
+      "Terminate",
+      "Ignore",
+      "Wait"
+    ],
     "CapacityDistributionStrategy": [
       "balanced-only",
       "balanced-best-effort"
@@ -2259,6 +2395,15 @@
       "USER_PREFERENCE",
       "EPISODIC",
       "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.ts": {
+    "StreamDeliveryContentType": [
+      "MEMORY_RECORDS"
+    ],
+    "StreamDeliveryContentLevel": [
+      "METADATA_ONLY",
+      "FULL_CONTENT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
@@ -4837,6 +4982,13 @@
       "API_AND_CONFIG_MAP",
       "API"
     ],
+    "ControlPlaneScalingTier": [
+      "standard",
+      "tier-xl",
+      "tier-2xl",
+      "tier-4xl",
+      "tier-8xl"
+    ],
     "NodeType": [
       "Standard",
       "GPU",
@@ -5223,6 +5375,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/http-endpoint.ts": {
+    "HttpCompression": [
+      "GZIP",
+      "NONE"
+    ],
+    "HttpBackupMode": [
+      "FailedDataOnly",
+      "AllData"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
@@ -6502,12 +6664,6 @@
       "nodejs20.x",
       "nodejs22.x",
       "nodejs24.x"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
-    "DependencyOperation": [
-      0,
-      1
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/fs/options.ts": {

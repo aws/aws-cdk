@@ -1,12 +1,11 @@
 import { Dependable, type IConstruct } from 'constructs';
-import { CfnResource } from '../cfn-resource';
 import { UnscopedValidationError } from '../errors';
 import type { NestedStack } from '../nested-stack';
+import { iterateDfsPreorder, iterateStackCfnResources } from './construct-iteration';
+import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
 import type { Stage } from '../stage';
-import { iterateDfsPreorder } from './construct-iteration';
-import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 
 /**
  * Turn all dependencies added via `source.node.addDependency(target)` into concrete dependencies.
@@ -145,7 +144,7 @@ function* dependingResourcesFor(construct: DependencyContainer) {
     yield construct.construct.nestedStackResource;
   }
   if (construct.type === 'construct') {
-    yield* findCfnResources(construct.construct);
+    yield* iterateStackCfnResources(construct.construct);
   }
 }
 
@@ -227,17 +226,6 @@ function sharedDependencyContainerIndex(as: DependencyContainer[], bs: Dependenc
     }
   }
   return -1;
-}
-
-/**
- * Find all resources in a set of constructs
- */
-function* findCfnResources(root: IConstruct): IterableIterator<CfnResource> {
-  for (const node of iterateDfsPreorder(root)) {
-    if (CfnResource.isCfnResource(node)) {
-      yield node;
-    }
-  }
 }
 
 /**

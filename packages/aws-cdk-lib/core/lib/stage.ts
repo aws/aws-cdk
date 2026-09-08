@@ -183,6 +183,7 @@ export class Stage extends Construct {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Do not use this function to look up validation plugins. Use `Validations.of(stage).plugins` instead.
    */
   public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
     return this._policyValidation.map(_toBeta1Plugin);

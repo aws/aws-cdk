@@ -2,9 +2,10 @@ import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
-import { AnnotationPlugin } from '../private/annotation-plugin';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
+import { enhancedStackTrace } from '../private/stack-trace';
+import { normalizeValidationIdForAnnotations } from './private/validation-id';
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -80,7 +81,8 @@ export class Validations {
    * @param message the warning message
    */
   public addWarning(id: string, message: string): void {
-    Annotations.of(this.scope).addWarningV2(this.qualifyId(id), message);
+    id = normalizeValidationIdForAnnotations(id);
+    Annotations.of(this.scope).addWarningV2(id, message);
   }
 
   /**
@@ -96,7 +98,8 @@ export class Validations {
    * @param message the error message
    */
   public addError(id: string, message: string): void {
-    Annotations.of(this.scope).addError(`${message} (${this.qualifyId(id)})`);
+    id = normalizeValidationIdForAnnotations(id);
+    Annotations.of(this.scope).addError(`${message} (${id})`);
   }
 
   /**
@@ -115,7 +118,7 @@ export class Validations {
    */
   public acknowledge(...rules: Acknowledgment[]): void {
     for (const rule of rules) {
-      const qualifiedId = this.qualifyId(rule.id);
+      const qualifiedId = normalizeValidationIdForAnnotations(rule.id);
       this.recordAcknowledgment(qualifiedId, rule.reason);
 
       // For now, all rules route to annotation acknowledgment.
@@ -128,25 +131,8 @@ export class Validations {
     this.scope.node.addMetadata(
       Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       { [id]: reason },
-      { stackTrace: true },
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      { stackTraceOverride: enhancedStackTrace(this.recordAcknowledgment) },
     );
-  }
-
-  private qualifyId(id: string): string {
-    const parts = id.split('::');
-    if (parts.length > 2 || (parts.length === 2 && parts[0].length === 0)) {
-      throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
-    }
-
-    if (parts.length === 1) {
-      return `${AnnotationPlugin.RULE_PREFIX}::${id}`;
-    }
-
-    if (parts[0] === 'annotation') {
-      // Uppercase this
-      return `${AnnotationPlugin.RULE_PREFIX}::${parts[1]}`;
-    }
-
-    return id;
   }
 }

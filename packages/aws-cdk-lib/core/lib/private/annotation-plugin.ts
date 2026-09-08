@@ -2,9 +2,11 @@ import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from '../validation';
 import { iterateDfsPreorder } from './construct-iteration';
-import { stackOf } from './core-construct-finders';
+import { stackOf, stageOf } from './core-construct-finders';
 import * as cxschema from '../../../cloud-assembly-schema';
+import { CfnResource } from '../cfn-resource';
 import type { NamedValidationPluginReport } from '../validation/private/report';
+import { namespaceFromPluginName } from '../validation/private/validation-id';
 import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
 /**
@@ -21,7 +23,6 @@ import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingReso
  * has a prefix in which case the prefix is preserved.
  */
 export class AnnotationPlugin implements IPolicyValidationPlugin {
-  public static RULE_PREFIX = 'Annotation';
   public static NAME = 'Construct Annotations';
   public readonly name = AnnotationPlugin.NAME;
 
@@ -37,7 +38,9 @@ export class AnnotationPlugin implements IPolicyValidationPlugin {
  * and convert them into a NamedValidationPluginReport that can be merged
  * into the same report pipeline as plugin violations.
  */
-export function collectAnnotationReport(root: IConstruct, outdir: string): IPolicyValidationPlugin | undefined {
+export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlugin | undefined {
+  const myNamespace = namespaceFromPluginName(AnnotationPlugin.NAME);
+
   const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
 
   for (const construct of iterateDfsPreorder(root)) {
@@ -50,18 +53,23 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
       let { message, ruleName } = splitDescriptionAndId(String(entry.data));
 
       if (ruleName && !ruleName.includes('::')) {
-        ruleName = `${AnnotationPlugin.RULE_PREFIX}::${ruleName}`;
+        ruleName = `${myNamespace}::${ruleName}`;
       }
 
       let templatePath: string | undefined;
       try {
-        templatePath = path.join(outdir, stackOf(construct).templateFile);
-      } catch {
+        templatePath = path.join(stageOf(construct)?.outdir ?? '.', stackOf(construct).templateFile);
+      } catch (e) {
         // Construct is not inside a Stack
       }
 
+      const resourceLogicalId = CfnResource.isCfnResource(construct)
+        ? stackOf(construct).resolve(construct.logicalId)
+        : undefined;
+
       const violatingResource: PolicyViolatingResource = {
         constructPath: construct.node.path,
+        resourceLogicalId,
         templatePath,
         locations: [],
       };
@@ -72,7 +80,7 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): IPoli
         existing.violatingResources.push(violatingResource);
       } else {
         violationMap.set(key, {
-          ruleName: ruleName ?? `${AnnotationPlugin.RULE_PREFIX}::${severity}-annotation`,
+          ruleName: ruleName ?? `${myNamespace}::${severity}-annotation`,
           description: message,
           severity,
           violatingResources: [violatingResource],
