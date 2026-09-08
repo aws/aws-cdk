@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
-import { App, CfnOutput, CfnResource, Duration, Fn, Lazy, Stack, Tags } from '../../core';
+import { App, CfnOutput, CfnResource, Duration, Fn, Lazy, Stack, Tags, Token } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import type { NatInstanceProps, PublicSubnet } from '../lib';
 import {
@@ -1302,6 +1302,18 @@ describe('vpc', () => {
       });
     });
 
+    test('warns and creates no NAT gateway when natGateways is an unresolved token', () => {
+      const app = new App();
+      const stack = new Stack(app, 'TestStack');
+      new Vpc(stack, 'Vpc', {
+        natGateways: Token.asNumber(Lazy.number({ produce: () => 2 })),
+      });
+
+      Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGateways` must be resolved at synthesis time'));
+
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+    });
+
     describe('Regional NAT Gateway', () => {
       test('creates a single regional NAT gateway', () => {
         const stack = new Stack();
@@ -1452,6 +1464,20 @@ describe('vpc', () => {
           '/TestStack/Vpc',
           Match.stringLikeRegexp('`natGateways: 0` disables the Regional NAT Gateway'),
         );
+      });
+
+      test('warns and creates no NAT gateway when natGateways is an unresolved token', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider: NatProvider.regionalGateway(),
+          natGateways: Token.asNumber(Lazy.number({ produce: () => 1 })),
+        });
+
+        Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGateways` must be resolved at synthesis time'));
+        expect(Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('disables the Regional NAT Gateway')).length).toBe(0);
+
+        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
       });
 
       test('warns when natGatewaySubnets is specified', () => {
