@@ -1,8 +1,12 @@
+import { Token } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Validates that each value in the array does not exceed the maximum length
+ *
+ * Unresolved tokens are skipped, since their synth-time placeholder says nothing
+ * about the length of the value the service will eventually see.
  */
 function validateMaxLength(
   fieldName: string,
@@ -10,18 +14,26 @@ function validateMaxLength(
   ...values: string[]
 ): void {
   for (const value of values) {
+    if (Token.isUnresolved(value)) {
+      continue;
+    }
     if (value.length > maxLength) {
       throw new UnscopedValidationError(lit`ExceedsMaximumLength`,
-        `${fieldName} '${value}' exceeds the maximum length of ${maxLength} characters`,
+        `${fieldName} ${JSON.stringify(value)} exceeds the maximum length of ${maxLength} characters`,
       );
     }
   }
 }
 /**
  * Validates that each value is non-empty
+ *
+ * Unresolved tokens are skipped; they are validated by the service at deploy time.
  */
 function validateNonEmpty(fieldName: string, ...values: string[]): void {
   for (const value of values) {
+    if (Token.isUnresolved(value)) {
+      continue;
+    }
     if (value.length === 0) {
       throw new UnscopedValidationError(lit`MustBeNonEmpty`, `${fieldName} must be non-empty`);
     }
@@ -31,27 +43,32 @@ function validateNonEmpty(fieldName: string, ...values: string[]): void {
 /**
  * Validates that the number of values does not exceed the maximum count
  */
-function validateMaxCount(fieldName: string, maxCount: number, ...values: string[]): void {
+function validateMaxCount(maxCount: number, ...values: string[]): void {
   if (values && values.length > maxCount) {
-    throw new UnscopedValidationError(lit`ExceedsMaxCount`,
-      `${fieldName} can only have '${maxCount}' condition values`,
+    throw new UnscopedValidationError(lit`RuleOnlyConditionValues`,
+      `A rule can only have '${maxCount}' condition values`,
     );
   }
 }
 
 /**
  * Validates that each value matches a given regex pattern
+ *
+ * Unresolved tokens are skipped; they are validated by the service at deploy time.
  */
 function validatePattern(
   fieldName: string,
   pattern: RegExp,
-  allowedCharsMessage: string,
+  allowedChars: string,
   ...values: string[]
 ): void {
   for (const value of values) {
+    if (Token.isUnresolved(value)) {
+      continue;
+    }
     if (!pattern.test(value)) {
       throw new UnscopedValidationError(lit`ContainsInvalidCharacters`,
-        `${fieldName} '${value}' contains invalid characters. ${allowedCharsMessage}`,
+        `${fieldName} ${JSON.stringify(value)} contains invalid characters, only ${allowedChars} are allowed`,
       );
     }
   }
@@ -178,7 +195,7 @@ export interface QueryStringCondition {
 class HostHeaderListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
-    validateMaxLength('Host header value', 128, ...values);
+    validateMaxLength('host header value', 128, ...values);
   }
 
   public renderRawCondition(): any {
@@ -197,7 +214,7 @@ class HostHeaderListenerCondition extends ListenerCondition {
 class HostHeaderRegexListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
-    validateMaxLength('Host header regex value', 128, ...values);
+    validateMaxLength('host header regex value', 128, ...values);
   }
 
   public renderRawCondition(): any {
@@ -240,7 +257,7 @@ class HttpHeaderRegexListenerCondition extends ListenerCondition {
     super();
     validateNonEmpty('HTTP header name', name);
     validateMaxLength('HTTP header name', 40, name);
-    validateMaxLength('HTTP header regex', 128, ...values);
+    validateMaxLength('HTTP header regex value', 128, ...values);
   }
 
   public renderRawCondition(): any {
@@ -265,7 +282,7 @@ class HttpRequestMethodListenerCondition extends ListenerCondition {
     validatePattern(
       'HTTP request method',
       /^[A-Z\-_]+$/,
-      'Only A-Z, hyphen (-), and underscore (_) are allowed',
+      'A-Z, hyphen (-) and underscore (_)',
       ...values,
     );
   }
@@ -286,8 +303,8 @@ class HttpRequestMethodListenerCondition extends ListenerCondition {
 class PathPatternListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
-    validateMaxCount('Path pattern value', 5, ...values);
-    validateMaxLength('Path pattern value', 128, ...values);
+    validateMaxCount(5, ...values);
+    validateMaxLength('path pattern value', 128, ...values);
   }
 
   public renderRawCondition(): any {
@@ -306,8 +323,8 @@ class PathPatternListenerCondition extends ListenerCondition {
 class PathPatternRegexListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
-    validateMaxCount('Path pattern regex value', 5, ...values);
-    validateMaxLength('Path pattern regex value', 128, ...values);
+    validateMaxCount(5, ...values);
+    validateMaxLength('path pattern regex value', 128, ...values);
   }
 
   public renderRawCondition(): any {
@@ -326,8 +343,8 @@ class PathPatternRegexListenerCondition extends ListenerCondition {
 class QueryStringListenerCondition extends ListenerCondition {
   constructor(public readonly values: QueryStringCondition[]) {
     super();
-    validateMaxLength( 'Query string key', 128, ...values.filter(v => v.key !== undefined).map(v => v.key!));
-    validateMaxLength( 'Query string value', 128, ...values.map(v => v.value));
+    validateMaxLength('query string key', 128, ...values.filter(v => v.key !== undefined).map(v => v.key!));
+    validateMaxLength('query string value', 128, ...values.map(v => v.value));
   }
 
   public renderRawCondition(): any {
