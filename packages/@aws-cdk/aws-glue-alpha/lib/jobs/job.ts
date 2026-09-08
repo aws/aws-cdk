@@ -373,8 +373,8 @@ export interface JobProps {
    * `enableObservabilityMetrics`, `sparkUI`, `className`, `extraJars`, `extraJarsFirst`,
    * `extraPythonFiles`, `extraFiles`). Passing a construct-managed argument (e.g.
    * `--enable-continuous-cloudwatch-log`, `--enable-metrics`, `--enable-spark-ui`,
-   * `--job-language`) or a Glue-reserved argument (`--debug`, `--mode`, `--JOB_NAME`) here throws
-   * at synthesis time, so there is exactly one way to express each intent.
+   * `--job-language`) or a Glue-reserved argument (`--debug`, `--mode`, `--JOB_NAME`, `--endpoint`)
+   * here throws at synthesis time, so there is exactly one way to express each intent.
    *
    * Also note that these are emitted verbatim into the CloudFormation template, so avoid
    * placing secrets here in plaintext. Pass secrets to the job at runtime
@@ -479,12 +479,49 @@ export abstract class Job extends JobBase {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  private static readonly GLUE_RESERVED_ARGUMENTS = new Set(['--debug', '--mode', '--JOB_NAME']);
+  private static readonly GLUE_RESERVED_ARGUMENTS = new Set(['--debug', '--mode', '--JOB_NAME', '--endpoint']);
 
   /**
    * The IAM role Glue assumes to run this job.
    */
   public readonly abstract role: iam.IRole;
+
+  /**
+   * The construct-managed job arguments that are actually emitted for the current configuration,
+   * accumulated via {@link setManagedArgument}. Passed through to `CfnJob.defaultArguments` after
+   * being merged with the user-supplied `defaultArguments` by {@link mergeDefaultArguments}.
+   */
+  private readonly _managedArguments: { [key: string]: string } = {};
+
+  /**
+   * Every argument key this construct manages, accumulated via {@link setManagedArgument} — whether
+   * or not the current configuration emits a value for it. This is the reserved set that a
+   * user-supplied `defaultArguments` must not collide with. Registering a key even when its value
+   * is `undefined` (feature disabled or unset) is what keeps `defaultArguments` from silently
+   * re-enabling it.
+   */
+  private readonly _managedArgumentKeys = new Set<string>();
+
+  /**
+   * Declare `key` as construct-managed and, when `value` is defined, emit it into the job's
+   * arguments.
+   *
+   * This is the single sink for every argument a job construct derives from its typed props (or
+   * from the job class itself). Call it once per managed key, passing `undefined` as the value when
+   * the corresponding feature is turned off or unset — the key is still reserved from
+   * `defaultArguments` either way, so a disabled feature cannot be re-enabled through the escape
+   * hatch. There is deliberately no other way for a subclass to emit a managed argument, so the
+   * reserved set can never drift from what is emitted.
+   *
+   * @param key the Glue argument key, e.g. `--enable-metrics`
+   * @param value the value to emit, or `undefined` to reserve the key without emitting it
+   */
+  protected setManagedArgument(key: string, value?: string): void {
+    this._managedArgumentKeys.add(key);
+    if (value !== undefined) {
+      this._managedArguments[key] = value;
+    }
+  }
 
   /**
    * Merge the customer-supplied `defaultArguments` with the arguments this construct manages.
@@ -501,9 +538,11 @@ export abstract class Job extends JobBase {
    * Glue-reserved keys are never emitted by the construct, so there is no value to reconcile and
    * they always throw.
    *
-   * The reserved set is derived from `managedArguments` (the arguments the caller actually emits)
-   * rather than a hand-maintained list, so adding a new typed prop automatically reserves its
-   * argument key without a second place to update.
+   * The reserved set is `_managedArgumentKeys` — every key the construct declared through
+   * {@link setManagedArgument}, whether or not a value was emitted for it. It is deliberately NOT
+   * derived from the keys that carry a value: a typed prop that turns a feature *off* (e.g.
+   * `enableMetrics: false`) emits no value but still reserves its key, so `defaultArguments` cannot
+   * silently re-enable it.
    *
    * Conflict detection relies on string equality of the argument keys, which cannot see through
    * unresolved tokens (e.g. a key produced by `CfnJson` that only resolves at deploy time). If a
@@ -511,22 +550,23 @@ export abstract class Job extends JobBase {
    * the (rare) case where a token key resolves to a managed argument at deploy time — in which the
    * construct-managed value would silently take precedence — is surfaced rather than hidden.
    *
+   * @param defaultArguments the caller-supplied escape-hatch arguments, if any
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  protected mergeManagedArguments(
-    managedArguments: { [key: string]: string },
+  protected mergeDefaultArguments(
     defaultArguments?: { [key: string]: string },
   ): { [key: string]: string } {
     if (defaultArguments) {
       if (Object.keys(defaultArguments).some((arg) => cdk.Token.isUnresolved(arg))) {
         cdk.Annotations.of(this).addWarningV2(
-          'aws-cdk/aws-glue-alpha:tokenJobArgumentKey',
+          '@aws-cdk/aws-glue-alpha:tokenJobArgumentKey',
           'defaultArguments contains an unresolved token as an argument key, so it cannot be checked for conflicts with construct-managed arguments. If it resolves to a managed argument at deploy time, the construct-managed value will take precedence. Configure managed arguments through their dedicated props (e.g. continuousLogging, enableMetrics, enableObservabilityMetrics, sparkUI).',
         );
       }
       const conflicts = Object.keys(defaultArguments).filter(
         (arg) => Job.GLUE_RESERVED_ARGUMENTS.has(arg)
-          || (arg in managedArguments && defaultArguments[arg] !== managedArguments[arg]),
+          || (this._managedArgumentKeys.has(arg)
+            && !(Object.hasOwn(this._managedArguments, arg) && defaultArguments[arg] === this._managedArguments[arg])),
       );
       if (conflicts.length > 0) {
         throw new cdk.ValidationError(
@@ -542,58 +582,45 @@ export abstract class Job extends JobBase {
       '@aws-cdk/aws-glue-alpha:plaintextJobArgumentSecret',
       'Pass secrets to the job at runtime through AWS Secrets Manager instead of embedding them in `defaultArguments`.',
     );
-    return { ...defaultArguments, ...managedArguments };
+    return { ...defaultArguments, ...this._managedArguments };
   }
 
   /**
-   * Setup Continuous Logging Properties
-   * @param role The IAM role to use for continuous logging
+   * Register (and, when enabled, emit) the continuous-logging arguments this job manages.
+   *
+   * All five continuous-logging keys are reserved on every job type regardless of configuration:
+   * they are always registered through {@link setManagedArgument}, and carry a value only when
+   * logging is enabled. This keeps `defaultArguments` from re-enabling logging a user turned off.
+   *
+   * @param role The IAM role to grant write access to a custom log group, if one is provided
    * @param props The properties for continuous logging configuration
    * @param securityConfiguration The security configuration attached to the job, if any
-   * @returns String containing the args for the continuous logging command
    */
-  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined, securityConfiguration?: ISecurityConfiguration) : any {
-    // If the developer has explicitly disabled continuous logging return no args
-    if (props && !props.enabled) {
-      return {};
-    }
+  protected setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps | undefined, securityConfiguration?: ISecurityConfiguration): void {
+    // Continuous logging is on unless the developer has explicitly disabled it.
+    const enabled = !(props && !props.enabled);
 
-    // Continuous logging is on (explicitly or by default), but the logs will be written to an
-    // unencrypted CloudWatch log group unless a SecurityConfiguration is attached. We cannot
-    // introspect whether the attached SecurityConfiguration actually configures cloudWatchEncryption
-    // (the ISecurityConfiguration interface only exposes the name), so we only warn when none is
-    // attached at all to avoid false positives.
-    if (!securityConfiguration) {
+    // When logging is on, the logs are written to an unencrypted CloudWatch log group unless a
+    // SecurityConfiguration is attached. We cannot introspect whether the attached
+    // SecurityConfiguration actually configures cloudWatchEncryption (the ISecurityConfiguration
+    // interface only exposes the name), so we only warn when none is attached at all to avoid
+    // false positives.
+    if (enabled && !securityConfiguration) {
       cdk.Annotations.of(this).addWarningV2(
-        'aws-cdk/aws-glue-alpha:unencryptedContinuousLogging',
+        '@aws-cdk/aws-glue-alpha:unencryptedContinuousLogging',
         'Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html',
       );
     }
 
-    // Else we turn on continuous logging by default. Determine what log group to use.
-    const args: {[key: string]: string} = {
-      '--enable-continuous-cloudwatch-log': 'true',
-    };
+    // A custom log group is only wired up (and only granted write) when logging is enabled.
+    const logGroup = enabled ? props?.logGroup : undefined;
+    logGroup?.grantWrite(role);
 
-    if (props?.quiet) {
-      args['--enable-continuous-log-filter'] = 'true';
-    }
-
-    // If the developer provided a log group, add its name to the args and update the role.
-    if (props?.logGroup) {
-      args['--continuous-log-logGroup'] = props.logGroup.logGroupName;
-      props.logGroup.grantWrite(role);
-    }
-
-    if (props?.logStreamPrefix) {
-      args['--continuous-log-logStreamPrefix'] = props.logStreamPrefix;
-    }
-
-    if (props?.conversionPattern) {
-      args['--continuous-log-conversionPattern'] = props.conversionPattern;
-    }
-
-    return args;
+    this.setManagedArgument('--enable-continuous-cloudwatch-log', enabled ? 'true' : undefined);
+    this.setManagedArgument('--enable-continuous-log-filter', enabled && props?.quiet ? 'true' : undefined);
+    this.setManagedArgument('--continuous-log-logGroup', logGroup?.logGroupName);
+    this.setManagedArgument('--continuous-log-logStreamPrefix', enabled ? props?.logStreamPrefix : undefined);
+    this.setManagedArgument('--continuous-log-conversionPattern', enabled ? props?.conversionPattern : undefined);
   }
 
   protected codeS3ObjectUrl(code: Code) {

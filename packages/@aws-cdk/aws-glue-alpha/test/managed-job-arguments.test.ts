@@ -19,12 +19,14 @@ import * as glue from '../lib';
  *    silent drop; and
  *  - passing a genuinely custom key still flows through untouched (escape hatch preserved).
  *
- * If a future change adds a typed prop that emits a new argument, this test starts rejecting that
- * key from `defaultArguments` automatically — there is no separate reserved list to keep in sync.
+ * A managed key stays reserved even when the feature that would emit it is turned OFF (e.g.
+ * `enableMetrics: false`) — otherwise `defaultArguments` could silently re-enable it. That case is
+ * not observable from the synthesized args (the key is absent), so it is covered by an explicit
+ * block below.
  */
 
 // Glue service-reserved keys — owned by Glue, reserved for every job type regardless of props.
-const GLUE_RESERVED = ['--debug', '--mode', '--JOB_NAME'];
+const GLUE_RESERVED = ['--debug', '--mode', '--JOB_NAME', '--endpoint'];
 
 /**
  * Each entry builds one job class with every args-producing prop set, so the synthesized
@@ -164,6 +166,55 @@ describe('defaultArguments managed-key invariant', () => {
       });
     });
   }
+
+  describe('managed key stays reserved when its feature is disabled', () => {
+    // A typed prop that turns a feature OFF emits no argument, but the argument is still
+    // construct-managed. defaultArguments must not become a back door to turn it on again.
+    const METRICS_CLASSES = [
+      'PySparkEtlJob', 'PySparkFlexEtlJob', 'PySparkStreamingJob',
+      'ScalaSparkEtlJob', 'ScalaSparkFlexEtlJob', 'ScalaSparkStreamingJob', 'RayJob',
+    ];
+    test.each(METRICS_CLASSES)('%s rejects --enable-metrics when enableMetrics is false', (name) => {
+      const jobClass = JOB_CLASSES.find((j) => j.name === name)!;
+      const stack = new cdk.Stack(new cdk.App(), 'S');
+      expect(() => jobClass.build(stack, {
+        enableMetrics: false,
+        defaultArguments: { '--enable-metrics': '' },
+      })).toThrow(/managed by the construct or reserved by Glue/);
+    });
+
+    test.each(JOB_CLASSES.map((j) => j.name))(
+      '%s rejects --enable-continuous-cloudwatch-log when continuous logging is disabled',
+      (name) => {
+        const jobClass = JOB_CLASSES.find((j) => j.name === name)!;
+        const stack = new cdk.Stack(new cdk.App(), 'S');
+        expect(() => jobClass.build(stack, {
+          continuousLogging: { enabled: false },
+          defaultArguments: { '--enable-continuous-cloudwatch-log': 'true' },
+        })).toThrow(/managed by the construct or reserved by Glue/);
+      },
+    );
+  });
+
+  describe('prototype-chain keys are treated as custom arguments, not managed', () => {
+    // Conflict detection uses Object.hasOwn (not the `in` operator), so inherited Object members
+    // are not mistaken for managed arguments and flow through as ordinary custom keys.
+    test.each(['toString', 'constructor', 'hasOwnProperty', 'valueOf'])(
+      'allows inherited key %s as a custom defaultArguments entry',
+      (key) => {
+        const stack = new cdk.Stack(new cdk.App(), 'S');
+        new glue.PythonShellJob(stack, 'Job', {
+          role: roleOf(stack),
+          script: scriptOf(stack),
+          jobName: 'Job',
+          defaultArguments: { [key]: 'x' },
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+          DefaultArguments: Match.objectLike({ [key]: 'x' }),
+        });
+      },
+    );
+  });
 
   describe('token-keyed defaultArguments', () => {
     test('warns that a token argument key cannot be checked for conflicts', () => {

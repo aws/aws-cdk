@@ -148,7 +148,7 @@ describe('Job', () => {
   });
 
   describe('Continuous logging encryption warning', () => {
-    const warningId = 'aws-cdk/aws-glue-alpha:unencryptedContinuousLogging';
+    const warningId = '@aws-cdk/aws-glue-alpha:unencryptedContinuousLogging';
 
     test('warns when continuous logging is enabled by default and no security configuration is attached', () => {
       new glue.PySparkEtlJob(stack, 'PySparkETLJob', {

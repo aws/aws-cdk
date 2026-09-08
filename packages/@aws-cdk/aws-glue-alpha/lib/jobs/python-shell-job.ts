@@ -96,24 +96,19 @@ export class PythonShellJob extends Job {
     // Glue accepts but ignores them for the pythonshell command (verified: a pythonshell run with
     // --enable-metrics emits no JobName-dimensioned CloudWatch metrics). See SparkJob/RayJob for
     // the job types where these metrics apply.
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
+    this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
-    // Gather executable arguments
-    const executableArgs = this.executableArguments(props);
+    // Register the executable arguments (--job-language, library-set)
+    this.executableArguments(props);
 
-    // Set up extra Python files argument
-    const extraPythonFilesArgs: {[key: string]: string} = {};
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      extraPythonFilesArgs['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
+    // Register the extra Python files argument, emitted only when files are provided
+    this.setManagedArgument(
+      '--extra-py-files',
+      props.extraPythonFiles && props.extraPythonFiles.length > 0 ? props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',') : undefined,
+    );
 
-    // Combine command line arguments into a single line item
-    const managedArguments = {
-      ...executableArgs,
-      ...extraPythonFilesArgs,
-      ...continuousLoggingArgs,
-    };
-    const defaultArguments = this.mergeManagedArguments(managedArguments, props.defaultArguments);
+    // Merge the construct-managed arguments with the user's escape-hatch arguments.
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -148,21 +143,16 @@ export class PythonShellJob extends Job {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: PythonShellJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.PYTHON;
+  private executableArguments(props: PythonShellJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.PYTHON);
 
     // The library-set option only applies to Python 3.9 (the default version). Default to the
     // common analytics libraries, but let the caller override it (e.g. LibrarySet.NONE) via the
-    // typed prop. Note: Glue names this argument `library-set`, without the `--` prefix.
-    if (!props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE) {
-      args['library-set'] = props.librarySet ?? LibrarySet.ANALYTICS;
-    }
-
-    return args;
+    // typed prop. Note: Glue names this argument `library-set`, without the `--` prefix. The key is
+    // always reserved (managed by the librarySet prop); a value is emitted only for Python 3.9.
+    const isPython39 = !props.pythonVersion || props.pythonVersion == PythonVersion.THREE_NINE;
+    this.setManagedArgument('library-set', isPython39 ? (props.librarySet ?? LibrarySet.ANALYTICS) : undefined);
   }
 }
