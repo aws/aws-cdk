@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "fc628edb231d27475603faac6bcccec1bd30da1b7b445920e2c1190e31f5bdf7": {
+      "displayName": "S3EventBridgeNotificationViaPropertyTest Template",
+      "source": {
+        "path": "S3EventBridgeNotificationViaPropertyTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a3ca10e1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fc628edb231d27475603faac6bcccec1bd30da1b7b445920e2c1190e31f5bdf7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

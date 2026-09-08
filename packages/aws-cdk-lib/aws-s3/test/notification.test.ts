@@ -433,6 +433,147 @@ describe('notification', () => {
     });
   });
 
+  describe('EventBridge via CfnBucket property feature flag', () => {
+    test('EventBridge-only bucket sets the property directly and creates no custom resource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN
+      new s3.Bucket(stack, 'MyBucket', {
+        eventBridgeEnabled: true,
+      });
+
+      // THEN - EventBridge set natively on the bucket, no custom resource, no handler policy
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: { EventBridgeEnabled: true },
+        },
+      });
+      template.resourceCountIs('Custom::S3BucketNotifications', 0);
+      template.resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
+    test('enableEventBridgeNotification() after construction sets the property directly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      bucket.enableEventBridgeNotification();
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: { EventBridgeEnabled: true },
+        },
+      });
+      template.resourceCountIs('Custom::S3BucketNotifications', 0);
+    });
+
+    test('EventBridge plus a Lambda/SNS/SQS target keeps the custom resource and renders EventBridge there', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN - enable EventBridge, then add a topic notification
+      const bucket = new s3.Bucket(stack, 'MyBucket', {
+        eventBridgeEnabled: true,
+      });
+      bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+        bind: () => ({
+          arn: 'ARN',
+          type: s3.BucketNotificationDestinationType.TOPIC,
+        }),
+      });
+
+      // THEN - custom resource owns the full config (incl. EventBridge), bucket does not duplicate it
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3BucketNotifications', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: {},
+          TopicConfigurations: [
+            { Events: ['s3:ObjectCreated:*'], TopicArn: 'ARN' },
+          ],
+        },
+      });
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        NotificationConfiguration: Match.absent(),
+      });
+    });
+
+    test('Lambda/SNS/SQS target added before enabling EventBridge still routes EventBridge through the custom resource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN - add a topic notification first, then enable EventBridge
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+        bind: () => ({
+          arn: 'ARN',
+          type: s3.BucketNotificationDestinationType.TOPIC,
+        }),
+      });
+      bucket.enableEventBridgeNotification();
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3BucketNotifications', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: {},
+          TopicConfigurations: [
+            { Events: ['s3:ObjectCreated:*'], TopicArn: 'ARN' },
+          ],
+        },
+      });
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        NotificationConfiguration: Match.absent(),
+      });
+    });
+
+    test('without the feature flag EventBridge still routes through the custom resource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new s3.Bucket(stack, 'MyBucket', {
+        eventBridgeEnabled: true,
+      });
+
+      // THEN - unchanged behavior
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3BucketNotifications', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: {},
+        },
+      });
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        NotificationConfiguration: Match.absent(),
+      });
+    });
+
+    test('imported bucket routes EventBridge through the custom resource even with the flag enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN
+      const bucket = s3.Bucket.fromBucketName(stack, 'MyBucket', 'foo-bar');
+      bucket.enableEventBridgeNotification();
+
+      // THEN - imported buckets have no CfnBucket to set, so the custom resource is used
+      Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+        NotificationConfiguration: {
+          EventBridgeConfiguration: {},
+        },
+      });
+    });
+  });
+
   test('Notification custom resource uses always treat bucket as unmanaged', () => {
     // GIVEN
     const stack = new cdk.Stack();
