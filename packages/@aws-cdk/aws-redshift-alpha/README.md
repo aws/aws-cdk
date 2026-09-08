@@ -78,6 +78,7 @@ Amazon Redshift logs information about connections and user activities in your d
 To send audit logs to an S3 bucket, use `ClusterLogging.s3()`:
 
 ```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 declare const vpc: ec2.IVpc;
@@ -100,6 +101,8 @@ const cluster = new Cluster(this, 'Redshift', {
 To send audit logs to CloudWatch, use `ClusterLogging.cloudwatch()`:
 
 ```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
 declare const vpc: ec2.IVpc;
 
 const cluster = new Cluster(this, 'Redshift', {
@@ -115,7 +118,7 @@ const cluster = new Cluster(this, 'Redshift', {
 
 Note: To capture user activity logs (`LogExport.USER_ACTIVITY_LOG`), you must also enable the `enable_user_activity_logging` database parameter:
 
-```ts
+```ts fixture=cluster
 cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 ```
 
