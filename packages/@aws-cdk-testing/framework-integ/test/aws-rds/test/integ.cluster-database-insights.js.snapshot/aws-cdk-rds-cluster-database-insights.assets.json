@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
-    "406c8a6d6d9cbd9b3c515c5f6550ae91cc011908a527a7e533ba328e7d7c5fc7": {
+    "db351fb6b827a717bbefb4bfb7ad23664332e4e1b1d5917fceaaeac1b78c86c4": {
       "displayName": "aws-cdk-rds-cluster-database-insights Template",
       "source": {
         "path": "aws-cdk-rds-cluster-database-insights.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-0acf04dd": {
+        "current_account-current_region-cd16e1c4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "406c8a6d6d9cbd9b3c515c5f6550ae91cc011908a527a7e533ba328e7d7c5fc7.json",
+          "objectKey": "db351fb6b827a717bbefb4bfb7ad23664332e4e1b1d5917fceaaeac1b78c86c4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
