@@ -234,11 +234,14 @@ describe('ForEachCondition', () => {
     const app = new App();
     const stack = new Stack(app, 'TestStack');
 
+    // The expression has to reference the loop variable. A condition that does not
+    // expands to N identical conditions, which is a real template smell (cfn-lint
+    // W9053, 'Condition X is equivalent to condition Y').
     new ForEachCondition(stack, 'EnvConditions', {
       loopName: 'Env',
       collection: ['dev', 'prod'],
       conditionKeyTemplate: 'Is${Env}',
-      expression: Fn.conditionEquals('a', 'b'),
+      expression: Fn.conditionEquals('a', Fn.forEachRef('Env')),
     });
 
     const template = app.synth().getStackByName('TestStack').template;
@@ -247,7 +250,7 @@ describe('ForEachCondition', () => {
       'Env',
       ['dev', 'prod'],
       {
-        'Is${Env}': { 'Fn::Equals': ['a', 'b'] },
+        'Is${Env}': { 'Fn::Equals': ['a', '${Env}'] },
       },
     ]);
   });

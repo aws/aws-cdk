@@ -185,6 +185,12 @@ export class ForEachResource extends Construct {
 
     return {
       [`Fn::ForEach::${this.loopName}`]: [
+        // Identifier. CloudFormation requires exactly three elements --
+        // [Identifier, Collection, {OutputKey: OutputValue}] -- and this built the
+        // list by hand rather than going through Fn.forEach(), so it kept emitting
+        // the two-element form after that was fixed. cfn-lint rejects two elements
+        // with E0001 ('Fn::ForEach values must be a list of 3 elements').
+        this.loopName,
         this.collection,
         { [this.logicalIdTemplate]: resourceDef },
       ],
