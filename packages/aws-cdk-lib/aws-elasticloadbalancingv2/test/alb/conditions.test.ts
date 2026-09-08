@@ -1,3 +1,4 @@
+import { Lazy } from '../../../core';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
@@ -12,7 +13,7 @@ describe('tests', () => {
     // THEN
     expect(() => {
       elbv2.ListenerCondition.pathPatterns(array);
-    }).toThrow(/Path pattern value can only have '5' condition values/);
+    }).toThrow(/A rule can only have '5' condition values/);
   });
 
   test('pathPatternsRegex length greater than 5 will throw exception', () => {
@@ -26,7 +27,7 @@ describe('tests', () => {
     // THEN
     expect(() => {
       elbv2.ListenerCondition.pathPatternsRegex(array);
-    }).toThrow(/Path pattern regex value can only have '5' condition values/);
+    }).toThrow(/A rule can only have '5' condition values/);
   });
 
   test('pathPatternsRegex renders with regexValues', () => {
@@ -322,6 +323,25 @@ describe('tests', () => {
     }).toThrow(/exceeds the maximum length of 128 characters/);
   });
 
+  test('queryStrings validates maximum length of 128 characters', () => {
+    // GIVEN
+    const validValue = 'a'.repeat(128);
+    const invalidValue = 'a'.repeat(129);
+
+    // WHEN/THEN
+    expect(() => {
+      elbv2.ListenerCondition.queryStrings([{ key: validValue, value: validValue }]);
+    }).not.toThrow();
+
+    expect(() => {
+      elbv2.ListenerCondition.queryStrings([{ value: invalidValue }]);
+    }).toThrow(/query string value ".*" exceeds the maximum length of 128 characters/);
+
+    expect(() => {
+      elbv2.ListenerCondition.queryStrings([{ key: invalidValue, value: validValue }]);
+    }).toThrow(/query string key ".*" exceeds the maximum length of 128 characters/);
+  });
+
   test('queryStrings renders with values', () => {
     // GIVEN
     const condition = elbv2.ListenerCondition.queryStrings([
@@ -341,6 +361,55 @@ describe('tests', () => {
           { value: 'test' },
         ],
       },
+    });
+  });
+
+  describe('unresolved tokens skip client-side validation', () => {
+    // A token placeholder is longer than some of the limits, is not a valid HTTP
+    // request method, and says nothing about the value the service will see.
+    const token = Lazy.string({ produce: () => 'GET' });
+
+    test('hostHeaders', () => {
+      expect(() => elbv2.ListenerCondition.hostHeaders([token])).not.toThrow();
+    });
+
+    test('hostHeadersRegex', () => {
+      expect(() => elbv2.ListenerCondition.hostHeadersRegex([token])).not.toThrow();
+    });
+
+    test('httpHeader', () => {
+      expect(() => elbv2.ListenerCondition.httpHeader(token, [token])).not.toThrow();
+    });
+
+    test('httpHeaderRegex', () => {
+      expect(() => elbv2.ListenerCondition.httpHeaderRegex(token, [token])).not.toThrow();
+    });
+
+    test('httpRequestMethods', () => {
+      expect(() => elbv2.ListenerCondition.httpRequestMethods([token])).not.toThrow();
+    });
+
+    test('pathPatterns', () => {
+      expect(() => elbv2.ListenerCondition.pathPatterns([token])).not.toThrow();
+    });
+
+    test('pathPatternsRegex', () => {
+      expect(() => elbv2.ListenerCondition.pathPatternsRegex([token])).not.toThrow();
+    });
+
+    test('queryStrings', () => {
+      expect(() => elbv2.ListenerCondition.queryStrings([{ key: token, value: token }])).not.toThrow();
+    });
+
+    test('the token is passed through to the rendered condition', () => {
+      const rendered = elbv2.ListenerCondition.httpRequestMethods([token]).renderRawCondition();
+
+      expect(rendered).toEqual({
+        field: 'http-request-method',
+        httpRequestMethodConfig: {
+          values: [token],
+        },
+      });
     });
   });
 
