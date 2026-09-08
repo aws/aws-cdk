@@ -1,7 +1,8 @@
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { App, Stack, type StackProps, Stage, type StageProps, RemovalPolicy } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, Stage, RemovalPolicy } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as integ from '@aws-cdk/integ-tests-alpha';

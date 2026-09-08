@@ -259,7 +259,7 @@ test('can specify execution mode SUPERSEDED for v1 pipeline', () => {
         'npx cdk synth',
       ],
     }),
-    pipelineType: PipelineType.V2,
+    pipelineType: PipelineType.V1,
     executionMode: ExecutionMode.SUPERSEDED,
   });
 
