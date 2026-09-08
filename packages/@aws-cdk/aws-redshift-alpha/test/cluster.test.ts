@@ -602,7 +602,7 @@ describe('logging', () => {
     );
   });
 
-  test('does not add user-activity-logging warning for S3 logging by default', () => {
+  test('adds warning for S3 logging (all log types are enabled together)', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
 
@@ -616,7 +616,7 @@ describe('logging', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning(
+    Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
       'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
       'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.  ' +
@@ -683,14 +683,13 @@ describe('logging', () => {
     });
 
     // THEN
-    const warnings = Annotations.fromStack(stack).findWarning('/Default/Redshift', Match.anyValue());
-    expect(warnings).toHaveLength(1);
-    expect(warnings[0].entry.data as string).toContain(
-      'Could not add bucket policy for Redshift logging. If you are using an imported bucket, ' +
-      'ensure that your bucket policy contains the following permissions:',
-    );
-    expect(warnings[0].entry.data as string).toContain(
-      '[ack: @aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded]',
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      Match.stringLikeRegexp(
+        'Could not add bucket policy for Redshift logging\\. If you are using an imported bucket, ' +
+        'ensure that your bucket policy contains the following permissions:[\\s\\S]*' +
+        '\\[ack: @aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded\\]',
+      ),
     );
   });
 

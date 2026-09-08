@@ -140,8 +140,6 @@ export enum LogExport {
 export interface S3LoggingOptions {
   /**
    * The S3 bucket where the log files are stored.
-   *
-   * [disable-awslint:prefer-ref-interface]
    */
   readonly bucket: s3.IBucket;
 
@@ -748,10 +746,9 @@ export class Cluster extends ClusterBase {
     if (props.logging) {
       loggingProperties = props.logging._renderLoggingProperty(this);
 
-      if (
-        loggingProperties.logExports?.includes(LogExport.USER_ACTIVITY_LOG) ||
-        (loggingProperties.logDestinationType === LogDestinationType.CLOUDWATCH && !loggingProperties.logExports)
-      ) {
+      // S3 renders no `logExports` and enables all log types, so the user activity log is
+      // only ever excluded when CloudWatch is given an explicit list without it.
+      if (loggingProperties.logExports === undefined || loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG)) {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
           'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
