@@ -1,9 +1,19 @@
 {
+  "/LambdaS3ObjectStorageModeStack/CodeKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
   "/LambdaS3ObjectStorageModeStack/CodeBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "versioned": true,
+        "encryption": "KMS",
+        "encryptionKey": "*",
         "removalPolicy": "destroy",
         "autoDeleteObjects": true
       }
@@ -93,6 +103,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "functionName": "*",
         "runtime": "*",
         "handler": "*",
         "code": "*"
@@ -103,6 +114,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "layerVersionName": "*",
         "code": "*",
         "compatibleRuntimes": "*"
       }
@@ -118,6 +130,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/LambdaS3ObjectStorageModeStack/CodeKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeKey6D723D80"
     }
   ],
   "/LambdaS3ObjectStorageModeStack/CodeBucket/Resource": [
@@ -212,6 +230,10 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
     }
   ],
   "/LambdaS3ObjectStorageModeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
@@ -250,6 +272,14 @@
       "data": {
         "attachInlinePolicy": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     },
@@ -337,6 +367,14 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
         "attachToRole": [
           "*"
         ]
@@ -409,6 +447,12 @@
       "data": "LayerVersion3878DA3A"
     }
   ],
+  "/LambdaS3ObjectStorageModeStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction76856677C48862D5"
+    }
+  ],
   "/LambdaS3ObjectStorageModeStack/CodeBucket/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -469,6 +513,14 @@
       "data": {
         "attachToRole": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
         ]
       }
     },

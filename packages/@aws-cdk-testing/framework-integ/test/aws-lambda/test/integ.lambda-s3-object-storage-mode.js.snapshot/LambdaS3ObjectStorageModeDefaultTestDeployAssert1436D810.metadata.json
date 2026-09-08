@@ -1,4 +1,23 @@
 {
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/refs.js:204:54)",
+        "resolveReferences (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/app.js:216:27)",
+        "process.<anonymous> (/Volumes/workplace/LambdaTools/aws-cdk-pr-38745-review-round2/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
+      ]
+    }
+  ],
   "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -9,6 +28,50 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/LambdaS3ObjectStorageMode/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
     }
   ]
 }

@@ -4,7 +4,7 @@ import { CfnFunction, CfnLayerVersion } from './lambda.generated';
 import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
-import { KeyGrants, type IKeyRef } from '../../aws-kms';
+import type { IKeyRef } from '../../aws-kms';
 import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
@@ -60,7 +60,7 @@ export abstract class Code {
    * @param key The object key
    * @param options Optional parameters for setting the code, current optional parameters to set here are
    * 1. `objectVersion` to set S3 object version
-   * 2. `sourceKMSKey` to set KMS Key for encryption of code
+   * 2. `sourceKMSKey` to configure encryption of Lambda-managed code storage
    * 3. `s3ObjectStorageMode` to set how Lambda stores the code
    */
   public static fromBucketV2 (bucket: s3.IBucket, key: string, options?: BucketOptions): S3CodeV2 {
@@ -264,8 +264,11 @@ export interface CodeConfig {
   readonly image?: CodeImageConfig;
 
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The ARN of the KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKeyArn?: string;
 
@@ -453,15 +456,23 @@ export class S3CodeV2 extends Code {
       bucketGrant.applyBefore(resource);
     }
 
-    if (this.options.sourceKMSKey) {
-      const keyGrant = KeyGrants.fromKey(this.options.sourceKMSKey).decrypt(lambdaServicePrincipal);
-      if (!this.keyGrantWasApplied(keyGrant, this.options.sourceKMSKey)) {
+    if (this.bucket.encryptionKey) {
+      // Grant does not expose whether an imported KMS key accepted a resource-policy statement.
+      // Add the statement once and inspect the result so an imported key can produce an actionable warning.
+      const keyPolicyResult = this.bucket.encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        principals: [lambdaServicePrincipal],
+        resources: ['*'],
+      }));
+      if (!keyPolicyResult.statementAdded) {
         cdk.Annotations.of(resource).addWarningV2(
           '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy',
           'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
-          'Grant the lambda.amazonaws.com service principal kms:Decrypt on the source KMS key manually. ' +
+          'Grant the lambda.amazonaws.com service principal kms:Decrypt on the bucket encryption key manually. ' +
           'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
         );
+      } else {
+        resource.node.addDependency(this.bucket.encryptionKey);
       }
     }
   }
@@ -470,18 +481,6 @@ export class S3CodeV2 extends Code {
     // Grant.success includes attempted resource statements even when an imported resource declines the policy update.
     // A resource-policy grant only creates dependency roots when the statement was actually applied.
     return grant.success && Dependable.of(grant).dependencyRoots.length > 0;
-  }
-
-  private keyGrantWasApplied(grant: iam.Grant, key: IKeyRef): boolean {
-    const policyResource = iam.ResourceWithPolicies.of(key);
-    const resourceStatement = grant.resourceStatement ?? grant.principalStatement;
-
-    // Grant.success records the generated statement even when an imported key declines the policy update.
-    // Re-adding the same statement is deduplicated during synthesis and exposes the actual policy result.
-    return grant.success
-      && policyResource !== undefined
-      && resourceStatement !== undefined
-      && policyResource.addToResourcePolicy(resourceStatement).statementAdded;
   }
 }
 
@@ -589,8 +588,11 @@ export interface CfnParametersCodeProps {
    */
   readonly objectKeyParam?: cdk.CfnParameter;
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKey?: IKeyRef;
 }
@@ -864,8 +866,11 @@ export interface BucketOptions {
   readonly objectVersion?: string;
 
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKey?: IKeyRef;
 

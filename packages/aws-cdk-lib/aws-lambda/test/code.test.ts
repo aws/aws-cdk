@@ -762,6 +762,10 @@ describe('code', () => {
           Match.stringLikeRegexp('BucketPolicy'),
         ]),
       });
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Default/Fn/Resource',
+        Match.stringLikeRegexp('.*s3ObjectStorageModeReferenceImportedBucketPolicy.*'),
+      );
     });
 
     test('fromBucketV2 grants an unnamed function read access before CloudFormation generates its name', () => {
@@ -920,30 +924,41 @@ describe('code', () => {
         'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy. ' +
         '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedBucketPolicy]',
       );
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        DependsOn: [
+          Match.stringLikeRegexp('FnServiceRole'),
+        ],
+      });
     });
 
-    test('fromBucketV2 grants Lambda decrypt access to the source KMS key', () => {
+    test('fromBucketV2 grants Lambda decrypt access to the bucket encryption key', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: {
           account: '123456789012',
           region: 'us-east-1',
         },
       });
-      const bucket = new s3.Bucket(stack, 'Bucket');
-      const key = new kms.Key(stack, 'Key');
+      const key = new kms.Key(stack, 'BucketKey', {
+        description: 'bucket encryption key',
+      });
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        encryption: s3.BucketEncryption.KMS,
+        encryptionKey: key,
+      });
 
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromBucketV2(bucket, 'Object', {
           objectVersion: 'v1',
           s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
-          sourceKMSKey: key,
         }),
         functionName: 'my-function',
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::KMS::Key', {
+        Description: 'bucket encryption key',
         KeyPolicy: {
           Statement: Match.arrayWith([
             Match.objectLike({
@@ -970,9 +985,26 @@ describe('code', () => {
           ]),
         },
       });
+      const keyResource = Object.values(template.findResources('AWS::KMS::Key'))
+        .find(resource => resource.Properties.Description === 'bucket encryption key')!;
+      const lambdaDecryptStatements = keyResource.Properties.KeyPolicy.Statement
+        .filter((statement: any) => statement.Action === 'kms:Decrypt'
+          && statement.Principal?.Service === 'lambda.amazonaws.com');
+      expect(lambdaDecryptStatements).toHaveLength(1);
+      template.hasResource('AWS::Lambda::Function', {
+        DependsOn: [
+          Match.stringLikeRegexp('BucketPolicy'),
+          Match.stringLikeRegexp('BucketKey'),
+          Match.stringLikeRegexp('FnServiceRole'),
+        ],
+      });
+      Annotations.fromStack(stack).hasNoWarning(
+        '/Default/Fn/Resource',
+        Match.stringLikeRegexp('.*s3ObjectStorageModeReferenceImportedKeyPolicy.*'),
+      );
     });
 
-    test('fromBucketV2 warns when the source KMS key policy cannot be updated', () => {
+    test('fromBucketV2 warns when the bucket encryption key policy cannot be updated', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack', {
         env: {
@@ -980,14 +1012,16 @@ describe('code', () => {
           region: 'us-east-1',
         },
       });
-      const bucket = new s3.Bucket(stack, 'Bucket');
       const key = kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/imported-key');
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        encryption: s3.BucketEncryption.KMS,
+        encryptionKey: key,
+      });
 
       new lambda.Function(stack, 'Fn', {
         code: lambda.Code.fromBucketV2(bucket, 'Object', {
           objectVersion: 'v1',
           s3ObjectStorageMode: lambda.S3ObjectStorageMode.REFERENCE,
-          sourceKMSKey: key,
         }),
         functionName: 'my-function',
         handler: 'index.handler',
@@ -997,10 +1031,16 @@ describe('code', () => {
       Annotations.fromStack(stack).hasWarning(
         '/Stack/Fn/Resource',
         'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
-        'Grant the lambda.amazonaws.com service principal kms:Decrypt on the source KMS key manually. ' +
+        'Grant the lambda.amazonaws.com service principal kms:Decrypt on the bucket encryption key manually. ' +
         'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy. ' +
         '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy]',
       );
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        DependsOn: [
+          Match.stringLikeRegexp('BucketPolicy'),
+          Match.stringLikeRegexp('FnServiceRole'),
+        ],
+      });
     });
 
     test.each([

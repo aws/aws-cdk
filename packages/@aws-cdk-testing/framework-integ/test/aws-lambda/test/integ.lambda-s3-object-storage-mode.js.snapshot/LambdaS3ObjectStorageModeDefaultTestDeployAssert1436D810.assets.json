@@ -1,16 +1,29 @@
 {
   "version": "54.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "66efb9a98318f7ca4623cda991d36623acaf4b9c1ffd4352587acb351590076e": {
+      "source": {
+        "path": "asset.66efb9a98318f7ca4623cda991d36623acaf4b9c1ffd4352587acb351590076e.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-6c059ca9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "66efb9a98318f7ca4623cda991d36623acaf4b9c1ffd4352587acb351590076e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "5e43ca10fe920f7f1ed7d03b9a2d4496675385c9da0f4a73c7649ace9ac47c18": {
       "displayName": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810 Template",
       "source": {
         "path": "LambdaS3ObjectStorageModeDefaultTestDeployAssert1436D810.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-aae53279": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "5e43ca10fe920f7f1ed7d03b9a2d4496675385c9da0f4a73c7649ace9ac47c18.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
