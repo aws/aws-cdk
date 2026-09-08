@@ -139,7 +139,7 @@ describe('LogAlarm', () => {
     alarm.addAlarmAction(aiopsAction);
 
     Annotations.fromStack(stack).hasWarning('/Default/Alarm',
-      Match.stringLikeRegexp('log alarms do not support aiops actions'));
+      Match.stringLikeRegexp('log alarms do not dispatch aiops actions'));
   });
 
   test('does not warn for a supported (SNS) action', () => {
@@ -151,7 +151,7 @@ describe('LogAlarm', () => {
     alarm.addAlarmAction(snsAction);
 
     Annotations.fromStack(stack).hasNoWarning('/Default/Alarm',
-      Match.stringLikeRegexp('do not support'));
+      Match.stringLikeRegexp('do not dispatch'));
   });
 
   test('omits logGroups when not provided (inline SOURCE query)', () => {

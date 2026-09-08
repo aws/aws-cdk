@@ -718,10 +718,9 @@ declare const topic: sns.Topic;
 logAlarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
-Log alarms support **SNS notification**, **Lambda**, and **Systems Manager OpsItem**
-actions. Other action types (for example CloudWatch investigation or Systems Manager
-Incident) are not supported and are ignored by the service; adding one emits a
-synthesis-time warning.
+Log alarms dispatch a narrower set of action types than metric alarms. An action the
+service does not dispatch is ignored rather than rejected, so adding one emits a
+synthesis-time warning where the action type can be determined from its ARN.
 
 ### Importing an Existing Log Alarm
 
