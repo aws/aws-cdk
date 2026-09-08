@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { Annotations, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -1035,6 +1035,95 @@ describe('repository', () => {
               'Resource': '*',
             },
           ],
+        },
+      });
+    });
+
+    test('grant for a CDK-owned role in a different account trusts the account root scoped by tag', () => {
+      const app = new cdk.App();
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012', region: 'us-east-1' } });
+      const repo = new ecr.Repository(stackA, 'Repo', { repositoryName: 'my-repo' });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123', region: 'us-east-1' } });
+      const role = new iam.Role(stackB, 'Role', { assumedBy: new iam.AnyPrincipal() });
+
+      repo.grantRead(role);
+
+      const roleTag = `StackB_${role.node.addr}`;
+      Template.fromStack(stackA).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Action: ['ecr:DescribeRepositories', 'ecr:DescribeImages'],
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::234567890123:root']],
+              },
+            },
+            Condition: {
+              StringEquals: { 'aws:PrincipalTag/aws-cdk:id': roleTag },
+            },
+          })]),
+        },
+      });
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: roleTag }],
+      });
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Action: ['ecr:DescribeRepositories', 'ecr:DescribeImages'],
+            Resource: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ecr:us-east-1:123456789012:repository/my-repo']],
+            },
+          })]),
+        },
+      });
+    });
+
+    test('grant for a CDK-owned role in a different account keeps the role ARN when the repository stack depends on the principal stack', () => {
+      const app = new cdk.App();
+      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012', region: 'us-east-1' } });
+      const repo = new ecr.Repository(stackA, 'Repo', { repositoryName: 'my-repo' });
+      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123', region: 'us-east-1' } });
+      const role = new iam.Role(stackB, 'Role', {
+        assumedBy: new iam.AnyPrincipal(),
+        roleName: 'MyRolePhysicalName',
+      });
+      stackA.addDependency(stackB);
+
+      repo.grantRead(role);
+
+      Template.fromStack(stackA).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Principal: {
+              AWS: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::234567890123:role/MyRolePhysicalName']],
+              },
+            },
+            Condition: Match.absent(),
+          })]),
+        },
+      });
+      Template.fromStack(stackB).resourcePropertiesCountIs('AWS::IAM::Role', {
+        Tags: [{ Key: 'aws-cdk:id', Value: Match.anyValue() }],
+      }, 0);
+    });
+
+    test('grant for an imported role in a different account keeps the role ARN', () => {
+      const stack = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012', region: 'us-east-1' } });
+      const repo = new ecr.Repository(stack, 'Repo', { repositoryName: 'my-repo' });
+      const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::234567890123:role/MyImportedRole', {
+        mutable: false,
+      });
+
+      repo.grantRead(role);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Principal: { AWS: 'arn:aws:iam::234567890123:role/MyImportedRole' },
+            Condition: Match.absent(),
+          })]),
         },
       });
     });

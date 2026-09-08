@@ -1,8 +1,9 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { App, Duration, SecretValue, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as cpactions from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -192,6 +193,58 @@ describe('S3 Deploy Action', () => {
         },
       ],
     });
+  });
+
+  test('cross-account, cross-region deploy grants the replication key via account-root and PrincipalTag when the flag is enabled', () => {
+    // Regression test for cross-account + cross-region pipelines. The cross-region replication
+    // key's policy used to reference the cross-account action role by ARN. That role is created
+    // in a separate support stack with no guaranteed deploy ordering relative to the key, so KMS
+    // rejected the key policy on first deploy ("Policy contains a statement with one or more
+    // invalid principals."). The key should instead trust the action account's root scoped down
+    // to the role's `aws-cdk:id` tag.
+    const app = new App({ context: { [cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG]: true } });
+    const stack = new Stack(app, 'PipelineStack', {
+      env: { account: '123456789012', region: 'us-west-2' },
+    });
+    // A deploy bucket that is in both another account and another region forces both a
+    // cross-account support stack (holding the action role) and a cross-region support stack
+    // (holding the replication bucket and its KMS key).
+    const deployBucket = s3.Bucket.fromBucketAttributes(stack, 'DeployBucket', {
+      bucketName: 'my-deploy-bucket',
+      account: '234567890123',
+      region: 'ap-southeast-1',
+    });
+
+    minimalPipeline(stack, { bucket: deployBucket });
+
+    const asm = app.synth();
+    const crossRegionSupportStack = asm.getStackByName('PipelineStack-support-ap-southeast-1');
+    const template = Template.fromJSON(crossRegionSupportStack.template);
+
+    // The replication key trusts the account root of the action's account, scoped by the tag,
+    // instead of the (possibly not-yet-existing) cross-account action-role ARN.
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::234567890123:root']] },
+            },
+            Condition: {
+              StringEquals: {
+                'aws:PrincipalTag/aws-cdk:id': Match.stringLikeRegexp('PipelineStack-support-234567890123_.*'),
+              },
+            },
+          }),
+        ]),
+      },
+    });
+
+    // The key policy must NOT reference the cross-account action role by ARN.
+    const keys = template.findResources('AWS::KMS::Key');
+    expect(JSON.stringify(keys)).not.toMatch(/234567890123:role\//);
   });
 });
 

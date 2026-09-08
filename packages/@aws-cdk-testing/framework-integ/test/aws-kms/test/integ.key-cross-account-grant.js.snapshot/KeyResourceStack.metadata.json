@@ -1,0 +1,28 @@
+{
+  "/KeyResourceStack/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/KeyResourceStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/KeyResourceStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/KeyResourceStack/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    }
+  ]
+}

@@ -4,7 +4,11 @@ import type { IBucketRef } from './s3.generated';
 import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../../aws-iam';
 import { AnyPrincipal, EncryptedResources, Grant, ResourceWithPolicies } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
-import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import {
+  grantCrossAccountViaPrincipalTag,
+  unsafeCrossAccountResourcePolicyPrincipal,
+} from '../../aws-iam/lib/private/cross-account-grants';
+import { FeatureFlags, Lazy, Stack, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api/index';
 
@@ -275,16 +279,38 @@ export class BucketGrants {
     resourceArn: string, ...otherResourceArns: string[]) {
     const resources = [resourceArn, ...otherResourceArns];
 
-    const result = (this.policyResource ? Grant.addToPrincipalOrResource({
-      actions: bucketActions,
-      grantee: grantee,
-      resourceArns: resources,
-      resource: this.policyResource,
-    }) : Grant.addToPrincipal({
-      actions: bucketActions,
-      grantee: grantee,
-      resourceArns: resources,
-    }));
+    let result: Grant | undefined;
+    if (FeatureFlags.of(this.bucket).isEnabled(cxapi.CROSS_ACCOUNT_GRANTS_VIA_PRINCIPAL_TAG)) {
+      const bucketStack = Stack.of(this.bucket);
+      const unsafePrincipal = unsafeCrossAccountResourcePolicyPrincipal(grantee, bucketStack.account, bucketStack);
+      if (unsafePrincipal && this.policyResource) {
+        result = grantCrossAccountViaPrincipalTag({
+          grantee,
+          principal: unsafePrincipal,
+          actions: bucketActions,
+          resource: this.policyResource,
+          identityResourceArns: resources,
+          resourcePolicyResources: resources,
+        });
+      }
+    }
+
+    if (result === undefined) {
+      if (this.policyResource) {
+        result = Grant.addToPrincipalOrResource({
+          actions: bucketActions,
+          grantee,
+          resourceArns: resources,
+          resource: this.policyResource,
+        });
+      } else {
+        result = Grant.addToPrincipal({
+          actions: bucketActions,
+          grantee,
+          resourceArns: resources,
+        });
+      }
+    }
 
     if (keyActions.length > 0) {
       this.encryptedResource?.grantOnKey(grantee, ...keyActions);
