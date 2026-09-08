@@ -116,7 +116,7 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
    */
-  public static regionalGateway(props: RegionalNatGatewayProviderProps = {}): NatProvider {
+  public static regionalGateway(props: RegionalNatGatewayProviderProps = {}): RegionalNatGatewayProvider {
     return new RegionalNatGatewayProvider(props);
   }
 
