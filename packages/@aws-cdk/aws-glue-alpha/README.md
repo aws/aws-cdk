@@ -368,6 +368,7 @@ strongly-typed prop:
 | `--enable-spark-ui`, `--spark-event-logs-path`                           | `sparkUI`                                                       |
 | `--job-language`, `--class`                                              | job class / `className`                                         |
 | `--extra-jars`, `--user-jars-first`, `--extra-py-files`, `--extra-files` | `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles` |
+| `library-set`                                                            | `librarySet` (Python Shell)                                     |
 
 The `defaultArguments` prop is the escape hatch for arguments this construct does **not** model.
 Use it for any argument without a dedicated prop:
@@ -391,8 +392,11 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
 
 To keep a single, unambiguous way to express each intent, setting a **construct-managed** argument
 (any argument in the table above) or a **Glue-reserved** argument (`--debug`, `--mode`,
-`--JOB_NAME`) through `defaultArguments` throws at synthesis time. Configure those through their
-dedicated prop instead — for example, use `continuousLogging: { enabled: false }` rather than
+`--JOB_NAME`, `--endpoint`) through `defaultArguments` throws at synthesis time. This holds even
+when the feature is turned off — for example, `enableMetrics: false` combined with
+`defaultArguments: { '--enable-metrics': '' }` throws rather than silently re-enabling metrics.
+Configure managed arguments through their dedicated prop instead — for example, use
+`continuousLogging: { enabled: false }` rather than
 `defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`.
 
 ### Enable Job Run Queuing
