@@ -1,7 +1,7 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 
 const app = new App();
@@ -14,7 +14,7 @@ const queryRole = new Role(stack, 'ScheduledQueryRole', {
 });
 
 new LogAlarm(stack, 'LogAlarm', {
-  logAlarmName: 'integ-log-alarm',
+  alarmName: 'integ-log-alarm',
   threshold: 5,
   comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
   queryResultsToEvaluate: 3,
@@ -35,7 +35,7 @@ new LogAlarm(stack, 'LogAlarm', {
 
 // Auto-created roles: no scheduledQueryRole, and actionLogLineCount > 0 to trigger the log-line role.
 new LogAlarm(stack, 'AutoRoleLogAlarm', {
-  logAlarmName: 'integ-log-alarm-auto-role',
+  alarmName: 'integ-log-alarm-auto-role',
   threshold: 1,
   comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
   queryResultsToEvaluate: 1,
@@ -52,6 +52,17 @@ new LogAlarm(stack, 'AutoRoleLogAlarm', {
   },
 });
 
-new IntegTest(app, 'LogAlarmInteg', {
+const integ = new IntegTest(app, 'LogAlarmInteg', {
   testCases: [stack],
 });
+
+// Confirms the service actually created the alarm, and that its scheduled query is not
+// stuck in a failed state (a misconfigured query role leaves the alarm in INSUFFICIENT_DATA).
+integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
+  AlarmNames: ['integ-log-alarm'],
+  AlarmTypes: ['LogAlarm'],
+}).expect(ExpectedResult.objectLike({
+  LogAlarms: Match.arrayWith([
+    Match.objectLike({ AlarmName: 'integ-log-alarm' }),
+  ]),
+}));

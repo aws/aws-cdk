@@ -2075,6 +2075,7 @@
     "interface-extends-ref:aws-cdk-lib.aws_glue.ITable",
     "interface-extends-ref:aws-cdk-lib.aws_glue.IWorkflow",
     "prefer-ref-interface:aws-cdk-lib.aws_glue.DatabaseProps.catalog",
-    "prefer-ref-interface:aws-cdk-lib.aws_glue.ConnectionProps.vpc"
+    "prefer-ref-interface:aws-cdk-lib.aws_glue.ConnectionProps.vpc",
+    "props-physical-name:aws-cdk-lib.aws_cloudwatch.LogAlarmProps"
   ]
 }

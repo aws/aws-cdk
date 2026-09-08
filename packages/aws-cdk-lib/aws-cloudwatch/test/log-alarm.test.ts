@@ -275,15 +275,15 @@ describe('LogAlarm', () => {
     )).toThrow(new RegExp(`${propName.replace('.', '\\.')} can contain at most 50 tags`));
   });
 
-  test.each([0, 256])('fails for a logAlarmName of invalid length %d', (length) => {
+  test.each([0, 256])('fails for an alarmName of invalid length %d', (length) => {
     expect(() => new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      logAlarmName: 'a'.repeat(length),
-    })).toThrow(/logAlarmName must be between 1 and 255 characters/);
+      alarmName: 'a'.repeat(length),
+    })).toThrow(/alarmName must be between 1 and 255 characters/);
   });
 
-  test('renders logAlarmName as the alarm name', () => {
-    new LogAlarm(stack, 'Alarm', { ...baseProps(), logAlarmName: 'my-log-alarm' });
+  test('renders alarmName as the alarm name', () => {
+    new LogAlarm(stack, 'Alarm', { ...baseProps(), alarmName: 'my-log-alarm' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       AlarmName: 'my-log-alarm',
@@ -333,6 +333,31 @@ describe('LogAlarm', () => {
         }),
       }),
     });
+  });
+
+  test.each([
+    ['equal to startTimeOffset', Duration.minutes(5)],
+    ['greater than startTimeOffset', Duration.minutes(10)],
+  ])('fails when endTimeOffset is %s', (_name, endTimeOffset) => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: { rate: Duration.minutes(5), startTimeOffset: Duration.minutes(5), endTimeOffset },
+      },
+    })).toThrow(/startTimeOffset must be greater than endTimeOffset/);
+  });
+
+  test('scopes the region-wide fallback to the current account', () => {
+    const props = baseProps();
+    const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
+    void logGroups;
+    new LogAlarm(stack, 'Alarm', { ...props, scheduledQueryConfiguration: sqcWithout });
+
+    const policy = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const rendered = JSON.stringify(Object.values(policy));
+    expect(rendered).not.toContain(':*:log-group');
   });
 
   test('fails when queryResultsToAlarm exceeds queryResultsToEvaluate', () => {

@@ -16,6 +16,13 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
+ * ARN service segments of the action types a log alarm dispatches.
+ *
+ * Anything else is accepted by the API and then ignored, so it is worth warning about.
+ */
+const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm', 'cloudwatch']);
+
+/**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
  */
 export interface ScheduledQuerySchedule {
@@ -78,8 +85,13 @@ export interface ScheduledQueryConfiguration {
   /**
    * The IAM role that grants CloudWatch permission to run the scheduled query.
    *
-   * Typed as `IRole` rather than `IRoleRef` because the construct adds the query
-   * permissions to this role's policy, which requires `addToPrincipalPolicy`.
+   * The construct adds the query permissions to this role, so it must be mutable.
+   * A role imported with `Role.fromRoleArn(..., { mutable: false })` discards those
+   * additions silently, and the query then fails at runtime; attach the permissions
+   * to such a role yourself.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
+   * `addToPrincipalPolicy`.
    *
    * [disable-awslint:prefer-ref-interface]
    *
@@ -148,7 +160,7 @@ export interface LogAlarmProps {
    *
    * @default - Automatically generated name
    */
-  readonly logAlarmName?: string;
+  readonly alarmName?: string;
 
   /**
    * Description for the alarm.
@@ -183,8 +195,11 @@ export interface LogAlarmProps {
   /**
    * The IAM role used to read the log lines included in notifications.
    *
-   * Typed as `IRole` rather than `IRoleRef` because the construct adds the
-   * log-line read permission to this role's policy, which requires
+   * The construct adds the log-line read permission to this role, so it must be
+   * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
+   * discards that addition silently.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
    * `addToPrincipalPolicy`.
    *
    * [disable-awslint:prefer-ref-interface]
@@ -284,7 +299,7 @@ export class LogAlarm extends AlarmBase {
 
   constructor(scope: Construct, id: string, props: LogAlarmProps) {
     super(scope, id, {
-      physicalName: props.logAlarmName,
+      physicalName: props.alarmName,
     });
 
     addConstructMetadata(this, props);
@@ -314,9 +329,9 @@ export class LogAlarm extends AlarmBase {
 
     const sqc = props.scheduledQueryConfiguration;
 
-    if (props.logAlarmName !== undefined && !Token.isUnresolved(props.logAlarmName)
-      && (props.logAlarmName.length < 1 || props.logAlarmName.length > 255)) {
-      throw new ValidationError(lit`InvalidLogAlarmName`, `logAlarmName must be between 1 and 255 characters, got ${props.logAlarmName.length}`, this);
+    if (props.alarmName !== undefined && !Token.isUnresolved(props.alarmName)
+      && (props.alarmName.length < 1 || props.alarmName.length > 255)) {
+      throw new ValidationError(lit`InvalidAlarmName`, `alarmName must be between 1 and 255 characters, got ${props.alarmName.length}`, this);
     }
 
     this.validateTagCount('tags', props.tags);
@@ -349,6 +364,14 @@ export class LogAlarm extends AlarmBase {
       if (endOffsetSeconds < 0 || endOffsetSeconds > 2592000) {
         throw new ValidationError(lit`InvalidEndTimeOffset`, `endTimeOffset must be between 0 seconds and 2592000 seconds (30 days), got ${endOffsetSeconds} seconds`, this);
       }
+    }
+
+    // The query window is [now - startTimeOffset, now - endTimeOffset], so an end offset at or
+    // beyond the start offset produces an empty window and the alarm evaluates no data.
+    if (sqc.schedule.endTimeOffset !== undefined
+      && !sqc.schedule.startTimeOffset.isUnresolved() && !sqc.schedule.endTimeOffset.isUnresolved()
+      && sqc.schedule.endTimeOffset.toSeconds() >= sqc.schedule.startTimeOffset.toSeconds()) {
+      throw new ValidationError(lit`InvalidTimeOffsetRange`, `startTimeOffset must be greater than endTimeOffset, got ${sqc.schedule.startTimeOffset.toSeconds()} and ${sqc.schedule.endTimeOffset.toSeconds()} seconds`, this);
     }
 
     props.alarmActions?.forEach(action => this.addAlarmAction(action));
@@ -453,7 +476,7 @@ export class LogAlarm extends AlarmBase {
     // cannot be inspected at synth time; this is a best-effort check on literal ARNs only.
     if (!Token.isUnresolved(arn)) {
       const service = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME).service;
-      if (service === 'aiops' || service === 'ssm-incidents') {
+      if (!SUPPORTED_ACTION_SERVICES.has(service)) {
         Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
           `log alarms do not support ${service} actions; supported actions are SNS, Lambda, and Systems Manager OpsItem. This action will be ignored by the service. Got ${JSON.stringify(arn)}`);
       }
@@ -553,7 +576,7 @@ export class LogAlarm extends AlarmBase {
    */
   private logGroupPolicyResources(logGroups?: ILogGroupRef[]): string[] {
     if (logGroups === undefined || Token.isUnresolved(logGroups) || logGroups.length === 0) {
-      return [Stack.of(this).formatArn({ service: 'logs', account: '*', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
+      return [Stack.of(this).formatArn({ service: 'logs', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
     }
     return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);
   }
