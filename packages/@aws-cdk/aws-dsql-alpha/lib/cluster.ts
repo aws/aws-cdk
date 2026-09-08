@@ -1,5 +1,6 @@
 import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib/core';
 import { RemovalPolicy, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import type { IResource } from 'aws-cdk-lib/core';
@@ -37,6 +38,13 @@ export interface ClusterProps {
    * @default - true if `removalPolicy` is RETAIN, undefined otherwise.
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * The KMS key to use to encrypt the cluster.
+   *
+   * @default - Amazon owned key.
+   */
+  readonly encryptionKey?: kms.IKeyRef;
 }
 
 /**
@@ -216,6 +224,7 @@ export class Cluster extends ClusterBase {
 
     this.cluster = new CfnCluster(this, 'Resource', {
       deletionProtectionEnabled: deletionProtection,
+      kmsEncryptionKey: props?.encryptionKey?.keyRef?.keyArn,
     });
 
     this.clusterIdentifier = this.cluster.ref;

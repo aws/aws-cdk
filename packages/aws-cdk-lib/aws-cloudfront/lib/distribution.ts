@@ -43,7 +43,10 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import {
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021,
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025,
+} from '../../cx-api';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
@@ -878,8 +881,11 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderViewerCertificate(certificate: ICertificateRef,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
-    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
-      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025)
+      ? SecurityPolicyProtocol.TLS_V1_2_2025
+      : FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
+        ? SecurityPolicyProtocol.TLS_V1_2_2021
+        : SecurityPolicyProtocol.TLS_V1_2_2019;
     const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 

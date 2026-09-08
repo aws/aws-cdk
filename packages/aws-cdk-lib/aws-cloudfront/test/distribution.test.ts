@@ -526,6 +526,59 @@ describe('certificates', () => {
     });
   });
 
+  test('use the TLSv1.2_2025 security policy when the 2025 flag is enabled', () => {
+    const flagApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025': true,
+      },
+    });
+    const flagStack = new Stack(flagApp, 'Stack', {
+      env: { account: '1234', region: 'testregion' },
+    });
+    const certificate = acm.Certificate.fromCertificateArn(flagStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    new Distribution(flagStack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com', 'www.example.com'],
+      certificate,
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          MinimumProtocolVersion: 'TLSv1.2_2025',
+        },
+      },
+    });
+  });
+
+  test('explicit minimumProtocolVersion wins over the 2025 flag', () => {
+    const flagApp = new App({
+      context: {
+        '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025': true,
+      },
+    });
+    const flagStack = new Stack(flagApp, 'Stack', {
+      env: { account: '1234', region: 'testregion' },
+    });
+    const certificate = acm.Certificate.fromCertificateArn(flagStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    new Distribution(flagStack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['www.example.com'],
+      certificate,
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          MinimumProtocolVersion: 'TLSv1.2_2019',
+        },
+      },
+    });
+  });
+
   test('adding a certificate with non default security policy protocol', () => {
     const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
     new Distribution(stack, 'Dist', {
