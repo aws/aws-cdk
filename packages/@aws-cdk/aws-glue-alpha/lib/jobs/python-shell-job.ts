@@ -1,6 +1,7 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { ValidationError } from 'aws-cdk-lib/core';
+import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -14,9 +15,13 @@ import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage, LibraryS
  */
 export interface PythonShellJobProps extends JobProps {
   /**
-   * Python Version
-   * The version of Python to use to execute this job
-   * @default 3.9 for Shell Jobs
+   * The version of Python to use to execute this job.
+   *
+   * Python shell jobs only support `PythonVersion.THREE_NINE`. The older `PythonVersion.TWO`
+   * (Python 2.7) and `PythonVersion.THREE` (Python 3.6) runtimes have been retired by AWS Glue
+   * and are no longer available for Python shell jobs.
+   *
+   * @default PythonVersion.THREE_NINE
    **/
   readonly pythonVersion?: PythonVersion;
 
@@ -85,6 +90,17 @@ export class PythonShellJob extends Job {
     super(scope, id, { physicalName: props.jobName });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    // Python 2.7 (PythonVersion.TWO) and Python 3.6 (PythonVersion.THREE) have been retired by
+    // AWS Glue for Python shell jobs; they always fail at deploy time with "The Python Shell
+    // version selected for the job is no longer available". Fail fast at synth instead.
+    if (props.pythonVersion && props.pythonVersion !== PythonVersion.THREE_NINE) {
+      throw new ValidationError(
+        lit`RetiredPythonShellVersion`,
+        `Python shell jobs only support PythonVersion.THREE_NINE, got ${JSON.stringify(props.pythonVersion)}`,
+        this,
+      );
+    }
 
     // Set up role and permissions for principal
     this.role = props.role;

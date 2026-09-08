@@ -165,17 +165,6 @@ describe('Job', () => {
       });
     });
 
-    test('is not set for non-3.9 Python versions', () => {
-      new glue.PythonShellJob(stack, 'PythonShellJob', {
-        role,
-        script,
-        pythonVersion: glue.PythonVersion.TWO,
-      });
-      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        DefaultArguments: Match.not(Match.objectLike({ 'library-set': Match.anyValue() })),
-      });
-    });
-
     test('rejects the managed `library-set` key passed via defaultArguments', () => {
       expect(() => new glue.PythonShellJob(stack, 'PythonShellJob', {
         role,
@@ -185,13 +174,26 @@ describe('Job', () => {
     });
   });
 
+  describe('Retired Python shell versions', () => {
+    test.each([glue.PythonVersion.TWO, glue.PythonVersion.THREE])(
+      'fails for retired pythonVersion %s',
+      (pythonVersion) => {
+        expect(() => new glue.PythonShellJob(stack, 'PythonShellJob', {
+          role,
+          script,
+          pythonVersion,
+        })).toThrow(/Python shell jobs only support PythonVersion.THREE_NINE/);
+      },
+    );
+  });
+
   describe('Create Python Shell Job with overridden Python verion and max capacity', () => {
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         role,
         script,
         jobName: 'PythonShellJob',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
       });
     });
@@ -205,12 +207,12 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });
@@ -227,7 +229,7 @@ describe('Job', () => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
         description: 'This is a description',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
         role,
         script,
@@ -320,12 +322,12 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });
@@ -393,7 +395,7 @@ describe('Job', () => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
         description: 'This is a description',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
         role,
         script,
@@ -493,12 +495,12 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });

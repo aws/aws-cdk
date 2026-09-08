@@ -78,12 +78,12 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
+      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: @aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
       "trace": [
         "Annotations.addMessage (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:321:38)",
-        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:105:48)",
+        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:362:38)",
+        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:112:18)",
         "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.job-python-shell.js:63:1)",
         "Module._compile (node:internal/modules/cjs/loader:1760:14)",
@@ -104,12 +104,12 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
+      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: @aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
       "trace": [
         "Annotations.addMessage (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:321:38)",
-        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:105:48)",
+        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:362:38)",
+        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:112:18)",
         "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.job-python-shell.js:67:1)",
         "Module._compile (node:internal/modules/cjs/loader:1760:14)",
@@ -130,12 +130,12 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
+      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: @aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
       "trace": [
         "Annotations.addMessage (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:321:38)",
-        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:105:48)",
+        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:362:38)",
+        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:112:18)",
         "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.job-python-shell.js:73:1)",
         "Module._compile (node:internal/modules/cjs/loader:1760:14)",
@@ -156,12 +156,12 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
+      "data": "Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html [ack: @aws-cdk/aws-glue-alpha:unencryptedContinuousLogging]",
       "trace": [
         "Annotations.addMessage (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:321:38)",
-        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:105:48)",
+        "WrappedClass.setupContinuousLogging (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/job.js:362:38)",
+        "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/jobs/python-shell-job.js:112:18)",
         "new PythonShellJob (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.job-python-shell.js:80:1)",
         "Module._compile (node:internal/modules/cjs/loader:1760:14)",
