@@ -405,7 +405,7 @@ const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
 // Create a workflow and add a trigger that runs the job
 const workflow = new glue.Workflow(stack, 'Workflow');
 workflow.addOnDemandTrigger('OnDemandTrigger', {
-  actions: [{ job }],
+  actions: [glue.Action.job(job)],
 });
 ```
 
@@ -418,21 +418,35 @@ actions list using the job or crawler objects using conditional types.
 
 #### **2. Scheduled Triggers**
 
-You can create scheduled triggers using cron expressions. This construct
-provides daily and weekly convenience functions,
-as well as a custom function that allows you to create your own
-custom timing using the [existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
-without having to build your own cron expressions. The L2 extracts
-the expression that Glue requires from the Schedule object. The constructor
-takes an optional description and a list of jobs or crawlers as actions.
+Use `addScheduledTrigger` with a `TriggerSchedule` to fire on a cron schedule.
+`TriggerSchedule.daily()` and `TriggerSchedule.weekly()` are convenience
+factories; `TriggerSchedule.cron(...)` lets you build any schedule from the
+[existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
+without writing raw cron expressions. The L2 extracts the expression that Glue
+requires from the `TriggerSchedule`.
 
-#### **3. Notify  Event Triggers**
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
+const workflow = new glue.Workflow(stack, 'Workflow');
 
-There are two types of notify event triggers: batching and non-batching.
-For batching triggers, you must specify `BatchSize`. For non-batching
-triggers, `BatchSize` defaults to 1. For both triggers, `BatchWindow`
-defaults to 900 seconds, but you can override the window to align with
-your workload's requirements.
+workflow.addScheduledTrigger('WeeklyTrigger', {
+  actions: [glue.Action.job(job)],
+  schedule: glue.TriggerSchedule.weekly(),
+});
+```
+
+#### **3. Event Triggers**
+
+Use `addEventTrigger` for EventBridge event-based triggers. There are two types:
+batching and non-batching. For batching triggers, you must specify `batchSize`.
+For non-batching triggers, `batchSize` defaults to 1. For both, `batchWindow`
+defaults to 900 seconds, but you can override the window to align with your
+workload's requirements.
 
 #### **4. Conditional Triggers**
 
@@ -451,13 +465,14 @@ certain types of data stores.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
 configuration**
-    You can specify the exact subnet of the Connection when it's defined, but
-    you are not required to. Instead, you can provide a `vpc` and, optionally, a
-    `vpcSubnets` selection, and the L2 leverages the existing
+    Configure VPC placement through the `network` property, built with
+    `ConnectionNetwork.subnet(subnet)` to pin a specific subnet, or
+    `ConnectionNetwork.vpc(vpc, vpcSubnets?)` to let the L2 select one via the
+    existing
     [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
-    library to make the best choice selection for the subnet. A Glue connection
-    targets a single subnet, so the first subnet of the selection is used.
-    `subnet` and `vpc` are mutually exclusive.
+    library. A Glue connection targets a single subnet, so the first subnet of
+    the selection is used. The two factories are mutually exclusive, so a subnet
+    and a VPC can never be combined.
 
 Pin the connection to a specific subnet:
 
@@ -469,7 +484,7 @@ new glue.Connection(this, 'MyConnection', {
   // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
 });
 ```
 
@@ -481,9 +496,8 @@ declare const vpc: ec2.Vpc;
 new glue.Connection(this, 'MyConnection', {
   type: glue.ConnectionType.NETWORK,
   securityGroups: [securityGroup],
-  vpc,
-  // Optional - defaults to private subnets
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  // vpcSubnets is optional - defaults to private subnets
+  network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
 });
 ```
 
@@ -496,7 +510,7 @@ declare const db: rds.DatabaseCluster;
 new glue.Connection(this, "RdsConnection", {
   type: glue.ConnectionType.JDBC,
   securityGroups: [securityGroup],
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
   secret: db.secret,
   properties: {
     JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
@@ -945,8 +959,9 @@ new glue.S3Table(this, 'MyTable', {
       min: '2020-01-01',
       max: '2023-12-31',
       format: 'yyyy-MM-dd',
-      interval: 1,  // optional, defaults to 1
-      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+      // `step` bundles interval + unit (supply both or neither). Optional at day
+      // precision or coarser; required when the format is sub-day (e.g. hours).
+      step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
     }),
   },
 });
