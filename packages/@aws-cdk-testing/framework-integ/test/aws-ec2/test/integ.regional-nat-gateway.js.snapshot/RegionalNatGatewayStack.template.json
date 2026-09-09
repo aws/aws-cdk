@@ -585,6 +585,7 @@
     },
     "AvailabilityMode": "regional",
     "ConnectivityType": "public",
+    "MaxDrainDurationSeconds": 600,
     "Tags": [
      {
       "Key": "Name",

@@ -17,6 +17,7 @@ class RegionalNatGatewayStack extends cdk.Stack {
     new ec2.Vpc(this, 'VpcWithEip', {
       natGatewayProvider: ec2.NatProvider.regionalGateway({
         eip,
+        maxDrainDuration: cdk.Duration.minutes(10),
       }),
       subnetConfiguration: [
         { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
