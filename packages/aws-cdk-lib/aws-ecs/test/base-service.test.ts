@@ -1,5 +1,6 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
@@ -1264,5 +1265,96 @@ describe('forceNewDeployment constructor option', () => {
         ForceNewDeploymentNonce: 'method-nonce',
       },
     });
+  });
+});
+
+describe('empty load balancers', () => {
+  let stack: cdk.Stack;
+  let service: ecs.FargateService;
+  let targetGroup: elbv2.ApplicationTargetGroup;
+
+  function setup(context?: Record<string, any>) {
+    const app = new App({ context });
+    stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 8080 }],
+    });
+    service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'Lb', { vpc });
+    targetGroup = new elbv2.ApplicationTargetGroup(stack, 'Tg', {
+      vpc,
+      port: 8080,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+    lb.addListener('Listener', { port: 80, defaultTargetGroups: [targetGroup] });
+  }
+
+  test('an attached target group renders as before', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // WHEN
+    service.attachToApplicationTargetGroup(targetGroup);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [Match.objectLike({ ContainerName: 'Container', ContainerPort: 8080 })],
+    });
+  });
+
+  test('a service with no target groups renders an empty array when the flag is enabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [],
+    });
+  });
+
+  test('a service with no target groups omits the property when the flag is disabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false });
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('LoadBalancers');
+  });
+
+  test('the property is omitted by default', () => {
+    // GIVEN
+    setup();
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('LoadBalancers');
+  });
+
+  test('emptying the target groups renders an empty array when the flag is enabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+    service.attachToApplicationTargetGroup(targetGroup);
+
+    // WHEN
+    service.loadBalancers = [];
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [],
+    });
+  });
+
+  test('the health check grace period is not set for an empty array', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('HealthCheckGracePeriodSeconds');
   });
 });
