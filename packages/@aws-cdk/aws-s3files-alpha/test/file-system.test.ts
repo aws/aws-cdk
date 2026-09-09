@@ -142,6 +142,89 @@ describe('FileSystem', () => {
     });
   });
 
+  test('grants KMS permissions on the bucket SSE-KMS key even without kmsKey prop', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const key = new kms.Key(stack, 'BucketKey');
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      versioned: true,
+      encryption: s3.BucketEncryption.KMS,
+      encryptionKey: key,
+    });
+
+    new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['kms:Decrypt']),
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('BucketKey.*'), 'Arn'] },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('scopes object permissions to the prefix when provided', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    new FileSystem(stack, 'FileSystem', {
+      bucket,
+      prefix: 'data/',
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['s3:GetObject']),
+            Resource: {
+              'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/data/*']],
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('throws when subnet selection has two subnets in the same AZ', () => {
+    const stack = new Stack();
+    // maxAzs: 1 with 2 subnet configs yields two subnets in the same AZ.
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 1,
+      subnetConfiguration: [
+        { name: 'a', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+        { name: 'b', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      ],
+    });
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    expect(() => {
+      new FileSystem(stack, 'FileSystem', {
+        bucket,
+        vpcConfiguration: {
+          vpc,
+          vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+        },
+      });
+    }).toThrow(/Only one mount target is allowed per Availability Zone/);
+  });
+
   test('supports ipAddressType on mount targets', () => {
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });

@@ -1,4 +1,4 @@
-import { ArnFormat, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, Token, ValidationError } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -471,9 +471,23 @@ export class FileSystem extends FileSystemBase {
     this.fileSystemArn = this._resource.ref;
     this.fileSystemId = this._resource.attrFileSystemId;
 
-    // Create mount targets
+    // Create mount targets. S3 Files allows only one mount target per
+    // Availability Zone, so reject a subnet selection with two subnets in the
+    // same AZ early rather than failing at deploy time.
     const subnets = props.vpcConfiguration.vpc.selectSubnets(props.vpcConfiguration.vpcSubnets).subnets;
+    // Compare the raw `availabilityZone` values. Two subnets with the same
+    // value — whether a concrete AZ or the identical unresolved token — are in
+    // the same AZ, which S3 Files rejects. Distinct tokens that happen to
+    // resolve to the same AZ can't be detected at synth time.
+    const seenAzs = new Set<string>();
     for (const subnet of subnets) {
+      if (seenAzs.has(subnet.availabilityZone)) {
+        throw new ValidationError(
+          lit`DuplicateMountTargetAz`,
+          'Only one mount target is allowed per Availability Zone, but the subnet selection includes multiple subnets in the same Availability Zone',
+          this);
+      }
+      seenAzs.add(subnet.availabilityZone);
       const mountTarget = new CfnMountTarget(this, `MountTarget-${subnet.node.id}`, {
         fileSystemId: this.fileSystemId,
         subnetId: subnet.subnetId,
@@ -548,6 +562,10 @@ export class FileSystem extends FileSystemBase {
     }));
 
     // Object-level permissions, including versioning and multipart uploads.
+    // Scope to the configured prefix when one is provided.
+    const objectResource = props.prefix !== undefined
+      ? props.bucket.arnForObjects(`${props.prefix}*`)
+      : props.bucket.arnForObjects('*');
     role.addToPolicy(new iam.PolicyStatement({
       actions: [
         's3:GetObject',
@@ -558,7 +576,7 @@ export class FileSystem extends FileSystemBase {
         's3:ListMultipartUploadParts',
         's3:AbortMultipartUpload',
       ],
-      resources: [props.bucket.arnForObjects('*')],
+      resources: [objectResource],
     }));
 
     role.addToPolicy(new iam.PolicyStatement({
@@ -604,7 +622,19 @@ export class FileSystem extends FileSystemBase {
       ],
     }));
 
+    // Grant KMS permissions for every key the service must use to read/write
+    // objects. This includes the bucket's own SSE-KMS key (if any) — without it
+    // s3:HeadObject/GetObject fail with access denied when the bucket is
+    // encrypted with a customer-managed key — as well as any explicitly provided
+    // file system key.
+    const kmsKeyArns = new Set<string>();
+    if (props.bucket.encryptionKey) {
+      kmsKeyArns.add(props.bucket.encryptionKey.keyArn);
+    }
     if (props.kmsKey) {
+      kmsKeyArns.add(props.kmsKey.keyArn);
+    }
+    if (kmsKeyArns.size > 0) {
       role.addToPolicy(new iam.PolicyStatement({
         actions: [
           'kms:GenerateDataKey',
@@ -613,7 +643,7 @@ export class FileSystem extends FileSystemBase {
           'kms:ReEncryptFrom',
           'kms:ReEncryptTo',
         ],
-        resources: [props.kmsKey.keyArn],
+        resources: Array.from(kmsKeyArns),
         conditions: {
           StringLike: {
             'kms:ViaService': 's3.*.amazonaws.com',
@@ -639,10 +669,11 @@ export class FileSystem extends FileSystemBase {
         }
       }
 
-      // `toDays` throws for fractional day durations (and for unresolved tokens),
-      // so we only need to bound-check the value here.
+      // Only range-check resolved values. `toDays` guards against fractional
+      // days but not against token-based durations, so skip the bound check
+      // when the value is unresolved.
       const days = dataExpiration.toDays();
-      if (days < 1 || days > 365) {
+      if (!Token.isUnresolved(days) && (days < 1 || days > 365)) {
         throw new ValidationError(lit`DataExpirationInvalid`, 'dataExpiration must be between 1 and 365 days', this);
       }
     }
