@@ -656,6 +656,13 @@ export class FileSystem extends FileSystemBase {
   }
 
   private validateProps(props: FileSystemProps): void {
+    // The file system prefix must end with '/' (or be empty) to denote a
+    // directory. Skip validation for unresolved tokens.
+    if (props.prefix !== undefined && !Token.isUnresolved(props.prefix)
+      && props.prefix !== '' && !props.prefix.endsWith('/')) {
+      throw new ValidationError(lit`PrefixInvalid`, `prefix must be empty or end with '/': '${props.prefix}'`, this);
+    }
+
     if (props.synchronizationConfiguration) {
       const { importDataRules, dataExpiration } = props.synchronizationConfiguration;
 
@@ -664,7 +671,7 @@ export class FileSystem extends FileSystemBase {
       }
 
       for (const rule of importDataRules) {
-        if (rule.prefix !== '' && !rule.prefix.endsWith('/')) {
+        if (!Token.isUnresolved(rule.prefix) && rule.prefix !== '' && !rule.prefix.endsWith('/')) {
           throw new ValidationError(lit`ImportDataRulePrefixInvalid`, `importDataRule prefix must be empty or end with '/': '${rule.prefix}'`, this);
         }
       }
