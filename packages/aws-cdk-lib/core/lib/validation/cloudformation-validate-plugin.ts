@@ -64,7 +64,7 @@ export interface CloudFormationValidatePluginProps {
    * @default true
    */
   readonly includeDefaultRules?: boolean;
-  
+
   /**
    * Path to a directory containing additional CloudFormation resource provider
    * schema files (JSON) to merge with the bundled schemas.
