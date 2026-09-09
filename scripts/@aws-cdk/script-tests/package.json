@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.12",
     "@types/jest": "^29.5.14"
   },
   "jest": {
