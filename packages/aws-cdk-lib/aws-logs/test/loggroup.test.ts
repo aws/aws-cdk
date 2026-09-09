@@ -1117,6 +1117,49 @@ test('set more than 20 field indexes in a field index policy', () => {
   expect(message).toEqual('A maximum of 20 fields can be indexed per log group');
 });
 
+test('fails when a field index name exceeds 100 characters', () => {
+  // GIVEN
+  const tooLongFieldName = 'a'.repeat(101);
+
+  let message;
+  try {
+    // WHEN
+    new FieldIndexPolicy({
+      fields: [tooLongFieldName],
+    });
+  } catch (e) {
+    message = (e as Error).message;
+  }
+
+  // THEN
+  expect(message).toBeDefined();
+  expect(message).toMatch(/field index name .* maximum of 100 characters/);
+});
+
+test('accepts a field index name of exactly 100 characters', () => {
+  // GIVEN
+  const stack = new Stack();
+  const boundaryFieldName = 'a'.repeat(100);
+  const fieldIndexPolicy = new FieldIndexPolicy({
+    fields: [boundaryFieldName],
+  });
+
+  // WHEN
+  const logGroupName = 'test-field-index-name-boundary';
+  new LogGroup(stack, 'LogGroup', {
+    logGroupName: logGroupName,
+    fieldIndexPolicies: [fieldIndexPolicy],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: logGroupName,
+    FieldIndexPolicies: [{
+      Fields: [boundaryFieldName],
+    }],
+  });
+});
+
 describe('subscription filter', () => {
   test('add subscription filter with custom name', () => {
     // GIVEN
