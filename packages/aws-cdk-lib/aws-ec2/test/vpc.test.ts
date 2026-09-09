@@ -3,7 +3,7 @@ import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Duration, Fn, Lazy, Stack, Tags, Token } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
-import type { NatInstanceProps, PublicSubnet } from '../lib';
+import type { NatInstanceProps } from '../lib';
 import {
   AclCidr,
   AclTraffic,
@@ -26,6 +26,7 @@ import {
   Peer,
   Port,
   PrivateSubnet,
+  PublicSubnet,
   RouterType,
   Subnet,
   SubnetType,
@@ -1296,6 +1297,21 @@ describe('vpc', () => {
         maxDrainDuration: Duration.seconds(Lazy.number({ produce: () => 600 })),
       });
       new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+        MaxDrainDurationSeconds: 600,
+      });
+    });
+
+    test('PublicSubnet.addNatGateway forwards maxDrainDuration to the NAT gateway', () => {
+      const stack = new Stack();
+      const subnet = new PublicSubnet(stack, 'Subnet', {
+        vpcId: 'vpc-1234',
+        availabilityZone: stack.availabilityZones[0],
+        cidrBlock: '10.0.0.0/28',
+      });
+
+      subnet.addNatGateway(undefined, Duration.minutes(10));
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
         MaxDrainDurationSeconds: 600,
