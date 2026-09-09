@@ -1501,21 +1501,115 @@ describe('Runtime metrics and grant methods tests', () => {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
       Statistic: 'Sum',
+      // Dimensions synth in alphabetical order by Name. Assert each dimension
+      // in its own arrayWith, not in one ordered array.
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
         Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
       ]),
     });
+    // Regression guard: the buggy shape emitted a `Service` dimension.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
   });
 
-  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
+  test('metricLatency() emits per-resource Operation/Name/Resource dimensions and no Service', () => {
+    alarmForMetric('LatencyDimAlarm', runtime.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'InvokeAgentRuntime' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: { 'Fn::GetAtt': [Match.stringLikeRegexp('.*'), 'AgentRuntimeArn'] } }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Service' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() produces Invocations with only the AggregateOperation dimension', () => {
     alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Invocations',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      // Aggregated metrics carry one dimension: AggregateOperation.
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('metricInvocationsAggregated() merges a caller-supplied dimension onto the AggregateOperation path', () => {
+    alarmForMetric('InvocAggOverrideAlarm', runtime.metricInvocationsAggregated({
+      dimensionsMap: { Foo: 'bar' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // The caller dimension merges onto the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Foo', Value: 'bar' }),
+      ]),
+    });
+    // The AggregateOperation dimension stays present with the override.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }),
       ]),
     });
   });
@@ -1586,15 +1680,83 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
+  test('metricSessionsAggregated() produces Sessions with only the AggregateOperation dimension', () => {
     alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
       MetricName: 'Sessions',
       Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: [{ Name: 'AggregateOperation', Value: 'InvokeAgentRuntime' }],
+    });
+    // Guard: per-resource dimensions must be absent on the aggregated metric.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Operation' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Name' }),
+      ])),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Dimensions: Match.not(Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ])),
+    });
+  });
+
+  test('caller-supplied dimensionsMap overrides the per-resource defaults', () => {
+    alarmForMetric('OverrideAlarm', runtime.metricInvocations({
+      dimensionsMap: { Operation: 'CustomOp', Resource: 'custom-resource' },
+    }));
+
+    const template = Template.fromStack(stack);
+    // Overridden dimensions win (order-independent per-dimension assertions).
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
       Dimensions: Match.arrayWith([
-        Match.objectLike({ Name: 'Resource', Value: 'All' }),
+        Match.objectLike({ Name: 'Operation', Value: 'CustomOp' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource', Value: 'custom-resource' }),
+      ]),
+    });
+    // The un-overridden default (Name) is still present.
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('.*::DEFAULT$') }),
+      ]),
+    });
+  });
+
+  test('unnamed runtime resolves Name to a concrete synth string ending ::DEFAULT', () => {
+    // A runtime without runtimeName gets a Lazy token (Names.uniqueResourceName)
+    // that resolves at synth to a plain string, NOT an Fn::Join.
+    const repository = new ecr.Repository(stack, 'TokenRepository', {
+      repositoryName: 'token-agent-runtime',
+    });
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const unnamed = new Runtime(stack, 'unnamed-runtime', {
+      agentRuntimeArtifact,
+    });
+
+    alarmForMetric('TokenNameAlarm', unnamed.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Name', Value: Match.stringLikeRegexp('^[^{]*::DEFAULT$') }),
       ]),
     });
   });
@@ -3314,6 +3476,121 @@ describe('Runtime observability tests', () => {
         },
       ],
     });
+  });
+
+  test('Should not create X-Ray resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoXRayPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    // X-Ray resource policy should NOT be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+  });
+
+  test('Should not create CloudWatch Logs resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoCwlPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedLogGroupArn = stack.resolve(logGroup.logGroupArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: resolvedLogGroupArn,
+    });
+
+    // CloudWatch Logs resource policy should NOT be created
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
+  });
+
+  test('Should not create any delivery resource policies when manageDeliveryResourcePolicy is false with both tracing and logging', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoPoliciesStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    new Runtime(stack, 'FullObservabilityRuntime', {
+      runtimeName: 'full_observability_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Neither X-Ray nor CloudWatch Logs resource policies should be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
   });
 });
 
