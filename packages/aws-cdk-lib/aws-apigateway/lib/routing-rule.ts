@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import type { IDomainNameRef } from './apigateway.generated';
 import { RestApiBase } from './restapi';
 import type { IRestApi } from './restapi';
-import type { Stage } from './stage';
+import type { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IResource } from '../../core';
 import { Resource, Token } from '../../core';
@@ -98,7 +98,7 @@ export interface RoutingRuleAction {
    *
    * @default - the deployment stage of the target REST API
    */
-  readonly stage?: Stage;
+  readonly stage?: IStage;
 
   /**
    * Strip the matched base path before forwarding to the target API.
@@ -148,7 +148,9 @@ const MAX_PRIORITY = 1_000_000;
 const MAX_HEADER_CONDITIONS = 2;
 const MAX_HEADER_NAME_LENGTH = 40;
 const MAX_HEADER_GLOB_LENGTH = 128;
-// Max total length (incl. wildcards) of an infix-match glob.
+// Max total length (incl. wildcards) of an infix-match glob. Not in the API reference,
+// which documents only the 128-char value glob limit; the 40-char infix cap was observed
+// against the service (a 41-char infix glob is rejected).
 const MAX_INFIX_GLOB_LENGTH = 40;
 const MAX_BASE_PATH_LENGTH = 128;
 
