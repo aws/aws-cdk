@@ -196,6 +196,24 @@ const crossAccountSearch = new cloudwatch.SearchExpression({
 });
 ```
 
+Like `Metric` and `MathExpression`, a `SearchExpression` can be hidden from a
+graph by setting `visible: false`. The time series stay on the widget without
+being rendered, so they can still be toggled on in the CloudWatch console:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+const hiddenSearch = new cloudwatch.SearchExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)",
+  label: 'EC2 CPU Utilization',
+  visible: false,
+});
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  left: [hiddenSearch],
+}));
+```
+
 ### Aggregation
 
 To graph or alarm on metrics you must aggregate them first, using a function
