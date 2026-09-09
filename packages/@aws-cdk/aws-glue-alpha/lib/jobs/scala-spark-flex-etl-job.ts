@@ -81,10 +81,10 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
     addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -121,15 +121,11 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: ScalaSparkFlexEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.SCALA;
-    args['--class'] = props.className;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: ScalaSparkFlexEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.SCALA);
+    this.setManagedArgument('--class', props.className);
+    this.setupExtraCodeArguments(props);
   }
 }
