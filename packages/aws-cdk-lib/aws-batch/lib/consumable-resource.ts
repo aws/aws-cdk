@@ -1,8 +1,11 @@
 import type { Construct } from 'constructs';
 import { CfnConsumableResource } from './batch.generated';
 import type { IResource } from '../../core';
-import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import { ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IConsumableResourceRef, ConsumableResourceReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
@@ -66,12 +69,22 @@ export interface ConsumableResourceProps {
  *
  * Consumable resources are finite resources that are consumed by jobs,
  * such as third-party software licenses or API rate limits.
+ *
+ * @resource AWS::Batch::ConsumableResource
  */
+@propertyInjectable
 export class ConsumableResource extends Resource implements IConsumableResource {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ConsumableResource';
+
   /**
    * Import an existing consumable resource from its ARN
    */
   public static fromConsumableResourceArn(scope: Construct, id: string, consumableResourceArn: string): IConsumableResource {
+    if (Token.isUnresolved(consumableResourceArn)) {
+      throw new ValidationError(lit`ConsumableResourceArnCannotBeUnresolvedToken`, 'consumableResourceArn cannot be an unresolved token', scope);
+    }
+
     const stack = Stack.of(scope);
     class Import extends Resource implements IConsumableResource {
       public readonly consumableResourceArn = consumableResourceArn;
@@ -111,9 +124,11 @@ export class ConsumableResource extends Resource implements IConsumableResource 
     super(scope, id, {
       physicalName: props.consumableResourceName,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (props.totalQuantity < 1) {
-      throw new ValidationError(`totalQuantity must be at least 1, got ${props.totalQuantity}`, this);
+      throw new ValidationError(lit`TotalQuantityTooSmall`, `totalQuantity must be at least 1, got ${props.totalQuantity}`, this);
     }
 
     this.resource = new CfnConsumableResource(this, 'Resource', {

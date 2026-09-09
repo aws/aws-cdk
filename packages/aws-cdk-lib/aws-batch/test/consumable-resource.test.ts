@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { Stack } from '../../core';
+import { App, CfnOutput, Fn, Stack } from '../../core';
 import { ConsumableResource, ConsumableResourceType } from '../lib';
 
 describe('ConsumableResource', () => {
@@ -83,5 +83,54 @@ describe('ConsumableResource', () => {
     // THEN
     expect(imported.consumableResourceArn).toBe('arn:aws:batch:us-east-1:123456789012:consumable-resource/my-resource');
     expect(imported.consumableResourceName).toBe('my-resource');
+  });
+
+  test('consumableResourceArn resolves to the resource reference within the same environment', () => {
+    // WHEN
+    const resource = new ConsumableResource(stack, 'MyResource', {
+      consumableResourceName: 'my-license',
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 100,
+    });
+
+    // THEN
+    // `Ref` of AWS::Batch::ConsumableResource is the ARN, so no ARN needs to be constructed here.
+    const logicalId = Object.keys(Template.fromStack(stack).findResources('AWS::Batch::ConsumableResource'))[0];
+    expect(stack.resolve(resource.consumableResourceArn)).toEqual({ Ref: logicalId });
+  });
+
+  test('consumableResourceArn is constructed from batch ARN components when referenced across accounts', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer', { env: { account: '123456789012', region: 'us-east-1' } });
+    const consumer = new Stack(app, 'Consumer', { env: { account: '234567890123', region: 'us-east-1' } });
+
+    const resource = new ConsumableResource(producer, 'MyResource', {
+      consumableResourceName: 'my-license',
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 100,
+    });
+
+    // WHEN
+    new CfnOutput(consumer, 'Output', { value: resource.consumableResourceArn });
+
+    // THEN
+    // Pins the service, resource segment and the slash separator used by getResourceArnAttribute.
+    Template.fromStack(consumer).hasOutput('Output', {
+      Value: {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':batch:us-east-1:123456789012:consumable-resource/my-license',
+        ]],
+      },
+    });
+  });
+
+  test('fromConsumableResourceArn throws when given an unresolved token', () => {
+    // WHEN / THEN
+    expect(() => {
+      ConsumableResource.fromConsumableResourceArn(stack, 'ImportedResource', Fn.importValue('SomeArn'));
+    }).toThrow(/consumableResourceArn cannot be an unresolved token/);
   });
 });
