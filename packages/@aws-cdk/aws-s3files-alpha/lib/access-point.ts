@@ -1,4 +1,4 @@
-import { ArnFormat, type IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, Fn, type IResource, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -188,7 +188,12 @@ export class AccessPoint extends AccessPointBase {
           // ARN format: arn:...:file-system/${FileSystemId}/access-point/${AccessPointId}
           this.accessPointArn = attrs.accessPointArn;
           const resourceName = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-          this.accessPointId = resourceName.split('/').pop()!;
+          // resourceName is `${FileSystemId}/access-point/${AccessPointId}`; the
+          // access point id is the third segment. `split().pop()` is a no-op on
+          // unresolved tokens, so use Fn.select/Fn.split in that case.
+          this.accessPointId = Token.isUnresolved(resourceName)
+            ? Fn.select(2, Fn.split('/', resourceName))
+            : resourceName.split('/').pop()!;
         } else {
           this.accessPointId = attrs.accessPointId!;
           // The access point ARN is the file system ARN with the access point
