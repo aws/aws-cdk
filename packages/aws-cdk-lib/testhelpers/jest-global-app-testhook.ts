@@ -2,6 +2,17 @@
 // Used via Jest's `setupFilesAfterEnv` in both aws-cdk-lib and alpha module test suites.
 
 import * as cdk from '../core';
+import { getTemporarySchemasDirectory, hasTemporarySchemas } from './temporary-schema-validation';
+
+// Configure the validation plugin singleton ONCE at module load.
+// When temporary schemas are present (aws-cdk-private), the singleton is pre-configured
+// with schema overlays so it recognizes pre-GA properties. This avoids per-App plugin
+// registration which conflicts with tests that register their own plugin.
+if (hasTemporarySchemas()) {
+  cdk.CloudFormationValidatePlugin._configureSingleton({
+    _additionalSchemasDirectory: getTemporarySchemasDirectory(),
+  });
+}
 
 const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
 (globalThis as any)[APP_INIT_HOOK_SYMBOL] = (app: cdk.App) => {
@@ -9,9 +20,9 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::W7001', reason: 'Tests do not always reference mappings' },
     { id: 'CloudFormation-Validate::W9008', reason: 'Do not care about storage encryption of RDS instances in tests' },
-    { id: 'CloudFormation-Validate::W3010', reason: 'Tests hardcode availability zone strings' },
     { id: 'CloudFormation-Validate::W3696', reason: 'Service is about to get shut down, no reason not to test' },
     { id: 'CloudFormation-Validate::F3031', reason: 'Some test value does not match the expected regex' },
+    { id: 'CloudFormation-Validate::F3017', reason: 'Many tests use placeholder KMS key identifiers; valid forms are documented at https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id' },
     { id: 'CloudFormation-Validate::E1151', reason: 'vpc-12345 is not a valid VPC ID' },
     { id: 'CloudFormation-Validate::W2001', reason: 'Parameter is not used in the template' },
     { id: 'CloudFormation-Validate::E1156', reason: 'Many of our Role ARN literals are bogus' },
