@@ -861,7 +861,7 @@ export class Runtime extends RuntimeBase {
     const stackRegion = Stack.of(this).region;
     if (region && region !== '' && region !== stackRegion && !Token.isUnresolved(stackRegion)) {
       Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-bedrock-agentcore:iamRoleCrossAccount',
+        '@aws-cdk/aws-bedrock-agentcore:iamRoleCrossRegion',
         `IAM role ARN contains a region (${region}) that doesn't match the stack region (${stackRegion}). ` +
         'IAM is a global service, so this might be intentional.',
       );
