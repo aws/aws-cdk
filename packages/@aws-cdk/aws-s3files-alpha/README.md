@@ -29,7 +29,7 @@ automatically exported back to the bucket after a short idle period.
 > not have versioning enabled, so make sure to create the bucket with
 > `versioned: true`.
 
-Create an S3 Bucket backed by a File System:
+Create a File System backed by an S3 Bucket:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -110,6 +110,30 @@ declare const lambdaFunction: lambda.Function;
 fileSystem.grants.read(lambdaFunction);
 fileSystem.grants.readWrite(lambdaFunction);
 fileSystem.grants.rootAccess(lambdaFunction);
+```
+
+## Metrics
+
+Use the metric methods to monitor the file system in CloudWatch:
+
+```ts
+declare const fileSystem: s3files.FileSystem;
+
+// Convenience methods for common metrics
+const readBytes = fileSystem.metricDataReadBytes();
+const writeBytes = fileSystem.metricDataWriteBytes();
+
+// Any metric by name, with custom options
+const clientConnections = fileSystem.metric('ClientConnections', {
+  period: Duration.minutes(5),
+  statistic: 'Maximum',
+});
+
+new cloudwatch.Alarm(this, 'HighReadBytes', {
+  metric: readBytes,
+  threshold: 1_000_000_000,
+  evaluationPeriods: 3,
+});
 ```
 
 ## File System Policy

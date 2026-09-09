@@ -245,6 +245,23 @@ describe('FileSystem', () => {
     });
   });
 
+  test('validates the file system prefix format', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    expect(() => {
+      new FileSystem(stack, 'FileSystem', {
+        bucket,
+        prefix: 'data',
+        vpcConfiguration: {
+          vpc,
+          vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+        },
+      });
+    }).toThrow(/prefix must be empty or end with/);
+  });
+
   test('validates importDataRules count', () => {
     const stack = new Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
