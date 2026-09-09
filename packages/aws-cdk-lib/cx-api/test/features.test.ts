@@ -53,6 +53,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
     [feats.DOCKERFILE_SPECIFIC_IGNORE_FILE]: false,
+    [feats.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false,
 
   });
 });
