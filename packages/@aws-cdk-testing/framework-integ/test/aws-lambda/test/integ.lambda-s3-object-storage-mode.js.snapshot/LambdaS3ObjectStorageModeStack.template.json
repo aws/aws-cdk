@@ -34,6 +34,18 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         },
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "s3.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
          }
         },
         "ArnLike": {
@@ -71,6 +83,18 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         },
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "s3.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
          }
         },
         "ArnLike": {

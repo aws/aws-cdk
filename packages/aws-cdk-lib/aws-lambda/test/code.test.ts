@@ -974,6 +974,7 @@ describe('code', () => {
                 },
                 StringEquals: {
                   'aws:SourceAccount': '123456789012',
+                  'kms:ViaService': 's3.us-east-1.amazonaws.com',
                 },
               },
               Effect: 'Allow',
@@ -1030,8 +1031,8 @@ describe('code', () => {
 
       Annotations.fromStack(stack).hasWarning(
         '/Stack/Fn/Resource',
-        'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
-        'Grant the lambda.amazonaws.com service principal kms:Decrypt on the bucket encryption key manually. ' +
+        'Cannot update the policy of the KMS key encrypting the code bucket for S3ObjectStorageMode.REFERENCE. ' +
+        'Grant the lambda.amazonaws.com service principal kms:Decrypt on that key manually. ' +
         'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy. ' +
         '[ack: @aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy]',
       );

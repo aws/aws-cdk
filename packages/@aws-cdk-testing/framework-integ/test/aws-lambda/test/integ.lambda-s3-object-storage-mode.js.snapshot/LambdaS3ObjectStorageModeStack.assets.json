@@ -71,16 +71,16 @@
         }
       }
     },
-    "ffff1b2462e5188472a7eea50557eaa7363942b4b8ef9a9a91631fed86cfba6e": {
+    "56732f495ef0c35b24eb2e6c5c92cafedb66e8c7e9cc4a0af0264a13abfc676b": {
       "displayName": "LambdaS3ObjectStorageModeStack Template",
       "source": {
         "path": "LambdaS3ObjectStorageModeStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d2bcf7eb": {
+        "current_account-current_region-651c4182": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ffff1b2462e5188472a7eea50557eaa7363942b4b8ef9a9a91631fed86cfba6e.json",
+          "objectKey": "56732f495ef0c35b24eb2e6c5c92cafedb66e8c7e9cc4a0af0264a13abfc676b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

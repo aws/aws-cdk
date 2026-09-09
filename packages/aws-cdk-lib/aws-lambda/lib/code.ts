@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { Dependable, type Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnFunction, CfnLayerVersion } from './lambda.generated';
 import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
@@ -428,59 +428,64 @@ export class S3CodeV2 extends Code {
       );
     }
 
-    const lambdaServicePrincipal = new iam.ServicePrincipal('lambda.amazonaws.com').withConditions({
+    const lambdaServicePrincipal = new iam.ServicePrincipal('lambda.amazonaws.com');
+    const conditions = {
       StringEquals: {
         'aws:SourceAccount': stack.account,
       },
       ArnLike: {
         'aws:SourceArn': sourceArn,
       },
-    });
-    const bucketGrant = iam.Grant.addToPrincipalOrResource({
+    };
+    const bucketPolicyResult = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
         's3:GetObject',
         's3:GetObjectVersion',
       ],
-      grantee: lambdaServicePrincipal,
-      resourceArns: [this.bucket.arnForObjects(this.key)],
-      resource: this.bucket,
-    });
-    if (!this.grantWasApplied(bucketGrant)) {
+      resources: [this.bucket.arnForObjects(this.key)],
+      principals: [lambdaServicePrincipal],
+      conditions,
+    }));
+    if (bucketPolicyResult.statementAdded) {
+      // The bucket policy must exist before Lambda creates the resource and reads the object.
+      if (bucketPolicyResult.policyDependable) {
+        resource.node.addDependency(bucketPolicyResult.policyDependable);
+      }
+    } else {
       cdk.Annotations.of(resource).addWarningV2(
         '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedBucketPolicy',
         'Cannot update the policy of an imported bucket for S3ObjectStorageMode.REFERENCE. ' +
         'Grant the lambda.amazonaws.com service principal s3:GetObject and s3:GetObjectVersion on the referenced object manually. ' +
         'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
       );
-    } else {
-      bucketGrant.applyBefore(resource);
     }
 
-    if (this.bucket.encryptionKey) {
-      // Grant does not expose whether an imported KMS key accepted a resource-policy statement.
-      // Add the statement once and inspect the result so an imported key can produce an actionable warning.
-      const keyPolicyResult = this.bucket.encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+    const encryptionKey = this.bucket.encryptionKey;
+    if (encryptionKey) {
+      const keyPolicyResult = encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
         actions: ['kms:Decrypt'],
         principals: [lambdaServicePrincipal],
         resources: ['*'],
-      }));
-      if (!keyPolicyResult.statementAdded) {
+        conditions: {
+          StringEquals: {
+            ...conditions.StringEquals,
+            'kms:ViaService': `s3.${stack.region}.amazonaws.com`,
+          },
+          ArnLike: conditions.ArnLike,
+        },
+      }), true);
+      if (keyPolicyResult.statementAdded) {
+        // The key policy is inline on the key resource, so the key must exist before Lambda reads the object.
+        resource.node.addDependency(encryptionKey);
+      } else {
         cdk.Annotations.of(resource).addWarningV2(
           '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy',
-          'Cannot update the policy of an imported KMS key for S3ObjectStorageMode.REFERENCE. ' +
-          'Grant the lambda.amazonaws.com service principal kms:Decrypt on the bucket encryption key manually. ' +
+          'Cannot update the policy of the KMS key encrypting the code bucket for S3ObjectStorageMode.REFERENCE. ' +
+          'Grant the lambda.amazonaws.com service principal kms:Decrypt on that key manually. ' +
           'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
         );
-      } else {
-        resource.node.addDependency(this.bucket.encryptionKey);
       }
     }
-  }
-
-  private grantWasApplied(grant: iam.Grant): boolean {
-    // Grant.success includes attempted resource statements even when an imported resource declines the policy update.
-    // A resource-policy grant only creates dependency roots when the statement was actually applied.
-    return grant.success && Dependable.of(grant).dependencyRoots.length > 0;
   }
 }
 
