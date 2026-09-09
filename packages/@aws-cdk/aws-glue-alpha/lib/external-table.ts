@@ -13,13 +13,17 @@ import { TableBase } from './table-base';
 export interface ExternalTableProps extends TableBaseProps {
   /**
    * The connection the table will use when performing reads and writes.
+   *
+   * @default - No connection
    */
   readonly connection: IConnection;
 
   /**
    * The data source location of the glue table, (e.g. `default_db_public_example` for Redshift).
    *
-   * This overrides both `bucket` and `s3Prefix`.
+   * If this property is set, it will override both `bucket` and `s3Prefix`.
+   *
+   * @default - No outsourced data source location
    */
   readonly externalDataLocation: string;
 }
