@@ -351,6 +351,16 @@ export interface SearchExpressionOptions {
   readonly color?: string;
 
   /**
+   * Whether the time series produced by this search expression should be visible in dashboard graphs.
+   *
+   * Setting this to false keeps the time series on the widget without rendering
+   * them, so they can still be toggled on in the CloudWatch console.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * The period over which the search expression's statistics are applied.
    *
    * This period overrides the period defined within the search expression.
@@ -1041,6 +1051,11 @@ export class SearchExpression implements IMetric {
   public readonly color?: string;
 
   /**
+   * Whether the time series produced by this search expression should be visible in dashboard graphs.
+   */
+  public readonly visible?: boolean;
+
+  /**
    * The aggregation period for the metrics produced by the Search Expression.
    */
   public readonly period: cdk.Duration;
@@ -1070,6 +1085,7 @@ export class SearchExpression implements IMetric {
     this.expression = props.expression;
     this.label = props.label;
     this.color = props.color;
+    this.visible = props.visible;
     this.period = props.period || cdk.Duration.minutes(5);
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
@@ -1092,6 +1108,7 @@ export class SearchExpression implements IMetric {
   public with(props: SearchExpressionOptions): SearchExpression {
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
       && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
       && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
@@ -1102,6 +1119,7 @@ export class SearchExpression implements IMetric {
       expression: this.expression,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      visible: ifUndefined(props.visible, this.visible),
       period: ifUndefined(props.period, this.period),
       searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
       searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
@@ -1134,6 +1152,7 @@ export class SearchExpression implements IMetric {
       renderingProperties: {
         label: this.label,
         color: this.color,
+        visible: this.visible,
       },
     };
   }
