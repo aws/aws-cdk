@@ -468,7 +468,11 @@ export class TaskDefinition extends TaskDefinitionBase {
   private _passRoleStatement?: iam.PolicyStatement;
 
   /**
-   * The runtime platform (operating system family and CPU architecture) for the task definition.
+   * The runtime platform (operating system family and CPU architecture) for the task definition,
+   * or `undefined` if none was configured.
+   *
+   * Intentionally public: `runtimePlatform` is already public API as an input prop and on the
+   * underlying L1 `CfnTaskDefinition`, so reading it back from the L2 is deliberate read-parity.
    */
   public get runtimePlatform(): RuntimePlatform | undefined {
     return this._runtimePlatform;
