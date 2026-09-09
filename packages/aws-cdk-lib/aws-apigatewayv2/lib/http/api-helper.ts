@@ -1,5 +1,6 @@
-import { IHttpApiRef } from './api';
+import type { IHttpApiRef } from './api';
 import { ArnFormat, Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Calculations and operations for HTTP APIs
@@ -28,7 +29,7 @@ export class HttpApiHelper {
    */
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new ValidationError(`Path must start with '/': ${path}`, this.httpApi);
+      throw new ValidationError(lit`PathStart`, `Path must start with '/': ${path}`, this.httpApi);
     }
 
     if (method && method.toUpperCase() === 'ANY') {
@@ -37,6 +38,8 @@ export class HttpApiHelper {
 
     return Stack.of(this.httpApi).formatArn({
       service: 'execute-api',
+      account: this.httpApi.env.account,
+      region: this.httpApi.env.region,
       resource: this.httpApi.apiRef.apiId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,

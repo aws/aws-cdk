@@ -3,16 +3,18 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import type {
+  IContainerRecipe,
+  IImageRecipe,
+  IRecipeBase,
+} from '../lib';
 import {
   AmazonManagedWorkflow,
   ContainerRecipe,
   DistributionConfiguration,
-  IContainerRecipe,
-  IImageRecipe,
   Image,
   ImageRecipe,
   InfrastructureConfiguration,
-  IRecipeBase,
   WorkflowOnFailure,
   WorkflowParameterValue,
 } from '../lib';

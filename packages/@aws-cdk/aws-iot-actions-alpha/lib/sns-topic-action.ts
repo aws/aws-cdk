@@ -1,7 +1,7 @@
-import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import { CommonActionProps } from '.';
+import type * as iot from '@aws-cdk/aws-iot-alpha';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type * as sns from 'aws-cdk-lib/aws-sns';
+import type { CommonActionProps } from '.';
 import { singletonActionRole } from './private/role';
 
 /**

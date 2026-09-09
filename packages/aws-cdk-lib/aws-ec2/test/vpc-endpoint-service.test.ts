@@ -3,7 +3,8 @@ import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { ArnPrincipal } from '../../aws-iam';
 import { Stack } from '../../core';
 
-import { IpAddressType, IVpcEndpointServiceLoadBalancer, Vpc, VpcEndpointService } from '../lib';
+import type { IVpcEndpointServiceLoadBalancer } from '../lib';
+import { IpAddressType, Vpc, VpcEndpointService } from '../lib';
 
 /**
  * A load balancer that can host a VPC Endpoint Service

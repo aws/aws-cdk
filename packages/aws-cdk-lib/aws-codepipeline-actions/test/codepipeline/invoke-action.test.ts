@@ -2,7 +2,8 @@ import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as s3 from '../../../aws-s3';
-import { App, Stack } from '../../../core';
+import type { App } from '../../../core';
+import { Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
 describe('pipeline invoke Action', () => {

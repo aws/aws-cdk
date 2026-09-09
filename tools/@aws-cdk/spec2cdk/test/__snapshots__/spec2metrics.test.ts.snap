@@ -1,0 +1,155 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates V2/V3 methods for previousStatistics, keeping the original name deprecated 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
+
+/**
+ * CloudWatch metrics facade for AWS/Lambda
+ * This class contains helper functions to initialize the dimension-sets classes
+ * for selected resources if available.
+ *
+ * @stability external
+ */
+export abstract class LambdaMetrics {
+
+}
+
+export namespace LambdaMetrics {
+  /**
+   * Metrics for dimension set: FunctionName {FunctionName}
+   *
+   * @stability external
+   */
+  export class FunctionNameMetrics {
+    private readonly dimensions: Record<string, string>;
+
+    public constructor(props: LambdaMetrics.FunctionNameMetricsProps) {
+      this.dimensions = {
+        FunctionName: props.functionName
+      };
+    }
+
+    /**
+     * Average of the Invocations metric
+     *
+     * @deprecated Use invocationsV3() instead; the default statistic changed to Maximum.
+     * @default - Average over 5 minutes
+     */
+    public invocations(options?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+      return new cloudwatch.Metric({
+        namespace: "AWS/Lambda",
+        metricName: "Invocations",
+        dimensionsMap: this.dimensions,
+        statistic: "Average",
+        ...options
+      });
+    }
+
+    /**
+     * Sum of the Invocations metric
+     *
+     * @deprecated Use invocationsV3() instead; the default statistic changed to Maximum.
+     * @default - Sum over 5 minutes
+     */
+    public invocationsV2(options?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+      return new cloudwatch.Metric({
+        namespace: "AWS/Lambda",
+        metricName: "Invocations",
+        dimensionsMap: this.dimensions,
+        statistic: "Sum",
+        ...options
+      });
+    }
+
+    /**
+     * Maximum of the Invocations metric
+     *
+     * @default - Maximum over 5 minutes
+     */
+    public invocationsV3(options?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+      return new cloudwatch.Metric({
+        namespace: "AWS/Lambda",
+        metricName: "Invocations",
+        dimensionsMap: this.dimensions,
+        statistic: "Maximum",
+        ...options
+      });
+    }
+  }
+
+  /**
+   * Dimensions for FunctionNameMetrics
+   *
+   * @struct
+   * @stability external
+   */
+  export interface FunctionNameMetricsProps {
+    /**
+     * The FunctionName dimension
+     */
+    readonly functionName: string;
+  }
+}"
+`;
+
+exports[`no V2 method when previousStatistics is empty 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
+
+/**
+ * CloudWatch metrics facade for AWS/Lambda
+ * This class contains helper functions to initialize the dimension-sets classes
+ * for selected resources if available.
+ *
+ * @stability external
+ */
+export abstract class LambdaMetrics {
+
+}
+
+export namespace LambdaMetrics {
+  /**
+   * Metrics for dimension set: FunctionName {FunctionName}
+   *
+   * @stability external
+   */
+  export class FunctionNameMetrics {
+    private readonly dimensions: Record<string, string>;
+
+    public constructor(props: LambdaMetrics.FunctionNameMetricsProps) {
+      this.dimensions = {
+        FunctionName: props.functionName
+      };
+    }
+
+    /**
+     * Sum of the Invocations metric
+     *
+     * @default - Sum over 5 minutes
+     */
+    public invocations(options?: cloudwatch.MetricOptions): cloudwatch.IMetric {
+      return new cloudwatch.Metric({
+        namespace: "AWS/Lambda",
+        metricName: "Invocations",
+        dimensionsMap: this.dimensions,
+        statistic: "Sum",
+        ...options
+      });
+    }
+  }
+
+  /**
+   * Dimensions for FunctionNameMetrics
+   *
+   * @struct
+   * @stability external
+   */
+  export interface FunctionNameMetricsProps {
+    /**
+     * The FunctionName dimension
+     */
+    readonly functionName: string;
+  }
+}"
+`;

@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Lazy } from '../../core';
 import * as codepipeline from '../lib';
 

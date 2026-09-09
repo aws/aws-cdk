@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { notify } from '../private/print';
 import { runExecFile } from '../private/run-exec-file';
-import { LifecyclesSkip, PackageInfo } from '../types';
+import type { LifecyclesSkip, PackageInfo } from '../types';
 
 export interface BumpOptions {
   skip?: LifecyclesSkip;

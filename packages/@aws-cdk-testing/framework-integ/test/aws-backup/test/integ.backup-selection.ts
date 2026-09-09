@@ -1,5 +1,6 @@
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as backup from 'aws-cdk-lib/aws-backup';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';

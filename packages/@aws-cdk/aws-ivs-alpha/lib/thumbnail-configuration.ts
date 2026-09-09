@@ -1,5 +1,5 @@
 import { Duration, Token } from 'aws-cdk-lib';
-import { Resolution } from './util';
+import type { Resolution } from './util';
 
 /**
  * Thumbnail recording mode.

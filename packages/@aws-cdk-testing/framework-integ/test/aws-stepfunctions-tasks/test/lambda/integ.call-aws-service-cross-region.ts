@@ -108,7 +108,7 @@ class TestStack extends cdk.Stack {
     deleteTable.next(listApplications);
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: createTable.next(poll),
+      definitionBody: sfn.DefinitionBody.fromChainable(createTable.next(poll)),
     });
   }
 }

@@ -5,6 +5,8 @@ import { Fn, Lazy, Stack } from '../../core';
 import { IdentityPool, IdentityPoolProviderUrl, RoleMappingMatchType } from '../lib/identitypool';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 
+const dummySamlMetadata = '<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">' + 'x'.repeat(1000) + '</md:EntityDescriptor>';
+
 describe('identity pool', () => {
   test('minimal setup', () => {
     const stack = new Stack();
@@ -335,7 +337,7 @@ describe('identity pool', () => {
       thumbprints: ['thumbprint'],
     });
     const saml = new SamlProvider(stack, 'Provider', {
-      metadataDocument: SamlMetadataDocument.fromXml('document'),
+      metadataDocument: SamlMetadataDocument.fromXml(dummySamlMetadata),
     });
     new IdentityPool(stack, 'TestIdentityPoolCustomProviders', {
       authenticationProviders: {

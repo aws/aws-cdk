@@ -1,4 +1,4 @@
-import * as sfn from '../../../aws-stepfunctions';
+import type * as sfn from '../../../aws-stepfunctions';
 
 /** Http Methods that API Gateway supports */
 export enum HttpMethod {
@@ -60,7 +60,7 @@ export interface CallApiGatewayEndpointBaseOptions {
   readonly apiPath?: string;
 
   /**
-   * Query strings attatched to end of request
+   * Query strings attached to end of request
    * @default - No query parameters
    */
   readonly queryParameters?: sfn.TaskInput;

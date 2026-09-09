@@ -1,9 +1,9 @@
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
 
+import type { IConnectable } from '../lib';
 import {
   Connections,
-  IConnectable,
   Port,
   SecurityGroup,
   Vpc,

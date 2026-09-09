@@ -1,11 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "48.0.0",
   "testCases": {
     "targetGroupTest/DefaultTest": {
       "stacks": [
         "aws-cdk-elbv2-integ"
       ],
-      "assertionStack": "targetGroupTest/DefaultTest/DeployAssert"
+      "assertionStack": "targetGroupTest/DefaultTest/DeployAssert",
+      "assertionStackName": "targetGroupTestDefaultTestDeployAssert29FB5AEF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

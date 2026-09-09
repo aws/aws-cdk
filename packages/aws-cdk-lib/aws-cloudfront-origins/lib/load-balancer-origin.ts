@@ -1,5 +1,6 @@
-import { HttpOrigin, HttpOriginProps } from './http-origin';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import type { HttpOriginProps } from './http-origin';
+import { HttpOrigin } from './http-origin';
+import type * as elbv2 from '../../aws-elasticloadbalancingv2';
 
 /**
  * Properties for an Origin backed by a v2 load balancer.

@@ -1,6 +1,6 @@
-import { Construct, IDependable } from 'constructs';
-import { SubscriptionOptions } from './subscription';
-import { ITopic } from './topic-base';
+import type { Construct, IDependable } from 'constructs';
+import type { SubscriptionOptions } from './subscription';
+import type { ITopic } from './topic-base';
 
 /**
  * Subscription configuration

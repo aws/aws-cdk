@@ -214,6 +214,31 @@ const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
 });
 ```
 
+#### Container Startup Health Check Timeout
+
+You can specify a timeout value for your inference container to pass health check by configuring
+the `containerStartupHealthCheckTimeout` property. This is useful when your model takes longer
+to initialize and you want to avoid premature health check failures:
+
+```typescript
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
+
+declare const model: sagemaker.Model;
+
+const endpointConfig = new sagemaker.EndpointConfig(this, 'EndpointConfig', {
+  instanceProductionVariants: [
+    {
+      model: model,
+      variantName: 'my-variant',
+      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5), // 5 minutes timeout
+    },
+  ]
+});
+```
+
+The timeout value must be between 60 seconds and 1 hour (3600 seconds). If not specified, 
+Amazon SageMaker uses the default timeout behavior.
+
 ### Serverless Inference
 
 Amazon SageMaker Serverless Inference is a purpose-built inference option that makes it easy for you to deploy and scale ML models. Serverless endpoints automatically launch compute resources and scale them in and out depending on traffic, eliminating the need to choose instance types or manage scaling policies. For more information, see [SageMaker Serverless Inference](https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html).

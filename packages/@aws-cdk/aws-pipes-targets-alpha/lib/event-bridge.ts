@@ -1,7 +1,7 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { Token } from 'aws-cdk-lib';
-import { IEventBus } from 'aws-cdk-lib/aws-events';
-import { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IEventBus } from 'aws-cdk-lib/aws-events';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
 
 /**
  * EventBridge target properties.

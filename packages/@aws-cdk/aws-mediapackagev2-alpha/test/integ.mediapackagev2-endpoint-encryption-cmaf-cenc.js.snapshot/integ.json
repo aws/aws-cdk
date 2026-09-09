@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-cmaf-cenc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-cmaf-cenc"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-cmaf-cenc/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagecmafcencDefaultTestDeployAssert4918013E"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

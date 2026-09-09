@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import * as sqs from '../../aws-sqs';
+import type * as sqs from '../../aws-sqs';
 import { Annotations } from '../../core';
 
 /**

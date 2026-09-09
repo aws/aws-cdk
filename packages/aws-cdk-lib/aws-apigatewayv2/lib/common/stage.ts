@@ -1,8 +1,8 @@
-import { IAccessLogDestination } from './access-log';
-import { AccessLogFormat } from '../../../aws-apigateway/lib';
-import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { IResource } from '../../../core';
-import { IDomainNameRef, IStageRef } from '../apigatewayv2.generated';
+import type { IAccessLogDestination } from './access-log';
+import type { AccessLogFormat } from '../../../aws-apigateway/lib';
+import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import type { IResource } from '../../../core';
+import type { IDomainNameRef, IStageRef } from '../apigatewayv2.generated';
 
 /**
  * Represents a Stage.

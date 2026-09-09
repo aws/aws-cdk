@@ -1,14 +1,18 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.capacity-providers": {
+    "integ-capacity-providers/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-capacity-provider"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "integ-capacity-providers/DefaultTest/DeployAssert",
+      "assertionStackName": "integcapacityprovidersDefaultTestDeployAssert5C35646E"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1033.0"
 }

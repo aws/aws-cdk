@@ -5,7 +5,8 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { TestEnrichment, TestSource, TestSourceWithDeadLetterTarget, TestTarget } from './test-classes';
-import { DesiredState, IEnrichment, ISource, ITarget, Pipe } from '../lib';
+import type { IEnrichment, ISource, ITarget } from '../lib';
+import { DesiredState, Pipe } from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;

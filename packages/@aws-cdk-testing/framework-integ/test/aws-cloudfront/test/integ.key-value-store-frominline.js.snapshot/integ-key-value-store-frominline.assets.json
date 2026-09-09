@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "47ae18762663e5017f1b901bfe0a06cb436df2476a53b49e1db53fc36a08a793": {
+      "displayName": "TestKeyValueStore/ImportSource",
+      "source": {
+        "path": "asset.47ae18762663e5017f1b901bfe0a06cb436df2476a53b49e1db53fc36a08a793.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-533c4223": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "47ae18762663e5017f1b901bfe0a06cb436df2476a53b49e1db53fc36a08a793.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "41eeee037115ef8fb6afc6d5d0a29924514694dc6f39396c6d82ab196ae121f4": {
+      "displayName": "integ-key-value-store-frominline Template",
+      "source": {
+        "path": "integ-key-value-store-frominline.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0a746a10": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "41eeee037115ef8fb6afc6d5d0a29924514694dc6f39396c6d82ab196ae121f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

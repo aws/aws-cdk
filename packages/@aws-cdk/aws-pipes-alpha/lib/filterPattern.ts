@@ -1,4 +1,4 @@
-import { IFilterPattern } from './filter';
+import type { IFilterPattern } from './filter';
 
 /**
  * Generate a filter pattern from an input.

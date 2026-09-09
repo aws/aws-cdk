@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4a618e819ddeb456f0f69496c5e95725dd9de6377078f7fcbb680970a607c6af": {
+      "displayName": "aws-cdk-rds-serverless-cluster-scaling Template",
+      "source": {
+        "path": "aws-cdk-rds-serverless-cluster-scaling.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-67c8676d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a618e819ddeb456f0f69496c5e95725dd9de6377078f7fcbb680970a607c6af.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

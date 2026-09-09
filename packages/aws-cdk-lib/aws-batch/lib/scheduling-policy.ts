@@ -1,9 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type {
+  ISchedulingPolicyRef,
+  SchedulingPolicyReference,
+} from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -203,7 +209,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.FairshareSchedulingPolicy';
 
   /**
-   * Reference an exisiting Scheduling Policy by its ARN
+   * Reference an existing Scheduling Policy by its ARN
    */
   public static fromFairshareSchedulingPolicyArn(scope: Construct, id: string, fairshareSchedulingPolicyArn: string): IFairshareSchedulingPolicy {
     const stack = Stack.of(scope);
@@ -218,9 +224,27 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
 
   public readonly computeReservation?: number;
   public readonly shareDecay?: Duration;
-  public readonly shares: Share[];
-  public readonly schedulingPolicyArn: string;
-  public readonly schedulingPolicyName: string;
+  private readonly _shares: IArrayBox<Share>;
+
+  private readonly resource: CfnSchedulingPolicy;
+
+  @memoizedGetter
+  public get schedulingPolicyArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'batch',
+      resource: 'scheduling-policy',
+      resourceName: this.physicalName,
+    });
+  }
+
+  public get shares(): Share[] {
+    return this._shares.getMutable();
+  }
+
+  @memoizedGetter
+  public get schedulingPolicyName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props?: FairshareSchedulingPolicyProps) {
     super(scope, id, props);
@@ -228,27 +252,18 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     addConstructMetadata(this, props);
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
-    this.shares = props?.shares ?? [];
-    const resource = new CfnSchedulingPolicy(this, 'Resource', {
+    this._shares = Box.fromArray(props?.shares ?? [], { omitEmpty: false });
+    this.resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
-        shareDistribution: Lazy.any({
-          produce: () => this.shares?.map((share) => ({
-            shareIdentifier: share.shareIdentifier,
-            weightFactor: share.weightFactor,
-          })),
-        }),
+        shareDistribution: this._shares.map(share => ({
+          shareIdentifier: share.shareIdentifier,
+          weightFactor: share.weightFactor,
+        })),
       },
       name: props?.schedulingPolicyName,
     });
-
-    this.schedulingPolicyArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'batch',
-      resource: 'scheduling-policy',
-      resourceName: this.physicalName,
-    });
-    this.schedulingPolicyName = this.getResourceNameAttribute(resource.ref);
   }
 
   /**
@@ -256,6 +271,6 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
    */
   @MethodMetadata()
   public addShare(share: Share) {
-    this.shares.push(share);
+    this._shares.push(share);
   }
 }

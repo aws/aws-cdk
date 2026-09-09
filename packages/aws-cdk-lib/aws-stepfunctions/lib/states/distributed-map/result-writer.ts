@@ -1,5 +1,5 @@
 import * as iam from '../../../../aws-iam';
-import { IBucket } from '../../../../aws-s3';
+import type { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws } from '../../../../core';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';

@@ -1,11 +1,14 @@
 import { EOL } from 'os';
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import * as constructs from 'constructs';
-import { Code } from '../code';
-import { Job, JobProps } from './job';
+import type * as constructs from 'constructs';
+import type { Code } from '../code';
+import type { WorkerType } from '../constants';
+import type { JobProps } from './job';
+import { Job } from './job';
 
 /**
  * Code props for different {@link Code} assets used by different types of Spark jobs.
@@ -89,9 +92,37 @@ export interface SparkUILoggingLocation {
 }
 
 /**
+ * The worker configuration for a Spark job.
+ *
+ * The worker type and the number of workers are set together: providing this
+ * configuration requires both values, so a Spark job can never be given one
+ * without the other.
+ */
+export interface WorkerConfiguration {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   *
+   * Enum options: Standard, G_1X, G_2X, G_025X, G_4X, G_8X, Z_2X
+   */
+  readonly workerType: WorkerType;
+
+  /**
+   * The number of workers of the given `workerType` that are allocated when a job runs.
+   */
+  readonly numberOfWorkers: number;
+}
+
+/**
  * Common properties for different types of Spark jobs.
  */
 export interface SparkJobProps extends JobProps {
+  /**
+   * The worker type and the number of workers allocated when a job runs.
+   *
+   * @default - the job runs with the G_1X worker type and 10 workers.
+   */
+  readonly workerConfiguration?: WorkerConfiguration;
+
   /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
@@ -149,45 +180,47 @@ export abstract class SparkJob extends Job {
     this.sparkUILoggingLocation = props.sparkUI ? this.setupSparkUILoggingLocation(props.sparkUI) : undefined;
   }
 
-  protected nonExecutableCommonArguments(props: SparkJobProps): {[key: string]: string} {
+  /**
+   * Register the arguments this construct manages for a Spark job. These are owned by the construct
+   * (derived from typed props). Each key is declared via {@link setManagedArgument} whether or not
+   * the current configuration emits a value, so a disabled feature (e.g. `enableMetrics: false`)
+   * cannot be silently re-enabled through `defaultArguments`.
+   */
+  protected nonExecutableCommonArguments(props: SparkJobProps): void {
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
-    // Conditionally include metrics arguments (default to enabled for backward compatibility)
-    const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
-    const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
+    // Conditionally emit metrics arguments (default to enabled for backward compatibility)
+    this.setManagedArgument('--enable-metrics', (props.enableMetrics ?? true) ? '' : undefined);
+    this.setManagedArgument('--enable-observability-metrics', (props.enableObservabilityMetrics ?? true) ? 'true' : undefined);
 
-    // Set spark ui args, if spark ui logging had been setup
-    const sparkUIArgs = this.sparkUILoggingLocation ? ({
-      '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': this.sparkUILoggingLocation.bucket.s3UrlForObject(this.sparkUILoggingLocation.prefix).replace(/\/?$/, '/'), // path will always end with a slash
-    }): {};
-
-    return {
-      ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-      ...sparkUIArgs,
-      ...this.checkNoReservedArgs(props.defaultArguments),
-    };
+    // Emit Spark UI args only when Spark UI logging has been set up
+    this.setManagedArgument('--enable-spark-ui', this.sparkUILoggingLocation ? 'true' : undefined);
+    this.setManagedArgument(
+      '--spark-event-logs-path',
+      this.sparkUILoggingLocation
+        ? this.sparkUILoggingLocation.bucket.s3UrlForObject(this.sparkUILoggingLocation.prefix).replace(/\/?$/, '/') // path will always end with a slash
+        : undefined,
+    );
   }
 
   /**
-   * Set the arguments for extra {@link Code}-related properties
+   * Register the arguments for extra {@link Code}-related properties
    */
-  protected setupExtraCodeArguments(args: { [key: string]: string }, props: SparkExtraCodeProps) {
-    if (props.extraJars && props.extraJars.length > 0) {
-      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraJarsFirst) {
-      args['--user-jars-first'] = 'true';
-    }
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
-    if (props.extraFiles && props.extraFiles.length > 0) {
-      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    }
+  protected setupExtraCodeArguments(props: SparkExtraCodeProps) {
+    this.setManagedArgument(
+      '--extra-jars',
+      props.extraJars && props.extraJars.length > 0 ? props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',') : undefined,
+    );
+    this.setManagedArgument('--user-jars-first', props.extraJarsFirst ? 'true' : undefined);
+    this.setManagedArgument(
+      '--extra-py-files',
+      props.extraPythonFiles && props.extraPythonFiles.length > 0 ? props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',') : undefined,
+    );
+    this.setManagedArgument(
+      '--extra-files',
+      props.extraFiles && props.extraFiles.length > 0 ? props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',') : undefined,
+    );
   }
 
   private setupSparkUILoggingLocation(props: SparkUIProps): SparkUILoggingLocation {
@@ -218,7 +251,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new UnscopedValidationError(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(lit`InvalidSparkUiPrefix`, `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

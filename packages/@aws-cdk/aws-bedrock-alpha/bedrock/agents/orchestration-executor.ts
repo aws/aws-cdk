@@ -1,5 +1,5 @@
-import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Enum for orchestration types available for agents.

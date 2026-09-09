@@ -14,7 +14,9 @@
     "DatabaseInput": {
      "Name": "my_database"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "CSVTableE499CABA": {
    "Type": "AWS::Glue::Table",
@@ -84,7 +86,6 @@
   "DataQualityRulesetBB177ADB": {
    "Type": "AWS::Glue::DataQualityRuleset",
    "Properties": {
-    "ClientToken": "client_token",
     "Description": "my description",
     "Name": "my_ruleset",
     "Ruleset": "Rules = [RowCount > 10]",
@@ -100,7 +101,9 @@
       "Ref": "CSVTableE499CABA"
      }
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

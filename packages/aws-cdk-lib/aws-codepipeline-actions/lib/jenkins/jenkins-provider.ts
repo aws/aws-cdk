@@ -1,4 +1,5 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 
 /**

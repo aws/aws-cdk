@@ -1,6 +1,7 @@
 import { sortKeyComparator } from './sorting';
 import { Match } from '../match';
-import { Matcher, MatchResult } from '../matcher';
+import type { MatchResult } from '../matcher';
+import { Matcher } from '../matcher';
 
 export type MatchSuccess = { match: true; matches: { [key: string]: any }; analyzed: { [key: string]: any }; analyzedCount: number };
 export type MatchFailure = { match: false; closestResults: Record<string, MatchResult>; analyzed: { [key: string]: any }; analyzedCount: number };

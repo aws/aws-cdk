@@ -1,9 +1,11 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Table, AttributeType, InputCompressionType, InputFormat } from 'aws-cdk-lib/aws-dynamodb';
-import { Bucket, IBucket } from 'aws-cdk-lib/aws-s3';
+import type { IBucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class S3Stack extends Stack {
   public readonly bucket: Bucket;

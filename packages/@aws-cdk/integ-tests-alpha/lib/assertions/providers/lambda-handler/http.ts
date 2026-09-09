@@ -1,10 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 import { flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
-import fetch, { Response } from 'node-fetch';
+import type { Response } from 'node-fetch';
+import fetch from 'node-fetch';
 // TODO: can use builtin fetch on node18
 import { CustomResourceHandler } from './base';
-import { HttpRequest, HttpResponseWrapper } from './types';
+import type { HttpRequest, HttpResponseWrapper } from './types';
 import { deepParseJson } from './utils';
 
 export class HttpHandler extends CustomResourceHandler<HttpRequest, HttpResponseWrapper | { [key: string]: unknown }> {

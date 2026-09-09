@@ -7,6 +7,7 @@
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
   - [SQS Integration](#sqs-integration)
+  - [EventBridge Integration](#eventbridge-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
@@ -248,6 +249,63 @@ new apigwv2.ParameterMapping()
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl);
 ```
+
+### EventBridge Integration
+
+EventBridge integrations enable integrating an HTTP API route with Amazon EventBridge using the PutEvents API.
+This allows the HTTP API to forward requests as events to an EventBridge event bus.
+
+The following code configures EventBridge integrations:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+import { HttpEventBridgeIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const bus: events.IEventBus;
+declare const httpApi: apigwv2.HttpApi;
+
+// default integration (PutEvents)
+httpApi.addRoutes({
+  path: '/default',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('DefaultEventBridgeIntegration', {
+    eventBusRef: bus.eventBusRef,
+  }),
+});
+
+// explicit subtype
+httpApi.addRoutes({
+  path: '/put-events',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('ExplicitSubtypeIntegration', {
+    eventBusRef: bus.eventBusRef,
+    subtype: apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
+  }),
+});
+```
+
+#### EventBridge integration parameter mappings
+
+You can configure the custom parameter mappings of the EventBridge integration using the `parameterMapping` property of the `HttpEventBridgeIntegration` object.
+
+By default, the integration expects the request body to contain `Detail`, `DetailType`, and `Source` fields. The `EventBusName` is automatically included from `eventBusRef` in all cases, even when a custom `parameterMapping` is provided (unless explicitly overridden). This ensures consistency and eliminates redundant configuration.
+
+The default parameter mapping is as follows:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+declare const bus: events.IEventBus;
+
+new apigwv2.ParameterMapping()
+  // The following fields are required for the EventBridge PutEvents integration
+  .custom('Detail', '$request.body.Detail')
+  .custom('DetailType', '$request.body.DetailType')
+  .custom('Source', '$request.body.Source')
+  // EventBusName is automatically included from eventBusRef
+  .custom('EventBusName', bus.eventBusName);
+```
+
+When providing a custom `parameterMapping`, you don't need to include `EventBusName` - it will be automatically added from `eventBusRef`:
 
 ### Private Integration
 

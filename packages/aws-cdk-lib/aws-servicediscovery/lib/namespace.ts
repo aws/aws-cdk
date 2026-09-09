@@ -1,5 +1,12 @@
-import { IResource } from '../../core';
+import type { IResource } from '../../core';
 
+/**
+ * A type of namespace
+ *
+ * One of private, public or HTTP namespace.
+ *
+ * [awslint:interface-extends-ref]
+ */
 export interface INamespace extends IResource {
   /**
    * A name for the Namespace.

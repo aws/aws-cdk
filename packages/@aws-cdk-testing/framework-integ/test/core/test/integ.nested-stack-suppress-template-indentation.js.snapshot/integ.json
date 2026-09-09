@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "NestedSuppressIndentationTest/DefaultTest": {
+      "stacks": [
+        "ParentStack"
+      ],
+      "assertionStack": "NestedSuppressIndentationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

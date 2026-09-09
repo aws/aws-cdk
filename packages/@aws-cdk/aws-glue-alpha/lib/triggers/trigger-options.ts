@@ -1,30 +1,23 @@
 import * as events from 'aws-cdk-lib/aws-events';
-import { CfnCrawler } from 'aws-cdk-lib/aws-glue';
-import * as cdk from 'aws-cdk-lib/core';
-import { JobState, CrawlerState, ConditionLogicalOperator, PredicateLogical } from '../constants';
-import { IJob } from '../jobs/job'; // Use IJob interface instead of concrete class
-import { ISecurityConfiguration } from '../security-configuration';
+import type { CfnTrigger, ICrawlerRef, IJobRef } from 'aws-cdk-lib/aws-glue';
+import type * as cdk from 'aws-cdk-lib/core';
+import { ConditionLogicalOperator } from '../constants';
+import type { JobState, CrawlerState, PredicateLogical } from '../constants';
+import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
- * Represents a trigger action.
+ * Options for the execution of a crawler.
  */
-export interface Action {
+export interface CrawlerActionOptions {
   /**
-   * The job to be executed.
-   *
-   * @default - no job is executed
-   */
-  readonly job?: IJob;
-
-  /**
-   * The job arguments used when this trigger fires.
+   * The arguments used when this trigger fires.
    *
    * @default - no arguments are passed to the job
    */
   readonly arguments?: { [key: string]: string };
 
   /**
-   * The job run timeout. This is the maximum time that a job run can consume resources before it is terminated and enters TIMEOUT status.
+   * The run timeout. This is the maximum time that a run can consume resources before it is terminated and enters TIMEOUT status.
    *
    * @default - the default timeout value set in the job definition
    */
@@ -36,13 +29,104 @@ export interface Action {
    * @default - no security configuration is used
    */
   readonly securityConfiguration?: ISecurityConfiguration;
+}
+
+/**
+ * Options for the execution of a job.
+ */
+export interface JobActionOptions {
+  /**
+   * The arguments used when this trigger fires.
+   *
+   * @default - no arguments are passed to the job
+   */
+  readonly arguments?: { [key: string]: string };
 
   /**
-   * The name of the crawler to be used with this action.
+   * The run timeout. This is the maximum time that a run can consume resources before it is terminated and enters TIMEOUT status.
    *
-   * @default - no crawler is used
+   * @default - the default timeout value set in the job definition
    */
-  readonly crawler?: CfnCrawler;
+  readonly timeout?: cdk.Duration;
+
+  /**
+   * The `SecurityConfiguration` to be used with this action.
+   *
+   * @default - no security configuration is used
+   */
+  readonly securityConfiguration?: ISecurityConfiguration;
+}
+
+/**
+ * An action initiated by a trigger.
+ *
+ * An action runs exactly one target: use {@link Action.job} to run a job or
+ * {@link Action.crawler} to run a crawler. Because these are separate factory
+ * methods, an action can never target both or neither.
+ */
+export abstract class Action {
+  /**
+   * Create an action that runs a job.
+   *
+   * @param job the job to run when the trigger fires.
+   * @param options additional options for the action.
+   */
+  public static job(job: IJobRef, options: JobActionOptions = {}): Action {
+    return new JobAction(job, options);
+  }
+
+  /**
+   * Create an action that runs a crawler.
+   *
+   * @param crawler the crawler to run when the trigger fires.
+   * @param options additional options for the action.
+   */
+  public static crawler(crawler: ICrawlerRef, options: CrawlerActionOptions = {}): Action {
+    return new CrawlerAction(crawler, options);
+  }
+
+  /**
+   * Render this action to its CloudFormation representation.
+   *
+   * @internal
+   */
+  public abstract _render(): CfnTrigger.ActionProperty;
+}
+
+/**
+ * An action that runs a job.
+ */
+class JobAction extends Action {
+  constructor(private readonly job: IJobRef, private readonly options: JobActionOptions) {
+    super();
+  }
+
+  public _render(): CfnTrigger.ActionProperty {
+    return {
+      jobName: this.job.jobRef.jobName,
+      arguments: this.options.arguments,
+      timeout: this.options.timeout?.toMinutes(),
+      securityConfiguration: this.options.securityConfiguration?.securityConfigurationName,
+    };
+  }
+}
+
+/**
+ * An action that runs a crawler.
+ */
+class CrawlerAction extends Action {
+  constructor(private readonly crawler: ICrawlerRef, private readonly options: CrawlerActionOptions) {
+    super();
+  }
+
+  public _render(): CfnTrigger.ActionProperty {
+    return {
+      crawlerName: this.crawler.crawlerRef.crawlerName,
+      arguments: this.options.arguments,
+      timeout: this.options.timeout?.toMinutes(),
+      securityConfiguration: this.options.securityConfiguration?.securityConfigurationName,
+    };
+  }
 }
 
 /**
@@ -70,6 +154,24 @@ export class TriggerSchedule {
   }
 
   /**
+   * Creates a schedule that fires once a day, at midnight UTC.
+   *
+   * @returns A new TriggerSchedule instance.
+   */
+  public static daily(): TriggerSchedule {
+    return TriggerSchedule.cron({ minute: '0', hour: '0' });
+  }
+
+  /**
+   * Creates a schedule that fires once a week, at midnight UTC on Sunday.
+   *
+   * @returns A new TriggerSchedule instance.
+   */
+  public static weekly(): TriggerSchedule {
+    return TriggerSchedule.cron({ minute: '0', hour: '0', weekDay: 'SUN' });
+  }
+
+  /**
    * @param expressionString The expression string for the schedule.
    */
   private constructor(public readonly expressionString: string) {}
@@ -82,7 +184,7 @@ export interface Predicate {
   /**
    * The logical operator to be applied to the conditions.
    *
-   * @default - ConditionLogical.AND if multiple conditions are provided, no logical operator if only one condition
+   * @default - PredicateLogical.AND if multiple conditions are provided, no logical operator if only one condition
    */
   readonly logical?: PredicateLogical;
 
@@ -95,43 +197,96 @@ export interface Predicate {
 }
 
 /**
- * Represents a trigger condition.
+ * Options shared by all trigger conditions.
  */
-export interface Condition {
+export interface ConditionOptions {
   /**
    * The logical operator for the condition.
    *
    * @default ConditionLogicalOperator.EQUALS
    */
   readonly logicalOperator?: ConditionLogicalOperator;
+}
+
+/**
+ * A condition that determines when a conditional trigger fires.
+ *
+ * A condition watches exactly one target in exactly one state: use
+ * {@link Condition.job} to watch a job or {@link Condition.crawler} to watch a
+ * crawler. Because the state is a required argument of each factory, a condition
+ * can never reference a target without its state, or both a job and a crawler.
+ */
+export abstract class Condition {
+  /**
+   * Create a condition on the state of a job.
+   *
+   * @param job the job to watch.
+   * @param state the job state that satisfies the condition.
+   * @param options additional options for the condition.
+   */
+  public static job(job: IJobRef, state: JobState, options: ConditionOptions = {}): Condition {
+    return new JobCondition(job, state, options);
+  }
 
   /**
-   * The job to which this condition applies.
+   * Create a condition on the state of a crawler.
    *
-   * @default - no job is specified
+   * @param crawler the crawler to watch.
+   * @param crawlState the crawler state that satisfies the condition.
+   * @param options additional options for the condition.
    */
-  readonly job?: IJob;
+  public static crawler(crawler: ICrawlerRef, crawlState: CrawlerState, options: ConditionOptions = {}): Condition {
+    return new CrawlerCondition(crawler, crawlState, options);
+  }
 
   /**
-   * The condition job state.
+   * Render this condition to its CloudFormation representation.
    *
-   * @default - no job state is specified
+   * @internal
    */
-  readonly state?: JobState;
+  public abstract _render(): CfnTrigger.ConditionProperty;
+}
 
-  /**
-   * The name of the crawler to which this condition applies.
-   *
-   * @default - no crawler is specified
-   */
-  readonly crawlerName?: string;
+/**
+ * A condition on the state of a job.
+ */
+class JobCondition extends Condition {
+  constructor(
+    private readonly job: IJobRef,
+    private readonly state: JobState,
+    private readonly options: ConditionOptions,
+  ) {
+    super();
+  }
 
-  /**
-   * The condition crawler state.
-   *
-   * @default - no crawler state is specified
-   */
-  readonly crawlState?: CrawlerState;
+  public _render(): CfnTrigger.ConditionProperty {
+    return {
+      logicalOperator: this.options.logicalOperator ?? ConditionLogicalOperator.EQUALS,
+      jobName: this.job.jobRef.jobName,
+      state: this.state,
+    };
+  }
+}
+
+/**
+ * A condition on the state of a crawler.
+ */
+class CrawlerCondition extends Condition {
+  constructor(
+    private readonly crawler: ICrawlerRef,
+    private readonly crawlState: CrawlerState,
+    private readonly options: ConditionOptions,
+  ) {
+    super();
+  }
+
+  public _render(): CfnTrigger.ConditionProperty {
+    return {
+      logicalOperator: this.options.logicalOperator ?? ConditionLogicalOperator.EQUALS,
+      crawlerName: this.crawler.crawlerRef.crawlerName,
+      crawlState: this.crawlState,
+    };
+  }
 }
 
 /**
@@ -181,9 +336,9 @@ export interface TriggerOptions {
 export interface OnDemandTriggerOptions extends TriggerOptions {}
 
 /**
- * Properties for configuring a daily-scheduled Glue Trigger.
+ * Base options for triggers that can be started when they are created.
  */
-export interface DailyScheduleTriggerOptions extends TriggerOptions {
+export interface StartableTriggerOptions extends TriggerOptions {
   /**
    * Whether to start the trigger on creation or not.
    *
@@ -193,16 +348,14 @@ export interface DailyScheduleTriggerOptions extends TriggerOptions {
 }
 
 /**
- * Properties for configuring a weekly-scheduled Glue Trigger.
+ * Properties for configuring a scheduled Glue Trigger.
  */
-export interface WeeklyScheduleTriggerOptions extends DailyScheduleTriggerOptions {}
-
-/**
- * Properties for configuring a custom-scheduled Glue Trigger.
- */
-export interface CustomScheduledTriggerOptions extends WeeklyScheduleTriggerOptions {
+export interface ScheduledTriggerOptions extends StartableTriggerOptions {
   /**
-   * The custom schedule for the trigger.
+   * The schedule on which this trigger fires.
+   *
+   * Build one with {@link TriggerSchedule.daily}, {@link TriggerSchedule.weekly},
+   * {@link TriggerSchedule.cron}, or {@link TriggerSchedule.expression}.
    */
   readonly schedule: TriggerSchedule;
 }
@@ -210,7 +363,7 @@ export interface CustomScheduledTriggerOptions extends WeeklyScheduleTriggerOpti
 /**
  * Properties for configuring an Event Bridge based Glue Trigger.
  */
-export interface NotifyEventTriggerOptions extends TriggerOptions {
+export interface EventTriggerOptions extends TriggerOptions {
   /**
    * Batch condition for the trigger.
    *
@@ -222,7 +375,7 @@ export interface NotifyEventTriggerOptions extends TriggerOptions {
 /**
  * Properties for configuring a Condition (Predicate) based Glue Trigger.
  */
-export interface ConditionalTriggerOptions extends DailyScheduleTriggerOptions{
+export interface ConditionalTriggerOptions extends StartableTriggerOptions {
   /**
    * The predicate for the trigger.
    */

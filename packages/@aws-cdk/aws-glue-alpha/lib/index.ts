@@ -1,11 +1,13 @@
 // AWS::Glue CloudFormation Resources:
 
+export * from './catalog';
 export * from './code';
 export * from './connection';
 export * from './data-format';
 export * from './data-quality-ruleset';
 export * from './database';
 export * from './external-table';
+export * from './partition-projection';
 export * from './s3-table';
 export * from './schema';
 export * from './security-configuration';
@@ -22,6 +24,5 @@ export * from './jobs/scala-spark-etl-job';
 export * from './jobs/scala-spark-flex-etl-job';
 export * from './jobs/scala-spark-streaming-job';
 export * from './table-base';
-export * from './table-deprecated';
 export * from './triggers/workflow';
 export * from './triggers/trigger-options';

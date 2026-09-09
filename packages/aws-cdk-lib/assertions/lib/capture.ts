@@ -1,7 +1,8 @@
 import { Match } from '.';
 import { Matcher, MatchResult } from './matcher';
 import { AssertionError } from './private/error';
-import { Type, getType } from './private/type';
+import type { Type } from './private/type';
+import { getType } from './private/type';
 
 /**
  * Capture values while matching templates.

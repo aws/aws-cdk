@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '../../../assertions';
-import * as cloudwatch from '../../../aws-cloudwatch';
+import type * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';

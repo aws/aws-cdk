@@ -2,8 +2,9 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
+import type { ISecretAttachmentTarget } from '../lib';
 import * as secretsmanager from '../lib';
-import { AttachmentTargetType, ISecretAttachmentTarget } from '../lib';
+import { AttachmentTargetType } from '../lib';
 
 class MockAttachmentTarget extends cdk.Resource implements ISecretAttachmentTarget {
   asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {

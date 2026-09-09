@@ -1,0 +1,14 @@
+{
+  "resources": {
+    "ServerlessCache": {
+      "grants": {
+        "connect": {
+          "actions": [
+            "elasticache:Connect", "elasticache:DescribeServerlessCaches"
+          ],
+          "docSummary": "Grant connect permissions to the cache"
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-cloudfront-custom');
 
 const loggingBucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -33,6 +34,11 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   },
 });
 
+const loggingBucket2 = new s3.Bucket(stack, 'LoggingBucket2', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+
 new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
   originConfigs: [
     {
@@ -49,7 +55,9 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
       ],
     },
   ],
-  loggingConfig: {},
+  loggingConfig: {
+    bucket: loggingBucket2,
+  },
 });
 
 app.synth();

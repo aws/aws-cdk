@@ -1,7 +1,7 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3tables from '../../lib';
 
 /**

@@ -1,5 +1,5 @@
-import { IPipe, ISource, ITarget, SourceConfig, SourceParameters } from '@aws-cdk/aws-pipes-alpha';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { IPipe, ISource, ITarget, SourceConfig, SourceParameters } from '@aws-cdk/aws-pipes-alpha';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 
 export class TestSource implements ISource {
   readonly sourceArn = 'source-arn';

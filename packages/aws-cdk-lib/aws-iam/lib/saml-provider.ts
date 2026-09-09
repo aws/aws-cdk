@@ -1,8 +1,11 @@
 import * as fs from 'fs';
-import { Construct } from 'constructs';
-import { CfnSAMLProvider, ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { ISAMLProviderRef, SAMLProviderReference } from './iam.generated';
+import { CfnSAMLProvider } from './iam.generated';
+import type { IResource } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -96,7 +99,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
     addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w+=,.@-]{1,128}$/.test(props.name)) {
-      throw new ValidationError('Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.', this);
+      throw new ValidationError(lit`InvalidSamlProviderName`, 'Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.', this);
     }
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {

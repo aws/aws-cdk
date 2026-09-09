@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnLifecycleHook } from './autoscaling.generated';
-import { ILifecycleHookTarget } from './lifecycle-hook-target';
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource, ValidationError } from '../../core';
+import type { ILifecycleHookTarget } from './lifecycle-hook-target';
+import type * as iam from '../../aws-iam';
+import type { Duration, IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import type { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Basic properties for a lifecycle hook
@@ -102,7 +104,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public get role() {
     if (!this._role) {
-      throw new ValidationError('\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.', this);
+      throw new ValidationError(lit`RoleUndefined`, '\'role\' is undefined. Please specify a \'role\' or specify a \'notificationTarget\' to have a role provided for you.', this);
     }
 
     return this._role;
@@ -136,7 +138,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       this._role = props.role;
 
       if (!props.notificationTarget) {
-        throw new ValidationError("'notificationTarget' parameter required when 'role' parameter is specified", this);
+        throw new ValidationError(lit`NotificationTargetParameterRequiredRole`, "'notificationTarget' parameter required when 'role' parameter is specified", this);
       }
     } else {
       this._role = targetProps ? targetProps.createdRole : undefined;

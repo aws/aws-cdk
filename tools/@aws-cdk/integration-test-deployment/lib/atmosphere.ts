@@ -1,4 +1,5 @@
-import { Allocation, AtmosphereClient, Credentials } from '@cdklabs/cdk-atmosphere-client';
+import type { Allocation, Credentials } from '@cdklabs/cdk-atmosphere-client';
+import { AtmosphereClient } from '@cdklabs/cdk-atmosphere-client';
 
 export class AtmosphereAllocation {
   static async acquire({ endpoint, pool, creds }: {endpoint: string; pool: string; creds: Credentials}): Promise<AtmosphereAllocation> {

@@ -1,9 +1,12 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, CfnResource, Stack, Tag, Tags } from '../lib';
-import { IAspect, Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
+import { App, CfnResource, Stack, Tag, Tags, Validations } from '../lib';
+import type { IAspect } from '../lib/aspect';
+import { Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
+import { STACK_TYPE } from '../lib/private/core-construct-finders';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
 
@@ -56,7 +59,7 @@ class AddLoggingBucketAspect implements IAspect {
 class AddSingletonBucketAspect implements IAspect {
   private processed = false;
   public visit(node: IConstruct): void {
-    if (Stack.isStack(node) && !this.processed) {
+    if (STACK_TYPE.isMarked(node) && !this.processed) {
       // Add a new logging bucket Bucket to the stack this bucket belongs to.
       new Bucket(node, 'my-new-logging-bucket-from-aspect', {
         bucketName: 'my-new-logging-bucket-from-aspect',
@@ -406,6 +409,11 @@ describe('aspect', () => {
 
   test('RemovalPolicy: multiple aspects in chain', () => {
     const app = new App();
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3016', reason: 'SNAPSHOT technically doesnt make sense here' },
+      { id: 'CloudFormation-Validate::F0018', reason: 'SNAPSHOT technically doesnt make sense here' },
+    );
+
     const stack = new Stack(app, 'My-Stack');
     new Bucket(stack, 'my-bucket', {
       removalPolicy: RemovalPolicy.RETAIN,

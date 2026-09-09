@@ -1,6 +1,6 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { AdvancedSecurityMode, FeaturePlan, Mfa, UserPool, UserPoolEmail } from 'aws-cdk-lib/aws-cognito';
+import { FeaturePlan, Mfa, StandardThreatProtectionMode, UserPool, UserPoolEmail } from 'aws-cdk-lib/aws-cognito';
 
 /**
  * Before you run test, you must set up SES email identity and set domain to domainName.
@@ -27,7 +27,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     otp: false,
     email: true,
   },
-  advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+  standardThreatProtectionMode: StandardThreatProtectionMode.FULL_FUNCTION,
   featurePlan: FeaturePlan.PLUS,
 });
 

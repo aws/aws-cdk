@@ -1,13 +1,14 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
 import {
   Stack,
-  StackProps,
   App,
+  CfnParameter,
   aws_ec2 as ec2,
   aws_autoscaling as asg,
   aws_ssm as ssm,
 } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 export class TestCase extends Stack {
@@ -16,7 +17,7 @@ export class TestCase extends Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const vpc = new ec2.Vpc(this, 'Vpc');
 
-    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO);
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO);
 
     new ec2.Instance(this, 'amzn2', {
       instanceType,
@@ -39,11 +40,16 @@ export class TestCase extends Stack {
       vpc,
     });
 
+    // Use a CFN parameter to resolve a region-appropriate AMI from the public SSM path
+    const amiParam = new CfnParameter(this, 'LatestAl2023Ami', {
+      type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64',
+    });
+
     const parameter = new ssm.CfnParameter(this, 'AmiParameter', {
-      name: 'IntegTestAmi',
       type: 'String',
       dataType: 'aws:ec2:image',
-      value: 'ami-06ca3ca175f37dd66',
+      value: amiParam.valueAsString,
     });
 
     const machineImage = ec2.MachineImage.resolveSsmParameterAtLaunch(parameter.ref);

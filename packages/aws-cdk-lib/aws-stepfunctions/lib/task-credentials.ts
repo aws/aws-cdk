@@ -1,5 +1,5 @@
 import { JsonPath } from './fields';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 
 /**
  * Specifies a target role assumed by the State Machine's execution role for invoking the task's resource.

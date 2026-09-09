@@ -1,4 +1,5 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 /**
  * Represents a Transit Gateway Attachment.
  */

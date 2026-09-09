@@ -1,0 +1,257 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "integ-attributes-group"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "integ-attributes-group",
+    "ChannelName": "awscdkmediapackagev2attributesChannel378E2B55",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "integ-attributes-group",
+    "ChannelName": "awscdkmediapackagev2attributesChannel378E2B55",
+    "ContainerType": "CMAF",
+    "DashManifests": [
+     {
+      "ManifestName": "dash-primary"
+     },
+     {
+      "ManifestName": "dash-backup"
+     }
+    ],
+    "HlsManifests": [
+     {
+      "ManifestName": "hls-primary"
+     },
+     {
+      "ManifestName": "hls-backup"
+     }
+    ],
+    "LowLatencyHlsManifests": [
+     {
+      "ManifestName": "llhls"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2attributesEndpoint237A1082",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "GroupEgressDomain": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GroupC77FDACD",
+     "EgressDomain"
+    ]
+   }
+  },
+  "ChannelIngestUrl0": {
+   "Value": {
+    "Fn::Select": [
+     0,
+     {
+      "Fn::GetAtt": [
+       "Channel4048F119",
+       "IngestEndpointUrls"
+      ]
+     }
+    ]
+   }
+  },
+  "ChannelIngestUrl1": {
+   "Value": {
+    "Fn::Select": [
+     1,
+     {
+      "Fn::GetAtt": [
+       "Channel4048F119",
+       "IngestEndpointUrls"
+      ]
+     }
+    ]
+   }
+  },
+  "GroupCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GroupC77FDACD",
+     "CreatedAt"
+    ]
+   }
+  },
+  "GroupModifiedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GroupC77FDACD",
+     "ModifiedAt"
+    ]
+   }
+  },
+  "ChannelCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Channel4048F119",
+     "CreatedAt"
+    ]
+   }
+  },
+  "ChannelModifiedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Channel4048F119",
+     "ModifiedAt"
+    ]
+   }
+  },
+  "EndpointCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointEEF1FD8F",
+     "CreatedAt"
+    ]
+   }
+  },
+  "EndpointModifiedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointEEF1FD8F",
+     "ModifiedAt"
+    ]
+   }
+  },
+  "EndpointHlsUrls": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::GetAtt": [
+          "EndpointEEF1FD8F",
+          "HlsManifestUrls"
+         ]
+        }
+       ]
+      },
+      ",",
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::GetAtt": [
+          "EndpointEEF1FD8F",
+          "HlsManifestUrls"
+         ]
+        }
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "EndpointLlHlsUrls": {
+   "Value": {
+    "Fn::Select": [
+     0,
+     {
+      "Fn::GetAtt": [
+       "EndpointEEF1FD8F",
+       "LowLatencyHlsManifestUrls"
+      ]
+     }
+    ]
+   }
+  },
+  "EndpointDashUrls": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::GetAtt": [
+          "EndpointEEF1FD8F",
+          "DashManifestUrls"
+         ]
+        }
+       ]
+      },
+      ",",
+      {
+       "Fn::Select": [
+        1,
+        {
+         "Fn::GetAtt": [
+          "EndpointEEF1FD8F",
+          "DashManifestUrls"
+         ]
+        }
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

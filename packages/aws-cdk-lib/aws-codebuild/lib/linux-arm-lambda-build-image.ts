@@ -1,8 +1,8 @@
-import { BuildSpec } from './build-spec';
+import type { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage } from './project';
+import type { BuildEnvironment, IBuildImage } from './project';
 
 /**
  * Construction properties of `LinuxArmLambdaBuildImage`.
@@ -26,6 +26,8 @@ export class LinuxArmLambdaBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2023_NODE_20 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs20');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs22` build image. */
   public static readonly AMAZON_LINUX_2023_NODE_22 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs22');
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs24` build image. */
+  public static readonly AMAZON_LINUX_2023_NODE_24 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs24');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11` build image. */
   public static readonly AMAZON_LINUX_2_PYTHON_3_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.12` build image. */

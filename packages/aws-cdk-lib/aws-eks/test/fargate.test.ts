@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Stack, Tags } from '../../core';
+import { Stack, Tags, RemovalPolicy } from '../../core';
 import * as eks from '../lib';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
@@ -490,6 +490,26 @@ describe('fargate', () => {
           ],
         },
       },
+    });
+  });
+
+  test('supports custom removal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    cluster.addFargateProfile('MyProfile', {
+      selectors: [{ namespace: 'default' }],
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('Custom::AWSCDK-EKS-FargateProfile', {
+      DeletionPolicy: 'Retain',
     });
   });
 });

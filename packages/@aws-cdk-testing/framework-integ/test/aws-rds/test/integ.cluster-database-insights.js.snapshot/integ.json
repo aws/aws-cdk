@@ -1,12 +1,13 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "integ-cluster-database-insights/DefaultTest": {
+    "cluster-database-insights-integ-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-rds-integ-cluster-database-insights"
+        "aws-cdk-rds-cluster-database-insights"
       ],
-      "assertionStack": "integ-cluster-database-insights/DefaultTest/DeployAssert",
-      "assertionStackName": "integclusterdatabaseinsightsDefaultTestDeployAssertDADC99BF"
+      "assertionStack": "cluster-database-insights-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterdatabaseinsightsintegtestDefaultTestDeployAssert71AD9E18"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

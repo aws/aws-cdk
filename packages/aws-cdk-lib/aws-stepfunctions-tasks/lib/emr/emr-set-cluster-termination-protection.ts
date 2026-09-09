@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
@@ -32,7 +32,7 @@ export interface EmrSetClusterTerminationProtectionJsonataProps extends sfn.Task
 export interface EmrSetClusterTerminationProtectionProps extends sfn.TaskStateBaseProps, EmrSetClusterTerminationProtectionOptions { }
 
 /**
- * A Step Functions Task to to set Termination Protection on an EMR Cluster.
+ * A Step Functions Task to set Termination Protection on an EMR Cluster.
  */
 export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
   /**

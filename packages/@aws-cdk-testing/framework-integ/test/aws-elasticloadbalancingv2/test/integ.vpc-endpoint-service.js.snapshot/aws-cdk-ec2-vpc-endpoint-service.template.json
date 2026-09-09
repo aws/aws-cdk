@@ -401,6 +401,14 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBNoPrincipalsSecurityGroup4123CC51",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -410,6 +418,24 @@
      }
     ],
     "Type": "network"
+   }
+  },
+  "NLBNoPrincipalsSecurityGroup4123CC51": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkec2vpcendpointserviceNLBNoPrincipals44A78C98",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "MyVpcEndpointServiceWithNoPrincipals9B24276E": {
@@ -433,6 +459,14 @@
      }
     ],
     "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBWithPrincipalsSecurityGroup61C8D3D8",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -442,6 +476,24 @@
      }
     ],
     "Type": "network"
+   }
+  },
+  "NLBWithPrincipalsSecurityGroup61C8D3D8": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awscdkec2vpcendpointserviceNLBWithPrincipals6E6930A6",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "MyVpcEndpointServiceWithPrincipals41EE2DF2": {

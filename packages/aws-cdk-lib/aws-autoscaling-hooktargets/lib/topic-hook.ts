@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { createRole } from './common';
-import * as autoscaling from '../../aws-autoscaling';
-import * as sns from '../../aws-sns';
+import type * as autoscaling from '../../aws-autoscaling';
+import type * as sns from '../../aws-sns';
 
 /**
  * Use an SNS topic as a hook target

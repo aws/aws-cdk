@@ -1,10 +1,11 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
-import { RemovalPolicy, Resource } from 'aws-cdk-lib/core';
+import type { RemovalPolicy } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITable } from './table';
+import type { Construct } from 'constructs';
+import type { ITable } from './table';
 
 /**
  * Parameters for constructing a TablePolicy

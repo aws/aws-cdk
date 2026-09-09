@@ -1,14 +1,19 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { ValidationError } from 'aws-cdk-lib/core';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Job, JobProps } from './job';
+import type { Construct } from 'constructs';
+import type { JobProps } from './job';
+import { Job } from './job';
 import { JobType, GlueVersion, WorkerType, Runtime } from '../constants';
 
 /**
  * Properties for creating a Ray Glue job
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 export interface RayJobProps extends JobProps {
   /**
@@ -17,6 +22,15 @@ export interface RayJobProps extends JobProps {
    * @default - Runtime version will default to Ray2.4
    */
   readonly runtime?: Runtime;
+
+  /**
+   * The number of workers allocated when a job runs.
+   *
+   * Ray jobs only support the Z.2X worker type, so the worker type is not configurable.
+   *
+   * @default 3
+   */
+  readonly numberOfWorkers?: number;
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -56,15 +70,18 @@ export interface RayJobProps extends JobProps {
  * These are not overrideable since these are the only configuration that
  * Glue Ray jobs currently support. The runtime defaults to Ray2.4 and min
  * workers defaults to 3.
+ *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 @propertyInjectable
 export class RayJob extends Job {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.RayJob';
-  public readonly jobArn: string;
-  public readonly jobName: string;
   public readonly role: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
+  private resource: CfnJob;
 
   /**
    * RayJob constructor
@@ -76,32 +93,21 @@ export class RayJob extends Job {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.jobName = props.jobName ?? '';
-
     // Set up role and permissions for principal
     this.role = props.role;
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
-    // Conditionally include metrics arguments (default to enabled for backward compatibility)
-    const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
-    const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
+    // Conditionally emit metrics arguments (default to enabled for backward compatibility)
+    this.setManagedArgument('--enable-metrics', (props.enableMetrics ?? true) ? '' : undefined);
+    this.setManagedArgument('--enable-observability-metrics', (props.enableObservabilityMetrics ?? true) ? 'true' : undefined);
 
-    // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.checkNoReservedArgs(props.defaultArguments),
-      ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-    };
+    // Merge the construct-managed arguments with the user's escape-hatch arguments.
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
-    if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new ValidationError('Ray jobs only support Z.2X worker type', this);
-    }
-
-    const jobResource = new CfnJob(this, 'Resource', {
+    this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
@@ -111,8 +117,8 @@ export class RayJob extends Job {
         runtime: props.runtime ? props.runtime : Runtime.RAY_TWO_FOUR,
       },
       glueVersion: GlueVersion.V4_0,
-      workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers: 3,
+      workerType: WorkerType.Z_2X,
+      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 3,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
@@ -122,9 +128,15 @@ export class RayJob extends Job {
       tags: props.tags,
       defaultArguments,
     });
+  }
 
-    const resourceName = this.getResourceNameAttribute(jobResource.ref);
-    this.jobArn = this.buildJobArn(this, resourceName);
-    this.jobName = resourceName;
+  @memoizedGetter
+  public get jobArn(): string {
+    return this.buildJobArn(this, this.jobName);
+  }
+
+  @memoizedGetter
+  public get jobName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 }

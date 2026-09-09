@@ -1,0 +1,163 @@
+{
+  "/aws-cdk-project-macos-base26/MacOsFleet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "fleetName": "*",
+        "baseCapacity": "*",
+        "computeType": "BUILD_GENERAL1_MEDIUM",
+        "environmentType": "MAC_ARM"
+      }
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "fleet": "*",
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_MEDIUM",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          },
+          "computeType": "BUILD_GENERAL1_MEDIUM"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-project-macos-base26/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsFleet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MacOsFleet804A3B5D"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MacOsProjectCFCE4F6B"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/Exports/Output{\"Fn::GetAtt\":[\"MacOsFleet804A3B5D\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMacOsFleet804A3B5DArn01D9C584"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/Exports/Output{\"Ref\":\"MacOsProjectCFCE4F6B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMacOsProjectCFCE4F6BC768DECD"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MacOsProjectRole1708711E"
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-macos-base26/MacOsProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MacOsProjectRoleDefaultPolicy76A4A56E"
+    }
+  ]
+}

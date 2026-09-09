@@ -1,12 +1,14 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IConnection } from './connection';
-import { Column } from './schema';
-import { PartitionIndex, TableBase, TableBaseProps } from './table-base';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import type { Column } from './schema';
+import type { PartitionIndex, TableBaseProps } from './table-base';
+import { TableBase } from './table-base';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -34,15 +36,6 @@ export interface ExternalTableProps extends TableBaseProps {
 export class ExternalTable extends TableBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.ExternalTable';
-  /**
-   * Name of this table.
-   */
-  public readonly tableName: string;
-
-  /**
-   * ARN of this table.
-   */
-  public readonly tableArn: string;
 
   /**
    * The connection associated to this table
@@ -56,13 +49,15 @@ export class ExternalTable extends TableBase {
 
   protected readonly tableResource: CfnTable;
 
+  private resource: CfnTable;
+
   constructor(scope: Construct, id: string, props: ExternalTableProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.connection = props.connection;
-    this.tableResource = new CfnTable(this, 'Table', {
-      catalogId: props.database.catalogId,
+    this.resource = new CfnTable(this, 'Table', {
+      catalogId: props.database.catalog.catalogId,
 
       databaseName: props.database.databaseName,
 
@@ -74,10 +69,12 @@ export class ExternalTable extends TableBase {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           'connectionName': props.connection.connectionName,
-          ...props.parameters,
+          ...this.parameters,
+          // Managed keys are emitted last so free-form `parameters` cannot
+          // silently override them. Conflicts are rejected in `TableBase`.
+          'has_encrypted_data': this.hasEncryptedData,
         },
         storageDescriptor: {
           location: props.externalDataLocation,
@@ -91,7 +88,7 @@ export class ExternalTable extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError(lit`DuplicateStorageParameterKey`, `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
@@ -103,13 +100,8 @@ export class ExternalTable extends TableBase {
       },
     });
 
-    this.tableName = this.getResourceNameAttribute(this.tableResource.ref);
-    this.tableArn = this.stack.formatArn({
-      service: 'glue',
-      resource: 'table',
-      resourceName: `${this.database.databaseName}/${this.tableName}`,
-    });
-    this.node.defaultChild = this.tableResource;
+    this.tableResource = this.resource;
+    this.node.defaultChild = this.resource;
 
     // Partition index creation relies on created table.
     if (props.partitionIndexes) {
@@ -119,7 +111,28 @@ export class ExternalTable extends TableBase {
   }
 
   /**
+   * Name of this table.
+   */
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this table.
+   */
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.stack.formatArn({
+      service: 'glue',
+      resource: 'table',
+      resourceName: `${this.database.databaseName}/${this.tableName}`,
+    });
+  }
+
+  /**
    * Grant read permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -131,6 +144,7 @@ export class ExternalTable extends TableBase {
 
   /**
    * Grant write permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -142,6 +156,7 @@ export class ExternalTable extends TableBase {
 
   /**
    * Grant read and write permissions to the table
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal
    */
@@ -170,7 +185,7 @@ const writePermissions = [
   'glue:UpdatePartition',
 ];
 
-function renderColumns(columns?: Array<Column | Column>) {
+function renderColumns(columns?: Column[]) {
   if (columns === undefined) {
     return undefined;
   }

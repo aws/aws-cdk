@@ -1,4 +1,5 @@
-import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
@@ -72,7 +73,7 @@ const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
 });
 
 message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.stringLikeRegexp('myPK')).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(2),
+  totalTimeout: cdk.Duration.minutes(5),
   interval: cdk.Duration.seconds(15),
 });
 

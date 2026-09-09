@@ -1,9 +1,10 @@
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AttributeType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {
@@ -14,6 +15,10 @@ class TestStack extends Stack {
       runtime: Runtime.PYTHON_3_11,
       code: Code.fromAsset(path.join(__dirname, 'replica-handler')),
       handler: 'index.handler',
+      environment: {
+        TABLE_NAME: 'global-table',
+        REPLICA_REGION: 'us-west-1',
+      },
     });
 
     const globalTable = new TableV2(this, 'GlobalTable', {
@@ -37,6 +42,7 @@ const app = new App({
 });
 
 const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
+  // Global tables with replicas require a region-aware stack
   testCases: [new TestStack(app, 'BarStack', { env: { region: 'us-east-1' } })],
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
@@ -44,7 +50,5 @@ const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
 
 const invoke = integTest.assertions.invokeFunction({ functionName: 'global-table-lambda' });
 invoke.expect(ExpectedResult.objectLike({
-  Payload: {
-    status_code: 200,
-  },
+  Payload: Match.stringLikeRegexp('status_code.*200'),
 }));

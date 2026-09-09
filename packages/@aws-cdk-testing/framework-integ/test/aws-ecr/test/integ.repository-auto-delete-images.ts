@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 const repo = new ecr.Repository(stack, 'Repo', {
   repositoryName: 'delete-even-if-containing-images',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  autoDeleteImages: true,
+  emptyOnDelete: true,
 });
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {

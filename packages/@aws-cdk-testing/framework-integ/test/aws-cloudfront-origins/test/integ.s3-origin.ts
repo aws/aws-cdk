@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'cloudfront-s3-origin');
 
 const bucket = new s3.Bucket(stack, 'Bucket');
 new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: new origins.S3Origin(bucket) },
+  defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessControl(bucket) },
 });
 
 app.synth();

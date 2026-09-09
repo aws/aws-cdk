@@ -2,7 +2,8 @@ import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, CfnResource, Resource, Stack } from '../../core';
-import { AddToPrincipalPolicyResult, AnyPrincipal, CfnPolicy, Grant, Group, IResourceWithPolicy, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import type { AddToPrincipalPolicyResult, CfnPolicy, IResourceWithPolicy } from '../lib';
+import { AnyPrincipal, Grant, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
@@ -24,7 +25,7 @@ describe('IAM policy', () => {
   test('policy with statements', () => {
     const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
@@ -42,7 +43,7 @@ describe('IAM policy', () => {
            {
              Statement:
             [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
              Version: '2012-10-17',
            },
             PolicyName: 'MyPolicyName',
@@ -92,7 +93,7 @@ describe('IAM policy', () => {
   test('policy name can be omitted, in which case the logical id will be used', () => {
     const policy = new Policy(stack, 'MyPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
@@ -109,7 +110,7 @@ describe('IAM policy', () => {
            {
              Statement:
             [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+              { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
              Version: '2012-10-17',
            },
             PolicyName: 'MyPolicy39D66CF6',

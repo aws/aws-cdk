@@ -1,7 +1,9 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole, PolicyStatement } from '../../aws-iam';
-import { IDeliveryStream } from '../../aws-kinesisfirehose';
-import { IScheduleTarget } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { IDeliveryStream } from '../../aws-kinesisfirehose';
+import type { IScheduleTarget } from '../../aws-scheduler';
 
 /**
  * Use an Amazon Data Firehose as a target for AWS EventBridge Scheduler.

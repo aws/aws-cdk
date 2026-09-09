@@ -1,5 +1,5 @@
-import { Construct, IDependable } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type { Construct, IDependable } from 'constructs';
+import type { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
  * An Amazon Data Firehose delivery stream destination configuration.
@@ -11,6 +11,12 @@ export interface DestinationConfig {
    * @default - S3 destination is not used.
    */
   readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
+  /**
+   * Datadog destination configuration properties.
+   *
+   * @default - HTTP destination is not used.
+   */
+  readonly httpEndpointDestinationConfiguration?: CfnDeliveryStream.HttpEndpointDestinationConfigurationProperty;
 
   /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.

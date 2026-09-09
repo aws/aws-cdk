@@ -1,0 +1,313 @@
+{
+  "/MetricsDashboard": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MetricsDashboard/L1Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L1Function"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:50:29)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/L2Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/MetricsDashboard/MetricsDashboard": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "dashboardName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          },
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          },
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          },
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          },
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MetricsDashboard/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/MetricsDashboard/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/MetricsDashboard/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Role1ABCC5F0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:46:22)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/L2Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MetricsDashboard/L2Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2FunctionA2EBE646"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:57:20)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/L2Function/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/MetricsDashboard/MetricsDashboard/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MetricsDashboard8B06AE3A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Dashboard (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/dashboard.js:151:31)",
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:75:27)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/L2Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2FunctionServiceRole2D0DE7A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:57:20)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MetricsDashboard/L2Function/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2FunctionLogGroup99127C76"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new Function (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
+        "new MetricsDashboard (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:57:20)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:89:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

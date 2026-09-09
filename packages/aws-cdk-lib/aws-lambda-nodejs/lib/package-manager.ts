@@ -78,13 +78,13 @@ export class PackageManager {
     this.argsSeparator = props.argsSeparator;
   }
 
-  public runBinCommand(bin: string): string {
+  public runBinCommand(bin: string): string[] {
     const [runCommand, ...runArgs] = this.runCommand;
     return [
       os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
       ...runArgs,
       ...(this.argsSeparator ? [this.argsSeparator] : []),
       bin,
-    ].join(' ');
+    ];
   }
 }

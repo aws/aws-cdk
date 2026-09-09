@@ -1,8 +1,7 @@
 
-/* eslint-disable no-console */
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
@@ -164,6 +163,8 @@ async function main() {
 
       if (color) {
         console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${chalk.bold(`awslint:${diag.rule.code}`)}:${chalk.bold(diag.scope)}] ${diag.message}`));
+      } else {
+        console.error(`${DiagnosticLevel[diag.level].toLowerCase()}: [${`awslint:${diag.rule.code}`}:${diag.scope}] ${diag.message}`);
       }
     }
 

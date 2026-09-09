@@ -1,20 +1,11 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const app = new cdk.App({
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
-});
-const stack = new cdk.Stack(app, 'MultiAzRedshift', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'MultiAzRedshift');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
@@ -24,11 +15,17 @@ cdk.Aspects.of(stack).add({
   },
 });
 
+// Create VPC with explicit AZ selection to ensure 3 AZs
+// Use Fn.select to get first 3 AZs from the region
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
   enableDnsHostnames: true,
   enableDnsSupport: true,
-  maxAzs: 3,
+  availabilityZones: [
+    cdk.Fn.select(0, cdk.Fn.getAzs()),
+    cdk.Fn.select(1, cdk.Fn.getAzs()),
+    cdk.Fn.select(2, cdk.Fn.getAzs()),
+  ],
 });
 
 new redshift.Cluster(stack, 'Cluster', {
@@ -36,7 +33,6 @@ new redshift.Cluster(stack, 'Cluster', {
   masterUser: {
     masterUsername: 'admin',
   },
-  nodeType: redshift.NodeType.RA3_XLPLUS,
   clusterType: redshift.ClusterType.MULTI_NODE,
   numberOfNodes: 2,
   multiAz: true,

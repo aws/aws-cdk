@@ -207,7 +207,7 @@ all certificates. This metric is emitted by AWS Certificates Manager once per
 day until the certificate has effectively expired.
 
 An alarm can be created to determine whether a certificate is soon due for
-renewal ussing the following code:
+renewal using the following code:
 
 ```ts
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';

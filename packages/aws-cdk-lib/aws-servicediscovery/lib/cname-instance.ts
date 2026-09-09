@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import { BaseInstanceProps, InstanceBase } from './instance';
+import type { Construct } from 'constructs';
+import type { BaseInstanceProps } from './instance';
+import { InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
-import { DnsRecordType, IService } from './service';
+import type { IService } from './service';
+import { DnsRecordType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /*
@@ -58,11 +61,11 @@ export class CnameInstance extends InstanceBase {
     addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
-      throw new ValidationError('Namespace associated with Service must be a DNS Namespace.', this);
+      throw new ValidationError(lit`NamespaceAssociatedServiceNamespace`, 'Namespace associated with Service must be a DNS Namespace.', this);
     }
 
     if (props.service.dnsRecordType !== DnsRecordType.CNAME) {
-      throw new ValidationError('A `CnameIntance` can only be used with a service using a `CNAME` record.', this);
+      throw new ValidationError(lit`OnlyUsedServiceUsing`, 'A `CnameIntance` can only be used with a service using a `CNAME` record.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {
