@@ -58,7 +58,7 @@ export interface RouterNetworkInterfaceProps {
   readonly configuration: RouterNetworkConfiguration;
 
   /**
-   * The AWS Region where the router network interface will be created.
+   * Select a region for your router network interface.
    *
    * @default - Same region as the stack
    */
@@ -93,8 +93,12 @@ export interface RouterNetworkInterfaceAttributes {
  * Properties for public network configuration
  */
 export interface PublicNetworkConfigurationProps {
-  /** CIDR blocks allowed to access the network interface */
-  readonly cidr: string[];
+  /**
+   * CIDR blocks allowed to send inbound traffic to the network interface.
+   *
+   * @default - no inbound allowed (outbound only)
+   */
+  readonly cidr?: string[];
 }
 
 /**
@@ -116,15 +120,10 @@ export class RouterNetworkConfiguration {
    * @param props Public network configuration properties
    * @returns RouterNetworkConfiguration instance for public setup
    */
-  public static publicNetwork(props: PublicNetworkConfigurationProps): RouterNetworkConfiguration {
+  public static publicNetwork(props: PublicNetworkConfigurationProps = {}): RouterNetworkConfiguration {
+    const allowRules = (props.cidr ?? []).map(ip => ({ cidr: ip }));
     return new RouterNetworkConfiguration({
-      public: {
-        allowRules: props.cidr.map(ip => {
-          return {
-            cidr: ip,
-          };
-        }),
-      },
+      public: { allowRules },
     }, props.cidr);
   }
 
@@ -174,11 +173,12 @@ export class RouterNetworkConfiguration {
 
 /**
  * Shared base for both real and imported router network interfaces.
- * @internal
  */
 abstract class RouterNetworkInterfaceBase extends Resource implements IRouterNetworkInterface {
   public abstract readonly routerNetworkInterfaceArn: string;
   public abstract readonly routerNetworkInterfaceId: string;
+  public abstract readonly createdAt?: string;
+  public abstract readonly updatedAt?: string;
 
   public get routerNetworkInterfaceRef(): RouterNetworkInterfaceReference {
     return { routerNetworkInterfaceArn: this.routerNetworkInterfaceArn };
@@ -223,6 +223,8 @@ export class RouterNetworkInterface extends RouterNetworkInterfaceBase {
   ): IRouterNetworkInterface {
     class Import extends RouterNetworkInterfaceBase {
       public readonly routerNetworkInterfaceArn = attrs.routerNetworkInterfaceArn;
+      public readonly createdAt = undefined;
+      public readonly updatedAt = undefined;
 
       public get routerNetworkInterfaceId(): string {
         if (attrs.routerNetworkInterfaceId) return attrs.routerNetworkInterfaceId;
@@ -259,8 +261,8 @@ export class RouterNetworkInterface extends RouterNetworkInterfaceBase {
       if (props.routerNetworkInterfaceName.length > 128) {
         throw new ValidationError(lit`RouterNetworkInterfaceNameLength`, `Router network interface name must be between 1 and 128 characters, got ${props.routerNetworkInterfaceName.length}`, this);
       }
-      if (!/^[a-zA-Z0-9-]+$/.test(props.routerNetworkInterfaceName)) {
-        throw new ValidationError(lit`RouterNetworkInterfaceNameFormat`, `Router network interface name must contain only alphanumeric characters and hyphens, got '${props.routerNetworkInterfaceName}'`, this);
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.routerNetworkInterfaceName)) {
+        throw new ValidationError(lit`RouterNetworkInterfaceNameFormat`, `Router network interface name must contain only alphanumeric characters, hyphens, and underscores, got '${props.routerNetworkInterfaceName}'`, this);
       }
     }
 
