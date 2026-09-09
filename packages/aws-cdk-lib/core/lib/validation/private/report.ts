@@ -1,4 +1,3 @@
-import * as path from 'path';
 import type {
   PluginReportJson,
   PolicyValidationReportConclusion,
@@ -155,22 +154,13 @@ export class PolicyValidationReportFormatter {
             severity: violation.severity,
             violatingResources: violation.violatingResources,
             violatingConstructs: violation.violatingResources.map(resource => {
-              // Use constructPath from the input if provided (e.g. annotations),
-              // otherwise derive it from the logical ID via the construct tree.
-              const constructPath = resource.constructPath ?? (
-                resource.templatePath && resource.resourceLogicalId
-                  ? this.tree.getConstructByLogicalId(
-                    path.basename(resource.templatePath),
-                    resource.resourceLogicalId,
-                  )?.node.path
-                  : undefined
-              );
+              const constructPath = resource.constructPath;
               return {
                 constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
                 locations: resource.locations,
-                resourceLogicalId: resource.resourceLogicalId ?? 'N/A',
-                templatePath: resource.templatePath ?? 'N/A',
+                resourceLogicalId: resource.resourceLogicalId,
+                templatePath: resource.templatePath,
               };
             }),
           })),
@@ -201,14 +191,6 @@ export class PolicyValidationReportFormatter {
       ruleMetadata: violation.ruleMetadata,
       violatingConstructs: violation.violatingResources.map(resource => {
         let constructPath = resource.constructPath;
-
-        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
-        if (!constructPath && resource.templatePath && resource.resourceLogicalId) {
-          constructPath = this.tree.getConstructByLogicalId(
-            path.basename(resource.templatePath),
-            resource.resourceLogicalId,
-          )?.node.path;
-        }
 
         const constructInfo = constructPath
           ? this.tree.constructTraceLevelFromConstructPath(constructPath)

@@ -17,12 +17,12 @@ beforeEach(() => {
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  // jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('validations', () => {
@@ -1622,8 +1622,14 @@ describe('validations', () => {
     });
   });
 
-  test('suppressions respect scope', () => {
-    const app = new NonStrictApp();
+  test.each([
+    ['StackA/ScopeA', 3],
+    ['StackA', 2],
+    ['', 0],
+  ])('suppressions respect scope: suppression at %p leaves %p violations', (suppressScope, warningCount) => {
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
 
     // A plugin that complains about every resource it finds
     core.Validations.of(app).addPlugins({
@@ -1661,13 +1667,13 @@ describe('validations', () => {
     }
 
     // Only acknowledge the rule on StackA's resource.
-    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+    core.Validations.of(constructAt(app, suppressScope)).acknowledge({
       id: 'ValidationPlugin::MyRule-001',
       reason: 'Silence in scope',
     });
 
     const report = AssemblyValidationReport.fromApp(app);
-    expect(report.allViolations()).toHaveLength(3);
+    expect(report.allViolations()).toHaveLength(warningCount);
   });
 });
 
@@ -1816,7 +1822,7 @@ function loadJson(filePath: string): any {
 }
 
 function constructAt(root: IConstruct, constructPath: string) {
-  const parts = constructPath.split('/');
+  const parts = constructPath ? constructPath.split('/') : [];
 
   let current: IConstruct = root;
   while (parts.length > 0) {
