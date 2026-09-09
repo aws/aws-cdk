@@ -111,7 +111,11 @@ export class ConsumableResource extends Resource implements IConsumableResource 
 
   @memoizedGetter
   public get consumableResourceName(): string {
-    return this.getResourceNameAttribute(this.resource.ref);
+    // `Ref` of AWS::Batch::ConsumableResource is the ARN, so the name has to be split out of it,
+    // the same way `fromConsumableResourceArn` does for imported resources.
+    return this.getResourceNameAttribute(
+      Stack.of(this).splitArn(this.resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!,
+    );
   }
 
   public get consumableResourceRef(): ConsumableResourceReference {
@@ -127,8 +131,8 @@ export class ConsumableResource extends Resource implements IConsumableResource 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (props.totalQuantity < 1) {
-      throw new ValidationError(lit`TotalQuantityTooSmall`, `totalQuantity must be at least 1, got ${props.totalQuantity}`, this);
+    if (!Token.isUnresolved(props.totalQuantity) && props.totalQuantity < 0) {
+      throw new ValidationError(lit`TotalQuantityMustBeNonNegative`, `totalQuantity must be non-negative, got ${props.totalQuantity}`, this);
     }
 
     this.resource = new CfnConsumableResource(this, 'Resource', {

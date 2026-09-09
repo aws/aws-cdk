@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { App, CfnOutput, Fn, Stack } from '../../core';
+import { App, CfnOutput, CfnParameter, Fn, Stack, Token } from '../../core';
 import { ConsumableResource, ConsumableResourceType } from '../lib';
 
 describe('ConsumableResource', () => {
@@ -39,14 +39,18 @@ describe('ConsumableResource', () => {
     });
   });
 
-  test('throws error when totalQuantity is less than 1', () => {
-    // WHEN / THEN
-    expect(() => {
-      new ConsumableResource(stack, 'MyResource', {
-        resourceType: ConsumableResourceType.REPLENISHABLE,
-        totalQuantity: 0,
-      });
-    }).toThrow(/totalQuantity must be at least 1/);
+  test('accepts totalQuantity of 0', () => {
+    // WHEN
+    // The service documents no minimum for TotalQuantity, so 0 must be allowed.
+    new ConsumableResource(stack, 'MyResource', {
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ConsumableResource', {
+      TotalQuantity: 0,
+    });
   });
 
   test('throws error when totalQuantity is negative', () => {
@@ -56,7 +60,21 @@ describe('ConsumableResource', () => {
         resourceType: ConsumableResourceType.REPLENISHABLE,
         totalQuantity: -5,
       });
-    }).toThrow(/totalQuantity must be at least 1/);
+    }).toThrow(/totalQuantity must be non-negative/);
+  });
+
+  test('does not throw when totalQuantity is an unresolved token', () => {
+    // GIVEN
+    const quantity = new CfnParameter(stack, 'Quantity', { type: 'Number' });
+
+    // WHEN / THEN
+    // An unresolved number token encodes to a sentinel value, so it must not be range-checked.
+    expect(() => {
+      new ConsumableResource(stack, 'MyResource', {
+        resourceType: ConsumableResourceType.REPLENISHABLE,
+        totalQuantity: Token.asNumber(quantity.valueAsNumber),
+      });
+    }).not.toThrow();
   });
 
   test('accepts totalQuantity of 1', () => {
@@ -132,5 +150,20 @@ describe('ConsumableResource', () => {
     expect(() => {
       ConsumableResource.fromConsumableResourceArn(stack, 'ImportedResource', Fn.importValue('SomeArn'));
     }).toThrow(/consumableResourceArn cannot be an unresolved token/);
+  });
+  test('consumableResourceName resolves to the name rather than the ARN-shaped ref', () => {
+    // WHEN
+    const resource = new ConsumableResource(stack, 'MyResource', {
+      consumableResourceName: 'my-license',
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 100,
+    });
+
+    // THEN
+    // `Ref` is the ARN, so the name must be split out of it to stay consistent with the import path.
+    const logicalId = Object.keys(Template.fromStack(stack).findResources('AWS::Batch::ConsumableResource'))[0];
+    expect(stack.resolve(resource.consumableResourceName)).toEqual({
+      'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: logicalId }] }] }] }],
+    });
   });
 });
