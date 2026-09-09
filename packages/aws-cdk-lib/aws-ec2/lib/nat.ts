@@ -451,10 +451,14 @@ export class NatGatewayProvider extends NatProvider {
  * @see https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html
  */
 export class RegionalNatGatewayProvider extends NatProvider {
+  private _natGateway?: CfnNatGateway;
+
   /**
-   * The Regional NAT Gateway created by this provider
+   * The Regional NAT Gateway created by this provider, or `undefined` before the VPC has configured it
    */
-  public natGateway?: CfnNatGateway;
+  public get natGateway(): CfnNatGateway | undefined {
+    return this._natGateway;
+  }
 
   constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
     super();
@@ -513,7 +517,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       );
     }
 
-    this.natGateway = new CfnNatGateway(options.vpc, 'RegionalNatGateway', {
+    this._natGateway = new CfnNatGateway(options.vpc, 'RegionalNatGateway', {
       vpcId: options.vpc.vpcId,
       availabilityMode: 'regional',
       connectivityType: 'public',
@@ -528,19 +532,19 @@ export class RegionalNatGatewayProvider extends NatProvider {
   }
 
   public configureSubnet(subnet: PrivateSubnet) {
-    if (!this.natGateway) {
+    if (!this._natGateway) {
       throw new UnscopedValidationError(lit`CannotConfigureSubnetBeforeNat`, 'Cannot configure subnet before configuring NAT gateway');
     }
     subnet.addRoute('DefaultRoute', {
       routerType: RouterType.NAT_GATEWAY,
-      routerId: this.natGateway.attrNatGatewayId,
+      routerId: this._natGateway.attrNatGatewayId,
       enablesInternetConnectivity: true,
     });
   }
 
   public get configuredGateways(): GatewayConfig[] {
-    return this.natGateway
-      ? [{ az: 'regional', gatewayId: this.natGateway.attrNatGatewayId }]
+    return this._natGateway
+      ? [{ az: 'regional', gatewayId: this._natGateway.attrNatGatewayId }]
       : [];
   }
 }
