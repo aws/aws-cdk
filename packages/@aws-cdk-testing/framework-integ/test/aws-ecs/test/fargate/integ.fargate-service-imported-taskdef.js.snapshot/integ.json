@@ -1,0 +1,14 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "FargateServiceImportedTaskDefTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-imported-taskdef-producer",
+        "aws-ecs-integ-imported-taskdef-consumer"
+      ],
+      "assertionStack": "FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FargateServiceImportedTaskDefTestDefaultTestDeployAssert58BCE3D9"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}
