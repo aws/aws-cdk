@@ -516,7 +516,17 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     let exclude: string[] = props.exclude || [];
 
-    const ignore = path.join(dir, '.dockerignore');
+    const contextRootIgnoreFileName = '.dockerignore';
+    const dockerfileSpecificIgnoreFileName = `${this.dockerfilePath}.dockerignore`;
+
+    const isDockerfileSpecificIgnore =
+      FeatureFlags.of(this).isEnabled(cxapi.DOCKERFILE_SPECIFIC_IGNORE_FILE)
+      && fs.existsSync(path.join(dir, dockerfileSpecificIgnoreFileName));
+
+    const ignoreFileName = isDockerfileSpecificIgnore
+      ? dockerfileSpecificIgnoreFileName
+      : contextRootIgnoreFileName;
+    const ignore = path.join(dir, ignoreFileName);
 
     if (fs.existsSync(ignore)) {
       const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
@@ -525,8 +535,8 @@ export class DockerImageAsset extends Construct implements IAsset {
         ...dockerIgnorePatterns,
         ...exclude,
 
-        // Ensure .dockerignore is included no matter what.
-        '!.dockerignore',
+        // Keep the ignore file Docker will re-read from the staged directory.
+        `!${ignoreFileName}`,
       ];
     }
 
