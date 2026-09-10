@@ -1950,7 +1950,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Enabling this adds \`LoadBalancers: []\` to every ECS service that has no target groups, including
       services that never had any. Amazon ECS starts a new deployment when a load balancer configuration
       is added, updated or removed, so expect a one-time deployment of those services.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.269.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
