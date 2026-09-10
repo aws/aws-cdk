@@ -3,7 +3,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { App, CfnParameter, Fn, Lazy, RemovalPolicy, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
 import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
@@ -1158,6 +1158,18 @@ test('accepts a field index name of exactly 100 characters', () => {
       Fields: [boundaryFieldName],
     }],
   });
+});
+
+test('does not validate the length of a tokenized field index name', () => {
+  // GIVEN
+  // A token whose resolved value would exceed 100 characters. Its length is
+  // unknown at synth time, so Token.isUnresolved() must skip the length check.
+  const tokenizedFieldName = Lazy.string({ produce: () => 'a'.repeat(200) });
+
+  // THEN
+  expect(() => new FieldIndexPolicy({
+    fields: [tokenizedFieldName],
+  })).not.toThrow();
 });
 
 describe('subscription filter', () => {
