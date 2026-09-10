@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, mergeBarrel, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -142,6 +142,37 @@ describe('deprecateAlphaReadme', () => {
       write(path.join(ctx.alphaDir, 'README.md'), '# Foo Construct Library\n\nNo banner here.\n');
       deprecateAlphaReadme(ctx, report);
       expect(report.hasManualItems).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('mergeBarrel', () => {
+  test('appends new alpha exports, dedupes existing ones, and preserves the submodule barrel', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'lib', 'index.ts'), [
+        "export * from './foo';",
+        "export * from './bar';",
+        '',
+      ].join('\n'));
+      // The submodule barrel already re-exports the generated L1 and one L2.
+      write(path.join(ctx.submoduleLibDir, 'index.ts'), [
+        "export * from './glue.generated';",
+        "export * from './foo';",
+        '',
+      ].join('\n'));
+
+      mergeBarrel(ctx, report);
+
+      const out = fs.readFileSync(path.join(ctx.submoduleLibDir, 'index.ts'), 'utf-8');
+      // New export appended.
+      expect(out).toContain("export * from './bar';");
+      // Duplicate not appended twice.
+      expect(out.match(/export \* from '\.\/foo';/g)).toHaveLength(1);
+      // Pre-existing lines preserved.
+      expect(out).toContain("export * from './glue.generated';");
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
