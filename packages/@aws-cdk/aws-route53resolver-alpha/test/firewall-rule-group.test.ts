@@ -1,5 +1,5 @@
 import { Duration, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import type { IFirewallDomainList } from '../lib';
 import { DnsBlockResponse, FirewallDomainList, FirewallRuleAction, FirewallRuleGroup } from '../lib';
@@ -122,6 +122,48 @@ test('associate rule group with a vpc', () => {
     VpcId: {
       Ref: 'Vpc8378EB38',
     },
+    // mutation protection is left unset by default so the association stays
+    // updatable/deletable by CloudFormation
+    MutationProtection: Match.absent(),
+  });
+});
+
+test('associate with mutationProtection enabled', () => {
+  // GIVEN
+  const vpc = new Vpc(stack, 'Vpc');
+  const ruleGroup = new FirewallRuleGroup(stack, 'RuleGroup');
+
+  // WHEN
+  ruleGroup.associate('Association', {
+    priority: 101,
+    vpc,
+    mutationProtection: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroupAssociation', {
+    MutationProtection: 'ENABLED',
+  });
+});
+
+test('associate with mutationProtection disabled and a custom name', () => {
+  // GIVEN
+  const vpc = new Vpc(stack, 'Vpc');
+  const ruleGroup = new FirewallRuleGroup(stack, 'RuleGroup');
+
+  // WHEN
+  ruleGroup.associate('Association', {
+    name: 'my-association',
+    priority: 101,
+    vpc,
+    mutationProtection: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallRuleGroupAssociation', {
+    Name: 'my-association',
+    Priority: 101,
+    MutationProtection: 'DISABLED',
   });
 });
 
