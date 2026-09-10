@@ -1604,6 +1604,13 @@
       }
     ]
   },
+  "aws-pricingplanmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::PricingPlanManager"
+      }
+    ]
+  },
   "aws-proton": {
     "scopes": [
       {
