@@ -15,6 +15,11 @@ import type { aws_apigatewayv2 } from '../../interfaces';
  *
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-routing-mode.html
  */
+// These are the values the REST-API DomainName endpoint accepts, verified by CLI and a
+// CloudFormation deploy. They differ from the AWS::ApiGatewayV2::DomainName CFN reference
+// (which lists API_MAPPING_ONLY / ROUTING_RULE_THEN_API_MAPPING / ROUTING_RULE_ONLY): the
+// service rejects API_MAPPING_ONLY and ROUTING_RULE_THEN_API_MAPPING, and accepts
+// ROUTING_RULE_THEN_BASE_PATH_MAPPING, which the reference omits.
 export enum RoutingMode {
   /**
    * Base path mappings only (default). Routing rules cannot be added.
@@ -447,6 +452,8 @@ export class RoutingRule extends Resource implements IRoutingRule {
         );
       }
       if (isInfixMatch) {
+        // Uses `>` (not `>=` like the other length guards): the docs say infix globs must
+        // be "less than 40 characters", but the service actually accepts 40 and rejects 41.
         if (glob.length > MAX_INFIX_GLOB_LENGTH) {
           throw new ValidationError(
             lit`RoutingRuleHeaderInfixGlobTooLong`,
