@@ -97,7 +97,8 @@ new lambda.Function(stack, 'MyLambdaDirectS3Read', {
   runtime: lambda.Runtime.PYTHON_3_12,
   vpc,
   filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint2, '/mnt/data', {
-    directS3Read: lambda.DirectS3ReadMode.ENABLED,
+    // Enables direct reads and grants s3:GetObject/s3:GetObjectVersion on the backing bucket to the execution role.
+    directS3Read: lambda.DirectS3Read.enabled(bucket),
   }),
 });
 

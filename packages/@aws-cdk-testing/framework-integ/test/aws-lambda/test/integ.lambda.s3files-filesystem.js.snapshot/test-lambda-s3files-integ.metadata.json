@@ -1,4 +1,20 @@
 {
+  "/test-lambda-s3files-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:125:18)",
+        "    at Stack._silenceLiteralAzWarning (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda.s3files-filesystem.js:50:13)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/test-lambda-s3files-integ/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -478,8 +494,8 @@
         "/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:51",
         "ReactiveList.forEachAndForever (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
         "Connections.allowTo (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:30)",
-        "WrappedClass.configureVpc (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1246:38)",
-        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:755:33)",
+        "WrappedClass.configureVpc (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1248:38)",
+        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:757:33)",
         "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda.s3files-filesystem.js:99:1)",
         "Module._compile (node:internal/modules/cjs/loader:1781:14)",
@@ -547,6 +563,14 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/test-lambda-s3files-integ/MyLambdaDirectS3Read/SecurityGroup": [
@@ -583,8 +607,8 @@
         "/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:51",
         "ReactiveList.forEachAndForever (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
         "Connections.allowTo (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:30)",
-        "WrappedClass.configureVpc (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1246:38)",
-        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:755:33)",
+        "WrappedClass.configureVpc (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1248:38)",
+        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:757:33)",
         "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/s3-files-directS3read/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda.s3files-filesystem.js:116:1)",
         "Module._compile (node:internal/modules/cjs/loader:1781:14)",
@@ -809,6 +833,14 @@
       "data": {
         "attachToRole": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
         ]
       }
     },

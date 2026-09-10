@@ -3,32 +3,66 @@ import type { Connections } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import type * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
 import type * as s3files from '../../aws-s3files';
 import { AccessPointReflection } from '../../aws-s3files/lib/private/access-point-reflection';
-import { Stack } from '../../core';
+import { Annotations, Stack } from '../../core';
 
 /**
- * The DirectS3Read mode for S3 Files filesystem configurations.
+ * The DirectS3Read configuration for an S3 Files filesystem mount.
  *
- * Controls whether Lambda can read objects directly from S3 without
- * going through the S3 Files mount target.
+ * Direct reads let Lambda read objects straight from the backing S3 bucket for
+ * higher throughput, instead of routing every read through the file system mount.
+ *
+ * Use one of the predefined values or the `enabled` factory:
+ *
+ * - `DirectS3Read.AUTO` — the service decides based on the function's memory.
+ * - `DirectS3Read.DISABLED` — always read through the mount.
+ * - `DirectS3Read.enabled(bucket)` — turn direct reads on and grant the execution
+ *   role read access to `bucket`.
  */
-export enum DirectS3ReadMode {
-  /**
-   * Direct S3 read is enabled.
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * Direct S3 read is disabled.
-   */
-  DISABLED = 'DISABLED',
-
+export class DirectS3Read {
   /**
    * The service determines whether to use direct S3 read based on the function's
    * memory configuration: direct reads are active for functions with 512 MB or more of memory.
    */
-  AUTO = 'AUTO',
+  public static readonly AUTO = new DirectS3Read('AUTO');
+
+  /**
+   * Direct S3 read is disabled; all reads go through the S3 Files mount.
+   */
+  public static readonly DISABLED = new DirectS3Read('DISABLED');
+
+  /**
+   * Enable direct S3 reads, bypassing the mount for higher throughput.
+   *
+   * When `bucket` is provided, the function's execution role is granted
+   * `s3:GetObject` and `s3:GetObjectVersion` on the bucket's objects so that direct
+   * reads can succeed. If `bucket` is omitted, no S3 read permissions are added and a
+   * warning is emitted; grant them to the execution role yourself (and `kms:Decrypt`
+   * if the bucket is encrypted with a customer-managed key).
+   *
+   * @param bucket the S3 bucket backing the S3 Files file system
+   */
+  public static enabled(bucket?: s3.IBucket): DirectS3Read {
+    return new DirectS3Read('ENABLED', bucket);
+  }
+
+  /**
+   * The DirectS3Read mode rendered into the CloudFormation `S3FilesConfig`.
+   * One of `ENABLED`, `DISABLED`, or `AUTO`.
+   */
+  public readonly mode: string;
+
+  /**
+   * The bucket to grant the execution role read access to, when direct reads are enabled.
+   */
+  public readonly bucket?: s3.IBucket;
+
+  private constructor(mode: string, bucket?: s3.IBucket) {
+    this.mode = mode;
+    this.bucket = bucket;
+  }
 }
 
 /**
@@ -36,14 +70,14 @@ export enum DirectS3ReadMode {
  */
 export interface S3FilesOptions {
   /**
-   * The DirectS3Read mode for the S3 Files filesystem.
+   * The DirectS3Read configuration for the S3 Files filesystem.
    *
-   * Controls whether Lambda can read objects directly from S3 without
-   * going through the S3 Files mount target.
+   * Use `DirectS3Read.AUTO`, `DirectS3Read.DISABLED`, or `DirectS3Read.enabled(bucket)`
+   * to control whether Lambda reads objects directly from S3 instead of through the mount.
    *
    * @default - DirectS3Read is not set. The service default is AUTO.
    */
-  readonly directS3Read?: DirectS3ReadMode;
+  readonly directS3Read?: DirectS3Read;
 }
 
 /**
@@ -82,13 +116,14 @@ export interface FileSystemConfig {
   readonly policies?: iam.PolicyStatement[];
 
   /**
-   * The DirectS3Read mode, applied only for S3 Files access-point mounts.
+   * The DirectS3Read mode (`ENABLED`, `DISABLED`, or `AUTO`), applied only for
+   * S3 Files access-point mounts.
    *
    * Set internally by `fromS3FilesAccessPoint`; not applicable to EFS mounts.
    *
    * @default - DirectS3Read is not set. The service default is AUTO.
    */
-  readonly s3FilesDirectRead?: DirectS3ReadMode;
+  readonly s3FilesDirectRead?: string;
 }
 
 /**
@@ -137,6 +172,38 @@ export class FileSystem {
   public static fromS3FilesAccessPoint(ap: s3files.IAccessPointRef, mountPath: string, options?: S3FilesOptions): FileSystem {
     const reflection = AccessPointReflection.of(ap);
 
+    const policies = [
+      new iam.PolicyStatement({
+        actions: ['s3files:ClientMount'],
+        resources: [ap.accessPointRef.accessPointArn],
+      }),
+      new iam.PolicyStatement({
+        actions: ['s3files:ClientMount', 's3files:ClientWrite'],
+        resources: [reflection.fileSystem.fileSystemRef.fileSystemArn],
+      }),
+    ];
+
+    // Direct reads bypass the mount and read objects straight from the backing bucket,
+    // so they require s3:GetObject/s3:GetObjectVersion on the execution role. Grant them
+    // when the caller enabled direct reads with a bucket (`DirectS3Read.enabled(bucket)`).
+    // AUTO is service-decided at runtime, so we don't grant for it.
+    const directS3Read = options?.directS3Read;
+    if (directS3Read?.mode === 'ENABLED') {
+      if (directS3Read.bucket) {
+        policies.push(new iam.PolicyStatement({
+          actions: ['s3:GetObject', 's3:GetObjectVersion'],
+          resources: [directS3Read.bucket.arnForObjects('*')],
+        }));
+      } else {
+        Annotations.of(ap).addWarningV2(
+          '@aws-cdk/aws-lambda:s3FilesDirectReadMissingBucket',
+          'DirectS3Read is enabled but no bucket was provided to \'DirectS3Read.enabled()\', so no S3 read permissions were added. ' +
+          'Grant the function\'s execution role s3:GetObject and s3:GetObjectVersion on the backing bucket ' +
+          '(and kms:Decrypt if it is encrypted with a customer-managed key), or pass the bucket to \'DirectS3Read.enabled(bucket)\'.',
+        );
+      }
+    }
+
     return new FileSystem({
       localMountPath: mountPath,
       arn: ap.accessPointRef.accessPointArn,
@@ -147,17 +214,8 @@ export class FileSystem {
         ),
         defaultPort: ec2.Port.tcp(FileSystem.NFS_PORT),
       }),
-      policies: [
-        new iam.PolicyStatement({
-          actions: ['s3files:ClientMount'],
-          resources: [ap.accessPointRef.accessPointArn],
-        }),
-        new iam.PolicyStatement({
-          actions: ['s3files:ClientMount', 's3files:ClientWrite'],
-          resources: [reflection.fileSystem.fileSystemRef.fileSystemArn],
-        }),
-      ],
-      s3FilesDirectRead: options?.directS3Read,
+      policies,
+      s3FilesDirectRead: directS3Read?.mode,
     });
   }
 

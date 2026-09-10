@@ -1674,9 +1674,9 @@ S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file syste
 - **Mount targets** (`CfnMountTarget`) — ENIs placed in your VPC subnets that allow NFS clients (like Lambda) to connect. Each mount target needs a security group that permits inbound NFS traffic (TCP port 2049).
 - **Access point** (`CfnAccessPoint`) — defines the POSIX user identity and root directory path that Lambda uses when accessing the file system. This scopes and isolates the function's view of the file system.
 
-You can optionally set `DirectS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount. Supported values are `ENABLED`, `DISABLED`, and `AUTO` (the default: direct reads are active for functions with 512 MB or more of memory). 
+You can optionally configure `directS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount. Use `DirectS3Read.AUTO` (the default: direct reads are active for functions with 512 MB or more of memory), `DirectS3Read.DISABLED`, or `DirectS3Read.enabled(bucket)`.
 
-To use direct reads, grant the function's execution role the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket; if a direct read fails, Lambda falls back to reading through the file system.
+To use direct reads, the function's execution role needs the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket (if a direct read fails, Lambda falls back to reading through the file system). Passing the bucket to `DirectS3Read.enabled(bucket)` grants these permissions to the execution role automatically. If you call `DirectS3Read.enabled()` without a bucket, grant the permissions yourself (and `kms:Decrypt` if the bucket is encrypted with a customer-managed key).
 
 > Visit [S3FilesConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-s3filesconfig.html) for more details.
 
@@ -1754,7 +1754,8 @@ const fn = new lambda.Function(this, 'MyFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
   filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files', {
-    directS3Read: lambda.DirectS3ReadMode.ENABLED,
+    // Enables direct reads and grants s3:GetObject/s3:GetObjectVersion on the bucket to the execution role.
+    directS3Read: lambda.DirectS3Read.enabled(bucket),
   }),
 });
 ```
