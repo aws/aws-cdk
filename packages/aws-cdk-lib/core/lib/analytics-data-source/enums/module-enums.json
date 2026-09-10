@@ -480,6 +480,10 @@
       "3",
       "3.9"
     ],
+    "LibrarySet": [
+      "analytics",
+      "none"
+    ],
     "Runtime": [
       "Ray2.4"
     ],
@@ -2404,6 +2408,12 @@
     "StreamDeliveryContentLevel": [
       "METADATA_ONLY",
       "FULL_CONTENT"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
@@ -5619,7 +5629,8 @@
     ],
     "LogGroupClass": [
       "STANDARD",
-      "INFREQUENT_ACCESS"
+      "INFREQUENT_ACCESS",
+      "DELIVERY"
     ],
     "Distribution": [
       "ByLogStream",
