@@ -490,6 +490,28 @@ export function deprecateAlphaReadme(ctx: GraduationContext, report: GraduationR
   log.step(`deprecated the alpha README banner at ${rel(ctx, src)}`);
 }
 
+/**
+ * Mark the alpha `package.json` as deprecated in place. Sets `stability` and
+ * `maturity` to `deprecated` and rewrites the `description` to point users at
+ * the stable submodule. Like `deprecateAlphaReadme`, this leaves the package
+ * present and publishable until the separate `--cleanup` PR removes it.
+ */
+export function deprecateAlphaPackage(ctx: GraduationContext, report: GraduationReport): void {
+  const pkgFile = path.join(ctx.alphaDir, 'package.json');
+  if (!fs.existsSync(pkgFile)) {
+    return;
+  }
+  const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+
+  pkg.description = `This module is deprecated. All constructs are now available under aws-cdk-lib/${ctx.service}`;
+  pkg.stability = 'deprecated';
+  pkg.maturity = 'deprecated';
+
+  fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2) + '\n');
+  log.step(`marked ${rel(ctx, pkgFile)} as deprecated (stability, maturity, description)`);
+  report.review('deprecate-package', 'set stability/maturity to deprecated and rewrote the description to point at the stable module', rel(ctx, pkgFile));
+}
+
 /** Drop the alpha module from aws-cdk-lib's rosetta exampleDependencies, if present. */
 export function removeExampleDependency(ctx: GraduationContext, report: GraduationReport): void {
   const pkgFile = path.join(ctx.libDir, 'package.json');

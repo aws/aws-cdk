@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -142,6 +142,31 @@ describe('deprecateAlphaReadme', () => {
       write(path.join(ctx.alphaDir, 'README.md'), '# Foo Construct Library\n\nNo banner here.\n');
       deprecateAlphaReadme(ctx, report);
       expect(report.hasManualItems).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('deprecateAlphaPackage', () => {
+  test('sets stability/maturity to deprecated and rewrites the description', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const pkgFile = write(path.join(ctx.alphaDir, 'package.json'), JSON.stringify({
+        name: '@aws-cdk/aws-foo-alpha',
+        description: 'The CDK Construct Library for AWS::Foo',
+        stability: 'experimental',
+        maturity: 'experimental',
+      }, null, 2) + '\n');
+
+      deprecateAlphaPackage(ctx, report);
+
+      const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8'));
+      expect(pkg.stability).toBe('deprecated');
+      expect(pkg.maturity).toBe('deprecated');
+      expect(pkg.description).toBe('This module is deprecated. All constructs are now available under aws-cdk-lib/aws-foo');
+      // Unrelated fields are preserved.
+      expect(pkg.name).toBe('@aws-cdk/aws-foo-alpha');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }

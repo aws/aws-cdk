@@ -41,6 +41,7 @@ the target submodule already exists, and detects custom resources.
 | grants.json | Move into the submodule (spec2cdk regenerates the `*Grants` classes) |
 | rosetta | Move fixtures into `aws-cdk-lib/rosetta/aws_<svc>/` |
 | README | Move the README into the stable submodule and strip the stability banner; deprecate the alpha README in place (deprecated banner + pointer to the stable module) |
+| Alpha package.json | Set `stability`/`maturity` to `deprecated` and rewrite `description` to point at `aws-cdk-lib/aws-<svc>` |
 | Custom resources | Copy handler source into the central package under a non-alpha key (config edit is a manual step) |
 
 **Phase 3 — Self-test:** build `aws-cdk-lib`, run the module's unit tests, awslint,
