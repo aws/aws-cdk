@@ -32,6 +32,16 @@ describe('GraduationReport', () => {
     expect(out).toContain('`lib/foo.ts`');
   });
 
+  test('renders skipped ("not moved") entries in their own section', () => {
+    const report = new GraduationReport('aws-foo');
+    report.skipped('sources', 'did not copy 2 generated L1 file(s)');
+    const out = report.render();
+    expect(out).toContain('⚫ Not moved — intentionally skipped');
+    expect(out).toContain('did not copy 2 generated L1 file(s)');
+    // A skipped entry is not a manual follow-up.
+    expect(report.hasManualItems).toBe(false);
+  });
+
   test('omits empty sections', () => {
     const report = new GraduationReport('aws-foo');
     report.info('target', 'only info');

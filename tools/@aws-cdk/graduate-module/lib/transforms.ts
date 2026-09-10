@@ -65,11 +65,13 @@ function rewriteAlphaPackageRefs(ctx: GraduationContext, text: string): string {
  */
 export function copySources(ctx: GraduationContext, report: GraduationReport): string[] {
   const alphaLib = path.join(ctx.alphaDir, 'lib');
-  const sources = walk(alphaLib, (f) =>
-    f.endsWith('.ts')
-    && !f.endsWith('.d.ts')
-    && !f.endsWith('.generated.ts')
-    && path.basename(f) !== 'index.ts');
+  // Only the top-level barrel is excluded (it is merged by `mergeBarrel`). Nested
+  // `index.ts` files (e.g. `lib/private/.../index.ts`) are real sources and must
+  // be copied — matching them by basename anywhere would silently drop them.
+  const topLevelBarrel = path.join(alphaLib, 'index.ts');
+  const allTs = walk(alphaLib, (f) => f.endsWith('.ts') && !f.endsWith('.d.ts'));
+  const sources = allTs.filter((f) => !f.endsWith('.generated.ts') && f !== topLevelBarrel);
+  const skippedGenerated = allTs.filter((f) => f.endsWith('.generated.ts'));
 
   const copied: string[] = [];
   for (const src of sources) {
@@ -84,6 +86,19 @@ export function copySources(ctx: GraduationContext, report: GraduationReport): s
   }
   log.step(`copied ${copied.length} source file(s) into ${rel(ctx, ctx.submoduleLibDir)}`);
   report.review('sources', `copied ${copied.length} L2 source file(s) from the alpha module`);
+
+  // Record what was deliberately left behind so a maintainer can confirm nothing
+  // that should have moved was dropped.
+  const notMoved: string[] = [];
+  if (skippedGenerated.length > 0) {
+    notMoved.push(`${skippedGenerated.length} generated L1 file(s) (already present in the submodule)`);
+  }
+  if (fs.existsSync(topLevelBarrel)) {
+    notMoved.push('the top-level lib/index.ts barrel (its exports are merged separately)');
+  }
+  if (notMoved.length > 0) {
+    report.skipped('sources', `did not copy ${notMoved.join('; ')}`);
+  }
   return copied;
 }
 
@@ -208,47 +223,69 @@ export function copyTests(ctx: GraduationContext, report: GraduationReport): voi
   const submoduleTestDir = path.join(ctx.submoduleDir, 'test');
   const unitFiles: string[] = []; // .test.ts + helper .ts — import-rewritten and linted
   const integFiles: string[] = [];
-  let fixtures = 0; // fixture dirs/files copied verbatim (e.g. job-script/)
+  let fixtures = 0; // fixture files copied verbatim (e.g. job-script/hello.py)
+  let compiledSkipped = 0; // .js/.d.ts artifacts left behind
 
-  for (const entry of fs.readdirSync(alphaTest, { withFileTypes: true })) {
-    const name = entry.name;
-    const full = path.join(alphaTest, name);
+  // A directory is a "test-source dir" if its subtree contains any `*.test.ts`.
+  // Its `.ts` files are unit tests/helpers that need import rewriting; a directory
+  // with no tests (e.g. an asset fixture dir like `job-script/`, which may hold
+  // handler `.ts` sources) is copied verbatim so its contents are never rewritten.
+  const isTestSourceDir = (dir: string): boolean =>
+    walk(dir, (f) => f.endsWith('.test.ts') && !f.endsWith('.d.ts')).length > 0;
 
-    if (name.startsWith('integ.')) {
-      // Integ source + snapshot dir go to framework-integ; compiled .js/.d.ts are skipped.
-      if (entry.isDirectory() && name.endsWith('.js.snapshot')) {
-        fs.cpSync(full, path.join(ctx.frameworkIntegTestDir, name), { recursive: true });
-      } else if (name.endsWith('.ts') && !name.endsWith('.d.ts')) {
+  // Recurse the test tree, preserving the relative directory structure. Nested
+  // unit-test directories (e.g. `test/<service>/foo.test.ts`, as some alpha
+  // modules organize them) are rewritten + linted like top-level unit tests
+  // instead of being copied verbatim as if they were asset fixtures.
+  // `classifyTsAsUnit` says whether a loose `.ts` in the current dir is a unit
+  // file; it is true directly under `test/` and inside test-source dirs, and
+  // false inside asset fixture dirs.
+  const recurse = (dir: string, classifyTsAsUnit: boolean): void => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const name = entry.name;
+      const full = path.join(dir, name);
+
+      if (entry.isDirectory()) {
+        if (name.endsWith('.js.snapshot')) {
+          // Integ snapshot dir → framework-integ verbatim; do not descend.
+          fs.cpSync(full, path.join(ctx.frameworkIntegTestDir, name), { recursive: true });
+        } else {
+          // Classify each subdirectory independently so an asset dir nested
+          // anywhere is protected from rewriting.
+          recurse(full, isTestSourceDir(full));
+        }
+        continue;
+      }
+
+      if (name.startsWith('integ.') && name.endsWith('.ts') && !name.endsWith('.d.ts')) {
+        // Integ source → framework-integ (flat, keyed by basename).
         const dest = path.join(ctx.frameworkIntegTestDir, name);
         copyFile(full, dest);
         rewriteIntegImports(ctx, dest);
         integFiles.push(dest);
+      } else if (name.endsWith('.d.ts') || name.endsWith('.js')) {
+        // Compiled artifact — skip.
+        compiledSkipped++;
+      } else if (classifyTsAsUnit && name.endsWith('.ts')) {
+        // Unit test or test helper (at any depth) — import-rewritten + linted
+        // below. Preserve the relative structure so nested layouts survive.
+        const dest = path.join(submoduleTestDir, path.relative(alphaTest, full));
+        if (fs.existsSync(dest)) {
+          throw new Error(`collision: test file ${rel(ctx, dest)} already exists.`);
+        }
+        copyFile(full, dest);
+        unitFiles.push(dest);
+      } else {
+        // Asset fixture file (e.g. .py, .jar, .json, or a handler .ts inside an
+        // asset dir) — copy verbatim, preserving structure.
+        const dest = path.join(submoduleTestDir, path.relative(alphaTest, full));
+        copyFile(full, dest);
+        fixtures++;
       }
-      continue;
     }
-
-    // Every non-integ entry lives alongside the unit tests in the submodule.
-    const dest = path.join(submoduleTestDir, name);
-    if (entry.isDirectory()) {
-      // Asset fixture directory (e.g. job-script, module) — copy verbatim.
-      fs.cpSync(full, dest, { recursive: true });
-      fixtures++;
-    } else if (name.endsWith('.d.ts') || name.endsWith('.js')) {
-      // Compiled artifact — skip.
-      continue;
-    } else if (name.endsWith('.ts')) {
-      // Unit test or test helper — import-rewritten + linted below.
-      if (fs.existsSync(dest)) {
-        throw new Error(`collision: test file ${rel(ctx, dest)} already exists.`);
-      }
-      copyFile(full, dest);
-      unitFiles.push(dest);
-    } else {
-      // Asset fixture file (e.g. .py, .jar, .json) — copy verbatim.
-      copyFile(full, dest);
-      fixtures++;
-    }
-  }
+  };
+  // Loose files directly under `test/` are unit tests/helpers.
+  recurse(alphaTest, true);
 
   // Unit tests live inside aws-cdk-lib now, so their aws-cdk-lib imports need
   // the same relative rewrite as the sources; `../lib` references remain valid.
@@ -262,6 +299,9 @@ export function copyTests(ctx: GraduationContext, report: GraduationReport): voi
 
   log.step(`copied ${unitFiles.length} test file(s) + ${fixtures} fixture(s) to submodule/test, ${integFiles.length} integ test(s) to framework-integ`);
   report.review('tests', `copied unit tests + ${fixtures} fixture(s)/helper(s) into packages/aws-cdk-lib/${ctx.service}/test; integ tests into framework-integ`);
+  if (compiledSkipped > 0) {
+    report.skipped('tests', `did not copy ${compiledSkipped} compiled test artifact(s) (.js/.d.ts)`);
+  }
 }
 
 /**

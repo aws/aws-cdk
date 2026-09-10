@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, mergeBarrel, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { copyRosetta, copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, mergeBarrel, migrateCustomResources, removeExampleDependency, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -215,6 +215,44 @@ describe('copySources', () => {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
   });
+
+  test('copies nested source barrels but skips only the top-level lib/index.ts', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'lib', 'foo.ts'), 'export class Foo {}\n');
+      // Top-level barrel — merged separately, must NOT be copied.
+      write(path.join(ctx.alphaDir, 'lib', 'index.ts'), "export * from './foo';\n");
+      // Nested barrel (e.g. a private provider dir) — a real source, MUST be copied.
+      const nestedIndex = write(path.join(ctx.alphaDir, 'lib', 'private', 'provider', 'index.ts'), 'export const handler = 1;\n');
+
+      copySources(ctx, report);
+
+      expect(fs.existsSync(path.join(ctx.submoduleLibDir, 'private', 'provider', 'index.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(ctx.submoduleLibDir, 'index.ts'))).toBe(false);
+      // Copy-only: alpha nested barrel untouched.
+      expect(fs.existsSync(nestedIndex)).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('records skipped generated L1s and the barrel in the report', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'lib', 'foo.ts'), 'export class Foo {}\n');
+      write(path.join(ctx.alphaDir, 'lib', 'foo.generated.ts'), 'export class CfnFoo {}\n');
+      write(path.join(ctx.alphaDir, 'lib', 'index.ts'), "export * from './foo';\n");
+
+      copySources(ctx, report);
+
+      const skipped = report.render();
+      expect(skipped).toContain('Not moved');
+      expect(skipped).toContain('generated L1');
+      expect(skipped).toContain('index.ts');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('copyTests', () => {
@@ -247,6 +285,48 @@ describe('copyTests', () => {
       // Copy-only: alpha test tree remains.
       expect(fs.existsSync(integSrc)).toBe(true);
       expect(fs.existsSync(unitSrc)).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('rewrites unit tests in nested directories instead of copying them verbatim', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const alphaTest = path.join(ctx.alphaDir, 'test');
+      // Some alpha modules nest unit tests under a per-service subdirectory.
+      write(path.join(alphaTest, 'aws-foo', 'foo.test.ts'), [
+        "import { Stack } from 'aws-cdk-lib';",
+        "import { Foo } from '../../lib';",
+        'const x = 1;',
+        '',
+      ].join('\n'));
+      // A nested integ test + snapshot still route to framework-integ.
+      write(path.join(alphaTest, 'aws-foo', 'integ.nested.ts'), "import * as foo from '../../lib';\n");
+      write(path.join(alphaTest, 'aws-foo', 'integ.nested.js.snapshot', 'manifest.json'), '{}\n');
+      // A genuine nested asset fixture is still copied verbatim.
+      write(path.join(alphaTest, 'aws-foo', 'assets', 'hello.py'), 'print("hi")\n');
+      // An asset dir with NO test files — including a handler `.ts` — must be
+      // copied verbatim, never import-rewritten.
+      const handlerSrc = "import { foo } from 'aws-cdk-lib';\nexport const handler = foo;\n";
+      write(path.join(alphaTest, 'handler-asset', 'index.ts'), handlerSrc);
+
+      copyTests(ctx, report);
+
+      // Nested unit test landed under the submodule preserving structure, with its
+      // aws-cdk-lib import rewritten (proving it was NOT treated as a fixture).
+      const nestedUnit = path.join(ctx.submoduleDir, 'test', 'aws-foo', 'foo.test.ts');
+      expect(fs.existsSync(nestedUnit)).toBe(true);
+      const out = fs.readFileSync(nestedUnit, 'utf-8');
+      expect(out).toContain("from '../../../core'");
+      expect(out).not.toContain("from 'aws-cdk-lib'");
+      // Nested integ + snapshot routed to framework-integ (flat, by basename).
+      expect(fs.existsSync(path.join(ctx.frameworkIntegTestDir, 'integ.nested.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(ctx.frameworkIntegTestDir, 'integ.nested.js.snapshot', 'manifest.json'))).toBe(true);
+      // Nested fixture copied verbatim, preserving structure.
+      expect(fs.existsSync(path.join(ctx.submoduleDir, 'test', 'aws-foo', 'assets', 'hello.py'))).toBe(true);
+      // The handler asset in a test-free dir is copied byte-for-byte (not rewritten).
+      expect(fs.readFileSync(path.join(ctx.submoduleDir, 'test', 'handler-asset', 'index.ts'), 'utf-8')).toBe(handlerSrc);
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
@@ -398,6 +478,100 @@ describe('rewriteIntegImports', () => {
       const out = fs.readFileSync(file, 'utf-8');
       expect(out).toContain("import * as a from 'aws-cdk-lib/aws-fo.o';");
       expect(out).toContain("import * as b from '@aws-cdk/aws-foXo-alpha';");
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('copyRosetta', () => {
+  test('copies fixtures and rewrites the alpha package ref to the stable subpath', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'rosetta', 'default.ts-fixture'), [
+        "import * as foo from '@aws-cdk/aws-foo-alpha';",
+        'class Fixture {}',
+        '',
+      ].join('\n'));
+      // A fixture with no alpha reference must be left byte-identical.
+      const plain = "import { Stack } from 'aws-cdk-lib';\n";
+      write(path.join(ctx.alphaDir, 'rosetta', 'plain.ts-fixture'), plain);
+
+      copyRosetta(ctx, report);
+
+      const out = fs.readFileSync(path.join(ctx.rosettaDir, 'default.ts-fixture'), 'utf-8');
+      expect(out).toContain("import * as foo from 'aws-cdk-lib/aws-foo';");
+      expect(out).not.toContain('@aws-cdk/aws-foo-alpha');
+      // Non-matching fixture unchanged.
+      expect(fs.readFileSync(path.join(ctx.rosettaDir, 'plain.ts-fixture'), 'utf-8')).toBe(plain);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('removeExampleDependency', () => {
+  test('deletes the alpha key from jsiiRosetta.exampleDependencies and preserves the rest', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const pkgFile = write(path.join(ctx.libDir, 'package.json'), JSON.stringify({
+        name: 'aws-cdk-lib',
+        jsiiRosetta: {
+          exampleDependencies: {
+            '@aws-cdk/aws-foo-alpha': '0.0.0',
+            '@aws-cdk/aws-other-alpha': '0.0.0',
+          },
+        },
+      }, null, 2) + '\n');
+
+      removeExampleDependency(ctx, report);
+
+      const deps = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')).jsiiRosetta.exampleDependencies;
+      expect(deps['@aws-cdk/aws-foo-alpha']).toBeUndefined();
+      // Unrelated alpha deps survive.
+      expect(deps['@aws-cdk/aws-other-alpha']).toBe('0.0.0');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('migrateCustomResources', () => {
+  /** Seed the custom-resources-framework config so `ctx.hasCustomResources` is true. */
+  function seedCrConfig(ctx: GraduationContext): void {
+    write(
+      path.join(ctx.crHandlersDir, 'lib', 'custom-resources-framework', 'config.ts'),
+      "export const config = { 'aws-foo-alpha': {} };\n",
+    );
+  }
+
+  test('copies the handler source under a non-alpha key and records the config edit as manual', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      seedCrConfig(ctx);
+      write(path.join(ctx.crHandlersDir, 'lib', 'aws-foo-alpha', 'index.ts'), 'export const handler = 1;\n');
+
+      migrateCustomResources(ctx, report);
+
+      // Handler source copied to the non-alpha location.
+      expect(fs.existsSync(path.join(ctx.crHandlersDir, 'lib', 'aws-foo', 'index.ts'))).toBe(true);
+      // The alpha copy is left in place until cleanup.
+      expect(fs.existsSync(path.join(ctx.crHandlersDir, 'lib', 'aws-foo-alpha', 'index.ts'))).toBe(true);
+      // The config.ts registry edit is left as a manual follow-up.
+      expect(report.render()).toContain('config.ts');
+      expect(report.hasManualItems).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('does nothing when the module has no custom resources', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      // No config seeded → hasCustomResources is false.
+      migrateCustomResources(ctx, report);
+      expect(fs.existsSync(path.join(ctx.crHandlersDir, 'lib', 'aws-foo'))).toBe(false);
+      expect(report.hasManualItems).toBe(false);
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
