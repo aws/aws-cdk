@@ -140,7 +140,7 @@ describe('serverless cluster', () => {
     });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'", () => {
+  test("sets the retention policy of the SubnetGroup to 'Retain' and enables deletion protection if the Serverless Cluster is created with 'Retain'", () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -154,9 +154,13 @@ describe('serverless cluster', () => {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
+    });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'RetainOnUpdateOrDelete'", () => {
+  test("sets the retention policy of the SubnetGroup to 'Retain' and enables deletion protection if the Serverless Cluster is created with 'RetainOnUpdateOrDelete'", () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -169,6 +173,10 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'RetainExceptOnCreate',
       UpdateReplacePolicy: 'Retain',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
     });
   });
 
