@@ -144,6 +144,10 @@ test('a connection with a custom type', () => {
     description: 'description',
     type: new glue.ConnectionType('CUSTOM_TYPE'),
   });
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'ConnectionType.of() intentionally supports arbitrary connection types',
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Connection', {
     CatalogId: {
