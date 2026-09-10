@@ -1,0 +1,53 @@
+{
+  "/aws-cdk-log-group-integ/LogGroupLambdaAudit": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-log-group-integ/audit-bucket-id": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-log-group-integ/LogGroupLambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "dataProtectionPolicy": "*",
+        "fieldIndexPolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-log-group-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-log-group-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-log-group-integ/LogGroupLambdaAudit/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupLambdaAuditF8F47F46"
+    }
+  ],
+  "/aws-cdk-log-group-integ/audit-bucket-id/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "auditbucketidE6660EBD"
+    }
+  ],
+  "/aws-cdk-log-group-integ/LogGroupLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupLambdaAC756C5B"
+    }
+  ]
+}
