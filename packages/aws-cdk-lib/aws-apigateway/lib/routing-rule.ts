@@ -1,8 +1,7 @@
 import type { Construct } from 'constructs';
-import type { IDomainNameRef } from './apigateway.generated';
+import type { IDomainNameRef, IStageRef } from './apigateway.generated';
 import { RestApiBase } from './restapi';
 import type { IRestApi } from './restapi';
-import type { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IResource } from '../../core';
 import { Resource, Token } from '../../core';
@@ -94,11 +93,9 @@ export interface RoutingRuleAction {
   /**
    * The stage of the target REST API to invoke.
    *
-   * [disable-awslint:ref-via-interface]
-   *
    * @default - the deployment stage of the target REST API
    */
-  readonly stage?: IStage;
+  readonly stage?: IStageRef;
 
   /**
    * Strip the matched base path before forwarding to the target API.
@@ -279,7 +276,7 @@ export class RoutingRule extends Resource implements IRoutingRule {
       actions: [{
         invokeApi: {
           apiId: props.action.restApi.restApiId,
-          stage: stage.stageName,
+          stage: stage.stageRef.stageName,
           stripBasePath: props.action.stripBasePath,
         },
       }],
