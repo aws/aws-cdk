@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -148,6 +148,80 @@ describe('deprecateAlphaReadme', () => {
   });
 });
 
+describe('copySources', () => {
+  test('copies L2 sources into the submodule lib and leaves the alpha copy in place', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const alphaSrc = write(path.join(ctx.alphaDir, 'lib', 'foo.ts'), 'export class Foo {}\n');
+      // Generated L1s and the barrel are excluded from the copy.
+      write(path.join(ctx.alphaDir, 'lib', 'foo.generated.ts'), 'export class CfnFoo {}\n');
+      write(path.join(ctx.alphaDir, 'lib', 'index.ts'), "export * from './foo';\n");
+
+      const copied = copySources(ctx, report);
+
+      expect(copied).toEqual([path.join(ctx.submoduleLibDir, 'foo.ts')]);
+      expect(fs.existsSync(path.join(ctx.submoduleLibDir, 'foo.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(ctx.submoduleLibDir, 'foo.generated.ts'))).toBe(false);
+      expect(fs.existsSync(path.join(ctx.submoduleLibDir, 'index.ts'))).toBe(false);
+      // Copy-only: the alpha source is untouched.
+      expect(fs.existsSync(alphaSrc)).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('hard-aborts rather than overwrite an existing stable-submodule source file', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'lib', 'foo.ts'), 'export class Foo {}\n');
+      // A same-named file already lives in the stable submodule.
+      write(path.join(ctx.submoduleLibDir, 'foo.ts'), 'export class Existing {}\n');
+
+      expect(() => copySources(ctx, report)).toThrow(/collision/);
+      // The existing file must not have been clobbered.
+      expect(fs.readFileSync(path.join(ctx.submoduleLibDir, 'foo.ts'), 'utf-8')).toContain('Existing');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('copyTests', () => {
+  test('routes integ tests + snapshots to framework-integ and unit tests + fixtures to the submodule', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const alphaTest = path.join(ctx.alphaDir, 'test');
+      // Integ test source + its snapshot dir → framework-integ.
+      const integSrc = write(path.join(alphaTest, 'integ.foo.ts'), "import * as foo from '../lib';\n");
+      write(path.join(alphaTest, 'integ.foo.js.snapshot', 'manifest.json'), '{}\n');
+      // Unit test + a fixture dir → submodule test/.
+      const unitSrc = write(path.join(alphaTest, 'foo.test.ts'), "import { Foo } from '../lib';\nconst x = 1;\n");
+      write(path.join(alphaTest, 'job-script', 'hello.py'), 'print("hi")\n');
+      // Compiled artifacts are skipped.
+      write(path.join(alphaTest, 'foo.test.js'), '"use strict";\n');
+
+      copyTests(ctx, report);
+
+      // Integ source landed in framework-integ with its ../lib import retargeted.
+      const integDest = path.join(ctx.frameworkIntegTestDir, 'integ.foo.ts');
+      expect(fs.existsSync(integDest)).toBe(true);
+      expect(fs.readFileSync(integDest, 'utf-8')).toContain("from 'aws-cdk-lib/aws-foo'");
+      // Snapshot dir copied recursively.
+      expect(fs.existsSync(path.join(ctx.frameworkIntegTestDir, 'integ.foo.js.snapshot', 'manifest.json'))).toBe(true);
+      // Unit test + fixture landed in the submodule test dir.
+      expect(fs.existsSync(path.join(ctx.submoduleDir, 'test', 'foo.test.ts'))).toBe(true);
+      expect(fs.existsSync(path.join(ctx.submoduleDir, 'test', 'job-script', 'hello.py'))).toBe(true);
+      // Compiled artifact was not copied.
+      expect(fs.existsSync(path.join(ctx.submoduleDir, 'test', 'foo.test.js'))).toBe(false);
+      // Copy-only: alpha test tree remains.
+      expect(fs.existsSync(integSrc)).toBe(true);
+      expect(fs.existsSync(unitSrc)).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('deprecateAlphaPackage', () => {
   test('sets stability/maturity to deprecated and rewrites the description', () => {
     const { ctx, report, repoRoot } = makeCtx();
@@ -191,6 +265,23 @@ describe('rewriteImports', () => {
       expect(out).toContain("from '../../aws-ec2'");
       expect(out).toContain("from './foo.generated'");
       expect(out).not.toContain("from 'aws-cdk-lib");
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('retargets custom-resource handler dist imports off the -alpha path', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const file = write(path.join(ctx.submoduleLibDir, 'provider.ts'),
+        "import { handler } from '../custom-resource-handlers/dist/aws-foo-alpha/index';\n");
+
+      rewriteImports(ctx, [file], report);
+
+      const out = fs.readFileSync(file, 'utf-8');
+      // The alpha dist path must be gone, retargeted at the non-alpha location.
+      expect(out).not.toContain('aws-foo-alpha');
+      expect(out).toContain('custom-resource-handlers/dist/aws-foo/index');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
