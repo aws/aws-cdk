@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff": {
+      "source": {
+        "path": "asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-b47a7931": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "5e6dc1cd2a61a1b24d60ee8b7574f1997510ad118e54a48951c9d60a1b4e3830": {
+      "displayName": "BatchConsumableResourceTestDefaultTestDeployAssertDCC06141 Template",
+      "source": {
+        "path": "BatchConsumableResourceTestDefaultTestDeployAssertDCC06141.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5709dc46": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5e6dc1cd2a61a1b24d60ee8b7574f1997510ad118e54a48951c9d60a1b4e3830.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
