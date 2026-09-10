@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
-import type { IDomainNameRef, IStageRef } from './apigateway.generated';
+import type { IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
 import { RestApiBase } from './restapi';
-import type { IRestApi } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IResource } from '../../core';
 import { Resource, Token } from '../../core';
@@ -23,14 +22,14 @@ export enum RoutingMode {
   BASE_PATH_MAPPING_ONLY = 'BASE_PATH_MAPPING_ONLY',
 
   /**
-   * Routing rules only. Base path mappings cannot be added.
+   * Routing rules only. Base path and API mappings cannot be added.
    */
   ROUTING_RULE_ONLY = 'ROUTING_RULE_ONLY',
 
   /**
-   * Routing rules are evaluated first, then base path and API mappings.
+   * Routing rules are evaluated first, then base path and API mappings as a fallback.
    *
-   * Both `addRoutingRule()` and `addApiMapping()` / `addBasePathMapping()` can be used.
+   * `addRoutingRule()`, `addApiMapping()`, and `addBasePathMapping()` can all be used.
    */
   ROUTING_RULE_THEN_BASE_PATH_MAPPING = 'ROUTING_RULE_THEN_BASE_PATH_MAPPING',
 }
@@ -84,16 +83,15 @@ export interface RoutingRuleConditions {
 export interface RoutingRuleAction {
   /**
    * The target REST API to invoke. Must be in the same account as the domain.
-   *
-   * [disable-awslint:ref-via-interface]
-   * [disable-awslint:prefer-ref-interface]
    */
-  readonly restApi: IRestApi;
+  readonly restApi: IRestApiRef;
 
   /**
    * The stage of the target REST API to invoke.
    *
-   * @default - the deployment stage of the target REST API
+   * Required when the target REST API is imported or has no deployment stage.
+   *
+   * @default - the deployment stage of the target REST API, if it has one
    */
   readonly stage?: IStageRef;
 
@@ -275,7 +273,7 @@ export class RoutingRule extends Resource implements IRoutingRule {
       conditions,
       actions: [{
         invokeApi: {
-          apiId: props.action.restApi.restApiId,
+          apiId: props.action.restApi.restApiRef.restApiId,
           stage: stage.stageRef.stageName,
           stripBasePath: props.action.stripBasePath,
         },

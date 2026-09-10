@@ -158,7 +158,7 @@ describe('routing rule', () => {
     });
   });
 
-  test('ROUTING_RULE_THEN_BASE_PATH_MAPPING allows both routing rules and api mappings', () => {
+  test('ROUTING_RULE_THEN_BASE_PATH_MAPPING allows routing rules, api mappings, and base path mappings', () => {
     // GIVEN
     const { stack, cert, api } = newStack();
     const domain = new apigw.DomainName(stack, 'Domain', {
@@ -170,10 +170,12 @@ describe('routing rule', () => {
     // WHEN
     domain.addRoutingRule('Rule', { priority: 1, action: { restApi: api } });
     domain.addApiMapping(api.deploymentStage, { basePath: 'legacy' });
+    domain.addBasePathMapping(api, { basePath: 'classic' });
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::RoutingRule', 1);
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::ApiMapping', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::BasePathMapping', 1);
   });
 
   describe('routing mode enforcement', () => {
@@ -197,7 +199,7 @@ describe('routing rule', () => {
       });
 
       expect(() => domain.addBasePathMapping(api))
-        .toThrow(/addBasePathMapping\(\) is only supported when routingMode is RoutingMode.BASE_PATH_MAPPING_ONLY/);
+        .toThrow(/addBasePathMapping\(\) is not supported when routingMode is RoutingMode.ROUTING_RULE_ONLY/);
     });
 
     test('addApiMapping fails in ROUTING_RULE_ONLY mode', () => {
@@ -307,6 +309,21 @@ describe('routing rule', () => {
         action: { restApi: api },
       })).toThrow(/base path condition cannot be empty/);
     });
+
+    test('fails for base path with invalid characters', () => {
+      const { stack, cert, api } = newStack();
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+      });
+
+      expect(() => domain.addRoutingRule('Rule', {
+        priority: 1,
+        conditions: { basePath: 'users?bad' },
+        action: { restApi: api },
+      })).toThrow(/may only contain letters, numbers/);
+    });
   });
 
   describe('header validation', () => {
@@ -360,6 +377,51 @@ describe('routing rule', () => {
         conditions: { headers: [{ header: 'x'.repeat(40), valueGlob: 'v' }] },
         action: { restApi: api },
       })).toThrow(/header name must be less than 40 characters/);
+    });
+
+    test('fails for header glob that is too long', () => {
+      const { stack, cert, api } = newStack();
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+      });
+
+      expect(() => domain.addRoutingRule('Rule', {
+        priority: 1,
+        conditions: { headers: [{ header: 'x-version', valueGlob: 'v'.repeat(128) }] },
+        action: { restApi: api },
+      })).toThrow(/header glob value must be less than 128 characters/);
+    });
+
+    test('fails for header name with invalid characters', () => {
+      const { stack, cert, api } = newStack();
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+      });
+
+      expect(() => domain.addRoutingRule('Rule', {
+        priority: 1,
+        conditions: { headers: [{ header: 'x version', valueGlob: 'v' }] },
+        action: { restApi: api },
+      })).toThrow(/header name may only contain/);
+    });
+
+    test('fails for header glob with invalid characters', () => {
+      const { stack, cert, api } = newStack();
+      const domain = new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+      });
+
+      expect(() => domain.addRoutingRule('Rule', {
+        priority: 1,
+        conditions: { headers: [{ header: 'x-version', valueGlob: 'v alue' }] },
+        action: { restApi: api },
+      })).toThrow(/header glob value may only contain/);
     });
 
     test('fails for empty header name', () => {
@@ -497,6 +559,22 @@ describe('routing rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::RoutingRule', {
       Actions: [{ InvokeApi: { Stage: { Ref: Match.stringLikeRegexp('CustomStage') } } }],
     });
+  });
+
+  test('fails when the target REST API has no deployment stage and no stage is given', () => {
+    const { stack, cert } = newStack();
+    const api = new apigw.RestApi(stack, 'NoDeployApi', { deploy: false });
+    api.root.addMethod('GET');
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'api.example.com',
+      certificate: cert,
+      routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+    });
+
+    expect(() => domain.addRoutingRule('Rule', {
+      priority: 1,
+      action: { restApi: api },
+    })).toThrow(/a stage must be provided/);
   });
 
   // Verified against the service: the CloudFormation handler rejects stripBasePath

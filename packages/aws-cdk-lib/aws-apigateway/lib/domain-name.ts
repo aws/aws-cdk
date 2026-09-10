@@ -417,11 +417,11 @@ export class DomainName extends Resource implements IDomainName {
    */
   @MethodMetadata()
   public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
-    if (this.routingMode !== RoutingMode.BASE_PATH_MAPPING_ONLY) {
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY) {
       throw new ValidationError(
         lit`BasePathMappingNotAllowedForRoutingMode`,
-        `addBasePathMapping() is only supported when routingMode is RoutingMode.BASE_PATH_MAPPING_ONLY, but the routing mode is ${this.routingMode}. ` +
-        'Use addRoutingRule() instead, or use addApiMapping() with RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING.',
+        'addBasePathMapping() is not supported when routingMode is RoutingMode.ROUTING_RULE_ONLY. ' +
+        'Use addRoutingRule() instead, or use RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING to combine both.',
         this,
       );
     }
