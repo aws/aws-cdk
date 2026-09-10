@@ -30,6 +30,7 @@ export function move(ctx: GraduationContext, report: GraduationReport): void {
   t.copyGrants(ctx, report);
   t.copyRosetta(ctx, report);
   t.graduateReadme(ctx, report);
+  t.deprecateAlphaReadme(ctx, report);
   t.removeExampleDependency(ctx, report);
 
   t.migrateCustomResources(ctx, report);

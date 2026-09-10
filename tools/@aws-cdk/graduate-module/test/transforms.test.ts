@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { deprecateAlphaReadme, graduateReadme, mergeAwslint, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -89,6 +89,59 @@ describe('graduateReadme', () => {
       expect(out).toContain("import * as foo from 'aws-cdk-lib/aws-foo';");
       // Copy-only: alpha README still there.
       expect(fs.existsSync(alphaReadme)).toBe(true);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('deprecateAlphaReadme', () => {
+  test('swaps the experimental banner for the deprecated one and points the first paragraph at the stable module', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const alphaReadme = write(path.join(ctx.alphaDir, 'README.md'), [
+        '# Foo Construct Library',
+        '<!--BEGIN STABILITY BANNER-->',
+        '',
+        '---',
+        '',
+        '![cdk-constructs: Experimental](https://example/badge.svg)',
+        '',
+        '> The APIs of higher level constructs in this module are experimental.',
+        '',
+        '---',
+        '',
+        '<!--END STABILITY BANNER-->',
+        '',
+        'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
+        '',
+        '## README',
+        '',
+      ].join('\n'));
+
+      deprecateAlphaReadme(ctx, report);
+
+      const out = fs.readFileSync(alphaReadme, 'utf-8');
+      expect(out).toContain('![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)');
+      expect(out).toContain('> This API may emit warnings. Backward compatibility is not guaranteed.');
+      expect(out).not.toContain('experimental');
+      // First paragraph now points at the stable module.
+      expect(out).toContain('All constructs moved to aws-cdk-lib/aws-foo.');
+      expect(out).not.toContain('This module is part of the [AWS Cloud Development Kit]');
+      // The rest of the README (the title, later sections) is preserved.
+      expect(out).toContain('# Foo Construct Library');
+      expect(out).toContain('## README');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('flags a missing banner as a manual item', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'README.md'), '# Foo Construct Library\n\nNo banner here.\n');
+      deprecateAlphaReadme(ctx, report);
+      expect(report.hasManualItems).toBe(true);
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }

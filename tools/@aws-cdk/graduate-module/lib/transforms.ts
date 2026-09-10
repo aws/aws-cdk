@@ -437,6 +437,59 @@ export function graduateReadme(ctx: GraduationContext, report: GraduationReport)
   log.step(`copied README (banner stripped) to ${rel(ctx, ctx.submoduleDir)}/README.md`);
 }
 
+/** The stability banner stamped onto the alpha README once its constructs have graduated. */
+const DEPRECATED_BANNER = [
+  '<!--BEGIN STABILITY BANNER-->',
+  '',
+  '---',
+  '',
+  '![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)',
+  '',
+  '> This API may emit warnings. Backward compatibility is not guaranteed.',
+  '',
+  '---',
+  '',
+  '<!--END STABILITY BANNER-->',
+].join('\n');
+
+/**
+ * Deprecate the *alpha* README in place. The alpha package survives (buildable
+ * and published) until the separate `--cleanup` PR, so its README must tell
+ * users the constructs have moved: swap the experimental banner for the
+ * deprecated one and replace the boilerplate first paragraph with a pointer to
+ * the stable submodule. Distinct from `graduateReadme`, which produces the
+ * *stable* README inside aws-cdk-lib.
+ */
+export function deprecateAlphaReadme(ctx: GraduationContext, report: GraduationReport): void {
+  const src = path.join(ctx.alphaDir, 'README.md');
+  if (!fs.existsSync(src)) {
+    return;
+  }
+  let text = fs.readFileSync(src, 'utf-8');
+
+  const banner = /<!--BEGIN STABILITY BANNER-->[\s\S]*?<!--END STABILITY BANNER-->/;
+  if (!banner.test(text)) {
+    report.manual('deprecate-readme', 'no stability banner found in the alpha README — add the deprecated banner manually', rel(ctx, src));
+    return;
+  }
+  text = text.replace(banner, DEPRECATED_BANNER);
+
+  // Replace the first paragraph after the banner (the "This module is part of
+  // the AWS CDK project" boilerplate) with a pointer to the stable module.
+  const pointer = `All constructs moved to aws-cdk-lib/${ctx.service}.`;
+  const firstPara = /(<!--END STABILITY BANNER-->\n+)[^\n][\s\S]*?(\n\n)/;
+  if (firstPara.test(text)) {
+    text = text.replace(firstPara, `$1${pointer}$2`);
+    report.review('deprecate-readme', 'deprecated the alpha banner and pointed the first paragraph at the stable module', rel(ctx, src));
+  } else {
+    text = text.replace(banner, `${DEPRECATED_BANNER}\n\n${pointer}`);
+    report.review('deprecate-readme', 'deprecated the alpha banner; verify the stable-module pointer was inserted correctly', rel(ctx, src));
+  }
+
+  fs.writeFileSync(src, text);
+  log.step(`deprecated the alpha README banner at ${rel(ctx, src)}`);
+}
+
 /** Drop the alpha module from aws-cdk-lib's rosetta exampleDependencies, if present. */
 export function removeExampleDependency(ctx: GraduationContext, report: GraduationReport): void {
   const pkgFile = path.join(ctx.libDir, 'package.json');
