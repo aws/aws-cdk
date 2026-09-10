@@ -746,15 +746,7 @@ export interface PolicyStatementProps {
  * // Example 4: raw Cedar, for features the API does not model
  * new Policy(this, 'CustomPolicy', {
  *   policyEngine: engine,
- *   definition: 'permit(principal, action, resource) when { context.custom > 10 };',
- * });
- *
- * // Or using fromCedar():
- * new Policy(this, 'ImportedPolicy', {
- *   policyEngine: engine,
- *   statement: PolicyStatement.fromCedar(
- *     'forbid(principal, action, resource) when { resource.confidential == true };'
- *   ),
+ *   statement: PolicyStatement.fromCedar('permit(principal, action, resource) when { context.custom > 10 };'),
  * });
  */
 export class PolicyStatement {

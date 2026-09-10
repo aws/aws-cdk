@@ -293,7 +293,6 @@ export class PolicyEngine extends PolicyEngineBase {
     const policy = new Policy(this, id, {
       policyEngine: this,
       policyName: options.policyName,
-      definition: options.definition,
       statement: options.statement,
       description: options.description,
       validationMode: options.validationMode,

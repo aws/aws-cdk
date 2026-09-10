@@ -355,11 +355,11 @@ describe('PolicyStatement', () => {
       });
     });
 
-    test('Should create Policy with raw Cedar definition', () => {
+    test('Should create Policy with raw Cedar via fromCedar()', () => {
       new Policy(stack, 'test-policy', {
         policyEngine,
         policyName: 'test_policy',
-        definition: 'permit(principal, action, resource is AgentCore::Gateway);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource is AgentCore::Gateway);'),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
@@ -369,22 +369,6 @@ describe('PolicyStatement', () => {
           },
         },
       });
-    });
-
-    test('Should reject Policy with both definition and statement', () => {
-      expect(() => new Policy(stack, 'test-policy', {
-        policyEngine,
-        policyName: 'test_policy',
-        definition: 'permit(principal, action, resource);',
-        statement: statement(),
-      })).toThrow();
-    });
-
-    test('Should reject Policy with neither definition nor statement', () => {
-      expect(() => new Policy(stack, 'test-policy', {
-        policyEngine,
-        policyName: 'test_policy',
-      })).toThrow();
     });
   });
 

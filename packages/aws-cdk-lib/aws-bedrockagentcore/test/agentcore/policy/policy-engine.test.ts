@@ -17,6 +17,7 @@ import * as kms from '../../../../aws-kms';
 import * as cdk from '../../../../core';
 import { Gateway } from '../../../lib/gateway/gateway';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
+import { PolicyStatement } from '../../../lib/policy/policy-statement';
 
 describe('PolicyEngine default tests', () => {
   let template: Template;
@@ -646,7 +647,7 @@ describe('PolicyEngine addPolicy tests', () => {
     });
 
     policyEngine.addPolicy('test-policy', {
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       policyName: 'test_policy',
       description: 'Test policy',
     });

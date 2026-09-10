@@ -2933,26 +2933,26 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 
 // Add policy to policy engine
 policyEngine.addPolicy("AllowAllActions", {
-  definition: `
+  statement: agentcore.PolicyStatement.fromCedar(`
     permit(
       principal,
       action,
       resource == AgentCore::Gateway::"${gateway.gatewayArn}"
     );
-  `,
+  `),
   description: "Allow all actions on specific gateway (development)",
   validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS, // This will ignore all cedar warnings
 });
 
 // you can add multiple policies to the policy engine
 policyEngine.addPolicy("SpecificToolPolicy", {
-  definition: `
+  statement: agentcore.PolicyStatement.fromCedar(`
     permit(
       principal is AgentCore::OAuthUser,
       action == AgentCore::Action::"WeatherTool__get_forecast",
       resource == AgentCore::Gateway::"${gateway.gatewayArn}"
     );
-  `,
+  `),
   description: "Allow specific weather tool access",
   validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS, // This will fail policy creation for any cedar warning
 });
@@ -3159,19 +3159,19 @@ policyEngine.addPolicy("DenyDangerous", {
 
 #### Raw Cedar for Advanced Cases
 
-For advanced Cedar features that `PolicyStatement` does not model, use raw Cedar strings:
+For advanced Cedar features that `PolicyStatement` does not model, pass a raw Cedar string through `PolicyStatement.fromCedar()`:
 
 ```typescript fixture=default
 declare const policyEngine: agentcore.PolicyEngine;
 
-// Option 1: Using definition property
 const advancedPolicy = new agentcore.Policy(this, "AdvancedPolicy", {
   policyEngine: policyEngine,
-  definition: 'permit(principal, action, resource) when { context.custom > 10 };',
+  statement: agentcore.PolicyStatement.fromCedar(
+    'permit(principal, action, resource) when { context.custom > 10 };'
+  ),
   description: "Advanced policy with custom Cedar logic",
 });
 
-// Option 2: Using fromCedar() with statement property
 policyEngine.addPolicy("CustomPolicy", {
   statement: agentcore.PolicyStatement.fromCedar(
     'forbid(principal, action, resource) when { resource.confidential == true };'
@@ -3180,13 +3180,11 @@ policyEngine.addPolicy("CustomPolicy", {
 });
 ```
 
-**Note**: You must specify **either** `definition` (raw Cedar string) **or** `statement` (a `PolicyStatement`), but not both.
-
 ##### Raw Cedar is trusted input
 
-A constructed `PolicyStatement` is the safe tier: every value you pass to it is written as a single Cedar string literal, and synthesis fails if a value cannot be represented that way.
+A `PolicyStatement` built from the factories is the safe tier: every value you pass to it is written as a single Cedar string literal, and synthesis fails if a value cannot be represented that way.
 
-`PolicyStatement.fromCedar()` and `PolicyProps.definition` are the direct tier. The module passes the string through unchanged, applying no escaping, no quoting, and no syntax checking. Keep these four points in mind:
+`PolicyStatement.fromCedar()` is the direct tier. The module passes the string through unchanged, applying no escaping, no quoting, and no syntax checking. Keep these four points in mind:
 
 - The string is used exactly as given. The module does not escape it, quote it, or check its syntax.
 - Treat the string as trusted input. Supply Cedar you control.
@@ -3256,7 +3254,7 @@ const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
 // Use the imported engine
 const policy = new agentcore.Policy(this, "PolicyForImportedEngine", {
   policyEngine: importedEngine,
-  definition: "permit(principal, action, resource);",
+  statement: agentcore.PolicyStatement.fromCedar("permit(principal, action, resource);"),
 });
 ```
 

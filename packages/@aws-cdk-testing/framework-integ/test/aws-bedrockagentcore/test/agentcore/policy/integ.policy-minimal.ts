@@ -13,7 +13,7 @@
 
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Policy, PolicyEngine } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { Policy, PolicyEngine, PolicyStatement } from 'aws-cdk-lib/aws-bedrockagentcore';
 
 /**
  * Minimal integration test for the AgentCore Policy + PolicyEngine flow.
@@ -33,13 +33,13 @@ const policyEngine = new PolicyEngine(stack, 'TestPolicyEngine');
 // Single Policy with a constrained Cedar statement.
 new Policy(stack, 'TestPolicy', {
   policyEngine,
-  definition: [
+  statement: PolicyStatement.fromCedar([
     'permit(',
     '  principal == AgentCore::IamEntity::"arn:aws:iam::123456789012:role/TestAgentRole",',
     '  action,',
     '  resource is AgentCore::Gateway',
     ');',
-  ].join('\n'),
+  ].join('\n')),
 });
 
 new integ.IntegTest(app, 'PolicyMinimalIntegTest', {

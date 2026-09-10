@@ -47,25 +47,13 @@ export class PolicyValidationMode {
  */
 export interface AddPolicyOptions {
   /**
-   * Cedar policy statement (35-153,600 characters).
+   * The Cedar policy statement for this policy.
    *
-   * You must specify either `definition` or `statement`, but not both.
-   *
-   * @default - Must provide either definition or statement
+   * Build a type-safe statement with the `PolicyStatement` factories, or use
+   * `PolicyStatement.fromCedar('...')` for raw Cedar. Raw Cedar is treated as trusted
+   * input: the module does not escape, quote, or validate it.
    */
-  readonly definition?: string;
-
-  /**
-   * Type-safe Cedar policy statement built using PolicyStatement builder.
-   *
-   * Use this for a type-safe, form-like API to build Cedar policies without
-   * writing raw Cedar syntax. The builder validates at synthesis time.
-   *
-   * You must specify either `definition` or `statement`, but not both.
-   *
-   * @default - Must provide either definition or statement
-   */
-  readonly statement?: PolicyStatement;
+  readonly statement: PolicyStatement;
 
   /**
    * The name of the policy.

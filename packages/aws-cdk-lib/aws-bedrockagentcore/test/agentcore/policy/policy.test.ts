@@ -17,6 +17,7 @@ import * as kms from '../../../../aws-kms';
 import * as cdk from '../../../../core';
 import { Policy } from '../../../lib/policy/policy';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
+import { PolicyStatement } from '../../../lib/policy/policy-statement';
 import { PolicyValidationMode } from '../../../lib/policy/policy-types';
 
 describe('Policy default tests', () => {
@@ -42,7 +43,7 @@ describe('Policy default tests', () => {
     policy = new Policy(stack, 'test-policy', {
       policyEngine,
       policyName: 'test_policy',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       description: 'A test policy for authorization',
     });
 
@@ -105,7 +106,7 @@ describe('Policy with auto-generated name', () => {
 
     policy = new Policy(stack, 'auto-name-policy', {
       policyEngine,
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
     });
 
     template = Template.fromStack(stack);
@@ -145,7 +146,7 @@ describe('Policy with different validation modes', () => {
     const policy = new Policy(stack, 'default-validation-policy', {
       policyEngine,
       policyName: 'default_validation',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
     });
 
     expect(policy.validationMode).toBe(PolicyValidationMode.FAIL_ON_ANY_FINDINGS);
@@ -167,7 +168,7 @@ describe('Policy with different validation modes', () => {
     const policy = new Policy(newStack, 'ignore-validation-policy', {
       policyEngine: newEngine,
       policyName: 'ignore_validation',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       validationMode: PolicyValidationMode.IGNORE_ALL_FINDINGS,
     });
 
@@ -199,7 +200,7 @@ describe('Policy validation tests', () => {
       new Policy(stack, 'invalid-policy-1', {
         policyEngine,
         policyName: '1invalid',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
     }).toThrow();
   });
@@ -209,7 +210,7 @@ describe('Policy validation tests', () => {
       new Policy(stack, 'invalid-policy-2', {
         policyEngine,
         policyName: 'invalid-name!',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
     }).toThrow();
   });
@@ -219,7 +220,7 @@ describe('Policy validation tests', () => {
       new Policy(stack, 'invalid-policy-3', {
         policyEngine,
         policyName: 'a'.repeat(49),
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
     }).toThrow();
   });
@@ -229,57 +230,57 @@ describe('Policy validation tests', () => {
       new Policy(stack, 'valid-policy-1', {
         policyEngine,
         policyName: 'ValidName',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
       new Policy(stack, 'valid-policy-2', {
         policyEngine,
         policyName: 'Valid_Name_123',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
       new Policy(stack, 'valid-policy-3', {
         policyEngine,
         policyName: 'a',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
     }).not.toThrow();
   });
 
-  test('Should throw error for definition too short', () => {
+  test('Should throw error for statement too short', () => {
     expect(() => {
       new Policy(stack, 'invalid-def-short', {
         policyEngine,
         policyName: 'test_policy',
-        definition: 'short',
+        statement: PolicyStatement.fromCedar('short'),
       });
     }).toThrow();
   });
 
-  test('Should throw error for definition too long', () => {
+  test('Should throw error for statement too long', () => {
     expect(() => {
       new Policy(stack, 'invalid-def-long', {
         policyEngine,
         policyName: 'test_policy',
-        definition: 'a'.repeat(153601),
+        statement: PolicyStatement.fromCedar('a'.repeat(153601)),
       });
     }).toThrow();
   });
 
-  test('Should accept valid definition lengths', () => {
+  test('Should accept valid statement lengths', () => {
     expect(() => {
       new Policy(stack, 'valid-def-1', {
         policyEngine,
         policyName: 'test_policy_1',
-        definition: 'a'.repeat(35),
+        statement: PolicyStatement.fromCedar('a'.repeat(35)),
       });
       new Policy(stack, 'valid-def-2', {
         policyEngine,
         policyName: 'test_policy_2',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
       new Policy(stack, 'valid-def-3', {
         policyEngine,
         policyName: 'test_policy_3',
-        definition: 'a'.repeat(1000),
+        statement: PolicyStatement.fromCedar('a'.repeat(1000)),
       });
     }).not.toThrow();
   });
@@ -289,18 +290,8 @@ describe('Policy validation tests', () => {
       new Policy(stack, 'invalid-desc-policy', {
         policyEngine,
         policyName: 'test_policy',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
         description: 'a'.repeat(4097),
-      });
-    }).toThrow();
-  });
-
-  test('Should throw error for null or undefined definition', () => {
-    expect(() => {
-      new Policy(stack, 'invalid-def-null', {
-        policyEngine,
-        policyName: 'test_policy',
-        definition: null as any,
       });
     }).toThrow();
   });
@@ -392,7 +383,7 @@ describe('Policy grant methods tests', () => {
     policy = new Policy(stack, 'grant-policy', {
       policyEngine,
       policyName: 'grant_policy',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
     });
 
     role = new iam.Role(stack, 'test-role', {
@@ -438,7 +429,7 @@ describe('Policy metrics tests', () => {
     policy = new Policy(stack, 'metrics-policy', {
       policyEngine,
       policyName: 'metrics_policy',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
     });
   });
 
@@ -496,7 +487,7 @@ describe('Policy with complex Cedar definitions', () => {
       new Policy(stack, 'permit-policy', {
         policyEngine,
         policyName: 'permit_policy',
-        definition: cedarDefinition,
+        statement: PolicyStatement.fromCedar(cedarDefinition),
       });
     }).not.toThrow();
   });
@@ -514,7 +505,7 @@ describe('Policy with complex Cedar definitions', () => {
       new Policy(stack, 'forbid-policy', {
         policyEngine,
         policyName: 'forbid_policy',
-        definition: cedarDefinition,
+        statement: PolicyStatement.fromCedar(cedarDefinition),
       });
     }).not.toThrow();
   });
@@ -538,7 +529,7 @@ describe('Policy with complex Cedar definitions', () => {
       new Policy(stack, 'multi-statement-policy', {
         policyEngine,
         policyName: 'multi_statement_policy',
-        definition: cedarDefinition,
+        statement: PolicyStatement.fromCedar(cedarDefinition),
       });
     }).not.toThrow();
   });
@@ -574,7 +565,7 @@ describe('Cross-stack Policy tests', () => {
       new Policy(policyStack, 'cross-stack-policy', {
         policyEngine,
         policyName: 'cross_stack_policy',
-        definition: 'permit(principal, action, resource);',
+        statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       });
     }).not.toThrow();
 
@@ -596,7 +587,7 @@ describe('Policy confused deputy protection', () => {
     const policy = new Policy(stack, 'Policy', {
       policyEngine: engine,
       policyName: 'test_policy',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
     });
     const key = new kms.Key(stack, 'Key');
 
@@ -638,7 +629,7 @@ describe('PolicyValidationMode.of() escape hatch', () => {
     new Policy(stack, 'Policy', {
       policyEngine,
       policyName: 'of_validation',
-      definition: 'permit(principal, action, resource);',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
       validationMode: PolicyValidationMode.of('FUTURE_MODE'),
     });
 

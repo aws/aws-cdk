@@ -36,42 +36,18 @@ export interface PolicyProps {
   readonly policyEngine: IPolicyEngine;
 
   /**
-   * Cedar policy statement.
-   * The authorization policy written in Cedar policy language.
+   * The Cedar policy statement for this policy.
    *
-   * Cedar supports permit and forbid rules with conditions.
-   * The statement will be wrapped in a PolicyDefinition structure internally.
+   * Build a type-safe statement with the `PolicyStatement` factories, which validate
+   * at synthesis time and reject values that cannot be represented safely in Cedar.
    *
-   * Pass the raw Cedar statement as a string. For example:
-   * - "permit(principal, action, resource);"
-   * - "permit(principal in Group::\"Admins\", action == Action::\"InvokeModel\", resource) when { context.environment == \"production\" };"
-   *
-   * This string is used exactly as given. The module does not escape, quote, or
-   * validate it, so it is treated as trusted input and you own its correctness and
-   * its safety. Do not assemble it by joining values that come from outside your
-   * application, such as a request body or a database record: a value containing a
-   * double quote can close a string literal early and add policy statements you did
-   * not write. Use the `statement` builder for those values, which rejects that case
-   * at synthesis time. Service-side validation does not help, because an injected
-   * policy is still valid Cedar.
-   *
-   * You must specify either `definition` or `statement`, but not both.
-   *
-   * @default - Must provide either definition or statement
+   * For raw Cedar (features this API does not model, or migrating an existing policy),
+   * use `PolicyStatement.fromCedar('...')`. That string is used exactly as given: the
+   * module does not escape, quote, or validate it, so it is treated as trusted input
+   * and you own its correctness and safety. Do not assemble it from values that come
+   * from outside your application, such as a request body or a database record.
    */
-  readonly definition?: string;
-
-  /**
-   * Type-safe Cedar policy statement built using PolicyStatement builder.
-   *
-   * Use this for a type-safe, form-like API to build Cedar policies without
-   * writing raw Cedar syntax. The builder validates at synthesis time.
-   *
-   * You must specify either `definition` or `statement`, but not both.
-   *
-   * @default - Must provide either definition or statement
-   */
-  readonly statement?: PolicyStatement;
+  readonly statement: PolicyStatement;
 
   /**
    * Optional description for the policy.
@@ -203,32 +179,12 @@ export class Policy extends PolicyBase {
     addConstructMetadata(this, props);
 
     // ------------------------------------------------------
-    // Validate definition vs statement
-    // ------------------------------------------------------
-    if (!props.definition && !props.statement) {
-      throw new ValidationError(
-        lit`PolicyDefinitionRequired`,
-        `Policy '${this.physicalName}' must specify either 'definition' (raw Cedar string) or 'statement' (PolicyStatement builder), but neither was provided.`,
-        this,
-      );
-    }
-
-    if (props.definition && props.statement) {
-      throw new ValidationError(
-        lit`PolicyDefinitionConflict`,
-        `Policy '${this.physicalName}' must specify either 'definition' OR 'statement', but not both. ` +
-        'Use definition for raw Cedar strings, or statement for the type-safe builder.',
-        this,
-      );
-    }
-
-    // ------------------------------------------------------
     // Set properties and defaults
     // ------------------------------------------------------
     this.policyName = this.physicalName;
     this.policyEngine = props.policyEngine;
 
-    this.definition = props.statement ? props.statement.toCedar() : props.definition!;
+    this.definition = props.statement.toCedar();
 
     this.description = props.description;
     this.validationMode = props.validationMode ?? PolicyValidationMode.FAIL_ON_ANY_FINDINGS;

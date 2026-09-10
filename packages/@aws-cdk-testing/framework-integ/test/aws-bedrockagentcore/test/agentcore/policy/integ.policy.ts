@@ -22,7 +22,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
  * Validates:
  *   - PolicyEngine variants: explicit name, KMS encryption + tags, auto-generated name
  *   - PolicyEngine convenience: `addPolicy()` and the `policies` accessor
- *   - Policy authoring: raw Cedar `definition` and the `PolicyStatement` builder
+ *   - Policy authoring: raw Cedar via `PolicyStatement.fromCedar()` and the `PolicyStatement` builder
  *   - Builder methods: forPrincipal (OAuthUser and IamEntity), forAllPrincipals,
  *     onAllActions, onResource (specific), onResourceType
  *   - Permit and forbid policies
@@ -48,13 +48,13 @@ new Policy(stack, 'RawCedarPolicy', {
   policyEngine: basicEngine,
   policyName: 'raw_cedar_policy',
   description: 'Raw Cedar definition with constrained principal',
-  definition: [
+  statement: PolicyStatement.fromCedar([
     'permit(',
     `  principal == AgentCore::IamEntity::"arn:${cdk.Aws.PARTITION}:iam::${cdk.Aws.ACCOUNT_ID}:role/TestAgentRole",`,
     '  action,',
     '  resource is AgentCore::Gateway',
     ');',
-  ].join('\n'),
+  ].join('\n')),
 });
 
 const kmsKey = new kms.Key(stack, 'PolicyEngineKey', {
