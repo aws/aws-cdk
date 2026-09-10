@@ -2955,7 +2955,7 @@ describe('Subnet', () => {
     // WHEN
     const subnet = new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       cidrBlock: '10.0.0.0/24',
     });
 
@@ -2963,7 +2963,7 @@ describe('Subnet', () => {
     expect(subnet.ipv4CidrBlock).toEqual('10.0.0.0/24');
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
       VpcId: 'vpc-1234',
-      AvailabilityZone: 'us-east-1a',
+      AvailabilityZone: 'dummy1a',
       CidrBlock: '10.0.0.0/24',
       Ipv4IpamPoolId: Match.absent(),
       Ipv4NetmaskLength: Match.absent(),
@@ -2978,14 +2978,14 @@ describe('Subnet', () => {
     // WHEN
     new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
       VpcId: 'vpc-1234',
-      AvailabilityZone: 'us-east-1a',
+      AvailabilityZone: 'dummy1a',
       CidrBlock: Match.absent(),
       Ipv4IpamPoolId: ipamPoolId,
       Ipv4NetmaskLength: 24,
@@ -3000,7 +3000,7 @@ describe('Subnet', () => {
     // WHEN
     new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
     });
 
@@ -3019,7 +3019,7 @@ describe('Subnet', () => {
     // WHEN
     const subnet = new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
     });
 
@@ -3036,8 +3036,8 @@ describe('Subnet', () => {
     const ipv4IpamAllocation = { ipamPool: CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId), netmaskLength: 24 };
 
     // WHEN
-    const publicSubnet = new PublicSubnet(stack, 'Public', { vpcId: 'vpc-1234', availabilityZone: 'us-east-1a', ipv4IpamAllocation });
-    new PrivateSubnet(stack, 'Private', { vpcId: 'vpc-1234', availabilityZone: 'us-east-1a', ipv4IpamAllocation });
+    const publicSubnet = new PublicSubnet(stack, 'Public', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', ipv4IpamAllocation });
+    new PrivateSubnet(stack, 'Private', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', ipv4IpamAllocation });
     publicSubnet.addNatGateway();
 
     // THEN
@@ -3059,7 +3059,7 @@ describe('Subnet', () => {
     // WHEN
     new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength: Lazy.number({ produce: () => 24 }) },
     });
 
@@ -3077,7 +3077,7 @@ describe('Subnet', () => {
     // THEN
     expect(() => new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       cidrBlock: '10.0.0.0/24',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
     })).toThrow(/Cannot specify both 'cidrBlock' and 'ipv4IpamAllocation'/);
@@ -3090,7 +3090,7 @@ describe('Subnet', () => {
     // THEN
     expect(() => new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
     })).toThrow(/Either 'cidrBlock' or 'ipv4IpamAllocation' must be specified/);
   });
 
@@ -3102,7 +3102,7 @@ describe('Subnet', () => {
     // THEN
     expect(() => new Subnet(stack, 'Subnet', {
       vpcId: 'vpc-1234',
-      availabilityZone: 'us-east-1a',
+      availabilityZone: 'dummy1a',
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength },
     })).toThrow(/'ipv4IpamAllocation.netmaskLength' must be between 16 and 28/);
   });
