@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "ea2578734d6c03fed3444541e8073ad30a2e8a38e8879a2fcca6a15e9448b8b3": {
+      "displayName": "DSQLEncryptionKeyStack Template",
+      "source": {
+        "path": "DSQLEncryptionKeyStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e9577994": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea2578734d6c03fed3444541e8073ad30a2e8a38e8879a2fcca6a15e9448b8b3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
