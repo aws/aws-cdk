@@ -897,9 +897,17 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return this.lambda.latestVersion;
   }
 
-  public get tenancyConfig() {
-    return this.lambda.tenancyConfig;
-  }
+  /**
+   * The IAM role associated with this function, inherited from the underlying
+   * function. Resolved at construction via `copyOptionalFunctionAttributes`.
+   */
+  public readonly role?: iam.IRole;
+
+  /**
+   * The tenancy config of this function, inherited from the underlying function.
+   * Resolved at construction via `copyOptionalFunctionAttributes`.
+   */
+  public readonly tenancyConfig?: TenancyConfig;
 
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
