@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "812e1221e906d087fa94328561c1a8828cb50ac8ba05235f4345dde96e0e3ed5": {
+      "source": {
+        "path": "asset.812e1221e906d087fa94328561c1a8828cb50ac8ba05235f4345dde96e0e3ed5.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-8a5afcee": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "812e1221e906d087fa94328561c1a8828cb50ac8ba05235f4345dde96e0e3ed5.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "36f8232669fadc98ee5bd41a9e24ca753ff7ca14d2f55e9ef90a5b63a02322f4": {
+      "displayName": "AlbFargateAzRebalancingTestDefaultTestDeployAssertD04ADE26 Template",
+      "source": {
+        "path": "AlbFargateAzRebalancingTestDefaultTestDeployAssertD04ADE26.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0aef5550": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "36f8232669fadc98ee5bd41a9e24ca753ff7ca14d2f55e9ef90a5b63a02322f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
