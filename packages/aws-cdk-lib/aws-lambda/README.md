@@ -1674,6 +1674,14 @@ S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file syste
 - **Mount targets** (`CfnMountTarget`) — ENIs placed in your VPC subnets that allow NFS clients (like Lambda) to connect. Each mount target needs a security group that permits inbound NFS traffic (TCP port 2049).
 - **Access point** (`CfnAccessPoint`) — defines the POSIX user identity and root directory path that Lambda uses when accessing the file system. This scopes and isolates the function's view of the file system.
 
+You can optionally configure `directS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount using `DirectS3Read.enabled(bucket)`, `DirectS3Read.enabledWithoutGrant()`, `DirectS3Read.auto()`, or `DirectS3Read.disabled()`.
+
+To use direct reads, the function's execution role needs the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket for a direct read to succeed (if a direct read fails, Lambda falls back to reading through the file system). `DirectS3Read.enabled(bucket)` grants these permissions to the execution role automatically. Use `DirectS3Read.enabledWithoutGrant()` when the role already has read access through another policy; you are then responsible for the grant (and `kms:Decrypt` if the bucket is encrypted with a customer-managed key). `DirectS3Read.auto()` adds no permissions, so the role must already hold them for a service-initiated direct read to succeed. 
+
+Use `DirectS3Read.disabled()` to opt-out from this feature. 
+
+> Visit [S3FilesConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-s3filesconfig.html) for more details.
+
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -1747,7 +1755,10 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
-  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files'),
+  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files', {
+    // Enables direct reads and grants s3:GetObject/s3:GetObjectVersion on the bucket to the execution role.
+    directS3Read: lambda.DirectS3Read.enabled(bucket),
+  }),
 });
 ```
 
