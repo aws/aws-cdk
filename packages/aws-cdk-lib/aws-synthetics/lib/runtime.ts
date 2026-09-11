@@ -614,6 +614,46 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_7_0 = new Runtime('syn-python-selenium-7.0', RuntimeFamily.PYTHON);
 
   /**
+   * `syn-python-selenium-8.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 142.0.7444.175
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-8.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_8_0 = new Runtime('syn-python-selenium-8.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-9.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 143.0.7499.169
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-9.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_9_0 = new Runtime('syn-python-selenium-9.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-10.0` includes the following:
+   * - Lambda runtime Python 3.11
+   * - Selenium version 4.32.0
+   * - Chromium version 145.0.7632.77
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-10.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_10_0 = new Runtime('syn-python-selenium-10.0', RuntimeFamily.PYTHON);
+
+  /**
+   * `syn-python-selenium-11.0` includes the following:
+   * - Lambda runtime Python 3.12
+   * - Selenium version 4.32.0
+   * - Chromium version 147.0.7727.57
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-11.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_11_0 = new Runtime('syn-python-selenium-11.0', RuntimeFamily.PYTHON);
+
+  /**
    * @param name The name of the runtime version
    * @param family The Lambda runtime family
    */
