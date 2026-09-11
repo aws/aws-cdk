@@ -1,6 +1,7 @@
 import type { SpawnSyncOptions } from 'child_process';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import { createRequire } from 'module';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
@@ -91,13 +92,36 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Returns a module version by requiring its package.json file
+ * Returns a module version by requiring its package.json file.
+ *
+ * Tries resolution in order:
+ * 1. Optional `fromPath` (e.g. the caller's package.json) for workspace-local installs
+ * 2. `process.cwd()` so packages in the synth project's node_modules are found
+ * 3. Bare `require()` from this module's location (legacy / hoisted root installs)
+ *
+ * @see https://github.com/aws/aws-cdk/issues/37545
  */
-export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
+export function tryGetModuleVersionFromRequire(mod: string, fromPath?: string): string | undefined {
+  const anchors: string[] = [];
+  if (fromPath !== undefined) {
+    anchors.push(fromPath);
+  }
+  anchors.push(path.join(process.cwd(), 'package.json'));
+
+  for (const anchor of anchors) {
+    try {
+      const req = createRequire(anchor);
+      return req(`${mod}/package.json`).version;
+    } catch {
+      // try next anchor
+    }
+  }
+
   try {
+    // Fallback: resolve from this module's location (hoisted root deps)
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`${mod}/package.json`).version;
-  } catch (err) {
+  } catch {
     return undefined;
   }
 }
@@ -140,7 +164,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
   for (const mod of modules) {
     const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
-      ?? tryGetModuleVersionFromRequire(mod);
+      ?? tryGetModuleVersionFromRequire(mod, pkgPath);
     if (!version) {
       throw new UnscopedValidationError(lit`CannotExtractModuleVersion`, `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
