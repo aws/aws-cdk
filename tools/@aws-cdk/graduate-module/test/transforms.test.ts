@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { copyRosetta, copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, ensureRegistration, graduateReadme, mergeAwslint, mergeBarrel, migrateCustomResources, removeExampleDependency, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths, sweepReferences } from '../lib/transforms';
+import { copyGrants, copyRosetta, copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, ensureRegistration, graduateReadme, mergeAwslint, mergeBarrel, migrateCustomResources, removeExampleDependency, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths, sweepReferences } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -504,6 +504,56 @@ describe('copyRosetta', () => {
       expect(out).not.toContain('@aws-cdk/aws-foo-alpha');
       // Non-matching fixture unchanged.
       expect(fs.readFileSync(path.join(ctx.rosettaDir, 'plain.ts-fixture'), 'utf-8')).toBe(plain);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('records a review note when a copy overwrites a pre-existing rosetta fixture', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'rosetta', 'default.ts-fixture'), 'class Fixture {}\n');
+      // A file already exists at the destination — the clobber must be surfaced.
+      write(path.join(ctx.rosettaDir, 'default.ts-fixture'), 'class Old {}\n');
+
+      copyRosetta(ctx, report);
+
+      expect(report.render()).toMatch(/overwrote a pre-existing file/);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('copyGrants', () => {
+  test('copies grants.json into the submodule and leaves the alpha copy in place', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      const src = write(path.join(ctx.alphaDir, 'grants.json'), '{"grants":[]}\n');
+
+      copyGrants(ctx, report);
+
+      const dest = path.join(ctx.submoduleDir, 'grants.json');
+      expect(fs.readFileSync(dest, 'utf-8')).toBe('{"grants":[]}\n');
+      // Copy-only: the alpha grants.json is untouched.
+      expect(fs.existsSync(src)).toBe(true);
+      // A fresh destination is not flagged as an overwrite.
+      expect(report.render()).not.toMatch(/overwrote a pre-existing file/);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('records a review note when it overwrites a pre-existing grants.json', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.alphaDir, 'grants.json'), '{"grants":["new"]}\n');
+      // A grants.json already exists in the stable submodule.
+      write(path.join(ctx.submoduleDir, 'grants.json'), '{"grants":["old"]}\n');
+
+      copyGrants(ctx, report);
+
+      expect(report.render()).toMatch(/overwrote a pre-existing file/);
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
