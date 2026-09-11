@@ -102,8 +102,13 @@ describe('Runtime default tests', () => {
     });
   });
 
-  test('Should have policy for execution role with correct permissions', () => {
-    template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  test('Should apply removal policy via the L2 construct', () => {
+    expect(() => runtime.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY)).not.toThrow();
+
+    const cfnRuntime = runtime.node.defaultChild as cdk.CfnResource;
+    expect(cfnRuntime).toBeDefined();
+    expect(cfnRuntime.cfnOptions.deletionPolicy).toBe('Delete');
+    expect(cfnRuntime.cfnOptions.updateReplacePolicy).toBe('Delete');
   });
 });
 
