@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "http-api-origin/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-http-api-origin"
+      ],
+      "assertionStack": "http-api-origin/DefaultTest/DeployAssert",
+      "assertionStackName": "httpapioriginDefaultTestDeployAssert85E1833E"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
