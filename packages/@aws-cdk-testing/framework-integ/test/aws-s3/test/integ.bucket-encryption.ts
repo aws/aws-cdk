@@ -6,12 +6,12 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-s3-bucket-encryption');
 
-new s3.Bucket(stack, 'MyDSSEBucket', {
+const dsseBucket = new s3.Bucket(stack, 'MyDSSEBucket', {
   encryption: s3.BucketEncryption.DSSE_MANAGED,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new s3.Bucket(stack, 'MySSES3Bucket', {
+const sseS3Bucket = new s3.Bucket(stack, 'MySSES3Bucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
   bucketKeyEnabled: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -25,6 +25,10 @@ const kmsBucket = new s3.Bucket(stack, 'MyKMSBucket', {
 
 kmsBucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
+new cdk.CfnOutput(stack, 'DSSEBucketEncryption', { value: dsseBucket.encryption! });
+new cdk.CfnOutput(stack, 'SSES3BucketEncryption', { value: sseS3Bucket.encryption! });
+new cdk.CfnOutput(stack, 'KMSBucketEncryption', { value: kmsBucket.encryption! });
+
 new s3.Bucket(stack, 'MySSECBlockedBucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
   blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
@@ -34,5 +38,3 @@ new s3.Bucket(stack, 'MySSECBlockedBucket', {
 new integ.IntegTest(app, 'IntegTestDSSEBucket', {
   testCases: [stack],
 });
-
-app.synth();

@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { Stack, App, Resource } from '../../core';
+import { Stack, App, Lazy, Resource } from '../../core';
 import { BucketReflection } from '../lib/bucket-reflection';
 
 /** Compare constructs by node path to avoid circular JSON serialization in Jest error messages */
@@ -388,5 +388,96 @@ describe('find KMS key for Bucket', () => {
   test('returns undefined for custom IBucketRef without CfnBucket', () => {
     const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
     expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
+  });
+});
+
+describe('find encryption mode for Bucket', () => {
+  let app: App;
+  let stack: Stack;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'TestStack');
+  });
+
+  test.each([
+    ['no encryption configuration', undefined, s3.BucketEncryption.S3_MANAGED],
+    ['S3-managed encryption', { sseAlgorithm: 'AES256' }, s3.BucketEncryption.S3_MANAGED],
+    ['KMS-managed encryption', { sseAlgorithm: 'aws:kms' }, s3.BucketEncryption.KMS_MANAGED],
+    ['customer-managed KMS encryption', { sseAlgorithm: 'aws:kms', kmsMasterKeyId: 'key-id' }, s3.BucketEncryption.KMS],
+    ['DSSE with an AWS-managed key', { sseAlgorithm: 'aws:kms:dsse' }, s3.BucketEncryption.DSSE_MANAGED],
+    ['DSSE with a customer-managed key', { sseAlgorithm: 'aws:kms:dsse', kmsMasterKeyId: 'key-id' }, s3.BucketEncryption.DSSE],
+  ])('returns %s', (_description, encryptionByDefault, expected) => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: encryptionByDefault ? {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: encryptionByDefault,
+        }],
+      } : undefined,
+    });
+
+    expect(BucketReflection.of(bucket).encryption).toBe(expected);
+  });
+
+  test('returns the customer-managed mode for a tokenized KMS key ID', () => {
+    const key = new kms.CfnKey(stack, 'Key', { keyPolicy: {} });
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: {
+            sseAlgorithm: 'aws:kms',
+            kmsMasterKeyId: key.attrArn,
+          },
+        }],
+      },
+    });
+
+    expect(BucketReflection.of(bucket).encryption).toBe(s3.BucketEncryption.KMS);
+  });
+
+  test('returns undefined for an unresolved encryption algorithm', () => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: {
+            sseAlgorithm: Stack.of(stack).toJsonString('AES256'),
+          },
+        }],
+      },
+    });
+
+    expect(BucketReflection.of(bucket).encryption).toBeUndefined();
+  });
+
+  test.each([
+    ['encryption configuration', Lazy.any({ produce: () => ({ serverSideEncryptionConfiguration: [] }) })],
+    ['server-side encryption configuration', {
+      serverSideEncryptionConfiguration: Lazy.any({ produce: () => [{ serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }] }),
+    }],
+  ])('returns undefined for unresolved %s', (_description, bucketEncryption) => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', { bucketEncryption });
+
+    expect(BucketReflection.of(bucket).encryption).toBeUndefined();
+  });
+
+  test('reflects changes to the underlying CfnBucket', () => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket');
+    const reflection = BucketReflection.of(bucket);
+
+    expect(reflection.encryption).toBe(s3.BucketEncryption.S3_MANAGED);
+
+    bucket.bucketEncryption = {
+      serverSideEncryptionConfiguration: [{
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: 'aws:kms:dsse',
+        },
+      }],
+    };
+    expect(reflection.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
+  });
+
+  test('returns undefined for custom IBucketRef without CfnBucket', () => {
+    const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
+    expect(BucketReflection.of(bucket).encryption).toBeUndefined();
   });
 });
