@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "24fbe344d97d22a2818e978b5ecf7bd9ba705ec2706f6a018aeda5b534d2ced3.zip"
+     "S3Key": "9a746caeb230acdc3265185e86b9466a51c3ec22cffc1616d837969aabd69237.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "8ecd72eb07701188f85af550a8ea80012413edfe9d1ea7139e0d2ce0bd68b0ff.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "8ecd72eb07701188f85af550a8ea80012413edfe9d1ea7139e0d2ce0bd68b0ff.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -249,7 +249,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -268,7 +268,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "Providerwaiterstatemachine5D4A9DF0"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c8afdae2704a124d668cd87acbfaabf9ffb7c8d9af"
      }
     },
     "Handler": "framework.onEvent",
@@ -335,6 +336,49 @@
      "Version": "2012-10-17"
     },
     "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole2BD343FF9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8afdae2704a124d668cd87acbfaabf9ffb7c8d9af/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole2BD343FF9",
     "Roles": [
      {
       "Ref": "ProviderframeworkonEventServiceRole9FF04296"
@@ -442,7 +486,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -525,6 +569,49 @@
      "Version": "2012-10-17"
     },
     "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
+     }
+    ]
+   }
+  },
+  "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole2BDEA2177": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8afdae2704a124d668cd87acbfaabf9ffb7c8d9af/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole2BDEA2177",
     "Roles": [
      {
       "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
@@ -632,7 +719,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -715,6 +802,49 @@
      "Version": "2012-10-17"
     },
     "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole2F248D9BF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8afdae2704a124d668cd87acbfaabf9ffb7c8d9af/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole2F248D9BF",
     "Roles": [
      {
       "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"

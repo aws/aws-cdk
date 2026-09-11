@@ -621,6 +621,15 @@
           "*"
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete": [
@@ -901,6 +910,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/Resource": [
@@ -942,6 +967,38 @@
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -1051,6 +1108,22 @@
           "*"
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/Resource": [
@@ -1092,6 +1165,38 @@
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -1201,6 +1306,22 @@
           "*"
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/Resource": [
@@ -1242,6 +1363,38 @@
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -1404,6 +1557,12 @@
       "data": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C"
     }
   ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onEvent/inlinePolicyAddedToExecutionRole-2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole206B54965"
+    }
+  ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1466,6 +1625,12 @@
       "data": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80"
     }
   ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-isComplete/inlinePolicyAddedToExecutionRole-2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole2F1D5F311"
+    }
+  ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1526,6 +1691,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D"
+    }
+  ],
+  "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/framework-onTimeout/inlinePolicyAddedToExecutionRole-2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole27051F0A9"
     }
   ],
   "/cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider/waiter-state-machine/Role/Resource": [

@@ -4,9 +4,20 @@
 
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
-import { invokeFunction, startExecution } from './outbound';
+import { invokeFunction, putParameter, startExecution } from './outbound';
+import { forgetResponseUrl, resolveResponseUrl } from './response-url';
 import { getEnv, log, parseJsonPayload } from './util';
 import type { IsCompleteResponse, OnEventResponse } from '../types';
+
+/**
+ * The event carried through the waiter state machine.
+ *
+ * Identical to the user-facing `IsCompleteRequest`, plus the internal reference
+ * to the stored response URL. Not part of the public handler contract.
+ */
+type WaiterEvent = AWSCDKAsyncCustomResource.IsCompleteRequest & {
+  ResponseURLParameterName?: string;
+};
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
@@ -54,10 +65,28 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
     return cfnResponse.submitResponse('SUCCESS', resourceEvent, { noEcho: resourceEvent.NoEcho });
   }
 
+  // The ResponseURL is a presigned URL that authorizes writing the result of this
+  // custom resource. Keep it out of the state machine execution state (and out of
+  // anything thrown back to the state machine) by parking it in SSM and passing
+  // only the parameter name along.
+  const responseUrlParameterName = `${getEnv(consts.RESPONSE_URL_PARAMETER_PREFIX_ENV)}/${cfnRequest.RequestId}`;
+  await putParameter({
+    Name: responseUrlParameterName,
+    Value: cfnRequest.ResponseURL,
+    Type: 'String',
+    Overwrite: true,
+  });
+
+  const waiterEvent: WaiterEvent = {
+    ...resourceEvent,
+    ResponseURL: consts.RESPONSE_URL_REDACTED,
+    ResponseURLParameterName: responseUrlParameterName,
+  };
+
   // ok, we are not complete, so kick off the waiter workflow
   const waiter = {
     stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-    input: JSON.stringify(resourceEvent),
+    input: JSON.stringify(waiterEvent),
   };
 
   log('starting waiter', {
@@ -65,11 +94,17 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   });
 
   // kick off waiter state machine
-  await startExecution(waiter);
+  try {
+    await startExecution(waiter);
+  } catch (e) {
+    // nothing will read the parameter if the waiter never started
+    await forgetResponseUrl(waiterEvent);
+    throw e;
+  }
 }
 
 // invoked a few times until `complete` is true or until it times out.
-async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
+async function isComplete(event: WaiterEvent) {
   const sanitizedRequest = { ...event, ResponseURL: '...' } as const;
   if (event?.NoEcho) {
     log('redacted isComplete request', cfnResponse.redactDataFromPayload(sanitizedRequest));
@@ -77,7 +112,10 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
     log('isComplete', sanitizedRequest);
   }
 
-  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, event.ResponseURL) as IsCompleteResponse;
+  // user handlers still receive the real URL, so it has to be read back here
+  const responseUrl = await resolveResponseUrl(event);
+
+  const isCompleteResult = await invokeUserFunction(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, sanitizedRequest, responseUrl) as IsCompleteResponse;
   if (event?.NoEcho) {
     log('redacted user isComplete returned:', cfnResponse.redactDataFromPayload(isCompleteResult));
   } else {
@@ -90,7 +128,9 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
       throw new Error('"Data" is not allowed if "IsComplete" is "False"');
     }
 
-    // This must be the full event, it will be deserialized in `onTimeout` to send the response to CloudFormation
+    // This must be the full event, it will be deserialized in `onTimeout` to send the response to CloudFormation.
+    // `event.ResponseURL` is the redacted placeholder here, so the presigned URL does not reach the state
+    // machine error output or the runtime's log of this uncaught error. `onTimeout` reads it back from SSM.
     throw new cfnResponse.Retry(JSON.stringify(event));
   }
 
@@ -104,16 +144,18 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
   };
 
   await cfnResponse.submitResponse('SUCCESS', response, { noEcho: event.NoEcho });
+  await forgetResponseUrl(event);
 }
 
 // invoked when completion retries are exhaused.
 async function onTimeout(timeoutEvent: any) {
   log('timeoutHandler', timeoutEvent);
 
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as WaiterEvent;
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out',
   });
+  await forgetResponseUrl(isCompleteRequest);
 }
 
 async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string) {

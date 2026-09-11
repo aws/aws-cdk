@@ -206,6 +206,33 @@
        "Resource": {
         "Ref": "MyProviderWithCustomRolewaiterstatemachineA313C5FC"
        }
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c88844b5288e584055d083e0f05cd6dfdc44789ad0/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -317,6 +344,33 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c88844b5288e584055d083e0f05cd6dfdc44789ad0/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -336,7 +390,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole)",
     "Environment": {
@@ -355,7 +409,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "MyProviderWithCustomRolewaiterstatemachineA313C5FC"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c88844b5288e584055d083e0f05cd6dfdc44789ad0"
      }
     },
     "Handler": "framework.onEvent",
@@ -384,7 +439,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole)",
     "Environment": {
@@ -429,7 +484,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-with-waiter-state-machine-custom-role/MyProviderWithCustomRole)",
     "Environment": {

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import mocks = require('./mocks');
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
+import consts = require('../../lib/provider-framework/runtime/consts');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
 
@@ -16,6 +17,9 @@ const MOCK_ATTRS = { MyAttribute: 'my-mock-attribute' };
 outbound.httpRequest = mocks.httpRequestMock;
 outbound.invokeFunction = mocks.invokeFunctionMock;
 outbound.startExecution = mocks.startExecutionMock;
+outbound.putParameter = mocks.putParameterMock;
+outbound.getParameter = mocks.getParameterMock;
+outbound.deleteParameter = mocks.deleteParameterMock;
 
 const invokeFunctionSpy = jest.spyOn(outbound, 'invokeFunction');
 
@@ -378,6 +382,109 @@ describe('ResponseURL is passed to user function', () => {
   });
 });
 
+describe('ResponseURL is kept out of the waiter state machine', () => {
+  const EXPECTED_PARAMETER_NAME = `${mocks.MOCK_RESPONSE_URL_PARAMETER_PREFIX}/${mocks.MOCK_REQUEST.RequestId}`;
+
+  test('the state machine input carries a parameter reference instead of the URL', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+    // WHEN
+    await simulateEvent({ RequestType: 'Create' });
+
+    // THEN
+    const input = mocks.startStateMachineInput!.input!;
+    expect(input).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+
+    const waiterEvent = JSON.parse(input);
+    expect(waiterEvent.ResponseURL).toEqual(consts.RESPONSE_URL_REDACTED);
+    expect(waiterEvent.ResponseURLParameterName).toEqual(EXPECTED_PARAMETER_NAME);
+  });
+
+  test('the retry thrown back to the state machine does not carry the URL', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
+    mocks.prepareForExecution();
+    await framework.onEvent(makeCfnEvent({ RequestType: 'Create' }));
+
+    // WHEN
+    const waiterEvent = JSON.parse(mocks.startStateMachineInput!.input!);
+    let thrown: any;
+    try {
+      await framework.isComplete(waiterEvent);
+    } catch (e: any) {
+      thrown = e;
+    }
+
+    // THEN
+    expect(thrown).toBeInstanceOf(cfnResponse.Retry);
+    expect(thrown.message).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+  });
+
+  test('the parameter is cleaned up once the resource completes', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+
+    // WHEN
+    await simulateEvent({ RequestType: 'Create' });
+
+    // THEN
+    expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    expect(mocks.parameterStore).toEqual({});
+  });
+
+  test('the parameter is cleaned up when the waiter times out', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: false });
+
+    // WHEN
+    await simulateEvent({ RequestType: 'Create' });
+
+    // THEN
+    expectCloudFormationFailed('Operation timed out');
+    expect(mocks.parameterStore).toEqual({});
+  });
+
+  test('a failure to clean up the parameter does not fail the deployment', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+    outbound.deleteParameter = async () => {
+      throw new Error('AccessDenied');
+    };
+
+    try {
+      // WHEN
+      await simulateEvent({ RequestType: 'Create' });
+
+      // THEN
+      expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    } finally {
+      outbound.deleteParameter = mocks.deleteParameterMock;
+    }
+  });
+
+  test('executions started before this version still complete', async () => {
+    // GIVEN an event shaped by the previous framework: URL inline, no parameter reference
+    mocks.isCompleteImplMock = async () => ({ IsComplete: true });
+    mocks.prepareForExecution();
+
+    // WHEN
+    await framework.isComplete({
+      ...makeCfnEvent({ RequestType: 'Create' }),
+      PhysicalResourceId: MOCK_PHYSICAL_ID,
+    } as any);
+
+    // THEN
+    expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
+    expect(mocks.parameterStore).toEqual({});
+  });
+});
+
 test('waiter state machine execution does not include name field (allows retries)', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ PhysicalResourceId: MOCK_PHYSICAL_ID });
@@ -399,13 +506,8 @@ test('waiter state machine execution does not include name field (allows retries
 
 // -----------------------------------------------------------------------------------------------------------------------
 
-/**
- * Triggers the custom resource lifecycle event flow by invoking the framework's
- * onEvent function and then, if the waiter state machine was started, simulates
- * the waiter and invokes isComplete and onTimeout as appropriate.
- */
-async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
-  const x = {
+function makeCfnEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
+  return {
     ServiceToken: 'SERVICE-TOKEN',
     ResponseURL: mocks.MOCK_REQUEST.ResponseURL,
     StackId: mocks.MOCK_REQUEST.StackId,
@@ -413,11 +515,20 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
     ResourceType: 'Custom::TestResource',
     LogicalResourceId: mocks.MOCK_REQUEST.LogicalResourceId,
     ...req,
-  };
+  } as AWSLambda.CloudFormationCustomResourceEvent;
+}
+
+/**
+ * Triggers the custom resource lifecycle event flow by invoking the framework's
+ * onEvent function and then, if the waiter state machine was started, simulates
+ * the waiter and invokes isComplete and onTimeout as appropriate.
+ */
+async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {
+  const x = makeCfnEvent(req);
 
   mocks.prepareForExecution();
 
-  await framework.onEvent(x as AWSLambda.CloudFormationCustomResourceEvent);
+  await framework.onEvent(x);
 
   // if the FSM
   if (mocks.startStateMachineInput && mocks.startStateMachineInput.stateMachineArn === mocks.MOCK_SFN_ARN) {

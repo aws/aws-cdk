@@ -299,6 +299,25 @@
        "Resource": {
         "Ref": "Providerwaiterstatemachine5D4A9DF0"
        }
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:eu-west-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8dee9d98a797e097d6428d2784ae880b1f66106de/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -318,7 +337,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -337,7 +356,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "Providerwaiterstatemachine5D4A9DF0"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c8dee9d98a797e097d6428d2784ae880b1f66106de"
      }
     },
     "Handler": "framework.onEvent",
@@ -458,6 +478,25 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:eu-west-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8dee9d98a797e097d6428d2784ae880b1f66106de/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -477,7 +516,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -614,6 +653,25 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ssm:eu-west-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8dee9d98a797e097d6428d2784ae880b1f66106de/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -633,7 +691,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
