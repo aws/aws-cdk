@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FsxOntapWithSecretIntegTest/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxOntapWithSecret"
+      ],
+      "assertionStack": "FsxOntapWithSecretIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "0d7d0b640ed9174702116483e2b69503ba9cd3a954574e1c14551968c65bce3c": {
+      "displayName": "AwsCdkFsxOntapVolume Template",
+      "source": {
+        "path": "AwsCdkFsxOntapVolume.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-97fbf35d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0d7d0b640ed9174702116483e2b69503ba9cd3a954574e1c14551968c65bce3c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
