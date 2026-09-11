@@ -11,6 +11,7 @@ export * from './origin-request-policy';
 export * from './public-key';
 export * from './realtime-log-config';
 export * from './response-headers-policy';
+export * from './trust-store';
 export * from './web-distribution';
 export * from './origin-access-control';
 export * from './vpc-origin';
