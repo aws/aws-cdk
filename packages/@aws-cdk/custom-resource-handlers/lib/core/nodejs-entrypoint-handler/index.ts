@@ -1,5 +1,4 @@
 import * as https from 'https';
-import * as url from 'url';
 
 // for unit tests
 export const external = {
@@ -106,14 +105,14 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
     Data: event.Data,
   };
 
-  const parsedUrl = url.parse(event.ResponseURL);
+  const parsedUrl = new URL(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
   external.log('submit response to cloudformation', loggingSafeUrl, json);
 
   const responseBody = JSON.stringify(json);
   const req = {
     hostname: parsedUrl.hostname,
-    path: parsedUrl.path,
+    path: parsedUrl.pathname + parsedUrl.search,
     method: 'PUT',
     headers: {
       'content-type': '',
