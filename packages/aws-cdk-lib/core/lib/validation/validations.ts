@@ -5,7 +5,7 @@ import { UnscopedValidationError } from '../errors';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import { enhancedStackTrace } from '../private/stack-trace';
-import { normalizeValidationIdForAnnotations } from './private/validation-id';
+import { ANNOTATION_PLUGIN_NAMESPACE, normalizeValidationIdForAnnotations, parseValidationId } from './private/validation-id';
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -118,12 +118,34 @@ export class Validations {
    */
   public acknowledge(...rules: Acknowledgment[]): void {
     for (const rule of rules) {
-      const qualifiedId = normalizeValidationIdForAnnotations(rule.id);
+      const parsed = parseValidationId(rule.id);
+
+      const qualifiedId = normalizeValidationIdForAnnotations(parsed);
       this.recordAcknowledgment(qualifiedId, rule.reason);
 
-      // For now, all rules route to annotation acknowledgment.
-      // Future validation types will be distinguished by their prefix.
+      // There is a mess here, that has been created for historical reasons and we now
+      // sort of have to leave in place for backwards compatibility.
+      //
+      // Annotations can be added via:
+      //
+      // 1) `Annotations.of().addWarningV2('<id>')`         -- adds an annotation with the given ID
+      // 2) `Validations.of().addWarning('<id>')`           -- adds an annotation with ID 'Annotation::<id>'
+      // 3) `Validations.of().addWarning('<prefix>::<id>')` -- adds an annotation with ID '<prefix>::<id>'
+      //
+      // For both cases (1) and (2), we would like to be able to suppress the warning by calling one of:
+      //
+      // a) `Validations.of().acknowledge('Annotation::<id>')`            -- validation namespace
+      // b) `Validations.of().acknowledge('<id>')`                        -- backwards compatible with the initial release of Validations API
+      // c) `Validations.of().acknowledge('Construct-Annotations::<id>')` -- previous name of validation namespace
+      //
+      // Since we can't know if `Validations.of().acknowledge('<id>')` should
+      // suppress the namespaced or unnamespaced version of the warning, we will suppress both.
       Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+
+      if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
+        const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
+        Annotations.of(this.scope).acknowledgeWarning(annotationId);
+      }
     }
   }
 
