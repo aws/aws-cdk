@@ -459,7 +459,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
   /**
    * Optional description for the gateway target
    */
-  public readonly description;
+  public readonly description?: string;
 
   /**
    * The gateway this target belongs to
@@ -522,7 +522,9 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     this.gatewayTargetName = this.physicalName;
     this.validateGatewayTargetName(this.gatewayTargetName);
 
-    this.description = props.description;
+    if (props.description !== undefined) {
+      this.description = props.description;
+    }
     if (this.description) {
       this.validateDescription(this.description);
     }
