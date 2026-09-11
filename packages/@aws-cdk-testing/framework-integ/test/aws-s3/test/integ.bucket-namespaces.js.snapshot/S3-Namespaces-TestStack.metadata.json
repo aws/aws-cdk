@@ -1,0 +1,119 @@
+{
+  "/S3-Namespaces-TestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-namespaces.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithNamePrefix": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithName_Regional": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithName_Global": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3-Namespaces-TestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:466: (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:466:3)",
+        "visit (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:523:9)",
+        "visit (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:520:9)",
+        "synthesizeTree (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:459:5)",
+        "synthesize (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:87:5)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:200:27)"
+      ]
+    }
+  ],
+  "/S3-Namespaces-TestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:466: (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:466:3)",
+        "visit (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:523:9)",
+        "visit (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:520:9)",
+        "synthesizeTree (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:459:5)",
+        "synthesize (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:87:5)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:200:27)"
+      ]
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithNamePrefix/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketWithNamePrefix2630E286"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1219:30)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-namespaces.js:51:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithName_Regional/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketWithNameRegional5F553776"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1219:30)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-namespaces.js:57:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/S3-Namespaces-TestStack/BucketWithName_Global/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketWithNameGlobalEA669FA5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1219:30)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-namespaces.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
