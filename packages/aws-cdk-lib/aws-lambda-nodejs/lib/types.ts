@@ -363,7 +363,13 @@ export interface ICommandHooks {
   /**
    * Returns commands to run before installing node modules.
    *
-   * This hook only runs when node modules are installed.
+   * This hook only runs when node modules are installed. Commands run after CDK
+   * has written the workspace setup files (`pnpm-workspace.yaml`, `package.json`,
+   * and the lockfile) into the output directory, but before the package manager
+   * install command is invoked. Use this hook to modify workspace configuration
+   * that the package manager reads at install time, for example appending
+   * `allowBuilds` entries to `pnpm-workspace.yaml` to permit native build scripts
+   * in pnpm v11 workspaces.
    *
    * Commands are chained with `&&`.
    */
