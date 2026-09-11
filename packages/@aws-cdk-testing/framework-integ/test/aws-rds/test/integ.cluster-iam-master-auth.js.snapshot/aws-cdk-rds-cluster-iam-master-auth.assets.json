@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "3f0e2d4ce6b02fde8bcf80d9233da1d9f5f161d6d2318828f530e734f8a2dcdc": {
+      "displayName": "aws-cdk-rds-cluster-iam-master-auth Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-iam-master-auth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-51838f5c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3f0e2d4ce6b02fde8bcf80d9233da1d9f5f161d6d2318828f530e734f8a2dcdc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
