@@ -1,0 +1,56 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "AlarmWarmupIntegTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "F3002",
+          "description": "WarmUpConfiguration: Additional properties are not allowed ('WarmUpConfiguration' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-cloudwatch-alarm-warmup/Alarm/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-cloudwatch-alarm-warmup.template.json",
+                "logicalId": "Alarm7103F465",
+                "propertyPaths": [
+                  "Properties.WarmUpConfiguration"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "WarmUpConfiguration is a newly launched property not yet in the bundled schema",
+          "acknowledgedAt": "aws-cdk-cloudwatch-alarm-warmup",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/work/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)\n    at <anonymous> (/work/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.alarm-warmup.js:41:27)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}
