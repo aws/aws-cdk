@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "sns-event-rule-target-role-enabled/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "snseventruletargetroleenabledDefaultTestDeployAssertEF14CC5B"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }
