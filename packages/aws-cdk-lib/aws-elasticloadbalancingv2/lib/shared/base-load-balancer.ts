@@ -17,6 +17,8 @@ import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
+const ELASTIC_LOAD_BALANCING_LOG_DELIVERY_SERVICE_PRINCIPAL = 'logdelivery.elasticloadbalancing.amazonaws.com';
+
 /**
  * The prefix to use for source NAT for a dual-stack network load balancer with UDP listeners.
  */
@@ -416,9 +418,6 @@ export abstract class BaseLoadBalancer extends Resource {
 
   /**
    * Enable access logging for this load balancer.
-   *
-   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
-   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
   public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
     prefix = prefix || '';
@@ -483,14 +482,14 @@ export abstract class BaseLoadBalancer extends Resource {
   protected resourcePolicyPrincipal(): iam.IPrincipal {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError(lit`RegionRequiredEnableBvAccess`, 'Region is required to enable ELBv2 access logging', this);
+      return new iam.ServicePrincipal(ELASTIC_LOAD_BALANCING_LOG_DELIVERY_SERVICE_PRINCIPAL);
     }
 
     const account = RegionInfo.get(region).elbv2Account;
     if (!account) {
       // New Regions use a service principal
       // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
-      return new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com');
+      return new iam.ServicePrincipal(ELASTIC_LOAD_BALANCING_LOG_DELIVERY_SERVICE_PRINCIPAL);
     }
 
     return new iam.AccountPrincipal(account);
