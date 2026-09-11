@@ -19,7 +19,7 @@ jobs:
           new-label: p1
           reprioritization-threshold: 20
           project-column-url: https://github.com/aws/aws-cdk/projects/13#column-18002436
-      - uses: kaizencc/pr-triage-manager@main
+      - uses: kaizencc/pr-triage-manager@3a2558737a4d072feaaa4c1768b92f51abfde53b # main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           on-pulls: ${{ steps.reprioritization-manager.outputs.linked-pulls }}
