@@ -4,7 +4,8 @@ import * as path from 'path';
 import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
-import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
+import type { Acknowledgement } from './collect-acknowledged-rule-ids';
+import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -13,7 +14,7 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
@@ -64,9 +65,12 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
   }
 
+  const tree = new ConstructTree(root);
+  inferConstructPathsFromLogicalIds(reports, tree);
+
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(tree);
   const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
 
   // Always write validation report to disk
@@ -257,59 +261,132 @@ function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginRepo
 }
 
 /**
+ * For violations that have a resource logical ID but no construct path, try to infer the construct path from the logical ID and template path.
+ */
+function inferConstructPathsFromLogicalIds(reports: NamedValidationPluginReport[], tree: ConstructTree) {
+  for (const report of reports) {
+    for (const violation of report.violations) {
+      for (const resource of violation.violatingResources) {
+        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
+        if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
+          mutable(resource).constructPath = tree.getConstructByLogicalId(
+            path.basename(resource.templatePath),
+            resource.resourceLogicalId,
+          )?.node.path;
+        }
+      }
+    }
+  }
+}
+
+/**
  * Filter out suppressed violations. Collect all acknowledged rule IDs
  * from construct metadata across the tree, then remove matching violations
  * from reports. Fatal violations cannot be suppressed.
  *
- * Rule matching: violations are matched as <pluginName>::<ruleName> with
- * spaces replaced by dashes. Users suppress with:
- *   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+ * This function modifies the given `reports` in-place, removing suppressed
+ * violations and updating the `success` field. It returns a map of report index
+ * to suppressed violations.
  */
 function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) {
   const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
-  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  const acknowledgedRules = collectAcknowledgedRules(root);
 
-  if (acknowledgedRules.size > 0) {
+  if (Object.keys(acknowledgedRules).length > 0) {
     for (let i = 0; i < reports.length; i++) {
-      const pluginName = reports[i].pluginName;
-      const active: typeof reports[0]['violations'] = [];
-      const suppressed: SuppressedViolation[] = [];
-      for (const v of reports[i].violations) {
-        if (!isSuppressibleViolation(v)) {
-          active.push(v);
-          continue;
-        }
+      const suppressed = suppressInReport(reports[i]);
 
-        const ackIds: string[] = [];
-
-        const ruleName = normalizeValidationId(v.ruleName, namespaceFromPluginName(pluginName));
-        ackIds.push(ruleName);
-
-        const ack = firstThat(ackIds.map(hyphenify), id => acknowledgedRules.get(id));
-
-        if (ack) {
-          suppressed.push({
-            ...v,
-            acknowledgedId: ack.key,
-            reason: ack.value.reason,
-            acknowledgedAt: ack.value.constructPath,
-            acknowledgedStackTrace: ack.value.stackTrace,
-          });
-        } else {
-          active.push(v);
-        }
-      }
       if (suppressed.length > 0) {
         suppressedByReport.set(i, suppressed);
-        reports[i] = {
-          ...reports[i],
-          violations: active,
-          success: active.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
-        };
+        mutable(reports[i]).success = reports[i].violations.every(v => v.severity !== 'error' && v.severity !== 'fatal');
       }
     }
   }
+
   return suppressedByReport;
+
+  function suppressInReport(report: NamedValidationPluginReport): SuppressedViolation[] {
+    const ruleNamespace = namespaceFromPluginName(report.pluginName);
+
+    const ret: SuppressedViolation[] = [];
+
+    for (let i = 0; i < report.violations.length; i++) {
+      const v = report.violations[i];
+      if (!isSuppressibleViolation(v)) {
+        continue;
+      }
+
+      const ruleName = normalizeValidationId(v.ruleName, ruleNamespace);
+      const pathBasedSuppressions = acknowledgedRules[ruleName];
+
+      if (!pathBasedSuppressions) {
+        continue;
+      }
+
+      const { suppressedGroups, unsuppressed } = groupResourcesBySuppressions(v.violatingResources, pathBasedSuppressions);
+      mutable(v).violatingResources = unsuppressed;
+
+      for (const suppressedGroup of suppressedGroups) {
+        ret.push({
+          ...v,
+          ...suppressedGroup.acknowledgement,
+          violatingResources: suppressedGroup.resources,
+        });
+      }
+
+      // If the violation is left with 0 violating resources, remove it from the report
+      if (v.violatingResources.length === 0) {
+        report.violations.splice(i, 1);
+        i--;
+      }
+    }
+    return ret;
+  }
+}
+
+function groupResourcesBySuppressions(resources: PolicyViolatingResource[], pathBasedSuppressions: Record<string, Acknowledgement>) {
+  interface SuppressionGroup {
+    acknowledgement: Acknowledgement;
+    resources: PolicyViolatingResource[];
+  }
+
+  const unsuppressed: PolicyViolatingResource[] = [];
+  const suppressed: Record<string, SuppressionGroup> = {};
+
+  for (const r of resources) {
+    const ack = findClosestAck(r);
+
+    if (ack) {
+      suppressed[ack.acknowledgedAt] ??= { acknowledgement: ack, resources: [] };
+      suppressed[ack.acknowledgedAt].resources.push(r);
+    } else {
+      unsuppressed.push(r);
+    }
+  }
+
+  return {
+    suppressedGroups: Object.values(suppressed),
+    unsuppressed,
+  };
+
+  /**
+   * Find an acknowledgement upwards in the construct tree for the given resource
+   */
+  function findClosestAck(r: PolicyViolatingResource): Acknowledgement | undefined {
+    let constructPath = r.constructPath ?? '';
+
+    let ret: Acknowledgement | undefined = pathBasedSuppressions[constructPath];
+    while (ret === undefined && constructPath !== '') {
+      const lastDot = constructPath.lastIndexOf('/');
+      if (lastDot === -1) {
+        constructPath = '';
+      } else {
+        constructPath = constructPath.substring(0, lastDot);
+      }
+      ret = pathBasedSuppressions[constructPath];
+    }
+    return ret;
+  }
 }
 
 /**
@@ -545,18 +622,4 @@ function stripAnsi(x: string) {
 
   const re = new RegExp(pattern, 'g');
   return x.replaceAll(re, '');
-}
-
-function firstThat<A, B>(xs: A[], predicate: (x: A) => B | undefined): { key: A; value: B } | undefined {
-  for (const x of xs) {
-    const value = predicate(x);
-    if (value !== undefined) {
-      return { key: x, value };
-    }
-  }
-  return undefined;
-}
-
-function hyphenify(x: string) {
-  return x.replace(/ /g, '-');
 }
