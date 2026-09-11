@@ -94,6 +94,33 @@ describe('ec2 service', () => {
       }
     });
 
+    test('does not suggest circuitBreaker for DAEMON scheduling strategy services', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        daemon: true,
+        // no circuitBreaker — warning should NOT fire because daemon services
+        // have no desiredCount and the circuit breaker threshold is desiredCount-based
+      });
+
+      // THEN
+      const warnings = flattenMeta(app.synth().getStackByName('Stack').metadata)['/Stack/Ec2Service']?.['aws:cdk:warning'];
+      expect(warnings ?? []).not.toContainEqual(expect.stringContaining('Enable the \'circuitBreaker\' property'));
+    });
+
     [false, undefined].forEach((value) => {
       test('set cloudwatch permissions based on falsy feature flag when no cloudwatch log configured', () => {
         // GIVEN
