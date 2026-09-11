@@ -985,12 +985,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql17",
+    "DBClusterParameterGroupName": "default.aurora-postgresql18",
     "DBSubnetGroupName": {
      "Ref": "dbClusterSubnets03B9B0E1"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.9",
+    "EngineVersion": "18.4",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1476,12 +1476,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql17",
+    "DBClusterParameterGroupName": "default.aurora-postgresql18",
     "DBSubnetGroupName": {
      "Ref": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.9",
+    "EngineVersion": "18.4",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
