@@ -342,6 +342,28 @@ new ec2.Vpc(this, 'TheVPC', {
 
 With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
+#### Allocating a subnet CIDR from AWS IPAM
+
+A standalone `Subnet` (or `PublicSubnet`/`PrivateSubnet`) can also have its IPv4 CIDR block allocated from an IPAM pool at deploy time instead of taking a concrete `cidrBlock`. Pass the pool and the netmask length of the block to allocate in `ipv4IpamAllocation`; exactly one of `cidrBlock` and `ipv4IpamAllocation` must be set:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const pool: ec2.CfnIPAMPool;
+
+const subnet = new ec2.Subnet(this, 'IpamSubnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: vpc.availabilityZones[0],
+  ipv4IpamAllocation: {
+    ipamPool: pool,
+    netmaskLength: 24,
+  },
+});
+```
+
+The CIDR block allocated from the pool must lie within the CIDR of the VPC. To use a pool that is not defined in your CDK app (for example one shared with your account through AWS RAM), reference it by ID with `ec2.CfnIPAMPool.fromIpamPoolId(this, 'Pool', 'ipam-pool-0123456789abcdef0')`. If the pool's address space is provisioned through separate `CfnIPAMPoolCidr` resources, add a dependency from the subnet on them so the pool has space to allocate from when the subnet is created.
+
+Because the CIDR block is only known at deploy time, `subnet.ipv4CidrBlock` is a CloudFormation attribute reference rather than a concrete string. Subnet filters that parse the CIDR (`SubnetFilter.byCidrMask()`, `SubnetFilter.byCidrRanges()` and `SubnetFilter.containsIpAddresses()`) therefore cannot be used with IPAM-allocated subnets. Subnets created by `Vpc` from `subnetConfiguration` are not affected by this option; they keep getting their CIDRs from the VPC's `IpAddresses` provider.
+
 ### Dual Stack configuration
 
 To allocate both IPv4 and IPv6 addresses in your VPC, you can configure your VPC to have a dual stack protocol.

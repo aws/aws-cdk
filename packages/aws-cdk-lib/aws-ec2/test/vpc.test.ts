@@ -1,13 +1,14 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
-import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '../../core';
+import { App, CfnOutput, CfnResource, Fn, Lazy, Stack, Tags, Token } from '../../core';
 import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
-import type { NatInstanceProps, PublicSubnet } from '../lib';
+import type { NatInstanceProps } from '../lib';
 import {
   AclCidr,
   AclTraffic,
   BastionHostLinux,
+  CfnIPAMPool,
   CfnSubnet,
   CfnVPC,
   SubnetFilter,
@@ -25,6 +26,7 @@ import {
   Peer,
   Port,
   PrivateSubnet,
+  PublicSubnet,
   RouterType,
   Subnet,
   SubnetType,
@@ -2940,6 +2942,169 @@ describe('vpc', () => {
     expect(() => new Vpc(stack, 'Vpc', {
       ipv6Addresses: Ipv6Addresses.amazonProvided(),
     })).toThrow();
+  });
+});
+
+describe('Subnet', () => {
+  const ipamPoolId = 'ipam-pool-0123456789abcdef0';
+
+  test('subnet with a concrete cidrBlock renders CidrBlock and no IPAM properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const subnet = new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+    });
+
+    // THEN
+    expect(subnet.ipv4CidrBlock).toEqual('10.0.0.0/24');
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      VpcId: 'vpc-1234',
+      AvailabilityZone: 'dummy1a',
+      CidrBlock: '10.0.0.0/24',
+      Ipv4IpamPoolId: Match.absent(),
+      Ipv4NetmaskLength: Match.absent(),
+    });
+  });
+
+  test('subnet allocated from an IPAM pool renders Ipv4IpamPoolId and Ipv4NetmaskLength instead of CidrBlock', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      VpcId: 'vpc-1234',
+      AvailabilityZone: 'dummy1a',
+      CidrBlock: Match.absent(),
+      Ipv4IpamPoolId: ipamPoolId,
+      Ipv4NetmaskLength: 24,
+    });
+  });
+
+  test('subnet allocated from an IPAM pool defined in the same stack references that pool', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new CfnIPAMPool(stack, 'Pool', { addressFamily: 'ipv4', ipamScopeId: 'ipam-scope-0123456789abcdef0' });
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv4IpamPoolId: stack.resolve(pool.ipamPoolRef.ipamPoolId),
+      Ipv4NetmaskLength: 24,
+    });
+  });
+
+  test('ipv4CidrBlock of an IPAM-allocated subnet is the CidrBlock attribute of the subnet', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    const subnet = new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
+    });
+
+    // THEN
+    expect(Token.isUnresolved(subnet.ipv4CidrBlock)).toBe(true);
+    expect(stack.resolve(subnet.ipv4CidrBlock)).toEqual({
+      'Fn::GetAtt': [stack.getLogicalId(subnet.node.defaultChild as CfnSubnet), 'CidrBlock'],
+    });
+  });
+
+  test('PublicSubnet and PrivateSubnet accept ipv4IpamAllocation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const ipv4IpamAllocation = { ipamPool: CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId), netmaskLength: 24 };
+
+    // WHEN
+    const publicSubnet = new PublicSubnet(stack, 'Public', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', ipv4IpamAllocation });
+    new PrivateSubnet(stack, 'Private', { vpcId: 'vpc-1234', availabilityZone: 'dummy1a', ipv4IpamAllocation });
+    publicSubnet.addNatGateway();
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::EC2::Subnet', 2);
+    template.allResourcesProperties('AWS::EC2::Subnet', {
+      CidrBlock: Match.absent(),
+      Ipv4IpamPoolId: ipamPoolId,
+      Ipv4NetmaskLength: 24,
+    });
+    template.resourceCountIs('AWS::EC2::NatGateway', 1);
+  });
+
+  test('a token netmaskLength is passed through without validation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength: Lazy.number({ produce: () => 24 }) },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv4NetmaskLength: 24,
+    });
+  });
+
+  test('fails when both cidrBlock and ipv4IpamAllocation are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // THEN
+    expect(() => new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      cidrBlock: '10.0.0.0/24',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength: 24 },
+    })).toThrow(/Cannot specify both 'cidrBlock' and 'ipv4IpamAllocation'/);
+  });
+
+  test('fails when neither cidrBlock nor ipv4IpamAllocation is specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+    })).toThrow(/Either 'cidrBlock' or 'ipv4IpamAllocation' must be specified/);
+  });
+
+  test.each([15, 29])('fails for ipv4IpamAllocation.netmaskLength /%d outside the /16-/28 subnet range', (netmaskLength) => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // THEN
+    expect(() => new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength },
+    })).toThrow(/'ipv4IpamAllocation.netmaskLength' must be between 16 and 28/);
   });
 });
 
