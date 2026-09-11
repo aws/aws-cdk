@@ -15,6 +15,11 @@ export { GraduationReport } from './report';
  * Run graduation end-to-end. In stabilization mode this is
  * pre-flight → move → self-test; in `--cleanup` mode it deletes the alpha
  * package. A `graduation-report.md` is always written for human review.
+ *
+ * Returns an exit code: `2` when the report has unresolved manual follow-up
+ * items (including any self-test failure, each of which is recorded as a manual
+ * item), `0` when the graduation completed clean. A thrown, unrecoverable error
+ * is surfaced as exit `1` by the CLI wrapper, not here.
  */
 export function run(options: GraduationOptions, repoRoot?: string): number {
   const ctx = new GraduationContext(options, repoRoot);
@@ -26,13 +31,12 @@ export function run(options: GraduationOptions, repoRoot?: string): number {
   }
   log.info('This tool does not touch git — create a branch and review the diff yourself before committing.');
 
-  let ok = true;
   if (options.cleanup) {
     cleanup(ctx, report);
   } else {
     preflight(ctx, report);
     move(ctx, report);
-    ok = selfTest(ctx, report);
+    selfTest(ctx, report);
   }
 
   const reportPath = report.writeTo(ctx.repoRoot);
@@ -42,10 +46,6 @@ export function run(options: GraduationOptions, repoRoot?: string): number {
   if (report.hasManualItems) {
     log.warn('There are MANUAL follow-up items in the report — the graduation is not complete until they are resolved.');
     return 2;
-  }
-  if (!ok) {
-    log.error('Self-test reported failures — see the report.');
-    return 1;
   }
   log.ok('Graduation completed. Review the diff and the report before opening the PR.');
   return 0;
