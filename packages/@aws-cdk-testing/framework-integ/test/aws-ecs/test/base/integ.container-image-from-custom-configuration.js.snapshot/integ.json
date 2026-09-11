@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-ecs-integ-custom-container-image-test/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-custom-container-image"
+      ],
+      "assertionStack": "aws-ecs-integ-custom-container-image-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsintegcustomcontainerimagetestDefaultTestDeployAssert0366FBF6"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
