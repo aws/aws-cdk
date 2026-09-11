@@ -1,0 +1,85 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.8.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegClusterIO/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W2501",
+          "description": "MasterUserPassword: Property 'MasterUserPassword' should not be a hardcoded string - use a parameter with NoEcho or a dynamic reference",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-io-integ/Database/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-io-integ.template.json",
+                "logicalId": "DatabaseB269D8BB",
+                "propertyPaths": [
+                  "Properties.MasterUserPassword"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W9011",
+          "description": "PubliclyAccessible: RDS instance has PubliclyAccessible set to true - consider restricting access",
+          "suggestedFix": "Set PubliclyAccessible to false",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-io-integ/Database/writer/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-io-integ.template.json",
+                "logicalId": "Databasewriter2462CC03",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-rds-io-integ/Database/reader/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-io-integ.template.json",
+                "logicalId": "Databasereader13B43287",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
