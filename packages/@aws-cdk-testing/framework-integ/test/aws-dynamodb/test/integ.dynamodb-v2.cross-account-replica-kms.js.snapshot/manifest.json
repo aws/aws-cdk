@@ -1,0 +1,226 @@
+{
+  "version": "50.0.0",
+  "artifacts": {
+    "MultiAccountKmsSourceStackV2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiAccountKmsSourceStackV2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiAccountKmsSourceStackV2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://111111111111/eu-west-1",
+      "properties": {
+        "templateFile": "MultiAccountKmsSourceStackV2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-deploy-role-111111111111-eu-west-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-cfn-exec-role-111111111111-eu-west-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-111111111111-eu-west-1/2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiAccountKmsSourceStackV2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-eu-west-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAccountKmsSourceStackV2.assets"
+      ],
+      "metadata": {
+        "/MultiAccountKmsSourceStackV2/SourceTableV2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "partitionKey": {
+                "name": "*",
+                "type": "S"
+              },
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "SourceTableV21A662B48"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/MultiAccountKmsSourceStackV2/SourceTableV2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceTableV21A662B48"
+          }
+        ],
+        "/MultiAccountKmsSourceStackV2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MultiAccountKmsSourceStackV2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MultiAccountKmsSourceStackV2"
+    },
+    "MultiAccountKmsReplicaStackV2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiAccountKmsReplicaStackV2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiAccountKmsReplicaStackV2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://222222222222/ca-central-1",
+      "properties": {
+        "templateFile": "MultiAccountKmsReplicaStackV2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-deploy-role-222222222222-ca-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-ca-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-222222222222-ca-central-1/5dfa6e09a3f5cf4319ab561bcc01ff3ac6f849db80c3c09bdff396d0f238e66f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiAccountKmsReplicaStackV2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-lookup-role-222222222222-ca-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAccountKmsReplicaStackV2.assets"
+      ],
+      "metadata": {
+        "/MultiAccountKmsReplicaStackV2/ReplicaKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy"
+            }
+          }
+        ],
+        "/MultiAccountKmsReplicaStackV2/ReplicaKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaKey4DE8F013"
+          }
+        ],
+        "/MultiAccountKmsReplicaStackV2/ReplicaTableV2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "replicaSourceTable": "*",
+              "encryption": "*",
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": {
+              "Ref": "ReplicaTableV2C3057097"
+            }
+          }
+        ],
+        "/MultiAccountKmsReplicaStackV2/ReplicaTableV2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReplicaTableV2C3057097"
+          }
+        ],
+        "/MultiAccountKmsReplicaStackV2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MultiAccountKmsReplicaStackV2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MultiAccountKmsReplicaStackV2"
+    },
+    "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.assets"
+      ],
+      "displayName": "MultiAccountKmsReplicaIntegTestV2/DefaultTest/DeployAssert"
+    }
+  },
+  "metadata": {
+    "/MultiAccountKmsReplicaIntegTestV2": [
+      {
+        "type": "aws:cdk:analytics:construct",
+        "data": {
+          "testCases": [
+            "*",
+            "*"
+          ]
+        }
+      }
+    ]
+  }
+}
