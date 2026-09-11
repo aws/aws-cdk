@@ -684,7 +684,31 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":job-definition/*"
+           ":job-definition/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "JobDefinition24FFE3ED"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
           ]
          ]
         }
