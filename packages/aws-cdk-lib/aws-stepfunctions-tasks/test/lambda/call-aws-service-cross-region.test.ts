@@ -264,6 +264,155 @@ describe('default tests', () => {
     });
   });
 
+  test('with awsSdkCredentials of a specified role', () => {
+    // WHEN
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'getObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: sfn.JsonPath.stringAt('$.key'),
+      },
+      region: 'us-east-1',
+      iamResources: ['*'],
+      awsSdkCredentials: {
+        role: sfn.TaskRole.fromRole(role),
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
+          'Arn',
+        ],
+      },
+      End: true,
+      Parameters: {
+        parameters: {
+          'Bucket': 'my-bucket',
+          'Key.$': '$.key',
+        },
+        action: 'getObject',
+        region: 'us-east-1',
+        service: 's3',
+        assumeRoleArn: 'arn:aws:iam::123456789012:role/example-role',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:getObject',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('with awsSdkCredentials of json expression roleArn', () => {
+    // WHEN
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'getObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: sfn.JsonPath.stringAt('$.key'),
+      },
+      region: 'us-east-1',
+      iamResources: ['*'],
+      awsSdkCredentials: {
+        role: sfn.TaskRole.fromRoleArnJsonPath('$.Input.RoleArn'),
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::GetAtt': [
+          'CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F',
+          'Arn',
+        ],
+      },
+      End: true,
+      Parameters: {
+        'parameters': {
+          'Bucket': 'my-bucket',
+          'Key.$': '$.key',
+        },
+        'action': 'getObject',
+        'region': 'us-east-1',
+        'service': 's3',
+        'assumeRoleArn.$': '$.Input.RoleArn',
+      },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ClientExecutionTimeoutException',
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:getObject',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('throws with invalid integration pattern', () => {
     expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
       integrationPattern: sfn.IntegrationPattern.RUN_JOB,
@@ -293,6 +442,7 @@ describe('default tests', () => {
 
   test('integrationPattern is WAIT_FOR_TASK_TOKEN', () => {
     // WHEN
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
     const task = new tasks.CallAwsServiceCrossRegion(stack, 'StartExecution', {
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       service: 'sfn',
@@ -306,6 +456,9 @@ describe('default tests', () => {
         }),
       },
       iamResources: ['*'],
+      awsSdkCredentials: {
+        role: sfn.TaskRole.fromRole(role),
+      },
     });
     new sfn.StateMachine(stack, 'StateMachine', {
       definitionBody: sfn.DefinitionBody.fromChainable(task),
@@ -332,6 +485,7 @@ describe('default tests', () => {
           },
           region: 'us-east-1',
           service: 'sfn',
+          assumeRoleArn: 'arn:aws:iam::123456789012:role/example-role',
         },
       },
       Resource: {
