@@ -77,6 +77,7 @@ import type { IBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { stackOf } from '../../core/lib/private/core-construct-finders';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
@@ -1432,6 +1433,8 @@ export class Vpc extends VpcBase {
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
     }).value;
+
+    stackOf(scope)._silenceLiteralAzWarning();
 
     return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);
 

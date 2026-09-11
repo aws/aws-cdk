@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "64d60aa886b6101bdd038f47b1d67413ba0240de770c346c9496c6f6e4b1ee09": {
+      "displayName": "PolicyMinimalIntegTestStack Template",
+      "source": {
+        "path": "PolicyMinimalIntegTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5dbb1158": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64d60aa886b6101bdd038f47b1d67413ba0240de770c346c9496c6f6e4b1ee09.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
