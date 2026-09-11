@@ -18,7 +18,7 @@
 ## DNS Firewall
 
 With Route 53 Resolver DNS Firewall, you can filter and regulate outbound DNS traffic for your
-virtual private connections (VPCs). To do this, you create reusable collections of filtering rules
+virtual private clouds (VPCs). To do this, you create reusable collections of filtering rules
 in DNS Firewall rule groups and associate the rule groups to your VPC.
 
 DNS Firewall provides protection for outbound DNS requests from your VPCs. These requests route
@@ -36,12 +36,20 @@ Domain lists can be created using a list of strings, a text file stored in Amazo
 text file:
 
 ```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const bucket: s3.IBucket;
+
 const blockList = new route53resolver.FirewallDomainList(this, 'BlockList', {
   domains: route53resolver.FirewallDomains.fromList(['bad-domain.com', 'bot-domain.net']),
 });
 
-const s3List = new route53resolver.FirewallDomainList(this, 'S3List', {
+const s3UrlList = new route53resolver.FirewallDomainList(this, 'S3UrlList', {
   domains: route53resolver.FirewallDomains.fromS3Url('s3://bucket/prefix/object'),
+});
+
+const s3List = new route53resolver.FirewallDomainList(this, 'S3List', {
+  domains: route53resolver.FirewallDomains.fromS3(bucket, 'prefix/object'),
 });
 
 const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
@@ -49,7 +57,8 @@ const assetList = new route53resolver.FirewallDomainList(this, 'AssetList', {
 });
 ```
 
-The file must be a text file and must contain a single domain per line.
+When loading domains from Amazon S3 (`fromS3Url` or `fromS3`) or from a local file
+(`fromAsset`), the file must be a text file and must contain a single domain per line.
 
 Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing or [AWS managed domain list](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-managed-domain-lists.html):
 
@@ -99,6 +108,20 @@ ruleGroup.addRule({
   // block and override DNS response with a custom domain
   action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
 });
+
+ruleGroup.addRule({
+  priority: 30,
+  firewallDomainList: myBlockList,
+  // allow the request to go through
+  action: route53resolver.FirewallRuleAction.allow(),
+});
+
+ruleGroup.addRule({
+  priority: 40,
+  firewallDomainList: myBlockList,
+  // allow the request but send an alert to the logs
+  action: route53resolver.FirewallRuleAction.alert(),
+});
 ```
 
 Use `associate()` to associate a rule group with a VPC:
@@ -112,5 +135,24 @@ declare const myVpc: ec2.Vpc;
 ruleGroup.associate('Association', {
   priority: 101,
   vpc: myVpc,
-})
+});
+```
+
+Enable `mutationProtection` to prevent the association from being modified or removed, which
+helps guard against accidentally altering your DNS Firewall protections. Note that this also
+blocks CloudFormation from updating or deleting the association, so leave it disabled for
+associations whose lifecycle is managed by this stack:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const ruleGroup: route53resolver.FirewallRuleGroup;
+declare const myVpc: ec2.Vpc;
+
+ruleGroup.associate('Association', {
+  name: 'my-association',
+  priority: 101,
+  vpc: myVpc,
+  mutationProtection: true,
+});
 ```

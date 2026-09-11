@@ -63,7 +63,7 @@ export interface FirewallRule {
 }
 
 /**
- * A Firewall Rule
+ * The action for a Firewall Rule
  */
 export abstract class FirewallRuleAction {
   /**
