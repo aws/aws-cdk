@@ -1,13 +1,16 @@
 import * as path from 'path';
 import type { Construct } from 'constructs';
-import { readFileSync } from 'fs-extra';
+import { readFileSync, readdirSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import type { CfnStack } from '../lib';
 import {
-  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput, FileAssetPackaging, LegacyStackSynthesizer,
 } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
+import { CfnReference } from '../lib/private/cfn-reference';
+import { prepareApp } from '../lib/private/prepare-app';
+import { resolveReferences } from '../lib/private/refs';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -217,6 +220,191 @@ describe('nested-stack', () => {
     expect(child2.bundlingRequired).toBe(false);
   });
 });
+
+/**
+ * Defining nested stack assets adds references after the first round of reference
+ * resolution, so `prepareApp()` resolves references a second time. That second round
+ * only revisits nested stack resources, on the assumption that nothing else can have
+ * gained a reference. An unresolved cross-stack reference does not fail; it renders as
+ * a same-stack `{ Ref }` in the wrong template. So assert the assumption directly.
+ */
+describe('nested-stack reference resolution', () => {
+  const env = { account: '123456789012', region: 'us-east-1' };
+
+  const res = (scope: Construct, id: string, properties: any = {}) =>
+    new CfnResource(scope, id, { type: 'Test::Resource', properties });
+
+  const legacyAsset = (stack: Stack, sourceHash: string) => stack.synthesizer.addFileAsset({
+    fileName: __filename,
+    packaging: FileAssetPackaging.FILE,
+    sourceHash,
+  });
+
+  const shapes: Array<[string, () => App]> = [
+    ['four levels of nesting, legacy synthesizer', () => {
+      const app = new App();
+      const top = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
+      const l3 = new NestedStack(new NestedStack(new NestedStack(top, 'L1'), 'L2'), 'L3');
+      res(l3, 'Deepest');
+      return app;
+    }],
+
+    ['an asset at every level of nesting, legacy synthesizer', () => {
+      const app = new App();
+      let current: Stack = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
+      for (const id of ['L1', 'L2', 'L3', 'L4']) {
+        current = new NestedStack(current, id);
+        const location = legacyAsset(current, `hash-${id}`);
+        res(current, `${id}Resource`, { Bucket: location.bucketName, Key: location.objectKey });
+      }
+      return app;
+    }],
+
+    ['a deeply nested stack referencing the top-level stack', () => {
+      const app = new App();
+      const top = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
+      const topResource = res(top, 'TopResource');
+      const l3 = new NestedStack(new NestedStack(new NestedStack(top, 'L1'), 'L2'), 'L3');
+      res(l3, 'Deepest', { FromTop: topResource.ref });
+      return app;
+    }],
+
+    ['a nested stack referencing a sibling top-level stack', () => {
+      const app = new App();
+      const producer = new Stack(app, 'Producer', { env });
+      const consumer = new Stack(app, 'Consumer', { env });
+      const nested = new NestedStack(new NestedStack(consumer, 'L1'), 'L2');
+      res(nested, 'Consumes', { From: res(producer, 'Produced').ref });
+      return app;
+    }],
+
+    ['sibling nested stacks referencing each other', () => {
+      const app = new App();
+      const top = new Stack(app, 'Top', { env });
+      const produced = res(new NestedStack(top, 'Left'), 'Produced');
+      res(new NestedStack(top, 'Right'), 'Consumes', { From: produced.getAtt('Attribute').toString() });
+      return app;
+    }],
+
+    ['weak cross-stack references in both directions', () => {
+      const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+      const producer = new Stack(app, 'Producer', { env });
+      const consumer = new Stack(app, 'Consumer', { env });
+      res(new NestedStack(consumer, 'Nested'), 'Consumes', { From: res(producer, 'Produced').ref });
+      res(consumer, 'ConsumesNested', { From: res(new NestedStack(producer, 'NestedProducer'), 'Produced').ref });
+      return app;
+    }],
+
+    ['both-strength cross-stack references', () => {
+      const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+      const producer = new Stack(app, 'Producer', { env });
+      const consumer = new Stack(app, 'Consumer', { env });
+      res(new NestedStack(consumer, 'Nested'), 'Consumes', { From: res(producer, 'Produced').ref });
+      return app;
+    }],
+
+    ['a cross-region reference out of a nested stack', () => {
+      const app = new App();
+      const producer = new Stack(app, 'Producer', { env, crossRegionReferences: true });
+      const consumer = new Stack(app, 'Consumer', { env: { ...env, region: 'us-west-2' }, crossRegionReferences: true });
+      res(consumer, 'Consumes', { From: res(new NestedStack(producer, 'Nested'), 'Produced').ref });
+      return app;
+    }],
+
+    // tags are copied onto the nested stack resource while its asset is defined, i.e.
+    // after the first round of reference resolution
+    ['a nested stack tagged with a value from another stack', () => {
+      const app = new App();
+      const producer = new Stack(app, 'Producer', { env });
+      const top = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
+      const l2 = new NestedStack(new NestedStack(top, 'L1'), 'L2');
+      res(l2, 'Resource');
+      l2.tags.setTag('FromOtherStack', res(producer, 'Produced').ref);
+      return app;
+    }],
+  ];
+
+  test.each(shapes)('%s: leaves no reference unresolved', (_name, buildApp) => {
+    const app = buildApp();
+    prepareApp(app);
+
+    // an exhaustive sweep of the whole tree must now find nothing left to resolve
+    const assignValue = jest.spyOn(CfnReference.prototype, 'assignValueForStack');
+    try {
+      resolveReferences(app);
+      expect(assignValue.mock.calls.map(([stack]) => stack.node.path)).toEqual([]);
+    } finally {
+      assignValue.mockRestore();
+    }
+  });
+
+  test.each(shapes)('%s: synthesizes templates that resolve on their own', (_name, buildApp) => {
+    const app = buildApp();
+    const assembly = app.synth();
+
+    // every Ref and Fn::GetAtt must point at something its own template defines
+    const dangling = new Array<string>();
+
+    for (const file of readdirSync(assembly.directory).filter(f => f.endsWith('.template.json'))) {
+      const template = JSON.parse(readFileSync(path.join(assembly.directory, file), 'utf-8'));
+      const defined = new Set([
+        ...Object.keys(template.Resources ?? {}),
+        ...Object.keys(template.Parameters ?? {}),
+      ]);
+
+      for (const target of referencedLogicalIds(template)) {
+        // pseudo parameters (AWS::Region, AWS::NoValue, ...) are always available
+        if (!target.startsWith('AWS::') && !defined.has(target)) {
+          dangling.push(`${file}: ${target}`);
+        }
+      }
+    }
+
+    expect(dangling).toEqual([]);
+
+    // and every nested stack must be passed the parameters it declares
+    const templateOf = (stack: Stack) => stack.nested
+      ? JSON.parse(readFileSync(path.join(assembly.directory, (stack as NestedStack).templateFile), 'utf-8'))
+      : assembly.getStackByName(stack.stackName).template;
+
+    for (const nested of app.node.findAll().filter(NestedStack.isNestedStack)) {
+      const parent = nested.nestedStackParent!;
+      const stackResource = templateOf(parent).Resources[parent.resolve(nested.nestedStackResource!.logicalId)];
+      const passed = Object.keys(stackResource.Properties?.Parameters ?? {});
+      const required = Object.entries<any>(templateOf(nested).Parameters ?? {})
+        .filter(([, param]) => param.Default === undefined)
+        .map(([name]) => name);
+
+      expect(passed).toEqual(expect.arrayContaining(required));
+    }
+  });
+});
+
+/**
+ * Every logical id that a template points at with `Ref` or `Fn::GetAtt`
+ */
+function referencedLogicalIds(template: any): string[] {
+  const result = new Array<string>();
+
+  const recurse = (value: any): void => {
+    if (Array.isArray(value)) {
+      value.forEach(recurse);
+    } else if (value !== null && typeof value === 'object') {
+      for (const [key, inner] of Object.entries<any>(value)) {
+        if (key === 'Ref' && typeof inner === 'string') {
+          result.push(inner);
+        } else if (key === 'Fn::GetAtt') {
+          result.push(typeof inner === 'string' ? inner.split('.')[0] : inner[0]);
+        } else {
+          recurse(inner);
+        }
+      }
+    }
+  };
+
+  recurse(template);
+  return result;
+}
 
 class MyResource extends Resource {
   private readonly res: CfnResource;
