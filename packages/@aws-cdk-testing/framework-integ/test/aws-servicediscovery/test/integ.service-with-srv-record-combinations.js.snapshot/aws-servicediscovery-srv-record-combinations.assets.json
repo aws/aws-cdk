@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d0f80c9409be06ff00f761c80708e6ee2e1440acccb089589650d3fde9115822": {
+      "displayName": "aws-servicediscovery-srv-record-combinations Template",
+      "source": {
+        "path": "aws-servicediscovery-srv-record-combinations.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f1351f21": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d0f80c9409be06ff00f761c80708e6ee2e1440acccb089589650d3fde9115822.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

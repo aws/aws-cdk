@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
@@ -494,5 +494,177 @@ describe('instance', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::Instance', 2);
+  });
+  test('Registering IpInstance with ipv4 and port for a service using A_SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+    });
+
+    // WHEN
+    service.registerIpInstance('IpInstance', {
+      ipv4: '10.0.0.0',
+      port: 443,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: Match.objectLike({
+        AWS_INSTANCE_IPV4: '10.0.0.0',
+        AWS_INSTANCE_PORT: '443',
+      }),
+    });
+  });
+
+  test('Registering IpInstance throws when omitting port for a service using A_SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+    });
+
+    // THEN
+    expect(() => {
+      service.registerIpInstance('IpInstance', {
+        ipv4: '10.0.0.0',
+      });
+    }).toThrow(/A `port` must be specified for a service using a `SRV` record./);
+  });
+
+  test('Registering IpInstance throws when omitting ipv4 for a service using A_SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+    });
+
+    // THEN
+    expect(() => {
+      service.registerIpInstance('IpInstance', {
+        ipv6: '0:0:0:0:0:ffff:a00:0',
+        port: 443,
+      });
+    }).toThrow(/An `ipv4` must be specified for a service using a `A` record./);
+  });
+
+  test('Registering IpInstance throws when omitting ipv6 for a service using AAAA_SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.AAAA_SRV,
+    });
+
+    // THEN
+    expect(() => {
+      service.registerIpInstance('IpInstance', {
+        ipv4: '10.0.0.0',
+        port: 443,
+      });
+    }).toThrow(/An `ipv6` must be specified for a service using a `AAAA` record./);
+  });
+
+  test('Registering IpInstance with only ipv6 and port for a service using SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.SRV,
+    });
+
+    // WHEN
+    service.registerIpInstance('IpInstance', {
+      ipv6: '0:0:0:0:0:ffff:a00:0',
+      port: 443,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: Match.objectLike({
+        AWS_INSTANCE_IPV6: '0:0:0:0:0:ffff:a00:0',
+        AWS_INSTANCE_PORT: '443',
+      }),
+    });
+  });
+
+  test('Registering AliasTargetInstance for a service using A_AAAA records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+      vpc,
+    });
+
+    const service = namespace.createService('MyService', {
+      name: 'service',
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA,
+      loadBalancer: true,
+    });
+
+    // WHEN
+    service.registerLoadBalancer('Loadbalancer', alb);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Instance', {
+      InstanceAttributes: Match.objectLike({
+        AWS_ALIAS_DNS_NAME: {
+          'Fn::GetAtt': ['MyALB911A8556', 'DNSName'],
+        },
+      }),
+    });
+  });
+
+  test('Throws when registering AliasTargetInstance for a service using A_SRV records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'public',
+    });
+
+    const service = namespace.createService('MyService', {
+      dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+    });
+
+    const vpc = new ec2.Vpc(stack, 'MyVPC');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'MyALB', { vpc });
+
+    // THEN
+    expect(() => {
+      service.registerLoadBalancer('Loadbalancer', alb);
+    }).toThrow(/Service must use only `A` or `AAAA` records to register an AliasRecordTarget./);
   });
 });

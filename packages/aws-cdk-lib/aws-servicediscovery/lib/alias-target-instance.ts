@@ -2,8 +2,9 @@ import type { Construct } from 'constructs';
 import type { BaseInstanceProps } from './instance';
 import { InstanceBase } from './instance';
 import { NamespaceType } from './namespace';
+import { isAddressOnlyRecordType } from './private/utils';
 import type { IService } from './service';
-import { DnsRecordType, RoutingPolicy } from './service';
+import { RoutingPolicy } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { Names, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -61,10 +62,8 @@ export class AliasTargetInstance extends InstanceBase {
 
     // Should already be enforced when creating service, but validates if service is not instantiated with #createService
     const dnsRecordType = props.service.dnsRecordType;
-    if (dnsRecordType !== DnsRecordType.A
-      && dnsRecordType !== DnsRecordType.AAAA
-      && dnsRecordType !== DnsRecordType.A_AAAA) {
-      throw new ValidationError(lit`ServiceRecordsRegisterAliasRecord`, 'Service must use `A` or `AAAA` records to register an AliasRecordTarget.', this);
+    if (!isAddressOnlyRecordType(dnsRecordType)) {
+      throw new ValidationError(lit`ServiceRecordsRegisterAliasRecord`, 'Service must use only `A` or `AAAA` records to register an AliasRecordTarget.', this);
     }
 
     if (props.service.routingPolicy !== RoutingPolicy.WEIGHTED) {

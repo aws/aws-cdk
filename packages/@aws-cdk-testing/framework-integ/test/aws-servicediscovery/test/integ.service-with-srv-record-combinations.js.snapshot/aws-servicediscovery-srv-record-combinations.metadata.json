@@ -1,0 +1,353 @@
+{
+  "/aws-servicediscovery-srv-record-combinations/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "restrictDefaultSecurityGroup": false,
+        "maxAzs": "*",
+        "natGateways": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "name": "*",
+        "vpc": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "createService": [
+          "*",
+          {
+            "name": "*",
+            "dnsRecordType": "*",
+            "dnsTtl": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "createService": [
+          "*",
+          {
+            "name": "*",
+            "dnsRecordType": "*",
+            "dnsTtl": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "createService": [
+          "*",
+          {
+            "name": "*",
+            "dnsRecordType": "*",
+            "dnsTtl": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Namespace9B63B8C8"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/ASrvService": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "namespace": "*",
+        "name": "*",
+        "dnsRecordType": "*",
+        "dnsTtl": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/AaaaSrvService": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "namespace": "*",
+        "name": "*",
+        "dnsRecordType": "*",
+        "dnsTtl": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/AAaaaSrvService": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "namespace": "*",
+        "name": "*",
+        "dnsRecordType": "*",
+        "dnsTtl": "*"
+      }
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Exports/Output{\"Fn::GetAtt\":[\"NamespaceASrvService3CDD312D\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttNamespaceASrvService3CDD312DIdE78D7A34"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Exports/Output{\"Fn::GetAtt\":[\"NamespaceAaaaSrvService47BDCB32\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttNamespaceAaaaSrvService47BDCB32IdC9154211"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Exports/Output{\"Fn::GetAtt\":[\"NamespaceAAaaaSrvServiceBC1E7207\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttNamespaceAAaaaSrvServiceBC1E7207IdCB43661A"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1SubnetE48C5737"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2Subnet16364B91"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/ASrvService/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NamespaceASrvService3CDD312D"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/AaaaSrvService/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NamespaceAaaaSrvService47BDCB32"
+    }
+  ],
+  "/aws-servicediscovery-srv-record-combinations/Namespace/AAaaaSrvService/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NamespaceAAaaaSrvServiceBC1E7207"
+    }
+  ]
+}
