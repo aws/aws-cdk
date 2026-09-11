@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LogAlarmInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-log-alarm"
+      ],
+      "assertionStack": "LogAlarmInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogAlarmIntegDefaultTestDeployAssert332F6350"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

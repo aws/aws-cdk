@@ -1,0 +1,318 @@
+{
+ "Resources": {
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ScheduledQueryRole169FA9CC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledQueryRoleDefaultPolicy3C4AF794": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:GetQueryResults",
+        "logs:StartQuery",
+        "logs:StopQuery"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LogGroupF5B46931",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledQueryRoleDefaultPolicy3C4AF794",
+    "Roles": [
+     {
+      "Ref": "ScheduledQueryRole169FA9CC"
+     }
+    ]
+   }
+  },
+  "LogAlarm3F230FA3": {
+   "Type": "AWS::CloudWatch::LogAlarm",
+   "Properties": {
+    "AlarmName": "integ-log-alarm",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "QueryResultsToAlarm": 2,
+    "QueryResultsToEvaluate": 3,
+    "ScheduledQueryConfiguration": {
+     "AggregationExpression": "count(*)",
+     "LogGroupIdentifiers": [
+      {
+       "Ref": "LogGroupF5B46931"
+      }
+     ],
+     "QueryString": "fields @message | filter @message like /ERROR/",
+     "ScheduleConfiguration": {
+      "EndTimeOffset": 0,
+      "ScheduleExpression": "rate(5 minutes)",
+      "StartTimeOffset": 300
+     },
+     "ScheduledQueryRoleARN": {
+      "Fn::GetAtt": [
+       "ScheduledQueryRole169FA9CC",
+       "Arn"
+      ]
+     }
+    },
+    "Threshold": 5,
+    "TreatMissingData": "notBreaching"
+   }
+  },
+  "AutoRoleLogAlarmScheduledQueryRole809364A4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":scheduled-query:*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AutoRoleLogAlarmScheduledQueryRoleDefaultPolicy6D67126C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:GetQueryResults",
+        "logs:StartQuery",
+        "logs:StopQuery"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LogGroupF5B46931",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AutoRoleLogAlarmScheduledQueryRoleDefaultPolicy6D67126C",
+    "Roles": [
+     {
+      "Ref": "AutoRoleLogAlarmScheduledQueryRole809364A4"
+     }
+    ]
+   }
+  },
+  "AutoRoleLogAlarmLogLineRole65830227": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudwatch:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":alarm:*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudwatch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AutoRoleLogAlarmLogLineRoleDefaultPolicy540A6D84": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "logs:GetQueryResults",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LogGroupF5B46931",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AutoRoleLogAlarmLogLineRoleDefaultPolicy540A6D84",
+    "Roles": [
+     {
+      "Ref": "AutoRoleLogAlarmLogLineRole65830227"
+     }
+    ]
+   }
+  },
+  "AutoRoleLogAlarm537427CB": {
+   "Type": "AWS::CloudWatch::LogAlarm",
+   "Properties": {
+    "ActionLogLineCount": 5,
+    "ActionLogLineRoleArn": {
+     "Fn::GetAtt": [
+      "AutoRoleLogAlarmLogLineRole65830227",
+      "Arn"
+     ]
+    },
+    "AlarmName": "integ-log-alarm-auto-role",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "QueryResultsToAlarm": 1,
+    "QueryResultsToEvaluate": 1,
+    "ScheduledQueryConfiguration": {
+     "AggregationExpression": "count(*)",
+     "LogGroupIdentifiers": [
+      {
+       "Ref": "LogGroupF5B46931"
+      }
+     ],
+     "QueryString": "fields @message | filter @message like /WARN/",
+     "ScheduleConfiguration": {
+      "ScheduleExpression": "rate(5 minutes)",
+      "StartTimeOffset": 300
+     },
+     "ScheduledQueryRoleARN": {
+      "Fn::GetAtt": [
+       "AutoRoleLogAlarmScheduledQueryRole809364A4",
+       "Arn"
+      ]
+     }
+    },
+    "Threshold": 1
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
