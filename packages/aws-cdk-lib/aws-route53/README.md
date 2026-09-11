@@ -485,6 +485,44 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 });
 ```
 
+You can specify an `intermediateRole` that will be assumed first, before assuming the
+`delegationRole` in the parent account. If not specified, the `delegationRole` will be 
+assumed directly.
+
+```ts
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com',
+});
+
+// import the intermediate role
+const intermediateRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'intermediate-account-id',
+  resource: 'role',
+  resourceName: 'MyIntermediateRole',
+});
+const intermediateRole = iam.Role.fromRoleArn(this, 'IntermediateRole', intermediateRoleArn);
+
+// import the delegation role in the parent account
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+// create the record with an intermediate role
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
+  intermediateRole,
+});
+```
+
 ### Add Trailing Dot to Domain Names
 
 In order to continue managing existing domain names with trailing dots using CDK, you can set `addTrailingDot: false` to prevent the Construct from adding a dot at the end of the domain name.
