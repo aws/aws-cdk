@@ -57,7 +57,11 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly fifo: boolean;
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an AWS::SNS::Subscription resource. The endpoint and protocol are
+   * determined by the `ITopicSubscription` implementation (e.g., SQS queue,
+   * Lambda function, email address).
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
 
@@ -71,12 +75,18 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` IAM action on this topic's ARN.
+   * If the topic is encrypted with a customer-managed KMS key, this also
+   * grants `kms:Decrypt` and `kms:GenerateDataKey*` on the key.
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` IAM action on this topic's ARN.
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
@@ -127,7 +137,11 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an AWS::SNS::Subscription resource. The endpoint and protocol are
+   * determined by the `ITopicSubscription` implementation (e.g., SQS queue,
+   * Lambda function, email address).
    */
   public addSubscription(topicSubscription: ITopicSubscription): Subscription {
     const subscriptionConfig = topicSubscription.bind(this);
@@ -225,7 +239,11 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` IAM action on this topic's ARN.
+   * If the topic is encrypted with a customer-managed KMS key, this also
+   * grants `kms:Decrypt` and `kms:GenerateDataKey*` on the key.
    *
    * The use of this method is discouraged. Please use `grants.publish()` instead.
    *
@@ -236,7 +254,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` IAM action on this topic's ARN.
    *
    * The use of this method is discouraged. Please use `grants.subscribe()` instead.
    *
