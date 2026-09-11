@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "16abe94ba42ee8549fa1d6de64953ccc92f9f4f2349097d270fbc0fd7358a9a2": {
+      "displayName": "aws-cdk-dynamodb-vector-index Template",
+      "source": {
+        "path": "aws-cdk-dynamodb-vector-index.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-north-1-bd452d55": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-north-1",
+          "objectKey": "16abe94ba42ee8549fa1d6de64953ccc92f9f4f2349097d270fbc0fd7358a9a2.json",
+          "region": "eu-north-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-north-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

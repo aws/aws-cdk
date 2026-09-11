@@ -207,6 +207,47 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }
 
   /**
+   * Permits an IAM principal to search this table's vector indexes:
+   * SearchVectors on the index resources.
+   *
+   * SearchVectors is deliberately not included in `grantReadData`: fine-grained
+   * access control condition keys (such as `dynamodb:LeadingKeys`) have no
+   * effect on SearchVectors, so it must be granted explicitly.
+   *
+   * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
+   * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
+   *
+   * @param grantee the principal to grant access to
+   */
+  public grantVectorSearch(grantee: IGrantable): Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        lit`ServicePrincipalGrantNotSupported`,
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this,
+      );
+    }
+
+    if (this.encryptionKey) {
+      this.encryptionKey.grant(grantee, ...perms.KEY_READ_ACTIONS);
+    }
+
+    // SearchVectors targets the index resource, so the ARN is not gated on
+    // hasIndex: calling grantVectorSearch() implies the table carries a vector index.
+    return Grant.addToPrincipalOrResource({
+      grantee,
+      actions: [perms.SEARCH_VECTORS_ACTION],
+      resourceArns: [`${this.tableArn}/index/*`],
+      resourceSelfArns: ['*'],
+      resource: this,
+    });
+  }
+
+  /**
    * Permits an IAM principal all data write operations on this table.
    *
    * Actions: BatchWriteItem, PutItem, UpdateItem, DeleteItem, DescribeTable.

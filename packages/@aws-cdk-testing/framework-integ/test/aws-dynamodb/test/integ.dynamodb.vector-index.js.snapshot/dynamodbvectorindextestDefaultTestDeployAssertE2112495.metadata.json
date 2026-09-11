@@ -1,0 +1,52 @@
+{
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable72b4293a9793e8a281e5902076bb0319/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable72b4293a9793e8a281e5902076bb0319/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallDynamoDBdescribeTable72b4293a9793e8a281e5902076bb0319"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/dynamodb-vector-index-test/DefaultTest/DeployAssert/AwsApiCallDynamoDBdescribeTable72b4293a9793e8a281e5902076bb0319/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallDynamoDBdescribeTable72b4293a9793e8a281e5902076bb0319"
+    }
+  ]
+}

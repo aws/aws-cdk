@@ -11,9 +11,11 @@ import type {
   LocalSecondaryIndexProps, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
   KeySchema,
+  VectorIndexProps, SearchSchemaElement,
 } from './shared';
 import {
   Operation, BillingMode, ProjectionType, TableEncryption, StreamViewType,
+  SearchSchemaElementType,
   validateContributorInsights,
   parseKeySchema,
 } from './shared';
@@ -816,6 +818,25 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   }
 
   /**
+   * Permits an IAM principal to search this table's vector indexes:
+   * SearchVectors on the index resources.
+   *
+   * SearchVectors is deliberately not included in `grantReadData`: fine-grained
+   * access control condition keys (such as `dynamodb:LeadingKeys`) have no
+   * effect on SearchVectors, so it must be granted explicitly.
+   *
+   * Appropriate grants will also be added to the customer-managed KMS key
+   * if one was configured.
+   *
+   * [disable-awslint:no-grants]
+   *
+   * @param grantee The principal to grant access to
+   */
+  public grantVectorSearch(grantee: iam.IGrantable): iam.Grant {
+    return this.grants.vectorSearch(grantee);
+  }
+
+  /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
    *
    *
@@ -1264,6 +1285,8 @@ export class Table extends TableBase {
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
   private readonly _globalSecondaryIndexes: IArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
   private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
+  private readonly _vectorIndexes: IArrayBox<CfnTable.VectorIndexProperty>;
+  private readonly _vectorIndexNames = new Set<string>();
   private readonly _hasIndexBox: IReadableBox<boolean>;
 
   /**
@@ -1310,6 +1333,7 @@ export class Table extends TableBase {
 
     this._globalSecondaryIndexes = Box.fromArray();
     this._localSecondaryIndexes = Box.fromArray();
+    this._vectorIndexes = Box.fromArray();
     this._hasIndexBox = Box.combine(
       { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes },
       ({ gsi, lsi }) => gsi.length + lsi.length > 0,
@@ -1365,6 +1389,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: this._globalSecondaryIndexes,
       localSecondaryIndexes: this._localSecondaryIndexes,
+      vectorIndexes: this._vectorIndexes,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
@@ -1505,6 +1530,53 @@ export class Table extends TableBase {
     });
 
     this.schemas.set(props.indexName, normalizedSchema);
+  }
+
+  /**
+   * Add a vector index to the table.
+   *
+   * Vector indexes enable similarity search over an embedding attribute and can
+   * only be used with tables in `PAY_PER_REQUEST` (on-demand) billing mode. The
+   * index name must be unique across all global secondary indexes and vector
+   * indexes on the table.
+   *
+   * @param props the properties of the vector index
+   */
+  @MethodMetadata()
+  public addVectorIndex(props: VectorIndexProps) {
+    this.validateIndexName(props.indexName);
+
+    // Vector indexes are only supported in on-demand (PAY_PER_REQUEST) billing mode.
+    if (this.billingMode !== BillingMode.PAY_PER_REQUEST) {
+      throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `Vector indexes can only be used with ${BillingMode.PAY_PER_REQUEST} billing mode`, this);
+    }
+
+    if (!Token.isUnresolved(props.dimensions) && (!Number.isInteger(props.dimensions) || props.dimensions < 1 || props.dimensions > 4096)) {
+      throw new ValidationError(lit`VectorIndexInvalidDimensions`, `Dimensions for vector index ${props.indexName} must be an integer between 1 and 4096, got ${props.dimensions}`, this);
+    }
+
+    this.validateVectorSearchSchema(props);
+
+    // Search schema attributes require attribute definitions on the table. The
+    // vector attribute has an implicit type of List and is therefore not registered.
+    const searchSchema = props.searchSchema?.map((element: SearchSchemaElement) => {
+      this.registerAttribute(element.attribute);
+      return {
+        attributeName: element.attribute.name,
+        searchSchemaElementType: element.type,
+      };
+    });
+
+    this._vectorIndexes.push({
+      indexName: props.indexName,
+      vectorAttribute: { attributeName: props.vectorAttribute },
+      dimensions: props.dimensions,
+      distanceFunction: props.distanceFunction,
+      projection: this.buildIndexProjection(props),
+      searchSchema,
+    });
+
+    this._vectorIndexNames.add(props.indexName);
   }
 
   /**
@@ -1697,9 +1769,35 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.schemas.has(indexName)) {
+    if (this.schemas.has(indexName) || this._vectorIndexNames.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new ValidationError(lit`DuplicateIndexName`, `a duplicate index name, ${indexName}, is not allowed`, this);
+    }
+  }
+
+  /**
+   * Validate the search schema of a vector index: attribute names must be
+   * unique within the schema and at most one HASH element is allowed.
+   *
+   * @param props the properties of the vector index
+   */
+  private validateVectorSearchSchema(props: VectorIndexProps) {
+    if (!props.searchSchema) {
+      return;
+    }
+    if (props.searchSchema.length === 0) {
+      throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `Search schema for vector index ${props.indexName} must contain at least one element when provided; omit searchSchema instead of passing an empty array`, this);
+    }
+    const seen = new Set<string>();
+    let hashCount = 0;
+    for (const element of props.searchSchema) {
+      if (seen.has(element.attribute.name)) {
+        throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `Duplicate search schema attribute name, ${element.attribute.name}, in vector index ${props.indexName}`, this);
+      }
+      seen.add(element.attribute.name);
+      if (element.type === SearchSchemaElementType.HASH && ++hashCount > 1) {
+        throw new ValidationError(lit`VectorIndexMultipleHashElements`, `At most one HASH search schema element is allowed in vector index ${props.indexName}`, this);
+      }
     }
   }
 
