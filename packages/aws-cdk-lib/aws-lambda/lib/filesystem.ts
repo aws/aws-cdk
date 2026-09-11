@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import type * as s3 from '../../aws-s3';
 import type * as s3files from '../../aws-s3files';
 import { AccessPointReflection } from '../../aws-s3files/lib/private/access-point-reflection';
-import { Annotations, Stack } from '../../core';
+import { Stack } from '../../core';
 
 /**
  * The DirectS3Read configuration for an S3 Files filesystem mount.
@@ -14,38 +14,66 @@ import { Annotations, Stack } from '../../core';
  * Direct reads let Lambda read objects straight from the backing S3 bucket for
  * higher throughput, instead of routing every read through the file system mount.
  *
- * Use one of the predefined values or the `enabled` factory:
+ * Create one with a factory method:
  *
- * - `DirectS3Read.AUTO` — the service decides based on the function's memory.
- * - `DirectS3Read.DISABLED` — always read through the mount.
  * - `DirectS3Read.enabled(bucket)` — turn direct reads on and grant the execution
  *   role read access to `bucket`.
+ * - `DirectS3Read.enabledWithoutGrant()` — turn direct reads on but add no S3
+ *   permissions; grant read access to the execution role yourself.
+ * - `DirectS3Read.auto()` — let the service decide based on the function's memory.
+ * - `DirectS3Read.disabled()` — always read through the mount.
  */
 export class DirectS3Read {
   /**
-   * The service determines whether to use direct S3 read based on the function's
-   * memory configuration: direct reads are active for functions with 512 MB or more of memory.
-   */
-  public static readonly AUTO = new DirectS3Read('AUTO');
-
-  /**
-   * Direct S3 read is disabled; all reads go through the S3 Files mount.
-   */
-  public static readonly DISABLED = new DirectS3Read('DISABLED');
-
-  /**
-   * Enable direct S3 reads, bypassing the mount for higher throughput.
+   * Enable direct S3 reads, bypassing the mount for higher throughput, and grant the
+   * function's execution role `s3:GetObject` and `s3:GetObjectVersion` on the bucket's
+   * objects so that direct reads can succeed.
    *
-   * When `bucket` is provided, the function's execution role is granted
-   * `s3:GetObject` and `s3:GetObjectVersion` on the bucket's objects so that direct
-   * reads can succeed. If `bucket` is omitted, no S3 read permissions are added and a
-   * warning is emitted; grant them to the execution role yourself (and `kms:Decrypt`
-   * if the bucket is encrypted with a customer-managed key).
+   * Unlike `auto()`, this enables direct reads regardless of the function's memory size,
+   * including functions with less than 512 MB of memory.
+   *
+   * If the bucket is encrypted with a customer-managed KMS key, also grant the execution
+   * role `kms:Decrypt` on that key yourself.
    *
    * @param bucket the S3 bucket backing the S3 Files file system
    */
-  public static enabled(bucket?: s3.IBucket): DirectS3Read {
+  public static enabled(bucket: s3.IBucket): DirectS3Read {
     return new DirectS3Read('ENABLED', bucket);
+  }
+
+  /**
+   * Enable direct S3 reads, bypassing the mount for higher throughput, without adding any
+   * S3 read permissions.
+   *
+   * Like `enabled()`, this enables direct reads regardless of the function's memory size,
+   * including functions with less than 512 MB of memory.
+   *
+   * Use this when the execution role already has `s3:GetObject`/`s3:GetObjectVersion` on the
+   * backing bucket (for example through a managed policy or a bucket policy). You are
+   * responsible for granting those permissions; without them, direct reads silently fall
+   * back to reading through the file system.
+   */
+  public static enabledWithoutGrant(): DirectS3Read {
+    return new DirectS3Read('ENABLED');
+  }
+
+  /**
+   * Let the service decide whether to use direct S3 read based on the function's memory
+   * configuration: direct reads are active for functions with 512 MB or more of memory.
+   *
+   * No S3 read permissions are added; the execution role must already hold them for a
+   * service-initiated direct read to succeed, otherwise reads fall back to the mount.
+   */
+  public static auto(): DirectS3Read {
+    return new DirectS3Read('AUTO');
+  }
+
+  /**
+   * Disable direct S3 read; all reads are routed through the S3 Files file system's
+   * high-performance storage.
+   */
+  public static disabled(): DirectS3Read {
+    return new DirectS3Read('DISABLED');
   }
 
   /**
@@ -74,8 +102,9 @@ export interface S3FilesOptions {
   /**
    * The DirectS3Read configuration for the S3 Files filesystem.
    *
-   * Use `DirectS3Read.AUTO`, `DirectS3Read.DISABLED`, or `DirectS3Read.enabled(bucket)`
-   * to control whether Lambda reads objects directly from S3 instead of through the mount.
+   * Use `DirectS3Read.enabled(bucket)`, `DirectS3Read.enabledWithoutGrant()`,
+   * `DirectS3Read.auto()`, or `DirectS3Read.disabled()` to control whether Lambda reads
+   * objects directly from S3 instead of through the mount.
    *
    * @default - DirectS3Read is not set. The service default is AUTO.
    */
@@ -188,22 +217,14 @@ export class FileSystem {
     // Direct reads bypass the mount and read objects straight from the backing bucket,
     // so they require s3:GetObject/s3:GetObjectVersion on the execution role. Grant them
     // when the caller enabled direct reads with a bucket (`DirectS3Read.enabled(bucket)`).
-    // AUTO is service-decided at runtime, so we don't grant for it.
+    // `enabledWithoutGrant()` and `auto()` add nothing: the former opts out of the grant
+    // explicitly, the latter is service-decided at runtime.
     const directS3Read = options?.directS3Read;
-    if (directS3Read?._mode === 'ENABLED') {
-      if (directS3Read._bucket) {
-        policies.push(new iam.PolicyStatement({
-          actions: ['s3:GetObject', 's3:GetObjectVersion'],
-          resources: [directS3Read._bucket.arnForObjects('*')],
-        }));
-      } else {
-        Annotations.of(ap).addWarningV2(
-          '@aws-cdk/aws-lambda:s3FilesDirectReadMissingBucket',
-          'DirectS3Read is enabled but no bucket was provided to \'DirectS3Read.enabled()\', so no S3 read permissions were added. ' +
-          'Grant the function\'s execution role s3:GetObject and s3:GetObjectVersion on the backing bucket ' +
-          '(and kms:Decrypt if it is encrypted with a customer-managed key), or pass the bucket to \'DirectS3Read.enabled(bucket)\'.',
-        );
-      }
+    if (directS3Read?._mode === 'ENABLED' && directS3Read._bucket) {
+      policies.push(new iam.PolicyStatement({
+        actions: ['s3:GetObject', 's3:GetObjectVersion'],
+        resources: [directS3Read._bucket.arnForObjects('*')],
+      }));
     }
 
     return new FileSystem({

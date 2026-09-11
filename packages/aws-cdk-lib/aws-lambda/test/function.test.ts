@@ -3554,8 +3554,8 @@ describe('function', () => {
     }
 
     test.each([
-      ['AUTO', lambda.DirectS3Read.AUTO],
-      ['DISABLED', lambda.DirectS3Read.DISABLED],
+      ['AUTO', lambda.DirectS3Read.auto()],
+      ['DISABLED', lambda.DirectS3Read.disabled()],
     ])('DirectS3Read.%s renders S3FilesConfig in template', (expected, mode) => {
       const { stack } = createS3FilesStack(() => ({ directS3Read: mode }));
 
@@ -3613,9 +3613,9 @@ describe('function', () => {
       });
     });
 
-    test('DirectS3Read.enabled() without a bucket adds no S3 read permissions and warns', () => {
+    test('DirectS3Read.enabledWithoutGrant() renders ENABLED and adds no S3 read permissions', () => {
       const { stack } = createS3FilesStack(() => ({
-        directS3Read: lambda.DirectS3Read.enabled(),
+        directS3Read: lambda.DirectS3Read.enabledWithoutGrant(),
       }));
 
       // The S3FilesConfig is still rendered ...
@@ -3634,15 +3634,11 @@ describe('function', () => {
           },
         },
       });
-      Annotations.fromStack(stack).hasWarning(
-        '*',
-        Match.stringLikeRegexp('DirectS3Read is enabled but no bucket was provided'),
-      );
     });
 
-    test('DirectS3Read.AUTO does not grant S3 read permissions', () => {
+    test('DirectS3Read.auto() does not grant S3 read permissions', () => {
       const { stack } = createS3FilesStack(() => ({
-        directS3Read: lambda.DirectS3Read.AUTO,
+        directS3Read: lambda.DirectS3Read.auto(),
       }));
 
       Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
