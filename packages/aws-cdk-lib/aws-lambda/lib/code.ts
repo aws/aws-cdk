@@ -409,7 +409,8 @@ export class S3CodeV2 extends Code {
       sourceArn = stack.formatArn({
         service: 'lambda',
         resource: 'layer',
-        resourceName: usesWildcardSourceArn ? '*' : `${layerName}:*`,
+        // PublishLayerVersion uses the unversioned layer ARN as aws:SourceArn.
+        resourceName: usesWildcardSourceArn ? '*' : layerName,
         arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       });
     } else {

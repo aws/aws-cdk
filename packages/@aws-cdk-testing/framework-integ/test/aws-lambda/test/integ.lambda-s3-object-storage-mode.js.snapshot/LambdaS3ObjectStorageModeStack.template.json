@@ -114,7 +114,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":layer:lambda-s3-reference-layer:*"
+            ":layer:lambda-s3-reference-layer"
            ]
           ]
          }
@@ -307,7 +307,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":layer:lambda-s3-reference-layer:*"
+            ":layer:lambda-s3-reference-layer"
            ]
           ]
          }

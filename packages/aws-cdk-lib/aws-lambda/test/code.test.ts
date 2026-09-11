@@ -815,7 +815,7 @@ describe('code', () => {
       );
     });
 
-    test('fromBucketV2 grants a named layer read access to the referenced object', () => {
+    test('fromBucketV2 grants a named layer read access using its unversioned publish ARN', () => {
       const stack = new cdk.Stack(undefined, undefined, {
         env: {
           account: '123456789012',
@@ -841,7 +841,7 @@ describe('code', () => {
                   'aws:SourceArn': stack.resolve(stack.formatArn({
                     service: 'lambda',
                     resource: 'layer',
-                    resourceName: 'my-layer:*',
+                    resourceName: 'my-layer',
                     arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
                   })),
                 },
