@@ -1,0 +1,56 @@
+{
+  "/LogGroupResourcePolicyArnPrincipalInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:62:34)",
+        "new IntegTestCase (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
+        "new IntegTest (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
+        "<anonymous> (/Users/rishavacharya/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-resource-policy-arn-principal.ts:22:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/LogGroupResourcePolicyArnPrincipalInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
+      ]
+    }
+  ],
+  "/LogGroupResourcePolicyArnPrincipalInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "visit (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/rishavacharya/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
+      ]
+    }
+  ]
+}
