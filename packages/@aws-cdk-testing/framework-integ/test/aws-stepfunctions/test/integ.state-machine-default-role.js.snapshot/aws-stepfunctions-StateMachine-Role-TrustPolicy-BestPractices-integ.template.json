@@ -64,6 +64,16 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "ExportsOutputRefTestingDefaultRoleStateMachineC09073859D88708C": {
+   "Value": {
+    "Ref": "TestingDefaultRoleStateMachineC0907385"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ:ExportsOutputRefTestingDefaultRoleStateMachineC09073859D88708C"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

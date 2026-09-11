@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 /*
@@ -21,12 +21,17 @@ const stack = new cdk.Stack(app,
   'aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ',
 );
 
-new sfn.StateMachine(stack,
-  'Testing-Default-Role-StateMachine', {
-    definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Succeed(stack, 'Finished')),
-  },
-);
+const sm = new sfn.StateMachine(stack, 'Testing-Default-Role-StateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Succeed(stack, 'Finished')),
+});
 
-new IntegTest(app, 'StateMachineDefaultRoleTrust', { testCases: [stack] });
+const test = new IntegTest(app, 'StateMachineDefaultRoleTrust', { testCases: [stack] });
+
+const start = test.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: sm.stateMachineArn,
+});
+test.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: start.getAttString('executionArn'),
+}).expect(ExpectedResult.objectLike({ status: 'SUCCEEDED' }));
 
 app.synth();
