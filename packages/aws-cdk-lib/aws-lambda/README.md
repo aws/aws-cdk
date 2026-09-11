@@ -1387,7 +1387,7 @@ The legacy helper functions for the `layerVersion` prop are:
 * `AdotLayerVersion.fromJavaAutoInstrumentationSdkLayerVersion`
 * `AdotLayerVersion.fromGenericSdkLayerVersion`
 
-Each helper function expects a version value from a corresponding enum-like class as below:
+Each helper function expects a version value from a corresponding enum-like class as below (latest versions as of ADOT Collector v0.48.0):
 
 * `AdotLambdaLayerJavaScriptSdkVersion`
 * `AdotLambdaLayerPythonSdkVersion`
