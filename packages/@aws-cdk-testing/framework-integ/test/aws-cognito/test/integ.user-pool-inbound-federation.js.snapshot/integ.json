@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "InboundFederationIntegTest/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-inbound-federation"
+      ],
+      "assertionStack": "InboundFederationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InboundFederationIntegTestDefaultTestDeployAssertFA6BCD9B"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
