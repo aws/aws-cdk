@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.256"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@0.1.208":
-  version "0.1.208"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.208.tgz#a35767c8b556f8b0f51bd3f4aedc5e9f5e2f17f7"
-  integrity sha512-59zkwRZmWMkmkkpkc6fNpeJtDzxeX7O9bK5+tPYPOEUXHaXjC2z3j9nuOpFDqRT9e1lTBwDzjFruHJDe/3sKJw==
+"@aws-cdk/aws-service-spec@0.1.209":
+  version "0.1.209"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.209.tgz#c6972fa840d3f21d2a2ca0db79abdd5ef49036f3"
+  integrity sha512-l0l0ldpVNqBgW8lbSl+aAzxNuuocxGSAFcxxbEJ7eBOrkwj8OnyzFIon+c9pTh+pMlv78Qh8K76GmZTJR5JWfQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.274"
+    "@aws-cdk/service-spec-types" "^0.0.275"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.2.6":
@@ -134,12 +134,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v36/-/lambda-layer-kubectl-v36-2.0.0.tgz#7c84dc3cedad93003e161c0ef6add78cf04c8700"
   integrity sha512-GAzsW4F7pDVq6L233cA7Qvp5hmXfREKfyVcYi9oq1Yvx2aU9jS8mYDRHT+GEX+B79qeFod76fzVgvchsPYvP1Q==
 
-"@aws-cdk/service-spec-importers@0.0.138":
-  version "0.0.138"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.138.tgz#f13ce6bba350899df9033a6abe967f2987ea5a5d"
-  integrity sha512-YnOHIStezqhRubQog3QZY/ddSN9BAbIfP/A4z5C8/nQloLAwXEatkT/4c3z3b8ozs5mNjuvhkfAu5btrmabs7Q==
+"@aws-cdk/service-spec-importers@0.0.139":
+  version "0.0.139"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.139.tgz#8b0fabbcf3043ebe6808857f3e26e2eba52c14d9"
+  integrity sha512-Czt633nc+gUIBR/pIuc5CqoL/asI9BErzf6Z2urb+AD1cL9+jv1IasSB61+FyrR5nx1SVY7+S9i5kkI0L38Cyw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.272"
+    "@aws-cdk/service-spec-types" "^0.0.275"
     "@cdklabs/tskb" "^0.0.4"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -150,10 +150,10 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@0.0.274", "@aws-cdk/service-spec-types@^0.0.274":
-  version "0.0.274"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.274.tgz#e9f8bf0d5dc84b73b4d1f3fc297a6e0f87ec971e"
-  integrity sha512-D6w1h00QgN8a4cJ5cofuh4pu2ccK3DqHUDCkU6FgMUObRYlgBik/Ps4alt6Q7Jx3g0LEwiZJsDfPAEdtlFmQig==
+"@aws-cdk/service-spec-types@0.0.275", "@aws-cdk/service-spec-types@^0.0.275":
+  version "0.0.275"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.275.tgz#8d7fae7287946e2fc6b84f5e6cc7f42e6f9191cb"
+  integrity sha512-c0ac0ZDgKoW34Au+BK6JOsKH3O90Z9zsoQpH6IdJe87JtMvckKlysK4aMYDWH+NraVXnksoEooG+te5tbFS2jQ==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -161,13 +161,6 @@
   version "0.0.256"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.256.tgz#c787460597647332ab5c50647ab420f213130cb9"
   integrity sha512-oZz7qWObPzAhnOOxr0fMkM55AT9U9YhUr/PiAnBFjGEuONJnXamjuTaHvsjLfvCVTOiQY3HWSvR+Qo0+Ad3xzw==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.272":
-  version "0.0.272"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.272.tgz#3b21e72a7124361eb56e3f17df4fea01347eee18"
-  integrity sha512-iMgPauIuSbFDcbf7o1NBQalbS63h8dpFz+h/WtwaWOGNItE3WHRjmnlujRQVClpwAsvm2+UpzHO6zb+ry5skfA==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -2354,10 +2347,10 @@
     "@smithy/types" "^4.16.0"
     tslib "^2.6.2"
 
-"@aws/cloudformation-validate@1.8.0-beta":
-  version "1.8.0-beta"
-  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.8.0-beta.tgz#edc0708bf5c9672d2bb63c6d24cae6a6410e6af0"
-  integrity sha512-E7KrKKz2wzpaaHuSxP2vBkk4AUpTS57/GLAV1soTqViJLGj8qBSNjy5SMhkaBeiFjVOd0oQTwO9cytDugutuVQ==
+"@aws/cloudformation-validate@1.9.0-beta":
+  version "1.9.0-beta"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.9.0-beta.tgz#5442b4821cbdf421d372111732a9832116c6da98"
+  integrity sha512-y7mFIu3ne6KuygYT8D95+M6dW7P0PeNqqcUZofYB2aAMaz9mIcqHoeQRY8HeM9GOjGCVSwp+MVPPLnuC5bcnyA==
 
 "@aws/lambda-invoke-store@^0.3.0":
   version "0.3.0"
