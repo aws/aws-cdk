@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterhybridnodesadjacentcidrsintegDefaultTestDeployAssertD759BB8D"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
