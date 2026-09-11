@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "OpenSearchDeploymentStrategyInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-deployment-strategy"
+      ],
+      "assertionStack": "OpenSearchDeploymentStrategyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchDeploymentStrategyIntegDefaultTestDeployAssertC6F2F628"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
