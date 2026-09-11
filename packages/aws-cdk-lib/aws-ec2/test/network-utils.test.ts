@@ -90,6 +90,35 @@ describe('network utils', () => {
       const netmask = CidrBlock.calculateNetmask(27);
       expect(netmask).toEqual('255.255.255.224');
     });
+    test.each([
+      ['10.0.0.0', 'no mask at all'],
+      ['10.0.0.0/', 'empty mask'],
+      ['10.0.0.0/abc', 'non-numeric mask'],
+    ])('fails with a mask-specific error for %s (%s)', (cidr: string) => {
+      // These already threw, but the unvalidated mask flowed into the address
+      // arithmetic first, so the error named an address the caller never wrote:
+      // 'NaN.NaN.NaN.NaN is not a valid IP Address'.
+      expect(() => new CidrBlock(cidr)).toThrow(/invalid CIDR mask/);
+      expect(() => new CidrBlock(cidr)).not.toThrow(/NaN/);
+    });
+    test.each([
+      ['10.0.0.0/33', 'mask above 32'],
+      ['10.0.0.0/-1', 'negative mask'],
+    ])('fails instead of building a nonsensical block for %s (%s)', (cidr: string) => {
+      // Previously silent: '10.0.0.0/33' produced '9.255.255.255/33', which
+      // CloudFormation rejects at deploy time.
+      expect(() => new CidrBlock(cidr)).toThrow(/invalid CIDR mask/);
+    });
+    test('accepts the full range of valid masks', () => {
+      expect(new CidrBlock('0.0.0.0/0').cidr).toEqual('0.0.0.0/0');
+      expect(new CidrBlock('10.0.0.0/16').cidr).toEqual('10.0.0.0/16');
+      expect(new CidrBlock('10.0.0.1/32').cidr).toEqual('10.0.0.1/32');
+    });
+    test('keeps resolving masks that already resolved', () => {
+      // parseInt semantics are preserved so no app that synthesizes today breaks
+      expect(new CidrBlock('10.0.0.0/16abc').cidr).toEqual('10.0.0.0/16');
+      expect(new CidrBlock('10.0.0.0/16.5').cidr).toEqual('10.0.0.0/16');
+    });
   });
   describe('NetworkBuilder', () => {
     test('allows you to carve subnets our of CIDR network', () => {
