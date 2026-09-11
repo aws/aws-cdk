@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "9b0251342ce12f30650bbf24424c57aba9857cc654420b1deff1533588801ceb": {
+      "displayName": "Prod-Stack2 Template",
+      "source": {
+        "path": "PipelineStackDeployGateProdStack2EF240799.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4ddded02": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9b0251342ce12f30650bbf24424c57aba9857cc654420b1deff1533588801ceb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
