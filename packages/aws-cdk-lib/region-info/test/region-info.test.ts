@@ -67,3 +67,16 @@ test.each([
 ])('%p should be opt-in: %p', (region, expected) => {
   expect(RegionInfo.get(region).isOptInRegion).toEqual(expected);
 });
+
+test.each([
+  // Two regions added in #35371 took the hosted zone ID of the row above them. Pinned
+  // here alongside the regions they were copied from, so the pairs cannot silently
+  // collide again. Values from
+  // https://docs.aws.amazon.com/general/latest/gr/elasticbeanstalk.html
+  ['ap-southeast-7', 'Z08384933QM5LSQCVMNZM'],
+  ['ap-northeast-1', 'Z1R25G3KIG2GBW'],
+  ['eu-south-2', 'Z0243492AO4B9S3KI68O'],
+  ['eu-north-1', 'Z23GO28BZ5AETM'],
+])('%p has its own Elastic Beanstalk hosted zone ID: %p', (region, expected) => {
+  expect(RegionInfo.get(region).ebsEnvEndpointHostedZoneId).toEqual(expected);
+});
