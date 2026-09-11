@@ -60,6 +60,7 @@ describe('serverless cache', () => {
         securityGroups: [securityGroup],
         userGroup,
         backup: {
+          backupTime: '09:00',
           backupRetentionLimit: 2,
           backupNameBeforeDeletion: 'last-snapshot-name',
         },
@@ -83,6 +84,7 @@ describe('serverless cache', () => {
         },
         FinalSnapshotName: 'last-snapshot-name',
         ServerlessCacheName: 'serverelessCache',
+        DailySnapshotTime: '09:00',
         SnapshotRetentionLimit: 2,
         UserGroupId: 'usergroup',
         CacheUsageLimits: {
@@ -96,6 +98,22 @@ describe('serverless cache', () => {
           },
         },
       });
+    });
+
+    test('validate backup time format', () => {
+      expect(() => new ServerlessCache(stack, 'cache', {
+        vpc,
+        backup: {
+          backupTime: '9:00',
+        },
+      })).toThrow('Backup time must be in HH:MM UTC format.');
+
+      expect(() => new ServerlessCache(stack, 'cache2', {
+        vpc,
+        backup: {
+          backupTime: '24:00',
+        },
+      })).toThrow('Backup time must be in HH:MM UTC format.');
     });
 
     test.each([
@@ -477,4 +495,3 @@ describe('serverless cache', () => {
     });
   });
 });
-
