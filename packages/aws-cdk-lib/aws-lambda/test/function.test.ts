@@ -4472,7 +4472,7 @@ test('throws if ephemeral storage size is out of bound', () => {
     handler: 'bar',
     runtime: lambda.Runtime.NODEJS_LATEST,
     ephemeralStorageSize: Size.mebibytes(511),
-  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
+  })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB, received 511 MiB\./);
 });
 
 test('set ephemeral storage to desired size', () => {
