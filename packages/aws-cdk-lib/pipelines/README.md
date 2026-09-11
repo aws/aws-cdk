@@ -771,6 +771,25 @@ new pipelines.CodeBuildStep('Synth', {
 });
 ```
 
+#### Assuming a role before running commands
+
+If your `commands` need to act on a different account (for example, to invoke a
+Lambda function or seed test data in a deployed environment), pass `assumeRole`.
+CDK Pipelines grants the CodeBuild project's role `sts:AssumeRole` on the given
+role, and configures the AWS CLI to use it for the duration of the build:
+
+```ts
+declare const crossAccountRole: iam.IRole;
+new pipelines.CodeBuildStep('IntegTest', {
+  commands: ['./run-integ-tests.sh'],
+  assumeRole: crossAccountRole,
+});
+```
+
+`crossAccountRole` must already trust the CodeBuild project's role (or an ancestor
+of it) in its own trust policy; this property only grants the `sts:AssumeRole`
+permission, it does not create or modify the target role.
+
 You can also configure defaults for _all_ CodeBuild projects by passing `codeBuildDefaults`,
 or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
 `assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
