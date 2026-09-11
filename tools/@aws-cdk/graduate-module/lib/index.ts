@@ -16,8 +16,8 @@ export { GraduationReport } from './report';
  * pre-flight → move → self-test; in `--cleanup` mode it deletes the alpha
  * package. A `graduation-report.md` is always written for human review.
  */
-export function run(options: GraduationOptions): number {
-  const ctx = new GraduationContext(options);
+export function run(options: GraduationOptions, repoRoot?: string): number {
+  const ctx = new GraduationContext(options, repoRoot);
   const report = new GraduationReport(ctx.service);
 
   log.phase(`Graduating ${ctx.alphaPackageName} → aws-cdk-lib/${ctx.service}`);
