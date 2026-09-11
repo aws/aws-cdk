@@ -24,6 +24,19 @@ import {
 } from '../lib';
 
 describe('table', () => {
+  test('tableId and tableStreamArn are exposed as (token) strings on an owned table', () => {
+    const stack = new Stack(undefined, 'Stack');
+
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    expect(typeof table.tableId).toBe('string');
+    expect(stack.resolve(table.tableId)['Fn::GetAtt'][1]).toEqual('TableId');
+    expect(typeof table.tableStreamArn).toBe('string');
+    expect(stack.resolve(table.tableStreamArn)['Fn::GetAtt'][1]).toEqual('StreamArn');
+  });
+
   test('with default properties', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
