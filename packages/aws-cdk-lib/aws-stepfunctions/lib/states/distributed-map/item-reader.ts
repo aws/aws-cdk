@@ -5,6 +5,24 @@ import { lit } from '../../../../core/lib/private/literal-string';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';
 
+const KMS_READ_ACTIONS = [
+  'kms:Decrypt',
+  'kms:DescribeKey',
+];
+
+function buildKmsReadPolicyStatements(bucket?: IBucket): iam.PolicyStatement[] {
+  if (!bucket?.encryptionKey) {
+    return [];
+  }
+
+  return [
+    new iam.PolicyStatement({
+      actions: KMS_READ_ACTIONS,
+      resources: [bucket.encryptionKey.keyArn],
+    }),
+  ];
+}
+
 /**
  * Base interface for Item Reader configurations
  */
@@ -304,6 +322,7 @@ abstract class S3FileItemReader implements IItemReader {
         ],
         resources: [resource],
       }),
+      ...buildKmsReadPolicyStatements(this._bucket),
     ];
   }
 

@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "268d7d525c3e7d98fab9020353ceb93644559af1f9c8b607bf876249a1c349c7": {
+      "displayName": "aws-stepfunctions-distributed-map-kms Template",
+      "source": {
+        "path": "aws-stepfunctions-distributed-map-kms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b188dd4c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "268d7d525c3e7d98fab9020353ceb93644559af1f9c8b607bf876249a1c349c7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
