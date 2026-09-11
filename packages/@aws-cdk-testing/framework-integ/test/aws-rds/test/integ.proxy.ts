@@ -24,7 +24,7 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   vpc,
 });
 
-new rds.DatabaseProxy(stack, 'dbProxy', {
+const proxy = new rds.DatabaseProxy(stack, 'dbProxy', {
   borrowTimeout: cdk.Duration.seconds(30),
   maxConnectionsPercent: 50,
   secrets: [dbInstance.secret!],
@@ -32,6 +32,8 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   vpc,
   clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256,
 });
+
+proxy.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({

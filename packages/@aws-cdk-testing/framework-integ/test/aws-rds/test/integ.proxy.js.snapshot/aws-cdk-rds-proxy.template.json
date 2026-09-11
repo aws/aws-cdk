@@ -781,6 +781,34 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "dbProxyProxySecurityGroupfrom00000IndirectPort7AF515D8": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": "0.0.0.0/0",
+    "Description": "Open to the world",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbInstance4076B1EC",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbProxyProxySecurityGroup16E727A7",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbInstance4076B1EC",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "dbProxy3B89EAF2": {
    "Type": "AWS::RDS::DBProxy",
    "Properties": {
