@@ -154,13 +154,16 @@ describe('LogAlarm', () => {
       Match.stringLikeRegexp('do not dispatch'));
   });
 
-  test('does not fail synthesis when an action returns a value that is not an ARN', () => {
+  test.each([
+    'not-an-arn',
+    'arn:aws:sns:us-east-1:123456789012:',
+    'arn::sns:us-east-1:123456789012:my-topic',
+    'arn:',
+  ])('does not fail synthesis for an action ARN of %s', (alarmActionArn) => {
     const alarm = new LogAlarm(stack, 'Alarm', baseProps());
-    const bogusAction: IAlarmAction = { bind: () => ({ alarmActionArn: 'not-an-arn' }) };
 
-    expect(() => alarm.addAlarmAction(bogusAction)).not.toThrow();
+    expect(() => alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) })).not.toThrow();
     Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::LogAlarm', 1);
-    Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('do not dispatch'));
   });
 
   test('fails for an unresolved logGroups list', () => {

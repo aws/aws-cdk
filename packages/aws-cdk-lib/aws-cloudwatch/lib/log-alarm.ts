@@ -23,16 +23,6 @@ import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interface
 const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm', 'cloudwatch']);
 
 /**
- * Whether a literal string carries enough ARN structure for `splitArn` to parse it.
- *
- * `IAlarmAction` implementations may return any string, and `splitArn` throws on anything
- * that is not a well-formed ARN. A diagnostic must never be able to fail synthesis.
- */
-function isParseableArn(arn: string): boolean {
-  return arn.startsWith('arn:') && arn.split(':').length >= 6;
-}
-
-/**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
  */
 export interface ScheduledQuerySchedule {
@@ -498,11 +488,9 @@ export class LogAlarm extends AlarmBase {
 
   private bindAndWarn(action: IAlarmAction): string {
     const arn = action.bind(this, this).alarmActionArn;
-    // Action ARNs are frequently unresolved tokens (derived from other constructs), which
-    // cannot be inspected at synth time; this is a best-effort check on literal ARNs only.
-    if (!Token.isUnresolved(arn) && isParseableArn(arn)) {
-      const service = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME).service;
-      if (!SUPPORTED_ACTION_SERVICES.has(service)) {
+    if (!Token.isUnresolved(arn) && arn.startsWith('arn:')) {
+      const service = arn.split(':')[2] ?? '';
+      if (service !== '' && !SUPPORTED_ACTION_SERVICES.has(service)) {
         Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
           `log alarms do not dispatch ${service} actions, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
       }
