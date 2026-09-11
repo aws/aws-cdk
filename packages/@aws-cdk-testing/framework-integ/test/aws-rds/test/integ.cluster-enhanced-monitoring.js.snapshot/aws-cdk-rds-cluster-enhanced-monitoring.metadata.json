@@ -1,4 +1,20 @@
 {
+  "/aws-cdk-rds-cluster-enhanced-monitoring": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/jaheljo/IdeaProjects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enhanced-monitoring.js:44:13)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-rds-cluster-enhanced-monitoring/VPC": [
     {
       "type": "aws:cdk:analytics:construct",

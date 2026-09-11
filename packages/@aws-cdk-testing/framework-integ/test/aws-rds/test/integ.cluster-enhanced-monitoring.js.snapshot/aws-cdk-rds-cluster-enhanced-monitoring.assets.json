@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
-    "cd1e624e4fbb77a3e2779b3063f5107d5bd5362c53ae85ab451bbbc49d2a21c1": {
+    "b3979342463ceebdae67ef9d5a1ae620d60cc63d4c98e93b25fe1b67e3d05606": {
       "displayName": "aws-cdk-rds-cluster-enhanced-monitoring Template",
       "source": {
         "path": "aws-cdk-rds-cluster-enhanced-monitoring.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d600f64e": {
+        "current_account-current_region-68f491e5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cd1e624e4fbb77a3e2779b3063f5107d5bd5362c53ae85ab451bbbc49d2a21c1.json",
+          "objectKey": "b3979342463ceebdae67ef9d5a1ae620d60cc63d4c98e93b25fe1b67e3d05606.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
