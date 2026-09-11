@@ -1,0 +1,155 @@
+{
+  "/canary-environment-variables-encryption/EnvKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "test": "*",
+        "schedule": "*",
+        "runtime": "*",
+        "provisionedResourceCleanup": true,
+        "environmentVariables": "*"
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/canary-environment-variables-encryption/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/canary-environment-variables-encryption/EnvKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EnvKeyCD7B3BF3"
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS_MANAGED",
+        "enforceSSL": true,
+        "lifecycleRules": "*"
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*",
+        "managedPolicies": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Canary11957FE2"
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucket4A60D32B"
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryServiceRoleD132250E"
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucketPolicy63096C41"
+    }
+  ],
+  "/canary-environment-variables-encryption/Canary/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryServiceRoleDefaultPolicy447CDD49"
+    }
+  ]
+}

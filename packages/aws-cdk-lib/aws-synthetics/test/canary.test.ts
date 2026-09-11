@@ -1193,6 +1193,77 @@ describe('artifact encryption test', () => {
   });
 });
 
+describe('environment variables encryption key', () => {
+  test('is not set on the canary by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: Match.absent(),
+    });
+  });
+
+  test('sets KmsKeyArn from the provided key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'EnvKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentVariablesEncryptionKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: stack.resolve(key.keyArn),
+    });
+  });
+
+  test('grants the execution role decrypt permissions on the key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'EnvKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentVariablesEncryptionKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: stack.resolve(key.keyArn),
+          }),
+        ]),
+      },
+    });
+  });
+});
+
 test('can configure resourcesToReplicateTags', () => {
   // GIVEN
   const stack = new Stack();
