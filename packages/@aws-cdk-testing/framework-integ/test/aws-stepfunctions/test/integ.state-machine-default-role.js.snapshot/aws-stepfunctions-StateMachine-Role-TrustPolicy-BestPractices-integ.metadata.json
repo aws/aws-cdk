@@ -1,0 +1,49 @@
+{
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Testing-Default-Role-StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Testing-Default-Role-StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Testing-Default-Role-StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestingDefaultRoleStateMachineC0907385"
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Exports/Output{\"Ref\":\"TestingDefaultRoleStateMachineC0907385\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTestingDefaultRoleStateMachineC09073859D88708C"
+    }
+  ],
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Testing-Default-Role-StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestingDefaultRoleStateMachineRole9C0B111D"
+    }
+  ]
+}
