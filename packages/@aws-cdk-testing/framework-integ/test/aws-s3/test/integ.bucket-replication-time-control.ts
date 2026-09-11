@@ -5,7 +5,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'S3-RTC-TestStack');
 
-const dstBucket = new s3.Bucket(stack, 'DstBucket',{
+const dstBucket = new s3.Bucket(stack, 'DstBucket', {
   versioned: true,
 });
 
