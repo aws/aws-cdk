@@ -149,6 +149,33 @@ describe('restapi', () => {
     });
   });
 
+  describe('latestDeployment', () => {
+    test('is populated when "deploy" is enabled (the default)', () => {
+      // WHEN
+      const api = new apigw.RestApi(stack, 'restapi');
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(api.latestDeployment).toBeInstanceOf(apigw.Deployment);
+    });
+
+    test('is undefined when "deploy" is disabled', () => {
+      // WHEN
+      const api = new apigw.RestApi(stack, 'restapi', { deploy: false });
+
+      // THEN
+      expect(api.latestDeployment).toBeUndefined();
+    });
+
+    test('is undefined on an imported RestApi exposed as IRestApi', () => {
+      // WHEN
+      const api: apigw.IRestApi = apigw.RestApi.fromRestApiId(stack, 'imported', 'imported-id');
+
+      // THEN
+      expect(api.latestDeployment).toBeUndefined();
+    });
+  });
+
   test('fails in synthesis if there are no methods or definition', () => {
     // GIVEN
     const app = new App();
