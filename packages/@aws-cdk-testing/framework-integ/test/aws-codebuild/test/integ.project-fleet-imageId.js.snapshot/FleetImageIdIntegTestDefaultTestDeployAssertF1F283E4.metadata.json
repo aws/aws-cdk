@@ -1,0 +1,78 @@
+{
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodebuildlistFleets"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleets66a7814671b25b524d9d98dc01b3174b/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleets66a7814671b25b524d9d98dc01b3174b/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetFleets66a7814671b25b524d9d98dc01b3174b"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodebuildlistFleets/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodebuildlistFleets"
+    }
+  ],
+  "/FleetImageIdIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetFleets66a7814671b25b524d9d98dc01b3174b/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetFleets66a7814671b25b524d9d98dc01b3174b"
+    }
+  ]
+}
