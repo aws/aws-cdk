@@ -734,6 +734,41 @@ const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
 mySecurityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 ```
 
+### Allowing all traffic to self (`allowAllSelf`)
+
+Some workloads require a security group that allows **all** traffic (every
+protocol and port) between the resources that are members of the same security
+group. The most common example is [Elastic Fabric Adapter
+(EFA)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html#efa-start-security)
+network interfaces, which need self-referencing all-traffic ingress and egress
+rules.
+
+Set `allowAllSelf: true` to create those self-referencing rules in one line:
+
+```ts fixture=with-vpc
+const efaSecurityGroup = new ec2.SecurityGroup(this, 'EfaSecurityGroup', {
+  vpc,
+  allowAllSelf: true,
+});
+```
+
+This is equivalent to calling
+`efaSecurityGroup.connections.allowInternally(ec2.Port.allTraffic())` and
+produces a self-referencing `AWS::EC2::SecurityGroupIngress` **and**
+`AWS::EC2::SecurityGroupEgress` rule (all protocols, source/destination set to
+the security group itself).
+
+**Interaction with `allowAllOutbound`:** the self-referencing egress rule is
+always created, even with the default `allowAllOutbound: true`. Normally, when
+`allowAllOutbound` is `true`, explicit egress rules are dropped because the
+implicit "all traffic to `0.0.0.0/0`" rule is assumed to subsume them. That
+assumption does not hold for a self-referencing *security-group* egress rule
+(which is exactly what EFA requires), so `allowAllSelf` bypasses that shortcut
+and always emits the self egress rule. In other words, you can keep
+`allowAllOutbound: true` and still get the EFA-required self egress rule; no
+existing behavior of `allowAllOutbound` or `addEgressRule` changes for other
+rules.
+
 All constructs that create ENIs on your behalf (typically constructs that create
 EC2 instances or other VPC-connected resources) will all have security groups
 automatically assigned. Those constructs have an attribute called
