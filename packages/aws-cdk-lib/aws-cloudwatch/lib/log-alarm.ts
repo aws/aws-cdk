@@ -23,6 +23,16 @@ import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interface
 const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm', 'cloudwatch']);
 
 /**
+ * Whether a literal string carries enough ARN structure for `splitArn` to parse it.
+ *
+ * `IAlarmAction` implementations may return any string, and `splitArn` throws on anything
+ * that is not a well-formed ARN. A diagnostic must never be able to fail synthesis.
+ */
+function isParseableArn(arn: string): boolean {
+  return arn.startsWith('arn:') && arn.split(':').length >= 6;
+}
+
+/**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
  */
 export interface ScheduledQuerySchedule {
@@ -80,10 +90,17 @@ export interface ScheduledQueryConfiguration {
    * account and region when it is not, because a query that selects its own log
    * groups resolves them each time it runs.
    *
+   * A query that selects log groups outside this list fails at run time with an
+   * access-denied error. The permissions only cover the log groups named here.
+   *
+   * The list itself must be resolvable at synthesis time, because the log group names are
+   * rendered into the template. Individual log groups in it may be unresolved.
+   *
    * Log groups that live outside the current app can be referenced with
    * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`.
    *
    * @default - no log groups; the query must select its own
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
    */
   readonly logGroups?: ILogGroupRef[];
 
@@ -349,6 +366,10 @@ export class LogAlarm extends AlarmBase {
       throw new ValidationError(lit`InvalidLogGroups`, `logGroups must contain between 1 and 50 entries, got ${logGroups.length}`, this);
     }
 
+    if (logGroups !== undefined && Token.isUnresolved(logGroups)) {
+      throw new ValidationError(lit`UnresolvedLogGroups`, 'logGroups must be a resolved list because the log group names are rendered at synthesis time, got an unresolved list; pass the log groups individually or omit logGroups and select them in queryString', this);
+    }
+
     if (!Token.isUnresolved(sqc.queryString) && (sqc.queryString.length < 1 || sqc.queryString.length > 10000)) {
       throw new ValidationError(lit`InvalidQueryString`, `queryString must be between 1 and 10000 characters, got ${sqc.queryString.length}`, this);
     }
@@ -479,7 +500,7 @@ export class LogAlarm extends AlarmBase {
     const arn = action.bind(this, this).alarmActionArn;
     // Action ARNs are frequently unresolved tokens (derived from other constructs), which
     // cannot be inspected at synth time; this is a best-effort check on literal ARNs only.
-    if (!Token.isUnresolved(arn)) {
+    if (!Token.isUnresolved(arn) && isParseableArn(arn)) {
       const service = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME).service;
       if (!SUPPORTED_ACTION_SERVICES.has(service)) {
         Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',

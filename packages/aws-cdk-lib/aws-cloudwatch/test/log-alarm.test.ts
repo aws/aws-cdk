@@ -154,6 +154,26 @@ describe('LogAlarm', () => {
       Match.stringLikeRegexp('do not dispatch'));
   });
 
+  test('does not fail synthesis when an action returns a value that is not an ARN', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+    const bogusAction: IAlarmAction = { bind: () => ({ alarmActionArn: 'not-an-arn' }) };
+
+    expect(() => alarm.addAlarmAction(bogusAction)).not.toThrow();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::LogAlarm', 1);
+    Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('do not dispatch'));
+  });
+
+  test('fails for an unresolved logGroups list', () => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        logGroups: Token.asList({ Ref: 'LogGroupList' }) as unknown as LogGroup[],
+      },
+    })).toThrow(/logGroups must be a resolved list/);
+  });
+
   test('omits logGroups when not provided (inline SOURCE query)', () => {
     const { logGroups, ...sqcWithout } = baseProps().scheduledQueryConfiguration;
     void logGroups;
