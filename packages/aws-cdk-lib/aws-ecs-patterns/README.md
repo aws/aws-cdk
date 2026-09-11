@@ -74,7 +74,7 @@ Fargate services use the default VPC Security Group unless one or more are provi
 
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
 
-If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+If you specify the option `recordType`, you can choose a CNAME record, an A alias record, both A and AAAA alias records, or no DNS record.
 
 To set the minimum number of CPU units to reserve for the container, you can use the `containerCpu` property.
 
@@ -1233,26 +1233,35 @@ To use dualstack IP address type, you must have associated IPv6 CIDR blocks with
 ### Application Load Balancer
 
 You can use dualstack Application Load Balancer for Fargate and EC2 services.
+For a custom domain on either pattern, set `recordType` to `ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6`
+to create both A and AAAA alias records.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 
 // The VPC and subnet must have associated IPv6 CIDR blocks.
 const vpc = new ec2.Vpc(this, 'Vpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
 });
 const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
+  domainName: 'example.com',
+});
 
-const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myService', {
+const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'FargateService', {
   cluster,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  domainName: 'api.example.com',
+  domainZone: hostedZone,
+  recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
 });
 
-const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'myService', {
+const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Ec2Service', {
   cluster,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
