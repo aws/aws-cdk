@@ -3,9 +3,10 @@ import { ApplicationListener, type IApplicationListener } from './application-li
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
-import { Token, Tokenization } from '../../../core';
+import { Annotations, Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
+import type { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { ApplicationProtocol } from '../shared/enums';
 import type { IListenerAction } from '../shared/listener-action';
@@ -50,6 +51,26 @@ export class ListenerAction implements IListenerAction {
    */
   public static authenticateJwt(options: AuthenticateJwtOptions): ListenerAction {
     return new AuthenticateJwtAction(options);
+  }
+
+  /**
+   * Authenticate using JWT validation with Amazon Cognito User Pool
+   *
+   * This is a convenience method that automatically constructs the issuer and JWKS endpoint
+   * URLs from a Cognito User Pool.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-verify-jwt.html
+   */
+  public static authenticateJwtWithCognito(options: AuthenticateJwtWithCognitoOptions): ListenerAction {
+    const region = options.userPool.env.region;
+    const userPoolId = options.userPool.userPoolRef.userPoolId;
+    const baseUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+    return new AuthenticateJwtAction({
+      issuer: baseUrl,
+      jwksEndpoint: `${baseUrl}/.well-known/jwks.json`,
+      next: options.next,
+      allowHttpsOutbound: options.allowHttpsOutbound,
+    });
   }
 
   /**
@@ -481,6 +502,48 @@ export interface AuthenticateJwtOptions {
    * @example 'https://issuer.example.com/jwks'
    */
   readonly jwksEndpoint: string;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the JWKS endpoint.
+   *
+   * Set this property to false if the IP address used for the JWKS endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the JWKS endpoint's IP address using the listener's `connections` property.
+   *
+   * @default false
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
+}
+
+/**
+ * Options for `ListenerAction.authenticateJwtWithCognito()`
+ */
+export interface AuthenticateJwtWithCognitoOptions {
+  /**
+   * The Cognito User Pool to use for JWT validation
+   */
+  readonly userPool: IUserPoolRef;
+
+  /**
+   * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
+   */
+  readonly next: ListenerAction;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the Cognito JWKS endpoint.
+   *
+   * Set this property to false if the IP address used for the Cognito JWKS endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the endpoint's IP address using the listener's `connections` property.
+   *
+   * @default false
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**
@@ -522,6 +585,8 @@ class TargetGroupListenerAction extends ListenerAction {
  * A Listener Action to authenticate with JWT
  */
 class AuthenticateJwtAction extends ListenerAction {
+  private readonly allowHttpsOutbound: boolean;
+
   constructor(options: AuthenticateJwtOptions) {
     if (!Token.isUnresolved(options.jwksEndpoint)) {
       if (!options.jwksEndpoint.startsWith('https://')) {
@@ -542,6 +607,8 @@ class AuthenticateJwtAction extends ListenerAction {
         jwksEndpoint: options.jwksEndpoint,
       },
     }, options.next);
+
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? false;
   }
 
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
@@ -550,6 +617,13 @@ class AuthenticateJwtAction extends ListenerAction {
     // JWT authentication requires HTTPS listener
     if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
       throw new UnscopedValidationError(lit`JwtRequiresHttps`, 'JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
+    }
+
+    if (this.allowHttpsOutbound) {
+      listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to JWKS endpoint');
+    } else {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-elasticloadbalancingv2:jwtAllowHttpsOutboundDisabled',
+        'allowHttpsOutbound is false. Ensure that outbound HTTPS (port 443) traffic to the JWKS endpoint is allowed in the ALB\'s security group.');
     }
   }
 }
