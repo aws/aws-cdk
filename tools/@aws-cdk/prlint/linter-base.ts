@@ -5,6 +5,15 @@ import type { CheckRun, GitHubComment, GitHubPr, Review } from './github';
 export const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
 
 /**
+ * How long to wait for GitHub to compute a pull request's mergeability.
+ *
+ * GitHub does not document a settling time, so this is an upper bound comfortably above what we
+ * observe in practice. If mergeability still is not available afterwards, we carry on with the
+ * value we have rather than waiting longer.
+ */
+const MERGEABILITY_RECHECK_DELAY_MS = 3_000;
+
+/**
  * Props used to perform linting against the pull request.
  */
 export interface PullRequestLinterBaseProps {
@@ -32,6 +41,13 @@ export interface PullRequestLinterBaseProps {
    * For cases where the linter needs to know its own username
    */
   readonly linterLogin: string;
+
+  /**
+   * How long to wait before re-reading a pull request whose mergeability is not computed yet.
+   *
+   * @default 3000
+   */
+  readonly mergeabilityRecheckDelayMs?: number;
 }
 
 /**
@@ -71,6 +87,7 @@ export class PullRequestLinterBase {
   protected readonly prParams: { owner: string; repo: string; pull_number: number };
   protected readonly issueParams: { owner: string; repo: string; issue_number: number };
   protected readonly linterLogin: string;
+  protected readonly mergeabilityRecheckDelayMs: number;
 
   private _pr: GitHubPr | undefined;
 
@@ -79,12 +96,23 @@ export class PullRequestLinterBase {
     this.prParams = { owner: props.owner, repo: props.repo, pull_number: props.number };
     this.issueParams = { owner: props.owner, repo: props.repo, issue_number: props.number };
     this.linterLogin = props.linterLogin;
+    this.mergeabilityRecheckDelayMs = props.mergeabilityRecheckDelayMs ?? MERGEABILITY_RECHECK_DELAY_MS;
   }
 
   public async pr(): Promise<GitHubPr> {
     if (!this._pr) {
-      const r = await this.client.pulls.get(this.prParams);
-      this._pr = r.data;
+      let pr = (await this.client.pulls.get(this.prParams)).data;
+
+      // Reading a pull request is what starts GitHub's background mergeability computation, so a
+      // first read commonly comes back with `mergeable: null`. Read once more to pick up the result,
+      // otherwise everything downstream sees a pull request whose conflict state is unknown.
+      if (pr.mergeable === null) {
+        console.log('⌛  Mergeability not computed yet, re-reading the pull request');
+        await sleep(this.mergeabilityRecheckDelayMs);
+        pr = (await this.client.pulls.get(this.prParams)).data;
+      }
+
+      this._pr = pr;
     }
     return this._pr;
   }
@@ -402,6 +430,10 @@ export function mergeLinterActions(a: LinterActions, b: LinterActions): LinterAc
 
 function nonEmpty<A>(xs: A[]): A[] | undefined {
   return xs.length > 0 ? xs : undefined;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
