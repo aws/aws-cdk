@@ -20,7 +20,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../aws-iam';
 import type * as kms from '../../aws-kms';
-import type * as logs from '../../aws-logs';
+import * as logs from '../../aws-logs';
 import type * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import type {
@@ -31,6 +31,7 @@ import type {
 import {
   Aws,
   Duration,
+  RemovalPolicy,
   Resource,
   Stack,
   Aspects,
@@ -124,6 +125,104 @@ export interface ClusterProps {
    * @default - no encryption will be applied.
    */
   readonly managedStorageConfiguration?: ManagedStorageConfiguration;
+
+  /**
+   * Configuration for ECS Action Logs.
+   *
+   * Action Logs capture detailed records of service deployment and daemon
+   * lifecycle operations, providing visibility into previously invisible
+   * intermediate steps such as image pulls, load balancer registrations,
+   * and security group configurations.
+   *
+   * @default - Action Logs are not enabled
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/action-logs.html
+   */
+  readonly actionLogs?: ActionLogsConfiguration;
+}
+
+/**
+ * Configuration for ECS Action Logs.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/action-logs.html
+ */
+export interface ActionLogsConfiguration {
+  /**
+   * The destination for Action Logs delivery.
+   */
+  readonly destination: ActionLogsDestination;
+}
+
+/**
+ * The resolved destination configuration returned by ActionLogsDestination.bind().
+ */
+export interface ActionLogsDestinationConfig {
+  /**
+   * The ARN of the destination resource (log group, S3 bucket, etc.).
+   */
+  readonly destinationResourceArn: string;
+}
+
+/**
+ * Represents an Action Logs delivery destination.
+ *
+ * Use the static factory methods to create instances:
+ * - `ActionLogsDestination.toCloudWatchLogs()` — deliver to a CloudWatch Logs log group
+ * - `ActionLogsDestination.toS3()` — deliver to an S3 bucket
+ */
+export abstract class ActionLogsDestination {
+  /**
+   * Deliver Action Logs to a CloudWatch Logs log group.
+   *
+   * @param logGroup The log group to deliver to. If omitted, a new log group is
+   * created at `/aws/vendedlogs/ecs/action-logs/{clusterName}` with 7-day retention.
+   */
+  public static toCloudWatchLogs(logGroup?: logs.ILogGroup): ActionLogsDestination {
+    return new CloudWatchLogsActionLogsDestination(logGroup);
+  }
+
+  /**
+   * Deliver Action Logs to an S3 bucket.
+   *
+   * @param bucket The S3 bucket to deliver to.
+   */
+  public static toS3(bucket: s3.IBucket): ActionLogsDestination {
+    return new S3ActionLogsDestination(bucket);
+  }
+
+  /**
+   * Binds this destination to the given cluster, returning the destination ARN.
+   *
+   * @param scope The construct scope in which to create resources.
+   * @param cluster The cluster this destination is bound to.
+   */
+  public abstract bind(scope: Construct, cluster: ICluster): ActionLogsDestinationConfig;
+}
+
+class CloudWatchLogsActionLogsDestination extends ActionLogsDestination {
+  constructor(private readonly logGroup?: logs.ILogGroup) {
+    super();
+  }
+
+  public bind(scope: Construct, cluster: ICluster): ActionLogsDestinationConfig {
+    const lg = this.logGroup ?? new logs.LogGroup(scope, 'ActionLogGroup', {
+      logGroupName: `/aws/vendedlogs/ecs/action-logs/${cluster.clusterName}`,
+      retention: logs.RetentionDays.ONE_WEEK,
+      // Auto-created log groups are ephemeral debug data and are removed with the stack.
+      // Users who need to retain logs should provide their own log group.
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+    return { destinationResourceArn: lg.logGroupArn };
+  }
+}
+
+class S3ActionLogsDestination extends ActionLogsDestination {
+  constructor(private readonly bucket: s3.IBucket) {
+    super();
+  }
+
+  public bind(_scope: Construct, _cluster: ICluster): ActionLogsDestinationConfig {
+    return { destinationResourceArn: this.bucket.bucketArn };
+  }
 }
 
 /**
@@ -266,6 +365,11 @@ export class Cluster extends Resource implements ICluster {
    */
   private _cfnCluster: CfnCluster;
 
+  /**
+   * The Action Logs delivery resource, set once enableActionLogs() is called.
+   */
+  private _actionLogsDelivery?: logs.CfnDelivery;
+
   @memoizedGetter
   public get clusterArn(): string {
     return this.getResourceArnAttribute(this._cfnCluster.attrArn, {
@@ -345,6 +449,10 @@ export class Cluster extends Resource implements ICluster {
 
     this.updateKeyPolicyForEphemeralStorageConfiguration(props.clusterName);
 
+    if (props.actionLogs) {
+      this.enableActionLogs(props.actionLogs);
+    }
+
     // Only create cluster capacity provider associations if there are any EC2
     // capacity providers. Ordinarily we'd just add the construct to the tree
     // since it's harmless, but we'd prefer not to add unexpected new
@@ -396,6 +504,45 @@ export class Cluster extends Resource implements ICluster {
         },
       },
     }));
+  }
+
+  /**
+   * Enable Action Logs for this cluster.
+   *
+   * Action Logs capture detailed records of service deployment and daemon
+   * lifecycle operations. Can only be called once per cluster.
+   *
+   * @param config Action Logs configuration including the destination.
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/action-logs.html
+   */
+  @MethodMetadata()
+  public enableActionLogs(config: ActionLogsConfiguration): void {
+    if (this._actionLogsDelivery !== undefined) {
+      throw new ValidationError(lit`ActionLogsAlreadyEnabled`, 'action logs can only be enabled once', this);
+    }
+
+    const destConfig = config.destination.bind(this, this);
+
+    const deliverySource: logs.CfnDeliverySource = new logs.CfnDeliverySource(this, 'ActionLogsSource', {
+      name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliverySource, { maxLength: 60, allowedSpecialCharacters: '-_' }) }),
+      resourceArn: this.clusterArn,
+      logType: 'ACTION_LOGS',
+    });
+
+    const deliveryDestination: logs.CfnDeliveryDestination = new logs.CfnDeliveryDestination(this, 'ActionLogsDest', {
+      name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: 60, allowedSpecialCharacters: '-_' }) }),
+      destinationResourceArn: destConfig.destinationResourceArn,
+    });
+
+    const delivery = new logs.CfnDelivery(this, 'ActionLogsDelivery', {
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      deliveryDestinationArn: deliveryDestination.attrArn,
+    });
+
+    delivery.node.addDependency(deliverySource);
+    delivery.node.addDependency(deliveryDestination);
+
+    this._actionLogsDelivery = delivery;
   }
 
   /**
