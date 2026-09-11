@@ -1,0 +1,483 @@
+{
+ "Resources": {
+  "TaskDefTaskRole1EDB4A67": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TaskDef54694570": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "VAR_1",
+        "Value": "value1"
+       },
+       {
+        "Name": "VAR_2",
+        "Value": "value2"
+       },
+       {
+        "Name": "VAR_3",
+        "Value": "value3"
+       },
+       {
+        "Name": "VAR_4",
+        "Value": "value4"
+       },
+       {
+        "Name": "VAR_5",
+        "Value": "value5"
+       },
+       {
+        "Name": "VAR_6",
+        "Value": "value6"
+       },
+       {
+        "Name": "VAR_7",
+        "Value": "value7"
+       },
+       {
+        "Name": "VAR_8",
+        "Value": "value8"
+       },
+       {
+        "Name": "VAR_9",
+        "Value": "value9"
+       },
+       {
+        "Name": "VAR_10",
+        "Value": "value10"
+       },
+       {
+        "Name": "VAR_11",
+        "Value": "value11"
+       },
+       {
+        "Name": "VAR_12",
+        "Value": "value12"
+       },
+       {
+        "Name": "VAR_13",
+        "Value": "value13"
+       },
+       {
+        "Name": "VAR_14",
+        "Value": "value14"
+       },
+       {
+        "Name": "VAR_15",
+        "Value": "value15"
+       },
+       {
+        "Name": "VAR_16",
+        "Value": "value16"
+       },
+       {
+        "Name": "VAR_17",
+        "Value": "value17"
+       },
+       {
+        "Name": "VAR_18",
+        "Value": "value18"
+       },
+       {
+        "Name": "VAR_19",
+        "Value": "value19"
+       },
+       {
+        "Name": "VAR_20",
+        "Value": "value20"
+       },
+       {
+        "Name": "VAR_21",
+        "Value": "value21"
+       },
+       {
+        "Name": "VAR_22",
+        "Value": "value22"
+       },
+       {
+        "Name": "VAR_23",
+        "Value": "value23"
+       },
+       {
+        "Name": "VAR_24",
+        "Value": "value24"
+       },
+       {
+        "Name": "VAR_25",
+        "Value": "value25"
+       },
+       {
+        "Name": "VAR_26",
+        "Value": "value26"
+       },
+       {
+        "Name": "VAR_27",
+        "Value": "value27"
+       },
+       {
+        "Name": "VAR_28",
+        "Value": "value28"
+       },
+       {
+        "Name": "VAR_29",
+        "Value": "value29"
+       },
+       {
+        "Name": "VAR_30",
+        "Value": "value30"
+       },
+       {
+        "Name": "VAR_31",
+        "Value": "value31"
+       },
+       {
+        "Name": "VAR_32",
+        "Value": "value32"
+       },
+       {
+        "Name": "VAR_33",
+        "Value": "value33"
+       },
+       {
+        "Name": "VAR_34",
+        "Value": "value34"
+       },
+       {
+        "Name": "VAR_35",
+        "Value": "value35"
+       },
+       {
+        "Name": "VAR_36",
+        "Value": "value36"
+       },
+       {
+        "Name": "VAR_37",
+        "Value": "value37"
+       },
+       {
+        "Name": "VAR_38",
+        "Value": "value38"
+       },
+       {
+        "Name": "VAR_39",
+        "Value": "value39"
+       },
+       {
+        "Name": "VAR_40",
+        "Value": "value40"
+       },
+       {
+        "Name": "VAR_41",
+        "Value": "value41"
+       },
+       {
+        "Name": "VAR_42",
+        "Value": "value42"
+       },
+       {
+        "Name": "VAR_43",
+        "Value": "value43"
+       },
+       {
+        "Name": "VAR_44",
+        "Value": "value44"
+       },
+       {
+        "Name": "VAR_45",
+        "Value": "value45"
+       },
+       {
+        "Name": "VAR_46",
+        "Value": "value46"
+       },
+       {
+        "Name": "VAR_47",
+        "Value": "value47"
+       },
+       {
+        "Name": "VAR_48",
+        "Value": "value48"
+       },
+       {
+        "Name": "VAR_49",
+        "Value": "value49"
+       },
+       {
+        "Name": "VAR_50",
+        "Value": "value50"
+       },
+       {
+        "Name": "VAR_51",
+        "Value": "value51"
+       },
+       {
+        "Name": "VAR_52",
+        "Value": "value52"
+       },
+       {
+        "Name": "VAR_53",
+        "Value": "value53"
+       },
+       {
+        "Name": "VAR_54",
+        "Value": "value54"
+       },
+       {
+        "Name": "VAR_55",
+        "Value": "value55"
+       },
+       {
+        "Name": "VAR_56",
+        "Value": "value56"
+       },
+       {
+        "Name": "VAR_57",
+        "Value": "value57"
+       },
+       {
+        "Name": "VAR_58",
+        "Value": "value58"
+       },
+       {
+        "Name": "VAR_59",
+        "Value": "value59"
+       },
+       {
+        "Name": "VAR_60",
+        "Value": "value60"
+       },
+       {
+        "Name": "VAR_61",
+        "Value": "value61"
+       },
+       {
+        "Name": "VAR_62",
+        "Value": "value62"
+       },
+       {
+        "Name": "VAR_63",
+        "Value": "value63"
+       },
+       {
+        "Name": "VAR_64",
+        "Value": "value64"
+       },
+       {
+        "Name": "VAR_65",
+        "Value": "value65"
+       },
+       {
+        "Name": "VAR_66",
+        "Value": "value66"
+       },
+       {
+        "Name": "VAR_67",
+        "Value": "value67"
+       },
+       {
+        "Name": "VAR_68",
+        "Value": "value68"
+       },
+       {
+        "Name": "VAR_69",
+        "Value": "value69"
+       },
+       {
+        "Name": "VAR_70",
+        "Value": "value70"
+       },
+       {
+        "Name": "VAR_71",
+        "Value": "value71"
+       },
+       {
+        "Name": "VAR_72",
+        "Value": "value72"
+       },
+       {
+        "Name": "VAR_73",
+        "Value": "value73"
+       },
+       {
+        "Name": "VAR_74",
+        "Value": "value74"
+       },
+       {
+        "Name": "VAR_75",
+        "Value": "value75"
+       },
+       {
+        "Name": "VAR_76",
+        "Value": "value76"
+       },
+       {
+        "Name": "VAR_77",
+        "Value": "value77"
+       },
+       {
+        "Name": "VAR_78",
+        "Value": "value78"
+       },
+       {
+        "Name": "VAR_79",
+        "Value": "value79"
+       },
+       {
+        "Name": "VAR_80",
+        "Value": "value80"
+       },
+       {
+        "Name": "VAR_81",
+        "Value": "value81"
+       },
+       {
+        "Name": "VAR_82",
+        "Value": "value82"
+       },
+       {
+        "Name": "VAR_83",
+        "Value": "value83"
+       },
+       {
+        "Name": "VAR_84",
+        "Value": "value84"
+       },
+       {
+        "Name": "VAR_85",
+        "Value": "value85"
+       },
+       {
+        "Name": "VAR_86",
+        "Value": "value86"
+       },
+       {
+        "Name": "VAR_87",
+        "Value": "value87"
+       },
+       {
+        "Name": "VAR_88",
+        "Value": "value88"
+       },
+       {
+        "Name": "VAR_89",
+        "Value": "value89"
+       },
+       {
+        "Name": "VAR_90",
+        "Value": "value90"
+       },
+       {
+        "Name": "VAR_91",
+        "Value": "value91"
+       },
+       {
+        "Name": "VAR_92",
+        "Value": "value92"
+       },
+       {
+        "Name": "VAR_93",
+        "Value": "value93"
+       },
+       {
+        "Name": "VAR_94",
+        "Value": "value94"
+       },
+       {
+        "Name": "VAR_95",
+        "Value": "value95"
+       },
+       {
+        "Name": "VAR_96",
+        "Value": "value96"
+       },
+       {
+        "Name": "VAR_97",
+        "Value": "value97"
+       },
+       {
+        "Name": "VAR_98",
+        "Value": "value98"
+       },
+       {
+        "Name": "VAR_99",
+        "Value": "value99"
+       },
+       {
+        "Name": "VAR_100",
+        "Value": "value100"
+       }
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+      "Memory": 512,
+      "Name": "Container"
+     }
+    ],
+    "Cpu": "256",
+    "Family": "awsecscontainerdefinitionenvvarlimitTaskDef2CF21957",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "TaskDefTaskRole1EDB4A67",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

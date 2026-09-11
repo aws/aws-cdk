@@ -1,0 +1,12 @@
+{
+ "version": "38.0.1",
+ "testCases": {
+  "ContainerDefinitionEnvVarLimit/DefaultTest": {
+   "stacks": [
+    "aws-ecs-container-definition-env-var-limit"
+   ],
+   "assertionStack": "ContainerDefinitionEnvVarLimit/DefaultTest/DeployAssert",
+   "assertionStackName": "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C"
+  }
+ }
+}
