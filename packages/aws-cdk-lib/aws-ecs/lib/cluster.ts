@@ -1583,6 +1583,59 @@ export enum CapacityOptionType {
    * Launch instances as Spot instances
    */
   SPOT = 'SPOT',
+
+  /**
+   * Launch instances as Reserved instances
+   */
+  RESERVED = 'RESERVED',
+}
+
+/**
+ * The preference on when Capacity Reservations should be used for instances launched
+ * by a Managed Instances Capacity Provider.
+ */
+export enum ReservationPreference {
+  /**
+   * Exclusively launch instances into Capacity Reservations that match the instance
+   * requirements configured for the capacity provider.
+   *
+   * If no matching Capacity Reservation exists, instances will fail to provision.
+   */
+  RESERVATIONS_ONLY = 'RESERVATIONS_ONLY',
+
+  /**
+   * Prefer to launch instances into a Capacity Reservation if any exist that match the
+   * instance requirements configured for the capacity provider.
+   *
+   * If none exist, fall back to launching instances On-Demand.
+   */
+  RESERVATIONS_FIRST = 'RESERVATIONS_FIRST',
+
+  /**
+   * Avoid using Capacity Reservations and launch exclusively On-Demand.
+   */
+  RESERVATIONS_EXCLUDED = 'RESERVATIONS_EXCLUDED',
+}
+
+/**
+ * The Capacity Reservation configuration for a Managed Instances Capacity Provider.
+ *
+ * These options are used when the capacity option type is `CapacityOptionType.RESERVED`.
+ */
+export interface CapacityReservationsConfig {
+  /**
+   * The ARN of the Capacity Reservation resource group in which to run the instances.
+   *
+   * @default - instances are not restricted to a Capacity Reservation resource group
+   */
+  readonly reservationGroupArn?: string;
+
+  /**
+   * The preference on when Capacity Reservations should be used.
+   *
+   * @default - the Amazon ECS default preference is used
+   */
+  readonly reservationPreference?: ReservationPreference;
 }
 
 /**
@@ -1686,6 +1739,13 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default - `ON_DEMAND`
    */
   readonly capacityOptionType?: CapacityOptionType;
+
+  /**
+   * The Capacity Reservation configuration for the capacity provider.
+   *
+   * @default - no Capacity Reservation configuration
+   */
+  readonly capacityReservations?: CapacityReservationsConfig;
 }
 
 /**
@@ -1782,6 +1842,12 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       infrastructureRoleArn: this.infrastructureRole.roleArn,
       instanceLaunchTemplate: {
         capacityOptionType: props.capacityOptionType,
+        ...(props.capacityReservations && {
+          capacityReservations: {
+            reservationGroupArn: props.capacityReservations.reservationGroupArn,
+            reservationPreference: props.capacityReservations.reservationPreference,
+          },
+        }),
         ec2InstanceProfileArn: this.ec2InstanceProfile.instanceProfileArn,
         networkConfiguration: {
           subnets: props.subnets.map((subnet: ec2.ISubnet) => subnet.subnetId),
