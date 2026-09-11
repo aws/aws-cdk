@@ -119,6 +119,7 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-logs:logGroupGrantEncryptionKey](#aws-cdkaws-logsloggroupgrantencryptionkey) | Automatically grant a CloudWatch Logs LogGroup permission to use its customer-managed encryption key | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -182,6 +183,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-logs:logGroupGrantEncryptionKey": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
@@ -2580,6 +2582,31 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-logs:logGroupGrantEncryptionKey
+
+*Automatically grant a CloudWatch Logs LogGroup permission to use its customer-managed encryption key*
+
+Flag type: Backwards incompatible bugfix
+
+When a customer-managed KMS key is passed to a `LogGroup` via `encryptionKey`, CloudWatch Logs
+cannot create the log group unless the key's resource policy grants the CloudWatch Logs service
+principal permission to use the key. Previously the CDK did not add this grant, so a `LogGroup`
+configured with a customer-managed key would fail to deploy with a `CREATE_FAILED` error unless
+the user manually added a statement to the key policy.
+
+When this flag is enabled, the `LogGroup` automatically adds the required statement to the
+encryption key's resource policy, scoped to the log group via the
+`kms:EncryptionContext:aws:logs:arn` condition. This only applies to keys that are managed in
+the same CDK application (created via `new kms.Key(...)`); imported keys are unchanged and still
+require a manual grant, because the CDK cannot modify a resource policy it does not own.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
