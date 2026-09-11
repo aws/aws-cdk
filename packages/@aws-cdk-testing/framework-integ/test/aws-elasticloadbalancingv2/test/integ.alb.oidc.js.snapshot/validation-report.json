@@ -1,0 +1,35 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.6.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation was disabled on '2027-02-01' and update on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegAlbOidc/Signin/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "IntegAlbOidc.template.json",
+                "logicalId": "Signin352C80E6",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

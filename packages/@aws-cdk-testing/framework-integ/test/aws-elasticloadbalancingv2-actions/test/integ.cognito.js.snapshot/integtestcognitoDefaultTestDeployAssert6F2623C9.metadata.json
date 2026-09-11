@@ -1,13 +1,24 @@
 {
   "/integ-test-cognito/DefaultTest/DeployAssert": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DeployAssert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
-        "new IntegTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:209:14)",
-        "...node internals..."
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/private/refs.js:204:54)",
+        "resolveReferences (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/private/prepare-app.js:45:36)",
+        "synthesize (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/gabe/aws-cdk-wsl/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "Object.<anonymous> (/home/gabe/aws-cdk-wsl/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:261:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
       ]
     }
   ],
@@ -15,42 +26,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)"
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default": [
@@ -71,76 +52,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bdInvoke5A72F915"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LambdaInvokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
-        "DeployAssert.invokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:233:32)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/AssertionResults": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsLambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Object.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:355:38)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:327:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:9)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:111:26)",
-        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
-        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
-        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
-        "new LambdaInvokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
-        "DeployAssert.invokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:233:32)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:28)",
-        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
-        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
-        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
-        "new LambdaInvokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
-        "DeployAssert.invokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:233:32)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default": [
@@ -161,58 +90,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsAwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Object.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:355:38)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:43)",
-        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:327:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:9)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
-        "new LambdaInvokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
-        "DeployAssert.invokeFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:233:32)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-test-cognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
-        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:49:16)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2-actions/test/integ.cognito.js:239:37)",
-        "...node internals..."
-      ]
     }
   ]
 }
