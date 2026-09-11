@@ -6,6 +6,7 @@
 
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 
@@ -14,9 +15,17 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-browser-1');
 
 // Create a browser with basic configuration
-new agentcore.BrowserCustom(stack, 'Browser', {
+const browser = new agentcore.BrowserCustom(stack, 'Browser', {
   browserCustomName: 'browser',
 });
+
+// An agent that drives this browser needs to start a session and then connect to
+// its automation stream over CDP, so both sets of actions have to be granted.
+const agentRole = new iam.Role(stack, 'AgentRole', {
+  assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+});
+browser.grantUse(agentRole);
+browser.grantRead(agentRole);
 
 const recordingBucket = new s3.Bucket(stack, 'RecordingBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,

@@ -62,6 +62,7 @@ export const BROWSER_LIST_PERMS = [
 export const BROWSER_USE_PERMS = [
   'bedrock-agentcore:StartBrowserSession',
   'bedrock-agentcore:UpdateBrowserStream',
+  'bedrock-agentcore:ConnectBrowserAutomationStream',
   'bedrock-agentcore:StopBrowserSession',
 ];
 
