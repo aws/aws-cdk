@@ -735,7 +735,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html
    *
-   * @default - false
+   * @default - no value is set and the service default is used
    */
   readonly useLatestServiceSoftwareForBlueGreen?: boolean;
 
