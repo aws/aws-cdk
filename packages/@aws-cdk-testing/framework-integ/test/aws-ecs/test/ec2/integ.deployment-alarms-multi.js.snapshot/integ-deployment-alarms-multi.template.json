@@ -1,0 +1,74 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default"
+   }
+  },
+  "ClusterEB0386A7": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "TaskDef54694582": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Image": "amazon/amazon-ecs-sample",
+      "MemoryReservation": 256,
+      "Name": "web"
+     }
+    ],
+    "NetworkMode": "bridge",
+    "RequiresCompatibilities": [
+     "EC2"
+    ]
+   }
+  },
+  "EC2Service82B0E430": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [
+       { "Fn::GetAtt": [ "Alarm1F90F460A", "Arn" ] },
+       { "Fn::GetAtt": [ "Alarm260BA9B6F", "Arn" ] }
+      ],
+      "Enable": true,
+      "Rollback": true
+     }
+    },
+    "LaunchType": "EC2",
+    "TaskDefinition": {
+     "Ref": "TaskDef54694582"
+    }
+   }
+  },
+  "Alarm1F90F460A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/ECS",
+    "Threshold": 80
+   }
+  },
+  "Alarm260BA9B6F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 5,
+    "MetricName": "MemoryUtilization",
+    "Namespace": "AWS/ECS",
+    "Threshold": 80
+   }
+  }
+ }
+}
