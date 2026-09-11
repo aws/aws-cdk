@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { GraduationContext } from '../lib/context';
 import { GraduationReport } from '../lib/report';
-import { copyRosetta, copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, graduateReadme, mergeAwslint, mergeBarrel, migrateCustomResources, removeExampleDependency, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths } from '../lib/transforms';
+import { copyRosetta, copySources, copyTests, deprecateAlphaPackage, deprecateAlphaReadme, ensureRegistration, graduateReadme, mergeAwslint, mergeBarrel, migrateCustomResources, removeExampleDependency, rewriteImports, rewriteIntegImports, rewriteTestAssetPaths, sweepReferences } from '../lib/transforms';
 
 /** Build a GraduationContext rooted at a throwaway temp dir for the `aws-foo` service. */
 function makeCtx(): { ctx: GraduationContext; report: GraduationReport; repoRoot: string } {
@@ -572,6 +572,75 @@ describe('migrateCustomResources', () => {
       migrateCustomResources(ctx, report);
       expect(fs.existsSync(path.join(ctx.crHandlersDir, 'lib', 'aws-foo'))).toBe(false);
       expect(report.hasManualItems).toBe(false);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('ensureRegistration', () => {
+  test('stays silent when the submodule is already registered in both exports and index.ts', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.libDir, 'package.json'), JSON.stringify({
+        name: 'aws-cdk-lib',
+        exports: { './aws-foo': './aws-foo/index.js' },
+      }, null, 2) + '\n');
+      write(path.join(ctx.libDir, 'index.ts'), "export * as aws_foo from './aws-foo';\n");
+
+      ensureRegistration(ctx, report);
+
+      expect(report.hasManualItems).toBe(false);
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('flags a manual `yarn gen` when the exports entry and index.ts line are missing', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.libDir, 'package.json'), JSON.stringify({
+        name: 'aws-cdk-lib',
+        exports: {},
+      }, null, 2) + '\n');
+      write(path.join(ctx.libDir, 'index.ts'), "export * as aws_s3 from './aws-s3';\n");
+
+      ensureRegistration(ctx, report);
+
+      expect(report.hasManualItems).toBe(true);
+      expect(report.render()).toContain('yarn gen');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('sweepReferences', () => {
+  test('reports stray alpha references found in a docs file and the root README', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      // A nested doc and the root README both still reference the alpha package.
+      write(path.join(ctx.repoRoot, 'docs', 'guide.md'), `See ${ctx.alphaPackageName} for details.\n`);
+      write(path.join(ctx.repoRoot, 'README.md'), `# CDK — includes ${ctx.alphaPackageName}\n`);
+
+      sweepReferences(ctx, report);
+
+      const out = report.render();
+      expect(out).toContain('docs/guide.md');
+      expect(out).toContain('README.md');
+    } finally {
+      fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('reports nothing when no stray alpha references exist', () => {
+    const { ctx, report, repoRoot } = makeCtx();
+    try {
+      write(path.join(ctx.repoRoot, 'docs', 'guide.md'), 'Nothing to see here.\n');
+
+      sweepReferences(ctx, report);
+
+      expect(report.render()).not.toContain('doc reference(s)');
     } finally {
       fs.rmSync(repoRoot, { recursive: true, force: true });
     }
