@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "87c48b6f2f8f544a03c780d83c2f3edb6c7caad89f361eea0f4afb8167700da8": {
+      "displayName": "WebSocketApiSharedIntegrationInteg Template",
+      "source": {
+        "path": "WebSocketApiSharedIntegrationInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-003a015a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "87c48b6f2f8f544a03c780d83c2f3edb6c7caad89f361eea0f4afb8167700da8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

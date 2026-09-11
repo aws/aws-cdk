@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "websocket-lambda-shared-integration/DefaultTest": {
+      "stacks": [
+        "WebSocketApiSharedIntegrationInteg"
+      ],
+      "assertionStack": "websocket-lambda-shared-integration/DefaultTest/DeployAssert",
+      "assertionStackName": "websocketlambdasharedintegrationDefaultTestDeployAssert294E58ED"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

@@ -1,0 +1,344 @@
+{
+  "/WebSocketApiSharedIntegrationInteg": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:53:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mystage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/ApiEndpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiEndpoint"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:70:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:212:27)"
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:212:27)"
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:54:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapi32E6CE11"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:168:30)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mystage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mystage114C35EC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketStage (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/stage.js:151:13)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:65:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Exports/Output{\"Ref\":\"Handler886CB40B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHandler886CB40BD176DC16"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1225:17)",
+        "createImportValue (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:212:27)",
+        "process.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:161:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerServiceRoleFCDC14AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:54:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRouteSharedIntegrationPermissionF3D3DC2E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:211:9)",
+        "WebSocketLambdaIntegration.bind (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/websocket/lambda.js:49:22)",
+        "WebSocketLambdaIntegration._bindToRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:216:29)",
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)"
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRoute45A0ED6A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:118:27)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidisconnectRouteSharedIntegrationPermission2F352C87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:211:9)",
+        "WebSocketLambdaIntegration.bind (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/websocket/lambda.js:49:22)",
+        "WebSocketLambdaIntegration._bindToRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:216:29)",
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:183:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)"
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidisconnectRoute421A8CB9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:118:27)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:183:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidefaultRouteSharedIntegrationPermission0F0C792E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:211:9)",
+        "WebSocketLambdaIntegration.bind (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/websocket/lambda.js:49:22)",
+        "WebSocketLambdaIntegration._bindToRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:216:29)",
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:186:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)"
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidefaultRouteE9382DF8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:118:27)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:186:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRouteSharedIntegration4C96571D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketIntegration (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:152:27)",
+        "WebSocketLambdaIntegration._bindToRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:218:32)",
+        "new WebSocketRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "WrappedClass.addRoute (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/websocket/integ.lambda-shared-integration.js:60:22)"
+      ]
+    }
+  ]
+}
