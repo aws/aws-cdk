@@ -19,7 +19,7 @@ import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancin
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { NamespaceType } from '../../../aws-servicediscovery';
-import { Duration, Stack } from '../../../core';
+import { CfnParameter, Duration, Stack } from '../../../core';
 import { ApplicationMultipleTargetGroupsEc2Service, NetworkMultipleTargetGroupsEc2Service } from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
 
@@ -885,7 +885,67 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
     }).toThrow(/Listener listener2 is not defined. Did you define listener with name listener2?/);
   });
 
-  test('errors if desiredTaskCount is 0', () => {
+  test('sets DesiredCount to 0 when desiredCount is 0', () => {
+    // GIVEN
+    const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 0,
+    });
+  });
+
+  test('passes a tokenized desiredCount through to the service', () => {
+    // GIVEN
+    const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new ApplicationMultipleTargetGroupsEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: new CfnParameter(stack, 'DesiredCount', { type: 'Number' }).valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: { Ref: 'DesiredCount' },
+    });
+  });
+
+  test.each([-1, -1024])('fails if desiredCount is %d', (desiredCount: number) => {
     // GIVEN
     const stack = new Stack();
     acknowledgeTestValidationRules(stack);
@@ -907,8 +967,8 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
         taskImageOptions: {
           image: ContainerImage.fromRegistry('test'),
         },
-        desiredCount: 0,
-      })).toThrow(/You must specify a desiredCount greater than 0/);
+        desiredCount,
+      })).toThrow(`desiredCount must be greater than or equal to 0, got ${desiredCount}`);
   });
 });
 
@@ -1807,7 +1867,67 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
     }).toThrow(/Listener listener2 is not defined. Did you define listener with name listener2?/);
   });
 
-  test('errors if desiredTaskCount is 0', () => {
+  test('sets DesiredCount to 0 when desiredCount is 0', () => {
+    // GIVEN
+    const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 0,
+    });
+  });
+
+  test('passes a tokenized desiredCount through to the service', () => {
+    // GIVEN
+    const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new Vpc(stack, 'VPC');
+    const cluster = new Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    new NetworkMultipleTargetGroupsEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      desiredCount: new CfnParameter(stack, 'DesiredCount', { type: 'Number' }).valueAsNumber,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: { Ref: 'DesiredCount' },
+    });
+  });
+
+  test.each([-1, -1024])('fails if desiredCount is %d', (desiredCount: number) => {
     // GIVEN
     const stack = new Stack();
     acknowledgeTestValidationRules(stack);
@@ -1829,8 +1949,8 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
         taskImageOptions: {
           image: ContainerImage.fromRegistry('test'),
         },
-        desiredCount: 0,
-      })).toThrow(/You must specify a desiredCount greater than 0/);
+        desiredCount,
+      })).toThrow(`desiredCount must be greater than or equal to 0, got ${desiredCount}`);
   });
 
   test('errors when container port range is set for essential container', () => {
