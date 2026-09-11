@@ -99,6 +99,24 @@ Example:
 aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
 ```
 
+Alternatively, you can use a CodeConnections connection for GitHub App authentication:
+
+```ts
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  connectionArn: 'arn:aws:codeconnections:us-east-1:123456789012:connection/your-connection-id',
+  webhookFilters: [
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED),
+  ],
+});
+```
+
+When `connectionArn` is provided, the source uses CodeConnections (GitHub App) authentication
+instead of OAuth or personal access token credentials. The required IAM permissions
+for the connection are automatically granted to the project's role.
+
 ### `BitBucketSource`
 
 This source type can be used to build code from a BitBucket repository.
