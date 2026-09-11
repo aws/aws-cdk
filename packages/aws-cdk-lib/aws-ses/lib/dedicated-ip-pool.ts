@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
 import type { IResource } from '../../core';
-import { Resource, ValidationError } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -101,7 +101,11 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
+    // Only checkable when the name is known at synthesis time. A tokenized name
+    // (Fn::ImportValue, a CfnParameter, another resource's attribute) is a placeholder
+    // like "${Token[TOKEN.123]}" here, which no valid-name pattern can match.
+    if (props.dedicatedIpPoolName && !Token.isUnresolved(props.dedicatedIpPoolName) &&
+        !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
       throw new ValidationError(lit`InvalidDedicatedIpPoolName`, `Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
     }
 
