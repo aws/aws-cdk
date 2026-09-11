@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/550d8d562aef5ea494ae80c04549986d3301aacb2bca26828779efde89657edf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/242efcf45535d8bfa64580a9691a55344a9d1c49a9eb56d8b5204b782d39904e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -309,11 +309,26 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
+        "/integ-ecs-imported-cluster/KmsKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integ-ecs-imported-cluster/KmsKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KmsKey46693ADD"
+          }
+        ],
         "/integ-ecs-imported-cluster/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*"
+              "vpc": "*",
+              "managedStorageConfiguration": {
+                "kmsKey": "*"
+              }
             }
           },
           {

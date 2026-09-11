@@ -1,5 +1,6 @@
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -13,8 +14,12 @@ const app = new cdk.App({
 const stack = new cdk.Stack(app, 'integ-ecs-imported-cluster');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const kmsKey = new kms.Key(stack, 'KmsKey');
 const cluster = new ecs.Cluster(stack, 'Cluster', {
   vpc,
+  managedStorageConfiguration: {
+    kmsKey,
+  },
 });
 
 const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
@@ -31,10 +36,14 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
 
 cluster.addAsgCapacityProvider(cp);
 
+// Import cluster with managedStorageConfiguration to verify it can be passed through fromClusterAttributes
 ecs.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
   clusterName: cluster.clusterName,
   vpc,
   autoscalingGroup: autoScalingGroup,
+  managedStorageConfiguration: {
+    kmsKey,
+  },
 });
 
 new integ.IntegTest(app, 'ClusterImported', {
