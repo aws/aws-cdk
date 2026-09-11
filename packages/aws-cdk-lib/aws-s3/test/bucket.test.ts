@@ -939,21 +939,21 @@ describe('bucket', () => {
 
   describe('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL must end with \'-<accountId>-<region>-an\'', () => {
     test('When accountId & region are LITERALS, bucketName does NOT end with EXACT account-regional-suffix', () => {
-      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111122223333' } } );
+      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111111111111' } } );
       const expectedSuffix = `-${stack.account}-${stack.region}-an`;
       expect(() => {
         new s3.Bucket(stack, 'MyBucket', {
-          bucketName: 'my-bucket-111122223333-somewrongsuffix',
+          bucketName: 'my-bucket-111111111111-somewrongsuffix',
           bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
         });
       }).toThrow(`'bucketName' must end with '${expectedSuffix}'`);
     });
 
     test('allows when accountId & region are LITERALS, bucketName matches EXACTLY with account-regional-suffix', () => {
-      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111122223333' } } );
+      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111111111111' } } );
       expect(() => {
         new s3.Bucket(stack, 'MyBucket', {
-          bucketName: 'my-bucket-111122223333-us-east-1-an',
+          bucketName: 'my-bucket-111111111111-us-east-1-an',
           bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
         });
       }).not.toThrow();
