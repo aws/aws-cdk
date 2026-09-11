@@ -47,6 +47,27 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
+## Artifact Bucket Lifecycle
+
+By default, the artifact bucket created by the pipeline has a `RemovalPolicy.RETAIN` policy,
+meaning it will not be deleted when the stack is destroyed. For development or ephemeral
+environments where you want a full cleanup upon `cdk destroy`, you can configure the artifact
+bucket's lifecycle behavior:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+// Configure the artifact bucket to be deleted with the stack
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
+  artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  artifactBucketAutoDeleteObjects: true,
+});
+```
+
+Note that `artifactBucketAutoDeleteObjects` requires `artifactBucketRemovalPolicy` to be set
+to `RemovalPolicy.DESTROY`. These properties cannot be used together with `artifactBucket` or
+`crossRegionReplicationBuckets`.
+
 ## Stages
 
 You can provide Stages when creating the Pipeline:

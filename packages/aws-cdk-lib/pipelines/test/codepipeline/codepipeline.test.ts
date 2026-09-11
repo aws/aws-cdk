@@ -108,6 +108,62 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       }),
     }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
+  test('Providing codePipeline parameter and artifactBucketRemovalPolicy parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    }).create()).toThrow('Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+  test('Providing codePipeline parameter and artifactBucketAutoDeleteObjects parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      artifactBucketAutoDeleteObjects: true,
+    }).create()).toThrow('Cannot set \'artifactBucketAutoDeleteObjects\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
+});
+
+describe('artifact bucket lifecycle props', () => {
+  test('can set artifactBucketRemovalPolicy to DESTROY', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    pipeline.buildPipeline();
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResource('AWS::S3::Bucket', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+  });
+
+  test('can set artifactBucketAutoDeleteObjects with DESTROY policy', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      artifactBucketAutoDeleteObjects: true,
+    });
+    pipeline.buildPipeline();
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResource('AWS::S3::Bucket', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+    template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+      BucketName: Match.anyValue(),
+    });
+  });
+
+  test('default behavior retains the artifact bucket', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.buildPipeline();
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResource('AWS::S3::Bucket', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
 });
 
 test('Policy sizes do not exceed the maximum size', () => {
@@ -923,6 +979,8 @@ interface CodePipelineStackProps extends cdk.StackProps {
   enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
+  artifactBucketRemovalPolicy?: cdk.RemovalPolicy;
+  artifactBucketAutoDeleteObjects?: boolean;
 }
 
 class CodePipelinePropsCheckTest extends cdk.Stack {
@@ -964,6 +1022,20 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
         codePipeline: new Pipeline(this, 'Pipeline5'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.artifactBucketRemovalPolicy !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline6', {
+        artifactBucketRemovalPolicy: this.cProps.artifactBucketRemovalPolicy,
+        codePipeline: new Pipeline(this, 'Pipeline6'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.artifactBucketAutoDeleteObjects !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline7', {
+        artifactBucketAutoDeleteObjects: this.cProps.artifactBucketAutoDeleteObjects,
+        codePipeline: new Pipeline(this, 'Pipeline7'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }
