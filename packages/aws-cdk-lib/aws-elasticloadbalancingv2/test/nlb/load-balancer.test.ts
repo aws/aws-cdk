@@ -1746,3 +1746,55 @@ describe('tests', () => {
     });
   });
 });
+
+describe('INetworkLoadBalancer interface assignability', () => {
+  test('NetworkLoadBalancer is assignable to INetworkLoadBalancer', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      securityGroups: [sg],
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
+    });
+
+    // This assignment should work without TypeScript errors under exactOptionalPropertyTypes
+    const iNlb: elbv2.INetworkLoadBalancer = nlb;
+
+    // Verify properties are accessible
+    expect(iNlb.vpc).toBeDefined();
+    expect(iNlb.metrics).toBeDefined();
+    expect(iNlb.ipAddressType).toBeDefined();
+    expect(iNlb.securityGroups).toBeDefined();
+    expect(iNlb.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(iNlb.addListener).toBeDefined();
+  });
+
+  test('NetworkLoadBalancer from attributes is assignable to INetworkLoadBalancer', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+
+    // Create an NLB first to get its attributes
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'SourceLB', { vpc });
+
+    // Import it using fromNetworkLoadBalancerAttributes
+    const imported = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'ImportedLB', {
+      loadBalancerArn: nlb.loadBalancerArn,
+      loadBalancerCanonicalHostedZoneId: nlb.loadBalancerCanonicalHostedZoneId,
+      loadBalancerDnsName: nlb.loadBalancerDnsName,
+      vpc,
+      loadBalancerSecurityGroups: nlb.connections.securityGroups.map(sg => sg.securityGroupId),
+    });
+
+    // This assignment should work without TypeScript errors under exactOptionalPropertyTypes
+    const iNlb: elbv2.INetworkLoadBalancer = imported;
+
+    // Verify properties are accessible
+    expect(iNlb.loadBalancerArn).toBe(nlb.loadBalancerArn);
+    expect(iNlb.vpc).toBe(vpc);
+    expect(iNlb.metrics).toBeDefined();
+    expect(iNlb.securityGroups).toBeDefined();
+  });
+});
