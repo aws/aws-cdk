@@ -33,7 +33,7 @@ import * as kms from '../../aws-kms';
 import type * as s3 from '../../aws-s3';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import type { Duration, IResource } from '../../core';
-import { Annotations, ArnFormat, Aws, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, ArnFormat, Aspects, Aws, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
 import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -1241,6 +1241,10 @@ export class Project extends ProjectBase {
       this.buildImage.bind(this, this, {});
     }
 
+    // add an explicit dependency between CodeConnections Policy and this Project
+    // if CODECONNECTIONS / CODESTAR_CONNECTIONS source auth is used
+    this.addCodeConnectionsPolicyDependency(resource);
+
     this.node.addValidation({ validate: () => this.validateProject() });
   }
 
@@ -1595,6 +1599,67 @@ export class Project extends ProjectBase {
     // otherwise, creating the Project fails, as it requires these permissions
     // to be already attached to the Project's Role
     project.node.addDependency(policy);
+  }
+
+  /**
+   * Adds an explicit dependency on CodeConnections policy if CODECONNECTIONS / CODESTAR_CONNECTIONS source auth is used.
+   */
+  private addCodeConnectionsPolicyDependency(cfnProject: CfnProject): void {
+    if (!this.role) {
+      return;
+    }
+
+    const role = this.role;
+    const resource = cfnProject;
+    const project = this;
+
+    Aspects.of(this).add({
+      visit: (node: IConstruct): void => {
+        if (node !== project) {
+          return;
+        }
+
+        const source = resource.source as CfnProject.SourceProperty | undefined;
+        if (!source) {
+          return;
+        }
+
+        const auth = source.auth as CfnProject.SourceAuthProperty | undefined;
+        if (!auth) {
+          return;
+        }
+
+        const authType = typeof auth.type === 'string' ? auth.type.toUpperCase() : '';
+        if (authType !== 'CODECONNECTIONS' && authType !== 'CODESTAR_CONNECTIONS') {
+          return;
+        }
+
+        if (role instanceof iam.Role) {
+          let connPolicy = project.node.tryFindChild('CodeConnectionsPolicy') as iam.Policy | undefined;
+          if (!connPolicy) {
+            const connectionArn = auth.resource || '*';
+            connPolicy = new iam.Policy(project, 'CodeConnectionsPolicy', {
+              statements: [
+                new iam.PolicyStatement({
+                  effect: iam.Effect.ALLOW,
+                  actions: [
+                    'codeconnections:UseConnection',
+                    'codeconnections:GetConnection',
+                    'codeconnections:GetConnectionToken',
+                    'codestar-connections:UseConnection',
+                    'codestar-connections:GetConnection',
+                    'codestar-connections:GetConnectionToken',
+                  ],
+                  resources: [connectionArn],
+                }),
+              ],
+            });
+            connPolicy.attachToRole(role);
+          }
+          resource.node.addDependency(connPolicy);
+        }
+      },
+    });
   }
 
   private validateCodePipelineSettings(artifacts: IArtifacts) {
