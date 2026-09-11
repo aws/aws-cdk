@@ -49,19 +49,21 @@ export class DirectS3Read {
   }
 
   /**
-   * The DirectS3Read mode rendered into the CloudFormation `S3FilesConfig`.
-   * One of `ENABLED`, `DISABLED`, or `AUTO`.
+   * The DirectS3Read mode (`ENABLED`, `DISABLED`, or `AUTO`) rendered into the
+   * CloudFormation `S3FilesConfig`.
+   * @internal
    */
-  public readonly mode: string;
+  public readonly _mode: string;
 
   /**
    * The bucket to grant the execution role read access to, when direct reads are enabled.
+   * @internal
    */
-  public readonly bucket?: s3.IBucket;
+  public readonly _bucket?: s3.IBucket;
 
   private constructor(mode: string, bucket?: s3.IBucket) {
-    this.mode = mode;
-    this.bucket = bucket;
+    this._mode = mode;
+    this._bucket = bucket;
   }
 }
 
@@ -188,11 +190,11 @@ export class FileSystem {
     // when the caller enabled direct reads with a bucket (`DirectS3Read.enabled(bucket)`).
     // AUTO is service-decided at runtime, so we don't grant for it.
     const directS3Read = options?.directS3Read;
-    if (directS3Read?.mode === 'ENABLED') {
-      if (directS3Read.bucket) {
+    if (directS3Read?._mode === 'ENABLED') {
+      if (directS3Read._bucket) {
         policies.push(new iam.PolicyStatement({
           actions: ['s3:GetObject', 's3:GetObjectVersion'],
-          resources: [directS3Read.bucket.arnForObjects('*')],
+          resources: [directS3Read._bucket.arnForObjects('*')],
         }));
       } else {
         Annotations.of(ap).addWarningV2(
@@ -215,7 +217,7 @@ export class FileSystem {
         defaultPort: ec2.Port.tcp(FileSystem.NFS_PORT),
       }),
       policies,
-      s3FilesDirectRead: directS3Read?.mode,
+      s3FilesDirectRead: directS3Read?._mode,
     });
   }
 
