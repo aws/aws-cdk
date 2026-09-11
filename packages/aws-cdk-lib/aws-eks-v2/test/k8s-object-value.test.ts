@@ -1,9 +1,9 @@
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import type { App } from '../../core';
 import { Stack, Duration, RemovalPolicy } from '../../core';
 import * as eks from '../lib';
-import { testFixtureCluster } from './util';
 import { KubernetesObjectValue } from '../lib/k8s-object-value';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;

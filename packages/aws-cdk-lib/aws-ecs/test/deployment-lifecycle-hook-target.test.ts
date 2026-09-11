@@ -1,10 +1,10 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 describe('DeploymentLifecycleHookTarget', () => {
   let stack: cdk.Stack;

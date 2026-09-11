@@ -2,6 +2,8 @@ import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import { Annotations } from './annotations';
 import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
+import { Stack } from './stack';
 import { stackOf } from './private/core-construct-finders';
 import { lit } from './private/literal-string';
 import { Token } from './token';
