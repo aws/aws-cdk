@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
@@ -213,6 +213,43 @@ describe('scaling', () => {
     expect(() => Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
       CoolDown: undefined,
     })).toThrow(/Template has 1 resources with type AWS::AutoScaling::ScalingPolicy, but none match as expected/);
+  });
+
+  test('scaleOnMetric without cooldown does not emit cooldown deprecation warning', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // WHEN - cooldown is not set
+    fixture.asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+      ],
+    });
+
+    // THEN - no cooldown warning should be emitted for either the lower or upper policy
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('@aws-cdk/aws-autoscaling:cooldownOnStepScaling'));
+  });
+
+  test('scaleOnMetric with cooldown emits cooldown deprecation warning', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // WHEN - cooldown is explicitly set (deprecated on StepScaling)
+    fixture.asg.scaleOnMetric('Metric', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+      ],
+      cooldown: cdk.Duration.seconds(60),
+    });
+
+    // THEN - the deprecation warning fires because cooldown is explicitly set
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('@aws-cdk/aws-autoscaling:cooldownOnStepScaling'));
   });
 
   test('step scaling', () => {
