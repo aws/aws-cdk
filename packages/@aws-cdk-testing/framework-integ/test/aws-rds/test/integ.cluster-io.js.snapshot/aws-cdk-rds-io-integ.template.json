@@ -503,12 +503,12 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql17",
+    "DBClusterParameterGroupName": "default.aurora-postgresql18",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.9",
+    "EngineVersion": "18.3",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "adminuser",
     "Port": 5432,

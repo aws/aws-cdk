@@ -121,6 +121,9 @@ describe('cluster engine', () => {
     const engine_VER_17_2 = DatabaseClusterEngine.auroraPostgres({
       version: AuroraPostgresEngineVersion.VER_17_2,
     });
+    const engine_VER_18_3 = DatabaseClusterEngine.auroraPostgres({
+      version: AuroraPostgresEngineVersion.VER_18_3,
+    });
 
     // THEN
     expect(engine_VER_13_20.parameterGroupFamily).toEqual('aurora-postgresql13');
@@ -128,6 +131,7 @@ describe('cluster engine', () => {
     expect(engine_VER_15_12.parameterGroupFamily).toEqual('aurora-postgresql15');
     expect(engine_VER_16_3.parameterGroupFamily).toEqual('aurora-postgresql16');
     expect(engine_VER_17_2.parameterGroupFamily).toEqual('aurora-postgresql17');
+    expect(engine_VER_18_3.parameterGroupFamily).toEqual('aurora-postgresql18');
   });
 
   testDeprecated.each([
