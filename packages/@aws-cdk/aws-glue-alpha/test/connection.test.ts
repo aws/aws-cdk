@@ -139,6 +139,10 @@ test('a connection with a name and description', () => {
 
 test('a connection with a custom type', () => {
   const stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'This test intentionally uses a connection type not currently supported by CloudFormation to verify escape-hatch passthrough',
+  });
   new glue.Connection(stack, 'Connection', {
     connectionName: 'name',
     description: 'description',
