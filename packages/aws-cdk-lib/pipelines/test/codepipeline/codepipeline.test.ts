@@ -855,6 +855,109 @@ test('sns topic for manual approval', () => {
   });
 });
 
+test('reuses service role for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack');
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    role: new iam.Role(pipelineStack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+      roleName: 'MyCustomPipelineRole',
+    }),
+  });
+
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+
+  const approval = new cdkp.ManualApprovalStep('Approval');
+
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'codepipeline.amazonaws.com',
+          },
+        },
+      ],
+    },
+    RoleName: 'MyCustomPipelineRole',
+  });
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    RoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
+  });
+
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          RoleArn: { 'Fn::GetAtt': ['CustomRole6D8E6809', 'Arn'] },
+        }),
+      ]),
+    }]),
+  });
+});
+
+test('supports custom role for manual approval', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack');
+  const pipelineRole = new iam.Role(pipelineStack, 'CustomPipelineRole', {
+    assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
+    roleName: 'MyCustomPipelineRole',
+  });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    role: pipelineRole,
+  });
+
+  const stage = new TwoStackApp(app, 'TheApp', { withDependency: false });
+
+  const approval = new cdkp.ManualApprovalStep('Approval', {
+    role: new iam.Role(pipelineStack, 'CustomApprovalRole', {
+      assumedBy: pipelineRole,
+      roleName: 'MyCustomApprovalRole',
+    }),
+  });
+
+  pipeline.addStage(stage, {
+    pre: [approval],
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            AWS: { 'Fn::GetAtt': ['CustomPipelineRoleB4F2C27F', 'Arn'] },
+          },
+        },
+      ],
+    },
+    RoleName: 'MyCustomApprovalRole',
+  });
+
+  template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
+      Name: 'TheApp',
+      Actions: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Approval',
+          RunOrder: 1,
+          RoleArn: { 'Fn::GetAtt': ['CustomApprovalRoleAC05D098', 'Arn'] },
+        }),
+      ]),
+    }]),
+  });
+});
+
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
   reuseCrossRegionSupportStacks?: boolean;
   reuseStageProps?: ReuseStageProps;
