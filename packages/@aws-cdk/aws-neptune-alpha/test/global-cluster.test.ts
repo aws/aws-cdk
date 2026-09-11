@@ -1,0 +1,210 @@
+import { RemovalPolicy, Stack, Tags } from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { CfnDBCluster, CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
+import { DatabaseCluster, EngineVersion, GlobalCluster, InstanceType } from '../lib';
+
+let stack: Stack;
+
+beforeEach(() => {
+  stack = new Stack();
+});
+
+test('creates a global cluster from minimal properties', () => {
+  new GlobalCluster(stack, 'Global');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    Engine: 'neptune',
+    StorageEncrypted: true,
+  });
+});
+
+test('storageEncrypted defaults to true, but can be disabled explicitly', () => {
+  new GlobalCluster(stack, 'Global', { storageEncrypted: false });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    StorageEncrypted: false,
+  });
+});
+
+test('creates a global cluster from all properties', () => {
+  new GlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: 'my-global-cluster',
+    engineVersion: EngineVersion.V1_3_0_0,
+    deletionProtection: true,
+    storageEncrypted: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    GlobalClusterIdentifier: 'my-global-cluster',
+    Engine: 'neptune',
+    EngineVersion: '1.3.0.0',
+    DeletionProtection: true,
+    StorageEncrypted: true,
+  });
+});
+
+test('retains the global cluster by default', () => {
+  new GlobalCluster(stack, 'Global');
+
+  Template.fromStack(stack).hasResource('AWS::Neptune::GlobalCluster', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('applies the removal policy to the underlying resource', () => {
+  new GlobalCluster(stack, 'Global', { removalPolicy: RemovalPolicy.DESTROY });
+
+  Template.fromStack(stack).hasResource('AWS::Neptune::GlobalCluster', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+});
+
+test('enables deletion protection by default when the removal policy is RETAIN', () => {
+  new GlobalCluster(stack, 'Global', { removalPolicy: RemovalPolicy.RETAIN });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    DeletionProtection: true,
+  });
+});
+
+test('an explicit deletionProtection overrides the RETAIN removal policy default', () => {
+  new GlobalCluster(stack, 'Global', {
+    removalPolicy: RemovalPolicy.RETAIN,
+    deletionProtection: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    DeletionProtection: false,
+  });
+});
+
+test('creates a global cluster from a source cluster', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const sourceCluster = new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+  });
+
+  new GlobalCluster(stack, 'Global', { sourceCluster });
+
+  const template = Template.fromStack(stack);
+  // Engine, EngineVersion and StorageEncrypted are inherited from the source cluster.
+  template.hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    Engine: Match.absent(),
+    EngineVersion: Match.absent(),
+    StorageEncrypted: Match.absent(),
+    SourceDBClusterIdentifier: {
+      'Fn::Join': ['', Match.arrayWith([':rds:'])],
+    },
+  });
+});
+
+test('creates a global cluster from a source cluster defined as an L1 CfnDBCluster', () => {
+  const sourceCluster = new CfnDBCluster(stack, 'SourceDatabase', {
+    dbClusterIdentifier: 'my-source-cluster',
+  });
+
+  new GlobalCluster(stack, 'Global', { sourceCluster });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    SourceDBClusterIdentifier: {
+      'Fn::Join': ['', Match.arrayWith([':rds:', { Ref: 'SourceDatabase' }])],
+    },
+  });
+});
+
+test('fails when both sourceCluster and engineVersion are provided', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const sourceCluster = new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+  });
+
+  expect(() => new GlobalCluster(stack, 'Global', {
+    sourceCluster,
+    engineVersion: EngineVersion.V1_3_0_0,
+  })).toThrow(/cannot specify both sourceCluster and engineVersion/);
+});
+
+test('fails when both sourceCluster and storageEncrypted are provided', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const sourceCluster = new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+  });
+
+  expect(() => new GlobalCluster(stack, 'Global', {
+    sourceCluster,
+    storageEncrypted: false,
+  })).toThrow(/cannot specify both sourceCluster and storageEncrypted/);
+});
+
+test.each([
+  ['', /between 1 and 63 characters/],
+  ['a'.repeat(64), /between 1 and 63 characters/],
+  ['1invalid', /must start with a lowercase letter/],
+  ['Invalid', /must start with a lowercase letter/],
+  ['ends-', /must start with a lowercase letter/],
+  ['two--hyphens', /must start with a lowercase letter/],
+])('fails for invalid globalClusterIdentifier %j', (identifier, expected) => {
+  expect(() => new GlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: identifier,
+  })).toThrow(expected);
+});
+
+test('does not validate a tokenized globalClusterIdentifier', () => {
+  expect(() => new GlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: Stack.of(stack).account,
+  })).not.toThrow();
+});
+
+test('propagates tags to the underlying resource', () => {
+  const globalCluster = new GlobalCluster(stack, 'Global');
+  Tags.of(globalCluster).add('Environment', 'production');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::GlobalCluster', {
+    Tags: [{ Key: 'Environment', Value: 'production' }],
+  });
+});
+
+test('a database cluster can join a global database cluster', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const globalCluster = new GlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: 'my-global-cluster',
+  });
+
+  new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+    globalCluster,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+    GlobalClusterIdentifier: { Ref: Match.stringLikeRegexp('Global.*') },
+  });
+});
+
+test('a database cluster can join a global database cluster defined as an L1 CfnGlobalCluster', () => {
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cfnGlobalCluster = new CfnGlobalCluster(stack, 'Global', {
+    globalClusterIdentifier: 'my-global-cluster',
+  });
+
+  new DatabaseCluster(stack, 'Database', {
+    vpc,
+    instanceType: InstanceType.R5_LARGE,
+    globalCluster: cfnGlobalCluster,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+    GlobalClusterIdentifier: { Ref: 'Global' },
+  });
+});
+
+test('import global cluster by identifier', () => {
+  const globalCluster = GlobalCluster.fromGlobalClusterIdentifier(stack, 'Global', 'my-global-cluster');
+  expect(globalCluster.globalClusterIdentifier).toBe('my-global-cluster');
+});

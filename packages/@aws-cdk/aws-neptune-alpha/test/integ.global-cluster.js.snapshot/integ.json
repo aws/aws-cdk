@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "GlobalClusterTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-neptune-global-cluster-integ"
+      ],
+      "assertionStack": "GlobalClusterTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

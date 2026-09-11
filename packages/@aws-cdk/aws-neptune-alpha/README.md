@@ -124,6 +124,79 @@ const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
 });
 ```
 
+## Neptune Global Database
+
+A Neptune global database spans multiple AWS Regions, enabling low-latency global reads and
+disaster recovery from Region-wide outages.
+
+> Visit [Neptune Global Database](https://docs.aws.amazon.com/neptune/latest/userguide/neptune-global-database.html) for more details.
+
+You can create an empty global database cluster and add clusters to it later. Storage is
+encrypted by default:
+
+```ts
+new neptune.GlobalCluster(this, 'GlobalCluster', {
+  globalClusterIdentifier: 'my-global-cluster',
+  engineVersion: neptune.EngineVersion.V1_3_0_0,
+});
+```
+
+Alternatively, you can create a global database from an existing cluster, which becomes its
+primary cluster. In this case the engine, engine version and storage encryption settings are
+inherited from the source cluster:
+
+```ts fixture=with-cluster
+new neptune.GlobalCluster(this, 'GlobalCluster', {
+  globalClusterIdentifier: 'my-global-cluster',
+  sourceCluster: cluster,
+});
+```
+
+`sourceCluster` also accepts the low-level `CfnDBCluster`:
+
+```ts
+import { CfnDBCluster } from 'aws-cdk-lib/aws-neptune';
+
+declare const cfnDbCluster: CfnDBCluster;
+
+new neptune.GlobalCluster(this, 'GlobalCluster', {
+  globalClusterIdentifier: 'my-global-cluster',
+  sourceCluster: cfnDbCluster,
+});
+```
+
+To add a cluster as a member of an existing global database, pass the global database cluster
+when defining the `DatabaseCluster`:
+
+```ts
+const globalCluster = new neptune.GlobalCluster(this, 'GlobalCluster', {
+  globalClusterIdentifier: 'my-global-cluster',
+  engineVersion: neptune.EngineVersion.V1_3_0_0,
+});
+
+new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  engineVersion: neptune.EngineVersion.V1_3_0_0,
+  globalCluster,
+});
+```
+
+`globalCluster` also accepts the low-level `CfnGlobalCluster`, so you're not required to use the
+`GlobalCluster` L2 construct:
+
+```ts
+import { CfnGlobalCluster } from 'aws-cdk-lib/aws-neptune';
+
+declare const cfnGlobalCluster: CfnGlobalCluster;
+
+new neptune.DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  globalCluster: cfnGlobalCluster,
+});
+```
+
 ## Automatic minor version upgrades
 
 By setting `autoMinorVersionUpgrade` to true, Neptune will automatically update

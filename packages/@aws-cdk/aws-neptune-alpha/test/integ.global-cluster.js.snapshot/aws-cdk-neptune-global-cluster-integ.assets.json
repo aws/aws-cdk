@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "8e59fb164b0f98fac612b31d9eb1354fac9b128300aa95145be01aaf5bc843c3": {
+      "displayName": "aws-cdk-neptune-global-cluster-integ Template",
+      "source": {
+        "path": "aws-cdk-neptune-global-cluster-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3cc66568": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8e59fb164b0f98fac612b31d9eb1354fac9b128300aa95145be01aaf5bc843c3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
