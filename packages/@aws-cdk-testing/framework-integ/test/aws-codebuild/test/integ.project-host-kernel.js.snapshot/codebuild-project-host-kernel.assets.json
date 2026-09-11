@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "bca038e5e848829a79ecd8f54f6479f6a32640505e667b2cba7c88c0e069fa7a": {
+      "displayName": "codebuild-project-host-kernel Template",
+      "source": {
+        "path": "codebuild-project-host-kernel.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c4844e32": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bca038e5e848829a79ecd8f54f6479f6a32640505e667b2cba7c88c0e069fa7a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -377,12 +377,36 @@ can use the `environment` property to customize the build environment:
 * `certificate` defines the location of a PEM encoded certificate to import.
 * `computeType` defines the instance type used for the build.
 * `dockerServer` defines the docker server used for the build.
+* `hostKernel` defines the host operating system kernel used for the build. See
+  [Host kernel](#host-kernel) below.
 * `privileged` can be set to `true` to allow privileged access.
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
 Finally, you can also set the build environment `fleet` property to create
 a reserved capacity project. See [Fleet](#fleet) for more information.
+
+### Host kernel
+
+CodeBuild runs your build container on a host instance. You can select which host
+operating system kernel that instance uses with the `hostKernel` property:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+    hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+  },
+});
+```
+
+The host kernel does not affect the build environment operating system, which is
+determined by the `buildImage`. Use `HostKernel.LINUX_KERNEL_LATEST` to always run
+on the latest supported host kernel.
+
+This setting only applies to the `LINUX_CONTAINER`, `ARM_CONTAINER`, `LINUX_EC2` and
+`ARM_EC2` environment types. Specifying it with a Windows, Lambda or Mac build image
+results in a validation error at synthesis time.
 
 ## Images
 
