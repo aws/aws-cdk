@@ -71,12 +71,35 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, permission
+   * to use the key for encryption will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *  - kms:Decrypt
+   *  - kms:GenerateDataKey*
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Subscribe
+   *
+   * Note that this only grants permission to call the `Subscribe` API;
+   * it does not grant permission to receive messages on a particular
+   * delivery protocol. KMS permissions are not required because subscribing
+   * does not access topic message payloads.
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
@@ -225,18 +248,41 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, permission
+   * to use the key for encryption will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *  - kms:Decrypt
+   *  - kms:GenerateDataKey*
    *
    * The use of this method is discouraged. Please use `grants.publish()` instead.
    *
    * [disable-awslint:no-grants]
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
    */
   public grantPublish(grantee: iam.IGrantable) {
     return this.grants.publish(grantee);
   }
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Subscribe
+   *
+   * Note that this only grants permission to call the `Subscribe` API;
+   * it does not grant permission to receive messages on a particular
+   * delivery protocol. KMS permissions are not required because subscribing
+   * does not access topic message payloads.
    *
    * The use of this method is discouraged. Please use `grants.subscribe()` instead.
    *
