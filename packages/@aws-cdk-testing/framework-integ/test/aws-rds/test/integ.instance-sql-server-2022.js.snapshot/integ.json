@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "sql-server-2022-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-sql-server-2022"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "sql-server-2022-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "sqlserver2022integtestDefaultTestDeployAssert"
+    }
+  }
+}
