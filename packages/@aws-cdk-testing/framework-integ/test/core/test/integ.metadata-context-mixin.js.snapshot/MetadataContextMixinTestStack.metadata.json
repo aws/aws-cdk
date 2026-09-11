@@ -1,0 +1,93 @@
+{
+  "/MetadataContextMixinTestStack/AuditQueue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditQueue"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "append-only audit trail buffer",
+          "defaultMutability": "must-never-change",
+          "must": [
+            "never shorten retention below 14d (audit requirement)"
+          ]
+        },
+        "options": {
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "resource belongs to the networked subsystem",
+          "deps": [
+            "NetworkStack"
+          ]
+        },
+        "options": {
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
+        }
+      }
+    }
+  ],
+  "/MetadataContextMixinTestStack/EventsTopic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsTopic"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.MetadataContextMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:metadata-context",
+      "data": {
+        "context": {
+          "why": "resource belongs to the networked subsystem",
+          "deps": [
+            "NetworkStack"
+          ]
+        },
+        "options": {
+          "applyToDescendants": false,
+          "applyToAllResources": false,
+          "inheritAncestorContext": true
+        }
+      }
+    }
+  ],
+  "/MetadataContextMixinTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MetadataContextMixinTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

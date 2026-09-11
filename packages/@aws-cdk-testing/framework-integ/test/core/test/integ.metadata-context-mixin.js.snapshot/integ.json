@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "MetadataContextMixinInteg/DefaultTest": {
+      "stacks": [
+        "MetadataContextMixinTestStack"
+      ],
+      "assertionStack": "MetadataContextMixinInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "MetadataContextMixinIntegDefaultTestDeployAssert0545CD9C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
