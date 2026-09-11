@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "ceccd2c23d69aaccd3cf656858b4521156ad93a01b5f0797cb45acee091bf642": {
+      "displayName": "aws-ecs-patterns-az-rebalancing Template",
+      "source": {
+        "path": "aws-ecs-patterns-az-rebalancing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4871e2fa": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ceccd2c23d69aaccd3cf656858b4521156ad93a01b5f0797cb45acee091bf642.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

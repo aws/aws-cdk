@@ -1,4 +1,4 @@
-import type { DeploymentCircuitBreaker, FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
+import type { AvailabilityZoneRebalancing, DeploymentCircuitBreaker, FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
 export interface FargateServiceBaseProps {
   /**
@@ -96,4 +96,14 @@ export interface FargateServiceBaseProps {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Whether to use Availability Zone rebalancing for the service.
+   *
+   * If enabled, `maxHealthyPercent` must be greater than 100.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
+   * @default - undefined; the underlying FargateService applies its default (ENABLED on service creation)
+   */
+  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
