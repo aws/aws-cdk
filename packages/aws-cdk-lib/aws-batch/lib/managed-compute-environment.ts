@@ -782,7 +782,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
 
-  private readonly _placementGroup?: ec2.IPlacementGroupRef;
+  public readonly placementGroup?: ec2.IPlacementGroup;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
@@ -832,7 +832,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this._placementGroup = props.placementGroup;
+    this.placementGroup = props.placementGroup ? asPlacementGroup(props.placementGroup, this) : undefined;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
@@ -871,10 +871,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
-  }
-
-  public get placementGroup(): ec2.IPlacementGroup | undefined {
-    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 }
 
@@ -1134,7 +1130,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
 
-  private readonly _placementGroup?: ec2.IPlacementGroupRef;
+  public readonly placementGroup?: ec2.IPlacementGroup;
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
@@ -1162,7 +1158,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this._placementGroup = props.placementGroup;
+    this.placementGroup = props.placementGroup ? asPlacementGroup(props.placementGroup, this) : undefined;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
@@ -1212,10 +1208,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
     });
 
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
-  }
-
-  public get placementGroup(): ec2.IPlacementGroup | undefined {
-    return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
 }
 

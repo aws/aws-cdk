@@ -69,7 +69,7 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
     return new Import(scope, id);
   }
 
-  public readonly unmanagedvCPUs?: number | undefined;
+  public readonly unmanagedvCPUs?: number;
 
   private readonly resource: CfnComputeEnvironment;
 
