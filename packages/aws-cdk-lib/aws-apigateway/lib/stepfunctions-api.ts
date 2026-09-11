@@ -81,6 +81,17 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   readonly headers?: boolean;
 
   /**
+   * Include only the named request headers in the execution input, instead of
+   * forwarding all of them. Matching is case-insensitive. The execution input
+   * will include a new key `headers` containing only the matched headers.
+   *
+   * Cannot be used together with `headers: true`.
+   *
+   * @default - all headers are forwarded if `headers` is true, none otherwise
+   */
+  readonly headerNames?: string[];
+
+  /**
    * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
    *
    * {
@@ -135,6 +146,7 @@ export class StepFunctionsRestApi extends RestApi {
       path: props.path?? true,
       querystring: props.querystring?? true,
       headers: props.headers,
+      headerNames: props.headerNames,
       authorizer: props.authorizer,
       useDefaultMethodResponses: props.useDefaultMethodResponses,
     });

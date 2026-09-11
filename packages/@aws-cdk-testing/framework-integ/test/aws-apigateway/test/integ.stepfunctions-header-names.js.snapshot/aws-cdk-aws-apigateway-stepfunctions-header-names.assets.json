@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F Template",
+    "99f319d32fea1c42b1899bb1d135d1faae8ae6cba540c1e4da3147fee20b9a96": {
+      "displayName": "aws-cdk-aws-apigateway-stepfunctions-header-names Template",
       "source": {
-        "path": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F.template.json",
+        "path": "aws-cdk-aws-apigateway-stepfunctions-header-names.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-3d9e0996": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "99f319d32fea1c42b1899bb1d135d1faae8ae6cba540c1e4da3147fee20b9a96.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
