@@ -1,5 +1,6 @@
 import { transformAttributeValueMap, validateJsonata, validateJsonPath } from './private/utils';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
@@ -95,7 +96,7 @@ export class DynamoProjectionExpression {
    */
   public atIndex(index: number): DynamoProjectionExpression {
     if (!this.expression.length) {
-      throw new UnscopedValidationError('Expression must start with an attribute');
+      throw new UnscopedValidationError(lit`ExpressionStartAttribute`, 'Expression must start with an attribute');
     }
 
     this.expression.push(`[${index}]`);
@@ -163,6 +164,9 @@ export class DynamoAttributeValue {
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
+   *
+   * This method only accepts static arrays defined at CDK synthesis time.
+   * Dynamic value resolution via JSONata or JsonPath is not supported for Set types.
    */
   public static fromStringSet(value: string[]) {
     return new DynamoAttributeValue({ SS: value });

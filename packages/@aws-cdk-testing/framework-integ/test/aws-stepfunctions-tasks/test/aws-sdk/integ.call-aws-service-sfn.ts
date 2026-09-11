@@ -17,18 +17,18 @@ const task = new CallAwsService(stack, 'SendTaskSuccess', {
 });
 
 const childStateMachine = new sfn.StateMachine(stack, 'ChildStateMachine', {
-  definition: task,
+  definitionBody: sfn.DefinitionBody.fromChainable(task),
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'ParentStateMachine', {
-  definition: new StepFunctionsStartExecution(stack, 'StepFunctionsStartExecution', {
+  definitionBody: sfn.DefinitionBody.fromChainable(new StepFunctionsStartExecution(stack, 'StepFunctionsStartExecution', {
     stateMachine: childStateMachine,
     integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     input: sfn.TaskInput.fromObject({
       output: sfn.JsonPath.entirePayload,
       taskToken: sfn.JsonPath.taskToken,
     }),
-  }),
+  })),
 });
 
 // THEN

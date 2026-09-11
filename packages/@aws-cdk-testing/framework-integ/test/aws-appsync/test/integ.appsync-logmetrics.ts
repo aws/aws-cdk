@@ -16,7 +16,9 @@ const logConfig: LogConfig = {
 const api = new GraphqlApi(stack, 'Api', {
   authorizationConfig: {},
   name: 'IntegLogRetention',
-  schema: SchemaFile.fromAsset(join(__dirname, 'appsync.test.graphql')),
+  definition: {
+    schema: SchemaFile.fromAsset(join(__dirname, 'appsync.test.graphql')),
+  },
   logConfig,
 });
 

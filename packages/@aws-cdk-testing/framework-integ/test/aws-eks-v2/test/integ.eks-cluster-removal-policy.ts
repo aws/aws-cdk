@@ -1,10 +1,11 @@
-/// !cdk-integ pragma:disable-update-workflow
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * This test checks that all EKS resources can be deployed with removal policies.
@@ -38,9 +39,12 @@ class EksClusterRemovalPolicyStack extends Stack {
       accessScope: { type: eks.AccessScopeType.CLUSTER },
       policy: eks.AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
     });
+    const accessEntryRole = new iam.Role(this, 'AccessEntryRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
     new eks.AccessEntry(this, 'AccessEntry', {
       cluster,
-      principal: 'arn:aws:iam::123456789012:user/test-user',
+      principal: accessEntryRole.roleArn,
       accessPolicies: [accessPolicy],
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -91,7 +95,8 @@ class EksClusterRemovalPolicyStack extends Stack {
     new eks.HelmChart(this, 'HelmChart', {
       cluster,
       chart: 'redis',
-      repository: 'https://charts.bitnami.com/bitnami',
+      repository: 'oci://registry-1.docker.io/bitnamicharts/redis',
+      version: '28.0.7',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -129,7 +134,11 @@ class EksClusterRemovalPolicyStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
+  },
+});
 
 const stack = new EksClusterRemovalPolicyStack(app, 'EksClusterV2RemovalPolicyStack');
 

@@ -44,7 +44,7 @@ const definition = new sfn.Pass(stack, 'Start', {
 }).next(submitJob);
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 const integTest = new integ.IntegTest(app, 'cdk-submit-job-queue-json-path-integ', {

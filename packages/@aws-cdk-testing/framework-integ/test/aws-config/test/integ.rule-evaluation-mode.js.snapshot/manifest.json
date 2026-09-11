@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "ConfigRuleEvaluationMode.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80b3c28ad17c580c5e58a49c6f3379a6862fcb4cf9733e5d145cf55397e9ae46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47f48a2030d33855bd3b460015e5f534c21221c071fe69e6d03d9ed185392710.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,123 +33,7 @@
       "dependencies": [
         "ConfigRuleEvaluationMode.assets"
       ],
-      "metadata": {
-        "/ConfigRuleEvaluationMode/CustomFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionServiceRoleD3F73B79"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionBADD59E7"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "lambdaFunction": "*",
-              "periodic": true,
-              "ruleScope": "*",
-              "evaluationModes": "*"
-            }
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomRuleB1CBBADE"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/ManagedRule": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "identifier": "*",
-              "evaluationModes": "*"
-            }
-          }
-        ],
-        "/ConfigRuleEvaluationMode/ManagedRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ManagedRule7126A2A0"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyText": "*",
-              "enableDebugLog": true,
-              "ruleScope": "*",
-              "evaluationModes": "*"
-            }
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CustomPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomPolicy6CB3FDA5"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ConfigRuleEvaluationMode/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ConfigRuleEvaluationMode.metadata.json",
       "displayName": "ConfigRuleEvaluationMode"
     },
     "ConfigRuleEvaluationModeTestDefaultTestDeployAssert7587D529.assets": {
@@ -184,20 +68,7 @@
       "dependencies": [
         "ConfigRuleEvaluationModeTestDefaultTestDeployAssert7587D529.assets"
       ],
-      "metadata": {
-        "/ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ConfigRuleEvaluationModeTestDefaultTestDeployAssert7587D529.metadata.json",
       "displayName": "ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -498,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -699,16 +571,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

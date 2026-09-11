@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
-import { Fn, Stack } from '../../core';
+import { Fn, Stack, Validations } from '../../core';
 import * as apigw from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -14,26 +14,26 @@ describe('domains', () => {
 
     // WHEN
     const regionalDomain = new apigw.DomainName(stack, 'my-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/region',
       certificate: cert,
       endpointType: apigw.EndpointType.REGIONAL,
     });
 
     const edgeDomain = new apigw.DomainName(stack, 'your-domain', {
-      domainName: 'example.com',
+      domainName: 'example.com/edge',
       certificate: cert,
       endpointType: apigw.EndpointType.EDGE,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/region',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
-      'DomainName': 'example.com',
+      'DomainName': 'example.com/edge',
       'EndpointConfiguration': { 'Types': ['EDGE'] },
       'CertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
@@ -353,10 +353,11 @@ describe('domains', () => {
     // WHEN
     new apigw.DomainName(stack, 'Domain', {
       domainName: 'foo.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.EDGE,
       mapping: api,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -382,11 +383,12 @@ describe('domains', () => {
       // WHEN
       new apigw.DomainName(stack, 'Domain', {
         domainName: 'foo.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
         endpointType: apigw.EndpointType.REGIONAL,
         mapping: api,
         basePath: 'v1/api',
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
@@ -413,7 +415,7 @@ describe('domains', () => {
       expect(() => {
         new apigw.DomainName(stack, 'Domain', {
           domainName: 'foo.com',
-          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
           endpointType: apigw.EndpointType.EDGE,
           mapping: api,
           basePath: 'v1/api',
@@ -431,7 +433,7 @@ describe('domains', () => {
       expect(() => {
         new apigw.DomainName(stack, 'Domain', {
           domainName: 'foo.com',
-          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+          certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
           mapping: api,
           basePath: 'v1/api',
           securityPolicy: apigw.SecurityPolicy.TLS_1_0,
@@ -448,8 +450,10 @@ describe('domains', () => {
       // WHEN
       const domain = new apigw.DomainName(stack, 'Domain', {
         domainName: 'foo.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
       domain.addApiMapping(api.deploymentStage);
       domain.addApiMapping(api.deploymentStage, { basePath: '//' });
       domain.addApiMapping(api.deploymentStage, {
@@ -517,8 +521,9 @@ describe('domains', () => {
 
       const domain = api.addDomainName('Domain', {
         domainName: 'foo.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       });
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
       // WHEN
       domain.addApiMapping(api.deploymentStage, {
@@ -560,7 +565,7 @@ describe('domains', () => {
       // WHEN
       const domain = new apigw.DomainName(stack, 'Domain', {
         domainName: 'foo.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
         mapping: api,
         basePath: 'v1/path',
       });
@@ -581,9 +586,10 @@ describe('domains', () => {
     const api2 = new apigw.RestApi(stack, 'api2');
     const domain = new apigw.DomainName(stack, 'my-domain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -828,13 +834,17 @@ describe('domains', () => {
   test('"addBasePathMapping" can be used to add base path mapping to the domain with specific stage', () => {
     // GIVEN
     const stack = new Stack();
-    const api1 = new apigw.RestApi(stack, 'api1');
+    const api1 = new apigw.RestApi(stack, 'api1', {
+      deploy: false,
+    });
     const api2 = new apigw.RestApi(stack, 'api2');
     const domain = new apigw.DomainName(stack, 'my-domain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       endpointType: apigw.EndpointType.REGIONAL,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     api1.root.addMethod('GET');
     api2.root.addMethod('GET');
 
@@ -885,13 +895,14 @@ describe('domains', () => {
         bucket,
         key: 'someca.pem',
       },
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
-      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
       'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem' },
     });
   });
@@ -901,17 +912,19 @@ describe('domains', () => {
     const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert2', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert2', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       mtls: {
         bucket,
         key: 'someca.pem',
         version: 'version',
       },
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
+
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
-      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      'RegionalCertificateArn': 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
       'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem', 'TruststoreVersion': 'version' },
     });
   });
@@ -922,10 +935,11 @@ describe('domains', () => {
     new apigw.RestApi(stack, 'restApiWithStage', {
       domainName: {
         domainName: 'example.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -944,6 +958,10 @@ describe('domains', () => {
   test('base path mapping configures stage for SpecRestApi creation', () => {
     // GIVEN
     const stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3660',
+      reason: 'We mix resources and Flutter definitions on purpose',
+    });
 
     const definition = {
       key1: 'val1',
@@ -953,10 +971,11 @@ describe('domains', () => {
       apiDefinition: apigw.ApiDefinition.fromInline(definition),
       domainName: {
         domainName: 'example.com',
-        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+        certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
         endpointType: apigw.EndpointType.REGIONAL,
       },
     }).root.addMethod('GET');
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
@@ -980,10 +999,11 @@ describe('domains', () => {
 
     const domain = new apigw.DomainName(stack, 'Domain', {
       domainName: 'foo.com',
-      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
       securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
       endpointAccessMode: apigw.EndpointAccessMode.STRICT,
     });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W9002', reason: 'hardcoded ARN intentional for tests' });
 
     // WHEN - should not throw
     expect(() => {

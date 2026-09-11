@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-glue-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Glue",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-glue",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -67,7 +67,10 @@
   "cdk-build": {
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
-    }
+    },
+    "pre": [
+      "./scripts/airlift-custom-resource-handlers.sh"
+    ]
   },
   "keywords": [
     "aws",
@@ -83,8 +86,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.196.1",
+    "@aws-cdk/integ-runner": "^2.202.3",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
@@ -99,8 +103,8 @@
   "engines": {
     "node": ">= 20.0.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },

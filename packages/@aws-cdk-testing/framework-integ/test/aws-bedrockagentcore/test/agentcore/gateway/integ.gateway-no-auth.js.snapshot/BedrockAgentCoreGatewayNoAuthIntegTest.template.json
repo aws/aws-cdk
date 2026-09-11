@@ -1,0 +1,279 @@
+{
+ "Resources": {
+  "NoAuthGatewayServiceRole73E92F41": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/integ-test-no-auth-gateway*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway integ-test-no-auth-gateway"
+   }
+  },
+  "NoAuthGatewayServiceRoleDefaultPolicy21867BE2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestFunction22AD90FC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestFunction22AD90FC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "NoAuthGatewayServiceRoleDefaultPolicy21867BE2",
+    "Roles": [
+     {
+      "Ref": "NoAuthGatewayServiceRole73E92F41"
+     }
+    ]
+   }
+  },
+  "NoAuthGateway34D8B21F": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerType": "NONE",
+    "Description": "Integration test gateway with No Auth authorizer",
+    "Name": "integ-test-no-auth-gateway",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "NoAuthGatewayServiceRole73E92F41",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "NoAuthGatewayLambdaTarget244BAC7C": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "Lambda target for No Auth gateway",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "NoAuthGateway34D8B21F",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "lambda-public-target",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Lambda": {
+       "LambdaArn": {
+        "Fn::GetAtt": [
+         "TestFunction22AD90FC",
+         "Arn"
+        ]
+       },
+       "ToolSchema": {
+        "InlinePayload": [
+         {
+          "Description": "A public tool that can be discovered without authentication",
+          "InputSchema": {
+           "Properties": {
+            "query": {
+             "Description": "Query parameter",
+             "Type": "string"
+            }
+           },
+           "Required": [
+            "query"
+           ],
+           "Type": "object"
+          },
+          "Name": "public_tool"
+         }
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "TestFunctionServiceRole6ABD93C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestFunction22AD90FC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Received event:', JSON.stringify(event));\n      return {\n        statusCode: 200,\n        body: JSON.stringify({\n          message: 'Hello from Lambda!',\n          input: event,\n        }),\n      };\n    };\n  "
+    },
+    "Description": "Lambda function for No Auth Gateway integration test",
+    "FunctionName": "integ-test-no-auth-gateway-lambda",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestFunctionServiceRole6ABD93C7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "TestFunctionServiceRole6ABD93C7"
+   ]
+  },
+  "TestFunctionLogGroupE7744A08": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TestFunction22AD90FC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

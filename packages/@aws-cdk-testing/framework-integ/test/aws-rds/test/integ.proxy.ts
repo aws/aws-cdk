@@ -37,7 +37,8 @@ const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({
     version: INTEG_TEST_LATEST_AURORA_POSTGRES,
   }),
-  instanceProps: { vpc },
+  vpc,
+  writer: rds.ClusterInstance.provisioned('writer'),
 });
 
 // The `DatabaseProxy` internally adds a dependency so that the `TargetGroup` is created after the `DatabaseCluster` is created.

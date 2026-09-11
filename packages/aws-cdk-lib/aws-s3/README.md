@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -170,7 +186,7 @@ s3.BucketGrants.fromBucket(bucket).delete(principal);
 
 If `bucket` is an instance of `CfnBucket`, and the grants process involves adding statements
 to the bucket policy, then the `BucketGrants` class will, by default, do the same thing it
-would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one) 
+would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one)
 and add the necessary statements to it.
 
 But if you want to customize this behavior, you can register an instance of `IResourcePolicyFactory`
@@ -201,7 +217,7 @@ ResourceWithPolicies.register(scope, 'AWS::S3::Bucket', new MyFactory());
 effectively providing an ad-hoc way to extend the behavior of L1s to support grants the same way
 as L2s do.
 
-The `BucketGrants` class has many methods, but two of them have a special behavior. These two 
+The `BucketGrants` class has many methods, but two of them have a special behavior. These two
 accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
 - `read`
 - `readWrite`
@@ -254,6 +270,26 @@ const bucket = new s3.Bucket(this, 'Bucket', {
   minimumTLSVersion: 1.2,
 });
 ```
+
+## Bucket Naming
+
+By default, CloudFormation assigns a unique bucket name. You can also specify a `bucketName` directly, but this creates a globally unique name that could conflict with other accounts.
+
+### Account-Regional Bucket Namespace
+
+Using `bucketNamePrefix` with `bucketNamespace` set to `ACCOUNT_REGIONAL`, the bucket name is scoped to your account and region, reducing the risk of name conflicts. CloudFormation appends `-<accountId>-<region>-an` to the prefix to form the full name.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  bucketNamePrefix: 'my-app',
+  bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+});
+// Resulting bucket name: my-app-123456789012-us-east-1-an
+```
+
+Note that `bucketName` cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+
+For more information, see the [AWS documentation on bucket namespaces](https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html).
 
 ## Sharing buckets between stacks
 
@@ -669,8 +705,8 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
   },
 });
 
-// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent 
-// generated bucket policy to allow access log delivery would append 
+// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent
+// generated bucket policy to allow access log delivery would append
 // to the current policy.
 s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
 
@@ -1097,42 +1133,58 @@ sourceBucket.grantReplicationPermission(replicationRole, {
 
 You can also set a destination bucket from a different account as the replication destination.
 
-In this case, the bucket policy for the destination bucket is required, to configure it through CDK use  `addReplicationPolicy()` method to add bucket policy on destination bucket.
-In a cross-account scenario, where the source and destination buckets are owned by different AWS accounts, you can use a KMS key to encrypt object replicas. However, the KMS key owner must grant the source bucket owner permission to use the KMS key.
-For more information, please refer to https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html .
-> **NOTE:** AWS managed keys don't allow cross-account use, and therefore can't be used to perform cross-account replication.
-
-If you need to override the bucket ownership to destination account pass the account value to the method to provide permissions to override bucket owner.
-`addReplicationPolicy(bucket.replicationRoleArn, true, '11111111111')`;
-
-
-However, if the destination bucket is a referenced bucket, CDK cannot set the bucket policy,
-so you will need to [configure the necessary bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html) separately.
+Cross-account replication requires a bucket policy on the destination bucket. If the destination
+bucket is managed by CDK, use `addReplicationPolicy()` to add the required permissions.
 
 ```ts
-// The destination bucket in a different account.
-declare const destinationBucket: s3.IBucket;
-declare const replicationRole: iam.IRole;
+// A bucket defined in a CDK stack in the destination account.
+declare const destinationBucket: s3.Bucket;
+// The account ID that owns the source bucket.
+declare const sourceAccountId: string;
+
 const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
   versioned: true,
-  // Optional. If not specified, a new role will be created.
-  replicationRole,
   replicationRules: [
     {
       destination: destinationBucket,
       priority: 1,
-      // Whether to want to change replica ownership to the AWS account that owns the destination bucket.
-      // The replicas are owned by same AWS account that owns the source object by default.
+      // Change replica ownership to the account that owns the destination bucket.
       accessControlTransition: true,
     },
   ],
 });
 
-//Add permissions to the destination after replication role is created
+// Add the required permissions to the destination bucket policy.
 if (sourceBucket.replicationRoleArn) {
-  destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
-  }
+  destinationBucket.addReplicationPolicy(
+    sourceBucket.replicationRoleArn,
+    true,
+    sourceAccountId,
+  );
+}
 ```
+
+The account ID passed to `addReplicationPolicy()` is the **source** bucket owner's account ID. CDK
+uses the destination bucket construct's account for the replication configuration.
+
+If the destination bucket uses `ObjectOwnership.BUCKET_OWNER_ENFORCED`, the destination bucket owner
+already owns all replicated objects and `accessControlTransition` is not required. The ownership
+override shown above is useful for ACL-enabled destination buckets.
+
+When importing an existing cross-account destination into the source stack, use
+`Bucket.fromBucketAttributes()` and set its `account` attribute to the destination bucket owner's
+account ID. `Bucket.fromBucketArn()` and `Bucket.fromBucketName()` assume that the bucket belongs to
+the same account as the scope where it is imported. Referenced buckets cannot have their bucket
+policy modified by CDK, so configure the
+[required bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html)
+separately in the destination account.
+
+In a cross-account scenario, you can use a KMS key to encrypt object replicas. The KMS key owner
+must grant the source bucket owner permission to use the key. AWS managed keys do not allow
+cross-account use and therefore cannot be used for cross-account replication.
+
+For more information, see
+[Changing the replica owner](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html).
 
 ## Mixins
 

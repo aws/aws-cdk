@@ -514,6 +514,30 @@
     "TaskDefTaskRole1EDB4A67"
    ]
   },
+  "ServiceSecurityGroupfromawsecsintegLBSecurityGroupC30F5EB480CD1B9463": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegLBSecurityGroupC30F5EB4:80",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ServiceSecurityGroupC96ED6A7",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "LBSecurityGroup8A41EA2B",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
   "ServiceTaskCountTarget23E25614": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
    "Properties": {
@@ -618,18 +642,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegLBC73915FE",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "LBSecurityGrouptoawsecsintegServiceSecurityGroup48EE4368807B287D7F": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegServiceSecurityGroup48EE4368:80",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ServiceSecurityGroupC96ED6A7",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "LBSecurityGroup8A41EA2B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
    }
   },
   "LBPublicListener6E1F3D94": {

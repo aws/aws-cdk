@@ -548,7 +548,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -801,7 +801,7 @@
     },
     "EnableLocalWriteForwarding": true,
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.7",
+    "EngineVersion": "17.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

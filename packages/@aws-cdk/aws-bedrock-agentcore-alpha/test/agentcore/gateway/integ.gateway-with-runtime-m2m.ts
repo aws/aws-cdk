@@ -14,7 +14,7 @@ const gateway = new agentcore.Gateway(stack, 'TestGateway', {
 });
 
 const calculatorFunction = new lambda.Function(stack, 'TestFunction', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event, context) => {

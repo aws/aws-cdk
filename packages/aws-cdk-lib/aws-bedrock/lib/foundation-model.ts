@@ -272,8 +272,17 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-6-v1". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new FoundationModelIdentifier('anthropic.claude-opus-4-6-v1');
 
+  /** Base model "anthropic.claude-opus-4-7". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_7 = new FoundationModelIdentifier('anthropic.claude-opus-4-7');
+
+  /** Base model "anthropic.claude-opus-4-8". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_8 = new FoundationModelIdentifier('anthropic.claude-opus-4-8');
+
   /** Base model "anthropic.claude-sonnet-4-6". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
+
+  /** Base model "anthropic.claude-sonnet-5". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -334,6 +343,33 @@ export class FoundationModelIdentifier {
 
   /** Base model "openai.gpt-oss-20b-1:0". */
   public static readonly OPENAI_GPT_OSS_20B_1 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
+
+  /** Base model "openai.gpt-oss-safeguard-120b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-120b');
+
+  /** Base model "openai.gpt-oss-safeguard-20b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-20b');
+
+  /** Base model "openai.gpt-5.4". */
+  public static readonly OPENAI_GPT_5_4 = new FoundationModelIdentifier('openai.gpt-5.4');
+
+  /** Base model "openai.gpt-5.5". */
+  public static readonly OPENAI_GPT_5_5 = new FoundationModelIdentifier('openai.gpt-5.5');
+
+  /** Base model "openai.gpt-5.6-sol". */
+  public static readonly OPENAI_GPT_5_6_SOL = new FoundationModelIdentifier('openai.gpt-5.6-sol');
+
+  /** Base model "openai.gpt-5.6-terra". */
+  public static readonly OPENAI_GPT_5_6_TERRA = new FoundationModelIdentifier('openai.gpt-5.6-terra');
+
+  /** Base model "openai.gpt-5.6-luna". */
+  public static readonly OPENAI_GPT_5_6_LUNA = new FoundationModelIdentifier('openai.gpt-5.6-luna');
+
+  /** Base model "openai.gpt-5.6-cyber". */
+  public static readonly OPENAI_GPT_5_6_CYBER = new FoundationModelIdentifier('openai.gpt-5.6-cyber');
+
+  /** Base model "openai.gpt-daybreak-blue-5.6-sol". */
+  public static readonly OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL = new FoundationModelIdentifier('openai.gpt-daybreak-blue-5.6-sol');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
@@ -428,6 +464,15 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
   public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
 
+  /** Base model "minimax.minimax-m2". */
+  public static readonly MINIMAX_MINIMAX_M2 = new FoundationModelIdentifier('minimax.minimax-m2');
+
+  /** Base model "minimax.minimax-m2.1". */
+  public static readonly MINIMAX_MINIMAX_M2_1 = new FoundationModelIdentifier('minimax.minimax-m2.1');
+
+  /** Base model "minimax.minimax-m2.5". */
+  public static readonly MINIMAX_MINIMAX_M2_5 = new FoundationModelIdentifier('minimax.minimax-m2.5');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -514,6 +559,15 @@ export class FoundationModelIdentifier {
 
   /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
   public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "zai.glm-4.7". */
+  public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');
+
+  /** Base model "zai.glm-4.7-flash". */
+  public static readonly ZAI_GLM_4_7_FLASH = new FoundationModelIdentifier('zai.glm-4.7-flash');
+
+  /** Base model "zai.glm-5". */
+  public static readonly ZAI_GLM_5 = new FoundationModelIdentifier('zai.glm-5');
 
   /**
    * Constructor for foundation model identifier

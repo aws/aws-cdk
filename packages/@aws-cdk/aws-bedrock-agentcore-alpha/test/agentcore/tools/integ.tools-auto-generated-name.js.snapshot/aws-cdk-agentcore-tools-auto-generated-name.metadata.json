@@ -1,0 +1,72 @@
+{
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Browser5046F7C9"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeInterpreterA1155DAC"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserServiceRoleE2CB4014"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeInterpreterServiceRole79E429DF"
+    }
+  ]
+}

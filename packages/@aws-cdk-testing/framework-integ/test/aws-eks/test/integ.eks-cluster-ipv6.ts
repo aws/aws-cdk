@@ -13,7 +13,7 @@ import type * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
@@ -200,12 +200,14 @@ class EksClusterStack extends Stack {
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
   private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
+    // deploy a dashboard through a helm chart
+    // As Kubernetes dashboard is retired, we will use headlamp instead.
+    // See https://github.com/kubernetes-retired/dashboard?tab=readme-ov-file#important
     this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
-      version: '6.0.8',
-      repository: 'https://kubernetes.github.io/dashboard/',
+      chart: 'headlamp',
+      // https://kubernetes-sigs.github.io/headlamp/
+      version: '0.39.0',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
     });
   }
 
@@ -357,6 +359,7 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

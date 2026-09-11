@@ -36,6 +36,7 @@ export class CdkCore extends ExternalModule {
   public readonly unionMapper = makeCallableExpr(this, 'unionMapper');
   public readonly requireProperty = makeCallableExpr(this, 'requireProperty');
   public readonly isResolvableObject = makeCallableExpr(this, 'isResolvableObject');
+  public readonly traceProperty = makeCallableExpr(this, 'traceProperty');
   public readonly mapArrayInPlace = makeCallableExpr(this, 'mapArrayInPlace');
 
   public readonly ValidationResult = $T(Type.fromName(this, 'ValidationResult'));

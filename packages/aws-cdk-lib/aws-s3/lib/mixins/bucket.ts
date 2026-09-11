@@ -1,7 +1,7 @@
 import type { IConstruct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import { CfnDeletionPolicy, CustomResource, Tags } from '../../../core';
-import { findParentL2Scope } from '../../../core/lib/helpers-internal';
+import { ConstructReflection } from '../../../core/lib/helpers-internal';
 import { Mixin } from '../../../core/lib/mixins';
 import { AutoDeleteObjectsProvider } from '../../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import { BlockPublicAccess, type BlockPublicAccessOptions } from '../bucket';
@@ -46,7 +46,7 @@ export class BucketAutoDeleteObjects extends Mixin {
     const bucketRef = construct.bucketRef;
 
     // We prefer to attach the CR to the L2 scope if we have one
-    const scope = findParentL2Scope(construct) ?? construct;
+    const scope = ConstructReflection.of(construct).defaultChildOwner ?? construct;
     const provider = AutoDeleteObjectsProvider.getOrCreateProvider(scope, BucketAutoDeleteObjects.AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting objects in ${bucketRef.bucketName} S3 bucket.`,

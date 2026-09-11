@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "8ff91f93bd08f7b02b2a254c230f4f0d478aa55cc96e5114bcc80e95fd33b398": {
+    "e5f840780c4ba5138c7372baf8531606ec08fcd68748e2fc85792ca6cd796e4b": {
+      "displayName": "aws-cdk-project-windows-2019-fleet Template",
       "source": {
         "path": "aws-cdk-project-windows-2019-fleet.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-020ae060": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8ff91f93bd08f7b02b2a254c230f4f0d478aa55cc96e5114bcc80e95fd33b398.json",
+          "objectKey": "e5f840780c4ba5138c7372baf8531606ec08fcd68748e2fc85792ca6cd796e4b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -51,7 +51,7 @@ class TestStack extends Stack {
     const endTask = new sfn.Pass(this, 'End Task');
 
     new sfn.StateMachine(this, 'State Machine', {
-      definition: sfn.Chain.start(startTask).next(crawlerTask).next(endTask),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(crawlerTask).next(endTask)),
     });
   }
 }

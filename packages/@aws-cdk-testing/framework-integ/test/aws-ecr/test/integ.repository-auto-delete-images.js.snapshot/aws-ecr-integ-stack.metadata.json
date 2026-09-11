@@ -1,0 +1,36 @@
+{
+  "/aws-ecr-integ-stack/Repo": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "repositoryName": "*",
+        "removalPolicy": "destroy",
+        "emptyOnDelete": true
+      }
+    }
+  ],
+  "/aws-ecr-integ-stack/RepositoryURI": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RepositoryURI"
+    }
+  ],
+  "/aws-ecr-integ-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-ecr-integ-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-ecr-integ-stack/Repo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Repo02AC86CF"
+    }
+  ]
+}

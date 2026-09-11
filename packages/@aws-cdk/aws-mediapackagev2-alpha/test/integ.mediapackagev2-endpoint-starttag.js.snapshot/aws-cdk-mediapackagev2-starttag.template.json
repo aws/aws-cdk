@@ -1,0 +1,142 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2starttagGroupD24D3852"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2starttagGroupD24D3852",
+    "ChannelName": "awscdkmediapackagev2starttagChannel9BD0E930",
+    "Description": "Channel with StartTag examples",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HlsEndpointB1B8983D": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2starttagGroupD24D3852",
+    "ChannelName": "awscdkmediapackagev2starttagChannel9BD0E930",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "hls-start",
+      "StartTag": {
+       "TimeOffset": 10
+      }
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2starttagHlsEndpoint1B90102C",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LlHlsEndpoint8DEAE007": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2starttagGroupD24D3852",
+    "ChannelName": "awscdkmediapackagev2starttagChannel9BD0E930",
+    "ContainerType": "CMAF",
+    "LowLatencyHlsManifests": [
+     {
+      "ManifestName": "ll-hls-precise",
+      "StartTag": {
+       "Precise": true,
+       "TimeOffset": -30
+      }
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2starttagLlHlsEndpointDEB5FDC9",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MultiManifestEndpointAA41686E": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2starttagGroupD24D3852",
+    "ChannelName": "awscdkmediapackagev2starttagChannel9BD0E930",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "hls-from-start",
+      "StartTag": {
+       "Precise": true,
+       "TimeOffset": 5
+      }
+     }
+    ],
+    "LowLatencyHlsManifests": [
+     {
+      "ManifestName": "ll-hls-from-live",
+      "StartTag": {
+       "TimeOffset": -20
+      }
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2starttagMultiManifestEndpoint6232684A",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

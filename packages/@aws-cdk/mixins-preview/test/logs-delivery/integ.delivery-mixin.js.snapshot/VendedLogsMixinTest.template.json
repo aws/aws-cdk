@@ -24,7 +24,7 @@
     "OutputFormat": "json"
    },
    "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
+    "DeliveryLogGroupPolicyResourcePolicy1BCF8DEE"
    ]
   },
   "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery2D4329FE": {
@@ -72,7 +72,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857": {
+  "DeliveryLogGroupPolicyResourcePolicy1BCF8DEE": {
    "Type": "AWS::Logs::ResourcePolicy",
    "Properties": {
     "PolicyDocument": {
@@ -102,11 +102,11 @@
          "Arn"
         ]
        },
-       ":log-stream:*\"}],\"Version\":\"2012-10-17\"}"
+       "\"}],\"Version\":\"2012-10-17\"}"
       ]
      ]
     },
-    "PolicyName": "VendedLogsMixinTestEventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDE18FD44"
+    "PolicyName": "VendedLogsMixinTestDeliveryLogGroupPolicyD7377ABB"
    }
   }
  },

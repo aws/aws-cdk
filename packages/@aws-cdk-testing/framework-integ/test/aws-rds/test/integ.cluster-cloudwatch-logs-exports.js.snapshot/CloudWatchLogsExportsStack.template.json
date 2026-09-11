@@ -672,7 +672,7 @@
      "instance"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.7",
+    "EngineVersion": "17.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
