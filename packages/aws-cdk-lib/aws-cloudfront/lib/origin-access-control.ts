@@ -137,6 +137,15 @@ export enum SigningProtocol {
    * The AWS Signature Version 4 signing protocol.
    */
   SIGV4 = 'sigv4',
+  /**
+   * The AWS Signature Version 4A signing protocol.
+   *
+   * Signs requests for multiple AWS Regions, as needed by origins such as
+   * Amazon S3 Multi-Region Access Points.
+   *
+   * @see https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html
+   */
+  SIGV4A = 'sigv4a',
 }
 
 /**
@@ -153,6 +162,11 @@ export class Signing {
    * using the AWS Signature Version 4 signing protocol.
    */
   public static readonly SIGV4_NO_OVERRIDE = new Signing(SigningProtocol.SIGV4, SigningBehavior.NO_OVERRIDE);
+
+  /**
+   * Sign all origin requests using the AWS Signature Version 4A signing protocol.
+   */
+  public static readonly SIGV4A_ALWAYS = new Signing(SigningProtocol.SIGV4A, SigningBehavior.ALWAYS);
 
   /**
    * Do not sign any origin requests.
