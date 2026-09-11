@@ -124,7 +124,36 @@ rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
 }));
 ```
 
-The cloudwatch log event target will create an AWS custom resource internally which will default
+By default, the LogGroup event target will create a LogGroup Resource Policy to allow EventBridge
+to put log events to the target LogGroup. If you want to create a LogGroup Resource Policy separately,
+set `createLogGroupResourcePolicy` to `false`.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+declare const logGroup: logs.LogGroup;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+  createLogGroupResourcePolicy: false,
+}));
+
+new logs.CfnResourcePolicy(this, 'EventBridgePolicy', {
+  policyName: 'EventBridgePolicy',
+  policyDocument: JSON.stringify(new iam.PolicyDocument({
+    statements: [new iam.PolicyStatement({
+      principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+      actions: ['logs:PutLogEvent', 'logs:CreateLogStream'],
+      resources: [this.formatArn({
+        service: 'logs', resource: 'log-group', resourceName: '/aws/events/*',
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    })]
+  })),
+});
+```
+
+The LogGroup Resource Policy is created using an AWS custom resource internally which will default
 to set `installLatestAwsSdk` to `true`. This may be problematic for CN partition deployment. To
 workaround this issue, set `installLatestAwsSdk` to `false`.
 
