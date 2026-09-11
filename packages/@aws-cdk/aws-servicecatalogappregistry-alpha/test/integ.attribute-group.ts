@@ -29,6 +29,21 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 attributeGroup.associateWith(application);
 
+// Import an attribute group with its known attributes so they can be read back via the
+// `attributes` accessor (AppRegistry does not return attributes from an ARN).
+const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupAttributes(stack, 'ImportedAttributeGroup', {
+  attributeGroupArn: 'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
+  attributes: { stage: 'beta', owner: 'platform' },
+});
+
+// Surface the `attributes` accessor for both a created and an imported attribute group.
+new cdk.CfnOutput(stack, 'CreatedAttributeGroupAttributes', {
+  value: JSON.stringify(attributeGroup.attributes),
+});
+new cdk.CfnOutput(stack, 'ImportedAttributeGroupAttributes', {
+  value: JSON.stringify(importedAttributeGroup.attributes),
+});
+
 new integ.IntegTest(app, 'AttributeGroupIntegTest', {
   testCases: [stack],
 });

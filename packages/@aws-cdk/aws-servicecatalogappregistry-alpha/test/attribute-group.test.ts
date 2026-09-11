@@ -78,6 +78,39 @@ describe('Attribute Group', () => {
     expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
   }),
 
+  test('created attribute group exposes its attributes', () => {
+    const attributes = { key: 'value', nested: { a: 1, b: ['x', 'y'] } };
+    const attributeGroup = new appreg.AttributeGroup(stack, 'MyAttributeGroup', {
+      attributeGroupName: 'testAttributeGroup',
+      attributes,
+    });
+    expect(attributeGroup.attributes).toEqual(attributes);
+  }),
+
+  test('attribute group imported via fromAttributeGroupAttributes exposes the provided attributes', () => {
+    const attributes = { stage: 'prod', team: 'platform' };
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupAttributes(stack, 'MyAttributeGroup', {
+      attributeGroupArn: 'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
+      attributes,
+    });
+    expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributes).toEqual(attributes);
+  }),
+
+  test('attribute group imported via fromAttributeGroupAttributes without attributes resolves attributes to undefined', () => {
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupAttributes(stack, 'MyAttributeGroup', {
+      attributeGroupArn: 'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i',
+    });
+    expect(attributeGroup.attributes).toBeUndefined();
+  }),
+
+  test('attribute group imported by ARN resolves attributes to undefined', () => {
+    const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
+      'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributeGroupId).toEqual('0aqmvxvgmry0ecc4mjhwypun6i');
+    expect(attributeGroup.attributes).toBeUndefined();
+  }),
+
   test('Associate an application to an imported attribute group', () => {
     const attributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'MyAttributeGroup',
       'arn:aws:servicecatalog:us-east-1:123456789012:/attribute-groups/0aqmvxvgmry0ecc4mjhwypun6i');
