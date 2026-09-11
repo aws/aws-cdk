@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_devicefarm"
+    },
+    "ruby": {
+      "module": "AWSCDK::DeviceFarm"
     }
   }
 }

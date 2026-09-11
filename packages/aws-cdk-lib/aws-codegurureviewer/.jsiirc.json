@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_codegurureviewer"
+    },
+    "ruby": {
+      "module": "AWSCDK::CodeGuruReviewer"
     }
   }
 }

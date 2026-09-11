@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_rbin"
+    },
+    "ruby": {
+      "module": "AWSCDK::Rbin"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.lambda_layer_awscli"
+    },
+    "ruby": {
+      "module": "AWSCDK::LambdaLayerAWSCLI"
     }
   }
 }
