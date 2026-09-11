@@ -3,6 +3,23 @@ import type { StackSteps, Step } from './step';
 import type * as cdk from '../../../core';
 
 /**
+ * The retry mode for a stage when it fails.
+ *
+ * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/stage-retry.html
+ */
+export enum RetryMode {
+  /**
+   * Retry all actions in the failed stage
+   */
+  ALL_ACTIONS = 'ALL_ACTIONS',
+
+  /**
+   * Retry only the failed actions in the stage
+   */
+  FAILED_ACTIONS = 'FAILED_ACTIONS',
+}
+
+/**
  * Construction properties for a `Wave`
  */
 export interface WaveProps {
@@ -19,6 +36,16 @@ export interface WaveProps {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Configure automatic retry on stage failure for this wave.
+   *
+   * When set, the corresponding CodePipeline stage will be configured
+   * to automatically retry on failure with the specified mode.
+   *
+   * @default - No automatic retry on failure
+   */
+  readonly retryMode?: RetryMode;
 }
 
 /**
@@ -40,11 +67,19 @@ export class Wave {
    */
   public readonly stages: StageDeployment[] = [];
 
+  /**
+   * The retry mode for the CodePipeline stage associated with this wave.
+   *
+   * @default - No automatic retry on failure
+   */
+  public readonly retryMode?: RetryMode;
+
   constructor(
     /** Identifier for this Wave */
     public readonly id: string, props: WaveProps = {}) {
     this.pre = props.pre ?? [];
     this.post = props.post ?? [];
+    this.retryMode = props.retryMode;
   }
 
   /**
@@ -98,6 +133,22 @@ export interface AddStageOpts {
    * @default - No additional instructions
    */
   readonly stackSteps?: StackSteps[];
+
+  /**
+   * Configure automatic retry on stage failure.
+   *
+   * When used with `pipeline.addStage()`, this configures the
+   * CodePipeline stage for automatic retry on failure with the
+   * specified mode. The retry mode is applied to the wave that
+   * is implicitly created for the stage.
+   *
+   * When used with `wave.addStage()`, this property is ignored.
+   * Use `retryMode` on `WaveOptions` instead when creating a wave
+   * with `pipeline.addWave()`.
+   *
+   * @default - No automatic retry on failure
+   */
+  readonly retryMode?: RetryMode;
 }
 
 /**
@@ -117,4 +168,14 @@ export interface WaveOptions {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Configure automatic retry on stage failure for this wave.
+   *
+   * When set, the corresponding CodePipeline stage will be configured
+   * to automatically retry on failure with the specified mode.
+   *
+   * @default - No automatic retry on failure
+   */
+  readonly retryMode?: RetryMode;
 }
