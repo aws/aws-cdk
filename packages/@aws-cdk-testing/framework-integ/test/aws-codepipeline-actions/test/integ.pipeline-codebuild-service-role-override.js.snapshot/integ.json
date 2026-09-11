@@ -1,0 +1,14 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integ.pipeline-codebuild-service-role-override": {
+      "stacks": [
+        "aws-cdk-codepipeline-codebuild-service-role-override"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}
