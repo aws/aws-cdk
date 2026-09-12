@@ -323,6 +323,33 @@ const eventBus = events.EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:
 eventBus.grantPutEventsTo(lambdaFunction);
 ```
 
+## Adding a resource policy to an EventBus
+
+Use `addToResourcePolicy` to grant permissions on an event bus you own:
+
+```ts
+declare const role: iam.Role;
+
+const eventBus = new events.EventBus(this, 'EventBus');
+
+eventBus.addToResourcePolicy(new iam.PolicyStatement({
+  sid: 'AllowPutEvents',
+  effect: iam.Effect.ALLOW,
+  principals: [role],
+  actions: ['events:PutEvents'],
+  resources: [eventBus.eventBusArn],
+}));
+```
+
+CloudFormation uses the policy's `StatementId` as the physical identifier of the
+`AWS::Events::EventBusPolicy` resource, so it must be unique within your account and
+region — across all stacks and event buses. With the
+`@aws-cdk/aws-events:eventBusPolicyUniqueStatementId` feature flag enabled, the CDK
+suffixes the statement id with a hash unique to the event bus, so deploying the same
+stack twice does not collide, and the `sid` becomes optional. Without the flag, the
+`sid` is required and used as-is, and reusing it anywhere in the account fails
+deployment.
+
 ## Use a customer managed key
 
 To use a customer managed key for events on the event bus, use the `kmsKey` attribute.

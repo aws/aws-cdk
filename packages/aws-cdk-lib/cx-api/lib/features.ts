@@ -159,6 +159,7 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const EVENT_BUS_POLICY_UNIQUE_STATEMENT_ID = '@aws-cdk/aws-events:eventBusPolicyUniqueStatementId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1954,6 +1955,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EVENT_BUS_POLICY_UNIQUE_STATEMENT_ID]: {
+    type: FlagType.BugFix,
+    summary: 'Generate unique StatementIds for EventBus resource policies to prevent collisions across stacks',
+    detailsMd: `
+      CloudFormation uses the \`StatementId\` of an \`AWS::Events::EventBusPolicy\` resource as its
+      physical identifier, which must be unique within an account and region across all stacks and
+      event buses. Previously, \`EventBus.addToResourcePolicy()\` used the statement's \`sid\` directly
+      as the \`StatementId\`, so deploying two stacks that add a statement with the same \`sid\` failed
+      with an "already exists" error, even though the EventBridge service allows different buses to
+      use the same statement id.
+
+      When this flag is enabled, the \`StatementId\` is suffixed with a short hash unique to the event
+      bus and its stack, so identical stacks no longer collide. The statement's \`sid\` also becomes
+      optional and is auto-generated when omitted. Logical IDs are unchanged; on the first deployment
+      after enabling the flag, existing \`AWS::Events::EventBusPolicy\` resources are replaced in-place
+      (the new statement is created before the old one is deleted, so permissions are not interrupted).`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
