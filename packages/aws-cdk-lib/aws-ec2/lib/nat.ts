@@ -521,7 +521,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       vpcId: options.vpc.vpcId,
       availabilityMode: 'regional',
       connectivityType: 'public',
-      allocationId: this.props.allocationId ?? this.props.eip,
+      allocationId: this.props.availabilityZoneAddresses ? undefined : (this.props.allocationId ?? this.props.eip),
       availabilityZoneAddresses: this.props.availabilityZoneAddresses,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
@@ -850,9 +850,19 @@ function validateMaxDrainDuration(maxDrainDuration?: Duration) {
   }
 
   const seconds = maxDrainDuration.toSeconds({ integral: false });
-  if (!Token.isUnresolved(seconds) && (seconds < 1 || seconds > 4000)) {
+  if (Token.isUnresolved(seconds)) {
+    return;
+  }
+
+  if (seconds < 1 || seconds > 4000) {
     throw new UnscopedValidationError(
       lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+    );
+  }
+
+  if (!Number.isInteger(seconds)) {
+    throw new UnscopedValidationError(
+      lit`NonIntegralMaxDrainDuration`, `\`maxDrainDuration\` must be a whole number of seconds, got ${seconds} seconds.`,
     );
   }
 }

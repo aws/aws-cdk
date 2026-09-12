@@ -1291,6 +1291,14 @@ describe('vpc', () => {
       }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
     });
 
+    test('NAT gateway provider throws when maxDrainDuration is not a whole number of seconds', () => {
+      expect(() => {
+        NatProvider.gateway({
+          maxDrainDuration: Duration.millis(1500),
+        });
+      }).toThrow('`maxDrainDuration` must be a whole number of seconds, got 1.5 seconds.');
+    });
+
     test('NAT gateway provider does not validate maxDrainDuration when it is an unresolved token', () => {
       const stack = new Stack();
       const natGatewayProvider = NatProvider.gateway({
@@ -1397,6 +1405,14 @@ describe('vpc', () => {
         }).toThrow('`maxDrainDuration` must be between 1 and 4000 seconds, got 4001 seconds.');
       });
 
+      test('throws when maxDrainDuration is not a whole number of seconds', () => {
+        expect(() => {
+          NatProvider.regionalGateway({
+            maxDrainDuration: Duration.millis(1500),
+          });
+        }).toThrow('`maxDrainDuration` must be a whole number of seconds, got 1.5 seconds.');
+      });
+
       test('does not validate maxDrainDuration when it is an unresolved token', () => {
         const stack = new Stack();
         const natGatewayProvider = NatProvider.regionalGateway({
@@ -1479,6 +1495,22 @@ describe('vpc', () => {
         Annotations.fromStack(stack).hasWarning(
           '/TestStack/Vpc',
           Match.stringLikeRegexp('`natGateways: 0` disables the Regional NAT Gateway'),
+        );
+      });
+
+      test('creates no NAT gateway when natGateways is negative', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider: NatProvider.regionalGateway(),
+          natGateways: -1,
+        });
+
+        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+
+        Annotations.fromStack(stack).hasWarning(
+          '/TestStack/Vpc',
+          Match.stringLikeRegexp('`natGateways: -1` disables the Regional NAT Gateway'),
         );
       });
 
@@ -1622,6 +1654,14 @@ describe('vpc', () => {
           '/TestStack/Vpc',
           Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
         );
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AllocationId: Match.absent(),
+          AvailabilityZoneAddresses: [{
+            AllocationIds: ['eipalloc-11111111'],
+            AvailabilityZone: 'us-east-1a',
+          }],
+        });
       });
 
       test('warns when availabilityZoneAddresses with eip', () => {
@@ -1644,6 +1684,14 @@ describe('vpc', () => {
           '/TestStack/Vpc',
           Match.stringLikeRegexp('`allocationId` and `eip` are ignored when `availabilityZoneAddresses` is specified'),
         );
+
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
+          AllocationId: Match.absent(),
+          AvailabilityZoneAddresses: [{
+            AllocationIds: ['eipalloc-11111111'],
+            AvailabilityZone: 'us-east-1a',
+          }],
+        });
       });
 
       test('throws when availabilityZoneAddress has neither availabilityZone nor availabilityZoneId', () => {
