@@ -746,8 +746,6 @@ export class Cluster extends ClusterBase {
     if (props.logging) {
       loggingProperties = props.logging._renderLoggingProperty(this);
 
-      // S3 renders no `logExports` and enables all log types, so the user activity log is
-      // only ever excluded when CloudWatch is given an explicit list without it.
       if (loggingProperties.logExports === undefined || loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG)) {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
