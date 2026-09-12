@@ -416,7 +416,7 @@ export class NatGatewayProvider extends NatProvider {
     let i = 0;
     for (const sub of options.natSubnets) {
       const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
-      const gateway = sub.addNatGateway(eipAllocationId, this.props.maxDrainDuration);
+      const gateway = sub.addNatGateway(eipAllocationId, { maxDrainDuration: this.props.maxDrainDuration });
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
     }
@@ -452,13 +452,6 @@ export class NatGatewayProvider extends NatProvider {
  */
 export class RegionalNatGatewayProvider extends NatProvider {
   private _natGateway?: CfnNatGateway;
-
-  /**
-   * The Regional NAT Gateway created by this provider, or `undefined` before the VPC has configured it
-   */
-  public get natGateway(): CfnNatGateway | undefined {
-    return this._natGateway;
-  }
 
   constructor(private readonly props: RegionalNatGatewayProviderProps = {}) {
     super();
@@ -525,6 +518,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       availabilityZoneAddresses: this.props.availabilityZoneAddresses,
       maxDrainDurationSeconds: this.props.maxDrainDuration?.toSeconds(),
     });
+    this._natGateway.node.addDependency(options.vpc.internetConnectivityEstablished);
 
     for (const sub of options.privateSubnets) {
       this.configureSubnet(sub);
@@ -542,6 +536,12 @@ export class RegionalNatGatewayProvider extends NatProvider {
     });
   }
 
+  /**
+   * Return list of gateways spawned by the provider
+   *
+   * A regional NAT gateway is not bound to a single Availability Zone, so `az`
+   * is the sentinel string `'regional'` rather than a zone name.
+   */
   public get configuredGateways(): GatewayConfig[] {
     return this._natGateway
       ? [{ az: 'regional', gatewayId: this._natGateway.attrNatGatewayId }]

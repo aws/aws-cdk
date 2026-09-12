@@ -1319,7 +1319,7 @@ describe('vpc', () => {
         cidrBlock: '10.0.0.0/28',
       });
 
-      subnet.addNatGateway(undefined, Duration.minutes(10));
+      subnet.addNatGateway(undefined, { maxDrainDuration: Duration.minutes(10) });
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::NatGateway', {
         MaxDrainDurationSeconds: 600,
@@ -1538,6 +1538,34 @@ describe('vpc', () => {
         });
 
         Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGatewaySubnets` is ignored when using Regional NAT Gateway'));
+      });
+
+      test('NAT gateway depends on the internet gateway', () => {
+        const stack = new Stack();
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider: NatProvider.regionalGateway(),
+          subnetConfiguration: [
+            { name: 'Private', subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+          ],
+        });
+
+        Template.fromStack(stack).hasResource('AWS::EC2::NatGateway', {
+          DependsOn: [Match.stringLikeRegexp('^VpcIGW')],
+        });
+      });
+
+      test('warns when natSubnets is passed to configureNat directly', () => {
+        const app = new App();
+        const stack = new Stack(app, 'TestStack');
+        const vpc = new Vpc(stack, 'Vpc');
+
+        NatProvider.regionalGateway().configureNat({
+          vpc,
+          natSubnets: vpc.publicSubnets as PublicSubnet[],
+          privateSubnets: [],
+        });
+
+        Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natSubnets` is ignored for Regional NAT Gateway'));
       });
 
       test('does not require public subnets', () => {

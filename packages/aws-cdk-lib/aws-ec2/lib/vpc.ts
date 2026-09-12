@@ -1852,9 +1852,6 @@ export class Vpc extends VpcBase {
         privateSubnets: this.privateSubnets as PrivateSubnet[],
       });
 
-      // NAT Gateway must be created after the Internet Gateway is ready
-      provider.natGateway?.node.addDependency(this.internetConnectivityEstablished);
-
       return;
     }
 
@@ -2525,6 +2522,19 @@ export interface PublicSubnetProps extends SubnetProps {
 
 }
 
+/**
+ * Options for adding a NAT gateway to a public subnet
+ */
+export interface AddNatGatewayOptions {
+  /**
+   * Maximum amount of time to wait before forcibly releasing the IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
+}
+
 export interface IPublicSubnet extends ISubnet { }
 
 export interface PublicSubnetAttributes extends SubnetAttributes { }
@@ -2554,18 +2564,18 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * Also adds the EIP for the managed NAT.
    *
    * @param eipAllocationId Allocation ID of an Elastic IP address to assign to the NAT gateway. A new EIP is allocated when omitted.
-   * @param maxDrainDuration Maximum amount of time to wait before forcibly releasing the IP addresses if connections are still in progress. Defaults to 350 seconds.
+   * @param options Additional options for the NAT gateway
    * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string, maxDrainDuration?: Duration) {
+  public addNatGateway(eipAllocationId?: string, options: AddNatGatewayOptions = {}) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
-      maxDrainDurationSeconds: maxDrainDuration?.toSeconds(),
+      maxDrainDurationSeconds: options.maxDrainDuration?.toSeconds(),
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;
