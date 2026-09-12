@@ -9,10 +9,8 @@
 # - update column doc
 # - rename columns
 # - widen types
-# - evolve partition specs
+# 
 #
 # Invalidate schema changes that:
-# - are not backward compatible
 # - drops columns
-# - reorders column order
 # - change column type to a narrower type
