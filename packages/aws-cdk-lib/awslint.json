@@ -135,6 +135,7 @@
     "props-physical-name:aws-cdk-lib.aws_lambda.EventSourceMappingProps",
     "props-physical-name:aws-cdk-lib.aws_lambda.FunctionUrlProps",
     "props-physical-name:aws-cdk-lib.aws_lambda.VersionProps",
+    "props-physical-name:aws-cdk-lib.aws_logs.AccountPolicyProps",
     "props-physical-name:aws-cdk-lib.aws_logs.MetricFilterProps",
     "props-physical-name:aws-cdk-lib.aws_logs.SubscriptionFilterProps",
     "props-physical-name:aws-cdk-lib.aws_rds.DatabaseClusterProps",

@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "e619aabddefe1d3f5561c42400a5cfa8b778b135d621c2747276a85b15c6871c": {
+      "displayName": "aws-cdk-account-policy-data-protection-integ Template",
+      "source": {
+        "path": "aws-cdk-account-policy-data-protection-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-08ea390c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e619aabddefe1d3f5561c42400a5cfa8b778b135d621c2747276a85b15c6871c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

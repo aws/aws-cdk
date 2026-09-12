@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "account-policy-transformer/DefaultTest": {
+      "stacks": [
+        "aws-cdk-account-policy-transformer-integ"
+      ],
+      "assertionStack": "account-policy-transformer/DefaultTest/DeployAssert",
+      "assertionStackName": "accountpolicytransformerDefaultTestDeployAssert457BBC35"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "8f8471782ce54ede98d86c4f54c1153c1eb2d94622ec2bf76bfdca337ee164e1": {
+      "displayName": "aws-cdk-account-policy-transformer-integ Template",
+      "source": {
+        "path": "aws-cdk-account-policy-transformer-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4eeee005": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8f8471782ce54ede98d86c4f54c1153c1eb2d94622ec2bf76bfdca337ee164e1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
