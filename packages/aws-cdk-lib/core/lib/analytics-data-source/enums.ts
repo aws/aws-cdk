@@ -379,6 +379,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AC-3",
     "EC-3"
   ],
+  "AudioCodecType": [
+    "AAC",
+    "AC3",
+    "EAC3",
+    "EAC3_ATMOS",
+    "MP2",
+    "WAV",
+    "PASSTHROUGH"
+  ],
   "AuditCheck": [
     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
     "CA_CERTIFICATE_EXPIRING_CHECK",
@@ -749,9 +758,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "emailHeader",
     "linkTag",
     "messageTag"
-  ],
-  "CloudWatchEncryptionMode": [
-    "SSE-KMS"
   ],
   "ClusterLoggingTypes": [
     "api",
@@ -1285,10 +1291,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Pipfile.lock",
     "uv.lock",
     ""
-  ],
-  "DependencyOperation": [
-    0,
-    1
   ],
   "DeploymentControllerType": [
     "ECS",
@@ -1853,6 +1855,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "JWT",
     "REQUEST"
   ],
+  "HttpBackupMode": [
+    "FailedDataOnly",
+    "AllData"
+  ],
   "HttpCodeElb": [
     "HTTPCode_ELB_3XX_Count",
     "HTTPCode_ELB_4XX_Count",
@@ -1867,6 +1873,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HTTPCode_Target_3XX_Count",
     "HTTPCode_Target_4XX_Count",
     "HTTPCode_Target_5XX_Count"
+  ],
+  "HttpCompression": [
+    "GZIP",
+    "NONE"
   ],
   "HttpConnectionType": [
     "VPC_LINK",
@@ -2530,9 +2540,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FULL",
     "NONE"
   ],
-  "JobBookmarksEncryptionMode": [
-    "CSE-KMS"
-  ],
   "JobLanguage": [
     "scala",
     "python"
@@ -2685,6 +2692,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TRACE",
     "OFF"
   ],
+  "LibrarySet": [
+    "analytics",
+    "none"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2721,6 +2732,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "LifecycleTransition": [
     "autoscaling:EC2_INSTANCE_LAUNCHING",
     "autoscaling:EC2_INSTANCE_TERMINATING"
+  ],
+  "LinkedChannelType": [
+    "PRIMARY_CHANNEL",
+    "FOLLOWING_CHANNEL"
   ],
   "LoadBalancerGeneration": [
     0,
@@ -2764,7 +2779,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "LogGroupClass": [
     "STANDARD",
-    "INFREQUENT_ACCESS"
+    "INFREQUENT_ACCESS",
+    "DELIVERY"
   ],
   "LogLevel": [
     "OFF",
@@ -3220,6 +3236,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "OutputFormat": [
     "cjs",
     "esm"
+  ],
+  "OutputLockingMode": [
+    "PIPELINE_LOCKING",
+    "EPOCH_LOCKING"
   ],
   "OutputType": [
     "JSON",
@@ -3916,6 +3936,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.2_2025",
     "TLSv1.3_2025"
   ],
+  "SegmentLengthUnits": [
+    "MILLISECONDS",
+    "SECONDS"
+  ],
   "SegmentTemplateFormat": [
     "NUMBER_WITH_TIMELINE"
   ],
@@ -4173,6 +4197,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "gp3",
     "io1",
     "io2"
+  ],
+  "StreamDeliveryContentLevel": [
+    "METADATA_ONLY",
+    "FULL_CONTENT"
+  ],
+  "StreamDeliveryContentType": [
+    "MEMORY_RECORDS"
   ],
   "StreamEncryption": [
     "NONE",
@@ -4658,6 +4689,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "H264",
     "H265",
     "AV1"
+  ],
+  "VideoCodecType": [
+    "H264",
+    "H265",
+    "AV1",
+    "FRAME_CAPTURE"
   ],
   "VideoDynamicRange": [
     "dv",
