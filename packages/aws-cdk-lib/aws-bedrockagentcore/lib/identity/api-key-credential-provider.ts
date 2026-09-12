@@ -30,7 +30,7 @@ import * as iam from '../../../aws-iam';
 import type { IResource, ResourceProps, SecretValue } from '../../../core';
 import { Lazy, Names, Resource, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /******************************************************************************
@@ -388,6 +388,7 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
   /**
    * ARNs for {@link GatewayCredentialProvider.fromApiKeyIdentity} / {@link GatewayCredentialProvider.fromApiKeyIdentityArn}.
    */
+  @MethodMetadata()
   public bindForGatewayApiKeyTarget(): GatewayApiKeyIdentityBinding {
     const secretArn = this.apiKeySecretArn;
     if (secretArn == null) {

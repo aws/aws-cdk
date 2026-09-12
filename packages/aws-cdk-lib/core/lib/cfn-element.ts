@@ -196,10 +196,11 @@ function notTooLong(x: string) {
 // These imports have to be at the end to prevent circular imports
 import { CfnReference } from './private/cfn-reference';
 import { Stack } from './stack';
-import { Token } from './token';import { ValidationError } from './errors';
+import { Token } from './token';
+import { ValidationError } from './errors';
 import type { IConstruct, IMixin } from 'constructs';
 import { withMixins } from './mixins/private/mixin-metadata';
 import { lit } from './private/literal-string';
-import { captureStackTrace } from './stack-trace';
+import { captureStackTrace } from './private/stack-trace';
 import { debugModeEnabled } from './debug';
 

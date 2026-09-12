@@ -15,6 +15,7 @@ import type { IGateway } from '../gateway-base';
  *****************************************************************************/
 /**
  * Credential provider types supported by gateway target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum CredentialProviderType {
   /**
@@ -39,6 +40,7 @@ export enum CredentialProviderType {
 
 /**
  * Abstract interface for gateway credential provider configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ICredentialProviderConfig {
   /**
@@ -61,6 +63,7 @@ export interface ICredentialProviderConfig {
 
 /**
  * Optional gateway settings when binding an {@link IApiKeyCredentialProvider} to a target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface FromApiKeyIdentityOptions {
   /**
@@ -73,6 +76,7 @@ export interface FromApiKeyIdentityOptions {
 
 /**
  * OAuth scopes (and optional custom parameters) when binding an {@link IOAuth2CredentialProvider} to a gateway target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface FromOauthIdentityOptions {
   /**
@@ -90,6 +94,7 @@ export interface FromOauthIdentityOptions {
 
 /**
  * Factory class for creating different Gateway Credential Providers
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayCredentialProvider {
   /**

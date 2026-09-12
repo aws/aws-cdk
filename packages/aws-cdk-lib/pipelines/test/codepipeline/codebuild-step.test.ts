@@ -115,7 +115,7 @@ test('timeout from defaults can be overridden', () => {
       additionalInputs: {
         'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
       },
-      timeout: Duration.minutes(888),
+      timeout: Duration.minutes(480),
     }),
     codeBuildDefaults: {
       timeout: Duration.minutes(180),
@@ -124,7 +124,7 @@ test('timeout from defaults can be overridden', () => {
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-    TimeoutInMinutes: 888,
+    TimeoutInMinutes: 480,
   });
 });
 

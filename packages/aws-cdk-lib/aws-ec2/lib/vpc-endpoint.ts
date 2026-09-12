@@ -252,6 +252,20 @@ export interface GatewayVpcEndpointOptions {
    *
    */
   readonly subnets?: SubnetSelection[];
+
+  /**
+   * The IP address type for the endpoint.
+   *
+   * @default not specified
+   */
+  readonly ipAddressType?: VpcEndpointIpAddressType;
+
+  /**
+   * Type of DNS records created for the VPC endpoint.
+   *
+   * @default not specified
+   */
+  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType;
 }
 
 /**
@@ -317,12 +331,18 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       throw new ValidationError(lit`CanTGatewayEndpointVpc`, 'Can\'t add a gateway endpoint to VPC; route table IDs are not available', this);
     }
 
+    const dnsOptions = props.dnsRecordIpType !== undefined
+      ? { dnsRecordIpType: props.dnsRecordIpType }
+      : undefined;
+
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       policyDocument: this._policyDocumentToken(),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
+      dnsOptions,
     });
 
     this.vpcEndpointId = endpoint.ref;
@@ -491,6 +511,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODE_CONNECTIONS = new InterfaceVpcEndpointAwsService('codeconnections.api');
   public static readonly COGNITO_IDP = new InterfaceVpcEndpointAwsService('cognito-idp');
   public static readonly COGNITO_IDP_FIPS = new InterfaceVpcEndpointAwsService('cognito-idp-fips');
+  public static readonly COGNITO_IDENTITY = new InterfaceVpcEndpointAwsService('cognito-identity');
+  public static readonly COGNITO_IDENTITY_FIPS = new InterfaceVpcEndpointAwsService('cognito-identity-fips');
   public static readonly COMPREHEND = new InterfaceVpcEndpointAwsService('comprehend');
   public static readonly COMPREHEND_MEDICAL = new InterfaceVpcEndpointAwsService('comprehendmedical');
   public static readonly COMPUTE_OPTIMIZER = new InterfaceVpcEndpointAwsService('compute-optimizer');

@@ -188,6 +188,126 @@ export class AlbControllerVersion {
   public static readonly V2_8_2 = new AlbControllerVersion('v2.8.2', '1.8.2', false);
 
   /**
+   * v2.8.3
+   */
+  public static readonly V2_8_3 = new AlbControllerVersion('v2.8.3', '1.8.4', false);
+
+  /**
+   * v2.9.0
+   */
+  public static readonly V2_9_0 = new AlbControllerVersion('v2.9.0', '1.9.0', false);
+
+  /**
+   * v2.9.1
+   */
+  public static readonly V2_9_1 = new AlbControllerVersion('v2.9.1', '1.9.1', false);
+
+  /**
+   * v2.9.2
+   */
+  public static readonly V2_9_2 = new AlbControllerVersion('v2.9.2', '1.9.2', false);
+
+  /**
+   * v2.10.0
+   */
+  public static readonly V2_10_0 = new AlbControllerVersion('v2.10.0', '1.10.0', false);
+
+  /**
+   * v2.10.1
+   */
+  public static readonly V2_10_1 = new AlbControllerVersion('v2.10.1', '1.10.1', false);
+
+  /**
+   * v2.11.0
+   */
+  public static readonly V2_11_0 = new AlbControllerVersion('v2.11.0', '1.11.0', false);
+
+  /**
+   * v2.12.0
+   */
+  public static readonly V2_12_0 = new AlbControllerVersion('v2.12.0', '1.12.0', false);
+
+  /**
+   * v2.13.0
+   */
+  public static readonly V2_13_0 = new AlbControllerVersion('v2.13.0', '1.13.0', false);
+
+  /**
+   * v2.13.1
+   */
+  public static readonly V2_13_1 = new AlbControllerVersion('v2.13.1', '1.13.1', false);
+
+  /**
+   * v2.13.2
+   */
+  public static readonly V2_13_2 = new AlbControllerVersion('v2.13.2', '1.13.2', false);
+
+  /**
+   * v2.13.3
+   */
+  public static readonly V2_13_3 = new AlbControllerVersion('v2.13.3', '1.13.3', false);
+
+  /**
+   * v2.13.4
+   */
+  public static readonly V2_13_4 = new AlbControllerVersion('v2.13.4', '1.13.4', false);
+
+  /**
+   * v2.14.0
+   */
+  public static readonly V2_14_0 = new AlbControllerVersion('v2.14.0', '1.14.0', false);
+
+  /**
+   * v2.14.1
+   */
+  public static readonly V2_14_1 = new AlbControllerVersion('v2.14.1', '1.14.1', false);
+
+  /**
+   * v2.15.0
+   */
+  public static readonly V2_15_0 = new AlbControllerVersion('v2.15.0', '1.15.0', false);
+
+  /**
+   * v2.16.0
+   */
+  public static readonly V2_16_0 = new AlbControllerVersion('v2.16.0', '1.16.0', false);
+
+  /**
+   * v2.17.0
+   */
+  public static readonly V2_17_0 = new AlbControllerVersion('v2.17.0', '1.17.0', false);
+
+  /**
+   * v2.17.1
+   */
+  public static readonly V2_17_1 = new AlbControllerVersion('v2.17.1', '1.17.1', false);
+
+  /**
+   * v3.0.0
+   */
+  public static readonly V3_0_0 = new AlbControllerVersion('v3.0.0', '3.0.0', false);
+
+  /**
+   * v3.1.0
+   */
+  public static readonly V3_1_0 = new AlbControllerVersion('v3.1.0', '3.1.0', false);
+
+  /**
+   * v3.2.0
+   */
+  public static readonly V3_2_0 = new AlbControllerVersion('v3.2.0', '3.2.0', false);
+
+  /**
+   * v3.2.1
+   */
+  public static readonly V3_2_1 = new AlbControllerVersion('v3.2.1', '3.2.1', false);
+
+  /**
+   * v3.2.2
+   */
+  public static readonly V3_2_2 = new AlbControllerVersion('v3.2.2', '3.2.2', false);
+
+  /**
    * Specify a custom version and an associated helm chart version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.

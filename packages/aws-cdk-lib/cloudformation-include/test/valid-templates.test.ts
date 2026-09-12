@@ -1,5 +1,6 @@
 import * as path from 'path';
 import type * as constructs from 'constructs';
+import { acknowledgeTestWarnings } from './test-warnings';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
@@ -14,8 +15,11 @@ import * as futils from '../lib/file-utils';
 describe('CDK Include', () => {
   let stack: core.Stack;
 
+  let app: core.App;
   beforeEach(() => {
-    stack = new core.Stack();
+    app = new core.App();
+    acknowledgeTestWarnings(app);
+    stack = new core.Stack(app, 'Stack');
   });
 
   test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
@@ -130,6 +134,11 @@ describe('CDK Include', () => {
   });
 
   test('accepts booleans for properties with type string', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'Yes this will be schematically illegal, that\'s not the point',
+    });
+
     includeTestTemplate(stack, 'boolean-for-string.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -522,7 +531,7 @@ describe('CDK Include', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {
-      bucketName: param.valueAsString,
+      bucketNamePrefix: param.valueAsString,
     });
 
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
@@ -532,7 +541,7 @@ describe('CDK Include', () => {
         "NewBucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": {
+            "BucketNamePrefix": {
               "Ref": "BucketName",
             },
           },
@@ -752,7 +761,6 @@ describe('CDK Include', () => {
 
   test("correctly handles referencing the ingested template's resources across Stacks", () => {
     // for cross-stack sharing to work, we need an App
-    const app = new core.App();
     stack = new core.Stack(app, 'MyStack');
     const cfnTemplate = includeTestTemplate(stack, 'only-empty-bucket.json');
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;

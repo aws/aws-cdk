@@ -77,6 +77,8 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   public static readonly ALL_VIEWER_AND_CLOUDFRONT_2022 = OriginRequestPolicy.fromManagedOriginRequestPolicy('33f36d7e-f396-46d9-90e0-52428a34d9dc');
   /** This policy includes all values (query strings, and cookies) except the header in the viewer request. */
   public static readonly ALL_VIEWER_EXCEPT_HOST_HEADER = OriginRequestPolicy.fromManagedOriginRequestPolicy('b689b0a8-53d0-40ab-baf2-68738e2966ac');
+  /** This policy includes only the Host header from the origin request. It doesn't include any query strings or cookies. */
+  public static readonly HOST_HEADER_ONLY = OriginRequestPolicy.fromManagedOriginRequestPolicy('bf0718e1-ba1e-49d1-88b1-f726733018ae');
 
   /** Imports a Origin Request Policy from its id. */
   public static fromOriginRequestPolicyId(scope: Construct, id: string, originRequestPolicyId: string): IOriginRequestPolicy {

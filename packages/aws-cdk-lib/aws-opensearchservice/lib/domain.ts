@@ -1810,7 +1810,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
 
       if (props.ebs?.throughput) {
-        const throughputRange = { Min: 125, Max: 1000 };
+        const throughputRange = { Min: 125, Max: 2000 };
         const { Min, Max } = throughputRange;
         if (volumeType != ec2.EbsDeviceVolumeType.GP3) {
           throw new ValidationError(lit`ThroughputRequiresGp3VolumeType`, '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`', this);
@@ -2088,7 +2088,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
-          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateId,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateArn,
         },
       },
       advancedSecurityOptions: advancedSecurityEnabled

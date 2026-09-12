@@ -9,6 +9,7 @@ import type { Duration } from 'aws-cdk-lib';
  * Protocol configuration for Agent Runtime
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-protocolconfiguration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum ProtocolType {
   /**
@@ -34,6 +35,7 @@ export enum ProtocolType {
 
 /**
  * Configuration for HTTP request headers that will be passed through to the runtime.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface RequestHeaderConfiguration {
   /**
@@ -47,6 +49,7 @@ export interface RequestHeaderConfiguration {
  * LifecycleConfiguration lets you manage the lifecycle of runtime sessions and resources in AgentCore Runtime.
  * This configuration helps optimize resource utilization by automatically cleaning up idle sessions and preventing
  * long-running instances from consuming resources indefinitely.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface LifecycleConfiguration {
   /**

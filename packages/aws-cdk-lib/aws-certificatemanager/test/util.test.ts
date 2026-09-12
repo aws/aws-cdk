@@ -13,6 +13,16 @@ describe('apex domain', () => {
   test('understands eTLDs', () => {
     expect(apexDomain('test.domain.co.uk')).toEqual('domain.co.uk');
   });
+
+  test('handles domain segments that collide with Object.prototype methods', () => {
+    // These domain segments match Object.prototype method names
+    // The function should not treat them as public suffixes
+    expect(apexDomain('www.tostring.com')).toEqual('tostring.com');
+    expect(apexDomain('www.valueof.com')).toEqual('valueof.com');
+    expect(apexDomain('www.hasownproperty.com')).toEqual('hasownproperty.com');
+    expect(apexDomain('www.constructor.com')).toEqual('constructor.com');
+    expect(apexDomain('api.tostring.example.com')).toEqual('example.com');
+  });
 });
 
 describe('isDnsValidatedCertificate', () => {
@@ -85,7 +95,7 @@ describe('getCertificateRegion', () => {
     const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
 
     const certificate = Certificate.fromCertificateArn(
-      stack, 'TestCertificate', 'arn:aws:acm:us-east-2:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
+      stack, 'TestCertificate', 'arn:aws:acm:us-east-2:111111111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
     );
 
     expect(getCertificateRegion(certificate)).toEqual('us-east-2');

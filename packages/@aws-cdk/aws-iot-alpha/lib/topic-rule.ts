@@ -1,6 +1,6 @@
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Resource, Stack } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Validations } from 'aws-cdk-lib/core';
 import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Box, memoizedGetter, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -130,6 +130,10 @@ export class TopicRule extends Resource implements ITopicRule {
         ruleDisabled: props.enabled === undefined ? undefined : !props.enabled,
         sql: sqlConfig.sql,
       },
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'topicRulePayload is deprecated, but we are using it for historical reasons',
     });
 
     props.actions?.forEach(action => {

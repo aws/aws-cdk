@@ -41,6 +41,7 @@ import type { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
  *   logGroupNames: ['/aws/my-external-agent/logs'],
  *   serviceNames: ['my-external-agent'],
  * });
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class DataSourceConfig {
   /**

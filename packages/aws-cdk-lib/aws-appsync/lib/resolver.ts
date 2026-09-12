@@ -176,7 +176,7 @@ export class Resolver extends Construct {
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
-      this.resolver.addDependency(props.dataSource.ds);
+      this.resolver.addResourceDependency(props.dataSource.ds);
     }
     this.arn = this.resolver.attrResolverArn;
   }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "52.0.0",
   "testCases": {
     "SfnTasksEcsFargateRunTaskTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SfnTasksEcsFargateRunTaskTest/DefaultTest/DeployAssert",
       "assertionStackName": "SfnTasksEcsFargateRunTaskTestDefaultTestDeployAssert9D97FD2B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

@@ -12,7 +12,7 @@ const gateway = new agentcore.Gateway(stack, 'Gateway', {
 
 // Create Lambda function for target
 const fn = new lambda.Function(stack, 'TestFunction', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
 });

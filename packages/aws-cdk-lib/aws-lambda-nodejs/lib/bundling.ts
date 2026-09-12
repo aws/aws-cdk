@@ -13,10 +13,28 @@ import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { profileFn, profileSpan } from '../../core/lib/private/perf';
+import { posixShellEscape } from '../../core/lib/private/shell-escape';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
+
+/**
+ * Returns true when `relativePath` (the output of `path.relative(projectRoot, ...)`)
+ * navigates out of the project root. A canonical relative path produced by
+ * `path.relative()` only starts with `..` segments when the target is outside
+ * the base; a literal `..` substring anywhere else (for example in a filename
+ * like `app..js`, or in a pnpm content-addressed directory such as
+ * `node_modules/.pnpm/file+..+pkg+0.0.1`) does not indicate path escape.
+ *
+ * On Windows, `path.relative()` cannot produce a relative path when the two
+ * paths are on different drives and returns the absolute target path instead
+ * (for example `D:\\other` relative to `C:\\project`). An absolute result is
+ * therefore also treated as an escape.
+ */
+function pathEscapesRoot(relativePath: string): boolean {
+  return path.isAbsolute(relativePath) || relativePath === '..' || relativePath.startsWith(`..${path.sep}`);
+}
 
 /**
  * Bundling properties
@@ -118,11 +136,11 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
-    if (this.relativeEntryPath.includes('..')) {
+    if (pathEscapesRoot(this.relativeEntryPath)) {
       throw new ValidationError(lit`PathNotUnderRoot`, `entryPath (${props.entry}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
-    if (this.relativeDepsLockFilePath.includes('..')) {
+    if (pathEscapesRoot(this.relativeDepsLockFilePath)) {
       throw new ValidationError(lit`PathNotUnderRoot`, `depsLockFilePath (${props.depsLockFilePath}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
@@ -196,7 +214,7 @@ export class Bundling implements cdk.BundlingOptions {
       // image would count as that. So we add an additional timer span just for the building of the runner image.
       using _span = profileSpan(`bundle:${this[cdk.PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
 
-      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, 'docker'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
@@ -598,7 +616,7 @@ function stepsToPosixShellCommand(steps: BundlingStep[]): string {
  * OS agnostic command
  */
 class OsCommand {
-  constructor(private readonly osPlatform: NodeJS.Platform) {}
+  constructor(private readonly osPlatform: NodeJS.Platform) { }
 
   public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
@@ -608,7 +626,7 @@ class OsCommand {
       return `echo ^${data}^ > "${filePath}"`;
     }
 
-    return `echo '${data}' > "${filePath}"`;
+    return `echo ${posixShellEscape(data)} > ${posixShellEscape(filePath)}`;
   }
 
   public writeJson(filePath: string, data: any): string {
@@ -621,7 +639,7 @@ class OsCommand {
       return `copy "${src}" "${dest}"`;
     }
 
-    return `cp "${src}" "${dest}"`;
+    return `cp ${posixShellEscape(src)} ${posixShellEscape(dest)}`;
   }
 
   public changeDirectory(dir: string): string {
@@ -656,14 +674,6 @@ function preparePosixShellCommand(argv: string[]): string {
   return argv.map(posixShellEscape).join(' ');
 }
 
-/**
- * Escapes a single argument for safe inclusion in a POSIX shell command.
- * Every argument is single-quoted unconditionally (like Python's shlex.quote).
- */
-function posixShellEscape(arg: string): string {
-  return "'" + arg.replace(/'/g, "'\\''") + "'";
-}
-
 function powershellEscape(arg: string): string {
   return "'" + arg.replace(/'/g, "''") + "'";
 }
@@ -679,7 +689,7 @@ function chain(commands: string[]): string {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {
@@ -735,5 +745,5 @@ function isEsmRuntime(runtime: Runtime): boolean {
     Runtime.NODEJS_12_X,
   ];
 
-  return !unsupportedRuntimes.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return !unsupportedRuntimes.some((r) => { return r.family === runtime.family && r.name === runtime.name; });
 }
