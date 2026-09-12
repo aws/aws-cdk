@@ -12,7 +12,7 @@ import { ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { ILogGroupRef, LogGroupReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { AccountPolicyReference, IAccountPolicyRef, ILogGroupRef, LogGroupReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Represents the contents of an account-level CloudWatch Logs policy.
@@ -81,6 +81,8 @@ export interface AccountPolicyProps {
   readonly policy: AccountPolicyDocument;
 }
 
+const ACCOUNT_POLICY_SYMBOL = Symbol.for('@aws-cdk/aws-logs.AccountPolicy');
+
 /**
  * An account-level CloudWatch Logs policy.
  *
@@ -88,9 +90,37 @@ export interface AccountPolicyProps {
  * account (optionally scoped down to a subset of log groups).
  */
 @propertyInjectable
-export class AccountPolicy extends Resource {
+export class AccountPolicy extends Resource implements IAccountPolicyRef {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-logs.AccountPolicy';
+
+  /**
+   * Return whether the given object is an `AccountPolicy`.
+   */
+  public static isAccountPolicy(x: any): x is AccountPolicy {
+    return x !== null && typeof x === 'object' && ACCOUNT_POLICY_SYMBOL in x;
+  }
+
+  /**
+   * The account ID of the account where this policy was created. For example, `123456789012`.
+   *
+   * @attribute
+   */
+  public readonly accountId: string;
+
+  /**
+   * The name of this policy.
+   *
+   * @attribute
+   */
+  public readonly policyName: string;
+
+  /**
+   * The type of this policy.
+   *
+   * @attribute
+   */
+  public readonly policyType: string;
 
   constructor(scope: Construct, id: string, props: AccountPolicyProps) {
     super(scope, id, {
@@ -99,14 +129,31 @@ export class AccountPolicy extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    Object.defineProperty(this, ACCOUNT_POLICY_SYMBOL, { value: true });
+
     const config = props.policy._bind(this);
 
-    new CfnAccountPolicy(this, 'Resource', {
+    const resource = new CfnAccountPolicy(this, 'Resource', {
       policyName: this.physicalName,
       policyType: config.policyType,
       policyDocument: config.policyDocument,
       selectionCriteria: config.selectionCriteria,
     });
+
+    this.accountId = resource.attrAccountId;
+    this.policyName = resource.policyName;
+    this.policyType = resource.policyType;
+  }
+
+  /**
+   * A reference to this `AccountPolicy` resource.
+   */
+  public get accountPolicyRef(): AccountPolicyReference {
+    return {
+      accountId: this.accountId,
+      policyType: this.policyType,
+      policyName: this.policyName,
+    };
   }
 }
 
