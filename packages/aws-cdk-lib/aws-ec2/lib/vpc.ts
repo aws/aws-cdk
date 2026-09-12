@@ -30,7 +30,8 @@ import {
   IpAddresses,
   Ipv6Addresses,
 } from './ip-addresses';
-import { NatProvider } from './nat';
+import type { ConfigureNatOptions } from './nat';
+import { NatProvider, RegionalNatGatewayProvider } from './nat';
 import type { INetworkAcl } from './network-acl';
 import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -57,7 +58,7 @@ import type { VpcLookupOptions } from './vpc-lookup';
 import type { EnableVpnGatewayOptions, VpnConnectionOptions } from './vpn';
 import { VpnConnection, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
-import type { IResource } from '../../core';
+import type { Duration, IResource } from '../../core';
 import {
   Annotations,
   Arn,
@@ -1672,7 +1673,37 @@ export class Vpc extends VpcBase {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+    const natGatewayCount = determineNatGatewayCount(
+      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
+    );
+
+    if (Token.isUnresolved(props.natGateways)) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ec2:natGatewaysToken',
+        '`natGateways` must be resolved at synthesis time to decide how many NAT gateways to create. The unresolved token is treated as 0, so no NAT gateway will be created.',
+      );
+    }
+
+    if (props.natGatewayProvider instanceof RegionalNatGatewayProvider) {
+      const natGateways = Token.isUnresolved(props.natGateways) ? undefined : props.natGateways;
+      if (natGateways !== undefined && natGateways < 1) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewayDisabled',
+          `\`natGateways: ${natGateways}\` disables the Regional NAT Gateway configured via \`natGatewayProvider\`. No NAT gateway will be created.`,
+        );
+      } else if (natGateways !== undefined && natGateways > 1) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewayCount',
+          '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+        );
+      }
+      if (props.natGatewaySubnets !== undefined) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
+          '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+        );
+      }
+    }
 
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
@@ -1814,6 +1845,16 @@ export class Vpc extends VpcBase {
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
+    if (provider instanceof RegionalNatGatewayProvider) {
+      provider.configureNat({
+        vpc: this,
+        natSubnets: [],
+        privateSubnets: this.privateSubnets as PrivateSubnet[],
+      });
+
+      return;
+    }
+
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
@@ -1821,11 +1862,12 @@ export class Vpc extends VpcBase {
       }
     }
 
-    provider.configureNat({
+    const options: ConfigureNatOptions = {
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[],
-    });
+    };
+    provider.configureNat(options);
   }
 
   /**
@@ -2480,6 +2522,19 @@ export interface PublicSubnetProps extends SubnetProps {
 
 }
 
+/**
+ * Options for adding a NAT gateway to a public subnet
+ */
+export interface AddNatGatewayOptions {
+  /**
+   * Maximum amount of time to wait before forcibly releasing the IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
+}
+
 export interface IPublicSubnet extends ISubnet { }
 
 export interface PublicSubnetAttributes extends SubnetAttributes { }
@@ -2507,16 +2562,20 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Creates a new managed NAT gateway attached to this public subnet.
    * Also adds the EIP for the managed NAT.
+   *
+   * @param eipAllocationId Allocation ID of an Elastic IP address to assign to the NAT gateway. A new EIP is allocated when omitted.
+   * @param options Additional options for the NAT gateway
    * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string) {
+  public addNatGateway(eipAllocationId?: string, options: AddNatGatewayOptions = {}) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
+      maxDrainDurationSeconds: options.maxDrainDuration?.toSeconds(),
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;
@@ -2813,7 +2872,20 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * Do we want to require that there are private subnets if there are NatGateways?
  * They seem pointless but I see no reason to prevent it.
  */
-function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
+function determineNatGatewayCount(
+  requestedCount: number | undefined,
+  subnetConfig: SubnetConfiguration[],
+  azCount: number,
+  natGatewayProvider?: NatProvider,
+) {
+  if (Token.isUnresolved(requestedCount)) {
+    return 0;
+  }
+
+  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
+    return requestedCount === undefined ? 1 : Math.min(1, Math.max(requestedCount, 0));
+  }
+
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
     || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);
