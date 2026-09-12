@@ -183,7 +183,7 @@ ETL jobs support pySpark and Scala languages, for which there are separate but
 similar constructors. ETL jobs default to the `G_1X` worker type, but you can
 override this default with any other supported `WorkerType` (e.g. `G_2X`,
 `G_4X`, `G_8X`). ETL jobs default to Glue version 4.0, which you can override
-to any supported `GlueVersion` (e.g. 3.0, 5.0, 5.1).
+to any supported `GlueVersion` (e.g. 3.0, 5.0, 5.1, 6.0).
 The following ETL features are enabled by default:
 `--enable-metrics, --enable-continuous-cloudwatch-log.`
 The Spark UI (`--enable-spark-ui`) is off by default; enable it by setting the
@@ -236,7 +236,7 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,
@@ -295,7 +295,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,
@@ -352,7 +352,7 @@ new glue.PySparkFlexEtlJob(stack, 'pySparkFlexEtlJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   continuousLogging: { enabled: false },
   workerConfiguration: {
     workerType: glue.WorkerType.G_2X,
