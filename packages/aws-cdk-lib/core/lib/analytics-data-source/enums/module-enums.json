@@ -480,6 +480,10 @@
       "3",
       "3.9"
     ],
+    "LibrarySet": [
+      "analytics",
+      "none"
+    ],
     "Runtime": [
       "Ray2.4"
     ],
@@ -524,14 +528,6 @@
       "HOURS",
       "MINUTES",
       "SECONDS"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
-    "TableEncryption": [
-      "SSE-S3",
-      "SSE-KMS",
-      "SSE-KMS-MANAGED",
-      "CSE-KMS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts": {
@@ -1047,6 +1043,61 @@
       "AUTOMATIC"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-codec-settings.ts": {
+    "AudioCodecType": [
+      "AAC",
+      "AC3",
+      "EAC3",
+      "EAC3_ATMOS",
+      "MP2",
+      "WAV",
+      "PASSTHROUGH"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel.ts": {
+    "OutputLockingMode": [
+      "PIPELINE_LOCKING",
+      "EPOCH_LOCKING"
+    ],
+    "LinkedChannelType": [
+      "PRIMARY_CHANNEL",
+      "FOLLOWING_CHANNEL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/enums.ts": {
+    "SegmentLengthUnits": [
+      "MILLISECONDS",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input.ts": {
+    "InputType": [
+      "UDP_PUSH",
+      "RTP_PUSH",
+      "RTMP_PUSH",
+      "RTMP_PULL",
+      "URL_PULL",
+      "MP4_FILE",
+      "MEDIACONNECT",
+      "INPUT_DEVICE",
+      "AWS_CDI",
+      "TS_FILE",
+      "SRT_CALLER",
+      "SRT_LISTENER",
+      "MULTICAST",
+      "SMPTE_2110_RECEIVER_GROUP",
+      "SDI",
+      "MEDIACONNECT_ROUTER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-codec-settings.ts": {
+    "VideoCodecType": [
+      "H264",
+      "H265",
+      "AV1",
+      "FRAME_CAPTURE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
     "InputType": [
       "CMAF",
@@ -1379,6 +1430,10 @@
     "RequestMetricsStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "StorageClass": [
+      "STANDARD",
+      "INTELLIGENT_TIERING"
     ],
     "TableBucketEncryption": [
       "aws:kms",
@@ -2353,6 +2408,12 @@
     "StreamDeliveryContentLevel": [
       "METADATA_ONLY",
       "FULL_CONTENT"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
@@ -5568,7 +5629,8 @@
     ],
     "LogGroupClass": [
       "STANDARD",
-      "INFREQUENT_ACCESS"
+      "INFREQUENT_ACCESS",
+      "DELIVERY"
     ],
     "Distribution": [
       "ByLogStream",
@@ -6613,12 +6675,6 @@
       "nodejs20.x",
       "nodejs22.x",
       "nodejs24.x"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
-    "DependencyOperation": [
-      0,
-      1
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/fs/options.ts": {
