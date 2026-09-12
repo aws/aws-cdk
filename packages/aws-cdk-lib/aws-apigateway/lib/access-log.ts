@@ -1,7 +1,9 @@
 import type { IStageRef } from './apigateway.generated';
 import type * as firehose from '../../aws-kinesisfirehose';
+import { ArnFormat, FeatureFlags, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
+import { APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD } from '../../cx-api';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
@@ -35,6 +37,16 @@ export class LogGroupLogDestination implements IAccessLogDestination {
    * Binds this destination to the CloudWatch Logs.
    */
   public bind(_stage: IStageRef): AccessLogDestinationConfig {
+    if (FeatureFlags.of(this.logGroup).isEnabled(APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD)) {
+      return {
+        destinationArn: Stack.of(this.logGroup).formatArn({
+          service: 'logs',
+          resource: 'log-group',
+          resourceName: this.logGroup.logGroupRef.logGroupName,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+      };
+    }
     return {
       destinationArn: this.logGroup.logGroupRef.logGroupArn,
     };

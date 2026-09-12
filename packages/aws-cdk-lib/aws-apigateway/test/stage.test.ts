@@ -2,6 +2,7 @@ import { Template } from '../../assertions';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as apigateway from '../lib';
 import { ApiDefinition } from '../lib';
 
@@ -331,6 +332,68 @@ describe('stage', () => {
         Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.responseLength $context.requestId',
       },
       StageName: 'prod',
+    });
+  });
+
+  test('the log group destination ARN omits the trailing wildcard when the feature flag is enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, true);
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':log-group:',
+            { Ref: 'LogGroupF5B46931' },
+          ]],
+        },
+      },
+    });
+  });
+
+  test('the log group destination ARN keeps the trailing wildcard when the feature flag is disabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, false);
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const testLogGroup = new logs.LogGroup(stack, 'LogGroup');
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(testLogGroup),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn',
+          ],
+        },
+      },
     });
   });
 
