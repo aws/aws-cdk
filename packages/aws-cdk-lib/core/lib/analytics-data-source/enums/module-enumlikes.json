@@ -241,7 +241,14 @@
       "MISTRAL_SMALL_2402_V1",
       "MISTRAL_LARGE_2402_V1",
       "MISTRAL_LARGE_2407_V1",
-      "MISTRAL_PIXTRAL_LARGE_2502_V1"
+      "MISTRAL_PIXTRAL_LARGE_2502_V1",
+      "OPENAI_GPT_5_6_SOL",
+      "OPENAI_GPT_5_6_TERRA",
+      "OPENAI_GPT_5_6_LUNA",
+      "OPENAI_GPT_OSS_120B_V1",
+      "OPENAI_GPT_OSS_20B_V1",
+      "OPENAI_GPT_OSS_SAFEGUARD_120B",
+      "OPENAI_GPT_OSS_SAFEGUARD_20B"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/prompts/tool-choice.ts": {
@@ -2225,6 +2232,15 @@
       "DEEP_SEEK_V3_V1_0",
       "OPENAI_GPT_OSS_120B_1",
       "OPENAI_GPT_OSS_20B_1",
+      "OPENAI_GPT_OSS_SAFEGUARD_120B",
+      "OPENAI_GPT_OSS_SAFEGUARD_20B",
+      "OPENAI_GPT_5_4",
+      "OPENAI_GPT_5_5",
+      "OPENAI_GPT_5_6_SOL",
+      "OPENAI_GPT_5_6_TERRA",
+      "OPENAI_GPT_5_6_LUNA",
+      "OPENAI_GPT_5_6_CYBER",
+      "OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL",
       "LUMA_RAY_V2_0",
       "META_LLAMA_2_13B_V1",
       "META_LLAMA_2_13B_V1_0_4K",
@@ -2322,6 +2338,12 @@
       "DEBUG"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.ts": {
+    "PolicyEngineMode": [
+      "LOG_ONLY",
+      "ENFORCE"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/protocol.ts": {
     "MCPProtocolVersion": [
       "MCP_2025_06_18",
@@ -2379,6 +2401,12 @@
       "FUSION_AUTH",
       "AUTH0",
       "COGNITO"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/policy/policy-types.ts": {
+    "PolicyValidationMode": [
+      "FAIL_ON_ANY_FINDINGS",
+      "IGNORE_ALL_FINDINGS"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/observability.ts": {

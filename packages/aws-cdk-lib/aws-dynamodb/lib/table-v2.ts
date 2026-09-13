@@ -877,11 +877,10 @@ export class TableV2 extends TableBaseV2 {
     // Initialize grants with replica regions for multi-account permissions.
     // `hasIndex` deliberately omitted: `TableGrants` resolves `table.hasIndex` lazily at synth
     // time, so indexes added after construction (`addGlobalSecondaryIndex`) are included.
+    // Deprecated resource props deliberately omitted: `TableGrants` discovers them from `table`.
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     if (props.tableName) {
