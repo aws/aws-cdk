@@ -441,21 +441,6 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addIngressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*",
-          false
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
         "addEgressRule": [
           "*",
           {},

@@ -21,6 +21,8 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'AzRebalancingS
   // AvailabilityZoneRebalancing requires maxHealthyPercent > 100.
   maxHealthyPercent: 200,
   availabilityZoneRebalancing: AvailabilityZoneRebalancing.ENABLED,
+  // Don't open the listener to 0.0.0.0/0; this test doesn't need public access.
+  openListener: false,
 });
 
 const test = new integ.IntegTest(app, 'AlbFargateAzRebalancingTest', {

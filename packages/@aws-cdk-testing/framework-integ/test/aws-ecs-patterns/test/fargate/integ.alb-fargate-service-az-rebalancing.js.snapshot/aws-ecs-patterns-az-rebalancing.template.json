@@ -430,15 +430,6 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecspatternsazrebalancingAzRebalancingServiceLB670DFB67",
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow from anyone on port 80",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "ToPort": 80
-     }
-    ],
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
