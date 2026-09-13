@@ -1,3 +1,5 @@
+import type { AccountPolicyType } from '../account-policy';
+
 /**
  * The rendered form of an `AccountPolicyDocument`, ready to be passed to the underlying
  * `AWS::Logs::AccountPolicy` resource.
@@ -6,7 +8,7 @@ export interface AccountPolicyDocumentConfig {
   /**
    * The type of policy.
    */
-  readonly policyType: string;
+  readonly policyType: AccountPolicyType;
 
   /**
    * The policy, in JSON.

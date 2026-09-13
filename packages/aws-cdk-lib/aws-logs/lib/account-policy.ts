@@ -15,6 +15,31 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { AccountPolicyReference, IAccountPolicyRef, ILogGroupRef, LogGroupReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
+ * The type of account-level CloudWatch Logs policy.
+ */
+export enum AccountPolicyType {
+  /**
+   * A subscription filter policy.
+   */
+  SUBSCRIPTION_FILTER_POLICY = 'SUBSCRIPTION_FILTER_POLICY',
+
+  /**
+   * A data protection policy.
+   */
+  DATA_PROTECTION_POLICY = 'DATA_PROTECTION_POLICY',
+
+  /**
+   * A field index policy.
+   */
+  FIELD_INDEX_POLICY = 'FIELD_INDEX_POLICY',
+
+  /**
+   * A transformer policy.
+   */
+  TRANSFORMER_POLICY = 'TRANSFORMER_POLICY',
+}
+
+/**
  * Represents the contents of an account-level CloudWatch Logs policy.
  *
  * `AccountPolicy` applies a single policy document to an entire account, as opposed to
@@ -120,7 +145,7 @@ export class AccountPolicy extends Resource implements IAccountPolicyRef {
    *
    * @attribute
    */
-  public readonly policyType: string;
+  public readonly policyType: AccountPolicyType;
 
   constructor(scope: Construct, id: string, props: AccountPolicyProps) {
     super(scope, id, {
@@ -142,7 +167,7 @@ export class AccountPolicy extends Resource implements IAccountPolicyRef {
 
     this.accountId = resource.attrAccountId;
     this.policyName = resource.policyName;
-    this.policyType = resource.policyType;
+    this.policyType = config.policyType;
   }
 
   /**
@@ -244,7 +269,7 @@ export class SubscriptionFilterPolicyDocument extends AccountPolicyDocument {
     const destConfig = this.props.destination.bind(scope, sourceLogGroup);
 
     return {
-      policyType: 'SUBSCRIPTION_FILTER_POLICY',
+      policyType: AccountPolicyType.SUBSCRIPTION_FILTER_POLICY,
       policyDocument: JSON.stringify({
         DestinationArn: destConfig.arn,
         RoleArn: destConfig.role?.roleArn,
@@ -325,7 +350,7 @@ export class DataProtectionAccountPolicyDocument extends AccountPolicyDocument {
     const config = this.props.policy._bind(scope);
 
     return {
-      policyType: 'DATA_PROTECTION_POLICY',
+      policyType: AccountPolicyType.DATA_PROTECTION_POLICY,
       policyDocument: JSON.stringify({
         Name: config.name,
         Description: config.description,
@@ -368,6 +393,20 @@ export class FieldIndexDataSource {
    * AWS CloudTrail management events.
    */
   public static readonly CLOUDTRAIL_MANAGEMENT_EVENTS = new FieldIndexDataSource('aws_cloudtrail', 'management');
+
+  /**
+   * Create a data source not in the list of static members. This is used to maintain
+   * forward compatibility, in case AWS adds a new data source not yet reflected in CDK.
+   *
+   * Equivalent to calling the constructor directly; provided for naming consistency with
+   * other enum-like classes in the CDK.
+   *
+   * @param name the data source name
+   * @param type the data source type
+   */
+  public static of(name: string, type: string): FieldIndexDataSource {
+    return new FieldIndexDataSource(name, type);
+  }
 
   /**
    * Create a data source not in the list of static members. This is used to maintain
@@ -440,7 +479,7 @@ export class FieldIndexAccountPolicyDocument extends AccountPolicyDocument {
     }
 
     return {
-      policyType: 'FIELD_INDEX_POLICY',
+      policyType: AccountPolicyType.FIELD_INDEX_POLICY,
       policyDocument: JSON.stringify(this.props.policy._bind(scope)),
       selectionCriteria: this.renderSelectionCriteria(),
     };
@@ -536,7 +575,7 @@ export class TransformerAccountPolicyDocument extends AccountPolicyDocument {
     }
 
     return {
-      policyType: 'TRANSFORMER_POLICY',
+      policyType: AccountPolicyType.TRANSFORMER_POLICY,
       // Unlike the log-group-level AWS::Logs::Transformer resource (whose CfnTransformer.transformerConfig
       // CFN property is named TransformerConfig), the account-level policyDocument is just the processor
       // array on its own — no wrapping object. Confirmed via a live PutAccountPolicy call.

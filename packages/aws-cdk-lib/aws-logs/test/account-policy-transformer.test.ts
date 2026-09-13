@@ -80,10 +80,17 @@ describe('account policy - transformer', () => {
     });
   });
 
+  // Every VendedLogType and non-OCSF ParserProcessorType is covered here (OCSF has its own
+  // regression test above), so that PROCESSOR_KEY_OVERRIDES staying in sync with the acronym
+  // processor names in transformer.ts is enforced: a newly added acronym-bearing processor
+  // that isn't added to the override map would fail here instead of silently producing a
+  // document CloudWatch Logs rejects.
   test.each([
     [VendedLogType.VPC, 'parseVPC'],
     [VendedLogType.WAF, 'parseWAF'],
     [VendedLogType.CLOUDFRONT, 'parseCloudfront'],
+    [VendedLogType.ROUTE53, 'parseRoute53'],
+    [VendedLogType.POSTGRES, 'parsePostgres'],
   ])('vended log parser for %s renders as %s', (logType, expectedKey) => {
     // GIVEN
     const stack = new Stack();
@@ -101,6 +108,35 @@ describe('account policy - transformer', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::AccountPolicy', {
       PolicyDocument: JSON.stringify([{ [expectedKey]: {} }]),
     });
+  });
+
+  test.each([
+    [ParserProcessorType.JSON, 'parseJSON'],
+    [ParserProcessorType.KEY_VALUE, 'parseKeyValue'],
+    [ParserProcessorType.CSV, 'csv'],
+    [ParserProcessorType.GROK, 'grok'],
+  ])('%s parser processor renders as %s', (type, expectedKey) => {
+    // GIVEN
+    const stack = new Stack();
+    const processor = new ParserProcessor(
+      type === ParserProcessorType.GROK
+        ? { type, grokOptions: { match: '%{COMMONAPACHELOG}' } }
+        : { type },
+    );
+
+    // WHEN
+    new AccountPolicy(stack, 'AccountPolicy', {
+      policyName: 'MyAccountPolicy',
+      policy: AccountPolicyDocument.transformer({
+        processors: [processor],
+      }),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack).findResources('AWS::Logs::AccountPolicy');
+    const [resource] = Object.values(template);
+    const [renderedProcessor] = JSON.parse(resource.Properties.PolicyDocument);
+    expect(Object.keys(renderedProcessor)).toEqual([expectedKey]);
   });
 
   test('logGroupNamePrefix is rendered as a selectionCriteria expression', () => {
