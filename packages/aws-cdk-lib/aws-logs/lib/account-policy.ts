@@ -52,7 +52,7 @@ export abstract class AccountPolicyDocument {
    * Creates a subscription filter policy that applies to every log group in the account.
    */
   public static subscriptionFilter(props: SubscriptionFilterAccountPolicyProps): AccountPolicyDocument {
-    return new SubscriptionFilterPolicyDocument(props);
+    return new SubscriptionFilterAccountPolicyDocument(props);
   }
 
   /**
@@ -243,7 +243,7 @@ export interface SubscriptionFilterAccountPolicyProps {
  *
  * Create instances of this class using `AccountPolicyDocument.subscriptionFilter()`.
  */
-export class SubscriptionFilterPolicyDocument extends AccountPolicyDocument {
+export class SubscriptionFilterAccountPolicyDocument extends AccountPolicyDocument {
   constructor(private readonly props: SubscriptionFilterAccountPolicyProps) {
     super();
   }
