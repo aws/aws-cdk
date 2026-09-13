@@ -26,15 +26,15 @@ export abstract class AccountPolicyDocument {
   /**
    * Creates a subscription filter policy that applies to every log group in the account.
    */
-  public static subscriptionFilter(props: SubscriptionFilterPolicyProps): AccountPolicyDocument {
+  public static subscriptionFilter(props: SubscriptionFilterAccountPolicyProps): AccountPolicyDocument {
     return new SubscriptionFilterPolicyDocument(props);
   }
 
   /**
    * Creates a data protection policy that applies to every log group in the account.
    */
-  public static dataProtection(policy: DataProtectionPolicy): AccountPolicyDocument {
-    return new DataProtectionAccountPolicyDocument(policy);
+  public static dataProtection(props: DataProtectionAccountPolicyProps): AccountPolicyDocument {
+    return new DataProtectionAccountPolicyDocument(props);
   }
 
   /**
@@ -160,7 +160,7 @@ export class AccountPolicy extends Resource implements IAccountPolicyRef {
 /**
  * Properties for a subscription filter account policy.
  */
-export interface SubscriptionFilterPolicyProps {
+export interface SubscriptionFilterAccountPolicyProps {
   /**
    * The destination to send matching log events to.
    *
@@ -219,7 +219,7 @@ export interface SubscriptionFilterPolicyProps {
  * Create instances of this class using `AccountPolicyDocument.subscriptionFilter()`.
  */
 export class SubscriptionFilterPolicyDocument extends AccountPolicyDocument {
-  constructor(private readonly props: SubscriptionFilterPolicyProps) {
+  constructor(private readonly props: SubscriptionFilterAccountPolicyProps) {
     super();
   }
 
@@ -298,13 +298,23 @@ class AccountWideLogGroupRef extends Resource implements ILogGroupRef {
 }
 
 /**
+ * Properties for a data protection account policy.
+ */
+export interface DataProtectionAccountPolicyProps {
+  /**
+   * The data protection policy to apply.
+   */
+  readonly policy: DataProtectionPolicy;
+}
+
+/**
  * A CloudWatch Logs account policy that applies a data protection policy to every log
  * group in the account.
  *
  * Create instances of this class using `AccountPolicyDocument.dataProtection()`.
  */
 export class DataProtectionAccountPolicyDocument extends AccountPolicyDocument {
-  constructor(private readonly policy: DataProtectionPolicy) {
+  constructor(private readonly props: DataProtectionAccountPolicyProps) {
     super();
   }
 
@@ -312,7 +322,7 @@ export class DataProtectionAccountPolicyDocument extends AccountPolicyDocument {
    * @internal
    */
   public _bind(scope: Construct): AccountPolicyDocumentConfig {
-    const config = this.policy._bind(scope);
+    const config = this.props.policy._bind(scope);
 
     return {
       policyType: 'DATA_PROTECTION_POLICY',

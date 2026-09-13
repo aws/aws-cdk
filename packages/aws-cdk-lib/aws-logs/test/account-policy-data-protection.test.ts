@@ -11,13 +11,13 @@ describe('account policy - data protection', () => {
     // WHEN
     new AccountPolicy(stack, 'AccountPolicy', {
       policyName: 'MyAccountPolicy',
-      policy: AccountPolicyDocument.dataProtection(
-        new DataProtectionPolicy({
+      policy: AccountPolicyDocument.dataProtection({
+        policy: new DataProtectionPolicy({
           name: 'test-policy-name',
           description: 'test description',
           identifiers: [identifier],
         }),
-      ),
+      }),
     });
 
     // THEN
@@ -62,11 +62,11 @@ describe('account policy - data protection', () => {
     // WHEN
     new AccountPolicy(stack, 'AccountPolicy', {
       policyName: 'MyAccountPolicy',
-      policy: AccountPolicyDocument.dataProtection(
-        new DataProtectionPolicy({
+      policy: AccountPolicyDocument.dataProtection({
+        policy: new DataProtectionPolicy({
           identifiers: [DataIdentifier.EMAILADDRESS],
         }),
-      ),
+      }),
     });
 
     // THEN

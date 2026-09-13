@@ -618,7 +618,7 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
 
 new logs.AccountPolicy(this, 'AccountPolicy', {
   policyName: 'AccountWideDataProtection',
-  policy: logs.AccountPolicyDocument.dataProtection(dataProtectionPolicy),
+  policy: logs.AccountPolicyDocument.dataProtection({ policy: dataProtectionPolicy }),
 });
 ```
 

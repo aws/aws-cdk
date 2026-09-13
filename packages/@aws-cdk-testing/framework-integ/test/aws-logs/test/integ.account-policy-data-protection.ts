@@ -9,10 +9,12 @@ class AccountPolicyDataProtectionIntegStack extends Stack {
 
     new AccountPolicy(this, 'AccountPolicy', {
       policyName: 'AccountPolicyDataProtectionIntegTest',
-      policy: AccountPolicyDocument.dataProtection(new DataProtectionPolicy({
-        name: 'account-policy-data-protection-integ',
-        identifiers: [DataIdentifier.EMAILADDRESS],
-      })),
+      policy: AccountPolicyDocument.dataProtection({
+        policy: new DataProtectionPolicy({
+          name: 'account-policy-data-protection-integ',
+          identifiers: [DataIdentifier.EMAILADDRESS],
+        }),
+      }),
     });
   }
 }

@@ -4,27 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.6.0",
+      "pluginVersion": "1.9.0",
       "conclusion": "success",
       "violations": [
         {
-          "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
-          "severity": "warning",
-          "ruleMetadata": {
-            "category": "Structure"
-          },
-          "violatingConstructs": [
-            {
-              "constructPath": "account-policy-subscription-filter/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
-            }
-          ]
-        },
-        {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation was disabled on '2027-02-01' and update on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"

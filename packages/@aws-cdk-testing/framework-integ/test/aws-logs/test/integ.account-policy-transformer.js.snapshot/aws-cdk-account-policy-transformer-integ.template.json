@@ -8,6 +8,33 @@
     "PolicyType": "TRANSFORMER_POLICY",
     "SelectionCriteria": "LogGroupNamePrefix = \"/aws/lambda/\""
    }
+  },
+  "VpcAccountPolicy571DFA5B": {
+   "Type": "AWS::Logs::AccountPolicy",
+   "Properties": {
+    "PolicyDocument": "[{\"parseVPC\":{}}]",
+    "PolicyName": "AccountPolicyTransformerVpcIntegTest",
+    "PolicyType": "TRANSFORMER_POLICY",
+    "SelectionCriteria": "LogGroupNamePrefix = \"/aws/vpc/\""
+   }
+  },
+  "WafAccountPolicy7B11A251": {
+   "Type": "AWS::Logs::AccountPolicy",
+   "Properties": {
+    "PolicyDocument": "[{\"parseWAF\":{}}]",
+    "PolicyName": "AccountPolicyTransformerWafIntegTest",
+    "PolicyType": "TRANSFORMER_POLICY",
+    "SelectionCriteria": "LogGroupNamePrefix = \"/aws/waf/\""
+   }
+  },
+  "OcsfAccountPolicyFF428C17": {
+   "Type": "AWS::Logs::AccountPolicy",
+   "Properties": {
+    "PolicyDocument": "[{\"parseToOCSF\":{\"source\":\"@message\",\"eventSource\":\"VPCFlow\",\"ocsfVersion\":\"V1.1\"}}]",
+    "PolicyName": "AccountPolicyTransformerOcsfIntegTest",
+    "PolicyType": "TRANSFORMER_POLICY",
+    "SelectionCriteria": "LogGroupNamePrefix = \"/aws/ocsf/\""
+   }
   }
  },
  "Parameters": {

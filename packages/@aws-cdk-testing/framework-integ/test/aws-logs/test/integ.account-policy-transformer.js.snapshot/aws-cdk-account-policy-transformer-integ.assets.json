@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "8f8471782ce54ede98d86c4f54c1153c1eb2d94622ec2bf76bfdca337ee164e1": {
+    "22ea597d3fc188ab0b6eee9f8b4415e99b5c06c6aa855d3256d09fc618017733": {
       "displayName": "aws-cdk-account-policy-transformer-integ Template",
       "source": {
         "path": "aws-cdk-account-policy-transformer-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4eeee005": {
+        "current_account-current_region-b5b5b982": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8f8471782ce54ede98d86c4f54c1153c1eb2d94622ec2bf76bfdca337ee164e1.json",
+          "objectKey": "22ea597d3fc188ab0b6eee9f8b4415e99b5c06c6aa855d3256d09fc618017733.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
