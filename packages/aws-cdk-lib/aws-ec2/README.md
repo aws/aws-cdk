@@ -232,8 +232,9 @@ new ec2.Vpc(this, 'Vpc', {
 Each Availability Zone may only appear once in `availabilityZoneAddresses`.
 
 The `natGateways` property is ignored when using a Regional NAT Gateway, since a single
-gateway already covers every Availability Zone. Setting `natGateways: 0` disables the
-gateway entirely, so no NAT gateway is created at all.
+gateway already covers every Availability Zone. Values below 1, as well as unresolved
+tokens, are rejected because they would silently disable the gateway you explicitly
+configured; omit `natGatewayProvider` instead if you do not want a NAT gateway.
 
 You can also configure the maximum drain duration:
 

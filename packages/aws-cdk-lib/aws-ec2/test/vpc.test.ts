@@ -1482,50 +1482,28 @@ describe('vpc', () => {
         expect(warnings.length).toBe(0);
       });
 
-      test('creates no NAT gateway when natGateways is 0', () => {
-        const app = new App();
-        const stack = new Stack(app, 'TestStack');
-        new Vpc(stack, 'Vpc', {
+      test('throws when natGateways is 0', () => {
+        const stack = new Stack();
+        expect(() => new Vpc(stack, 'Vpc', {
           natGatewayProvider: NatProvider.regionalGateway(),
           natGateways: 0,
-        });
-
-        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
-
-        Annotations.fromStack(stack).hasWarning(
-          '/TestStack/Vpc',
-          Match.stringLikeRegexp('`natGateways: 0` disables the Regional NAT Gateway'),
-        );
+        })).toThrow('`natGateways` must be at least 1 when `natGatewayProvider` is a Regional NAT Gateway, got 0. Remove `natGatewayProvider` if you do not want a NAT gateway.');
       });
 
-      test('creates no NAT gateway when natGateways is negative', () => {
-        const app = new App();
-        const stack = new Stack(app, 'TestStack');
-        new Vpc(stack, 'Vpc', {
+      test('throws when natGateways is negative', () => {
+        const stack = new Stack();
+        expect(() => new Vpc(stack, 'Vpc', {
           natGatewayProvider: NatProvider.regionalGateway(),
           natGateways: -1,
-        });
-
-        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
-
-        Annotations.fromStack(stack).hasWarning(
-          '/TestStack/Vpc',
-          Match.stringLikeRegexp('`natGateways: -1` disables the Regional NAT Gateway'),
-        );
+        })).toThrow('`natGateways` must be at least 1 when `natGatewayProvider` is a Regional NAT Gateway, got -1. Remove `natGatewayProvider` if you do not want a NAT gateway.');
       });
 
-      test('warns and creates no NAT gateway when natGateways is an unresolved token', () => {
-        const app = new App();
-        const stack = new Stack(app, 'TestStack');
-        new Vpc(stack, 'Vpc', {
+      test('throws when natGateways is an unresolved token', () => {
+        const stack = new Stack();
+        expect(() => new Vpc(stack, 'Vpc', {
           natGatewayProvider: NatProvider.regionalGateway(),
           natGateways: Token.asNumber(Lazy.number({ produce: () => 1 })),
-        });
-
-        Annotations.fromStack(stack).hasWarning('/TestStack/Vpc', Match.stringLikeRegexp('`natGateways` must be resolved at synthesis time'));
-        expect(Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('disables the Regional NAT Gateway')).length).toBe(0);
-
-        Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+        })).toThrow('`natGateways` must be a resolved number when `natGatewayProvider` is a Regional NAT Gateway, got an unresolved token.');
       });
 
       test('warns when natGatewaySubnets is specified', () => {

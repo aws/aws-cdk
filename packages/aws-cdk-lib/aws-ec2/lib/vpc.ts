@@ -1673,25 +1673,15 @@ export class Vpc extends VpcBase {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(
-      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
-    );
-
-    if (Token.isUnresolved(props.natGateways)) {
-      Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-ec2:natGatewaysToken',
-        '`natGateways` must be resolved at synthesis time to decide how many NAT gateways to create. The unresolved token is treated as 0, so no NAT gateway will be created.',
-      );
-    }
 
     if (props.natGatewayProvider instanceof RegionalNatGatewayProvider) {
-      const natGateways = Token.isUnresolved(props.natGateways) ? undefined : props.natGateways;
-      if (natGateways !== undefined && natGateways < 1) {
-        Annotations.of(this).addWarningV2(
-          '@aws-cdk/aws-ec2:regionalNatGatewayDisabled',
-          `\`natGateways: ${natGateways}\` disables the Regional NAT Gateway configured via \`natGatewayProvider\`. No NAT gateway will be created.`,
-        );
-      } else if (natGateways !== undefined && natGateways > 1) {
+      if (Token.isUnresolved(props.natGateways)) {
+        throw new ValidationError(lit`NatGatewaysTokenWithRegionalNatGateway`, '`natGateways` must be a resolved number when `natGatewayProvider` is a Regional NAT Gateway, got an unresolved token.', this);
+      }
+      if (props.natGateways !== undefined && props.natGateways < 1) {
+        throw new ValidationError(lit`NatGatewaysBelowOneWithRegionalNatGateway`, `\`natGateways\` must be at least 1 when \`natGatewayProvider\` is a Regional NAT Gateway, got ${props.natGateways}. Remove \`natGatewayProvider\` if you do not want a NAT gateway.`, this);
+      }
+      if (props.natGateways !== undefined && props.natGateways > 1) {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-ec2:regionalNatGatewayCount',
           '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
@@ -1704,6 +1694,17 @@ export class Vpc extends VpcBase {
         );
       }
     }
+
+    if (Token.isUnresolved(props.natGateways)) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ec2:natGatewaysToken',
+        '`natGateways` must be resolved at synthesis time to decide how many NAT gateways to create. The unresolved token is treated as 0, so no NAT gateway will be created.',
+      );
+    }
+
+    const natGatewayCount = determineNatGatewayCount(
+      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
+    );
 
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
@@ -2878,12 +2879,12 @@ function determineNatGatewayCount(
   azCount: number,
   natGatewayProvider?: NatProvider,
 ) {
-  if (Token.isUnresolved(requestedCount)) {
-    return 0;
+  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
+    return 1;
   }
 
-  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
-    return requestedCount === undefined ? 1 : Math.min(1, Math.max(requestedCount, 0));
+  if (Token.isUnresolved(requestedCount)) {
+    return 0;
   }
 
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
