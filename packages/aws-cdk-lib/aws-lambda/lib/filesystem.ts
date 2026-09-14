@@ -153,8 +153,9 @@ export interface FileSystemConfig {
    * Set internally by `fromS3FilesAccessPoint`; not applicable to EFS mounts.
    *
    * @default - DirectS3Read is not set. The service default is AUTO.
+   * @internal
    */
-  readonly s3FilesDirectRead?: string;
+  readonly _s3FilesDirectRead?: string;
 }
 
 /**
@@ -238,7 +239,7 @@ export class FileSystem {
         defaultPort: ec2.Port.tcp(FileSystem.NFS_PORT),
       }),
       policies,
-      s3FilesDirectRead: directS3Read?._mode,
+      _s3FilesDirectRead: directS3Read?._mode,
     });
   }
 
