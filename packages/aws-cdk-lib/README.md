@@ -1632,7 +1632,7 @@ every field it defines is optional, and it sets no `minLength`/`minItems`, so
 blank strings and empty arrays are structurally valid. The schema is advisory —
 CloudFormation does not validate or enforce `Metadata` fields. CDK maps a few
 ergonomic API names (`defaultMutability`, `propertyMutability`) onto the
-schema's wire keys and adds typed conveniences, but does not add top-level or
+schema's field names and adds typed conveniences, but does not add top-level or
 content requirements the schema itself does not impose.
 
 Context comes in two flavors, each with its own entry point:
@@ -1661,7 +1661,7 @@ ResourceMetadataContext.of(queue).add({
 
 This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
 `AWS::SQS::Queue` resource. `defaultMutability` and `propertyMutability` are
-rendered under the canonical wire keys `mutable` and `mutability`:
+rendered under the schema's field names `mutable` and `mutability`:
 
 ```json
 {
@@ -1714,13 +1714,26 @@ By default, `add()` is deliberately narrow and predictable. It targets:
   `sqs.Queue` L2 designates as its `defaultChild`, or the `AWS::Lambda::Function`
   inside a `lambda.Function`.
 
+The chain is followed through intermediate constructs, not just one level. If a
+construct's `defaultChild` is itself a construct, CDK follows *that* construct's
+`defaultChild` next, until it reaches a `CfnResource`. For example,
+`cloudfront.experimental.EdgeFunction` designates its internal `lambda.Function`
+as its `defaultChild`, and `lambda.Function` designates its
+`AWS::Lambda::Function`, so context added on the `EdgeFunction` lands on the
+`AWS::Lambda::Function` and still skips the function's generated role.
+
 Incidental helper resources (auto-created IAM roles/policies, log-retention
 functions, custom-resource plumbing) are not on the `defaultChild` chain, so they
-never receive context by default. Plain grouping constructs, L3 patterns and
-stacks are **not transparent** by default: context added on them does not leak
-onto everything nested beneath. If the selected mode and resource-type filters
-match no CloudFormation resources, synthesis fails with an actionable error
-instead of silently dropping the declaration.
+never receive context by default. Plain grouping constructs, L3 patterns that
+declare no `defaultChild` (for example
+`ecs_patterns.ApplicationLoadBalancedFargateService`) and stacks are **not
+transparent** by default: context added on them does not leak onto everything
+nested beneath. If the selected mode and resource-type filters match no
+CloudFormation resources, synthesis fails with an actionable error instead of
+silently dropping the declaration. An ambiguous `defaultChild` (a construct with
+both a `Resource` and a `Default` child) is treated as no `defaultChild`. L3
+authors can opt their construct into the default by setting
+`this.node.defaultChild` to the construct or resource that represents the pattern.
 
 To fan out to descendants, opt in explicitly:
 
@@ -1737,7 +1750,7 @@ ResourceMetadataContext.of(stack).add({
   includeResourceTypes: ['AWS::SQS::Queue'],
 });
 
-// Cascade to EVERY resource beneath the scope, helpers included.
+// Cascade to EVERY resource beneath the scope: primaries and helpers alike.
 ResourceMetadataContext.of(stack).add({
   why: 'resource belongs to the networked subsystem',
   deps: ['NetworkStack'],
@@ -1746,27 +1759,43 @@ ResourceMetadataContext.of(stack).add({
 });
 ```
 
-Adding context on a `lambda.Function` targets the `AWS::Lambda::Function`, not
-its execution role or log group. If a helper is exposed as a construct, target
-that helper directly instead of widening the whole subtree:
+`applyToAllResources` is not a "helpers only" selector — it selects every
+`CfnResource` under the scope. There is no helper-only mode because CDK has no
+marker that identifies a helper other than its absence from the `defaultChild`
+chain. To reach helpers of a particular kind, combine `applyToAllResources` with a
+resource-type filter, or target an exposed helper construct directly:
 
 ```typescript
+declare const stack: Stack;
 declare const deadLetterQueue: sqs.Queue;
 
+// Only the generated IAM roles anywhere in the stack.
+ResourceMetadataContext.of(stack).add({
+  must: ['execution roles keep the org permissions boundary'],
+}, {
+  applyToAllResources: true,
+  includeResourceTypes: ['AWS::IAM::Role'],
+});
+
+// A helper that the parent construct exposes as its own construct.
 ResourceMetadataContext.of(deadLetterQueue).add({
   why: 'stores failed order-processor invocations for replay',
 });
 ```
 
+Adding context on a `lambda.Function` targets the `AWS::Lambda::Function`, not
+its execution role or log group.
+
 For an L3 pattern (or any multi-resource construct), the default targets only a
-`defaultChild` chain that ends in a `CfnResource`. If no such primary resource
-exists, synthesis fails; set `applyToDescendants` to annotate the primary
-resource of each child construct, use `applyToAllResources` to include helpers,
-or target a specific child resource. Like `Tags`, descendant cascading crosses
-`NestedStack` boundaries, so context set on a scope containing a `NestedStack`
-reaches resources in the nested template when descendants are enabled. It does
-not cross `Stage` assembly boundaries; declare context inside each Stage instead,
-or the outer declaration fails if it has no targets in its own assembly.
+`defaultChild` chain that ends in a `CfnResource`. If the construct declares no
+`defaultChild`, or the chain ends at a construct without one, synthesis fails;
+set `applyToDescendants` to annotate the primary resource of each child
+construct, use `applyToAllResources` to include helpers, or target a specific
+child resource. Like `Tags`, descendant cascading crosses `NestedStack`
+boundaries, so context set on a scope containing a `NestedStack` reaches
+resources in the nested template when descendants are enabled. It does not cross
+`Stage` assembly boundaries; declare context inside each Stage instead, or the
+outer declaration fails if it has no targets in its own assembly.
 
 Narrow targeting further with resource-type filters:
 
@@ -1827,7 +1856,11 @@ ResourceMetadataContext.of(queue).add({
 
 The trust sources are `AUTHORED` (human-authored or human-confirmed), `COMMENT`
 (derived directly from a code comment), `COMMIT` (derived directly from commit
-rationale) and `INFERRED` (produced by agent inference or synthesis).
+rationale) and `INFERRED` (produced by agent inference or synthesis). When more
+than one fits, `AUTHORED` takes precedence once a person has confirmed the text;
+otherwise use the most direct evidence and record the rest in `citation` and
+`note`. Three of the four values exist for automated producers — a person adding
+context directly in CDK code can omit `trust` entirely.
 
 ### Context as a Mixin
 
@@ -1859,7 +1892,11 @@ Mixins.of(stack).apply(new MetadataContextMixin({
 `TemplateMetadataContext` holds cross-cutting facts stated once per stack: the
 architecture overview, template-wide invariants, pointers to external shared
 context, and ownership. The stack's purpose itself belongs in the native
-CloudFormation `Description` (the `description` prop of `Stack`). Every
+CloudFormation `Description` (the `description` prop of `Stack`): `Description`
+is one short string (at most 1,024 bytes) that the console stack list and
+`DescribeStacks` show, while template context is a set of named fields returned
+only inside the template body via `GetTemplate`. Avoid repeating the `Description`
+in `arch`, and keep rules and references out of `Description`. Every
 template-context field is optional; supply any combination, and an empty
 declaration is a harmless no-op:
 
@@ -1908,10 +1945,11 @@ a scoped `ValidationError` rather than silently overwriting or merging
 incompatible blocks — remove one to resolve it. Sibling metadata keys (such as
 your own reverse-DNS tool metadata) are never touched.
 
-The Context wire-format contract owns only `com.aws.cloudformation.Context` and
-does not define extension fields for custom dimensions. Tools that consume Context can
-publish independently defined structured data under their own sibling reverse-DNS
-metadata keys using `CfnResource.addMetadata()`.
+The `com.aws.cloudformation.Context` block contains only the fields defined by
+the published schema and does not define extension fields for custom
+dimensions. Tools that consume Context can publish independently defined
+structured data under their own sibling reverse-DNS metadata keys using
+`CfnResource.addMetadata()`.
 
 Keep free-text values terse — drop articles and use symbols (`->`, `>=`, `w/`) —
 since context competes with resources for the CloudFormation template size limit.
