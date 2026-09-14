@@ -103,7 +103,7 @@ export interface FargateServiceBaseProps {
    * If enabled, `maxHealthyPercent` must be greater than 100.
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
-   * @default - undefined; the underlying FargateService applies its default (ENABLED on service creation)
+   * @default - not set; Amazon ECS applies its own default, which is ENABLED for new services
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
 }
