@@ -108,8 +108,9 @@ export enum ContextTrustConfidence {
 /**
  * Provenance and confidence metadata for a context block.
  *
- * Lets template consumers weight context reliability and supports
- * anti-fabrication: context written by tooling should say so. Supplying
+ * Lets template consumers weigh how much to rely on a context block. Context
+ * written by tooling should say so through `source`, and `AUTHORED` is
+ * reserved for information a person wrote or explicitly confirmed. Supplying
  * `trust` is optional, but when supplied both `source` and `confidence` are
  * required — CDK never infers them on your behalf.
  */
@@ -337,9 +338,15 @@ export interface ResourceMetadataContextOptions {
    *
    * By default (`false`), `add()` targets only the scope itself when it is a
    * `CfnResource`, or the `defaultChild` chain of the scope (e.g. the
-   * `AWS::SQS::Queue` inside an `sqs.Queue`). Plain grouping constructs, L3
-   * patterns and stacks are NOT transparent, so context does not leak onto
-   * resources nested behind them.
+   * `AWS::SQS::Queue` inside an `sqs.Queue`). The chain is followed through
+   * intermediate constructs: if a construct's `defaultChild` is itself a
+   * construct (as with `cloudfront.experimental.EdgeFunction`, whose
+   * `defaultChild` is a `lambda.Function`), that construct's `defaultChild`
+   * is followed next until a `CfnResource` is reached. Plain grouping
+   * constructs, L3 patterns that declare no `defaultChild`, and stacks are NOT
+   * transparent, so context does not leak onto resources nested behind them;
+   * a declaration on such a scope with no options fails synthesis because it
+   * matches no resource.
    *
    * Set to `true` to make those grouping/L3/stack nodes transparent, so
    * context cascades to the primary resource of every construct beneath the
@@ -354,12 +361,14 @@ export interface ResourceMetadataContextOptions {
 
   /**
    * Apply the context block to every CloudFormation resource in scope,
-   * including incidental helper resources.
+   * primary and incidental helper resources alike.
    *
-   * Implies descendant traversal: setting this to `true` cascades context to
-   * all resources beneath the scope — primary resources and helper resources
-   * (IAM policies, log groups, custom-resource plumbing) alike — regardless
-   * of `applyToDescendants`. Traversal never crosses a `Stage` assembly
+   * This is not a "helpers only" selector: it disables the primary-resource
+   * filter, so every `CfnResource` beneath the scope receives the block. To
+   * reach helpers of a particular kind, combine it with
+   * `includeResourceTypes` (e.g. `['AWS::IAM::Role']`), or target an exposed
+   * helper construct directly. Implies descendant traversal regardless of
+   * `applyToDescendants`. Traversal never crosses a `Stage` assembly
    * boundary.
    *
    * @default false

@@ -43,7 +43,7 @@ describe('metadata context', () => {
       });
     });
 
-    test('defaultMutability/propertyMutability render under the canonical wire keys', () => {
+    test('defaultMutability/propertyMutability render under the schema field names', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
@@ -73,7 +73,7 @@ describe('metadata context', () => {
       });
     });
 
-    test('renders explicit trust with wire-format keys src/conf/cite/note', () => {
+    test('renders explicit trust with the schema field names src/conf/cite/note', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
@@ -121,6 +121,89 @@ describe('metadata context', () => {
       const template = toCloudFormation(stack);
       expect(template.Resources[stack.getLogicalId(primary)].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
       expect(template.Resources[stack.getLogicalId(helper)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+    });
+
+    test('default targeting follows a multi-hop defaultChild chain when the defaultChild is another construct', () => {
+      const stack = new Stack();
+
+      // Model an L3 whose defaultChild is an L2 (like cloudfront.experimental.EdgeFunction,
+      // whose defaultChild is a lambda.Function), which in turn designates its L1.
+      const l3 = new Construct(stack, 'EdgeFunction');
+      const l2 = new Construct(l3, 'Fn');
+      const primary = new CfnResource(l2, 'Resource', { type: 'AWS::Lambda::Function' });
+      const helper = new CfnResource(l2, 'ServiceRole', { type: 'AWS::IAM::Role' });
+      const sibling = new CfnResource(l3, 'Version', { type: 'AWS::Lambda::Version' });
+      l3.node.defaultChild = l2;
+
+      ResourceMetadataContext.of(l3).add({ why: 'runs at the edge' });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources[stack.getLogicalId(primary)].Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'runs at the edge' });
+      expect(template.Resources[stack.getLogicalId(helper)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(template.Resources[stack.getLogicalId(sibling)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+    });
+
+    test('default targeting fails when the defaultChild chain ends at a construct without a defaultChild', () => {
+      const stack = new Stack();
+
+      const l3 = new Construct(stack, 'Outer');
+      const middle = new Construct(l3, 'Middle');
+      // Not named 'Resource' or 'Default', so `middle` designates no defaultChild.
+      new CfnResource(middle, 'Thing', { type: 'AWS::Fake::Thing' });
+      l3.node.defaultChild = middle;
+
+      ResourceMetadataContext.of(l3).add({ why: 'dead-end chain' });
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*applyToDescendants/,
+      );
+    });
+
+    test('default targeting fails for an L3 that declares no defaultChild even when its children do', () => {
+      const stack = new Stack();
+
+      // Model an L3 pattern such as ApplicationLoadBalancedFargateService: several
+      // L2 children, each with its own primary resource, but no defaultChild on the L3.
+      const l3 = new Construct(stack, 'Service');
+      const lbL2 = new Construct(l3, 'LB');
+      const lb = new CfnResource(lbL2, 'Resource', { type: 'AWS::ElasticLoadBalancingV2::LoadBalancer' });
+      lbL2.node.defaultChild = lb;
+      const svcL2 = new Construct(l3, 'Svc');
+      const svc = new CfnResource(svcL2, 'Service', { type: 'AWS::ECS::Service' });
+      svcL2.node.defaultChild = svc;
+
+      ResourceMetadataContext.of(l3).add({ why: 'no primary resource' });
+
+      expect(() => synthesize(stack)).toThrow(
+        /resource context declaration matched no CloudFormation resources.*applyToDescendants/,
+      );
+    });
+
+    test('an L3 without a defaultChild can be targeted with applyToDescendants and a type filter', () => {
+      const stack = new Stack();
+
+      const l3 = new Construct(stack, 'Service');
+      const lbL2 = new Construct(l3, 'LB');
+      const lb = new CfnResource(lbL2, 'Resource', { type: 'AWS::ElasticLoadBalancingV2::LoadBalancer' });
+      lbL2.node.defaultChild = lb;
+      const lbHelper = new CfnResource(lbL2, 'SecurityGroup', { type: 'AWS::EC2::SecurityGroup' });
+      const svcL2 = new Construct(l3, 'Svc');
+      const svc = new CfnResource(svcL2, 'Service', { type: 'AWS::ECS::Service' });
+      svcL2.node.defaultChild = svc;
+
+      ResourceMetadataContext.of(l3).add({
+        must: ['ALB idle timeout >= backend read timeout'],
+      }, {
+        applyToDescendants: true,
+        includeResourceTypes: ['AWS::ElasticLoadBalancingV2::LoadBalancer'],
+      });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources[stack.getLogicalId(lb)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        must: ['ALB idle timeout >= backend read timeout'],
+      });
+      expect(template.Resources[stack.getLogicalId(lbHelper)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(template.Resources[stack.getLogicalId(svc)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('default targeting fails when a grouping construct has no primary resource', () => {
@@ -227,6 +310,45 @@ describe('metadata context', () => {
       const template = toCloudFormation(stack);
       expect(template.Resources[stack.getLogicalId(primary)].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
       expect(template.Resources[stack.getLogicalId(helper)].Metadata[CONTEXT_METADATA_KEY]).toMatchObject({ why: 'buffers events' });
+    });
+
+    test('applyToAllResources selects every resource under the scope, not only helpers', () => {
+      const stack = new Stack();
+      const l2 = new Construct(stack, 'MyQueue');
+      const primary = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
+      l2.node.defaultChild = primary;
+      const helper = new CfnResource(l2, 'Policy', { type: 'AWS::SQS::QueuePolicy' });
+      const loose = new CfnResource(stack, 'Loose', { type: 'AWS::Fake::Thing' });
+
+      ResourceMetadataContext.of(stack).add({ deps: ['NetworkStack'] }, { applyToAllResources: true });
+
+      const template = toCloudFormation(stack);
+      for (const resource of [primary, helper, loose]) {
+        expect(template.Resources[stack.getLogicalId(resource)].Metadata[CONTEXT_METADATA_KEY]).toEqual({ deps: ['NetworkStack'] });
+      }
+    });
+
+    test('applyToAllResources with a resource type filter reaches helpers of that type only', () => {
+      const stack = new Stack();
+      const l2 = new Construct(stack, 'Fn');
+      const primary = new CfnResource(l2, 'Resource', { type: 'AWS::Lambda::Function' });
+      l2.node.defaultChild = primary;
+      const role = new CfnResource(l2, 'ServiceRole', { type: 'AWS::IAM::Role' });
+      const policy = new CfnResource(l2, 'ServiceRolePolicy', { type: 'AWS::IAM::Policy' });
+
+      ResourceMetadataContext.of(stack).add({
+        must: ['execution roles keep the org permissions boundary'],
+      }, {
+        applyToAllResources: true,
+        includeResourceTypes: ['AWS::IAM::Role'],
+      });
+
+      const template = toCloudFormation(stack);
+      expect(template.Resources[stack.getLogicalId(role)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        must: ['execution roles keep the org permissions boundary'],
+      });
+      expect(template.Resources[stack.getLogicalId(primary)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(template.Resources[stack.getLogicalId(policy)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('ambiguous defaultChild fails with an actionable zero-target error', () => {
@@ -962,10 +1084,10 @@ describe('metadata context', () => {
       expect(Object.keys(template.Metadata[CONTEXT_METADATA_KEY]).sort()).toEqual(['arch', 'must', 'owner', 'ref']);
     });
 
-    test('enum wire values match the advisory schema vocabulary', () => {
+    test('enum values match the advisory schema vocabulary', () => {
       // Drift check per the schema's consumer-update strategy: these string
       // values are FROZEN for the advisory schema. If this test fails, the emitted
-      // wire format no longer matches the schema.
+      // values no longer match the published schema.
       expect(Object.values(ContextMutability).sort()).toEqual([
         'change-with-constraints',
         'free-to-tune',
