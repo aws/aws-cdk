@@ -12,8 +12,9 @@ export const RESOURCE_CONTEXT_METADATA_TYPE = 'aws:cdk:metadata-context';
  * Render explicitly authored props into the advisory schema.
  *
  * The public TypeScript/jsii prop names (`defaultMutability`,
- * `propertyMutability`) are rendered under the canonical wire keys
- * (`mutable`, `mutability`) so the emitted schema vocabulary is unchanged.
+ * `propertyMutability`) are rendered under the field names defined by the
+ * published CloudFormation Metadata Context schema (`mutable`, `mutability`)
+ * so the emitted vocabulary matches the schema exactly.
  */
 export function renderResourceContext(context: ResourceContextProps): Record<string, any> {
   const out: Record<string, any> = {};
