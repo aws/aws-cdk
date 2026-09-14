@@ -366,6 +366,9 @@ describe('CodeBuild Action', () => {
               'Action': 'iam:PassRole',
               'Effect': 'Allow',
               'Resource': stack.resolve(overrideRole.roleArn),
+              'Condition': {
+                'StringEquals': { 'iam:PassedToService': 'codebuild.amazonaws.com' },
+              },
             },
           ]),
         },
