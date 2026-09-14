@@ -1,4 +1,5 @@
 import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
@@ -47,16 +48,46 @@ const integ = new IntegTest(app, 'websocket-lambda-shared-integration', {
 // All three routes share one function. Its resource policy should grant
 // apigateway invoke permission for each route key, including $disconnect and
 // $default which previously did not receive a permission.
-const policy = integ.assertions.awsApiCall('Lambda', 'getPolicy', {
-  FunctionName: handler.functionName,
-}, ['Policy']);
+//
+// Lambda getPolicy returns a large response that exceeds the 4096-byte
+// CloudFormation custom resource limit. Using outputPaths to scope to
+// 'Policy' does not help because deepParseJson expands the JSON-encoded
+// Policy string before flattening, so assertAtPath/expect cannot match.
+// Instead, a small verification Lambda extracts just the source ARNs.
+const verifier = new lambda.Function(stack, 'PolicyVerifier', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: new lambda.InlineCode(`
+const { LambdaClient, GetPolicyCommand } = require('@aws-sdk/client-lambda');
+exports.handler = async () => {
+  const client = new LambdaClient();
+  const res = await client.send(new GetPolicyCommand({ FunctionName: process.env.TARGET_FUNCTION }));
+  const policy = JSON.parse(res.Policy);
+  const sourceArns = policy.Statement
+    .map(s => s.Condition?.ArnLike?.['AWS:SourceArn'] || '')
+    .sort();
+  return { sourceArns };
+};
+  `),
+  environment: {
+    TARGET_FUNCTION: handler.functionName,
+  },
+});
+verifier.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['lambda:GetPolicy'],
+  resources: [handler.functionArn],
+}));
 
-policy.expect(ExpectedResult.objectLike({
-  Policy: Match.serializedJson(Match.objectLike({
-    Statement: Match.arrayWith([
-      Match.objectLike({ Condition: { ArnLike: { 'AWS:SourceArn': Match.stringLikeRegexp('.*/\\*\\$connect$') } } }),
-      Match.objectLike({ Condition: { ArnLike: { 'AWS:SourceArn': Match.stringLikeRegexp('.*/\\*\\$disconnect$') } } }),
-      Match.objectLike({ Condition: { ArnLike: { 'AWS:SourceArn': Match.stringLikeRegexp('.*/\\*\\$default$') } } }),
+const verify = integ.assertions.invokeFunction({
+  functionName: verifier.functionName,
+});
+
+verify.expect(ExpectedResult.objectLike({
+  Payload: Match.serializedJson(Match.objectLike({
+    sourceArns: Match.arrayWith([
+      Match.stringLikeRegexp('.*/\\*\\$connect$'),
+      Match.stringLikeRegexp('.*/\\*\\$default$'),
+      Match.stringLikeRegexp('.*/\\*\\$disconnect$'),
     ]),
   })),
 }));

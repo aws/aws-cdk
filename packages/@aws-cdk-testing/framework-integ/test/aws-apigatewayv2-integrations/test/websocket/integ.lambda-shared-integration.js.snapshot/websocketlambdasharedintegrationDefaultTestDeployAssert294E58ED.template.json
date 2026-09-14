@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallLambdagetPolicy0d0818f03506c4cac7eeba2359f728ae": {
-   "Type": "Custom::DeployAssert@SdkCallLambdagetPolicy",
+  "LambdaInvoke3d95b54e6a1b47b562a199e7b1cd7258": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -10,8 +10,8 @@
      ]
     },
     "service": "Lambda",
-    "api": "getPolicy",
-    "expected": "{\"$ObjectLike\":{\"Policy\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Statement\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Condition\":{\"ArnLike\":{\"AWS:SourceArn\":{\"$StringLike\":\".*/\\\\*\\\\$connect$\"}}}}},{\"$ObjectLike\":{\"Condition\":{\"ArnLike\":{\"AWS:SourceArn\":{\"$StringLike\":\".*/\\\\*\\\\$disconnect$\"}}}}},{\"$ObjectLike\":{\"Condition\":{\"ArnLike\":{\"AWS:SourceArn\":{\"$StringLike\":\".*/\\\\*\\\\$default$\"}}}}}]}}}}}}",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$SerializedJson\":{\"$ObjectLike\":{\"sourceArns\":{\"$ArrayWith\":[{\"$StringLike\":\".*/\\\\*\\\\$connect$\"},{\"$StringLike\":\".*/\\\\*\\\\$default$\"},{\"$StringLike\":\".*/\\\\*\\\\$disconnect$\"}]}}}}}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "WebSocketApiSharedIntegrationInteg:ExportsOutputRefHandler886CB40BD176DC16"
+         "Fn::ImportValue": "WebSocketApiSharedIntegrationInteg:ExportsOutputRefPolicyVerifier929FEABD6D2954B0"
         },
         "\""
        ]
@@ -27,10 +27,25 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1781633377838"
+    "salt": "1789396950718"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke3d95b54e6a1b47b562a199e7b1cd7258InvokeFE04E9A6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "WebSocketApiSharedIntegrationInteg:ExportsOutputRefPolicyVerifier929FEABD6D2954B0"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -60,11 +75,42 @@
        "Statement": [
         {
          "Action": [
-          "lambda:GetPolicy"
+          "lambda:Invoke"
          ],
          "Effect": "Allow",
          "Resource": [
           "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "WebSocketApiSharedIntegrationInteg:ExportsOutputRefPolicyVerifier929FEABD6D2954B0"
+             }
+            ]
+           ]
+          }
          ]
         }
        ]
@@ -99,10 +145,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallLambdagetPolicy0d0818f03506c4cac7eeba2359f728ae": {
+  "AssertionResultsLambdaInvoke3d95b54e6a1b47b562a199e7b1cd7258": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallLambdagetPolicy0d0818f03506c4cac7eeba2359f728ae",
+     "LambdaInvoke3d95b54e6a1b47b562a199e7b1cd7258",
      "assertion"
     ]
    }

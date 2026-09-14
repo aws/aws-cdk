@@ -3,21 +3,41 @@
   "title": "Validation Report",
   "pluginReports": [
     {
-      "pluginName": "Construct Annotations",
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
       "conclusion": "success",
       "violations": [
         {
-          "ruleName": "@aws-cdk/core:crossStackReferencesDefaultStrong",
-          "description": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation was disabled on '2027-02-01' and update on '2027-03-03'. Please consider updating to 'nodejs24.x'",
           "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
           "violatingConstructs": [
             {
-              "constructPath": "websocket-lambda-shared-integration/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
+              "constructPath": "WebSocketApiSharedIntegrationInteg/Handler/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
               "libraryVersion": "0.0.0",
-              "stackTraces": [
-                "new IntegTest (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)\nnew IntegTestCase (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)\nnew DeployAssert (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)"
-              ]
+              "cloudFormationResource": {
+                "templatePath": "WebSocketApiSharedIntegrationInteg.template.json",
+                "logicalId": "Handler886CB40B",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "WebSocketApiSharedIntegrationInteg/PolicyVerifier/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebSocketApiSharedIntegrationInteg.template.json",
+                "logicalId": "PolicyVerifier929FEABD",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
             }
           ]
         }
