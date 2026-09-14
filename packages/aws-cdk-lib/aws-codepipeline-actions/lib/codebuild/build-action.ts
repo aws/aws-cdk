@@ -248,6 +248,9 @@ export class CodeBuildAction extends Action {
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         resources: [this.props.serviceRoleOverride.roleArn],
+        conditions: {
+          StringEquals: { 'iam:PassedToService': 'codebuild.amazonaws.com' },
+        },
       }));
     }
     return {
