@@ -118,7 +118,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * The pipeline's role will be granted `iam:PassRole` on this role.
    *
    * @default - the CodeBuild project's service role is used
-   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-configurations-reference.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-codepipeline-pipeline-actiondeclaration.html#cfn-codepipeline-pipeline-actiondeclaration-configuration
    */
   readonly serviceRoleOverride?: iam.IRole;
 }
@@ -245,7 +245,7 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.serviceRoleOverride) {
       configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleArn;
-      options.role.addToPolicy(new iam.PolicyStatement({
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         resources: [this.props.serviceRoleOverride.roleArn],
       }));
