@@ -1,0 +1,84 @@
+{
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/LambdaInvokeeddaa6189278bc7cf719e69304f88ded/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/LambdaInvokeeddaa6189278bc7cf719e69304f88ded/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeeddaa6189278bc7cf719e69304f88dedInvoke0D22C5CB"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/LambdaInvokeeddaa6189278bc7cf719e69304f88ded/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeeddaa6189278bc7cf719e69304f88ded"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/LambdaInvokeeddaa6189278bc7cf719e69304f88ded/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeeddaa6189278bc7cf719e69304f88ded"
+    }
+  ],
+  "/IntegTestAlbJwtCognito/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837"
+    }
+  ]
+}
