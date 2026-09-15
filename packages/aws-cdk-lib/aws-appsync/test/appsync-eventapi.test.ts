@@ -196,6 +196,257 @@ describe('AppSync Event Api auth configuration - security related', () => {
   });
 });
 
+describe('AppSync Event Api addAuthProvider - security related', () => {
+  test('an auth provider added after the API is defined is rendered onto the API', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'apiWithAddedProvider',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }],
+      },
+    });
+
+    // WHEN
+    api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.IAM });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      Name: 'apiWithAddedProvider',
+      EventConfig: {
+        AuthProviders: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+    expect(api.authProviderTypes).toEqual([
+      appsync.AppSyncAuthorizationType.API_KEY,
+      appsync.AppSyncAuthorizationType.IAM,
+    ]);
+  });
+
+  test('adding an auth provider renders the same template as configuring it on the API', () => {
+    // GIVEN
+    const apiKeyProvider: appsync.AppSyncAuthProvider = { authorizationType: appsync.AppSyncAuthorizationType.API_KEY };
+    const iamProvider: appsync.AppSyncAuthProvider = { authorizationType: appsync.AppSyncAuthorizationType.IAM };
+
+    // WHEN
+    const configuredStack = new cdk.Stack(new App({}), 'Stack');
+    new appsync.EventApi(configuredStack, 'api', {
+      apiName: 'api',
+      authorizationConfig: { authProviders: [apiKeyProvider, iamProvider] },
+    });
+
+    const addedStack = new cdk.Stack(new App({}), 'Stack');
+    const addedApi = new appsync.EventApi(addedStack, 'api', {
+      apiName: 'api',
+      authorizationConfig: { authProviders: [apiKeyProvider] },
+    });
+    addedApi.addAuthProvider(iamProvider);
+
+    // THEN
+    expect(Template.fromStack(addedStack).toJSON()).toEqual(Template.fromStack(configuredStack).toJSON());
+  });
+
+  test('auth mode types that were configured explicitly are not extended', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'apiWithAddedProvider',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }],
+        connectionAuthModeTypes: [appsync.AppSyncAuthorizationType.API_KEY],
+      },
+    });
+
+    // WHEN
+    api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.IAM });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      EventConfig: {
+        AuthProviders: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        ConnectionAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }],
+        DefaultPublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+        DefaultSubscribeAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.API_KEY }, { AuthType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+  });
+
+  test('an API key is created for an API key provider that is added later', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+
+    // WHEN
+    api.addAuthProvider({
+      authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+      apiKeyConfig: { name: 'second' },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
+    expect(api.apiKeys.second).toBeDefined();
+  });
+
+  test('the invoke permission is created for a Lambda authorizer that is added later', () => {
+    // GIVEN
+    const func = new lambda.Function(stack, 'auth-function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
+    });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // WHEN
+    api.addAuthProvider({
+      authorizationType: appsync.AppSyncAuthorizationType.LAMBDA,
+      lambdaAuthorizerConfig: { handler: func },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'appsync.amazonaws.com',
+      SourceArn: { 'Fn::GetAtt': ['apiC8550315', 'ApiArn'] },
+    });
+  });
+
+  test('IAM grants can be used for an IAM provider that is added later', () => {
+    // GIVEN
+    const func = new lambda.Function(stack, 'auth-function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
+    });
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // WHEN
+    api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.IAM });
+    api.grantConnect(func);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appsync:EventConnect',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':appsync:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':apis/',
+                  { 'Fn::GetAtt': ['apiC8550315', 'ApiId'] },
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('a channel namespace can use the authorization type of a provider that was added before it', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // WHEN
+    api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.IAM });
+    api.addChannelNamespace('default', {
+      authorizationConfig: { publishAuthModeTypes: [appsync.AppSyncAuthorizationType.IAM] },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ChannelNamespace', {
+      PublishAuthModes: [{ AuthType: appsync.AppSyncAuthorizationType.IAM }],
+    });
+  });
+
+  test('a channel namespace cannot use an authorization type that is only added afterwards', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // THEN
+    expect(() => api.addChannelNamespace('default', {
+      authorizationConfig: { publishAuthModeTypes: [appsync.AppSyncAuthorizationType.IAM] },
+    })).toThrow('API is missing authorization configuration for AWS_IAM');
+  });
+
+  test('duplicating the IAM configuration through addAuthProvider throws', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+
+    // THEN
+    expect(() => api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.IAM }))
+      .toThrow("You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html");
+  });
+
+  test('adding a second unnamed API key provider throws', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // THEN
+    expect(() => api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.API_KEY }))
+      .toThrow('You must specify key names when configuring more than 1 API key.');
+  });
+
+  test('adding a Cognito provider without its configuration throws', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', { apiName: 'api' });
+
+    // THEN
+    expect(() => api.addAuthProvider({ authorizationType: appsync.AppSyncAuthorizationType.USER_POOL }))
+      .toThrow('AMAZON_COGNITO_USER_POOLS authorization type is specified but Cognito Authorizer Configuration is missing in the AuthProvider');
+  });
+
+  test('a Cognito provider added later is rendered with its user pool configuration', () => {
+    // GIVEN
+    const api = new appsync.EventApi(stack, 'api', {
+      apiName: 'api',
+      authorizationConfig: {
+        authProviders: [{ authorizationType: appsync.AppSyncAuthorizationType.IAM }],
+      },
+    });
+
+    // WHEN
+    api.addAuthProvider({
+      authorizationType: appsync.AppSyncAuthorizationType.USER_POOL,
+      cognitoConfig: { userPool: new cognito.UserPool(stack, 'pool') },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Api', {
+      EventConfig: {
+        AuthProviders: [
+          { AuthType: appsync.AppSyncAuthorizationType.IAM },
+          {
+            AuthType: appsync.AppSyncAuthorizationType.USER_POOL,
+            CognitoConfig: {
+              AwsRegion: { Ref: 'AWS::Region' },
+              UserPoolId: { Ref: 'pool056F3F7E' },
+            },
+          },
+        ],
+      },
+    });
+  });
+});
+
 describe('Appsync Event api with cloudwatch logs', () => {
   test('Appsync Event API should be configured with custom CloudWatch Logs role when specified', () => {
     // GIVEN

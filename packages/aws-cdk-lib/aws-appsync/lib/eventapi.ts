@@ -47,7 +47,10 @@ import type { IDomain } from '../../aws-opensearchservice';
 import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -548,6 +551,7 @@ export interface EventApiAttributes {
  * @resource AWS::AppSync::Api
  */
 @propertyInjectable
+@noBoxStackTraces
 export class EventApi extends EventApiBase {
   /**
    * Uniquely identifies this class.
@@ -602,21 +606,29 @@ export class EventApi extends EventApiBase {
 
   /**
    * The Authorization Types for this Event Api
+   *
+   * Includes the authorization types of the auth providers added through `addAuthProvider()`.
    */
   public readonly authProviderTypes: AppSyncAuthorizationType[];
 
   /**
    * The connection auth modes for this Event Api
+   *
+   * Unless `connectionAuthModeTypes` was configured explicitly, this follows `authProviderTypes`.
    */
   public readonly connectionModeTypes: AppSyncAuthorizationType[];
 
   /**
    * The default publish auth modes for this Event Api
+   *
+   * Unless `defaultPublishAuthModeTypes` was configured explicitly, this follows `authProviderTypes`.
    */
   public readonly defaultPublishModeTypes: AppSyncAuthorizationType[];
 
   /**
    * The default subscribe auth modes for this Event Api
+   *
+   * Unless `defaultSubscribeAuthModeTypes` was configured explicitly, this follows `authProviderTypes`.
    */
   public readonly defaultSubscribeModeTypes: AppSyncAuthorizationType[];
 
@@ -635,7 +647,14 @@ export class EventApi extends EventApiBase {
   public readonly logGroup: ILogGroup;
 
   private api: CfnApi;
-  private eventConfig: CfnApi.EventConfigProperty;
+  private readonly authProviders: IArrayBox<AppSyncAuthProvider>;
+  private readonly eventLogConfig?: CfnApi.EventLogConfigProperty;
+
+  /**
+   * The auth mode type lists that were not configured explicitly. They default to the auth provider
+   * types of the API and keep following them, including providers added through `addAuthProvider()`.
+   */
+  private readonly defaultedAuthModeTypes: AppSyncAuthorizationType[][] = [];
   private domainNameResource?: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: EventApiProps) {
@@ -661,33 +680,24 @@ export class EventApi extends EventApiBase {
     const defaultAuthProviders: AppSyncAuthProvider[] = [{ authorizationType: defaultAuthType }];
     const authProviders = props.authorizationConfig?.authProviders ?? defaultAuthProviders;
 
+    // The auth providers are rendered into `eventConfig` when the template is synthesized, so that
+    // providers added later through `addAuthProvider()` end up on the API as well.
+    this.authProviders = Box.fromArray([...authProviders], { omitEmpty: false });
+
     this.authProviderTypes = this.setupAuthProviderTypes(authProviders);
 
-    const connectionAuthModeTypes: AppSyncAuthorizationType[] =
-      props.authorizationConfig?.connectionAuthModeTypes ?? this.authProviderTypes;
-    const defaultPublishAuthModeTypes: AppSyncAuthorizationType[] =
-      props.authorizationConfig?.defaultPublishAuthModeTypes ?? this.authProviderTypes;
-    const defaultSubscribeAuthModeTypes: AppSyncAuthorizationType[] =
-      props.authorizationConfig?.defaultSubscribeAuthModeTypes ?? this.authProviderTypes;
-
-    this.connectionModeTypes = connectionAuthModeTypes;
-    this.defaultPublishModeTypes = defaultPublishAuthModeTypes;
-    this.defaultSubscribeModeTypes = defaultSubscribeAuthModeTypes;
+    this.connectionModeTypes = this.setupAuthModeTypes(props.authorizationConfig?.connectionAuthModeTypes);
+    this.defaultPublishModeTypes = this.setupAuthModeTypes(props.authorizationConfig?.defaultPublishAuthModeTypes);
+    this.defaultSubscribeModeTypes = this.setupAuthModeTypes(props.authorizationConfig?.defaultSubscribeAuthModeTypes);
 
     this.validateEventApiConfiguration(props, authProviders);
 
-    this.eventConfig = {
-      authProviders: this.mapAuthorizationProviders(authProviders),
-      connectionAuthModes: this.mapAuthorizationConfig(connectionAuthModeTypes),
-      defaultPublishAuthModes: this.mapAuthorizationConfig(defaultPublishAuthModeTypes),
-      defaultSubscribeAuthModes: this.mapAuthorizationConfig(defaultSubscribeAuthModeTypes),
-      logConfig: this.setupLogConfig(props.logConfig),
-    };
+    this.eventLogConfig = this.setupLogConfig(props.logConfig);
 
     this.api = new CfnApi(this, 'Resource', {
       name: this.physicalName,
       ownerContact: props.ownerContact,
-      eventConfig: this.eventConfig,
+      eventConfig: this.authProviders.derive((providers) => this.renderEventConfig(providers)),
     });
 
     this.apiId = this.api.attrApiId;
@@ -695,22 +705,7 @@ export class EventApi extends EventApiBase {
     this.httpDns = this.api.attrDnsHttp;
     this.realtimeDns = this.api.attrDnsRealtime;
 
-    const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
-    for (const mode of apiKeyConfigs) {
-      this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = createAPIKey(this, this.apiId, mode.apiKeyConfig);
-    }
-
-    if (authProviders.some((mode) => mode.authorizationType === AppSyncAuthorizationType.LAMBDA)) {
-      const config = authProviders.find((mode: AppSyncAuthProvider) => {
-        return mode.authorizationType === AppSyncAuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
-      })?.lambdaAuthorizerConfig;
-
-      config?.handler.addPermission(`${id}-appsync`, {
-        principal: new ServicePrincipal('appsync.amazonaws.com'),
-        action: 'lambda:InvokeFunction',
-        sourceArn: this.apiArn,
-      });
-    }
+    this.setupAuthProviders(authProviders);
 
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
@@ -737,6 +732,39 @@ export class EventApi extends EventApiBase {
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
     }
+  }
+
+  /**
+   * Add an auth provider to this Event API.
+   *
+   * Use this when the resources an auth provider depends on - a Cognito user pool or a Lambda
+   * authorizer, for instance - only become available after the API has been defined. The provider is
+   * rendered onto the API exactly as if it had been passed in `authorizationConfig.authProviders`,
+   * and the same validations apply.
+   *
+   * The connection, default publish and default subscribe auth mode types follow the auth providers
+   * of the API unless they were configured explicitly, so the added provider can be used for those
+   * operations as well. Add the provider before any channel namespace that refers to its
+   * authorization type.
+   *
+   * @param provider the auth provider to add to this API
+   */
+  @MethodMetadata()
+  public addAuthProvider(provider: AppSyncAuthProvider) {
+    // Validate the resulting set of providers, so that adding a provider here fails for exactly the
+    // same reasons it would fail when passed in `authorizationConfig.authProviders`.
+    // The connection/publish/subscribe auth mode checks cannot fail here: auth providers are only
+    // ever added, and an auth mode type list that was not configured explicitly gains no more than
+    // the authorization type of the provider that is being added.
+    this.validateAuthorizationProps([...this.authProviders, provider]);
+
+    this.authProviders.push(provider);
+    this.authProviderTypes.push(provider.authorizationType);
+    for (const authModeTypes of this.defaultedAuthModeTypes) {
+      authModeTypes.push(provider.authorizationType);
+    }
+
+    this.setupAuthProviders([provider]);
   }
 
   /**
@@ -782,13 +810,59 @@ export class EventApi extends EventApiBase {
     };
   }
 
+  /**
+   * Create the resources an auth provider needs. Used both for the providers configured on the
+   * props and for the ones added later through `addAuthProvider()`, so that the two cannot drift.
+   */
+  private setupAuthProviders(authProviders: AppSyncAuthProvider[]) {
+    const apiKeyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
+    for (const mode of apiKeyConfigs) {
+      this.apiKeys[mode.apiKeyConfig?.name ?? 'Default'] = createAPIKey(this, this.apiId, mode.apiKeyConfig);
+    }
+
+    if (authProviders.some((mode) => mode.authorizationType === AppSyncAuthorizationType.LAMBDA)) {
+      const config = authProviders.find((mode: AppSyncAuthProvider) => {
+        return mode.authorizationType === AppSyncAuthorizationType.LAMBDA && mode.lambdaAuthorizerConfig;
+      })?.lambdaAuthorizerConfig;
+
+      config?.handler.addPermission(`${this.node.id}-appsync`, {
+        principal: new ServicePrincipal('appsync.amazonaws.com'),
+        action: 'lambda:InvokeFunction',
+        sourceArn: this.apiArn,
+      });
+    }
+  }
+
   private setupAuthProviderTypes(authProviders?: AppSyncAuthProvider[]) {
     if (!authProviders || authProviders.length === 0) return [AppSyncAuthorizationType.API_KEY];
     const modes = authProviders.map((mode) => mode.authorizationType);
     return modes;
   }
 
-  private mapAuthorizationProviders(authProviders: AppSyncAuthProvider[]) {
+  /**
+   * Auth mode types default to every authorization type configured on the API. A list that was left
+   * to default keeps following the auth providers, so that a provider added through
+   * `addAuthProvider()` can be used for connections, publishing and subscribing too.
+   */
+  private setupAuthModeTypes(configuredAuthModeTypes?: AppSyncAuthorizationType[]) {
+    const authModeTypes = [...(configuredAuthModeTypes ?? this.authProviderTypes)];
+    if (configuredAuthModeTypes === undefined) {
+      this.defaultedAuthModeTypes.push(authModeTypes);
+    }
+    return authModeTypes;
+  }
+
+  private renderEventConfig(authProviders: readonly AppSyncAuthProvider[]): CfnApi.EventConfigProperty {
+    return {
+      authProviders: this.mapAuthorizationProviders(authProviders),
+      connectionAuthModes: this.mapAuthorizationConfig(this.connectionModeTypes),
+      defaultPublishAuthModes: this.mapAuthorizationConfig(this.defaultPublishModeTypes),
+      defaultSubscribeAuthModes: this.mapAuthorizationConfig(this.defaultSubscribeModeTypes),
+      logConfig: this.eventLogConfig,
+    };
+  }
+
+  private mapAuthorizationProviders(authProviders: readonly AppSyncAuthProvider[]) {
     const authConfig: IAppSyncAuthConfig = new AppSyncEventApiAuthConfig();
 
     return authProviders.reduce<CfnApi.AuthProviderProperty[]>((acc, mode) => {
