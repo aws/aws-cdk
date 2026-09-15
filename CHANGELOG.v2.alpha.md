@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.269.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.268.0-alpha.0...v2.269.0-alpha.0) (2026-09-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** Glue job constructs now reject construct-managed and Glue-reserved
+arguments passed through `defaultArguments`. Previously, a managed argument set via
+`defaultArguments` was silently honored in `SparkJob` and `PythonShellJob` (customer
+value won over the construct default) and silently ignored in `RayJob` (construct
+default won). Both behaviors let a caller bypass the construct's security and
+observability defaults with no error. Passing any of the following through
+`defaultArguments` now throws a `ValidationError` at synthesis time:
+* construct-managed arguments — `--enable-continuous-cloudwatch-log`,
+  `--continuous-log-logGroup`, `--continuous-log-logStreamPrefix`,
+  `--continuous-log-conversionPattern`, `--enable-continuous-log-filter`,
+  `--enable-metrics`, `--enable-observability-metrics`, `--enable-spark-ui`,
+  `--spark-event-logs-path`, `--job-language`, `--class`, `--extra-jars`,
+  `--user-jars-first`, `--extra-py-files`, `--extra-files`, `library-set`
+* Glue-reserved arguments — `--debug`, `--mode`, `--JOB_NAME`, `--endpoint`
+
+A managed argument is rejected whether or not the current configuration emits it, so a
+disabled feature (e.g. `enableMetrics: false`) cannot be re-enabled through
+`defaultArguments`. Configure these through their dedicated props instead
+(`continuousLogging`, `enableMetrics`, `enableObservabilityMetrics`, `sparkUI`,
+`className`, `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles`). For
+example, replace `defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`
+with `continuousLogging: { enabled: false }`. Arguments without a dedicated prop (e.g.
+`--enable-glue-datacatalog`) are unaffected and remain settable via `defaultArguments`.
+
+The `checkNoReservedArgs(defaultArguments?)` method on the `Job` base class was removed.
+It is replaced by two protected members: `setManagedArgument(key, value?)`, which each
+job class calls to declare (and, when a value is present, emit) a managed argument, and
+`mergeDefaultArguments(defaultArguments?)`, which validates the caller-supplied
+`defaultArguments` against the accumulated reserved set and returns the merged map.
+* **route53resolver-alpha:** `FirewallRuleGroupAssociation` now honors the previously-ignored `mutationProtection` and `name` props. Stacks that set `mutationProtection: true` will enable mutation protection on redeploy (which blocks further CloudFormation update/delete until it is set back to false); stacks that set `name` will write it to the template, which may replace the association.
+* **glue-alpha:** trigger `Action` and `Condition` are no longer plain objects — use `Action.job(...)` / `Action.crawler(...)` and `Condition.job(...)` / `Condition.crawler(...)`. Jobs are referenced via `IJobRef` and crawlers via `ICrawlerRef` (a `CfnCrawler` instance or `CfnCrawler.fromCrawlerName(...)`) instead of a `CfnCrawler` field or crawler-name string; `IJob` now extends the generated `IJobRef`. `addDailyScheduledTrigger`/`addWeeklyScheduledTrigger`/`addCustomScheduledTrigger` are replaced by `addScheduledTrigger(id, { schedule, ... })` (use `TriggerSchedule.daily()`/`weekly()`/`cron(...)`). `addNotifyEventTrigger` is renamed `addEventTrigger` (`NotifyEventTriggerOptions` → `EventTriggerOptions`). All `addXxxTrigger` methods now return `ITriggerRef` instead of `CfnTrigger`.
+* **glue-alpha:** PartitionProjectionConfiguration's variant fields (integerRange, dateRange, interval, digits, format, intervalUnit, values) are no longer public; DATE projection now takes `step: { interval, intervalUnit }` instead of top-level `interval`/`intervalUnit`.
+* **glue-alpha:** ConnectionOptions no longer has `subnet`, `vpc`, or `vpcSubnets`; use `network: ConnectionNetwork.subnet(...)` or `network: ConnectionNetwork.vpc(...)` instead.
+
+### Features
+
+* **glue-alpha:** ensure job parameters consistency ([#38480](https://github.com/aws/aws-cdk/issues/38480)) ([bc7dc0c](https://github.com/aws/aws-cdk/commit/bc7dc0c30ab1f331c2ef7c9e66337ab7ea50f3bd))
+* **glue-alpha:** model Connection VPC placement as a value object ([#38729](https://github.com/aws/aws-cdk/issues/38729)) ([f72e9fe](https://github.com/aws/aws-cdk/commit/f72e9feb91de3e6de70d667641cd848f4d297185))
+* **glue-alpha:** model partition projection variants as internal state ([#38726](https://github.com/aws/aws-cdk/issues/38726)) ([16527cd](https://github.com/aws/aws-cdk/commit/16527cd788541825e10e9238e2f322bfaca03f6f))
+* **glue-alpha:** overhaul the workflow trigger API ([#38579](https://github.com/aws/aws-cdk/issues/38579)) ([c8f917d](https://github.com/aws/aws-cdk/commit/c8f917d0d636df2daf3abcd223997709d96bc433))
+
+
+### Bug Fixes
+
+* **route53resolver-alpha:** association silently ignored mutationProtection and name ([#38795](https://github.com/aws/aws-cdk/issues/38795)) ([5ab40b2](https://github.com/aws/aws-cdk/commit/5ab40b27c4c4181d1b44f9e5a1b64666e57c760f))
+
 ## [2.268.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.267.0-alpha.0...v2.268.0-alpha.0) (2026-09-02)
 
 
