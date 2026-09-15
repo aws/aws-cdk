@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as batch from '../../../aws-batch';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
@@ -587,6 +587,147 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
         },
       ],
       Version: '2012-10-17',
+    },
+  });
+});
+
+test('scopes batch:SubmitJob permissions to the job definition name with literal jobDefinitionArn', () => {
+  // GIVEN
+  const literalJobDefinitionArn = 'arn:aws:batch:us-east-1:123456789012:job-definition/MyJobDef:1';
+  const literalJobQueueArn = 'arn:aws:batch:us-east-1:123456789012:job-queue/MyQueue';
+
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: literalJobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: literalJobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: [
+            // Job definition ARN scoped to MyJobDef name with revision wildcard
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':batch:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':job-definition/MyJobDef:*',
+                ],
+              ],
+            },
+            literalJobQueueArn,
+          ],
+        }),
+      ]),
+    },
+  });
+});
+
+test('scopes batch:SubmitJob permissions when jobDefinitionArn is a token (CDK construct)', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN — for tokenized ARNs we defer name extraction to CloudFormation
+  // via Fn::Split / Fn::Select, then assemble the tightened resource ARN.
+  // Both the tightened job-definition ARN and the queue ARN must be present.
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: Match.arrayWith([
+            // Tightened job-definition ARN with deploy-time name extraction
+            Match.objectLike({
+              'Fn::Join': Match.arrayWith([
+                Match.arrayWith([
+                  Match.objectLike({
+                    'Fn::Select': [
+                      0,
+                      Match.objectLike({
+                        'Fn::Split': Match.arrayWith([':']),
+                      }),
+                    ],
+                  }),
+                  ':*',
+                ]),
+              ]),
+            }),
+            // Queue ARN must remain in the resource list
+            Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith(['JobQueueEE3AD499', 'JobQueueArn']),
+            }),
+          ]),
+        }),
+      ]),
+    },
+  });
+});
+
+test('falls back to wildcard job-definition ARN when jobDefinitionArn is a JsonPath expression', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: sfn.JsonPath.stringAt('$.jobDefinitionArn'),
+    jobName: 'JobName',
+    jobQueueArn: 'arn:aws:batch:us-east-1:123456789012:job-queue/MyQueue',
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN — JsonPath cannot be resolved at deploy time, so fall back to the wildcard.
+  // The queue ARN must still appear in the resource list.
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: Match.arrayWith([
+            // Wildcard job-definition ARN (fallback for state-machine-time expressions)
+            Match.objectLike({
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':batch:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':job-definition/*',
+                ],
+              ],
+            }),
+            // Queue ARN (literal string passed in)
+            'arn:aws:batch:us-east-1:123456789012:job-queue/MyQueue',
+          ]),
+        }),
+      ]),
     },
   });
 });
