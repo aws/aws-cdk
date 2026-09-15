@@ -6,6 +6,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
+// Trigger integration test update for PR linter
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
