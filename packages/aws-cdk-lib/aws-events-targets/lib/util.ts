@@ -121,8 +121,26 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRuleRef, queue:
   // There is no way to add a target onto an imported rule, so we can assume we will run the following code only
   // in the account where the rule is created.
   if (sameEnvDimension(rule.env.account, queue.env.account)) {
-    const policyStatementId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
+    if (queue.encryptionMasterKey) {
+      const policyStatementIdEncrypted = `AllowEncryptedEventRule${Names.nodeUniqueId(rule.node)}`;
+      queue.addToResourcePolicy(new iam.PolicyStatement({
+        sid: policyStatementIdEncrypted,
+        principals: [new iam.ServicePrincipal('events.amazonaws.com')],
+        effect: iam.Effect.ALLOW,
+        actions: [
+          'kms:Decrypt',
+          'kms:GenerateDataKey',
+        ],
+        resources: [queue.encryptionMasterKey.keyArn],
+        conditions: {
+          ArnEquals: {
+            'aws:SourceArn': events.CfnRule.arnForRule(rule),
+          },
+        },
+      }));
+    }
 
+    const policyStatementId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
     queue.addToResourcePolicy(new iam.PolicyStatement({
       sid: policyStatementId,
       principals: [new iam.ServicePrincipal('events.amazonaws.com')],
