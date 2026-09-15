@@ -1162,6 +1162,20 @@ new CfnOutput(this, 'CloudFrontEndpoint', {
 });
 ```
 
+### Issuer Type
+
+Amazon Cognito user pools can use different token issuer URL formats. By default, user pools use the traditional
+region-specific issuer URL. You can opt in to the `UPDATED` issuer type, which uses a multi-Region issuer URL that
+serves identical JWKS content across regions for improved resilience and efficiency:
+
+```ts
+const userpool = new cognito.UserPool(this, 'UserPool', {
+  issuerType: cognito.UserPoolIssuerType.UPDATED,
+});
+```
+
+Learn more about [issuer configuration here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-user-pool-issuer.html).
+
 ### Deletion protection
 
 Deletion protection can be enabled on a user pool to prevent accidental deletion:

@@ -1,0 +1,60 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.2.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": ""
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "IssuerConfiguration: Additional properties are not allowed ('IssuerConfiguration' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-user-pool-issuer-type/UserPoolOriginal/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "/Users/emmizuki/Documents/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-issuer-type.js.snapshot/integ-user-pool-issuer-type.template.json",
+                "logicalId": "UserPoolOriginal0549AFA3",
+                "propertyPaths": [
+                  "Properties.IssuerConfiguration"
+                ]
+              }
+            },
+            {
+              "constructPath": "integ-user-pool-issuer-type/UserPoolUpdated/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "/Users/emmizuki/Documents/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-issuer-type.js.snapshot/integ-user-pool-issuer-type.template.json",
+                "logicalId": "UserPoolUpdated17140A03",
+                "propertyPaths": [
+                  "Properties.IssuerConfiguration"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
