@@ -1,0 +1,57 @@
+{
+  "/integ-distribution-default-viewer-protocol-policy/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*",
+          "cachePolicy": "*"
+        },
+        "additionalBehaviors": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-distribution-default-viewer-protocol-policy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-default-viewer-protocol-policy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-distribution-default-viewer-protocol-policy/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ],
+  "/integ-distribution-default-viewer-protocol-policy/Exports/Output{\"Ref\":\"Distribution830FAC52\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistribution830FAC524DF81588"
+    }
+  ]
+}
