@@ -4,7 +4,7 @@ import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
 import { BucketReflection } from './bucket-reflection';
 import type { IBucketNotificationDestination } from './destination';
-import { BucketAutoDeleteObjects } from './mixins';
+import { BucketAutoDeleteObjects, BucketMetadataConfiguration } from './mixins';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import type { LifecycleRule, StorageClass } from './rule';
@@ -1782,6 +1782,159 @@ export enum BucketNamespace {
   ACCOUNT_REGIONAL = 'account-regional',
 }
 
+/**
+ * The server-side encryption settings for an S3 Metadata table.
+ */
+export abstract class MetadataTableEncryption {
+  /**
+   * Server-side encryption with Amazon S3 managed keys (SSE-S3).
+   */
+  public static s3Managed(): MetadataTableEncryption {
+    return new class extends MetadataTableEncryption {
+      public _render(): CfnBucket.MetadataTableEncryptionConfigurationProperty {
+        return { sseAlgorithm: 'AES256' };
+      }
+    }();
+  }
+
+  /**
+   * Server-side encryption with an AWS KMS key (SSE-KMS).
+   *
+   * The key must be a customer managed key located in the same Region as the
+   * general purpose bucket that the metadata configuration belongs to.
+   *
+   * @param key the KMS key used to encrypt the metadata table
+   */
+  public static kms(key: kms.IKey): MetadataTableEncryption {
+    return new class extends MetadataTableEncryption {
+      public _render(): CfnBucket.MetadataTableEncryptionConfigurationProperty {
+        return { sseAlgorithm: 'aws:kms', kmsKeyArn: key.keyArn };
+      }
+    }();
+  }
+
+  /**
+   * Render the metadata table encryption configuration.
+   *
+   * @internal
+   */
+  public abstract _render(): CfnBucket.MetadataTableEncryptionConfigurationProperty;
+}
+
+/**
+ * The journal table configuration of an S3 Metadata configuration.
+ *
+ * The journal table records the changes that are made to the objects in the bucket.
+ */
+export interface JournalTableConfiguration {
+  /**
+   * Whether journal table records expire.
+   *
+   * When `true`, `recordExpirationAfter` must also be specified.
+   *
+   * @default false
+   */
+  readonly recordExpirationEnabled?: boolean;
+
+  /**
+   * How long journal table records are retained before they expire.
+   *
+   * Only applies when `recordExpirationEnabled` is `true`, and must be a whole
+   * number of days between 7 and 2147483647.
+   *
+   * @default - records never expire
+   */
+  readonly recordExpirationAfter?: Duration;
+
+  /**
+   * The encryption settings for the journal table.
+   *
+   * @default - the default encryption of the AWS managed table bucket
+   */
+  readonly encryption?: MetadataTableEncryption;
+}
+
+/**
+ * The inventory table configuration of an S3 Metadata configuration.
+ *
+ * The inventory table records the current state of the objects in the bucket.
+ */
+export interface InventoryTableConfiguration {
+  /**
+   * Whether the inventory table is enabled.
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The encryption settings for the inventory table.
+   *
+   * @default - the default encryption of the AWS managed table bucket
+   */
+  readonly encryption?: MetadataTableEncryption;
+}
+
+/**
+ * The annotation table configuration of an S3 Metadata configuration.
+ *
+ * The annotation table stores the custom metadata that is attached to the objects in the bucket.
+ */
+export interface AnnotationTableConfiguration {
+  /**
+   * Whether the annotation table is enabled.
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The encryption settings for the annotation table.
+   *
+   * @default - the default encryption of the AWS managed table bucket
+   */
+  readonly encryption?: MetadataTableEncryption;
+
+  /**
+   * The IAM role that grants S3 Metadata permission to read annotations from the bucket.
+   *
+   * This role is required when the annotation table is enabled, and must be
+   * assumable by the `metadata.s3.amazonaws.com` service principal.
+   *
+   * @default - no role, only valid when the annotation table is disabled
+   */
+  readonly role?: iam.IRoleRef;
+}
+
+/**
+ * The V2 S3 Metadata configuration of a general purpose bucket.
+ *
+ * The metadata tables are stored as Apache Iceberg tables in an AWS managed table bucket.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html
+ */
+export interface MetadataConfiguration {
+  /**
+   * The journal table configuration.
+   *
+   * A journal table is always created by a V2 metadata configuration, so this
+   * property configures it rather than enabling it.
+   *
+   * @default - a journal table whose records never expire, using the default encryption
+   */
+  readonly journalTable?: JournalTableConfiguration;
+
+  /**
+   * The inventory table configuration.
+   *
+   * @default - no inventory table
+   */
+  readonly inventoryTable?: InventoryTableConfiguration;
+
+  /**
+   * The annotation table configuration.
+   *
+   * @default - no annotation table
+   */
+  readonly annotationTable?: AnnotationTableConfiguration;
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -2073,6 +2226,20 @@ export interface BucketProps {
    * @default - No inventory configuration
    */
   readonly inventories?: Inventory[];
+
+  /**
+   * The S3 Metadata configuration of the bucket.
+   *
+   * S3 Metadata captures the changes made to the objects in this bucket, and
+   * optionally their current state and custom annotations, as queryable Apache
+   * Iceberg tables.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/metadata-tables-overview.html
+   *
+   * @default - No metadata configuration
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
+
   /**
    * The objectOwnership of the bucket.
    *
@@ -2585,6 +2752,10 @@ export class Bucket extends BucketBase {
     this.reflection = BucketReflection.of(this);
 
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    if (props.metadataConfiguration) {
+      this.with(new BucketMetadataConfiguration(props.metadataConfiguration));
+    }
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
