@@ -2474,3 +2474,105 @@ test.each([-1, 15])('throws when autoRetryLimit is invalid', (autoRetryLimit) =>
     });
   }).toThrow(`autoRetryLimit must be a value between 0 and 10, got ${autoRetryLimit}.`);
 });
+
+test('CodeBuild project with CODECONNECTIONS source auth has DependsOn for role default policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const project = new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.gitHub({
+      owner: 'test-owner',
+      repo: 'test-repo',
+      webhook: false,
+    }),
+  });
+
+  // Override source to use CODECONNECTIONS auth via L1 escape hatch
+  const cfnProject = project.node.defaultChild as codebuild.CfnProject;
+  cfnProject.source = {
+    type: 'GITHUB',
+    location: 'https://github.com/test-owner/test-repo.git',
+    auth: {
+      type: 'CODECONNECTIONS',
+      resource: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+    },
+  };
+
+  // Add codeconnections permissions to the role (this creates the default policy)
+  project.addToRolePolicy(new iam.PolicyStatement({
+    actions: ['codeconnections:UseConnection'],
+    resources: ['*'],
+  }));
+
+  // THEN - CfnProject should have DependsOn including the dedicated CodeConnections policy
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::CodeBuild::Project', {
+    DependsOn: Match.arrayWith([
+      Match.stringLikeRegexp('ProjectCodeConnectionsPolicy.*'),
+    ]),
+  });
+});
+
+test('CodeBuild project with CODESTAR_CONNECTIONS source auth has DependsOn for role default policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const project = new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.gitHub({
+      owner: 'test-owner',
+      repo: 'test-repo',
+      webhook: false,
+    }),
+  });
+
+  // Override source to use CODESTAR_CONNECTIONS auth via L1 escape hatch
+  const cfnProject = project.node.defaultChild as codebuild.CfnProject;
+  cfnProject.source = {
+    type: 'GITHUB',
+    location: 'https://github.com/test-owner/test-repo.git',
+    auth: {
+      type: 'CODESTAR_CONNECTIONS',
+      resource: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/test-connection-id',
+    },
+  };
+
+  project.addToRolePolicy(new iam.PolicyStatement({
+    actions: ['codestar-connections:UseConnection'],
+    resources: ['*'],
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::CodeBuild::Project', {
+    DependsOn: Match.arrayWith([
+      Match.stringLikeRegexp('ProjectCodeConnectionsPolicy.*'),
+    ]),
+  });
+});
+
+test('CodeBuild project without CODECONNECTIONS source auth does not add extra DependsOn', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN - standard GitHub source without CODECONNECTIONS auth
+  new codebuild.Project(stack, 'Project', {
+    source: codebuild.Source.gitHub({
+      owner: 'test-owner',
+      repo: 'test-repo',
+      webhook: false,
+    }),
+  });
+
+  // THEN - CfnProject should NOT have DependsOn for CodeConnectionsPolicy
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::CodeBuild::Project', (res: any) => {
+    const deps = res.DependsOn || [];
+    const hasConnPolicyDep = deps.some((d: string) => d.includes('CodeConnectionsPolicy'));
+    if (hasConnPolicyDep) {
+      throw new Error(`CodeBuild project without CODECONNECTIONS should not have DependsOn for CodeConnectionsPolicy, but got: ${JSON.stringify(deps)}`);
+    }
+    return true;
+  });
+});
