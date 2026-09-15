@@ -160,6 +160,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,
       circuitBreaker: props.circuitBreaker,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     });
   }
 }
