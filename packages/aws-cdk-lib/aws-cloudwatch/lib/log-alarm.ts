@@ -31,6 +31,10 @@ export interface ScheduledQuerySchedule {
    *
    * Rendered to a `rate(...)` schedule expression, so only whole numbers of
    * minutes or hours are supported.
+   *
+   * A rate whose amount is only known at deploy time must be given as
+   * `Duration.minutes()`. A duration built from a token cannot be converted
+   * between units, so any other unit is rejected at synthesis time.
    */
   readonly rate: Duration;
 
@@ -253,6 +257,47 @@ export interface LogAlarmProps {
    * @default - no tags
    */
   readonly tags?: { [key: string]: string };
+
+  /**
+   * Delays alarm evaluation after the alarm is created or updated.
+   *
+   * A warm-up period reduces alarm noise while a new resource or service starts
+   * publishing data.
+   *
+   * @default - the alarm evaluates as soon as it has data
+   */
+  readonly warmUpConfiguration?: WarmUpConfiguration;
+}
+
+/**
+ * Warm-up behavior for a log alarm.
+ *
+ * During the warm-up period the alarm stays in `INSUFFICIENT_DATA` and does not
+ * perform alarm actions.
+ */
+export interface WarmUpConfiguration {
+  /**
+   * The length of the warm-up period.
+   *
+   * Between 1 minute and 2880 minutes, which is 48 hours. Changing this after the
+   * warm-up period has ended does not restart it.
+   *
+   * A period whose amount is only known at deploy time must be given as
+   * `Duration.minutes()`, because a duration built from a token cannot be converted
+   * between units.
+   */
+  readonly warmUpPeriod: Duration;
+
+  /**
+   * Whether the alarm waits for the whole warm-up period before it starts evaluating.
+   *
+   * When true the alarm waits for the full period even if data arrives earlier. When
+   * false the alarm ends the warm-up period as soon as it has enough data to fill its
+   * evaluation window.
+   *
+   * @default false
+   */
+  readonly onlyStartEvaluatingAfterWarmUpPeriodEnds?: boolean;
 }
 
 /**
@@ -428,6 +473,7 @@ export class LogAlarm extends AlarmBase {
       okActions: Token.asList(this._okActionArns),
       tags: this.renderTags(props.tags),
       scheduledQueryConfiguration: this.renderScheduledQuery(sqc),
+      warmUpConfiguration: this.renderWarmUp(props.warmUpConfiguration),
     });
   }
 
@@ -594,6 +640,20 @@ export class LogAlarm extends AlarmBase {
     }));
   }
 
+  private renderWarmUp(warmUp?: WarmUpConfiguration): CfnLogAlarm.WarmUpConfigurationProperty | undefined {
+    if (warmUp === undefined) {
+      return undefined;
+    }
+    const minutes = warmUp.warmUpPeriod.toMinutes({ integral: false });
+    if (!warmUp.warmUpPeriod.isUnresolved() && (!Number.isInteger(minutes) || minutes < 1 || minutes > 2880)) {
+      throw new ValidationError(lit`InvalidWarmUpPeriod`, `warmUpPeriod must be a whole number of minutes between 1 and 2880 (48 hours), got ${warmUp.warmUpPeriod.toSeconds()} seconds`, this);
+    }
+    return {
+      warmUpPeriodDurationInMinutes: minutes,
+      onlyStartEvaluatingAfterWarmUpPeriodEnds: warmUp.onlyStartEvaluatingAfterWarmUpPeriodEnds,
+    };
+  }
+
   /**
    * Log group identifiers for the scheduled query.
    *
@@ -624,13 +684,18 @@ export class LogAlarm extends AlarmBase {
     return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);
   }
 
+  /**
+   * Render the schedule rate as a `rate(...)` expression.
+   *
+   * An unresolved rate is read before any other conversion, because a duration built
+   * from a token can only be read in the unit it was created with. Its unit cannot be
+   * singularised and whole hours cannot be collapsed, so it is rendered as minutes.
+   */
   private renderRate(rate: Duration): string {
-    const minutes = rate.toMinutes({ integral: false });
-    // A tokenized rate is only known at deploy time, so the unit cannot be singularised
-    // and whole hours cannot be collapsed. Render minutes and let the service validate.
-    if (Token.isUnresolved(minutes)) {
-      return `rate(${Tokenization.stringifyNumber(minutes)} minutes)`;
+    if (rate.isUnresolved()) {
+      return `rate(${Tokenization.stringifyNumber(rate.toMinutes({ integral: false }))} minutes)`;
     }
+    const minutes = rate.toMinutes({ integral: false });
     if (!Number.isInteger(minutes) || minutes < 1) {
       throw new ValidationError(lit`InvalidScheduleRate`, `schedule rate must be a whole number of minutes and at least 1 minute, got ${rate.toSeconds()} seconds`, this);
     }

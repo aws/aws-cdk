@@ -41,6 +41,10 @@ new LogAlarm(stack, 'AutoRoleLogAlarm', {
   queryResultsToEvaluate: 1,
   queryResultsToAlarm: 1,
   actionLogLineCount: 5,
+  warmUpConfiguration: {
+    warmUpPeriod: Duration.minutes(10),
+    onlyStartEvaluatingAfterWarmUpPeriodEnds: true,
+  },
   scheduledQueryConfiguration: {
     queryString: 'fields @message | filter @message like /WARN/',
     aggregationExpression: 'count(*)',

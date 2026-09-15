@@ -722,6 +722,27 @@ Log alarms dispatch a narrower set of action types than metric alarms. An action
 service does not dispatch is ignored rather than rejected, so adding one emits a
 synthesis-time warning where the action type can be determined from its ARN.
 
+### Delaying Evaluation with a Warm-Up Period
+
+Set `warmUpConfiguration` to hold the alarm in `INSUFFICIENT_DATA` for a period after
+it is created or updated. This reduces alarm noise while a new resource starts
+publishing data. Alarm actions are not performed during the warm-up period.
+
+```ts
+declare const logAlarmProps: cloudwatch.LogAlarmProps;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  ...logAlarmProps,
+  warmUpConfiguration: {
+    warmUpPeriod: Duration.minutes(30),
+  },
+});
+```
+
+By default the alarm ends the warm-up period early once it has enough data to fill its
+evaluation window. Set `onlyStartEvaluatingAfterWarmUpPeriodEnds` to make it wait for
+the whole period.
+
 ### Importing an Existing Log Alarm
 
 ```ts

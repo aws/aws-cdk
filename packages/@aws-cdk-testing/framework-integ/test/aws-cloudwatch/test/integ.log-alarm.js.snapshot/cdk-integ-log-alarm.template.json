@@ -265,7 +265,11 @@
       ]
      }
     },
-    "Threshold": 1
+    "Threshold": 1,
+    "WarmUpConfiguration": {
+     "OnlyStartEvaluatingAfterWarmUpPeriodEnds": true,
+     "WarmUpPeriodDurationInMinutes": 10
+    }
    }
   }
  },

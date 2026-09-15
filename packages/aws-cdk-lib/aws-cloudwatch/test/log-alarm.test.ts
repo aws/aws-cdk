@@ -116,6 +116,38 @@ describe('LogAlarm', () => {
     });
   });
 
+  test('renders the warm-up configuration', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      warmUpConfiguration: {
+        warmUpPeriod: Duration.hours(1),
+        onlyStartEvaluatingAfterWarmUpPeriodEnds: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      WarmUpConfiguration: {
+        WarmUpPeriodDurationInMinutes: 60,
+        OnlyStartEvaluatingAfterWarmUpPeriodEnds: true,
+      },
+    });
+  });
+
+  test('omits the warm-up configuration when not provided', () => {
+    new LogAlarm(stack, 'Alarm', baseProps());
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      WarmUpConfiguration: Match.absent(),
+    });
+  });
+
+  test.each([Duration.seconds(30), Duration.minutes(2881)])('fails for a warmUpPeriod of %s', (warmUpPeriod) => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      warmUpConfiguration: { warmUpPeriod },
+    })).toThrow(/warmUpPeriod must be a whole number of minutes between 1 and 2880/);
+  });
+
   test('applies tags to the alarm', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
@@ -152,6 +184,32 @@ describe('LogAlarm', () => {
 
     Annotations.fromStack(stack).hasNoWarning('/Default/Alarm',
       Match.stringLikeRegexp('do not dispatch'));
+  });
+
+  test('renders action arns given through props into each state array', () => {
+    const action = (alarmActionArn: string): IAlarmAction => ({ bind: () => ({ alarmActionArn }) });
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      alarmActions: [action('arn:aws:sns:us-east-1:123456789012:alarm-topic')],
+      okActions: [action('arn:aws:sns:us-east-1:123456789012:ok-topic')],
+      insufficientDataActions: [action('arn:aws:sns:us-east-1:123456789012:insufficient-topic')],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      AlarmActions: ['arn:aws:sns:us-east-1:123456789012:alarm-topic'],
+      OKActions: ['arn:aws:sns:us-east-1:123456789012:ok-topic'],
+      InsufficientDataActions: ['arn:aws:sns:us-east-1:123456789012:insufficient-topic'],
+    });
+  });
+
+  test('renders action arns added after construction', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    alarm.addAlarmAction({ bind: () => ({ alarmActionArn: 'arn:aws:sns:us-east-1:123456789012:added-topic' }) });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      AlarmActions: ['arn:aws:sns:us-east-1:123456789012:added-topic'],
+    });
   });
 
   test.each([
