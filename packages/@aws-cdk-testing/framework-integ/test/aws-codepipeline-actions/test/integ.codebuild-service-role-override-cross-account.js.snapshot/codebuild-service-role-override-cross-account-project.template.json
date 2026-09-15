@@ -1,0 +1,456 @@
+{
+ "Resources": {
+  "MyBuildProjectRole6B7E2258": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "codebuild-service-role-ovbuildprojectroleeb0f894fe8cdc427d7c4"
+   }
+  },
+  "MyBuildProjectRoleDefaultPolicy5604AA87": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:test-region:222222222222:log-group:/aws/codebuild/",
+           {
+            "Ref": "MyBuildProject30DB9D6E"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:test-region:222222222222:log-group:/aws/codebuild/",
+           {
+            "Ref": "MyBuildProject30DB9D6E"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codebuild:test-region:222222222222:report-group/",
+          {
+           "Ref": "MyBuildProject30DB9D6E"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::codebuild-service-role-oveartifactsbucket5a7ac0a594cb3a9a8791"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::codebuild-service-role-oveartifactsbucket5a7ac0a594cb3a9a8791/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyBuildProjectRoleDefaultPolicy5604AA87",
+    "Roles": [
+     {
+      "Ref": "MyBuildProjectRole6B7E2258"
+     }
+    ]
+   }
+  },
+  "MyBuildProject30DB9D6E": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "CODEPIPELINE"
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "LINUX_CONTAINER"
+    },
+    "Name": "my-cross-account-full-clone-project",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "MyBuildProjectRole6B7E2258",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Type": "CODEPIPELINE"
+    }
+   }
+  },
+  "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionActionRoleB2CCC398": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnEquals": {
+         "aws:PrincipalArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::111111111111:role/codebuild-service-role-ovlinepipelineroled3a098fe04c7679ce2fe"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::111111111111:root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "codebuild-service-role-ovactionactionrole6f19f4ee9a0965808e0f"
+   }
+  },
+  "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionActionRoleDefaultPolicy47CC638A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "codebuild:BatchGetBuilds",
+        "codebuild:StartBuild",
+        "codebuild:StopBuild"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyBuildProject30DB9D6E",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "codebuild.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionCodeBuildServiceRole6199B564",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionActionRoleDefaultPolicy47CC638A",
+    "Roles": [
+     {
+      "Ref": "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionActionRoleB2CCC398"
+     }
+    ]
+   }
+  },
+  "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionCodeBuildServiceRole6199B564": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RoleName": "codebuild-service-role-ovbuildservicerole4aa67496a6557076e1ca"
+   }
+  },
+  "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionCodeBuildServiceRoleDefaultPolicy98A9A910": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:test-region:222222222222:log-group:/aws/codebuild/",
+           {
+            "Ref": "MyBuildProject30DB9D6E"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:test-region:222222222222:log-group:/aws/codebuild/",
+           {
+            "Ref": "MyBuildProject30DB9D6E"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codebuild:test-region:222222222222:report-group/",
+          {
+           "Ref": "MyBuildProject30DB9D6E"
+          },
+          "-*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::codebuild-service-role-oveartifactsbucket5a7ac0a594cb3a9a8791"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::codebuild-service-role-oveartifactsbucket5a7ac0a594cb3a9a8791/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "codeconnections:UseConnection",
+       "Condition": {
+        "StringEquals": {
+         "codeconnections:FullRepositoryId": "test-owner/test-repo"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "arn:aws:codeconnections:test-region:111111111111:connection/MOCK"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionCodeBuildServiceRoleDefaultPolicy98A9A910",
+    "Roles": [
+     {
+      "Ref": "codebuildserviceroleoverridecrossaccountpipelinePipeline07FD2D10BuildCodeBuildFullCloneActionCodeBuildServiceRole6199B564"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
