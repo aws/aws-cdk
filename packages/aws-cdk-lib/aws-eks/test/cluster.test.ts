@@ -928,6 +928,58 @@ describe('cluster', () => {
     });
   });
 
+  test('creating a cluster tags the isolated VPC subnets for internal load balancers', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 2,
+      natGateways: 0,
+      subnetConfiguration: [
+        { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+      ],
+    });
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Tags: Match.arrayWith([
+        { Key: 'aws-cdk:subnet-type', Value: 'Isolated' },
+        { Key: 'kubernetes.io/role/internal-elb', Value: '1' },
+      ]),
+    });
+  });
+
+  test('creating a cluster in an isolated VPC defaults the placement to the isolated subnets', () => {
+    // GIVEN
+    const { stack } = testFixtureNoVpc();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 2,
+      natGateways: 0,
+      subnetConfiguration: [
+        { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+      ],
+    });
+
+    // WHEN - no `vpcSubnets`, so the default placement is used. this used to throw
+    // because the default selection asked for public and private-with-egress subnets,
+    // neither of which exist in a fully isolated VPC.
+    new eks.Cluster(stack, 'Cluster', { vpc, defaultCapacity: 0, version: CLUSTER_VERSION, prune: false, kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer') });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: Match.objectLike({
+        resourcesVpcConfig: Match.objectLike({
+          subnetIds: [
+            { Ref: Match.stringLikeRegexp('VpcIsolatedSubnet1Subnet.*') },
+            { Ref: Match.stringLikeRegexp('VpcIsolatedSubnet2Subnet.*') },
+          ],
+        }),
+      }),
+    });
+  });
+
   test('adding capacity creates an ASG without a rolling update policy', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
