@@ -53,6 +53,13 @@ export interface CodeBuildFactoryProps {
   readonly actionRole?: iam.IRole;
 
   /**
+   * Role to assume before executing `commands`
+   *
+   * @default - Commands run under the CodeBuild project's own role
+   */
+  readonly assumeRole?: iam.IRole;
+
+  /**
    * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
    *
    * Doing this has two advantages:
@@ -153,6 +160,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectName: step.projectName,
       role: step.role,
       actionRole: step.actionRole,
+      assumeRole: step.assumeRole,
       ...additional,
       projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
@@ -221,8 +229,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       throw new UnscopedValidationError(lit`RequiresCodebuildActionRequires`, `CodeBuild action '${this.stepId}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`);
     }
 
+    const assumeRoleCommands = this.props.assumeRole ? [
+      `aws configure --profile cdk-assume-role set role_arn ${this.props.assumeRole.roleArn}`,
+      'aws configure --profile cdk-assume-role set credential_source EcsContainer',
+      'export AWS_PROFILE=cdk-assume-role',
+    ] : [];
+
     const installCommands = [
       ...generateInputArtifactLinkCommands(options.artifacts, extraInputs),
+      ...assumeRoleCommands,
       ...this.props.installCommands ?? [],
     ];
 
@@ -321,6 +336,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectOptions.rolePolicy.forEach(policyStatement => {
         project.addToRolePolicy(policyStatement);
       });
+    }
+
+    if (this.props.assumeRole) {
+      this.props.assumeRole.grant(project.grantPrincipal, 'sts:AssumeRole');
     }
 
     const stackOutputEnv = mapValues(this.props.envFromCfnOutputs ?? {}, outputRef =>
