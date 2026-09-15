@@ -159,8 +159,8 @@ export class PolicyValidationReportFormatter {
                 constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
                 locations: resource.locations,
-                resourceLogicalId: resource.resourceLogicalId,
-                templatePath: resource.templatePath,
+                resourceLogicalId: resource.resourceLogicalId ?? 'N/A',
+                templatePath: resource.templatePath ?? 'N/A',
               };
             }),
           })),

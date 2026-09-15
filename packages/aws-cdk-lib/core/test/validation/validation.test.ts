@@ -1632,28 +1632,7 @@ describe('validations', () => {
     });
 
     // A plugin that complains about every resource it finds
-    core.Validations.of(app).addPlugins({
-      name: 'ValidationPlugin',
-      validate(context) {
-        const violations = context.stackTemplates.flatMap((s) => {
-          const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
-          return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
-            description: 'dummy violation for demonstration',
-            ruleName: 'MyRule-001',
-            violatingResources: [{
-              resourceLogicalId: logicalId,
-              templatePath: s.templatePath,
-              locations: [],
-            }],
-          } satisfies core.PolicyViolation));
-        });
-
-        return {
-          success: violations.length === 0,
-          violations,
-        };
-      },
-    });
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
 
     // Make a construct tree with 4 resources across 2 stacks
     const stackA = new core.Stack(app, 'StackA');
@@ -1666,7 +1645,6 @@ describe('validations', () => {
       new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
     }
 
-    // Only acknowledge the rule on StackA's resource.
     core.Validations.of(constructAt(app, suppressScope)).acknowledge({
       id: 'ValidationPlugin::MyRule-001',
       reason: 'Silence in scope',
@@ -1675,7 +1653,81 @@ describe('validations', () => {
     const report = AssemblyValidationReport.fromApp(app);
     expect(report.allViolations()).toHaveLength(warningCount);
   });
+
+  test('properly splits the same violation from multiple resources', () => {
+    // Test that the internal data structure in the report splits appropriately.
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    // Only acknowledge the rule on StackA/ScopeA resource.
+    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app).pluginReport('ValidationPlugin');
+    expect(report).toMatchObject({
+      suppressedViolations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/ScopeA/Bucket',
+            }),
+          ],
+        }),
+      ],
+      violations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/Bucket',
+            }),
+          ],
+        }),
+      ],
+    });
+  });
 });
+
+function pluginThatReportsForEveryResource(ruleName: string = 'MyRule-001'): core.IPolicyValidationPlugin {
+  return {
+    name: 'ValidationPlugin',
+    validate(context) {
+      const violations = context.stackTemplates.flatMap((s) => {
+        const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
+        return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
+          description: 'dummy violation for demonstration',
+          ruleName,
+          violatingResources: [{
+            resourceLogicalId: logicalId,
+            templatePath: s.templatePath,
+            locations: [],
+          }],
+        } satisfies core.PolicyViolation));
+      });
+
+      return {
+        success: violations.length === 0,
+        violations,
+      };
+    },
+  };
+}
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
