@@ -4,6 +4,7 @@ import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { stackOf } from './private/core-construct-finders';
 import { Intrinsic } from './private/intrinsic';
 import { lit } from './private/literal-string';
+import { captureStackTrace } from './private/stack-trace';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
@@ -434,6 +435,40 @@ export class Fn {
    */
   public static valueOfAll(parameterType: string, attribute: string): string[] {
     return Token.asList(new FnValueOfAll(parameterType, attribute));
+  }
+
+  /**
+   * The `Fn::ForEach` intrinsic function for deploy-time loops.
+   *
+   * Requires the AWS::LanguageExtensions transform.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-foreach.html
+   * @param uniqueLoopName unique identifier for this loop (alphanumeric only)
+   * @param collection array of values to iterate over
+   * @param outputKey template for output keys, use ${loopName} as placeholder
+   * @param outputValue template for output values
+   * @returns a token representing the Fn::ForEach intrinsic
+   */
+  public static forEach(
+    uniqueLoopName: string,
+    collection: string[] | IResolvable,
+    outputKey: string,
+    outputValue: any,
+  ): IResolvable {
+    if (!/^[A-Za-z0-9]+$/.test(uniqueLoopName)) {
+      throw new UnscopedValidationError(lit`ForEachInvalidLoopName`, `forEach loop name must be alphanumeric, got '${uniqueLoopName}'`);
+    }
+    return new FnForEach(uniqueLoopName, collection, outputKey, outputValue);
+  }
+
+  /**
+   * Reference the current loop variable in Fn::ForEach.
+   *
+   * @param loopName the loop variable name
+   * @returns the loop variable placeholder string (${loopName})
+   */
+  public static forEachRef(loopName: string): string {
+    return `\${${loopName}}`;
   }
 
   /**
@@ -1004,4 +1039,44 @@ function range(n: number): number[] {
     ret.push(i);
   }
   return ret;
+}
+
+/**
+ * The `Fn::ForEach` intrinsic function for deploy-time loops.
+ */
+class FnForEach implements IResolvable {
+  public readonly creationStack: string[];
+
+  constructor(
+    private readonly loopName: string,
+    private readonly collection: string[] | IResolvable,
+    private readonly outputKey: string,
+    private readonly outputValue: any,
+  ) {
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext): any {
+    stackOf(context.scope).addTransform('AWS::LanguageExtensions');
+    return {
+      [`Fn::ForEach::${this.loopName}`]: [
+        // Identifier. CloudFormation requires exactly three elements here --
+        // [Identifier, Collection, {OutputKey: OutputValue}] -- and omitting it
+        // produced a two-element list that cfn-lint rejects with E0001. This API
+        // uses the loop name as the identifier, which is what forEachRef and the
+        // ${loopName} placeholders in the L2 props already assume.
+        this.loopName,
+        this.collection,
+        { [this.outputKey]: this.outputValue },
+      ],
+    };
+  }
+
+  public toString(): string {
+    return Token.asString(this, { displayHint: 'Fn::ForEach' });
+  }
+
+  public toJSON(): string {
+    return '<Fn::ForEach>';
+  }
 }
