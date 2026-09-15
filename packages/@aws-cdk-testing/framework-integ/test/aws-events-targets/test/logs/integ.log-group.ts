@@ -23,6 +23,10 @@ const logGroup2 = new logs.LogGroup(stack, 'log-group2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+const logGroup3 = new logs.LogGroup(stack, 'log-group3', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 new logs.LogGroup(stack, 'log-group-imported', {
   logGroupName: 'MyLogGroupNameToBeImported',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -58,6 +62,13 @@ timer3.addTarget(new targets.CloudWatchLogGroup(importedLogGroup, {
   deadLetterQueue: queue,
   maxEventAge: cdk.Duration.hours(2),
   retryAttempts: 2,
+}));
+
+const timer4 = new events.Rule(stack, 'Timer4', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+timer4.addTarget(new targets.CloudWatchLogGroup(logGroup3, {
+  createLogGroupResourcePolicy: false,
 }));
 
 const integ = new IntegTest(app, 'LogGroup', {
