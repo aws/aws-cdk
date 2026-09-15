@@ -386,7 +386,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('setting ALB HTTPS correctly sets the recordset name', () => {
+  test('default ALB record type creates only an A alias', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
@@ -409,8 +409,55 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Route53::RecordSet', 1);
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'test.domain.com.',
+      Type: 'A',
+    });
+  });
+
+  test('setting ALB dual-stack alias option creates matching A and AAAA records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const expectedAliasTarget = {
+      HostedZoneId: { 'Fn::GetAtt': ['FargateAlbServiceLBA7128551', 'CanonicalHostedZoneID'] },
+      DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['FargateAlbServiceLBA7128551', 'DNSName'] }]] },
+    };
+    template.resourceCountIs('AWS::Route53::RecordSet', 2);
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
+      Name: 'test.domain.com.',
+      Type: 'A',
+      AliasTarget: expectedAliasTarget,
+    });
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
+      Name: 'test.domain.com.',
+      Type: 'AAAA',
+      AliasTarget: expectedAliasTarget,
     });
   });
 
