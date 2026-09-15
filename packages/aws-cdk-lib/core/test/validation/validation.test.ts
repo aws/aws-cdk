@@ -7,6 +7,7 @@ import { AssemblyValidationReport } from '../../../assertions/lib/helpers-intern
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 import type { App } from '../../lib';
+import { namespaceFromPluginName, normalizeValidationId } from '../../lib/validation/private/validation-id';
 
 const ANNOTATION_CAPTION = 'Annotation';
 
@@ -17,7 +18,6 @@ beforeEach(() => {
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  // jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
@@ -1835,3 +1835,15 @@ function constructAt(root: IConstruct, constructPath: string) {
   }
   return current;
 }
+
+describe('normalizeValidationId', () => {
+  test('normalize without prefix', () => {
+    const normalized = normalizeValidationId('my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-plugin::my-rule');
+  });
+
+  test('normalize with prefix', () => {
+    const normalized = normalizeValidationId('my custom plugin::my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-custom-plugin::my-rule');
+  });
+});
