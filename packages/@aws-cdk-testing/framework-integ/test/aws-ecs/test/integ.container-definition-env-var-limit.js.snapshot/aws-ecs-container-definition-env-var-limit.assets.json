@@ -1,0 +1,19 @@
+{
+ "version": "38.0.1",
+ "files": {
+  "90dd0ce3541c95adebf5f54e7cd5b95fb405877fe26dd62ffaef6c31a131f715": {
+   "source": {
+    "path": "aws-ecs-container-definition-env-var-limit.template.json",
+    "packaging": "file"
+   },
+   "destinations": {
+    "current_account-current_region": {
+     "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+     "objectKey": "90dd0ce3541c95adebf5f54e7cd5b95fb405877fe26dd62ffaef6c31a131f715.json",
+     "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+    }
+   }
+  }
+ },
+ "dockerImages": {}
+}
