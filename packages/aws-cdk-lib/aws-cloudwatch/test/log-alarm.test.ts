@@ -177,6 +177,41 @@ describe('LogAlarm', () => {
     })).toThrow(/logGroups must be a resolved list/);
   });
 
+  test('renders the arn for a log group imported by arn, without the trailing wildcard', () => {
+    const props = baseProps();
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        logGroups: [LogGroup.fromLogGroupArn(stack, 'CrossAccount',
+          'arn:aws:logs:us-east-1:999999999999:log-group:/aws/lambda/other:*')],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: Match.objectLike({
+        LogGroupIdentifiers: ['arn:aws:logs:us-east-1:999999999999:log-group:/aws/lambda/other'],
+      }),
+    });
+  });
+
+  test('renders the name for a log group imported by name', () => {
+    const props = baseProps();
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        logGroups: [LogGroup.fromLogGroupName(stack, 'ByName', '/aws/lambda/local')],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: Match.objectLike({
+        LogGroupIdentifiers: ['/aws/lambda/local'],
+      }),
+    });
+  });
+
   test('omits logGroups when not provided (inline SOURCE query)', () => {
     const { logGroups, ...sqcWithout } = baseProps().scheduledQueryConfiguration;
     void logGroups;
@@ -201,7 +236,7 @@ describe('LogAlarm', () => {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: ['logs:StartQuery', 'logs:StopQuery', 'logs:GetQueryResults'],
+            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
             Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
           }),
         ]),
@@ -210,8 +245,11 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants logs:DescribeLogGroups on * because it has no resource-level permissions', () => {
-    new LogAlarm(stack, 'Alarm', baseProps());
+  test('grants logs:DescribeLogGroups on * when the query selects its own log groups', () => {
+    const props = baseProps();
+    const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
+    void logGroups;
+    new LogAlarm(stack, 'Alarm', { ...props, scheduledQueryConfiguration: sqcWithout });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
@@ -221,6 +259,13 @@ describe('LogAlarm', () => {
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
     });
+  });
+
+  test('does not grant logs:DescribeLogGroups when logGroups is given', () => {
+    new LogAlarm(stack, 'Alarm', baseProps());
+
+    const rendered = JSON.stringify(Object.values(Template.fromStack(stack).findResources('AWS::IAM::Policy')));
+    expect(rendered).not.toContain('logs:DescribeLogGroups');
   });
 
   test('falls back to a region-wide log group scope when no log groups are given', () => {
@@ -233,7 +278,7 @@ describe('LogAlarm', () => {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: ['logs:StartQuery', 'logs:StopQuery', 'logs:GetQueryResults'],
+            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
             Resource: { 'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('log-group:\\*')])] },
           }),
         ]),
@@ -457,6 +502,50 @@ describe('LogAlarm', () => {
     template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ActionLogLineCount: 10,
       ActionLogLineRoleArn: Match.anyValue(),
+    });
+  });
+
+  test('grants logs:GetQueryResults to the log line role, scoped to the log groups', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLineCount: 10,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'logs:GetQueryResults',
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
+          }),
+        ]),
+      }),
+      Roles: [{ Ref: Match.stringLikeRegexp('^AlarmLogLineRole') }],
+    });
+  });
+
+  test('fromLogAlarmArn derives the alarm name', () => {
+    const imported = LogAlarm.fromLogAlarmArn(stack, 'Imported',
+      'arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
+
+    expect(stack.resolve(imported.alarmName)).toEqual('my-log-alarm');
+    expect(stack.resolve(imported.alarmArn)).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
+  });
+
+  test('fromLogAlarmName formats an alarm arn and derives the name back', () => {
+    const imported = LogAlarm.fromLogAlarmName(stack, 'Imported', 'my-log-alarm');
+
+    expect(stack.resolve(imported.alarmName)).toEqual('my-log-alarm');
+    expect(stack.resolve(imported.alarmArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':cloudwatch:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':alarm:my-log-alarm',
+      ]],
     });
   });
 

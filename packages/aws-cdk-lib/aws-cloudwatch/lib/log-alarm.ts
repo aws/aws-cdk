@@ -86,8 +86,11 @@ export interface ScheduledQueryConfiguration {
    * The list itself must be resolvable at synthesis time, because the log group names are
    * rendered into the template. Individual log groups in it may be unresolved.
    *
-   * Log groups that live outside the current app can be referenced with
-   * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`.
+   * Log groups defined outside the current app can be referenced with
+   * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`. A log group in another
+   * account must be referenced by ARN, because only an ARN carries the account. Set up
+   * cross-account observability between the monitoring account and the source account
+   * before querying across accounts.
    *
    * @default - no log groups; the query must select its own
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
@@ -512,7 +515,7 @@ export class LogAlarm extends AlarmBase {
     return {
       queryString: config.queryString,
       aggregationExpression: config.aggregationExpression,
-      logGroupIdentifiers: config.logGroups?.map(lg => lg.logGroupRef.logGroupName),
+      logGroupIdentifiers: this.renderLogGroupIdentifiers(config.logGroups),
       scheduledQueryRoleArn: this.scheduledQueryRole.roleArn,
       scheduleConfiguration: {
         scheduleExpression: this.renderRate(config.schedule.rate),
@@ -565,16 +568,23 @@ export class LogAlarm extends AlarmBase {
    * Applied to the role this construct creates and to a role passed in by the
    * caller. Passing an imported immutable role (`Role.fromRoleArn` with
    * `mutable: false`) turns these additions into no-ops.
+   *
+   * `logs:DescribeLogGroups` is granted only when the query selects its own log
+   * groups, because that is the only case in which the service enumerates them on
+   * the role's behalf. The action supports no resource types, so when it is granted
+   * it can only be granted on every resource.
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
     role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['logs:StartQuery', 'logs:StopQuery', 'logs:GetQueryResults'],
+      actions: ['logs:StartQuery', 'logs:GetQueryResults'],
       resources: this.logGroupPolicyResources(logGroups),
     }));
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['logs:DescribeLogGroups'],
-      resources: ['*'],
-    }));
+    if (logGroups === undefined || logGroups.length === 0) {
+      role.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['logs:DescribeLogGroups'],
+        resources: ['*'],
+      }));
+    }
   }
 
   private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
@@ -585,6 +595,22 @@ export class LogAlarm extends AlarmBase {
   }
 
   /**
+   * Log group identifiers for the scheduled query.
+   *
+   * The scheduled query accepts a log group name or ARN, and only an ARN carries an
+   * account, so a concrete ARN is passed through to keep cross-account queries working.
+   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed.
+   * An ARN that is still a token cannot be edited, and a log group with a tokenized ARN
+   * belongs to this account, so its name is used instead.
+   */
+  private renderLogGroupIdentifiers(logGroups?: ILogGroupRef[]): string[] | undefined {
+    return logGroups?.map(logGroup => {
+      const arn = logGroup.logGroupRef.logGroupArn;
+      return Token.isUnresolved(arn) ? logGroup.logGroupRef.logGroupName : arn.replace(/:\*$/, '');
+    });
+  }
+
+  /**
    * Resource ARNs to scope log group permissions to.
    *
    * Uses `logGroupArn`, which carries the trailing `:*` that IAM expects for log
@@ -592,7 +618,7 @@ export class LogAlarm extends AlarmBase {
    * selects its log groups inline.
    */
   private logGroupPolicyResources(logGroups?: ILogGroupRef[]): string[] {
-    if (logGroups === undefined || Token.isUnresolved(logGroups) || logGroups.length === 0) {
+    if (logGroups === undefined || logGroups.length === 0) {
       return [Stack.of(this).formatArn({ service: 'logs', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
     }
     return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);

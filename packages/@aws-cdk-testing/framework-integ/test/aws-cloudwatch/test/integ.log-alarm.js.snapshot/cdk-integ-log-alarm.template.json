@@ -33,8 +33,7 @@
       {
        "Action": [
         "logs:GetQueryResults",
-        "logs:StartQuery",
-        "logs:StopQuery"
+        "logs:StartQuery"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -43,11 +42,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "logs:DescribeLogGroups",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -145,8 +139,7 @@
       {
        "Action": [
         "logs:GetQueryResults",
-        "logs:StartQuery",
-        "logs:StopQuery"
+        "logs:StartQuery"
        ],
        "Effect": "Allow",
        "Resource": {
@@ -155,11 +148,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "logs:DescribeLogGroups",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
