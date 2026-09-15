@@ -262,6 +262,12 @@ export interface ServerDeploymentGroupProps {
 }
 
 /**
+ * Strips `readonly` so a property that is read-only to consumers can still be
+ * maintained internally.
+ */
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
  * A CodeDeploy Deployment Group that deploys to EC2/on-premise instances.
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
@@ -294,6 +300,14 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    */
   public readonly role?: iam.IRole;
 
+  /**
+   * The auto-scaling groups belonging to this Deployment Group,
+   * including any added through `addAutoScalingGroup()`.
+   *
+   * This is a copy — mutating it has no effect on the Deployment Group.
+   */
+  public readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
+
   private readonly _autoScalingGroups: IArrayBox<autoscaling.IAutoScalingGroup>;
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
@@ -317,6 +331,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
     this._autoScalingGroups = Box.fromArray(props.autoScalingGroups || []);
+    this.refreshAutoScalingGroups();
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
@@ -379,6 +394,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   @MethodMetadata()
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
+    this.refreshAutoScalingGroups();
     this.addCodeDeployAgentInstallUserData(asg);
   }
 
@@ -392,8 +408,15 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.alarms.push(alarm);
   }
 
-  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
-    return this._autoScalingGroups.get().slice();
+  /**
+   * Refreshes the public `autoScalingGroups` view from the accumulator backing it.
+   *
+   * Must be called from every site that mutates `_autoScalingGroups`. The property is
+   * `readonly` to consumers, so the write goes through a `Writeable` cast, and a fresh
+   * copy is taken so consumers cannot reach the accumulator that drives synthesis.
+   */
+  private refreshAutoScalingGroups(): void {
+    (this as Writeable<ServerDeploymentGroup>).autoScalingGroups = this._autoScalingGroups.get().slice();
   }
 
   private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {
