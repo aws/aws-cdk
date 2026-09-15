@@ -1,3 +1,4 @@
+// Snapshot records custom log group deletion order for BucketDeployment.
 import * as path from 'path';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
