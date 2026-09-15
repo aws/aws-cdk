@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-elbv2-env-agnostic-logging/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-env-agnostic-logging"
+      ],
+      "assertionStack": "cdk-integ-elbv2-env-agnostic-logging/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegelbv2envagnosticloggingDefaultTestDeployAssertF8AD4930"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
