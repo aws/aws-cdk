@@ -1,0 +1,70 @@
+{
+  "/aws-cdk-account-policy-subscription-filter-integ/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/AccountPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/AccountPolicy/CanInvokeLambda": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccountPolicyCanInvokeLambda2CC44308"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/AccountPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccountPolicy1D7BC599"
+    }
+  ],
+  "/aws-cdk-account-policy-subscription-filter-integ/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ]
+}
