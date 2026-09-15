@@ -1,3 +1,4 @@
+import type { IKey } from '../../aws-kms';
 import type { Duration } from '../../core';
 
 /**
@@ -24,4 +25,16 @@ export interface DurableConfig {
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
+
+  /**
+   * The AWS KMS customer managed key (CMK) used to encrypt durable execution data at rest.
+   *
+   * For a CDK-managed key, CDK adds the required Lambda service and execution role
+   * statements to the key policy. For an imported key, author the key policy yourself.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - Durable execution data is encrypted at rest with an AWS owned key.
+   */
+  readonly kmsKey?: IKey;
 }

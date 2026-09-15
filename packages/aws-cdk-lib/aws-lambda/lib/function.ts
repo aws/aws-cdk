@@ -1705,10 +1705,38 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       retentionDays = config.retentionPeriod.toDays();
     }
 
+    if (config.kmsKey) {
+      this.grantDurableExecutionKeyAccess(config.kmsKey);
+    }
+
     return {
       executionTimeout: config.executionTimeout.toSeconds(),
       retentionPeriodInDays: retentionDays,
+      kmsKeyArn: config.kmsKey?.keyArn,
     };
+  }
+
+  private grantDurableExecutionKeyAccess(key: kms.IKey) {
+    const stack = Stack.of(this);
+
+    // Lambda authorizes durable-function key use only through the key policy.
+    // Account-scoped to avoid a Key -> Function -> Key dependency cycle.
+    key.grant(
+      new iam.ServicePrincipal('lambda.amazonaws.com', {
+        conditions: { StringEquals: { 'aws:SourceAccount': stack.account } },
+      }),
+      'kms:GenerateDataKey',
+      'kms:Decrypt',
+    );
+
+    // Execution role decrypts durable data at runtime, via the key policy only
+    // (no identity policy), restricted to calls made through Lambda.
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.ArnPrincipal(this.role!.roleArn)],
+      actions: ['kms:Decrypt'],
+      resources: ['*'],
+      conditions: { StringEquals: { 'kms:ViaService': `lambda.${stack.region}.amazonaws.com` } },
+    }));
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
