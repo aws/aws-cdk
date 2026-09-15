@@ -7,7 +7,7 @@ import { GatewayAuthorizer, GatewayAuthorizerType } from './inbound-auth/authori
 import type { IInterceptor, InterceptorBindConfig } from './interceptor';
 import { InterceptionPoint } from './interceptor';
 import type { ICredentialProviderConfig } from './outbound-auth/credential-provider';
-import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
+import { GATEWAY_KMS_KEY_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
 import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import type { IRestApi } from '../../../aws-apigateway';
@@ -850,29 +850,22 @@ export class Gateway extends GatewayBase {
    * @internal
    */
   private createGatewayRole(): iam.Role {
-    const role = new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
-      description: `Service role for Bedrock AgentCore Gateway ${this.gatewayName}`,
-    });
-
     const region = Stack.of(this).region;
     const account = Stack.of(this).account;
     const partition = Stack.of(this).partition;
 
-    // This restricts role assumption to the specific gateway resource only in this account,
-    // preventing other accounts from assuming this role.
-    // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
-    role.assumeRolePolicy?.addStatements(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com')],
-        actions: GATEWAY_ASSUME_ROLE,
+    const role = new iam.Role(this, 'ServiceRole', {
+      // This restricts role assumption to the specific gateway resource only in this account,
+      // preventing other accounts from assuming this role.
+      // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
         conditions: {
           StringEquals: { 'aws:SourceAccount': account },
           ArnLike: { 'aws:SourceArn': `arn:${partition}:bedrock-agentcore:${region}:${account}:gateway/${this.gatewayName}*` },
         },
       }),
-    );
+      description: `Service role for Bedrock AgentCore Gateway ${this.gatewayName}`,
+    });
 
     if (this.kmsKey) {
       role.addToPolicy(new iam.PolicyStatement({
