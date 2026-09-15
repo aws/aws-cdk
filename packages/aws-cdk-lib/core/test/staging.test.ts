@@ -826,6 +826,34 @@ describe('staging', () => {
     );
   });
 
+  test('bundling throws when an empty bundle directory is left over from an earlier run', () => {
+    // GIVEN - the asset directory an interrupted run would have left behind, empty. The hash
+    // is known before bundling, so the bundle directory is `asset.<hash>` and a later run
+    // reuses it instead of bundling again.
+    const props = {
+      sourcePath: FIXTURE_TEST1_DIR,
+      assetHashType: AssetHashType.SOURCE,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    };
+
+    const firstOutdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-b3-first'));
+    const bundleDirName = path.basename(
+      new AssetStaging(new Stack(new App({ outdir: firstOutdir }), 'stack'), 'Asset', props).absoluteStagedPath,
+    );
+    AssetStaging.clearAssetHashCache();
+
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-b3'));
+    const app = new App({ outdir });
+    const stack = new Stack(app, 'stack');
+    fs.mkdirpSync(path.join(app.synth().directory, bundleDirName));
+
+    // THEN - staged as an empty asset before, rejected now
+    expect(() => new AssetStaging(stack, 'Asset', props)).toThrow(/Bundling did not produce any output/);
+  });
+
   testDeprecated('bundling with BUNDLE asset hash type', () => {
     // GIVEN
     const app = new App();
