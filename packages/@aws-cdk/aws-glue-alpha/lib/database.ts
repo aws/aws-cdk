@@ -1,4 +1,4 @@
-import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
+import { CfnDatabase, type DatabaseReference, type IDatabaseRef } from 'aws-cdk-lib/aws-glue';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -8,7 +8,7 @@ import type { Construct } from 'constructs';
 import type { ICatalog } from './catalog';
 import { Catalog } from './catalog';
 
-export interface IDatabase extends IResource {
+export interface IDatabase extends IResource, IDatabaseRef {
 
   /**
    * The catalog this database belongs to.
@@ -86,6 +86,10 @@ export class Database extends Resource implements IDatabase {
       public databaseArn = databaseArn;
       public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
+      public get databaseRef(): DatabaseReference {
+        return { databaseName: this.databaseName };
+      }
+
       // Materialize the account catalog only on access, so importing a database
       // does not pre-empt Catalog.encryptAccount() for the stack.
       @memoizedGetter
@@ -100,7 +104,7 @@ export class Database extends Resource implements IDatabase {
   /**
    * Location URI of this database.
    */
-  public locationUri?: string;
+  public readonly locationUri?: string;
 
   private readonly _catalog?: ICatalog;
 
@@ -173,6 +177,10 @@ export class Database extends Resource implements IDatabase {
       resource: 'database',
       resourceName: this.databaseName,
     });
+  }
+
+  public get databaseRef(): DatabaseReference {
+    return { databaseName: this.databaseName };
   }
 }
 
