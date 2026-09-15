@@ -1107,5 +1107,26 @@ describe('Managed Instances compatibility', () => {
         });
       }).toThrow("Volume Configurations must not be specified for 'my-volume' when 'configuredAtLaunch' is set to true");
     });
+
+    test('throws when volume with configuredAtLaunch has s3FilesVolumeConfiguration', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.FARGATE,
+      });
+
+      // THEN
+      expect(() => {
+        taskDefinition.addVolume({
+          name: 'my-volume',
+          configuredAtLaunch: true,
+          s3FilesVolumeConfiguration: {
+            fileSystemArn: 'arn:aws:s3files:us-east-1:012345678901:file-system/fs-12345678',
+          },
+        });
+      }).toThrow("Volume Configurations must not be specified for 'my-volume' when 'configuredAtLaunch' is set to true");
+    });
   });
 });
