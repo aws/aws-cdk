@@ -45,3 +45,10 @@ export const MULTI_ACCOUNT_REPLICATION_ACTIONS = [
 ];
 
 export const DESCRIBE_TABLE = 'dynamodb:DescribeTable';
+
+// SearchVectors targets the index resource (table/NAME/index/INDEX-NAME) and is
+// deliberately NOT part of READ_DATA_ACTIONS: fine-grained access control
+// condition keys (dynamodb:LeadingKeys etc.) have no effect on SearchVectors,
+// so folding it into the generic read grant would silently widen FGAC-scoped
+// readers to unscoped vector search. Use grantVectorSearch() instead.
+export const SEARCH_VECTORS_ACTION = 'dynamodb:SearchVectors';

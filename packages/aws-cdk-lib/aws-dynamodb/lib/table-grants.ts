@@ -64,6 +64,7 @@ export class TableGrants {
 
   private readonly table: ITableRef;
   private readonly arns: string[] = [];
+  private readonly indexArns: string[] = [];
   private readonly encryptedResource?: iam.IEncryptedResource;
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
@@ -96,6 +97,13 @@ export class TableGrants {
       ...(props.regions ?? []).map(formatRegionalTableArn),
       arnForIndex(table.tableRef.tableArn),
       ...(props.regions ?? []).map(region => arnForIndex(formatRegionalTableArn(region))),
+    ];
+
+    // SearchVectors targets the index resource, so these ARNs are not gated on
+    // hasIndex: calling vectorSearch() implies the table carries a vector index.
+    this.indexArns = [
+      `${table.tableRef.tableArn}/index/*`,
+      ...(props.regions ?? []).map(region => `${formatRegionalTableArn(region)}/index/*`),
     ];
   }
 
@@ -155,6 +163,45 @@ export class TableGrants {
       actions: perms.PRINCIPAL_ONLY_READ_DATA_ACTIONS,
       resourceArns: this.arns,
     }));
+  }
+
+  /**
+   * Permits an IAM principal to search the table's vector indexes:
+   * SearchVectors on the index resources.
+   *
+   * SearchVectors is deliberately not part of `readData`: fine-grained access
+   * control condition keys (such as `dynamodb:LeadingKeys`) have no effect on
+   * SearchVectors, so it must be granted explicitly.
+   *
+   * Appropriate grants will also be added to the customer-managed KMS key
+   * if one was configured.
+   *
+   * @param grantee The principal to grant access to
+   */
+  public vectorSearch(grantee: iam.IGrantable): iam.Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        lit`ServicePrincipalGrantNotSupported`,
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this.table,
+      );
+    }
+
+    this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS);
+
+    return this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      grantee,
+      actions: [perms.SEARCH_VECTORS_ACTION],
+      resourceArns: this.indexArns,
+      resource: this.policyResource,
+      resourceSelfArns: ['*'],
+    }) : iam.Grant.addToPrincipal({
+      grantee,
+      actions: [perms.SEARCH_VECTORS_ACTION],
+      resourceArns: this.indexArns,
+    });
   }
 
   /**
