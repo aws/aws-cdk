@@ -1,0 +1,16 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "PolicyMinimalIntegTest/DefaultTest": {
+      "stacks": [
+        "PolicyMinimalIntegTestStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "PolicyMinimalIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyMinimalIntegTestDefaultTestDeployAssert7F8123CE"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
