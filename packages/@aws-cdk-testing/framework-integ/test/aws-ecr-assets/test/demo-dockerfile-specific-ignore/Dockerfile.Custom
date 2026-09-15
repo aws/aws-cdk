@@ -1,0 +1,8 @@
+# Pass oracle: feature flag @aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile enables
+# Dockerfile.Custom.dockerignore at staging time; must-not-exist.txt must be absent from /ctx after ADD.
+FROM public.ecr.aws/docker/library/alpine:3.20
+WORKDIR /ctx
+ADD . /ctx
+# Oracle: must-not-exist.txt appears in /ctx only if Dockerfile.Custom.dockerignore was ignored.
+RUN test ! -e /ctx/must-not-exist.txt
+CMD ["true"]
