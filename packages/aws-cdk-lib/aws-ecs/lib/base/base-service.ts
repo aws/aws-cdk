@@ -964,10 +964,15 @@ export abstract class BaseService extends Resource
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
 
+    // An empty array tells CloudFormation to remove the existing load balancer registrations, while an
+    // absent property leaves the live service alone, so removing the last target group from a service
+    // can only be expressed by rendering `[]`.
+    const isRemoveEmptyLoadBalancers = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS);
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: this._loadBalancers.derive(lbs => lbs.length > 0 ? lbs : undefined),
+      loadBalancers: this._loadBalancers.derive(lbs => lbs.length > 0 || isRemoveEmptyLoadBalancers ? lbs : undefined),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
