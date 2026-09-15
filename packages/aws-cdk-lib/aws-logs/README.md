@@ -492,6 +492,8 @@ For more information, see [Create field indexes to improve query performance and
 Only log groups in the Standard log class support field index policies.
 Currently, this array supports only one field index policy object.
 
+A field index policy can index a maximum of 20 fields, and each field index name can include a maximum of 100 characters.
+
 Example:
 
 ```ts
