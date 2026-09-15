@@ -1,23 +1,21 @@
 import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnEIP, GatewayVpcEndpoint, GatewayVpcEndpointAwsService, SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
 import * as route from '../lib/route';
 import * as subnet from '../lib/subnet-v2';
 import * as vpc from '../lib/vpc-v2';
 
+let stack: Stack;
+
 describe('EC2 Routing', () => {
-  let stack: cdk.Stack;
   let myVpc: vpc.VpcV2;
   let mySubnet: subnet.SubnetV2;
   let routeTable: route.RouteTable;
 
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-    stack = new cdk.Stack(app);
+    stack = testStack();
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({

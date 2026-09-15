@@ -1,0 +1,56 @@
+{
+ "Resources": {
+  "DeliveryLogGroup2A53FD53": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupClass": "DELIVERY"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDeliveryLogGroup2A53FD53473E2962": {
+   "Value": {
+    "Ref": "DeliveryLogGroup2A53FD53"
+   },
+   "Export": {
+    "Name": "aws-cdk-log-group-delivery-class-integ:ExportsOutputRefDeliveryLogGroup2A53FD53473E2962"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,209 @@
+import type * as constructs from 'constructs';
+import { CfnDataQualityRuleset, type IDatabaseRef } from './glue.generated';
+import type { ITable } from './table-base';
+import type { IResource, RemovalPolicy } from '../../core';
+import * as cdk from '../../core';
+import { Resource } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+/**
+ * The Glue table a `DataQualityRuleset` evaluates.
+ */
+export class DataQualityTargetTable {
+  /**
+   * Target an L2 table in a database.
+   *
+   * @param database the database that holds the table.
+   * @param table the table to evaluate.
+   */
+  public static fromTable(database: IDatabaseRef, table: ITable): DataQualityTargetTable {
+    return new DataQualityTargetTable(database.databaseRef.databaseName, table.tableName);
+  }
+
+  /**
+   * Target a table by name in a database. Use this when the table is not
+   * modeled as an L2 construct (e.g. it is imported or created elsewhere).
+   *
+   * @param database the database that holds the table.
+   * @param tableName the name of the table to evaluate.
+   */
+  public static fromTableName(database: IDatabaseRef, tableName: string): DataQualityTargetTable {
+    return new DataQualityTargetTable(database.databaseRef.databaseName, tableName);
+  }
+
+  /**
+   * The database name of the target table.
+   */
+  public readonly databaseName: string;
+
+  /**
+   * The table name of the target table.
+   */
+  public readonly tableName: string;
+
+  private constructor(databaseName: string, tableName: string) {
+    this.databaseName = databaseName;
+    this.tableName = tableName;
+  }
+}
+
+/**
+ * The Data Quality Definition Language (DQDL) document for a `DataQualityRuleset`.
+ *
+ * DQDL is an authored string that Glue parses and validates at deploy time. Build
+ * one from a raw DQDL string with {@link Dqdl.fromString}.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/dqdl.html
+ */
+export class Dqdl {
+  /**
+   * Create a `Dqdl` from a raw DQDL string.
+   *
+   * @param dqdl the DQDL document, e.g. `Rules = [ RowCount > 100 ]`.
+   */
+  public static fromString(dqdl: string): Dqdl {
+    return new Dqdl(dqdl);
+  }
+
+  private constructor(private readonly dqdl: string) {}
+
+  /**
+   * Render this DQDL to the string expected by the Glue ruleset resource.
+   *
+   * @internal
+   */
+  public _render(): string {
+    return this.dqdl;
+  }
+}
+
+export interface IDataQualityRuleset extends IResource {
+  /**
+   * The ARN of the ruleset
+   * @attribute
+   */
+  readonly rulesetArn: string;
+
+  /**
+   * The name of the ruleset
+   * @attribute
+   */
+  readonly rulesetName: string;
+}
+
+/**
+ * Construction properties for `DataQualityRuleset`
+ */
+export interface DataQualityRulesetProps {
+  /**
+   * The name of the ruleset
+   */
+  readonly rulesetName: string;
+
+  /**
+   * The description of the ruleset
+   * @attribute
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+
+  /**
+   * The DQDL document defining the ruleset's data quality rules.
+   *
+   * Build it with `Dqdl.fromString(...)`.
+   */
+  readonly dqdl: Dqdl;
+
+  /**
+   *  Key-Value pairs that define tags for the ruleset.
+   *  @default empty tags
+   */
+  readonly tags?: { [key: string]: string };
+
+  /**
+   * The target table of the ruleset
+   * @attribute
+   */
+  readonly targetTable: DataQualityTargetTable;
+
+  /**
+   * Policy to apply when the ruleset is removed from the stack.
+   *
+   * @default - resource will be destroyed
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+/**
+ * A Glue Data Quality ruleset.
+ */
+@propertyInjectable
+export class DataQualityRuleset extends Resource implements IDataQualityRuleset {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-glue-alpha.DataQualityRuleset';
+
+  public static fromRulesetArn(scope: constructs.Construct, id: string, rulesetArn: string): IDataQualityRuleset {
+    class Import extends Resource implements IDataQualityRuleset {
+      public rulesetArn = rulesetArn;
+      public rulesetName = cdk.Arn.extractResourceName(rulesetArn, 'dataqualityruleset');
+    }
+
+    return new Import(scope, id);
+  }
+
+  public static fromRulesetName(scope: constructs.Construct, id: string, rulesetName: string): IDataQualityRuleset {
+    class Import extends Resource implements IDataQualityRuleset {
+      public rulesetArn = DataQualityRuleset.buildRulesetArn(scope, rulesetName);
+      public rulesetName = rulesetName;
+    }
+
+    return new Import(scope, id);
+  }
+
+  private static buildRulesetArn(scope: constructs.Construct, rulesetName: string) : string {
+    return cdk.Stack.of(scope).formatArn({
+      service: 'glue',
+      resource: 'dataqualityruleset',
+      resourceName: rulesetName,
+    });
+  }
+
+  private resource: CfnDataQualityRuleset;
+
+  constructor(scope: constructs.Construct, id: string, props: DataQualityRulesetProps) {
+    super(scope, id, {
+      physicalName: props.rulesetName,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.resource = new CfnDataQualityRuleset(this, 'Resource', {
+      description: props.description,
+      name: props.rulesetName,
+      ruleset: props.dqdl._render(),
+      tags: props.tags,
+      targetTable: props.targetTable,
+    });
+
+    this.resource.applyRemovalPolicy(props.removalPolicy);
+  }
+
+  /**
+   * Name of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this ruleset.
+   */
+  @memoizedGetter
+  public get rulesetArn(): string {
+    return DataQualityRuleset.buildRulesetArn(this, this.rulesetName);
+  }
+}

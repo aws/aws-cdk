@@ -1442,7 +1442,7 @@ https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html
 
 ## Lambda with SnapStart
 
-SnapStart is currently supported on Python 3.12, Python 3.13, .NET 8, and Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html). SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
+SnapStart is currently supported on Python 3.12, Python 3.13, .NET 8, and Java 11 and later [Java managed runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html), as well as container image (OCI) deployments. SnapStart does not support provisioned concurrency, Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB. After you enable Lambda SnapStart for a particular Lambda function, publishing a new version of the function will trigger an optimization process.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html) to learn more about AWS Lambda SnapStart
 
@@ -1453,6 +1453,17 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'example.Handler::handleRequest',
   snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
   });
+
+const version = fn.currentVersion;
+```
+
+SnapStart can also be used with container image functions:
+
+```ts
+const fn = new lambda.DockerImageFunction(this, 'MyFunction', {
+  code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-handler')),
+  snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
 
 const version = fn.currentVersion;
 ```
@@ -1663,6 +1674,14 @@ S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file syste
 - **Mount targets** (`CfnMountTarget`) — ENIs placed in your VPC subnets that allow NFS clients (like Lambda) to connect. Each mount target needs a security group that permits inbound NFS traffic (TCP port 2049).
 - **Access point** (`CfnAccessPoint`) — defines the POSIX user identity and root directory path that Lambda uses when accessing the file system. This scopes and isolates the function's view of the file system.
 
+You can optionally configure `directS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount using `DirectS3Read.enabled(bucket)`, `DirectS3Read.enabledWithoutGrant()`, `DirectS3Read.auto()`, or `DirectS3Read.disabled()`.
+
+To use direct reads, the function's execution role needs the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket for a direct read to succeed (if a direct read fails, Lambda falls back to reading through the file system). `DirectS3Read.enabled(bucket)` grants these permissions to the execution role automatically. Use `DirectS3Read.enabledWithoutGrant()` when the role already has read access through another policy; you are then responsible for the grant (and `kms:Decrypt` if the bucket is encrypted with a customer-managed key). `DirectS3Read.auto()` adds no permissions, so the role must already hold them for a service-initiated direct read to succeed. 
+
+Use `DirectS3Read.disabled()` to opt-out from this feature. 
+
+> Visit [S3FilesConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-s3filesconfig.html) for more details.
+
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
@@ -1736,7 +1755,10 @@ const fn = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
-  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files'),
+  filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/s3files', {
+    // Enables direct reads and grants s3:GetObject/s3:GetObjectVersion on the bucket to the execution role.
+    directS3Read: lambda.DirectS3Read.enabled(bucket),
+  }),
 });
 ```
 
