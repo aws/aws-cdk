@@ -805,6 +805,7 @@ export class BrowserCustom extends BrowserCustomBase {
 
     // L1 instantiation
     this.__resource = new agent_core.CfnBrowserCustom(this, 'Resource', cfnProps);
+    this.node.defaultChild = this.__resource;
 
     // Get attributes directly from the CloudFormation resource
     this.browserId = this.__resource.attrBrowserId;
