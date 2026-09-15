@@ -1,0 +1,135 @@
+{
+  "/integ-servicecatalogappregistry-attribute-group": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/TestApplication": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/CreatedAttributeGroupAttributes": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CreatedAttributeGroupAttributes"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:69:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/ImportedAttributeGroupAttributes": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportedAttributeGroupAttributes"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:72:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/TestApplication/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestApplication2FBC585F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/application.js:279:33)",
+        "new Application (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:41:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestAttributeGroupB1CB284F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AttributeGroup (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/attribute-group.js:207:36)",
+        "new AttributeGroup (packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:45:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/ApplicationAttributeGroupAssociation73d834483ae3": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.associateWith (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/attribute-group.js:87:13)",
+        "<anonymous> (packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.attribute-group.js:61:16)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
