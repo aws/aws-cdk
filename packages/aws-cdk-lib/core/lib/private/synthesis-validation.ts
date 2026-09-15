@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
-import { AnnotationPlugin, collectAnnotationReport } from './annotation-plugin';
+import { collectAnnotationReport } from './annotation-plugin';
 import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
@@ -21,6 +21,7 @@ import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
 import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -280,19 +281,9 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
         }
 
         const ackIds: string[] = [];
-        if (v.ruleName.includes('::')) {
-          ackIds.push(v.ruleName);
 
-          // Annotations are special; we renamed the suppression namespace at one point
-          // from "Construct-Annotations" to just "Annotation", and we also want
-          // to support the naked-rule-name form for backwards compatibility.
-          if (pluginName === AnnotationPlugin.NAME) {
-            const unnamespacedPart = v.ruleName.split('::').slice(1).join('::');
-            ackIds.push(`${pluginName}::${unnamespacedPart}`);
-          }
-        } else {
-          ackIds.push(`${pluginName}::${v.ruleName}`);
-        }
+        const ruleName = normalizeValidationId(v.ruleName, namespaceFromPluginName(pluginName));
+        ackIds.push(ruleName);
 
         const ack = firstThat(ackIds.map(hyphenify), id => acknowledgedRules.get(id));
 

@@ -94,11 +94,10 @@ export class PySparkEtlJob extends SparkJob {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     if (props.jobRunQueuingEnabled === true && props.maxRetries !== undefined && props.maxRetries > 0) {
       Annotations.of(this).addWarningV2(lit`GlueMaxRetriesQueuingEnabled`,
@@ -140,14 +139,10 @@ export class PySparkEtlJob extends SparkJob {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: PySparkEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.PYTHON;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: PySparkEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.PYTHON);
+    this.setupExtraCodeArguments(props);
   }
 }

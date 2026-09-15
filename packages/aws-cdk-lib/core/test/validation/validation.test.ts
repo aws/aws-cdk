@@ -964,30 +964,6 @@ describe('validations', () => {
       expect(output).not.toContain('AckedWarning');
     });
 
-    // We make suppressible using both the old and new prefixes, to ensure that both are supported
-    test.each([
-      'Construct-Annotations::',
-      'Annotation::',
-      'annotation::',
-    ])('Annotations.addWarningV2 can be acknowledged via Validations using: %p', (prefix) => {
-      const app = new NonStrictApp({ context: annotationReportContext });
-      const stack = new core.Stack(app, 'MyStack');
-      const construct = new Construct(stack, 'MyConstruct');
-      new FailResource(construct, 'Resource');
-
-      core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
-      core.Validations.of(construct).acknowledge({
-        id: `${prefix}my-lib:AckedWarning`,
-        reason: 'Acceptable for testing',
-      });
-
-      redactAsmDir(app.synth());
-
-      // No annotations left, so no report at all
-      const output = mockErrorOutput();
-      expect(output).not.toContain('AckedWarning');
-    });
-
     test('partial acknowledgment only excludes acknowledged warnings', () => {
       const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
@@ -1160,6 +1136,39 @@ describe('validations', () => {
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('cdk-nag warning identifiers can be acknowledged via Validations.acknowledge', () => {
+      // cdk-nag's warnings contain `::`, which Validations uses as a namespace separator.
+      const warningId = 'AwsSolutions-IAM4[Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole]';
+
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('AwsSolutions', [{
+          description: 'Something wrong with this resource',
+          ruleName: warningId,
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'MyBucket',
+            templatePath: 'Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: `AwsSolutions::${warningId}`, reason: 'Not needed for this bucket' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).not.toContain(warningId);
+    });
+
     test('suppressed violations appear in validation-report.json', () => {
       const app = new NonStrictApp({
         context: {
@@ -1287,6 +1296,54 @@ describe('validations', () => {
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
       const annotationsReport = report.pluginReports.find((r: any) => r.pluginName === 'Construct Annotations');
       expect(annotationsReport).toBeDefined();
+    });
+  });
+
+  describe.each([false, true])('with annotations appearing in the report file: %p', (annotationsInReport) => {
+    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: annotationsInReport };
+
+    describe.each(['Annotations.addWarningV2', 'Validations.addWarning'] as const)('with warnings added via %s', (addWarningMethod) => {
+      let app: NonStrictApp;
+      let stack: core.Stack;
+      let construct: Construct;
+      beforeEach(() => {
+        app = new NonStrictApp({ context: annotationReportContext });
+        stack = new core.Stack(app, 'MyStack');
+        construct = new Construct(stack, 'MyConstruct');
+        new FailResource(construct, 'Resource');
+
+        switch (addWarningMethod) {
+          case 'Validations.addWarning':
+            core.Validations.of(construct).addWarning('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+          case 'Annotations.addWarningV2':
+            core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+        }
+      });
+
+      // We make suppressible using both the old and new prefixes, to ensure that both are supported
+      test.each([
+        '',
+        'Construct-Annotations::',
+        'Annotation::',
+        'annotation::',
+      ])('can be acknowledged using Validations.acknowledge(%p...)', (prefix) => {
+        core.Validations.of(construct).acknowledge({
+          id: `${prefix}my-lib:AckedWarning`,
+          reason: 'Acceptable for testing',
+        });
+
+        const asm = redactAsmDir(app.synth());
+
+        // No annotations left, so no report at all
+        const output = mockErrorOutput();
+        expect(output).not.toContain('AckedWarning');
+
+        // The warnings shall not appear in the metadata either
+        const warnings = asm.getStackByName(stack.stackName).findMetadataByType('aws:cdk:warning');
+        expect(JSON.stringify(warnings)).not.toContain('AckedWarning');
+      });
     });
   });
 
