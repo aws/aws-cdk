@@ -138,6 +138,36 @@ describe('DatabaseCluster', () => {
     }).toThrow('Cluster requires at least 2 subnets, got 1');
   });
 
+  test('accepts an unresolved list of subnet IDs', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromVpcAttributes(stack, 'VPC', {
+      vpcId: 'vpc-12345',
+      availabilityZones: cdk.Fn.split(',', cdk.Fn.importValue('AvailabilityZones')),
+      privateSubnetIds: cdk.Fn.split(',', cdk.Fn.importValue('PrivateSubnetIds')),
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBSubnetGroup', {
+      SubnetIds: {
+        'Fn::Split': [',', { 'Fn::ImportValue': 'PrivateSubnetIds' }],
+      },
+    });
+  });
+
   test('secret attachment target type is correct', () => {
     // GIVEN
     const stack = testStack();
