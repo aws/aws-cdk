@@ -1871,10 +1871,19 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
-Runtimes expose a `bundlingImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
+Runtimes expose a `bundlingImage` property that points to an
+[AWS SAM build image](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html).
+Predefined runtimes use an untagged image, so the latest image is used and its contents can change independently of the
+AWS CDK version. If your build depends on specific tool versions, select an explicit image tag:
 
-Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
-`cdk.DockerImage.fromBuild(path)` to build a specific image:
+```ts
+const image = DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153');
+```
+
+Choose a tag that contains the tools your build requires, and update the pinned image regularly to receive tool and
+security updates.
+
+Use `cdk.DockerImage.fromBuild(path)` to build a specific image instead:
 
 ```ts
 new lambda.Function(this, 'Function', {
