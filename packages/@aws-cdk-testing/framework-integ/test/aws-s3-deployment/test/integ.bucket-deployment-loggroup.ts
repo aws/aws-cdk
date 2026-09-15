@@ -10,6 +10,8 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
  * Integration test for bucket deployment with custom log group:
  * - Lambda function writes logs to a custom CloudWatch Log Group
  * - Tests that custom log groups work correctly with bucket deployments
+ * - Validates Lambda depends on LogGroup to prevent deletion race condition
+ *   (see https://github.com/aws/aws-cdk/issues/35632)
  */
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
