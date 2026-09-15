@@ -1750,6 +1750,22 @@ describe('User Pool', () => {
     })).toThrow(/the local part of the email address must use ASCII characters only/);
   });
 
+  test('email transmission with mixed ascii and non-ascii characters in the local part throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    // 'café' mixes ASCII ('caf') with a non-ASCII character ('é'); the whole
+    // local part must be ASCII, so this must be rejected.
+    expect(() => new UserPool(stack, 'Pool', {
+      email: UserPoolEmail.withSES({
+        sesRegion: 'us-east-1',
+        fromEmail: 'café@example.com',
+        sesVerifiedDomain: 'example.com',
+      }),
+    })).toThrow(/the local part of the email address must use ASCII characters only/);
+  });
+
   test('email withCognito', () => {
     // GIVEN
     const stack = new Stack();
