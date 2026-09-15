@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "GatewayMcpProtocolIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreGatewayMcpProtocolIntegTest"
+      ],
+      "assertionStack": "GatewayMcpProtocolIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayMcpProtocolIntegTestDefaultTestDeployAssertA915772D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
