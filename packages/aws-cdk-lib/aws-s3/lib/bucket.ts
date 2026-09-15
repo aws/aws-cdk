@@ -2289,6 +2289,7 @@ export class Bucket extends BucketBase {
       public policy = undefined;
       public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
+      public readonly isWebsite?: boolean;
 
       private readonly reflection: BucketReflection;
 
@@ -2297,14 +2298,13 @@ export class Bucket extends BucketBase {
 
         this.node.defaultChild = cfnBucket;
         this.reflection = BucketReflection.of(this);
+        if (this.reflection.isWebsite !== undefined) {
+          this.isWebsite = this.reflection.isWebsite;
+        }
       }
 
       public get bucketWebsiteDomainName() {
         return this.reflection.bucketWebsiteDomainName;
-      }
-
-      public get isWebsite(): boolean | undefined {
-        return this.reflection.isWebsite;
       }
 
       public get disallowPublicAccess(): boolean | undefined {
@@ -2497,9 +2497,7 @@ export class Bucket extends BucketBase {
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
-  public get isWebsite(): boolean | undefined {
-    return this.reflection.isWebsite;
-  }
+  public readonly isWebsite?: boolean;
   public policy?: BucketPolicy;
 
   public replicationRoleArn?: string;
@@ -2583,6 +2581,9 @@ export class Bucket extends BucketBase {
     });
     this._resource = resource;
     this.reflection = BucketReflection.of(this);
+    if (this.reflection.isWebsite !== undefined) {
+      this.isWebsite = this.reflection.isWebsite;
+    }
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
