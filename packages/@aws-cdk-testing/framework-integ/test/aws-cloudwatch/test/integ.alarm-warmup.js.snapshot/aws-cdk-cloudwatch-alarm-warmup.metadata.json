@@ -1,0 +1,53 @@
+{
+  "/aws-cdk-cloudwatch-alarm-warmup": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "WarmUpConfiguration is a newly launched property not yet in the bundled schema"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/work/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)",
+        "    at <anonymous> (/work/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.alarm-warmup.js:41:27)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    }
+  ]
+}
