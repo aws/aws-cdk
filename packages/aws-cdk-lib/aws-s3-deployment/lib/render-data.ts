@@ -12,13 +12,18 @@ export interface Content {
  */
 class TokenToMarkerMapper implements ITokenMapper {
   markers: Record<string, any>;
+  private markerCount: number;
 
   constructor() {
     this.markers = {};
+    this.markerCount = 0;
   }
 
   mapToken(token: IResolvable) {
-    const newMarker = `<<marker:0xbaba:${Object.keys(this.markers).length}>>`;
+    // Derive the marker id from a running counter rather than `Object.keys(this.markers).length`.
+    // The latter materializes the full key array on every call, making renderData O(n^2) in the
+    // number of tokens. The counter produces identical ids in the same order.
+    const newMarker = `<<marker:0xbaba:${this.markerCount++}>>`;
     this.markers[newMarker] = token.toString();
     return newMarker;
   }
