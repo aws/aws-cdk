@@ -1,0 +1,37 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.8.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "DSQLEncryptionKeyTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0",
+              "stackTraces": [
+                "new DeployAssert (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+                "new IntegTestCase (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+                "new IntegTest (/Users/sanya/Documents/opensource/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+                "[eval]:22 (:)",
+                "...node internals...",
+                "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+                "...node internals..."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
