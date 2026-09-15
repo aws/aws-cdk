@@ -730,25 +730,29 @@ export class AuroraMysqlEngineVersion {
   /** Version "8.0.mysql_aurora.3.12.0". */
   public static readonly VER_3_12_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.12.0');
 
+  /** Version "8.4.mysql_aurora.8.4.7". */
+  public static readonly VER_8_4_7 = AuroraMysqlEngineVersion.builtIn_8_4('8.4.7');
+
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
    *
    * @param auroraMysqlFullVersion the full version string,
    *   for example "5.7.mysql_aurora.2.78.3.6"
    * @param auroraMysqlMajorVersion the major version of the engine,
-   *   defaults to "5.7"
+   *   defaults to "5.7" unless it can be inferred from the full version
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
     // Detects whether the auto-pause feature is supported.
     // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
-    const coercedVersion = semver.valid(semver.coerce(auroraMysqlMajorVersion));
-    const serverlessV2AutoPauseSupported = auroraMysqlMajorVersion === '8.0'
+    const majorVersion = auroraMysqlMajorVersion ?? auroraMysqlFullVersion.split('.mysql_aurora.')[0];
+    const coercedVersion = semver.valid(semver.coerce(majorVersion));
+    const serverlessV2AutoPauseSupported = majorVersion === '8.0'
       ? auroraMysqlFullVersion >= '8.0.mysql_aurora.3.08.0'
       : (coercedVersion != null && semver.satisfies(coercedVersion, '>=8.1'));
     return new AuroraMysqlEngineVersion(
-      auroraMysqlFullVersion, auroraMysqlMajorVersion,
+      auroraMysqlFullVersion, majorVersion,
       {
-        combineImportAndExportRoles: (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
+        combineImportAndExportRoles: (majorVersion ? majorVersion !== '5.7' : false),
         serverlessV2AutoPauseSupported,
       },
     );
@@ -766,9 +770,16 @@ export class AuroraMysqlEngineVersion {
     });
   }
 
+  private static builtIn_8_4(minorVersion: string): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(`8.4.mysql_aurora.${minorVersion}`, '8.4', {
+      combineImportAndExportRoles: true,
+      serverlessV2AutoPauseSupported: true,
+    });
+  }
+
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
   public readonly auroraMysqlFullVersion: string;
-  /** The major version of the engine. Currently, it's either "5.7", or "8.0". */
+  /** The major version of the engine. Currently, it's either "5.7", "8.0", or "8.4". */
   public readonly auroraMysqlMajorVersion: string;
   /**
    * Whether this version requires combining the import and export IAM Roles.
