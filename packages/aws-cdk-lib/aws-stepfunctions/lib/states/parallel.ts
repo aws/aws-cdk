@@ -5,8 +5,7 @@ import { renderJsonPath, State } from './state';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import type { CatchProps, IChainable, INextable, RetryProps } from '../types';
-import { QueryLanguage } from '../types';
+import { CatchProps, ICatchable, IChainable, INextable, QueryLanguage, RetryProps } from '../types';
 
 interface ParallelJsonPathOptions extends JsonPathCommonOptions {
   /**
@@ -78,7 +77,7 @@ export interface ParallelProps extends StateBaseProps, AssignableStateOptions, P
  *
  * The Result of a Parallel state is an array of the results of its substatemachines.
  */
-export class Parallel extends State implements INextable {
+export class Parallel extends State implements INextable, ICatchable {
   /**
    * Define a Parallel state using JSONPath in the state machine
    *
@@ -130,7 +129,7 @@ export class Parallel extends State implements INextable {
    * When a particular error occurs, execution will continue at the error
    * handler instead of failing the state machine execution.
    */
-  public addCatch(handler: IChainable, props: CatchProps = {}): Parallel {
+  public addCatch(handler: IChainable, props: CatchProps = {}): ICatchable {
     super._addCatch(handler.startState, props);
     return this;
   }
