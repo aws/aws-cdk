@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "492b49e3ff5065cbc8bd4c1b9d61a4dc910bf80c21ce4934522df1a4994cee00": {
+      "displayName": "aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ Template",
+      "source": {
+        "path": "aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5d254015": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "492b49e3ff5065cbc8bd4c1b9d61a4dc910bf80c21ce4934522df1a4994cee00.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
