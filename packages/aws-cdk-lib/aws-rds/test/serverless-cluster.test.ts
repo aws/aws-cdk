@@ -785,6 +785,26 @@ describe('serverless cluster', () => {
     });
   });
 
+  test('preserves a tokenized cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    const stack = testStack(app);
+    const clusterIdentifier = new cdk.CfnParameter(stack, 'ClusterIdentifier').valueAsString;
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      clusterIdentifier,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: { Ref: 'ClusterIdentifier' },
+    });
+  });
+
   test('does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
     // GIVEN
     const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
