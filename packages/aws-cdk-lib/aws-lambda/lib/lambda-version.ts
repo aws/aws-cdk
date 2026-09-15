@@ -8,6 +8,7 @@ import type { IFunction } from './function-base';
 import { QualifiedFunctionBase } from './function-base';
 import type { IVersionRef, VersionReference } from './lambda.generated';
 import { CfnVersion } from './lambda.generated';
+import { copyOptionalFunctionAttributes } from './private/copy-function-attributes';
 import { addAlias } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
@@ -163,11 +164,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionName = `${lambda.functionName}:${version}`;
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
-      public readonly role = lambda.role;
       public readonly architecture = lambda.architecture;
 
       protected readonly qualifier = version;
       protected readonly canCreatePermissions = this._isStackAccount();
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        copyOptionalFunctionAttributes(this);
+      }
 
       public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
@@ -196,11 +201,15 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionName = `${attrs.lambda.functionName}:${attrs.version}`;
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
-      public readonly role = attrs.lambda.role;
       public readonly architecture = attrs.lambda.architecture;
 
       protected readonly qualifier = attrs.version;
       protected readonly canCreatePermissions = this._isStackAccount();
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        copyOptionalFunctionAttributes(this);
+      }
 
       public addAlias(name: string, opts: AliasOptions = {}): Alias {
         return addAlias(this, this, name, opts);
@@ -239,6 +248,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
+    copyOptionalFunctionAttributes(this);
 
     if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
       throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
@@ -282,10 +292,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   public get grantPrincipal() {
     return this.lambda.grantPrincipal;
-  }
-
-  public get role() {
-    return this.lambda.role;
   }
 
   @MethodMetadata()

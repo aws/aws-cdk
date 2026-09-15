@@ -720,3 +720,26 @@ describe('alias', () => {
     })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
   });
 });
+
+describe('role / tenancyConfig / IAlias assignability (issue #37996)', () => {
+  // Regression coverage: under `exactOptionalPropertyTypes`, Alias must stay
+  // assignable to the optional `IFunction.role` / `IFunction.tenancyConfig`. The
+  // IAlias annotation is the type-level guard; the runtime expectations confirm
+  // the getter -> readonly-field refactor preserves the delegated values.
+  test('a concrete Alias is assignable to IAlias and inherits role + tenancyConfig from the function', () => {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+    const alias: lambda.IAlias = new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+    });
+
+    expect(alias.role).toBe(fn.role);
+    expect(alias.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+});
