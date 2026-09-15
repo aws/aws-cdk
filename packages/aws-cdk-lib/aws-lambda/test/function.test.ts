@@ -3517,6 +3517,142 @@ describe('function', () => {
     });
   });
 
+  describe('S3 Files DirectS3Read configuration', () => {
+    function createS3FilesStack(makeOptions?: (bucket: s3.IBucket) => lambda.S3FilesOptions) {
+      const stack = new cdk.Stack();
+      // TODO: Remove this acknowledge once the bundled CFN validation schema includes S3FilesConfig
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'S3FilesConfig is a newly launched property not yet in the bundled schema' });
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const fileSystem = new s3files.CfnFileSystem(stack, 'S3FilesFs', {
+        bucket: bucket.bucketArn,
+        roleArn: 'arn:aws:iam::123456789012:role/S3FilesRole',
+      });
+
+      const sg = new ec2.SecurityGroup(stack, 'MountTargetSG', { vpc });
+
+      new s3files.CfnMountTarget(stack, 'MountTarget0', {
+        fileSystemId: fileSystem.attrFileSystemId,
+        subnetId: vpc.privateSubnets[0].subnetId,
+        securityGroups: [sg.securityGroupId],
+      });
+
+      const accessPoint = new s3files.CfnAccessPoint(stack, 'AccessPoint', {
+        fileSystemId: fileSystem.attrFileSystemId,
+      });
+
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_12,
+        code: lambda.Code.fromInline('def handler(event, context): pass'),
+        filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/data', makeOptions?.(bucket)),
+      });
+
+      return { stack, bucket, accessPoint };
+    }
+
+    test.each([
+      ['AUTO', lambda.DirectS3Read.auto()],
+      ['DISABLED', lambda.DirectS3Read.disabled()],
+    ])('DirectS3Read.%s renders S3FilesConfig in template', (expected, mode) => {
+      const { stack } = createS3FilesStack(() => ({ directS3Read: mode }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({
+            S3FilesConfig: {
+              DirectS3Read: expected,
+            },
+          }),
+        ],
+      });
+    });
+
+    test('DirectS3Read.enabled renders ENABLED in S3FilesConfig', () => {
+      const { stack } = createS3FilesStack((bucket) => ({ directS3Read: lambda.DirectS3Read.enabled(bucket) }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({
+            S3FilesConfig: {
+              DirectS3Read: 'ENABLED',
+            },
+          }),
+        ],
+      });
+    });
+
+    test('no S3FilesConfig is rendered when directS3Read is omitted', () => {
+      const { stack } = createS3FilesStack();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({
+            S3FilesConfig: Match.absent(),
+          }),
+        ],
+      });
+    });
+
+    test('DirectS3Read.enabled(bucket) grants s3:GetObject and s3:GetObjectVersion on the bucket objects', () => {
+      const { stack, bucket } = createS3FilesStack((b) => ({
+        directS3Read: lambda.DirectS3Read.enabled(b),
+      }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: ['s3:GetObject', 's3:GetObjectVersion'],
+              Resource: stack.resolve(bucket.arnForObjects('*')),
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('DirectS3Read.enabledWithoutGrant() renders ENABLED and adds no S3 read permissions', () => {
+      const { stack } = createS3FilesStack(() => ({
+        directS3Read: lambda.DirectS3Read.enabledWithoutGrant(),
+      }));
+
+      // The S3FilesConfig is still rendered ...
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          Match.objectLike({ S3FilesConfig: { DirectS3Read: 'ENABLED' } }),
+        ],
+      });
+      // ... but no s3:GetObject grant was added.
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyDocument: {
+            Statement: Match.not(Match.arrayWith([
+              Match.objectLike({ Action: Match.arrayWith(['s3:GetObject']) }),
+            ])),
+          },
+        },
+      });
+    });
+
+    test('DirectS3Read.auto() does not grant S3 read permissions', () => {
+      const { stack } = createS3FilesStack(() => ({
+        directS3Read: lambda.DirectS3Read.auto(),
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyDocument: {
+            Statement: Match.not(Match.arrayWith([
+              Match.objectLike({ Action: Match.arrayWith(['s3:GetObject']) }),
+            ])),
+          },
+        },
+      });
+    });
+  });
+
   describe('code config', () => {
     class MyCode extends lambda.Code {
       public readonly isInline: boolean;
