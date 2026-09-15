@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_ecr"
+    },
+    "ruby": {
+      "module": "AWSCDK::ECR"
     }
   }
 }
