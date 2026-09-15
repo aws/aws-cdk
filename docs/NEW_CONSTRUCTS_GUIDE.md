@@ -35,7 +35,7 @@ comprehensive opinionated experience for a service.
 
 ## Do My Constructs Belong in aws-cdk-lib?
 
-Users of the aws-cdk can use constructs from a number of packages within their application. `aws-cdk-lib` and/or any of the other constructs vended from npm, maven, pypi, nuget, or GitHub (for go) that are publicly available are indexed and searchable on [Construct Hub](constructs.dev). Anyone can create and publish new constructs that will be indexed on Construct Hub using repositories and packages that they own. However, if you believe your constructs should be part of the core aws construct library, here are some guidelines that they must adhere to.
+Users of the aws-cdk can use constructs from a number of packages within their application. `aws-cdk-lib` and/or any of the other constructs vended from npm, maven, pypi, nuget, or GitHub (for go) that are publicly available are indexed and searchable on [Construct Hub](https://constructs.dev). Anyone can create and publish new constructs that will be indexed on Construct Hub using repositories and packages that they own. However, if you believe your constructs should be part of the core aws construct library, here are some guidelines that they must adhere to.
 
 1. They meet the definition of [L2 constructs](https://github.com/aws/aws-cdk/blob/e4fdb0217edd7ecccdd4cbc20de958e3ba1a2349/docs/DESIGN_GUIDELINES.md?plain=1#L139-L147)
 1. They follow the relevant [design guidelines](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
