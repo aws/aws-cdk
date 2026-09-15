@@ -1,0 +1,26 @@
+{
+  "version": "50.0.0",
+  "artifacts": {
+    "MultiAccountKmsSourceStackV2": {
+      "type": "aws:cloudformation:stack",
+      "properties": {
+        "templateFile": "MultiAccountKmsSourceStackV2.template.json"
+      },
+      "displayName": "MultiAccountKmsSourceStackV2"
+    },
+    "MultiAccountKmsReplicaStackV2": {
+      "type": "aws:cloudformation:stack",
+      "properties": {
+        "templateFile": "MultiAccountKmsReplicaStackV2.template.json"
+      },
+      "displayName": "MultiAccountKmsReplicaStackV2"
+    },
+    "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940": {
+      "type": "aws:cloudformation:stack",
+      "properties": {
+        "templateFile": "MultiAccountKmsReplicaIntegTestV2DefaultTestDeployAssert93398940.template.json"
+      },
+      "displayName": "MultiAccountKmsReplicaIntegTestV2/DefaultTest/DeployAssert"
+    }
+  }
+}
