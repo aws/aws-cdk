@@ -1,0 +1,127 @@
+{
+ "Resources": {
+  "ProvisionedStream83AB28ED": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "MaxRecordSizeInKiB": 10240,
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "PROVISIONED"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "OnDemandStream73A5C516": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "MaxRecordSizeInKiB": 1536,
+    "RetentionPeriodHours": 24,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    },
+    "StreamModeDetails": {
+     "StreamMode": "ON_DEMAND"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefProvisionedStream83AB28ED989AFF71": {
+   "Value": {
+    "Ref": "ProvisionedStream83AB28ED"
+   },
+   "Export": {
+    "Name": "kinesis-stream-max-record-size-stack:ExportsOutputRefProvisionedStream83AB28ED989AFF71"
+   }
+  },
+  "ExportsOutputRefOnDemandStream73A5C5161D77A6AF": {
+   "Value": {
+    "Ref": "OnDemandStream73A5C516"
+   },
+   "Export": {
+    "Name": "kinesis-stream-max-record-size-stack:ExportsOutputRefOnDemandStream73A5C5161D77A6AF"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

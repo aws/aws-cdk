@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ-kinesis-stream-max-record-size/DefaultTest": {
+      "stacks": [
+        "kinesis-stream-max-record-size-stack"
+      ],
+      "assertionStack": "integ-kinesis-stream-max-record-size/DefaultTest/DeployAssert",
+      "assertionStackName": "integkinesisstreammaxrecordsizeDefaultTestDeployAssert3F5FAD01"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
