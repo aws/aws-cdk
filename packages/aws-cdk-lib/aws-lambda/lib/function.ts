@@ -1109,7 +1109,7 @@ export class Function extends FunctionBase {
 
     if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
       && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
-      throw new ValidationError(lit`EphemeralStorageOutOfRange`, `Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
+      throw new ValidationError(lit`EphemeralStorageOutOfRange`, `Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize.toMebibytes()} MiB.`, this);
     }
 
     const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;

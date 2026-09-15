@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LambdaEphemeralStorageValidationTest/DefaultTest": {
+      "stacks": [
+        "LambdaEphemeralStorageValidationStack"
+      ],
+      "assertionStack": "LambdaEphemeralStorageValidationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEphemeralStorageValidationTestDefaultTestDeployAssert7C4CD0C7"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
