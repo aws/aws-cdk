@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.269.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.268.0-alpha.0...v2.269.0-alpha.0) (2026-09-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** Glue job constructs now reject construct-managed and Glue-reserved
+arguments passed through `defaultArguments`. Previously, a managed argument set via
+`defaultArguments` was silently honored in `SparkJob` and `PythonShellJob` (customer
+value won over the construct default) and silently ignored in `RayJob` (construct
+default won). Both behaviors let a caller bypass the construct's security and
+observability defaults with no error. Passing any of the following through
+`defaultArguments` now throws a `ValidationError` at synthesis time:
+* construct-managed arguments — `--enable-continuous-cloudwatch-log`,
+  `--continuous-log-logGroup`, `--continuous-log-logStreamPrefix`,
+  `--continuous-log-conversionPattern`, `--enable-continuous-log-filter`,
+  `--enable-metrics`, `--enable-observability-metrics`, `--enable-spark-ui`,
+  `--spark-event-logs-path`, `--job-language`, `--class`, `--extra-jars`,
+  `--user-jars-first`, `--extra-py-files`, `--extra-files`, `library-set`
+* Glue-reserved arguments — `--debug`, `--mode`, `--JOB_NAME`, `--endpoint`
+
+A managed argument is rejected whether or not the current configuration emits it, so a
+disabled feature (e.g. `enableMetrics: false`) cannot be re-enabled through
+`defaultArguments`. Configure these through their dedicated props instead
+(`continuousLogging`, `enableMetrics`, `enableObservabilityMetrics`, `sparkUI`,
+`className`, `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles`). For
+example, replace `defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`
+with `continuousLogging: { enabled: false }`. Arguments without a dedicated prop (e.g.
+`--enable-glue-datacatalog`) are unaffected and remain settable via `defaultArguments`.
+
+The `checkNoReservedArgs(defaultArguments?)` method on the `Job` base class was removed.
+It is replaced by two protected members: `setManagedArgument(key, value?)`, which each
+job class calls to declare (and, when a value is present, emit) a managed argument, and
+`mergeDefaultArguments(defaultArguments?)`, which validates the caller-supplied
+`defaultArguments` against the accumulated reserved set and returns the merged map.
+* **route53resolver-alpha:** `FirewallRuleGroupAssociation` now honors the previously-ignored `mutationProtection` and `name` props. Stacks that set `mutationProtection: true` will enable mutation protection on redeploy (which blocks further CloudFormation update/delete until it is set back to false); stacks that set `name` will write it to the template, which may replace the association.
+* **glue-alpha:** trigger `Action` and `Condition` are no longer plain objects — use `Action.job(...)` / `Action.crawler(...)` and `Condition.job(...)` / `Condition.crawler(...)`. Jobs are referenced via `IJobRef` and crawlers via `ICrawlerRef` (a `CfnCrawler` instance or `CfnCrawler.fromCrawlerName(...)`) instead of a `CfnCrawler` field or crawler-name string; `IJob` now extends the generated `IJobRef`. `addDailyScheduledTrigger`/`addWeeklyScheduledTrigger`/`addCustomScheduledTrigger` are replaced by `addScheduledTrigger(id, { schedule, ... })` (use `TriggerSchedule.daily()`/`weekly()`/`cron(...)`). `addNotifyEventTrigger` is renamed `addEventTrigger` (`NotifyEventTriggerOptions` → `EventTriggerOptions`). All `addXxxTrigger` methods now return `ITriggerRef` instead of `CfnTrigger`.
+* **glue-alpha:** PartitionProjectionConfiguration's variant fields (integerRange, dateRange, interval, digits, format, intervalUnit, values) are no longer public; DATE projection now takes `step: { interval, intervalUnit }` instead of top-level `interval`/`intervalUnit`.
+* **glue-alpha:** ConnectionOptions no longer has `subnet`, `vpc`, or `vpcSubnets`; use `network: ConnectionNetwork.subnet(...)` or `network: ConnectionNetwork.vpc(...)` instead.
+
+### Features
+
+* **glue-alpha:** ensure job parameters consistency ([#38480](https://github.com/aws/aws-cdk/issues/38480)) ([bc7dc0c](https://github.com/aws/aws-cdk/commit/bc7dc0c30ab1f331c2ef7c9e66337ab7ea50f3bd))
+* **glue-alpha:** model Connection VPC placement as a value object ([#38729](https://github.com/aws/aws-cdk/issues/38729)) ([f72e9fe](https://github.com/aws/aws-cdk/commit/f72e9feb91de3e6de70d667641cd848f4d297185))
+* **glue-alpha:** model partition projection variants as internal state ([#38726](https://github.com/aws/aws-cdk/issues/38726)) ([16527cd](https://github.com/aws/aws-cdk/commit/16527cd788541825e10e9238e2f322bfaca03f6f))
+* **glue-alpha:** overhaul the workflow trigger API ([#38579](https://github.com/aws/aws-cdk/issues/38579)) ([c8f917d](https://github.com/aws/aws-cdk/commit/c8f917d0d636df2daf3abcd223997709d96bc433))
+
+
+### Bug Fixes
+
+* **route53resolver-alpha:** association silently ignored mutationProtection and name ([#38795](https://github.com/aws/aws-cdk/issues/38795)) ([5ab40b2](https://github.com/aws/aws-cdk/commit/5ab40b27c4c4181d1b44f9e5a1b64666e57c760f))
+
+## [2.268.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.267.0-alpha.0...v2.268.0-alpha.0) (2026-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** `DataQualityTargetTable`'s constructor is removed — use `DataQualityTargetTable.fromTable(database, table)` or `fromTableName(database, tableName)`; `IDatabase` now extends `IDatabaseRef`.
+* **glue-alpha**: `DataQualityRulesetProps.clientToken` is removed; use the `CfnDataQualityRuleset` L1 for request-level idempotency.
+* **glue-alpha:** S3Table.clientSideEncryptionKey is now kms.IKeyRef instead of kms.IKey.
+* **glue-alpha:** `DataQualityRulesetProps.rulesetName` is now required. `AWS::Glue::DataQualityRuleset` made `Name` a required property, so the name can no longer be left for CloudFormation to generate.
+
+### Features
+
+* **glue-alpha:** reference-typed DataQualityTargetTable and remove clientToken ([#38730](https://github.com/aws/aws-cdk/issues/38730)) ([c8fafbd](https://github.com/aws/aws-cdk/commit/c8fafbddbf651176f02f7d9b6cc8a8707a959339))
+
+
+### Code Refactoring
+
+* **glue-alpha:** use kms.IKeyRef for KMS key inputs where possible ([#38725](https://github.com/aws/aws-cdk/issues/38725)) ([604ac23](https://github.com/aws/aws-cdk/commit/604ac236ed6d80d3f2fc03f7882414ed61ab8f3a))
+
+## [2.267.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.266.0-alpha.0...v2.267.0-alpha.0) (2026-08-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* **glue-alpha:** schema `Type` is now an opaque class; construct column types via the `Schema` factories or `Schema.custom(...)` rather than `{ isPrimitive, inputString }` literals. `StorageParameter.custom(key, value)` requires a `string` value, and `StorageParameter.writeKmsKeyId` takes a `kms.IKey` instead of a string.
+* **glue-alpha:** `S3TableProps.bucket`/`encryption`/`encryptionKey` are removed. Use `storage: S3TableStorage.managedBucket(S3TableEncryption.kms(key?))` / `S3TableStorage.fromBucket(bucket)` and `clientSideEncryption: TableClientSideEncryption.kms(key?)`. `S3Table.encryption`/`encryptionKey` are removed (`clientSideEncryptionKey` exposes the client-side key; read `bucket.encryptionKey` for server-side). The `TableEncryption` enum and the deprecated `Table`/`TableProps` are removed — use `S3Table`.
+
+### Features
+
+* **glue-alpha:** add a typed secret input to Connection ([#38585](https://github.com/aws/aws-cdk/issues/38585)) ([ede4a1c](https://github.com/aws/aws-cdk/commit/ede4a1c730af62df4df4b58496cdc37668ca3ad5))
+* **glue-alpha:** add subnet selection to `Connection` ([#38561](https://github.com/aws/aws-cdk/issues/38561)) ([f9d7eac](https://github.com/aws/aws-cdk/commit/f9d7eaca850773a16deb39cd2a2a789bb898264a))
+* **glue-alpha:** model S3Table storage/encryption as value objects ([#38591](https://github.com/aws/aws-cdk/issues/38591)) ([9990e16](https://github.com/aws/aws-cdk/commit/9990e16da78f19ce3bd5a015c3b67c31bbaf2881))
+* **glue-alpha:** opaque Schema Type with Schema.custom, and stronger StorageParameter types ([#38592](https://github.com/aws/aws-cdk/issues/38592)) ([5c45eb0](https://github.com/aws/aws-cdk/commit/5c45eb0ae65cc0f0bfe4fd6d248b62bd4c398868))
+* **msk-alpha:** support Kafka 4.2 ([#38323](https://github.com/aws/aws-cdk/issues/38323)) ([97b181c](https://github.com/aws/aws-cdk/commit/97b181c58367e38bced08c031c5d0bbeb98dd84b))
+* **s3tables-alpha:** add storage class configuration support  ([#37339](https://github.com/aws/aws-cdk/issues/37339)) ([63ccf6d](https://github.com/aws/aws-cdk/commit/63ccf6d0248b353dc240c91a907d9ff27487b92d))
+
+
+### Bug Fixes
+
+* **glue-alpha:** validate that DATE partition projection interval is set when required ([#38594](https://github.com/aws/aws-cdk/issues/38594)) ([0e2b582](https://github.com/aws/aws-cdk/commit/0e2b582af1c5ac478e36cccc55523873302bf866))
+* **lambda-python-alpha:** escape Docker bundling command arguments ([#38583](https://github.com/aws/aws-cdk/issues/38583)) ([f7ce07b](https://github.com/aws/aws-cdk/commit/f7ce07beb41b7fd0214a647b5a009f8706339105))
+
 ## [2.266.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.265.0-alpha.0...v2.266.0-alpha.0) (2026-08-19)
 
 

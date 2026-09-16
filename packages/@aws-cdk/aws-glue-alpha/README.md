@@ -3,17 +3,15 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-glue.
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
@@ -71,7 +69,7 @@ for more granular details.
 #### ETL Jobs
 
 ETL jobs support pySpark and Scala languages, for which there are separate but
-similar constructors. ETL jobs default to the G2 worker type, but you can
+similar constructors. ETL jobs default to the G1 worker type, but you can
 override this default with other supported worker type values (G1, G2, G4
 and G8). ETL jobs defaults to Glue version 4.0, which you can override to 3.0.
 The following ETL features are enabled by default:
@@ -80,6 +78,17 @@ The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
 `sparkUI` prop.
 You can find more details about version, worker type and other features in
 [Glue's public documentation](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html).
+
+> **Note on continuous logging and encryption:** Because continuous logging is
+> enabled by default, job driver and executor stdout/stderr are streamed to
+> CloudWatch. Unless you attach a [`SecurityConfiguration`](#securityconfiguration)
+> with `cloudWatchEncryption`, these logs are written to the account-shared,
+> default Glue log group (`/aws-glue/jobs/logs-v2/`), which is **not** encrypted
+> with a customer-managed key. Since job logs can contain sensitive runtime data
+> (SQL statements, row values, error stack traces), attach a `SecurityConfiguration`
+> with `cloudWatchEncryption` for regulated workloads. The construct emits a
+> synthesis-time warning when continuous logging is on and no `SecurityConfiguration`
+> is attached.
 
 Reference the pyspark-etl-jobs.test.ts and scalaspark-etl-jobs.test.ts unit tests
 for examples of required-only and optional job parameters when creating these
@@ -140,7 +149,7 @@ Streaming jobs are similar to ETL jobs, except that they perform ETL on data
 streams using the Apache Spark Structured Streaming framework. Some Spark
 job features are not available to Streaming ETL jobs. They support Scala
 and pySpark languages. PySpark streaming jobs run on Python 3. It
-defaults to the G2 worker type and Glue 4.0, both of which you can override.
+defaults to the G1 worker type and Glue 4.0, both of which you can override.
 The following best practice features are enabled by default:
 `—enable-metrics, —enable-continuous-cloudwatch-log`.
 The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
@@ -197,7 +206,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
 
 The flexible execution class is appropriate for non-urgent jobs such as
 pre-production jobs, testing, and one-time data loads. Flexible jobs default
-to Glue version 5.0 and worker type `G_2X`. The following best practice
+to Glue version 5.0 and worker type `G_1X`. The following best practice
 features are enabled by default:
 `—enable-metrics, —enable-continuous-cloudwatch-log`
 The Spark UI (`—enable-spark-ui`) is off by default; enable it by setting the
@@ -256,8 +265,9 @@ Python shell jobs support a Python version that depends on the AWS Glue
 version you use. These can be used to schedule and run tasks that don't
 require an Apache Spark environment. Python shell jobs default to
 Python 3.9 and a MaxCapacity of `0.0625`. Python 3.9 supports pre-loaded
-analytics libraries using the `library-set=analytics` flag, which is
-enabled by default.
+analytics libraries, enabled by default (`librarySet: glue.LibrarySet.ANALYTICS`).
+Set `librarySet: glue.LibrarySet.NONE` when your libraries are custom or
+conflict with the pre-installed ones.
 
 Reference the pyspark-shell-job.test.ts unit tests for examples of 
 required-only and optional job parameters when creating these types of jobs.
@@ -342,6 +352,51 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
 
 This feature is available for all Spark job types (ETL, Streaming, Flex).
 
+### Job Arguments
+
+Glue jobs are configured through a map of name-value arguments (`DefaultArguments`). This construct
+manages several of these arguments on your behalf and exposes each one through a dedicated,
+strongly-typed prop:
+
+| Managed argument(s)                                                      | Prop                                                            |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------|
+| `--enable-continuous-cloudwatch-log`, `--continuous-log-*`               | `continuousLogging`                                             |
+| `--enable-metrics`                                                       | `enableMetrics`                                                 |
+| `--enable-observability-metrics`                                         | `enableObservabilityMetrics`                                    |
+| `--enable-spark-ui`, `--spark-event-logs-path`                           | `sparkUI`                                                       |
+| `--job-language`, `--class`                                              | job class / `className`                                         |
+| `--extra-jars`, `--user-jars-first`, `--extra-py-files`, `--extra-files` | `extraJars`, `extraJarsFirst`, `extraPythonFiles`, `extraFiles` |
+| `library-set`                                                            | `librarySet` (Python Shell)                                     |
+
+The `defaultArguments` prop is the escape hatch for arguments this construct does **not** model.
+Use it for any argument without a dedicated prop:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+
+new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+  role,
+  script,
+  defaultArguments: {
+    // an argument this construct does not manage
+    '--enable-glue-datacatalog': 'true',
+  },
+});
+```
+
+To keep a single, unambiguous way to express each intent, setting a **construct-managed** argument
+(any argument in the table above) or a **Glue-reserved** argument (`--debug`, `--mode`,
+`--JOB_NAME`, `--endpoint`) through `defaultArguments` throws at synthesis time. This holds even
+when the feature is turned off — for example, `enableMetrics: false` combined with
+`defaultArguments: { '--enable-metrics': '' }` throws rather than silently re-enabling metrics.
+Configure managed arguments through their dedicated prop instead — for example, use
+`continuousLogging: { enabled: false }` rather than
+`defaultArguments: { '--enable-continuous-cloudwatch-log': 'false' }`.
+
 ### Enable Job Run Queuing
 
 AWS Glue job queuing monitors your account level quotas and limits. If quotas or limits are insufficient to start a Glue job run, AWS Glue will automatically queue the job and wait for limits to free up. Once limits become available, AWS Glue will retry the job run. Glue jobs will queue for limits like max concurrent job runs per account, max concurrent Data Processing Units (DPU), and resource unavailable due to IP address exhaustion in Amazon Virtual Private Cloud (Amazon VPC).
@@ -405,7 +460,7 @@ const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
 // Create a workflow and add a trigger that runs the job
 const workflow = new glue.Workflow(stack, 'Workflow');
 workflow.addOnDemandTrigger('OnDemandTrigger', {
-  actions: [{ job }],
+  actions: [glue.Action.job(job)],
 });
 ```
 
@@ -418,21 +473,35 @@ actions list using the job or crawler objects using conditional types.
 
 #### **2. Scheduled Triggers**
 
-You can create scheduled triggers using cron expressions. This construct
-provides daily and weekly convenience functions,
-as well as a custom function that allows you to create your own
-custom timing using the [existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
-without having to build your own cron expressions. The L2 extracts
-the expression that Glue requires from the Schedule object. The constructor
-takes an optional description and a list of jobs or crawlers as actions.
+Use `addScheduledTrigger` with a `TriggerSchedule` to fire on a cron schedule.
+`TriggerSchedule.daily()` and `TriggerSchedule.weekly()` are convenience
+factories; `TriggerSchedule.cron(...)` lets you build any schedule from the
+[existing event Schedule class](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events.Schedule.html)
+without writing raw cron expressions. The L2 extracts the expression that Glue
+requires from the `TriggerSchedule`.
 
-#### **3. Notify  Event Triggers**
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const stack: cdk.Stack;
+declare const role: iam.IRole;
+declare const script: glue.Code;
+const job = new glue.PySparkEtlJob(stack, 'Job', { role, script });
+const workflow = new glue.Workflow(stack, 'Workflow');
 
-There are two types of notify event triggers: batching and non-batching.
-For batching triggers, you must specify `BatchSize`. For non-batching
-triggers, `BatchSize` defaults to 1. For both triggers, `BatchWindow`
-defaults to 900 seconds, but you can override the window to align with
-your workload's requirements.
+workflow.addScheduledTrigger('WeeklyTrigger', {
+  actions: [glue.Action.job(job)],
+  schedule: glue.TriggerSchedule.weekly(),
+});
+```
+
+#### **3. Event Triggers**
+
+Use `addEventTrigger` for EventBridge event-based triggers. There are two types:
+batching and non-batching. For batching triggers, you must specify `batchSize`.
+For non-batching triggers, `batchSize` defaults to 1. For both, `batchWindow`
+defaults to 900 seconds, but you can override the window to align with your
+workload's requirements.
 
 #### **4. Conditional Triggers**
 
@@ -445,18 +514,22 @@ A `Connection` allows Glue jobs, crawlers and development endpoints to access
 certain types of data stores.
 
 * **Secrets Management**
-    You must specify JDBC connection credentials in Secrets Manager and
-    provide the Secrets Manager Key name as a property to the job connection.
+    Manage JDBC connection credentials in Secrets Manager and pass the secret
+    to the connection via the `secret` property (see the example below), rather
+    than embedding credentials in `properties`.
 
 * **Networking - the CDK determines the best fit subnet for Glue connection
 configuration**
-    The prior version of the glue-alpha-module requires the developer to
-    specify the subnet of the Connection when it’s defined. Now, you can still
-    specify the specific subnet you want to use, but are no longer required
-    to. You are only required to provide a VPC and either a public or private
-    subnet selection. Without a specific subnet provided, the L2 leverages the
-    existing [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
-    library to make the best choice selection for the subnet.
+    Configure VPC placement through the `network` property, built with
+    `ConnectionNetwork.subnet(subnet)` to pin a specific subnet, or
+    `ConnectionNetwork.vpc(vpc, vpcSubnets?)` to let the L2 select one via the
+    existing
+    [EC2 Subnet Selection](https://docs.aws.amazon.com/cdk/api/v2/python/aws_cdk.aws_ec2/SubnetSelection.html)
+    library. A Glue connection targets a single subnet, so the first subnet of
+    the selection is used. The two factories are mutually exclusive, so a subnet
+    and a VPC can never be combined.
+
+Pin the connection to a specific subnet:
 
 ```ts
 declare const securityGroup: ec2.SecurityGroup;
@@ -466,11 +539,24 @@ new glue.Connection(this, 'MyConnection', {
   // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
   // The VPC subnet which contains the data source
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
 });
 ```
 
-For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. To use Secret, specify `SECRET_ID` in `properties` like the following code. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
+Or let the CDK select a subnet from a VPC:
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+declare const vpc: ec2.Vpc;
+new glue.Connection(this, 'MyConnection', {
+  type: glue.ConnectionType.NETWORK,
+  securityGroups: [securityGroup],
+  // vpcSubnets is optional - defaults to private subnets
+  network: glue.ConnectionNetwork.vpc(vpc, { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }),
+});
+```
+
+For RDS `Connection` by JDBC, it is recommended to manage credentials using AWS Secrets Manager. Pass the secret via the `secret` property: Glue reads the credentials at runtime through the connection's `SECRET_ID`, so the secret value never enters the template. Note that in this case, the subnet must have a route to the AWS Secrets Manager VPC endpoint or to the AWS Secrets Manager endpoint through a NAT gateway.
 
 ```ts
 declare const securityGroup: ec2.SecurityGroup;
@@ -479,19 +565,19 @@ declare const db: rds.DatabaseCluster;
 new glue.Connection(this, "RdsConnection", {
   type: glue.ConnectionType.JDBC,
   securityGroups: [securityGroup],
-  subnet,
+  network: glue.ConnectionNetwork.subnet(subnet),
+  secret: db.secret,
   properties: {
     JDBC_CONNECTION_URL: `jdbc:mysql://${db.clusterEndpoint.socketAddress}/databasename`,
     JDBC_ENFORCE_SSL: "false",
-    SECRET_ID: db.secret!.secretName,
   },
 });
 ```
 
-Connection `properties` are emitted verbatim into the CloudFormation template, so
-any credential placed there in plaintext is stored in plaintext in the template,
-`cdk.out`, and source control. Reference a Secrets Manager secret through
-`SECRET_ID` (as above) instead. If a property key looks like a credential (for
+Prefer the `secret` property over placing credentials in `properties`. Connection
+`properties` are emitted verbatim into the CloudFormation template, so any
+credential placed there in plaintext is stored in plaintext in the template,
+`cdk.out`, and source control. If a property key looks like a credential (for
 example `PASSWORD`, `SECRET`, or `TOKEN`) and holds a plaintext literal, the
 construct emits a synthesis-time warning.
 
@@ -724,13 +810,13 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
-By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
+By default, a S3 bucket will be created to store the table's data but you can bring your own with `S3TableStorage.fromBucket` and set an `s3Prefix`:
 
 ```ts
 declare const myBucket: s3.Bucket;
 declare const myDatabase: glue.Database;
 new glue.S3Table(this, 'MyTable', {
-  bucket: myBucket,
+  storage: glue.S3TableStorage.fromBucket(myBucket),
   s3Prefix: 'my-table/',
   // ...
   database: myDatabase,
@@ -928,8 +1014,9 @@ new glue.S3Table(this, 'MyTable', {
       min: '2020-01-01',
       max: '2023-12-31',
       format: 'yyyy-MM-dd',
-      interval: 1,  // optional, defaults to 1
-      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+      // `step` bundles interval + unit (supply both or neither). Optional at day
+      // precision or coarser; required when the format is sub-day (e.g. hours).
+      step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
     }),
   },
 });
@@ -1081,10 +1168,11 @@ Data Quality Definition Language (DQDL) — that are evaluated against a table i
 the Data Catalog.
 
 ```ts
+declare const database: glue.IDatabase;
 new glue.DataQualityRuleset(this, 'MyRuleset', {
   rulesetName: 'my_ruleset',
   dqdl: glue.Dqdl.fromString('Rules = [ RowCount > 100, IsComplete "order_id" ]'),
-  targetTable: new glue.DataQualityTargetTable('my_database', 'my_table'),
+  targetTable: glue.DataQualityTargetTable.fromTableName(database, 'my_table'),
 });
 ```
 
@@ -1095,16 +1183,17 @@ full rule syntax.
 
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
-When the table creates its own S3 bucket (i.e. you do not pass an explicit `bucket`), that bucket enforces SSL: a bucket policy denies any request made over plain HTTP. If you provide your own bucket, enabling `enforceSSL` on it is your responsibility.
+When the table creates its own S3 bucket (`S3TableStorage.managedBucket`, the default), that bucket enforces SSL: a bucket policy denies any request made over plain HTTP. If you bring your own bucket with `S3TableStorage.fromBucket`, enabling `enforceSSL` on it is your responsibility.
 
-You can enable encryption on a Table's data:
+Server-side encryption applies only to a bucket the table manages. Choose it with
+`storage: glue.S3TableStorage.managedBucket(...)`:
 
 * [S3Managed](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) - (default) Server side encryption (`SSE-S3`) with an Amazon S3-managed key.
 
 ```ts
 declare const myDatabase: glue.Database;
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.S3_MANAGED,
+  storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.s3Managed()),
   // ...
   database: myDatabase,
   columns: [{
@@ -1121,7 +1210,7 @@ new glue.S3Table(this, 'MyTable', {
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.KMS,
+  storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kms()),
   // ...
   database: myDatabase,
   columns: [{
@@ -1133,8 +1222,7 @@ new glue.S3Table(this, 'MyTable', {
 
 // with an explicit KMS key
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.KMS,
-  encryptionKey: new kms.Key(this, 'MyKey'),
+  storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kms(new kms.Key(this, 'MyKey'))),
   // ...
   database: myDatabase,
   columns: [{
@@ -1150,7 +1238,7 @@ new glue.S3Table(this, 'MyTable', {
 ```ts
 declare const myDatabase: glue.Database;
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.KMS_MANAGED,
+  storage: glue.S3TableStorage.managedBucket(glue.S3TableEncryption.kmsManaged()),
   // ...
   database: myDatabase,
   columns: [{
@@ -1161,13 +1249,13 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
-* [ClientSideKms](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro) - Client-side encryption (`CSE-KMS`) with an AWS KMS Key managed by the account owner.
+Client-side encryption ([CSE-KMS](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html#client-side-encryption-kms-managed-master-key-intro)) is independent of the bucket's server-side encryption and works with either a managed or an existing bucket. Configure it with `clientSideEncryption`:
 
 ```ts
 declare const myDatabase: glue.Database;
 // KMS key is created automatically
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.CLIENT_SIDE_KMS, 
+  clientSideEncryption: glue.TableClientSideEncryption.kms(),
   // ...
   database: myDatabase,
   columns: [{
@@ -1179,8 +1267,7 @@ new glue.S3Table(this, 'MyTable', {
 
 // with an explicit KMS key
 new glue.S3Table(this, 'MyTable', {
-  encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-  encryptionKey: new kms.Key(this, 'MyKey'),
+  clientSideEncryption: glue.TableClientSideEncryption.kms(new kms.Key(this, 'MyKey')),
   // ...
   database: myDatabase,
   columns: [{
@@ -1191,7 +1278,7 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
-*Note: you cannot provide a `Bucket` when creating the `S3Table` if you wish to use server-side encryption (`KMS`, `KMS_MANAGED` or `S3_MANAGED`)*.
+To store the table's data in an existing bucket, use `glue.S3TableStorage.fromBucket(bucket)`. CDK does not manage that bucket's server-side encryption, so an encryption choice can never be paired with a provided bucket — but client-side encryption still applies.
 
 ### Marking table data as encrypted
 
@@ -1249,6 +1336,8 @@ new glue.S3Table(this, 'MyTable', {
   dataFormat: glue.DataFormat.JSON,
 });  
 ```
+
+For a type the `Schema` factories don't model, use `glue.Schema.custom('...')`, which takes the raw Glue input string.
 
 ## Public FAQ
 

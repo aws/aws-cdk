@@ -1974,6 +1974,11 @@ describe('bucket', () => {
     });
 
     test('allows importing a BucketPolicy that references a Bucket', () => {
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
         policyDocument: {
           'Statement': [
@@ -5382,6 +5387,78 @@ describe('bucket', () => {
             'Ref': 'SrcBucketReplicationRole5B31865A',
           },
         ],
+      });
+    });
+
+    describe('replication metrics behavior', () => {
+      test('replication metrics can be enabled without replication time control', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackNoRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES, // metrics only
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: Match.absent(), // Explicitly ensure no EventThreshold field
+                  },
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('replication metrics includes eventThreshold when replication time control is defined', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackWithRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  ReplicationTime: {
+                    Status: 'Enabled',
+                    Time: { Minutes: 15 },
+                  },
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: {
+                      Minutes: 15,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
       });
     });
 

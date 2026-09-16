@@ -1746,6 +1746,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'connectionName': '*',
       'description': '*',
       'properties': '*',
+      'secret': '*',
       'matchCriteria': '*',
       'securityGroups': {
         'securityGroupId': '*',
@@ -1760,21 +1761,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'uniqueId': '*',
         'connections': '*'
       },
-      'subnet': {
-        'availabilityZone': '*',
-        'subnetId': '*',
-        'internetConnectivityEstablished': '*',
-        'ipv4CidrBlock': '*',
-        'routeTable': {
-          'routeTableId': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'network': '*',
       'addProperty': [
         '*',
         '*'
@@ -1782,7 +1769,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'DataQualityRuleset': {
       'rulesetName': '*',
-      'clientToken': '*',
       'description': '*',
       'dqdl': '*',
       'tags': '*',
@@ -1839,18 +1825,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'columns': {
         'name': '*',
-        'type': {
-          'isPrimitive': 'boolean',
-          'inputString': '*'
-        },
+        'type': '*',
         'comment': '*'
       },
       'partitionKeys': {
         'name': '*',
-        'type': {
-          'isPrimitive': 'boolean',
-          'inputString': '*'
-        },
+        'type': '*',
         'comment': '*'
       },
       'partitionIndexes': {
@@ -1894,40 +1874,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     },
     'S3Table': {
-      'bucket': {
-        'bucketArn': '*',
-        'bucketName': '*',
-        'bucketWebsiteUrl': '*',
-        'bucketWebsiteDomainName': '*',
-        'bucketDomainName': '*',
-        'bucketDualStackDomainName': '*',
-        'bucketRegionalDomainName': '*',
-        'isWebsite': 'boolean',
-        'encryptionKey': {
-          'keyArn': '*',
-          'keyId': '*',
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'policy': '*',
-        'replicationRoleArn': '*'
-      },
+      'storage': '*',
       's3Prefix': '*',
-      'encryption': 'TableEncryption',
-      'encryptionKey': {
-        'keyArn': '*',
-        'keyId': '*',
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
+      'clientSideEncryption': '*',
       'tableName': '*',
       'description': '*',
       'database': {
@@ -1948,18 +1897,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'columns': {
         'name': '*',
-        'type': {
-          'isPrimitive': 'boolean',
-          'inputString': '*'
-        },
+        'type': '*',
         'comment': '*'
       },
       'partitionKeys': {
         'name': '*',
-        'type': {
-          'isPrimitive': 'boolean',
-          'inputString': '*'
-        },
+        'type': '*',
         'comment': '*'
       },
       'partitionIndexes': {
@@ -2008,8 +1951,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'jobBookmarksEncryption': '*',
       's3Encryption': '*',
       'removalPolicy': 'RemovalPolicy'
-    },
-    'Table': {}
+    }
   },
   '@aws-cdk.aws-imagebuilder-alpha': {
     'Component': {
@@ -4023,6 +3965,282 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'tags': '*'
     }
   },
+  '@aws-cdk.aws-medialive-alpha': {
+    'ChannelPlacementGroup': {
+      'channelPlacementGroupName': '*',
+      'cluster': '*',
+      'nodes': '*',
+      'tags': '*'
+    },
+    'Channel': {
+      'channelName': '*',
+      'channelClass': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'inputs': {
+        'input': {
+          'inputArn': '*',
+          'inputId': '*',
+          'inputClass': '*',
+          'inputType': '*',
+          'inputDestinations': '*',
+          'inputSources': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'inputAttachmentName': '*',
+        'sourceEndBehavior': '*',
+        'inputFilter': '*',
+        'filterStrength': '*',
+        'deblockFilter': 'boolean',
+        'denoiseFilter': 'boolean',
+        'smpte2038DataPreference': '*',
+        'audioSelectors': '*',
+        'captionSelectors': '*',
+        'scte35Pid': '*',
+        'videoSelector': {
+          'colorSpace': '*',
+          'colorSpaceUsage': '*',
+          'hdr10': {
+            'maxContentLightLevel': '*',
+            'maxFrameAverageLightLevel': '*'
+          },
+          'selectBy': '*'
+        },
+        'networkInputSettings': {
+          'serverValidation': '*',
+          'hlsInputSettings': {
+            'bandwidth': '*',
+            'bufferSegments': '*',
+            'retries': '*',
+            'retryInterval': '*',
+            'scte35Source': '*'
+          },
+          'multicastSourceIp': '*'
+        },
+        'logicalInterfaceNames': '*',
+        'automaticInputFailover': {
+          'failoverConditions': '*',
+          'inputPreference': '*'
+        }
+      },
+      'outputGroups': '*',
+      'logLevel': '*',
+      'inputSpecification': '*',
+      'globalConfiguration': {
+        'initialAudioGain': '*',
+        'inputEndAction': '*',
+        'outputTimingSource': '*',
+        'supportLowFramerateInputs': 'boolean',
+        'inputLossBehavior': {
+          'blackFrame': '*',
+          'imageType': '*',
+          'imageColor': '*',
+          'imageSlate': '*'
+        },
+        'outputLocking': '*'
+      },
+      'tags': '*',
+      'maintenance': {
+        'day': '*',
+        'time': '*'
+      },
+      'timecodeConfig': {
+        'source': '*',
+        'syncThreshold': '*'
+      },
+      'vpc': {
+        'subnets': '*',
+        'securityGroups': '*',
+        'publicAddressAllocationIds': '*'
+      },
+      'availBlanking': {
+        'state': '*',
+        'image': '*'
+      },
+      'availSettings': '*',
+      'scte35SegmentationScope': '*',
+      'featureActivations': {
+        'inputPrepareScheduleActions': '*'
+      },
+      'motionGraphicsConfiguration': {
+        'motionGraphicsInsertion': '*'
+      },
+      'nielsenConfiguration': {
+        'distributorId': '*',
+        'nielsenPcmToId3Tagging': '*'
+      },
+      'thumbnailConfiguration': {
+        'state': '*'
+      },
+      'blackoutSlate': {
+        'state': '*',
+        'image': '*',
+        'networkEndBlackout': '*',
+        'networkId': '*'
+      },
+      'colorCorrections': {
+        'inputColorSpace': '*',
+        'lut': '*'
+      },
+      'anywhereSettings': {
+        'cluster': '*',
+        'channelPlacementGroup': '*'
+      },
+      'channelEngineVersion': '*',
+      'linkedChannelSettings': '*',
+      'channelSecurityGroups': '*',
+      'inferenceFeedArn': '*',
+      'addInput': [
+        {
+          'input': {
+            'inputArn': '*',
+            'inputId': '*',
+            'inputClass': '*',
+            'inputType': '*',
+            'inputDestinations': '*',
+            'inputSources': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'inputAttachmentName': '*',
+          'sourceEndBehavior': '*',
+          'inputFilter': '*',
+          'filterStrength': '*',
+          'deblockFilter': 'boolean',
+          'denoiseFilter': 'boolean',
+          'smpte2038DataPreference': '*',
+          'audioSelectors': '*',
+          'captionSelectors': '*',
+          'scte35Pid': '*',
+          'videoSelector': {
+            'colorSpace': '*',
+            'colorSpaceUsage': '*',
+            'hdr10': {
+              'maxContentLightLevel': '*',
+              'maxFrameAverageLightLevel': '*'
+            },
+            'selectBy': '*'
+          },
+          'networkInputSettings': {
+            'serverValidation': '*',
+            'hlsInputSettings': {
+              'bandwidth': '*',
+              'bufferSegments': '*',
+              'retries': '*',
+              'retryInterval': '*',
+              'scte35Source': '*'
+            },
+            'multicastSourceIp': '*'
+          },
+          'logicalInterfaceNames': '*',
+          'automaticInputFailover': {
+            'failoverConditions': '*',
+            'inputPreference': '*'
+          }
+        }
+      ],
+      'addOutputGroup': [
+        '*'
+      ]
+    },
+    'Cluster': {
+      'clusterName': '*',
+      'clusterType': '*',
+      'instanceRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'networkSettings': {
+        'defaultRoute': '*',
+        'interfaceMappings': {
+          'logicalInterfaceName': '*',
+          'networkId': '*'
+        }
+      },
+      'tags': '*'
+    },
+    'InputSecurityGroup': {
+      'allowlistRules': '*',
+      'tags': '*'
+    },
+    'Input': {
+      'inputName': '*',
+      'input': '*',
+      'inputNetworkLocation': '*',
+      'tags': '*',
+      '_grantPermissions': [
+        {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          },
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
+    },
+    'Network': {
+      'networkName': '*',
+      'ipPools': '*',
+      'routes': {
+        'cidr': '*',
+        'gateway': '*'
+      },
+      'tags': '*'
+    },
+    'SdiSource': {
+      'sdiSourceName': '*',
+      'type': '*',
+      'mode': '*',
+      'tags': '*'
+    }
+  },
   '@aws-cdk.aws-mediapackagev2-alpha': {
     'ChannelPolicy': {
       'channel': {
@@ -5167,7 +5385,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'removalPolicy': 'RemovalPolicy',
-      'requestMetricsStatus': 'RequestMetricsStatus'
+      'requestMetricsStatus': 'RequestMetricsStatus',
+      'storageClass': 'StorageClass'
     },
     'TablePolicy': {
       'table': {
@@ -5248,7 +5467,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'status': 'Status'
       },
       'removalPolicy': 'RemovalPolicy',
-      'withoutMetadata': 'boolean'
+      'withoutMetadata': 'boolean',
+      'storageClass': 'StorageClass'
     }
   },
   '@aws-cdk.aws-sagemaker-alpha': {
@@ -13106,6 +13326,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'mappingEnabled': 'boolean'
       },
       'cpuCredits': 'CpuCredits',
+      'cpuOptions': {
+        'amdSevSnp': 'boolean',
+        'coreCount': '*',
+        'nestedVirtualization': 'boolean',
+        'threadsPerCore': '*'
+      },
       'disableApiTermination': 'boolean',
       'ebsOptimized': 'boolean',
       'nitroEnclaveEnabled': 'boolean',
@@ -25899,6 +26125,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'librarySet': 'LibrarySet',
       'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
@@ -27053,6 +27280,30 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'interceptorConfigurations': {
         'interceptionPoint': 'InterceptionPoint'
       },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -27289,6 +27540,57 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         '*'
       ]
     },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
+    },
     'RuntimeEndpoint': {
       'endpointName': '*',
       'agentRuntimeId': '*',
@@ -27333,6 +27635,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'logType': '*',
         'destination': '*'
       },
+      'manageDeliveryResourcePolicy': 'boolean',
       'addEndpoint': [
         '*',
         {
