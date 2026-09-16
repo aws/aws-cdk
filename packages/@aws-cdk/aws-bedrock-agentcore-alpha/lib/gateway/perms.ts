@@ -6,6 +6,7 @@
 /**
  * Permissions to invoke the gateway
  * Used by agents or other services that need to call the gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_INVOKE_PERMS = ['bedrock-agentcore:InvokeGateway'];
 
@@ -16,6 +17,7 @@ export const GATEWAY_INVOKE_PERMS = ['bedrock-agentcore:InvokeGateway'];
 /**
  * KMS permissions for encryption
  * Required when using KMS keys for encryption
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_KMS_KEY_PERMS = [
   'kms:GenerateDataKey',
@@ -33,12 +35,14 @@ export const GATEWAY_KMS_KEY_PERMS = [
 /**
  * Assume role permission
  * Required for the gateway service to assume the execution role
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_ASSUME_ROLE = ['sts:AssumeRole'];
 
 /**
  * Outbound auth - Workload identity permissions (API key targets)
  * Used to obtain access tokens for workload identity
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_WORKLOAD_IDENTITY_PERMS = [
   'bedrock-agentcore:GetWorkloadAccessToken',
@@ -47,6 +51,7 @@ export const GATEWAY_WORKLOAD_IDENTITY_PERMS = [
 /**
  * Outbound auth - Workload identity permissions (OAuth targets)
  * OAuth flows additionally require JWT-based and user-ID-based token exchange
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_WORKLOAD_IDENTITY_OAUTH_PERMS = [
   'bedrock-agentcore:GetWorkloadAccessToken',
@@ -57,6 +62,7 @@ export const GATEWAY_WORKLOAD_IDENTITY_OAUTH_PERMS = [
 /**
  * Outbound auth - OAuth permissions
  * Used to obtain OAuth tokens and complete token auth for target authentication
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_OAUTH_PERMS = [
   'bedrock-agentcore:GetResourceOauth2Token',
@@ -65,6 +71,7 @@ export const GATEWAY_OAUTH_PERMS = [
 /**
  * Outbound auth - OAuth complete token auth permissions
  * Used to complete the OAuth token authorization flow
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_OAUTH_COMPLETE_AUTH_PERMS = [
   'bedrock-agentcore:CompleteResourceTokenAuth',
@@ -73,6 +80,7 @@ export const GATEWAY_OAUTH_COMPLETE_AUTH_PERMS = [
 /**
  * Outbound auth - API Key permissions
  * Used to retrieve API keys for target authentication
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_API_KEY_PERMS = [
   'bedrock-agentcore:GetResourceApiKey',
@@ -83,6 +91,7 @@ export const GATEWAY_API_KEY_PERMS = [
  * Required for reading credential secrets backing Token Vault providers.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_SECRETS_PERMS = ['secretsmanager:GetSecretValue'];
 
@@ -92,11 +101,13 @@ export const GATEWAY_SECRETS_PERMS = ['secretsmanager:GetSecretValue'];
 
 /**
  * Get permissions for gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_GET_PERMS = ['bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:GetGateway'];
 
 /**
  * List permissions for gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_LIST_PERMS = [
   'bedrock-agentcore:ListGateways',
@@ -105,6 +116,7 @@ export const GATEWAY_LIST_PERMS = [
 
 /**
  * Create permissions for gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_CREATE_PERMS = [
   'bedrock-agentcore:CreateGateway',
@@ -113,6 +125,7 @@ export const GATEWAY_CREATE_PERMS = [
 
 /**
  * Update permissions for gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_UPDATE_PERMS = [
   'bedrock-agentcore:UpdateGateway',
@@ -121,6 +134,7 @@ export const GATEWAY_UPDATE_PERMS = [
 
 /**
  * Delete permissions for gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_DELETE_PERMS = [
   'bedrock-agentcore:DeleteGateway',
@@ -129,11 +143,13 @@ export const GATEWAY_DELETE_PERMS = [
 
 /**
  * Combined manage permissions (create, update, delete)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_MANAGE_PERMS = [...new Set([...GATEWAY_CREATE_PERMS, ...GATEWAY_UPDATE_PERMS, ...GATEWAY_DELETE_PERMS])];
 
 /**
  * Synchronization permissions for MCP server targets
  * Used to refresh tool catalogs when MCP server tools change
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const GATEWAY_SYNC_PERMS = ['bedrock-agentcore:SynchronizeGatewayTargets'];

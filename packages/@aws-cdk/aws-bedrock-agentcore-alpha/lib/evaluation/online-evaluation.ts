@@ -44,6 +44,7 @@ import {
 
 /**
  * Properties for creating an OnlineEvaluationConfig.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
   /**
@@ -93,6 +94,10 @@ export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
  * });
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =

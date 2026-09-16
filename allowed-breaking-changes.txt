@@ -4175,3 +4175,10 @@ new-argument:aws-cdk-lib.aws_events_targets.LogGroupTargetInput.fromObject
 
 # This interface is new; its not depended on yet
 weakened:aws-cdk-lib.PolicyViolatingResource
+
+# Removing a method that should never have been exposed
+removed:aws-cdk-lib.CfnResource.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationOutputV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationReferenceDataSourceV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2.obtainResourceDependencies

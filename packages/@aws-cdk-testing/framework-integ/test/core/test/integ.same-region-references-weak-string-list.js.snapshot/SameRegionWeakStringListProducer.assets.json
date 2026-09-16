@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "d1fa2e6f60d8f2ce46b40a42b453fb1d8b0561d89615e851857faa7f033f984d": {
+      "displayName": "SameRegionWeakStringListProducer Template",
+      "source": {
+        "path": "SameRegionWeakStringListProducer.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-central-1-6f792e5d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-central-1",
+          "objectKey": "d1fa2e6f60d8f2ce46b40a42b453fb1d8b0561d89615e851857faa7f033f984d.json",
+          "region": "eu-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

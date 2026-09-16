@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "fb33714cb653bc7a35eb8684b06e87207a973e9cf13413a5ad20fe329a699341": {
       "displayName": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout Template",

@@ -14,6 +14,7 @@
 /**
  * Permissions to describe CloudWatch Log Groups.
  * This is a list operation that does not support resource-level permissions.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS = [
   'logs:DescribeLogGroups',
@@ -22,6 +23,7 @@ export const EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS = [
 /**
  * Permissions for the execution role to query CloudWatch Logs.
  * These actions support resource-level permissions scoped to specific log groups.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS = [
   'logs:GetQueryResults',
@@ -30,6 +32,7 @@ export const EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS = [
 
 /**
  * Permissions for the execution role to invoke Bedrock models.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const EVALUATION_BEDROCK_MODEL_PERMS = [
   'bedrock:InvokeModel',
@@ -38,6 +41,7 @@ export const EVALUATION_BEDROCK_MODEL_PERMS = [
 
 /**
  * Permissions for the execution role to write evaluation results.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS = [
   'logs:CreateLogGroup',
@@ -47,6 +51,7 @@ export const EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS = [
 
 /**
  * Permissions for CloudWatch index policies.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const EVALUATION_CLOUDWATCH_INDEX_POLICY_PERMS = [
   'logs:DescribeIndexPolicies',

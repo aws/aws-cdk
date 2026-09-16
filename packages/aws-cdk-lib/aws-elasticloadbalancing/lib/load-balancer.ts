@@ -278,6 +278,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 

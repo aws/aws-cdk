@@ -16,7 +16,7 @@ describe('addToRolePolicy token conflict detection', () => {
 
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('test'),
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_14,
       handler: 'index.test',
     });
 

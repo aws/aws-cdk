@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnScheduledAction } from './autoscaling.generated';
 import type { Schedule } from './schedule';
-import { Resource, ValidationError } from '../../core';
+import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -40,6 +40,10 @@ export interface BasicScheduledActionProps {
 
   /**
    * When this scheduled action expires.
+   *
+   * Warning! You should not set this field! After the scheduled end time, the AutoScaling
+   * service will delete the `ScheduledAction` without CloudFormation's knowledge, and subsequent
+   * stack deployments that try to modify or delete this ScheduledAction will fail.
    *
    * @default - The rule never expires.
    */
@@ -110,6 +114,10 @@ export class ScheduledAction extends Resource {
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
       throw new ValidationError(lit`LeastOneMinCapacityMax`, 'At least one of minCapacity, maxCapacity, or desiredCapacity is required', this);
+    }
+
+    if (props.endTime) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:scheduledActionWithEndTime', 'The use of \'endTime\' with a ScheduledAction is not recommended. If the given timestamp has passed AutoScaling will delete the action, leading to CloudFormation stack drift. Use a Custom Resource to create limited-time ScheduledActions.');
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

@@ -1,31 +1,31 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
-    "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4": {
+    "e7df8478a4c7cbd89c798a15a62ce8b78ae0f67f76119dbf9b6b1bb20effb78d": {
       "displayName": "CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider Code",
       "source": {
-        "path": "asset.60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4",
+        "path": "asset.e7df8478a4c7cbd89c798a15a62ce8b78ae0f67f76119dbf9b6b1bb20effb78d",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-west-2-10366f96": {
+        "current_account-us-west-2-56964834": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4.zip",
+          "objectKey": "e7df8478a4c7cbd89c798a15a62ce8b78ae0f67f76119dbf9b6b1bb20effb78d.zip",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
       }
     },
-    "a6d3472787c7bcdb100345301c18c034e68294d78ac2531dad7a2f22a2cd8714": {
+    "fdcdcc3067459c0e59e136af2d1f3b6e89509349bc48c047a94b79d05a9627bc": {
       "displayName": "CallRestApiInteg-ApiStack Template",
       "source": {
         "path": "CallRestApiInteg-ApiStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2-3ebc032f": {
+        "current_account-us-west-2-cb34183d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "a6d3472787c7bcdb100345301c18c034e68294d78ac2531dad7a2f22a2cd8714.json",
+          "objectKey": "fdcdcc3067459c0e59e136af2d1f3b6e89509349bc48c047a94b79d05a9627bc.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

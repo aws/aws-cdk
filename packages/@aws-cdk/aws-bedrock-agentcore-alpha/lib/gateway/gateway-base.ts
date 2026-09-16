@@ -16,6 +16,7 @@ import type { IGatewayProtocolConfig } from './protocol';
  *****************************************************************************/
 /**
  * Exception levels for gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayExceptionLevel {
   /**
@@ -31,6 +32,7 @@ export enum GatewayExceptionLevel {
  *****************************************************************************/
 /**
  * Interface for Gateway resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IGateway extends IResource, IGatewayRef {
   /**
@@ -229,6 +231,11 @@ export interface IGateway extends IResource, IGatewayRef {
  *                                Base Class
  *****************************************************************************/
 
+/**
+ * Base class for Gateway constructs.
+ *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly gatewayArn: string;
   public abstract readonly gatewayId: string;

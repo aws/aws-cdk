@@ -193,6 +193,7 @@ abstract class ParameterBase extends Resource implements IParameter, IEncryptedR
   public get parameterRef(): ParameterReference {
     return {
       parameterName: this.parameterName,
+      parameterArn: this.parameterArn,
     };
   }
 

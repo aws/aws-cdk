@@ -72,6 +72,9 @@ export interface PolicyViolatingResource {
 
   /**
    * The locations in the CloudFormation template that pose the violations.
+   *
+   * TODO: Define whether this is from the root of the template, or from the
+   * resource itself. Not sure this is well-defined at the moment.
    */
   readonly locations: string[];
 

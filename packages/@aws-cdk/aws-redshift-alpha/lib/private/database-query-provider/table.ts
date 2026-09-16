@@ -1,5 +1,6 @@
 
 import type * as AWSLambda from 'aws-lambda';
+import { quoteIdentifier, quoteLiteral } from './escape';
 import { executeStatement } from './redshift-data';
 import type { ClusterProps, TableAndClusterProps } from './types';
 import { TableSortStyle } from './types';
@@ -50,9 +51,9 @@ async function createTable(
   tableAndClusterProps: TableAndClusterProps,
 ): Promise<string> {
   const tableName = tableNamePrefix + tableNameSuffix;
-  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}${getEncodingColumnString(column)}`).join();
+  const tableColumnsString = tableColumns.map(column => `${quoteIdentifier(column.name)} ${column.dataType}${getEncodingColumnString(column)}`).join();
 
-  let statement = `CREATE TABLE ${tableName} (${tableColumnsString})`;
+  let statement = `CREATE TABLE ${quoteIdentifier(tableName)} (${tableColumnsString})`;
 
   if (tableAndClusterProps.distStyle) {
     statement += ` DISTSTYLE ${tableAndClusterProps.distStyle}`;
@@ -60,7 +61,7 @@ async function createTable(
 
   const distKeyColumn = getDistKeyColumn(tableColumns);
   if (distKeyColumn) {
-    statement += ` DISTKEY(${distKeyColumn.name})`;
+    statement += ` DISTKEY(${quoteIdentifier(distKeyColumn.name)})`;
   }
 
   const sortKeyColumns = getSortKeyColumns(tableColumns);
@@ -73,18 +74,18 @@ async function createTable(
 
   for (const column of tableColumns) {
     if (column.comment) {
-      await executeStatement(`COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`, tableAndClusterProps);
+      await executeStatement(`COMMENT ON COLUMN ${quoteIdentifier(tableName)}.${quoteIdentifier(column.name)} IS ${quoteLiteral(column.comment)}`, tableAndClusterProps);
     }
   }
   if (tableAndClusterProps.tableComment) {
-    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
+    await executeStatement(`COMMENT ON TABLE ${quoteIdentifier(tableName)} IS ${quoteLiteral(tableAndClusterProps.tableComment)}`, tableAndClusterProps);
   }
 
   return tableName;
 }
 
 async function dropTable(tableName: string, clusterProps: ClusterProps) {
-  await executeStatement(`DROP TABLE ${tableName}`, clusterProps);
+  await executeStatement(`DROP TABLE ${quoteIdentifier(tableName)}`, clusterProps);
 }
 
 async function updateTable(
@@ -115,7 +116,7 @@ async function updateTable(
     })
   ));
   if (columnDeletions.length > 0) {
-    alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
+    alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${quoteIdentifier(tableName)} DROP COLUMN ${quoteIdentifier(column.name)}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {
@@ -125,21 +126,21 @@ async function updateTable(
       }
       return oldColumn.name === column.name;
     });
-  }).map(column => `ADD ${column.name} ${column.dataType}`);
+  }).map(column => `ADD ${quoteIdentifier(column.name)} ${column.dataType}`);
   if (columnAdditions.length > 0) {
-    alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
+    alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${quoteIdentifier(tableName)} ${addition}`));
   }
 
   const columnEncoding = tableColumns.filter(column => {
     return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.encoding !== oldColumn.encoding);
-  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || 'AUTO'}`);
+  }).map(column => `ALTER COLUMN ${quoteIdentifier(column.name)} ENCODE ${column.encoding || 'AUTO'}`);
   if (columnEncoding.length > 0) {
-    alterationStatements.push(`ALTER TABLE ${tableName} ${columnEncoding.join(', ')}`);
+    alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ${columnEncoding.join(', ')}`);
   }
 
   const columnComments = tableColumns.filter(column => {
     return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.comment !== oldColumn.comment);
-  }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`);
+  }).map(column => `COMMENT ON COLUMN ${quoteIdentifier(tableName)}.${quoteIdentifier(column.name)} IS ${column.comment ? quoteLiteral(column.comment) : 'NULL'}`);
   if (columnComments.length > 0) {
     alterationStatements.push(...columnComments);
   }
@@ -154,7 +155,7 @@ async function updateTable(
     }, {} as Record<string, string>);
     if (Object.keys(columnNameUpdates).length > 0) {
       alterationStatements.push(...Object.entries(columnNameUpdates).map(([oldName, newName]) => (
-        `ALTER TABLE ${tableName} RENAME COLUMN ${oldName} TO ${newName}`
+        `ALTER TABLE ${quoteIdentifier(tableName)} RENAME COLUMN ${quoteIdentifier(oldName)} TO ${quoteIdentifier(newName)}`
       )));
     }
   }
@@ -164,20 +165,21 @@ async function updateTable(
     (oldDistStyle && !tableAndClusterProps.distStyle)) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   } else if (oldDistStyle !== tableAndClusterProps.distStyle) {
-    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE ${tableAndClusterProps.distStyle}`);
+    alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER DISTSTYLE ${tableAndClusterProps.distStyle}`);
   }
 
   const oldDistKey = getDistKeyColumn(oldTableColumns)?.name;
   const newDistKey = getDistKeyColumn(tableColumns)?.name;
   if (!oldDistKey && newDistKey) {
     // Table has no existing distribution key, add a new one
-    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE KEY DISTKEY ${newDistKey}`);
+    alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER DISTSTYLE KEY DISTKEY ${quoteIdentifier(newDistKey)}`);
   } else if (oldDistKey && !newDistKey) {
     // Table has a distribution key, remove and set to AUTO
-    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE AUTO`);
+    alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER DISTSTYLE AUTO`);
   } else if (oldDistKey !== newDistKey) {
     // Table has an existing distribution key, change it
-    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTKEY ${newDistKey}`);
+    // (both keys are defined here; the undefined cases are handled by the branches above)
+    alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER DISTKEY ${quoteIdentifier(newDistKey!)}`);
   }
 
   const oldSortKeyColumns = getSortKeyColumns(oldTableColumns);
@@ -194,12 +196,12 @@ async function updateTable(
 
       case TableSortStyle.COMPOUND: {
         const sortKeyColumnsString = getSortKeyColumnsString(newSortKeyColumns);
-        alterationStatements.push(`ALTER TABLE ${tableName} ALTER ${newSortStyle} SORTKEY(${sortKeyColumnsString})`);
+        alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER ${newSortStyle} SORTKEY(${sortKeyColumnsString})`);
         break;
       }
 
       case TableSortStyle.AUTO: {
-        alterationStatements.push(`ALTER TABLE ${tableName} ALTER SORTKEY ${newSortStyle}`);
+        alterationStatements.push(`ALTER TABLE ${quoteIdentifier(tableName)} ALTER SORTKEY ${newSortStyle}`);
         break;
       }
     }
@@ -208,7 +210,7 @@ async function updateTable(
   const oldComment = oldResourceProperties.tableComment;
   const newComment = tableAndClusterProps.tableComment;
   if (oldComment !== newComment) {
-    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
+    alterationStatements.push(`COMMENT ON TABLE ${quoteIdentifier(tableName)} IS ${newComment ? quoteLiteral(newComment) : 'NULL'}`);
   }
 
   // Limited by human input
@@ -218,7 +220,7 @@ async function updateTable(
   if (isTableV2) {
     const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
     if (tableNamePrefix !== oldTableNamePrefix) {
-      await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
+      await executeStatement(`ALTER TABLE ${quoteIdentifier(tableName)} RENAME TO ${quoteIdentifier(newTableName)}`, tableAndClusterProps);
       return tableNamePrefix + tableNameSuffix;
     }
   }
@@ -227,7 +229,7 @@ async function updateTable(
 }
 
 function getSortKeyColumnsString(sortKeyColumns: Column[]) {
-  return sortKeyColumns.map(column => column.name).join();
+  return sortKeyColumns.map(column => quoteIdentifier(column.name)).join();
 }
 
 function getEncodingColumnString(column: Column): string {

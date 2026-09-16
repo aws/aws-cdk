@@ -1,3 +1,4 @@
+import type { IConstruct } from 'constructs';
 import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1, PolicyViolatingResourceBeta1, PolicyViolationBeta1 } from './report';
 
 /**
@@ -70,6 +71,68 @@ export interface IPolicyValidationContext {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The absolute path of all templates to be processed, along with the stack construct path for each template.
+   */
+  readonly stackTemplates: PolicyValidationStack[];
+
+  /**
+   * The account ID for these templates, if known
+   *
+   * Only set if all stacks have the exact same account ID.
+   *
+   * @deprecated Use `stackTemplates` instead, which contains the account ID for each stack.
+   */
+  readonly accountId?: string;
+
+  /**
+   * The region for these templates, if known
+   *
+   * Only set if all stacks have the exact same region.
+   *
+   * @deprecated Use `stackTemplates` instead, which contains the region for each stack.
+   */
+  readonly region?: string;
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
+}
+
+/**
+ * Information about a single stack that is being validated.
+ */
+export interface PolicyValidationStack {
+  /**
+   * The Stack's construct path
+   */
+  readonly stackConstructPath: string;
+
+  /**
+   * The path to the template file on disk
+   */
+  readonly templatePath: string;
+
+  /**
+   * The account ID for this stack, if known
+   *
+   * @default - the account ID is unknown
+   */
+  readonly accountId: string | undefined;
+
+  /**
+   * The region for this stack, if known
+   *
+   * @default - the region is unknown
+   */
+  readonly region: string | undefined;
 }
 
 /**
@@ -120,6 +183,16 @@ export interface IPolicyValidationContextBeta1 {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
 }
 
 /**
@@ -138,7 +211,13 @@ export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidati
     version: plugin.version,
     ruleIds: plugin.ruleIds,
     validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
-      const report = plugin.validate(context);
+      const report = plugin.validate({
+        ...context,
+        // This is incorrect information -- it doesn't matter, this function shouldn't be used regardless.
+        stackTemplates: [],
+        accountId: undefined,
+        region: undefined,
+      });
       return {
         success: report.success,
         pluginVersion: report.pluginVersion,

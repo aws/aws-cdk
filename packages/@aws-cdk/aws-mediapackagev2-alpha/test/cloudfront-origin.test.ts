@@ -232,7 +232,7 @@ test('distribution origin uses egress domain and OAC ID', () => {
   });
 });
 
-test('MediaPackageV2Origin with cdnAuth configures endpoint policy', () => {
+test('MediaPackageV2Origin works alongside cdnAuth set on the endpoint props', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'Group', {
     channelGroupName: 'test-group',
   });
@@ -240,32 +240,62 @@ test('MediaPackageV2Origin with cdnAuth configures endpoint policy', () => {
     channelGroup: group,
     channelName: 'test-channel',
   });
+  const secret = new Secret(stack, 'CdnSecret');
+
   const endpoint = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
     channel,
     originEndpointName: 'test-endpoint',
     segment: mediapackagev2.Segment.cmaf(),
     manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+    cdnAuth: {
+      secrets: [secret],
+    },
   });
-
-  const secret = new Secret(stack, 'CdnSecret');
 
   new cloudfront.Distribution(stack, 'Dist', {
     defaultBehavior: {
       origin: new mediapackagev2.MediaPackageV2Origin(endpoint, {
         channelGroup: group,
-        cdnAuth: {
-          secrets: [secret],
-        },
       }),
     },
   });
 
   const template = Template.fromStack(stack);
 
-  // CDN auth configuration is present on the endpoint policy
   template.hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     CdnAuthConfiguration: Match.objectLike({
       CdnIdentifierSecretArns: Match.anyValue(),
     }),
+    Policy: {
+      Version: '2012-10-17',
+      Statement: [
+        // cdnAuth gating statement — third-party CDN with header check
+        {
+          Sid: 'AllowGetObjectAccessForAuthorizedRequest',
+          Effect: 'Allow',
+          Principal: '*',
+          Action: 'mediapackagev2:GetObject',
+          Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Endpoint'), 'Arn'] },
+          Condition: {
+            Bool: {
+              'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+            },
+          },
+        },
+        // OAC SigV4 statement — CloudFront via service principal
+        {
+          Sid: 'AllowCloudFrontServicePrincipal',
+          Effect: 'Allow',
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Action: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
+          Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Endpoint'), 'Arn'] },
+          Condition: {
+            StringEquals: {
+              'aws:SourceArn': Match.anyValue(),
+            },
+          },
+        },
+      ],
+    },
   });
 });
