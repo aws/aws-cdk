@@ -1,4 +1,4 @@
-import type { Bitrate, IResource, RemovalPolicy } from 'aws-cdk-lib';
+import type { Bitrate, IResource } from 'aws-cdk-lib';
 import { Duration, Resource, Lazy, Names, Token, ValidationError, UnscopedValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
@@ -457,16 +457,6 @@ export interface BridgeProps {
    */
   readonly sourceFailoverConfig?: BridgeFailoverConfig;
 
-  /**
-   * Policy to apply when the bridge is removed from the stack.
-   *
-   * Defaults to `RETAIN` because a bridge is a live transport between your premises and the
-   * cloud, not a data store. Retaining by default avoids an unplanned teardown of a bridge and
-   * everything wired to it. Set `RemovalPolicy.DESTROY` if you want it removed with the stack.
-   *
-   * @default RemovalPolicy.RETAIN
-   */
-  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -685,8 +675,8 @@ export class Bridge extends BridgeBase implements IBridge {
       if (props.bridgeName.length > 64) {
         throw new ValidationError(lit`BridgeNameLength`, `Bridge name must be between 1 and 64 characters, got ${props.bridgeName.length}`, this);
       }
-      if (!/^[a-zA-Z0-9-]+$/.test(props.bridgeName)) {
-        throw new ValidationError(lit`BridgeNameFormat`, `Bridge name must contain only alphanumeric characters and hyphens, got '${props.bridgeName}'`, this);
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.bridgeName)) {
+        throw new ValidationError(lit`BridgeNameFormat`, `Bridge name must contain only alphanumeric characters, hyphens, and underscores, got '${props.bridgeName}'`, this);
       }
     }
 
@@ -741,8 +731,6 @@ export class Bridge extends BridgeBase implements IBridge {
     this.bridgeName = this.physicalName;
     this.bridgeState = bridge.attrBridgeState;
     this.bridgeType = configBind.bridgeType;
-
-    bridge.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**

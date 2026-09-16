@@ -1,11 +1,79 @@
+# Stage 2 of the Security Guardian 2-stage workflow. Runs with privileged
+# permissions and has two jobs. The `validate` job runs with read-only
+# permissions and decides whether the rest should run. Since Stage 1 is
+# treated as untrusted, if the triggering PR modifies the Stage 1 workflow,
+# `validate` fails and the `report` job does not run. The `report` job runs
+# with the privileged permissions and posts findings on the PR.
 name: Security Report
 on:
   workflow_run:
     workflows: ["Security Guardian"]
     types: [completed]
 
+concurrency:
+  group: security-report-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 jobs:
+  # Resolve which PR triggered this run from GitHub-signed workflow_run
+  # metadata, and refuse to run the report job if the PR modifies the
+  # guardian workflow itself, since the triggering workflow is treated as
+  # untrusted.
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      actions: read
+    outputs:
+      pr_number: ${{ steps.check.outputs.pr_number }}
+      pr_sha: ${{ steps.check.outputs.pr_sha }}
+    steps:
+      - name: Resolve PR and check diff
+        id: check
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const headRepo = context.payload.workflow_run.head_repository;
+            if (!headRepo || !headRepo.owner || !headRepo.owner.login) {
+              core.setFailed('workflow_run repository information not found');
+              return;
+            }
+            const owner   = headRepo.owner.login;
+            const branch  = context.payload.workflow_run.head_branch;
+            const headSha = context.payload.workflow_run.head_sha;
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              state: 'open',
+              head:  `${owner}:${branch}`,
+            });
+            if (prs.length !== 1) {
+              core.setFailed(`Expected 1 PR, got ${prs.length}`);
+              return;
+            }
+            const pr = prs[0];
+            if (pr.head.sha !== headSha) {
+              core.setFailed(`SHA mismatch: expected ${headSha}, got ${pr.head.sha}`);
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              pull_number: pr.number,
+            });
+            const target = '.github/workflows/security-guardian.yml';
+            if (files.some(f => f.filename === target || f.previous_filename === target)) {
+              core.setFailed('PR modifies security-guardian workflow');
+              return;
+            }
+
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('pr_sha',    headSha);
+
   report:
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       checks: write
@@ -23,25 +91,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           repository: ${{ github.repository }}
-      
-      - name: Get PR info
-        id: pr_info
-        run: |
-          echo "pr_number=$(cat test-results/pr_number)" >> "$GITHUB_OUTPUT"
-          echo "pr_sha=$(cat test-results/pr_sha)" >> "$GITHUB_OUTPUT"
-          echo "PR: $(cat test-results/pr_number), SHA: $(cat test-results/pr_sha)"
-      - name: Publish Security Test Results 
+
+      - name: Publish Security Test Results
         id: junit_static
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-static.xml'
           check_name: ${{ env.CHECK_NAME_STATIC }}
           exclude_sources: 'node_modules,dist'
-          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          commit: ${{ needs.validate.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          pr_id: ${{ needs.validate.outputs.pr_number }}
           detailed_summary: true
           include_passed: false
           fail_on_failure: false
@@ -54,7 +116,7 @@ jobs:
         uses: actions/github-script@v9
         if: steps.junit_static.outcome == 'success'
         env:
-          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
           CHECK_NAME: ${{ env.CHECK_NAME_STATIC }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,13 +128,13 @@ jobs:
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes(checkName) &&
               !comment.body.includes('resolved templates')
             );
-            
+
             if (botComment) {
               const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({
@@ -85,16 +147,16 @@ jobs:
 
       - name: Publish Security Test Results for resolved templates
         id: junit_resolved
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
           check_name: ${{ env.CHECK_NAME_RESOLVED }}
           exclude_sources: 'node_modules,dist'
-          commit: ${{ steps.pr_info.outputs.pr_sha }}
+          commit: ${{ needs.validate.outputs.pr_sha }}
           check_annotations: true
           comment: true
-          pr_id: ${{ steps.pr_info.outputs.pr_number }}
+          pr_id: ${{ needs.validate.outputs.pr_number }}
           detailed_summary: true
           include_passed: false
           fail_on_failure: false
@@ -107,7 +169,7 @@ jobs:
         uses: actions/github-script@v9
         if: steps.junit_resolved.outcome == 'success'
         env:
-          PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
+          PR_NUMBER: ${{ needs.validate.outputs.pr_number }}
           CHECK_NAME: ${{ env.CHECK_NAME_RESOLVED }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -119,12 +181,12 @@ jobs:
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes(checkName)
             );
-            
+
             if (botComment) {
               const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({

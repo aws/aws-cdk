@@ -4,6 +4,7 @@ import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnRouterInput } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IRouterInputRef, RouterInputReference } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IChannelRef } from 'aws-cdk-lib/aws-medialive';
 import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -263,13 +264,12 @@ export interface RouterInputProps {
    * @default - Generated automatically
    */
   readonly routerInputName?: string;
-  /** Maximum bitrate in bits per second that the Router Input can handle */
+  /** The maximum bitrate for the router input. */
   readonly maximumBitrate: Bitrate;
-  /** Routing scope for the Router Input */
+  /** Indicates whether the router input is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
    * Select a tier based on your maximum bitrate requirements.
-   *
    * @default RouterInputTier.INPUT_20
    */
   readonly tier?: RouterInputTier;
@@ -281,12 +281,8 @@ export interface RouterInputProps {
    */
   readonly maintenanceConfiguration?: MaintenanceConfiguration;
   /**
-   * AWS region where the Router Input will be created (i.e. us-east-1).
-   *
-   * Must match the region of the flows, flow outputs, and network interfaces it connects to —
-   * MediaConnect rejects a cross-region connection at deploy.
-   *
-   * @default - Same as the stack's region
+   * The AWS Region where the router input is located.
+   * @default - Defaults to the same region as stack
    */
   readonly regionName?: string;
   /**
@@ -715,6 +711,12 @@ export interface StandardConfigurationProps {
   readonly networkInterface: IRouterNetworkInterface;
   /** Protocol configuration for the input */
   readonly protocol: RouterInputProtocol;
+  /**
+   * The availability zone where the router input is located.
+   *
+   * @default - assigned by the MediaConnect service
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -731,6 +733,12 @@ export interface FailoverConfigurationProps {
    * @default SourcePriorityConfig.none()
    */
   readonly sourcePriority?: SourcePriorityConfig;
+  /**
+   * The availability zone where the router input is located.
+   *
+   * @default - assigned by the MediaConnect service
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -743,6 +751,12 @@ export interface MergeConfigurationProps {
   readonly protocols: RouterInputProtocol[];
   /** Recovery window for merge operation */
   readonly mergeRecoveryWindow: Duration;
+  /**
+   * The availability zone where the router input is located.
+   *
+   * @default - assigned by the MediaConnect service
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -783,27 +797,26 @@ export interface MediaConnectFlowConfigurationWithoutConnectionProps {
  */
 export interface MediaLiveChannelConfigurationProps {
   /**
-   * ARN of the MediaLive channel to use as input.
-   *
-   * Note: This will change to accept a typed MediaLive channel reference
-   * when the @aws-cdk/aws-medialive-alpha L2 construct is released.
+   * The MediaLive channel to use as input.
    */
-  readonly mediaLiveChannelArn: string;
+  readonly channel: IChannelRef;
 
   /**
-   * The name of the MediaLive channel output to connect to this router input.
+   * The name of the individual output (within the channel's MediaConnect Router output
+   * group) to connect to this router input — not the name of the output group itself.
    */
-  readonly mediaLiveChannelOutputName: string;
+  readonly outputName: string;
 
   /**
    * The MediaLive pipeline to connect to this router input.
    */
-  readonly mediaLivePipelineId: MediaLivePipeline;
+  readonly pipeline: MediaLivePipeline;
 
   /**
-   * Optional transit encryption configuration.
+   * Optional transit encryption configuration. Must match the encryption type configured on the
+   * MediaLive channel's MediaConnect Router output group.
    *
-   * @default - Automatic encryption will be used
+   * @default - automatic encryption
    */
   readonly sourceTransitDecryption?: TransitEncryption;
 }
@@ -914,9 +927,9 @@ export abstract class RouterInputConfiguration {
    */
   public static mediaLiveChannel(props: MediaLiveChannelConfigurationProps): RouterInputConfiguration {
     return new MediaLiveChannelRouterInputConfig({
-      mediaLiveChannelArn: props.mediaLiveChannelArn,
-      mediaLiveChannelOutputName: props.mediaLiveChannelOutputName,
-      mediaLivePipelineId: props.mediaLivePipelineId,
+      mediaLiveChannelArn: props.channel.channelRef.channelArn,
+      mediaLiveChannelOutputName: props.outputName,
+      mediaLivePipelineId: props.pipeline,
       sourceTransitDecryption: props.sourceTransitDecryption,
     });
   }
@@ -982,6 +995,7 @@ class StandardRouterInputConfig extends RouterInputConfiguration {
           protocolConfiguration: protocol.config,
         },
       },
+      availabilityZone: this.props.availabilityZone,
     };
   }
 
@@ -1011,6 +1025,7 @@ class FailoverRouterInputConfig extends RouterInputConfiguration {
           primarySourceIndex: priority.primarySourceIndex,
         },
       },
+      availabilityZone: this.props.availabilityZone,
     };
   }
 
@@ -1042,6 +1057,7 @@ class MergeRouterInputConfig extends RouterInputConfiguration {
           mergeRecoveryWindowMilliseconds: this.props.mergeRecoveryWindow.toMilliseconds(),
         },
       },
+      availabilityZone: this.props.availabilityZone,
     };
   }
 
@@ -1058,7 +1074,7 @@ class MergeRouterInputConfig extends RouterInputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaConnectFlowRouterInputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaConnectFlowRouterInputConfig}.
  */
 interface MediaConnectFlowRouterInputOptions {
   readonly flow?: IFlow;
@@ -1095,7 +1111,7 @@ class MediaConnectFlowRouterInputConfig extends RouterInputConfiguration {
 }
 
 /**
- * Internal options for {@link MediaLiveChannelRouterInputConfig}. Not exported; jsii never sees this.
+ * Internal options for {@link MediaLiveChannelRouterInputConfig}.
  */
 interface MediaLiveChannelRouterInputOptions {
   readonly mediaLiveChannelArn?: string;
@@ -1371,8 +1387,8 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
       if (props.routerInputName.length > 128) {
         throw new ValidationError(lit`RouterInputNameLength`, `Router input name must be between 1 and 128 characters, got ${props.routerInputName.length}`, this);
       }
-      if (!/^[a-zA-Z0-9-]+$/.test(props.routerInputName)) {
-        throw new ValidationError(lit`RouterInputNameFormat`, `Router input name must contain only alphanumeric characters and hyphens, got '${props.routerInputName}'`, this);
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.routerInputName)) {
+        throw new ValidationError(lit`RouterInputNameFormat`, `Router input name must contain only alphanumeric characters, hyphens, and underscores, got '${props.routerInputName}'`, this);
       }
     }
 
@@ -1411,7 +1427,8 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     const configBind = props.configuration._bind(this, routerInputArn);
 
     // Validate AZ matches region if provided
-    if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
+    if (configBind.availabilityZone && !Token.isUnresolved(configBind.availabilityZone) && !Token.isUnresolved(targetRegion)
+      && !configBind.availabilityZone.startsWith(targetRegion)) {
       throw new ValidationError(lit`RouterInputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 
@@ -1453,4 +1470,3 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     this.grants = RouterInputGrants.fromRouterInput(this);
   }
 }
-

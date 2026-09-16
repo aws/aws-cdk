@@ -1,11 +1,11 @@
-import type { Bitrate, IResource, RemovalPolicy } from 'aws-cdk-lib';
-import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, Validations, ValidationError } from 'aws-cdk-lib';
+import type { Bitrate, IResource } from 'aws-cdk-lib';
+import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnFlow } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IFlowRef, FlowReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IFlowOutput, OutputConfiguration } from './flow-output';
@@ -163,7 +163,32 @@ export interface IFlow extends IResource, IFlowRef {
   /**
    * Add an output to this flow
    */
-  addOutput(id: string, outputConfig: OutputConfiguration): IFlowOutput;
+  addOutput(id: string, options: AddFlowOutputOptions): IFlowOutput;
+}
+
+/**
+ * Options for adding an output to a flow.
+ */
+export interface AddFlowOutputOptions {
+  /**
+   * The output configuration.
+   */
+  readonly output: OutputConfiguration;
+  /**
+   * The name of the flow output.
+   * @default - auto-generated
+   */
+  readonly flowOutputName?: string;
+  /**
+   * A description of the output.
+   * @default - no description
+   */
+  readonly description?: string;
+  /**
+   * Whether the output is enabled.
+   * @default State.ENABLED
+   */
+  readonly outputStatus?: State;
 }
 
 /**
@@ -207,17 +232,13 @@ export class FlowSize {
 }
 
 /**
- * Maintenance Window configuration for MediaConnect Flow.
+ * Configuration for scheduled maintenance windows.
  */
 export interface MaintenanceWindow {
-  /**
-   * A day of a week when the maintenance will happen.
-   */
-  readonly maintenanceDay: MaintenanceDay;
-  /**
-   * UTC time when the maintenance will happen. Use 24-hour HH:MM format. Minutes must be 00. Example: 13:00.
-   */
-  readonly maintenanceStartHour: string;
+  /** A day of a week when the maintenance will happen. */
+  readonly day: MaintenanceDay;
+  /** The maintenance start time in UTC, 24-hour HH:MM format. Minutes must be 00 (e.g., '02:00', '13:00'). */
+  readonly time: string;
 }
 
 /**
@@ -790,7 +811,7 @@ export interface FlowProps {
    *
    * @default - chosen by MediaConnect
    */
-  readonly maintenance?: MaintenanceWindow;
+  readonly maintenanceConfiguration?: MaintenanceWindow;
 
   /**
    * The media streams that are associated with the flow. After you associate a media stream with a source, you can also associate it with outputs on the flow.
@@ -838,26 +859,10 @@ export interface FlowProps {
 
   /**
    * The VPC Interfaces for this flow.
-   *
-   * Use this instead of the FlowVpcInterface construct.
-   *
    * @default No VPC Interface configuration applied
    */
   readonly vpcInterfaces?: VpcInterfaceConfig[];
 
-  /**
-   * Policy to apply when the flow is removed from the stack.
-   *
-   * Defaults to `RETAIN` because a flow is a live transport, not a data store, and MediaConnect
-   * won't delete an active flow — it must be stopped first. Retaining by default avoids an
-   * unplanned teardown of a running flow and everything wired to it.
-   *
-   * Trade-off: a destroyed stack leaves the flow behind (still running, still billing). Set
-   * `RemovalPolicy.DESTROY` if you want it removed together with the stack.
-   *
-   * @default RemovalPolicy.RETAIN
-   */
-  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -1104,8 +1109,8 @@ abstract class FlowBase extends Resource implements IFlow {
   /**
    * Add an output to this flow
    */
-  public addOutput(id: string, outputConfig: OutputConfiguration): IFlowOutput {
-    const protocol = outputConfig._bind().protocol;
+  public addOutput(id: string, options: AddFlowOutputOptions): IFlowOutput {
+    const protocol = options.output._bind().protocol;
 
     if (protocol === 'ndi-speed-hq') {
       if (this._ndiState !== undefined && this._ndiState !== State.ENABLED) {
@@ -1141,7 +1146,10 @@ abstract class FlowBase extends Resource implements IFlow {
 
     return new FlowOutput(this, id, {
       flow: this,
-      output: outputConfig,
+      output: options.output,
+      flowOutputName: options.flowOutputName,
+      description: options.description,
+      outputStatus: options.outputStatus,
     });
   }
 
@@ -1410,8 +1418,8 @@ export class Flow extends FlowBase implements IFlow {
     addConstructMetadata(this, props);
 
     // Validate maintenance start hour format
-    if (props.maintenance) {
-      validateMaintenanceTime(props.maintenance.maintenanceStartHour);
+    if (props.maintenanceConfiguration) {
+      validateMaintenanceTime(props.maintenanceConfiguration.time);
     }
 
     // Validate source monitoring thresholds and content-quality requirements
@@ -1465,9 +1473,9 @@ export class Flow extends FlowBase implements IFlow {
       source: sourceConfig,
       availabilityZone: props?.availabilityZone,
       flowSize: props?.flowSize?.value,
-      maintenance: props?.maintenance ? {
-        maintenanceDay: toTitleCase(props.maintenance.maintenanceDay),
-        maintenanceStartHour: props.maintenance.maintenanceStartHour,
+      maintenance: props?.maintenanceConfiguration ? {
+        maintenanceDay: toTitleCase(props.maintenanceConfiguration.day),
+        maintenanceStartHour: props.maintenanceConfiguration.time,
       } : undefined,
       mediaStreams: props.mediaStreams ? props.mediaStreams.map(stream => stream._bind()) : undefined,
       ndiConfig: props.ndiConfig ? {
@@ -1507,15 +1515,6 @@ export class Flow extends FlowBase implements IFlow {
       vpcInterfaces: Lazy.any({ produce: () => this.vpcInterfaces }, { omitEmptyArray: true }),
     });
 
-    // cfn-validate false positive: the engine's embedded schema flags Flow.Source as deprecated,
-    // but it is a required, current property (no alternative exists). Remove once the upstream
-    // schema is corrected.
-    // Tracking: https://github.com/aws-cloudformation/cloudformation-validate/issues/144
-    Validations.of(flow).acknowledge({
-      id: 'CloudFormation-Validate::W9009',
-      reason: 'cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)',
-    });
-
     this.flowArn = flow.attrFlowArn;
     this.sourceArn = flow.attrSourceSourceArn;
     this.egressIp = flow.attrEgressIp;
@@ -1525,8 +1524,6 @@ export class Flow extends FlowBase implements IFlow {
     this._ndiState = props.ndiConfig?.ndiState ?? State.DISABLED;
     this._sourceProtocol = sourceConfig.protocol;
     this._hasListenerSource = Flow.isListenerStyleProtocol(sourceConfig.protocol);
-
-    flow.applyRemovalPolicy(props.removalPolicy);
 
     this.node.addValidation({
       validate: () => {
@@ -1701,6 +1698,7 @@ export class Flow extends FlowBase implements IFlow {
   /**
    * Add a VPC interface to this flow.
    */
+  @MethodMetadata()
   public addVpcInterface(vpc: VpcInterfaceConfig) {
     this.vpcInterfaces.push({
       name: vpc.name,
