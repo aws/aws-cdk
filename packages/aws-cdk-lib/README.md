@@ -350,15 +350,12 @@ crosses region or account boundaries:
 > [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
 > To prevent deployment errors, limit the use of nested stacks and minimize stack name length.
 
-> [!NOTE]
-> Weakening a reference on a deployed application changes how a value is referenced, not the
-> value itself. CloudFormation only resolves `Fn::GetStackOutput` while it executes the change
-> set, so until then the value reads as `{{changeSet:KNOWN_AFTER_APPLY}}`: a property that
-> requires replacement and is fed by such a reference is planned for replacement, and so are
-> resources whose own properties depend on it. Stateful resources such as an
-> `AWS::RDS::DBInstance` are not exempt. Review the migration with `cdk diff` using credentials
-> that can create a change set, because read-only credentials fall back to a template-only
-> comparison that does not report replacements.
+Weakening a reference on a deployed application changes only how the value is referenced.
+CloudFormation resolves `Fn::GetStackOutput` while it executes the change set, so until then
+the change set shows `{{changeSet:KNOWN_AFTER_APPLY}}` in its place. If that value feeds a
+property that requires replacement, CloudFormation replaces the resource, and every resource
+whose own properties depend on the replaced one. This includes stateful resources such as
+`AWS::RDS::DBInstance`, so review the change set before you deploy the migration.
 
 ### The deadly embrace
 
