@@ -151,6 +151,31 @@ describe('WebSocketApi', () => {
     expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
   });
 
+  test('disableExecuteApiEndpoint is enabled', () => {
+    const stack = new Stack();
+
+    new WebSocketApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+      DisableExecuteApiEndpoint: true,
+    });
+  });
+
+  test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(() => api.apiEndpoint).toThrow(
+      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./,
+    );
+  });
+
   test('get arnForExecuteApi', () => {
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'api');
