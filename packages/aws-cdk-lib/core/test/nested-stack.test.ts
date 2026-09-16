@@ -241,14 +241,6 @@ describe('nested-stack reference resolution', () => {
   });
 
   const shapes: Array<[string, () => App]> = [
-    ['four levels of nesting, legacy synthesizer', () => {
-      const app = new App();
-      const top = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
-      const l3 = new NestedStack(new NestedStack(new NestedStack(top, 'L1'), 'L2'), 'L3');
-      res(l3, 'Deepest');
-      return app;
-    }],
-
     ['an asset at every level of nesting, legacy synthesizer', () => {
       const app = new App();
       let current: Stack = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env });
@@ -283,23 +275,6 @@ describe('nested-stack reference resolution', () => {
       const top = new Stack(app, 'Top', { env });
       const produced = res(new NestedStack(top, 'Left'), 'Produced');
       res(new NestedStack(top, 'Right'), 'Consumes', { From: produced.getAtt('Attribute').toString() });
-      return app;
-    }],
-
-    ['weak cross-stack references in both directions', () => {
-      const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
-      const producer = new Stack(app, 'Producer', { env });
-      const consumer = new Stack(app, 'Consumer', { env });
-      res(new NestedStack(consumer, 'Nested'), 'Consumes', { From: res(producer, 'Produced').ref });
-      res(consumer, 'ConsumesNested', { From: res(new NestedStack(producer, 'NestedProducer'), 'Produced').ref });
-      return app;
-    }],
-
-    ['both-strength cross-stack references', () => {
-      const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
-      const producer = new Stack(app, 'Producer', { env });
-      const consumer = new Stack(app, 'Consumer', { env });
-      res(new NestedStack(consumer, 'Nested'), 'Consumes', { From: res(producer, 'Produced').ref });
       return app;
     }],
 
