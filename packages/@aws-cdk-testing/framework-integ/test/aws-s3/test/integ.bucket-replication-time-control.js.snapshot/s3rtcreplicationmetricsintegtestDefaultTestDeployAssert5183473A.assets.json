@@ -1,10 +1,10 @@
 {
-  "version": "54.0.0",
+  "version": "52.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "LambdaS3FilesIntegTestDefaultTestDeployAssert0F4D084A Template",
+      "displayName": "s3rtcreplicationmetricsintegtestDefaultTestDeployAssert5183473A Template",
       "source": {
-        "path": "LambdaS3FilesIntegTestDefaultTestDeployAssert0F4D084A.template.json",
+        "path": "s3rtcreplicationmetricsintegtestDefaultTestDeployAssert5183473A.template.json",
         "packaging": "file"
       },
       "destinations": {
