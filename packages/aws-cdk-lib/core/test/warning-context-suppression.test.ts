@@ -48,6 +48,24 @@ describe('context-scoped warning suppression', () => {
     expect(msgs.some((m) => m.includes('aiops action ignored'))).toBe(false);
   });
 
+  test('a single-key filter suppresses a multi-key context (unmentioned keys are unconstrained)', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN — warning carries a two-key context; acknowledge mentions only one key
+    Validations.of(c1).addWarning(UNSUPPORTED, 'lambda action ignored', { context: { service: 'lambda', resource: 'function' } });
+    Validations.of(c1).acknowledge({
+      id: UNSUPPORTED,
+      reason: 'lambda actions are attached intentionally',
+      where: [WarningContextFilter.callSite('service', 'lambda')],
+    });
+
+    // THEN — the two-key occurrence is suppressed by the single-key filter
+    expect(messages(app).some((m) => m.includes('lambda action ignored'))).toBe(false);
+  });
+
   test('an unfiltered acknowledgement suppresses all occurrences (backwards compatible)', () => {
     // GIVEN
     const app = new App();

@@ -1919,6 +1919,36 @@ Validations.of(this).acknowledge({
 });
 ```
 
+#### Acknowledging a subset of a warning (context filters)
+
+A single warning `id` is sometimes emitted for a range of situations. A construct
+can attach structured **context** to each occurrence (the keys are the
+construct's choice), and you can then acknowledge only the occurrences whose
+context matches — leaving the rest to still warn.
+
+```ts
+// The construct attaches context describing this specific occurrence:
+Validations.of(this).addWarning(
+  'my-lib:unsupportedActionType',
+  'This action type is not supported and will be ignored',
+  { context: { service: 'aiops', resource: 'investigation-group' } },
+);
+
+// Acknowledge only the occurrences that match. Filters are combined with AND,
+// and any context key you do not mention is left unconstrained — so the filter
+// below also suppresses an occurrence whose context is
+// `{ service: 'aiops', resource: 'other' }`:
+Validations.of(this).acknowledge({
+  id: 'my-lib:unsupportedActionType',
+  reason: 'aiops actions are attached intentionally',
+  where: [WarningContextFilter.callSite('service', 'aiops')],
+});
+```
+
+Omitting `where` acknowledges every occurrence of the `id`, which is the default
+behavior. A warning emitted without any context can only be acknowledged by an
+unfiltered acknowledgement, so a specific filter never silences it accidentally.
+
 ### Acknowledging Infos
 
 Informational messages can also be emitted and acknowledged. Use `addInfoV2()`
