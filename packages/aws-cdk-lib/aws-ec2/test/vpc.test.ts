@@ -1774,6 +1774,89 @@ describe('vpc', () => {
           ],
         });
       });
+
+      test('throws when a private subnet is in an Availability Zone not listed in availabilityZoneAddresses', () => {
+        const stack = new Stack();
+        expect(() => new Vpc(stack, 'Vpc', {
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          natGatewayProvider: NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZone: 'us-east-1a' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZone: 'us-east-1b' },
+            ],
+          }),
+        })).toThrow('Subnet is in Availability Zone us-east-1c, which is not listed in `availabilityZoneAddresses` (us-east-1a, us-east-1b).');
+      });
+
+      test('routes every private subnet when all of its Availability Zones are listed in availabilityZoneAddresses', () => {
+        const stack = new Stack();
+        new Vpc(stack, 'Vpc', {
+          availabilityZones: ['us-east-1a', 'us-east-1b'],
+          natGatewayProvider: NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZone: 'us-east-1a' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZone: 'us-east-1b' },
+            ],
+          }),
+        });
+
+        Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          NatGatewayId: { 'Fn::GetAtt': ['VpcRegionalNatGateway3B64B8F5', 'NatGatewayId'] },
+        }, 2);
+      });
+
+      test('does not check Availability Zone coverage when availabilityZoneAddresses use availabilityZoneId', () => {
+        const stack = new Stack();
+        new Vpc(stack, 'Vpc', {
+          availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
+          natGatewayProvider: NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZoneId: 'use1-az1' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZoneId: 'use1-az2' },
+            ],
+          }),
+        });
+
+        Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          NatGatewayId: { 'Fn::GetAtt': ['VpcRegionalNatGateway3B64B8F5', 'NatGatewayId'] },
+        }, 3);
+      });
+
+      test('does not check Availability Zone coverage when a listed availabilityZone is an unresolved token', () => {
+        const stack = new Stack();
+        new Vpc(stack, 'Vpc', {
+          availabilityZones: ['us-east-1a', 'us-east-1b'],
+          natGatewayProvider: NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZone: 'us-east-1a' },
+              { allocationIds: ['eipalloc-22222222'], availabilityZone: Lazy.string({ produce: () => 'us-east-1c' }) },
+            ],
+          }),
+        });
+
+        Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          NatGatewayId: { 'Fn::GetAtt': ['VpcRegionalNatGateway3B64B8F5', 'NatGatewayId'] },
+        }, 2);
+      });
+
+      test('does not check Availability Zone coverage when the subnet Availability Zones are unresolved tokens', () => {
+        const stack = new Stack();
+        new Vpc(stack, 'Vpc', {
+          natGatewayProvider: NatProvider.regionalGateway({
+            availabilityZoneAddresses: [
+              { allocationIds: ['eipalloc-11111111'], availabilityZone: 'us-east-1a' },
+            ],
+          }),
+        });
+
+        Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::Route', {
+          DestinationCidrBlock: '0.0.0.0/0',
+          NatGatewayId: { 'Fn::GetAtt': ['VpcRegionalNatGateway3B64B8F5', 'NatGatewayId'] },
+        }, 2);
+      });
     });
 
     test('Can add an IPv6 route', () => {

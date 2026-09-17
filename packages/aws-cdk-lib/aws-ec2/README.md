@@ -220,6 +220,7 @@ const eip1 = new ec2.CfnEIP(this, 'NatEip1');
 const eip2 = new ec2.CfnEIP(this, 'NatEip2');
 
 new ec2.Vpc(this, 'Vpc', {
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
   natGatewayProvider: ec2.NatProvider.regionalGateway({
     availabilityZoneAddresses: [
       { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
@@ -230,6 +231,12 @@ new ec2.Vpc(this, 'Vpc', {
 ```
 
 Each Availability Zone may only appear once in `availabilityZoneAddresses`.
+
+In this manual mode the gateway only serves the listed Availability Zones and does not
+expand to other zones automatically, so every Availability Zone that contains a private
+subnet must be listed. When the zone names are known at synthesis time, a private subnet
+in an unlisted zone is rejected with an error. Entries that use `availabilityZoneId` or
+unresolved tokens cannot be checked at synthesis time.
 
 The `natGateways` property is ignored when using a Regional NAT Gateway, since a single
 gateway already covers every Availability Zone. Values below 1, as well as unresolved

@@ -16,7 +16,7 @@ import type { PrivateSubnet, PublicSubnet, Vpc } from './vpc';
 import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
 import type { Duration } from '../../core';
-import { Annotations, Fn, Token, UnscopedValidationError } from '../../core';
+import { Annotations, Fn, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
@@ -260,6 +260,13 @@ export interface RegionalNatGatewayProviderProps {
    *
    * When specified, `allocationId` and `eip` are ignored.
    * This enables manual mode for Regional NAT Gateway where you control EIP allocation per AZ.
+   *
+   * In manual mode the gateway only serves the listed Availability Zones and does not
+   * expand to other zones automatically, so every Availability Zone that contains a
+   * private subnet routed through this gateway must be listed. When the zone names are
+   * known at synthesis time, a private subnet in an unlisted zone is rejected with an
+   * error. Entries that use `availabilityZoneId` or unresolved tokens cannot be checked
+   * and are assumed to be correct.
    *
    * @default - Automatic mode: AWS manages AZ coverage and EIP allocation
    */
@@ -529,11 +536,51 @@ export class RegionalNatGatewayProvider extends NatProvider {
     if (!this._natGateway) {
       throw new UnscopedValidationError(lit`CannotConfigureSubnetBeforeNat`, 'Cannot configure subnet before configuring NAT gateway');
     }
+    this.validateAvailabilityZoneCoverage(subnet);
     subnet.addRoute('DefaultRoute', {
       routerType: RouterType.NAT_GATEWAY,
       routerId: this._natGateway.attrNatGatewayId,
       enablesInternetConnectivity: true,
     });
+  }
+
+  /**
+   * Throw if the subnet is in an Availability Zone that the gateway does not serve.
+   *
+   * With `availabilityZoneAddresses` the gateway only serves the listed zones and does
+   * not expand automatically, so a default route from a subnet in any other zone would
+   * not carry traffic at runtime. The check needs zone names on both sides, so it is
+   * skipped when the subnet's zone is an unresolved token or when the listed zones
+   * cannot be determined at synthesis time.
+   */
+  private validateAvailabilityZoneCoverage(subnet: PrivateSubnet) {
+    const listedZones = this.listedAvailabilityZones();
+    if (listedZones === undefined || Token.isUnresolved(subnet.availabilityZone)) {
+      return;
+    }
+    if (!listedZones.includes(subnet.availabilityZone)) {
+      throw new ValidationError(
+        lit`SubnetNotCoveredByRegionalNatGateway`,
+        `Subnet is in Availability Zone ${subnet.availabilityZone}, which is not listed in \`availabilityZoneAddresses\` (${listedZones.join(', ')}). `
+        + 'A Regional NAT Gateway with `availabilityZoneAddresses` only serves the listed Availability Zones. '
+        + 'Add an entry for this zone, or omit `availabilityZoneAddresses` to let AWS cover every zone automatically.',
+        subnet,
+      );
+    }
+  }
+
+  /**
+   * The Availability Zone names listed in `availabilityZoneAddresses`
+   *
+   * Returns `undefined` when they cannot be determined at synthesis time: in automatic
+   * mode, or when any entry uses `availabilityZoneId` or an unresolved `availabilityZone`.
+   */
+  private listedAvailabilityZones(): string[] | undefined {
+    const zones = this.props.availabilityZoneAddresses?.map(address => address.availabilityZone);
+    if (zones === undefined || !zones.every((zone): zone is string => zone !== undefined && !Token.isUnresolved(zone))) {
+      return undefined;
+    }
+    return zones;
   }
 
   /**
