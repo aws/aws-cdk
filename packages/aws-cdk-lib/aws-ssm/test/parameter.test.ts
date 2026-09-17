@@ -352,6 +352,19 @@ test('StringParameter.fromStringParameterName', () => {
   });
 });
 
+test('StringParameter.fromStringParameterName does not create a CfnParameter when stringValue is not read', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterName(stack, 'MyParamName', 'MyParamName');
+
+  // THEN
+  // the name/ARN can be used without creating a CloudFormation parameter, so no W2001 warning
+  expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
+  expect(Template.fromStack(stack).findParameters('MyParamNameParameter')).toEqual({});
+});
+
 test('fromStringParameterArn StringParameter.fromStringParameterArn', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -373,6 +386,19 @@ test('fromStringParameterArn StringParameter.fromStringParameterArn', () => {
       },
     },
   });
+});
+
+test('fromStringParameterArn does not create a CfnParameter when stringValue is not read', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const sharingParameterArn = 'arn:aws:ssm:us-east-1:123456789012:parameter/dummyName';
+
+  // WHEN
+  const param = ssm.StringParameter.fromStringParameterArn(stack, 'MyParamName', sharingParameterArn);
+
+  // THEN
+  expect(stack.resolve(param.parameterArn)).toEqual(sharingParameterArn);
+  expect(Template.fromStack(stack).findParameters('MyParamNameParameter')).toEqual({});
 });
 
 test('fromStringParameterArn throws when StringParameter.fromStringParameterArn is called with a token ARN', () => {
@@ -814,10 +840,12 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
       type: ParameterType.STRING,
     });
+    // reading stringValue triggers creation of the underlying CfnParameter
+    stack.resolve(param.stringValue);
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -835,10 +863,12 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
       valueType: ParameterValueType.STRING,
     });
+    // reading stringValue triggers creation of the underlying CfnParameter
+    stack.resolve(param.stringValue);
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -892,9 +922,11 @@ describe('from string list parameter', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
+    const param = ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
       parameterName: 'my-param-name',
     });
+    // reading stringListValue triggers creation of the underlying CfnParameter
+    stack.resolve(param.stringListValue);
 
     // THEN
     Template.fromStack(stack).templateMatches({
@@ -905,6 +937,20 @@ describe('from string list parameter', () => {
         },
       },
     });
+  });
+
+  test('fromListParameterAttributes does not create a CfnParameter when stringListValue is not read', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const param = ssm.StringListParameter.fromListParameterAttributes(stack, 'my-param-name', {
+      parameterName: 'my-param-name',
+    });
+
+    // THEN
+    expect(stack.resolve(param.parameterName)).toEqual('my-param-name');
+    expect(Template.fromStack(stack).findParameters('myparamnameParameter')).toEqual({});
   });
 
   testDeprecated('string type returns correct value', () => {
