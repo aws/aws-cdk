@@ -585,24 +585,20 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         throw new ValidationError(lit`RouteHostedDomainZoneName`, 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
-      switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {
+      const recordType = props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS;
+      switch (recordType) {
         case ApplicationLoadBalancedServiceRecordType.ALIAS:
-          let aliasRecord = new ARecord(this, 'DNS', {
-            zone: props.domainZone,
-            recordName: props.domainName,
-            target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-          });
-          domainName = aliasRecord.domainName;
-          break;
         case ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK: {
           const aliasProps = {
             zone: props.domainZone,
             recordName: props.domainName,
             target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
           };
-          const dualStackAliasRecord = new ARecord(this, 'DNS', aliasProps);
-          new AaaaRecord(this, 'DNSAAAA', aliasProps);
-          domainName = dualStackAliasRecord.domainName;
+          const aliasRecord = new ARecord(this, 'DNS', aliasProps);
+          if (recordType === ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK) {
+            new AaaaRecord(this, 'DNSAAAA', aliasProps);
+          }
+          domainName = aliasRecord.domainName;
           break;
         }
         case ApplicationLoadBalancedServiceRecordType.CNAME:
