@@ -10,6 +10,20 @@ export interface GenericStatistic {
   statistic: string;
 }
 
+/**
+ * The Interquartile Mean statistic.
+ *
+ * IQM is a first-class CloudWatch statistic but, unlike Average/Sum/etc., it is
+ * not accepted in the `Statistic` field of an alarm; it must be rendered into
+ * `ExtendedStatistic`. It takes no parameters, so it fits neither the `single`
+ * nor the `pair` shapes, hence its own type. It is kept distinct from `generic`
+ * so that it is not treated as an unrecognized/unsupported statistic.
+ */
+export interface IqmStatistic {
+  type: 'iqm';
+  statistic: string;
+}
+
 export interface ParseableStatistic {
   statPrefix: string;
   statName: string;
@@ -163,6 +177,7 @@ export function parseStatistic(
   | WinsorizedMeanStatistic
   | TrimmedCountStatistic
   | TrimmedSumStatistic
+  | IqmStatistic
   | GenericStatistic {
   const lowerStat = stat.toLowerCase();
 
@@ -177,7 +192,6 @@ export function parseStatistic(
     samplecount: Stats.SAMPLE_COUNT,
     n: Stats.SAMPLE_COUNT,
     sum: Stats.SUM,
-    iqm: Stats.IQM,
   };
 
   if (lowerStat in statMap) {
@@ -185,6 +199,15 @@ export function parseStatistic(
       type: 'simple',
       statistic: statMap[lowerStat],
     } as SimpleStatistic;
+  }
+
+  // IQM is a supported statistic but must be rendered as an ExtendedStatistic,
+  // so it is classified separately from the simple statistics above.
+  if (lowerStat === 'iqm') {
+    return {
+      type: 'iqm',
+      statistic: Stats.IQM,
+    } as IqmStatistic;
   }
 
   let m: ReturnType<typeof parseSingleStatistic> | ReturnType<typeof parsePairStatistic> = undefined;
@@ -220,7 +243,7 @@ export function parseStatistic(
 }
 
 export function normalizeStatistic(parsed: ReturnType<typeof parseStatistic>): string {
-  if (parsed.type === 'simple' || parsed.type === 'generic') {
+  if (parsed.type === 'simple' || parsed.type === 'generic' || parsed.type === 'iqm') {
     return parsed.statistic;
   } else if (parsed.type === 'single') {
     // Avoid parsing because we might get into

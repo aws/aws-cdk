@@ -699,7 +699,7 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
     return undefined;
   }
 
-  if (parsed.type === 'single' || parsed.type === 'pair') {
+  if (parsed.type === 'single' || parsed.type === 'pair' || parsed.type === 'iqm') {
     return normalizeStatistic(parsed);
   }
 

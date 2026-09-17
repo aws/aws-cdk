@@ -327,7 +327,7 @@ describe('Metrics', () => {
     expect(parseStatistic(Stats.SUM).type).toEqual('simple');
     expect(parseStatistic(Stats.MINIMUM).type).toEqual('simple');
     expect(parseStatistic(Stats.MAXIMUM).type).toEqual('simple');
-    expect(parseStatistic(Stats.IQM).type).toEqual('simple');
+    expect(parseStatistic(Stats.IQM).type).toEqual('iqm');
 
     /* eslint-disable no-multi-spaces */
 

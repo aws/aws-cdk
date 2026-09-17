@@ -641,6 +641,8 @@ export class Metric implements IMetric {
       extendedStatistic = singleStatisticToString(parsed);
     } else if (parsed.type === 'pair') {
       extendedStatistic = pairStatisticToString(parsed);
+    } else if (parsed.type === 'iqm') {
+      extendedStatistic = parsed.statistic;
     }
 
     return {
