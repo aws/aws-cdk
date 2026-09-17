@@ -21,6 +21,33 @@
     }
    },
    "Condition": "NeverTrue"
+  },
+  "ParameterGroup": {
+   "Type": "AWS::ElastiCache::ParameterGroup",
+   "Properties": {
+    "CacheParameterGroupFamily": "redis7",
+    "Description": "default rego rules",
+    "Properties": {
+     "maxmemory-policy": "allkeys-lru"
+    }
+   },
+   "Condition": "NeverTrue"
+  },
+  "ViolatingReplicationGroup": {
+   "Type": "AWS::ElastiCache::ReplicationGroup",
+   "Properties": {
+    "CacheNodeType": "cache.t4g.micro",
+    "CacheParameterGroupName": {
+     "Ref": "ParameterGroup"
+    },
+    "Engine": "redis",
+    "NumNodeGroups": 2,
+    "ReplicationGroupDescription": "default rego rules",
+    "UserGroupIds": [
+     "default-rego-rules"
+    ]
+   },
+   "Condition": "NeverTrue"
   }
  },
  "Conditions": {

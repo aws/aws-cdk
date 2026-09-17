@@ -4,9 +4,47 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.5.1",
+      "pluginVersion": "1.9.0",
       "conclusion": "success",
       "violations": [
+        {
+          "ruleName": "CDK-ElastiCache-001",
+          "description": "CacheParameterGroupName: NumNodeGroups is 2 but parameter group ParameterGroup does not set cluster-enabled to yes; the create fails with \"Use a parameter group with cluster-enabled parameter to create more than one node group.\"",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack/ViolatingReplicationGroup",
+              "constructFqn": "aws-cdk-lib.aws_elasticache.CfnReplicationGroup",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "DefaultRegoRulesStack.template.json",
+                "logicalId": "ViolatingReplicationGroup",
+                "propertyPaths": [
+                  "Properties.CacheParameterGroupName"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "CDK-ElastiCache-002",
+          "description": "UserGroupIds: UserGroupIds is set without encryption in transit; the create fails with \"User group based access control requires encryption-in-transit to be enabled on the replication group.\"",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack/ViolatingReplicationGroup",
+              "constructFqn": "aws-cdk-lib.aws_elasticache.CfnReplicationGroup",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "DefaultRegoRulesStack.template.json",
+                "logicalId": "ViolatingReplicationGroup",
+                "propertyPaths": [
+                  "Properties.UserGroupIds"
+                ]
+              }
+            }
+          ]
+        },
         {
           "ruleName": "CDK-GameLift-005",
           "description": "RoutingStrategy.FleetId: Alias with TERMINAL routing must not reference a fleet; either route to a fleet or set a terminal message, not both",
@@ -28,7 +66,7 @@
         },
         {
           "ruleName": "W8003",
-          "description": "Fn::Equals in condition 'NeverTrue' will always return False",
+          "description": "Conditions/NeverTrue: Fn::Equals in condition 'NeverTrue' will always return False",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Best Practice"
