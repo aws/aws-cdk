@@ -1233,7 +1233,7 @@ To use dualstack IP address type, you must have associated IPv6 CIDR blocks with
 ### Application Load Balancer
 
 You can use dualstack Application Load Balancer for Fargate and EC2 services.
-For a custom domain on either pattern, set `recordType` to `ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6`
+For a custom domain on either pattern, set `recordType` to `ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK`
 to create both A and AAAA alias records.
 
 ```ts
@@ -1258,7 +1258,7 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Far
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
   domainName: 'api.example.com',
   domainZone: hostedZone,
-  recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
+  recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
 });
 
 const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'Ec2Service', {

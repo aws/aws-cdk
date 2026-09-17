@@ -30,7 +30,7 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'myService', {
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
   domainName: 'service.test.public',
   domainZone: hostedZone,
-  recordType: ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
+  recordType: ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
 });
 
 const integ = new IntegTest(app, 'albFargateServiceTest', {

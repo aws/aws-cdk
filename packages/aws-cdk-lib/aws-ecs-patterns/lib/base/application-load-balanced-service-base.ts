@@ -45,7 +45,7 @@ export enum ApplicationLoadBalancedServiceRecordType {
    *
    * This option creates DNS records only. It does not configure the load balancer for IPv6.
    */
-  ALIAS_IPV4_IPV6,
+  ALIAS_DUAL_STACK,
 }
 
 /**
@@ -594,7 +594,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           });
           domainName = aliasRecord.domainName;
           break;
-        case ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6: {
+        case ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK: {
           const aliasProps = {
             zone: props.domainZone,
             recordName: props.domainName,

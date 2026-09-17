@@ -433,7 +433,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         hostedZoneId: 'fakeId',
         zoneName: 'domain.com.',
       }),
-      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_IPV4_IPV6,
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
       taskImageOptions: {
         containerPort: 2015,
         image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
