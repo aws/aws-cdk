@@ -1,89 +1,56 @@
+/**
+ * Implementation of https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Statistics-definitions.html
+ */
+import type { Statistic } from '../metric-types';
 import { Stats } from '../stats';
+
+export type ParsedStatistic =
+  | SimpleStatistic
+  | UnparseableStatistic
+  | ExtendedStatisticWithoutParameters
+  | ExtendedStatisticWithThreshold
+  | ExtendedStatisticWithRange
+  ;
 
 export interface SimpleStatistic {
   type: 'simple';
-  statistic: string;
+  statistic: typeof Stats.AVERAGE | typeof Stats.MINIMUM | typeof Stats.MAXIMUM | typeof Stats.SAMPLE_COUNT | typeof Stats.SUM;
 }
 
-export interface GenericStatistic {
-  type: 'generic';
-  statistic: string;
+export interface UnparseableStatistic {
+  type: 'unparseable';
+  originalInput: string;
 }
 
-/**
- * The Interquartile Mean statistic.
- *
- * IQM is a first-class CloudWatch statistic but, unlike Average/Sum/etc., it is
- * not accepted in the `Statistic` field of an alarm; it must be rendered into
- * `ExtendedStatistic`. It takes no parameters, so it fits neither the `single`
- * nor the `pair` shapes, hence its own type. It is kept distinct from `generic`
- * so that it is not treated as an unrecognized/unsupported statistic.
- */
-export interface IqmStatistic {
-  type: 'iqm';
-  statistic: string;
+export interface ExtendedStatisticWithoutParameters {
+  type: 'extended';
+  statistic: 'IQM';
 }
 
-export interface ParseableStatistic {
-  statPrefix: string;
-  statName: string;
-  rawStatistic: string;
-}
-
-export interface SingleStatistic extends ParseableStatistic {
+export interface ExtendedStatisticWithThreshold {
   type: 'single';
+  statPrefix: 'p' | 'tm' | 'wm' | 'tc' | 'ts';
   value: number;
+  originalInput: string;
 }
 
-export interface PairStatistic extends ParseableStatistic {
-  type: 'pair';
+export interface ExtendedStatisticWithRange {
+  type: 'range';
+  statPrefix: 'PR' | 'TM' | 'WM' | 'TC' | 'TS';
+  originalInput: string;
   isPercent: boolean;
   lower?: number;
   upper?: number;
-  canBeSingleStat: boolean;
   asSingleStatStr?: string;
 }
 
-export interface PercentileStatistic extends SingleStatistic {
-  statName: 'percentile';
-}
-
-export interface PercentileRankStatistic extends PairStatistic {
-  statName: 'percentileRank';
-}
-
-export interface TrimmedMeanStatistic extends PairStatistic {
-  statName: 'trimmedMean';
-}
-
-export interface WinsorizedMeanStatistic extends PairStatistic {
-  statName: 'winsorizedMean';
-}
-
-export interface TrimmedCountStatistic extends PairStatistic {
-  statName: 'trimmedCount';
-}
-
-export interface TrimmedSumStatistic extends PairStatistic {
-  statName: 'trimmedSum';
-}
-
-function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleStatistic, 'statName'> | undefined {
-  const prefixLower = prefix.toLowerCase();
-
-  // Allow `P99` uppercase
-  statistic = statistic.toLowerCase();
-
-  if (!statistic.startsWith(prefixLower)) {
-    return undefined;
-  }
-
+function parseSingleStatistic(rawStat: string, prefix: ExtendedStatisticWithThreshold['statPrefix']): ExtendedStatisticWithThreshold | undefined {
   // A decimal positive number regex (1, 1.2, 99.999, etc)
   const reDecimal = '\\d+(?:\\.\\d+)?';
 
   // p99.99
   // /^p(\d+(?:\.\d+)?)$/
-  const r = new RegExp(`^${prefixLower}(${reDecimal})$`).exec(statistic);
+  const r = new RegExp(`^${prefix}(${reDecimal})$`, 'i').exec(rawStat);
   if (!r) {
     return undefined;
   }
@@ -94,8 +61,8 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
   }
   return {
     type: 'single',
-    rawStatistic: statistic,
-    statPrefix: prefixLower,
+    originalInput: rawStat,
+    statPrefix: prefix,
     value,
   };
 }
@@ -103,17 +70,16 @@ function parseSingleStatistic(statistic: string, prefix: string): Omit<SingleSta
 /**
  * Parse a statistic that looks like `tm( LOWER : UPPER )`.
  */
-function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatistic, 'statName'> | undefined {
+function parsePairStatistic(statistic: string, prefix: ExtendedStatisticWithRange['statPrefix']): ExtendedStatisticWithRange | undefined {
   const r = new RegExp(`^${prefix}\\(([^)]+)\\)$`, 'i').exec(statistic);
   if (!r) {
     return undefined;
   }
 
-  const common: Omit<PairStatistic, 'statName' | 'isPercent'> = {
-    type: 'pair',
-    canBeSingleStat: false,
-    rawStatistic: statistic,
-    statPrefix: prefix.toUpperCase(),
+  const partial: Omit<ExtendedStatisticWithRange, 'isPercent'> = {
+    type: 'range',
+    originalInput: statistic,
+    statPrefix: prefix,
   };
 
   const [lhs, rhs] = r[1].split(':');
@@ -147,17 +113,15 @@ function parsePairStatistic(statistic: string, prefix: string): Omit<PairStatist
   }
 
   const isPercent = lhsPercent || rhsPercent;
-  const canBeSingleStat = lower === undefined && isPercent;
-  const asSingleStatStr = canBeSingleStat ? `${prefix.toLowerCase()}${upper}` : undefined;
 
-  return { ...common, lower, upper, isPercent, canBeSingleStat, asSingleStatStr };
+  return { ...partial, lower, upper, isPercent };
 }
 
-export function singleStatisticToString(parsed: SingleStatistic): string {
+export function singleStatisticToString(parsed: ExtendedStatisticWithThreshold): string {
   return `${parsed.statPrefix}${parsed.value}`;
 }
 
-export function pairStatisticToString(parsed: PairStatistic): string {
+export function pairStatisticToString(parsed: ExtendedStatisticWithRange): string {
   const percent = parsed.isPercent ? '%' : '';
   const lower = parsed.lower ? `${parsed.lower}${percent}` : '';
   const upper = parsed.upper ? `${parsed.upper}${percent}` : '';
@@ -167,22 +131,11 @@ export function pairStatisticToString(parsed: PairStatistic): string {
 /**
  * Parse a statistic, returning the type of metric that was used
  */
-export function parseStatistic(
-  stat: string,
-):
-  | SimpleStatistic
-  | PercentileStatistic
-  | PercentileRankStatistic
-  | TrimmedMeanStatistic
-  | WinsorizedMeanStatistic
-  | TrimmedCountStatistic
-  | TrimmedSumStatistic
-  | IqmStatistic
-  | GenericStatistic {
+export function parseStatistic(stat: string): ParsedStatistic {
   const lowerStat = stat.toLowerCase();
 
   // Simple statistics
-  const statMap: { [k: string]: string } = {
+  const simpleStats: { [k: string]: SimpleStatistic['statistic'] } = {
     average: Stats.AVERAGE,
     avg: Stats.AVERAGE,
     minimum: Stats.MINIMUM,
@@ -194,71 +147,73 @@ export function parseStatistic(
     sum: Stats.SUM,
   };
 
-  if (lowerStat in statMap) {
-    return {
-      type: 'simple',
-      statistic: statMap[lowerStat],
-    } as SimpleStatistic;
+  if (lowerStat in simpleStats) {
+    return { type: 'simple', statistic: simpleStats[lowerStat] };
   }
 
   // IQM is a supported statistic but must be rendered as an ExtendedStatistic,
   // so it is classified separately from the simple statistics above.
   if (lowerStat === 'iqm') {
-    return {
-      type: 'iqm',
-      statistic: Stats.IQM,
-    } as IqmStatistic;
+    return { type: 'extended', statistic: 'IQM' };
   }
 
-  let m: ReturnType<typeof parseSingleStatistic> | ReturnType<typeof parsePairStatistic> = undefined;
-
-  // Percentile statistics
-  m = parseSingleStatistic(stat, 'p');
-  if (m) return { ...m, statName: 'percentile' } as PercentileStatistic;
-
-  // Percentile Rank statistics
-  m = parsePairStatistic(stat, 'pr');
-  if (m) return { ...m, statName: 'percentileRank' } as PercentileRankStatistic;
-
-  // Trimmed mean statistics
-  m = parseSingleStatistic(stat, 'tm') || parsePairStatistic(stat, 'tm');
-  if (m) return { ...m, statName: 'trimmedMean' } as TrimmedMeanStatistic;
-
-  // Winsorized mean statistics
-  m = parseSingleStatistic(stat, 'wm') || parsePairStatistic(stat, 'wm');
-  if (m) return { ...m, statName: 'winsorizedMean' } as WinsorizedMeanStatistic;
-
-  // Trimmed count statistics
-  m = parseSingleStatistic(stat, 'tc') || parsePairStatistic(stat, 'tc');
-  if (m) return { ...m, statName: 'trimmedCount' } as TrimmedCountStatistic;
-
-  // Trimmed sum statistics
-  m = parseSingleStatistic(stat, 'ts') || parsePairStatistic(stat, 'ts');
-  if (m) return { ...m, statName: 'trimmedSum' } as TrimmedSumStatistic;
+  const m = parseSingleStatistic(stat, 'p')
+    ?? parseSingleStatistic(stat, 'tm')
+    ?? parseSingleStatistic(stat, 'wm')
+    ?? parseSingleStatistic(stat, 'tc')
+    ?? parseSingleStatistic(stat, 'ts')
+    ?? parsePairStatistic(stat, 'PR')
+    ?? parsePairStatistic(stat, 'TM')
+    ?? parsePairStatistic(stat, 'WM')
+    ?? parsePairStatistic(stat, 'TC')
+    ?? parsePairStatistic(stat, 'TS');
+  if (m) return m;
 
   return {
-    type: 'generic',
-    statistic: stat,
-  } as GenericStatistic;
+    type: 'unparseable',
+    originalInput: stat,
+  };
 }
 
 export function normalizeStatistic(parsed: ReturnType<typeof parseStatistic>): string {
-  if (parsed.type === 'simple' || parsed.type === 'generic' || parsed.type === 'iqm') {
-    return parsed.statistic;
-  } else if (parsed.type === 'single') {
-    // Avoid parsing because we might get into
-    // floating point rounding issues, return as-is but lowercase the stat prefix.
-    return parsed.rawStatistic.toLowerCase();
-  } else if (parsed.type === 'pair') {
-    // Avoid parsing because we might get into
-    // floating point rounding issues, return as-is but uppercase the stat prefix.
-    return parsed.rawStatistic.toUpperCase();
+  switch (parsed.type) {
+    case 'simple':
+    case 'extended':
+      return parsed.statistic;
+    case 'unparseable':
+      return parsed.originalInput;
+    case 'single':
+      // Avoid parsing because we might get into
+      // floating point rounding issues, return as-is but lowercase the stat prefix.
+      return parsed.originalInput.toLowerCase();
+    case 'range':
+      // Avoid parsing because we might get into
+      // floating point rounding issues, return as-is but uppercase the stat prefix.
+      return parsed.originalInput.toUpperCase();
   }
-
-  return '';
 }
 
 export function normalizeRawStringStatistic(stat: string): string {
   const parsed = parseStatistic(stat);
   return normalizeStatistic(parsed);
+}
+
+export interface StatisticFields {
+  readonly statistic?: Statistic;
+  readonly extendedStatistic?: string;
+}
+
+export function parseStatisticToFields(statistic: string): StatisticFields {
+  const parsed = parseStatistic(statistic);
+  switch (parsed.type) {
+    case 'simple':
+      return { statistic: parsed.statistic as Statistic }; // Stats strings and Statistic enum values are the same strings
+    case 'extended':
+    case 'single':
+    case 'range':
+      return { extendedStatistic: normalizeStatistic(parsed) };
+    case 'unparseable':
+      // This won't be correct, but we need to leave the user's input somewhere
+      return { extendedStatistic: parsed.originalInput };
+  }
 }

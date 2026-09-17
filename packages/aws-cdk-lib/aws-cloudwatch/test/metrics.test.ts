@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { Alarm, Metric, Stats } from '../lib';
-import type { PairStatistic, SingleStatistic } from '../lib/private/statistic';
+import type { ExtendedStatisticWithRange, ExtendedStatisticWithThreshold } from '../lib/private/statistic';
 import { parseStatistic } from '../lib/private/statistic';
 
 describe('Metrics', () => {
@@ -293,33 +293,29 @@ describe('Metrics', () => {
   });
 
   test('statistic is properly parsed', () => {
-    const checkParsingSingle = (statistic: string, statPrefix: string, statName: string, value: number) => {
+    const checkParsingSingle = (statistic: string, statPrefix: string, _statName: string, value: number) => {
       const parsed = parseStatistic(statistic);
       expect(parsed.type).toEqual('single');
-      expect((parsed as SingleStatistic).value).toEqual(value);
-      expect((parsed as SingleStatistic).statPrefix).toEqual(statPrefix);
-      expect((parsed as SingleStatistic).statName).toEqual(statName);
+      expect((parsed as ExtendedStatisticWithThreshold).value).toEqual(value);
+      expect((parsed as ExtendedStatisticWithThreshold).statPrefix).toEqual(statPrefix);
     };
 
     const checkParsingPair = (
       statistic: string,
       statPrefix: string,
-      statName: string,
+      _statName: string,
       isPercent: boolean,
-      canBeSingleStat: boolean,
-      asSingleStatStr?: string,
+      _canBeSingleStat: boolean,
+      _asSingleStatStr?: string,
       lower?: number,
       upper?: number,
     ) => {
       const parsed = parseStatistic(statistic);
-      expect(parsed.type).toEqual('pair');
-      expect((parsed as PairStatistic).isPercent).toEqual(isPercent);
-      expect((parsed as PairStatistic).lower).toEqual(lower);
-      expect((parsed as PairStatistic).upper).toEqual(upper);
-      expect((parsed as PairStatistic).canBeSingleStat).toEqual(canBeSingleStat);
-      expect((parsed as PairStatistic).asSingleStatStr).toEqual(asSingleStatStr);
-      expect((parsed as PairStatistic).statPrefix).toEqual(statPrefix);
-      expect((parsed as PairStatistic).statName).toEqual(statName);
+      expect(parsed.type).toEqual('range');
+      expect((parsed as ExtendedStatisticWithRange).isPercent).toEqual(isPercent);
+      expect((parsed as ExtendedStatisticWithRange).lower).toEqual(lower);
+      expect((parsed as ExtendedStatisticWithRange).upper).toEqual(upper);
+      expect((parsed as ExtendedStatisticWithRange).statPrefix).toEqual(statPrefix);
     };
 
     expect(parseStatistic(Stats.SAMPLE_COUNT).type).toEqual('simple');
@@ -327,7 +323,7 @@ describe('Metrics', () => {
     expect(parseStatistic(Stats.SUM).type).toEqual('simple');
     expect(parseStatistic(Stats.MINIMUM).type).toEqual('simple');
     expect(parseStatistic(Stats.MAXIMUM).type).toEqual('simple');
-    expect(parseStatistic(Stats.IQM).type).toEqual('iqm');
+    expect(parseStatistic(Stats.IQM)).toEqual({ type: 'extended', statistic: 'IQM' });
 
     /* eslint-disable no-multi-spaces */
 
@@ -373,32 +369,32 @@ describe('Metrics', () => {
     /* eslint-enable no-multi-spaces */
 
     // Check invalid statistics
-    expect(parseStatistic('p99.99.99').type).toEqual('generic');
-    expect(parseStatistic('p200').type).toEqual('generic');
-    expect(parseStatistic('pa99').type).toEqual('generic');
-    expect(parseStatistic('99').type).toEqual('generic');
-    expect(parseStatistic('tm1.').type).toEqual('generic');
-    expect(parseStatistic('tm12.').type).toEqual('generic');
-    expect(parseStatistic('tm123').type).toEqual('generic');
-    expect(parseStatistic('tm123.123456789').type).toEqual('generic');
-    expect(parseStatistic('tm.123456789').type).toEqual('generic');
-    expect(parseStatistic('TM(10:90%)').type).toEqual('generic');
-    expect(parseStatistic('TM(10%:1500)').type).toEqual('generic');
-    expect(parseStatistic('TM(10)').type).toEqual('generic');
-    expect(parseStatistic('TM()').type).toEqual('generic');
-    expect(parseStatistic('TM(0.:)').type).toEqual('pair');
-    expect(parseStatistic('TM(:0.)').type).toEqual('pair');
-    expect(parseStatistic('()').type).toEqual('generic');
-    expect(parseStatistic('(:)').type).toEqual('generic');
-    expect(parseStatistic('TM(:)').type).toEqual('generic');
-    expect(parseStatistic('TM(').type).toEqual('generic');
-    expect(parseStatistic('TM)').type).toEqual('generic');
-    expect(parseStatistic('TM(0.123456789%:%)').type).toEqual('generic');
-    expect(parseStatistic('TM(0.123:0.4543%)').type).toEqual('generic');
-    expect(parseStatistic('TM(0.123%:0.4543)').type).toEqual('generic');
-    expect(parseStatistic('TM(1000%:)').type).toEqual('generic');
-    expect(parseStatistic('TM(:1000%)').type).toEqual('generic');
-    expect(parseStatistic('TM(1000%:1000%)').type).toEqual('generic');
+    expect(parseStatistic('p99.99.99').type).toEqual('unparseable');
+    expect(parseStatistic('p200').type).toEqual('unparseable');
+    expect(parseStatistic('pa99').type).toEqual('unparseable');
+    expect(parseStatistic('99').type).toEqual('unparseable');
+    expect(parseStatistic('tm1.').type).toEqual('unparseable');
+    expect(parseStatistic('tm12.').type).toEqual('unparseable');
+    expect(parseStatistic('tm123').type).toEqual('unparseable');
+    expect(parseStatistic('tm123.123456789').type).toEqual('unparseable');
+    expect(parseStatistic('tm.123456789').type).toEqual('unparseable');
+    expect(parseStatistic('TM(10:90%)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(10%:1500)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(10)').type).toEqual('unparseable');
+    expect(parseStatistic('TM()').type).toEqual('unparseable');
+    expect(parseStatistic('TM(0.:)').type).toEqual('range');
+    expect(parseStatistic('TM(:0.)').type).toEqual('range');
+    expect(parseStatistic('()').type).toEqual('unparseable');
+    expect(parseStatistic('(:)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(:)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(').type).toEqual('unparseable');
+    expect(parseStatistic('TM)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(0.123456789%:%)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(0.123:0.4543%)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(0.123%:0.4543)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(1000%:)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(:1000%)').type).toEqual('unparseable');
+    expect(parseStatistic('TM(1000%:1000%)').type).toEqual('unparseable');
   });
 
   test('metric stores id and visible properties correctly', () => {
