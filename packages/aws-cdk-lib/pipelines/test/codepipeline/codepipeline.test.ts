@@ -108,6 +108,11 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       }),
     }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
+  test('Providing codePipeline parameter and executionMode parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      executionMode: ExecutionMode.QUEUED,
+    }).create()).toThrow('Cannot set \'executionMode\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
 });
 
 test('Policy sizes do not exceed the maximum size', () => {
@@ -1035,6 +1040,7 @@ interface CodePipelineStackProps extends cdk.StackProps {
   enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
+  executionMode?: ExecutionMode;
 }
 
 class CodePipelinePropsCheckTest extends cdk.Stack {
@@ -1076,6 +1082,13 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
         codePipeline: new Pipeline(this, 'Pipeline5'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.executionMode !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline6', {
+        executionMode: this.cProps.executionMode,
+        codePipeline: new Pipeline(this, 'Pipeline6'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }

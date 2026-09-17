@@ -514,6 +514,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.artifactBucket !== undefined) {
         throw new ValidationError(lit`CannotSetArtifactBucketExisting`, 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
+      if (this.props.executionMode !== undefined) {
+        throw new ValidationError(lit`CannotSetExecutionModeExisting`, 'Cannot set \'executionMode\' if an existing CodePipeline is given using \'codePipeline\'', this);
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
