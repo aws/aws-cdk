@@ -225,8 +225,12 @@ describe('nested-stack', () => {
  * Defining nested stack assets adds references after the first round of reference
  * resolution, so `prepareApp()` resolves references a second time. That second round
  * only revisits nested stack resources, on the assumption that nothing else can have
- * gained a reference. An unresolved cross-stack reference does not fail; it renders as
- * a same-stack `{ Ref }` in the wrong template. So assert the assumption directly.
+ * gained a reference.
+ *
+ * A (cross-stack/cross region) reference that never gets resolved does not throw an error,
+ * it silently renders as if its target were in the same template. This is a long-standing
+ * issue. So we assert the assumption that all our references that cross stack or template
+ * boundaries should be resolved through tests.
  */
 describe('nested-stack reference resolution', () => {
   const env = { account: '123456789012', region: 'us-east-1' };
@@ -295,6 +299,16 @@ describe('nested-stack reference resolution', () => {
       const l2 = new NestedStack(new NestedStack(top, 'L1'), 'L2');
       res(l2, 'Resource');
       l2.tags.setTag('FromOtherStack', res(producer, 'Produced').ref);
+      return app;
+    }],
+
+    ['a nested stack tagged with a cross-region value', () => {
+      const app = new App();
+      const producer = new Stack(app, 'Producer', { env: { ...env, region: 'us-west-2' }, crossRegionReferences: true });
+      const top = new Stack(app, 'Top', { synthesizer: new LegacyStackSynthesizer(), env, crossRegionReferences: true });
+      const l2 = new NestedStack(new NestedStack(top, 'L1'), 'L2');
+      res(l2, 'Resource');
+      l2.tags.setTag('FromOtherRegion', res(producer, 'Produced').ref);
       return app;
     }],
   ];
