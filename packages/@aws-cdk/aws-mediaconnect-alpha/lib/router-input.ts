@@ -218,9 +218,8 @@ export class RoutingScope {
 }
 
 /**
- * Routing tier for a router input. The tier determines the capacity limits, performance
- * characteristics, and associated costs. The `maximumBitrate` must fall within the limits of the
- * selected tier.
+ * Tier for a router input. The tier determines the capacity limits, performance characteristics,
+ * and associated costs. The `maximumBitrate` must fall within the limits of the selected tier.
  */
 export class RouterInputTier {
   /** Supports a maximum bitrate up to 100 megabits per second. */
@@ -271,8 +270,8 @@ export interface RouterInputProps {
   /** Indicates whether the router input is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Routing tier for this input. The tier determines the capacity limits, performance
-   * characteristics, and associated costs; `maximumBitrate` must fall within its limits.
+   * Tier for this input. The tier determines the capacity limits, performance characteristics,
+   * and associated costs; `maximumBitrate` must fall within its limits.
    * @default RouterInputTier.INPUT_20
    */
   readonly tier?: RouterInputTier;

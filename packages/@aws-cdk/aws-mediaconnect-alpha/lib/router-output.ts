@@ -47,9 +47,8 @@ export class RouterOutputProtocolOptions {
 }
 
 /**
- * Routing tier for a router output. The tier determines the capacity limits, performance
- * characteristics, and associated costs. The `maximumBitrate` must fall within the limits of the
- * selected tier.
+ * Tier for a router output. The tier determines the capacity limits, performance characteristics,
+ * and associated costs. The `maximumBitrate` must fall within the limits of the selected tier.
  */
 export class RouterOutputTier {
   /** Up to 100 Mbps */
@@ -172,8 +171,8 @@ export interface RouterOutputProps {
   /** Indicates whether the router output is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Routing tier for this output. The tier determines the capacity limits, performance
-   * characteristics, and associated costs; `maximumBitrate` must fall within its limits.
+   * Tier for this output. The tier determines the capacity limits, performance characteristics,
+   * and associated costs; `maximumBitrate` must fall within its limits.
    *
    * @default RouterOutputTier.OUTPUT_20
    */
