@@ -229,8 +229,8 @@ describe('nested-stack', () => {
  *
  * A (cross-stack/cross region) reference that never gets resolved does not throw an error,
  * it silently renders as if its target were in the same template. This is a long-standing
- * issue. So we assert the assumption that all our references that cross stack or template
- * boundaries should be resolved through tests.
+ * issue. So we assert the assumption that all our cross-stack/cross-region references
+ * should be resolved through tests.
  */
 describe('nested-stack reference resolution', () => {
   const env = { account: '123456789012', region: 'us-east-1' };
