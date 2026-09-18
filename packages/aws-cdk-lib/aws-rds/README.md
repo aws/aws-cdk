@@ -67,6 +67,14 @@ By default, the master password will be generated and stored in AWS Secrets Mana
 Your cluster will be empty by default. To add a default database upon construction, specify the
 `defaultDatabaseName` attribute.
 
+The database name must begin with a letter and contain only alphanumeric characters (underscores are
+also allowed for PostgreSQL-family engines). This applies to `defaultDatabaseName` on `DatabaseCluster`
+and `ServerlessCluster`, as well as `databaseName` on `DatabaseInstance`. It also applies when restoring
+from a snapshot, since a create-time database name is still accepted there: `DatabaseClusterFromSnapshot`
+and `DatabaseInstanceFromSnapshot` are validated the same way. The constraint is validated at
+synthesis time, so a definitively-invalid name (for example, one containing a hyphen) fails fast with a
+descriptive error rather than failing later at deploy time with the opaque RDS API error.
+
 When you create a DB instance in your cluster, Aurora automatically chooses an appropriate AZ for that instance if you don't specify an AZ.
 You can place each instance in fixed availability zone by specifying `availabilityZone` property.
 For details, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html).
