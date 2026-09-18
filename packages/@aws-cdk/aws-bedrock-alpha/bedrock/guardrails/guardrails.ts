@@ -1279,6 +1279,8 @@ export class Guardrail extends GuardrailBase {
   private validateDeniedTopics(deniedTopics?: filters.Topic[]): void {
     if (!deniedTopics) return;
 
+    const maxDefinitionLength = this.topicsTierConfig === filters.TierConfig.STANDARD ? 1000 : 200;
+
     deniedTopics.forEach((topic, index) => {
       const prefix = `Invalid Topic at index ${index}`;
 
@@ -1297,8 +1299,8 @@ export class Guardrail extends GuardrailBase {
       }
 
       // Validate definition length
-      if (!Token.isUnresolved(topic.definition) && topic.definition.length > 1000) {
-        throw new ValidationError(lit`TopicDefinitionTooLong`, `${prefix}: definition must be 1000 characters or less`, this);
+      if (!Token.isUnresolved(topic.definition) && topic.definition.length > maxDefinitionLength) {
+        throw new ValidationError(lit`TopicDefinitionTooLong`, `${prefix}: definition for topic ${topic.name} is ${topic.definition.length} characters long but must be ${maxDefinitionLength} characters or less`, this);
       }
 
       // Validate examples if provided
