@@ -13,12 +13,16 @@
 
 import { Template, Match } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
+import * as lambda from '../../../../aws-lambda';
 import { App, Duration, Lazy, Stack, Tags } from '../../../../core';
 import {
   OnlineEvaluationConfig,
   EvaluatorSelector,
   DataSourceConfig,
   BuiltinEvaluator,
+  EvaluationLevel,
+  Evaluator,
+  EvaluatorConfig,
   ExecutionStatus,
   FilterOperator,
   FilterValue,
@@ -206,6 +210,122 @@ describe('OnlineEvaluationConfig', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
         ExecutionStatus: Match.absent(),
+      });
+    });
+  });
+
+  describe('code-based evaluator permissions', () => {
+    const lambdaGrantStatement = Match.objectLike({
+      Action: ['lambda:InvokeFunction', 'lambda:GetFunction'],
+      Effect: 'Allow',
+      Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('EvalFunction.*'), 'Arn'] },
+    });
+
+    function codeBasedEvaluator(s: Stack): Evaluator {
+      const fn = new lambda.Function(s, 'EvalFunction', {
+        runtime: lambda.Runtime.PYTHON_3_12,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('def handler(event, context): return {}'),
+      });
+      return new Evaluator(s, 'CodeEvaluator', {
+        evaluatorName: 'code_evaluator',
+        level: EvaluationLevel.TOOL_CALL,
+        evaluatorConfig: EvaluatorConfig.codeBased({ lambdaFunction: fn }),
+      });
+    }
+
+    test('grants the generated execution role invoke access to a code-based evaluator function', () => {
+      const evaluator = codeBasedEvaluator(stack);
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'code_evaluation',
+        evaluators: [EvaluatorSelector.custom(evaluator)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([lambdaGrantStatement]),
+        },
+        Roles: [{ Ref: Match.stringLikeRegexp('TestEvaluationExecutionRole.*') }],
+      });
+    });
+
+    test('grants a user-provided execution role invoke access to a code-based evaluator function', () => {
+      const evaluator = codeBasedEvaluator(stack);
+      const executionRole = new iam.Role(stack, 'UserRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'code_evaluation',
+        evaluators: [EvaluatorSelector.custom(evaluator)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+        executionRole,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([lambdaGrantStatement]),
+        },
+        Roles: [{ Ref: Match.stringLikeRegexp('UserRole.*') }],
+      });
+    });
+
+    test('grants invoke access for an imported evaluator whose attributes provide the function', () => {
+      const fn = new lambda.Function(stack, 'EvalFunction', {
+        runtime: lambda.Runtime.PYTHON_3_12,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('def handler(event, context): return {}'),
+      });
+      const imported = Evaluator.fromEvaluatorAttributes(stack, 'ImportedEvaluator', {
+        evaluatorArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:evaluator/eval-12345',
+        evaluatorId: 'eval-12345',
+        lambdaFunction: fn,
+      });
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'code_evaluation',
+        evaluators: [EvaluatorSelector.custom(imported)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([lambdaGrantStatement]),
+        },
+      });
+    });
+
+    test('does not add lambda actions for built-in evaluators or imported evaluators without a function', () => {
+      const imported = Evaluator.fromEvaluatorAttributes(stack, 'ImportedEvaluator', {
+        evaluatorArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:evaluator/eval-12345',
+        evaluatorId: 'eval-12345',
+      });
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'no_code_evaluation',
+        evaluators: [
+          EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS),
+          EvaluatorSelector.custom(imported),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.not(Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['lambda:InvokeFunction']) }),
+          ])),
+        },
       });
     });
   });

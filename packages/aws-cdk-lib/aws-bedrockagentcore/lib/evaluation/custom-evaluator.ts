@@ -23,6 +23,7 @@ import {
 } from './validation-helpers';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as iam from '../../../aws-iam';
+import type * as lambda from '../../../aws-lambda';
 import { Arn, ArnFormat, Stack } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -191,6 +192,7 @@ export class Evaluator extends EvaluatorBase {
       public readonly status = undefined;
       public readonly createdAt = undefined;
       public readonly updatedAt = undefined;
+      public readonly lambdaFunction = attrs.lambdaFunction;
     }
 
     return new Import(scope, id);
@@ -232,6 +234,11 @@ export class Evaluator extends EvaluatorBase {
    */
   public readonly updatedAt?: string;
 
+  /**
+   * The Lambda function backing this evaluator, when it is code-based.
+   */
+  public readonly lambdaFunction?: lambda.IFunction;
+
   constructor(scope: Construct, id: string, props: EvaluatorProps) {
     super(scope, id, { physicalName: props.evaluatorName });
 
@@ -272,5 +279,6 @@ export class Evaluator extends EvaluatorBase {
     this.status = resource.attrStatus;
     this.createdAt = resource.attrCreatedAt;
     this.updatedAt = resource.attrUpdatedAt;
+    this.lambdaFunction = props.evaluatorConfig.lambdaFunction;
   }
 }

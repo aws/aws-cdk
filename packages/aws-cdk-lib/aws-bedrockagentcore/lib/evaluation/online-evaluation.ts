@@ -14,6 +14,7 @@
 import type { Construct } from 'constructs';
 import type { DataSourceConfig } from './data-source';
 import type { EvaluatorSelector } from './evaluator';
+import { EvaluatorBase } from './evaluator-base';
 import { type IOnlineEvaluationConfig, OnlineEvaluationBase } from './online-evaluation-base';
 import {
   EVALUATION_BEDROCK_MODEL_PERMS,
@@ -256,6 +257,21 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     this.onlineEvaluationConfigName = this.physicalName;
     this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
     this.grantPrincipal = this.executionRole;
+
+    // The service requires the execution role itself to be able to invoke the
+    // function backing a code-based evaluator, in addition to the resource
+    // policy the Evaluator construct puts on the function.
+    const codeEvaluatorFunctionArns = Array.from(new Set(props.evaluators
+      .map((selector) => selector.evaluator)
+      .filter((evaluator): evaluator is EvaluatorBase => evaluator !== undefined && EvaluatorBase.isEvaluatorBase(evaluator))
+      .flatMap((evaluator) => evaluator.lambdaFunction ? [evaluator.lambdaFunction.functionArn] : [])));
+    if (codeEvaluatorFunctionArns.length > 0) {
+      iam.Grant.addToPrincipal({
+        grantee: this.executionRole,
+        actions: ['lambda:InvokeFunction', 'lambda:GetFunction'],
+        resourceArns: codeEvaluatorFunctionArns,
+      });
+    }
 
     const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
       onlineEvaluationConfigName: this.physicalName,
