@@ -401,6 +401,20 @@ test('fromStringParameterArn does not create a CfnParameter when stringValue is 
   expect(Template.fromStack(stack).findParameters('MyParamNameParameter')).toEqual({});
 });
 
+test('reading stringValue twice reuses the same CfnParameter', () => {
+  const stack = new cdk.Stack();
+  const param = ssm.StringParameter.fromStringParameterAttributes(stack, 'my-param-name', {
+    parameterName: 'my-param-name',
+  });
+  void param.stringValue;
+  void param.stringValue;
+
+  const parameterNames = new Set(Object.keys(Template.fromStack(stack).findParameters('*')));
+  parameterNames.delete('BootstrapVersion'); // Don't care about this one
+
+  expect(Array.from(parameterNames)).toHaveLength(1);
+});
+
 test('fromStringParameterArn throws when StringParameter.fromStringParameterArn is called with a token ARN', () => {
   // GIVEN
   const stack = new cdk.Stack();
