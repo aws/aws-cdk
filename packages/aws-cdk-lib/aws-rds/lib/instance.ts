@@ -1116,6 +1116,7 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * (underscores are also allowed for PostgreSQL-family engines). This constraint
    * is validated at synthesis time, so a definitively-invalid name fails fast with a
    * descriptive error instead of failing later at deploy time with the RDS API error.
+   * The same validation applies to `DatabaseInstanceFromSnapshot` when restoring from a snapshot.
    *
    * @default - no name
    */

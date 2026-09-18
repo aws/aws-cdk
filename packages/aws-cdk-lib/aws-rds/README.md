@@ -69,7 +69,9 @@ Your cluster will be empty by default. To add a default database upon constructi
 
 The database name must begin with a letter and contain only alphanumeric characters (underscores are
 also allowed for PostgreSQL-family engines). This applies to `defaultDatabaseName` on `DatabaseCluster`
-and `ServerlessCluster`, as well as `databaseName` on `DatabaseInstance`. The constraint is validated at
+and `ServerlessCluster`, as well as `databaseName` on `DatabaseInstance`. It also applies when restoring
+from a snapshot, since a create-time database name is still accepted there: `DatabaseClusterFromSnapshot`
+and `DatabaseInstanceFromSnapshot` are validated the same way. The constraint is validated at
 synthesis time, so a definitively-invalid name (for example, one containing a hyphen) fails fast with a
 descriptive error rather than failing later at deploy time with the opaque RDS API error.
 
