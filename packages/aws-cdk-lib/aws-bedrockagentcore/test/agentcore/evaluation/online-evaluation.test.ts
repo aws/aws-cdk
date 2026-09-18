@@ -216,7 +216,7 @@ describe('OnlineEvaluationConfig', () => {
 
   describe('code-based evaluator permissions', () => {
     const lambdaGrantStatement = Match.objectLike({
-      Action: ['lambda:InvokeFunction', 'lambda:GetFunction'],
+      Action: Match.arrayWith(['lambda:InvokeFunction', 'lambda:GetFunction']),
       Effect: 'Allow',
       Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('EvalFunction.*'), 'Arn'] },
     });

@@ -17,8 +17,6 @@ import * as iam from '../../../aws-iam';
 import type * as lambda from '../../../aws-lambda';
 import { Resource, type IResource, type ResourceProps } from '../../../core';
 
-const EVALUATOR_BASE_SYMBOL = Symbol.for('aws-cdk-lib.aws-bedrockagentcore.EvaluatorBase');
-
 /**
  * Interface for Evaluator resources.
  */
@@ -66,17 +64,28 @@ export interface IEvaluator extends IResource, IEvaluatorRef {
 }
 
 /**
+ * An evaluator that is backed by a Lambda function (a code-based evaluator).
+ *
+ * Constructs that reference a code-based evaluator, such as
+ * `OnlineEvaluationConfig`, use this capability to grant their execution
+ * role permission to invoke the backing function. Implement it on custom
+ * `IEvaluator` implementations to opt in to the same wiring.
+ */
+export interface ICodeBasedEvaluator extends IEvaluator {
+  /**
+   * The Lambda function backing this evaluator.
+   *
+   * Uses the L2 interface to match `CodeBasedOptions.lambdaFunction`.
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly lambdaFunction: lambda.IFunction;
+}
+
+/**
  * Abstract base class for Evaluator.
  * Contains methods and attributes valid for evaluators either created with CDK or imported.
  */
 export abstract class EvaluatorBase extends Resource implements IEvaluator {
-  /**
-   * Return whether the given object is an EvaluatorBase.
-   */
-  public static isEvaluatorBase(x: any): x is EvaluatorBase {
-    return x !== null && typeof x === 'object' && EVALUATOR_BASE_SYMBOL in x;
-  }
-
   public abstract readonly evaluatorArn: string;
   public abstract readonly evaluatorId: string;
   public abstract readonly evaluatorName: string;
@@ -84,17 +93,8 @@ export abstract class EvaluatorBase extends Resource implements IEvaluator {
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
 
-  /**
-   * The Lambda function backing a code-based evaluator.
-   *
-   * Undefined for LLM-as-a-Judge evaluators and for imported evaluators
-   * whose attributes do not provide the function.
-   */
-  public abstract readonly lambdaFunction?: lambda.IFunction;
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-    Object.defineProperty(this, EVALUATOR_BASE_SYMBOL, { value: true });
   }
 
   /**

@@ -12,7 +12,7 @@
  */
 
 import type { Construct } from 'constructs';
-import { type IEvaluator, EvaluatorBase } from './evaluator-base';
+import { type ICodeBasedEvaluator, type IEvaluator, EvaluatorBase } from './evaluator-base';
 import type { EvaluatorConfig } from './evaluator-config';
 import type { EvaluationLevel, EvaluatorAttributes } from './types';
 import {
@@ -120,6 +120,14 @@ export class Evaluator extends EvaluatorBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =
     'aws-cdk-lib.aws-bedrockagentcore.Evaluator';
+
+  /**
+   * Return whether the given evaluator is code-based, that is, backed by a
+   * Lambda function it exposes through the `ICodeBasedEvaluator` capability.
+   */
+  public static isCodeBasedEvaluator(x: any): x is ICodeBasedEvaluator {
+    return x !== null && typeof x === 'object' && (x as ICodeBasedEvaluator).lambdaFunction !== undefined;
+  }
 
   /**
    * Import an existing Evaluator by its ID.

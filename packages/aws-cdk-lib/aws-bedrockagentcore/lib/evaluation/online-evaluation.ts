@@ -12,9 +12,10 @@
  */
 
 import type { Construct } from 'constructs';
+import { Evaluator } from './custom-evaluator';
 import type { DataSourceConfig } from './data-source';
 import type { EvaluatorSelector } from './evaluator';
-import { EvaluatorBase } from './evaluator-base';
+import type { ICodeBasedEvaluator } from './evaluator-base';
 import { type IOnlineEvaluationConfig, OnlineEvaluationBase } from './online-evaluation-base';
 import {
   EVALUATION_BEDROCK_MODEL_PERMS,
@@ -263,8 +264,8 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     // policy the Evaluator construct puts on the function.
     const codeEvaluatorFunctionArns = Array.from(new Set(props.evaluators
       .map((selector) => selector.evaluator)
-      .filter((evaluator): evaluator is EvaluatorBase => evaluator !== undefined && EvaluatorBase.isEvaluatorBase(evaluator))
-      .flatMap((evaluator) => evaluator.lambdaFunction ? [evaluator.lambdaFunction.functionArn] : [])));
+      .filter((evaluator): evaluator is ICodeBasedEvaluator => evaluator !== undefined && Evaluator.isCodeBasedEvaluator(evaluator))
+      .map((evaluator) => evaluator.lambdaFunction.functionArn)));
     if (codeEvaluatorFunctionArns.length > 0) {
       iam.Grant.addToPrincipal({
         grantee: this.executionRole,
