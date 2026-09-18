@@ -134,7 +134,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * under an unusual tag (e.g. `musllinux_1_2_x86_64`). The first tag that has a
    * matching wheel on the index wins; subsequent tags are fallbacks.
    *
-   * Has no effect when `local` is not `true`.
+   * Requires `local` to be `true` — setting this for a Docker build is an error.
    *
    * @default - Derived from the target Python runtime's base image:
    *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2),

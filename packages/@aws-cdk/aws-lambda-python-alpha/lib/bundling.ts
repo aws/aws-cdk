@@ -96,6 +96,13 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes = [],
     } = props;
 
+    if (props.manyLinuxTags !== undefined && props.local !== true) {
+      throw new UnscopedValidationError(
+        lit`PythonManyLinuxTagsRequiresLocalBundling`,
+        'manyLinuxTags only applies to local bundling, but local is not true. Set local: true, or remove manyLinuxTags',
+      );
+    }
+
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
     const packaging = Packaging.fromEntry(entry, poetryIncludeHashes, poetryWithoutUrls);
     const excludes = effectiveExcludes(assetExcludes, packaging);

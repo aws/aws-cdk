@@ -191,7 +191,11 @@ Prerequisites on the host:
 - Every dependency must publish a compatible wheel for the target platform. Source-only distributions are rejected (a source build would target the host OS/arch and not the Lambda runtime).
 - On Windows hosts, only plain `requirements.txt` projects are supported. The `pipenv`/`poetry`/`uv` export commands embed POSIX shell syntax (`&&`, `rm -rf`, `>` redirection) and will fail under `cmd.exe`; use Docker bundling for lockfile-based projects on Windows.
 
+Symlinks under `entry` are always followed (dereferenced into their targets) when bundling locally, regardless of any asset symlink-follow configuration.
+
 If local bundling fails for any reason, synthesis fails — there is no silent fallback to Docker.
+
+Note that this is the inverse of `aws-lambda-nodejs`, where local bundling is the default and `forceDockerBundling` opts out. Python dependency resolution relies on the target platform publishing compatible wheels, which fails far more often than an `esbuild` run, so Docker stays the default here and local bundling is opt-in.
 
 **Overriding platform tags**
 
