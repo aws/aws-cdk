@@ -1331,6 +1331,9 @@ export class Pipeline extends PipelineBase {
         for (const outputArtifact of action.outputs) {
           // output Artifacts always have a name set
           const name = outputArtifact.artifactName!;
+          if (outputArtifact.artifactFiles !== undefined && action.category !== ActionCategory.COMPUTE) {
+            ret.push(`Action '${action.actionName}' is not a compute action, so its output Artifact '${name}' cannot specify files. File paths on an output artifact are only supported for compute actions`);
+          }
           if (producers[name]) {
             ret.push(`Both Actions '${producers[name].actionName}' and '${action.actionName}' are producting Artifact '${name}'. Every artifact can only be produced once.`);
             continue;
