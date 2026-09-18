@@ -33,6 +33,68 @@ describe('tag parameter container image', () => {
       }).toThrow(/TagParameterContainerImage must be used in a container definition when using tagParameterValue/);
     });
 
+    test('synthesizes image URI with ":" separator for tag (default)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repository = new ecr.Repository(stack, 'Repository');
+      const tagParameterContainerImage = new ecs.TagParameterContainerImage(repository);
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('Container', { image: tagParameterContainerImage });
+
+      // THEN — Image URI must use ":" between repo URI and tag parameter
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: Match.arrayWith([
+          Match.objectLike({
+            Image: {
+              'Fn::Join': ['', Match.arrayWith([':'])],
+            },
+          }),
+        ]),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: Match.arrayWith([
+          Match.objectLike({
+            Image: Match.not({
+              'Fn::Join': ['', Match.arrayWith(['@'])],
+            }),
+          }),
+        ]),
+      });
+    });
+
+    test('synthesizes image URI with "@" separator when imageDigest is true', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repository = new ecr.Repository(stack, 'Repository');
+      const tagParameterContainerImage = new ecs.TagParameterContainerImage(repository, { imageDigest: true });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+      // WHEN
+      taskDefinition.addContainer('Container', { image: tagParameterContainerImage });
+
+      // THEN — Image URI must use "@" between repo URI and digest parameter
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: Match.arrayWith([
+          Match.objectLike({
+            Image: {
+              'Fn::Join': ['', Match.arrayWith(['@'])],
+            },
+          }),
+        ]),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: Match.arrayWith([
+          Match.objectLike({
+            Image: Match.not({
+              'Fn::Join': ['', Match.arrayWith([':'])],
+            }),
+          }),
+        ]),
+      });
+    });
+
     test('can be used in a cross-account manner', () => {
       // GIVEN
       const app = new cdk.App();
