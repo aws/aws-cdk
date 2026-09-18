@@ -5,6 +5,8 @@ import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
 import type { IRestApi } from './restapi';
 import { EndpointType } from './restapi';
+import type { RoutingRuleOptions } from './routing-rule';
+import { RoutingMode, RoutingRule } from './routing-rule';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IBucket } from '../../aws-s3';
 import type { IResource } from '../../core';
@@ -163,6 +165,17 @@ export interface DomainNameOptions {
    * @default - map requests from the domain root (e.g. `example.com`).
    */
   readonly basePath?: string;
+
+  /**
+   * The routing mode for this domain name.
+   *
+   * Set to `ROUTING_RULE_ONLY` or `ROUTING_RULE_THEN_BASE_PATH_MAPPING` to use
+   * `addRoutingRule()`. Routing rules require a `REGIONAL` endpoint.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-routing-mode.html
+   * @default RoutingMode.BASE_PATH_MAPPING_ONLY
+   */
+  readonly routingMode?: RoutingMode;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -252,6 +265,8 @@ export class DomainName extends Resource implements IDomainName {
   private readonly basePaths = new Set<string | undefined>();
   private readonly securityPolicy?: SecurityPolicy;
   private readonly endpointType: EndpointType;
+  private readonly routingMode: RoutingMode;
+  private readonly routingRulePriorities = new Set<number>();
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -261,6 +276,18 @@ export class DomainName extends Resource implements IDomainName {
     this.endpointType = props.endpointType || EndpointType.REGIONAL;
     const edge = this.endpointType === EndpointType.EDGE;
     this.securityPolicy = props.securityPolicy;
+    this.routingMode = props.routingMode ?? RoutingMode.BASE_PATH_MAPPING_ONLY;
+
+    // Routing rules are only supported for REGIONAL endpoints.
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-routing-rules.html#rest-api-routing-rules-restrictions
+    if (this.routingMode !== RoutingMode.BASE_PATH_MAPPING_ONLY && edge) {
+      throw new ValidationError(
+        lit`RoutingModeRequiresRegionalEndpoint`,
+        'routing rules are only supported for EndpointType.REGIONAL endpoints. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-routing-rules.html',
+        this,
+      );
+    }
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
       throw new ValidationError(lit`DomainNameDoesNotSupportUppercase`, `Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
@@ -327,6 +354,7 @@ export class DomainName extends Resource implements IDomainName {
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
       endpointAccessMode: props.endpointAccessMode,
+      routingMode: props.routingMode,
     });
 
     this.domainName = resource.ref;
@@ -389,6 +417,14 @@ export class DomainName extends Resource implements IDomainName {
    */
   @MethodMetadata()
   public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY) {
+      throw new ValidationError(
+        lit`BasePathMappingNotAllowedForRoutingMode`,
+        'addBasePathMapping() is not supported when routingMode is RoutingMode.ROUTING_RULE_ONLY. ' +
+        'Use addRoutingRule() instead, or use RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING to combine both.',
+        this,
+      );
+    }
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(lit`DomainNameAlreadyMappingPath`, `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -420,6 +456,14 @@ export class DomainName extends Resource implements IDomainName {
    */
   @MethodMetadata()
   public addApiMapping(targetStage: IStageRef, options: ApiMappingOptions = {}): void {
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY) {
+      throw new ValidationError(
+        lit`ApiMappingNotAllowedForRoutingMode`,
+        'addApiMapping() is not supported when routingMode is RoutingMode.ROUTING_RULE_ONLY. ' +
+        'Use addRoutingRule() instead, or use RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING to combine both.',
+        this,
+      );
+    }
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(lit`DomainNameAlreadyMappingPath`, `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -432,6 +476,44 @@ export class DomainName extends Resource implements IDomainName {
       stage: targetStage.stageRef.stageName,
       domainName: this.domainName,
       apiMappingKey: options.basePath,
+    });
+  }
+
+  /**
+   * Adds a routing rule to this domain name.
+   *
+   * Requires `routingMode` to be `ROUTING_RULE_ONLY` or
+   * `ROUTING_RULE_THEN_BASE_PATH_MAPPING` and a `REGIONAL` endpoint.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-routing-rules.html
+   * @param id The construct id of the routing rule.
+   * @param options Options for the routing rule.
+   */
+  @MethodMetadata()
+  public addRoutingRule(id: string, options: RoutingRuleOptions): RoutingRule {
+    if (this.routingMode === RoutingMode.BASE_PATH_MAPPING_ONLY) {
+      throw new ValidationError(
+        lit`RoutingRuleNotAllowedForRoutingMode`,
+        'addRoutingRule() requires the routingMode to be RoutingMode.ROUTING_RULE_ONLY or RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING. ' +
+        `The routing mode is ${this.routingMode}. Set the routingMode prop on the DomainName to use routing rules.`,
+        this,
+      );
+    }
+
+    if (!Token.isUnresolved(options.priority) && this.routingRulePriorities.has(options.priority)) {
+      throw new ValidationError(
+        lit`RoutingRuleDuplicatePriority`,
+        `DomainName ${this.node.id} already has a routing rule with priority ${options.priority}. Routing rules cannot share the same priority.`,
+        this,
+      );
+    }
+    if (!Token.isUnresolved(options.priority)) {
+      this.routingRulePriorities.add(options.priority);
+    }
+
+    return new RoutingRule(this, id, {
+      domainName: this,
+      ...options,
     });
   }
 
