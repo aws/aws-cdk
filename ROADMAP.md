@@ -100,7 +100,7 @@ Developers love CDK because it provides them with the ability to configure and m
  
 * **Give assets a display name:** This [feature](https://github.com/aws/aws-cdk/issues/9628) allows specifying a display name for AWS CDK assets to improve clarity in asset publishing and deployment.
 * **Enhanced L1 constructs:** This [rfc](https://github.com/aws/aws-cdk-rfcs/pull/657) is a proposal to enhance the L1 constructs by adding support for enums, resource interfaces, and CFN contraints to generated L1s.
-* **CLI: Enable client-side telemetry and analytics:** This [change]((https://github.com/aws/aws-cdk/issues/32010)) is to enable client-side telemetry and analytics collection in the CDK CLI.
+* **CLI: Enable client-side telemetry and analytics:** This [change](https://github.com/aws/aws-cdk/issues/32010) is to enable client-side telemetry and analytics collection in the CDK CLI.
 
 **_Research Items_**
 
