@@ -3,7 +3,7 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
+import { Stack, ValidationError, withResolved, ArnFormat } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -308,19 +308,37 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
   }
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
+    let jobDefinitionArn = '*';
+    if (!isJsonPathOrJsonataExpression(this.props.jobDefinitionArn)) {
+      try {
+        const parsedArn = Stack.of(this).splitArn(this.props.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME);
+        const jobDefName = parsedArn.resourceName?.split(':')[0] ?? '*';
+        jobDefinitionArn = Stack.of(this).formatArn({
+          service: 'batch',
+          resource: 'job-definition',
+          resourceName: `${jobDefName}:*`,
+          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        });
+      } catch {
+        jobDefinitionArn = Stack.of(this).formatArn({
+          service: 'batch',
+          resource: 'job-definition',
+          resourceName: '*',
+        });
+      }
+    }
+
     return [
       // Resource level access control for job-definition requires revision which batch does not support yet
       // Using the alternative permissions as mentioned here:
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
-        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
-          Stack.of(this).formatArn({
-            service: 'batch',
-            resource: 'job-definition',
-            resourceName: '*',
-          }),
-          this.props.jobQueueArn,
-        ],
+        resources: (isJsonPathOrJsonataExpression(this.props.jobQueueArn) || jobDefinitionArn === '*')
+          ? ['*']
+          : [
+            jobDefinitionArn,
+            this.props.jobQueueArn,
+          ],
         actions: ['batch:SubmitJob'],
       }),
       new iam.PolicyStatement({

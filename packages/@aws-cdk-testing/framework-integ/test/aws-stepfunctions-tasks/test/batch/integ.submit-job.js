@@ -40,6 +40,7 @@ const ecs = __importStar(require("aws-cdk-lib/aws-ecs"));
 const sfn = __importStar(require("aws-cdk-lib/aws-stepfunctions"));
 const cdk = __importStar(require("aws-cdk-lib"));
 const aws_stepfunctions_tasks_1 = require("aws-cdk-lib/aws-stepfunctions-tasks");
+// Trigger integration test update for PR linter
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
