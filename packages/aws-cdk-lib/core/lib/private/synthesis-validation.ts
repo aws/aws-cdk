@@ -13,14 +13,15 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
+import { DEFAULT_STACK_FRAME_FINDER } from './stack-trace';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
-import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import type { NamedValidationPluginReport, SuppressedViolation, ViolationStackTraces } from '../validation/private/report';
+import { ExtraObjectData, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
@@ -64,10 +65,14 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
   }
 
+  const tree = new ConstructTree(root);
+  inferConstructPathsFromLogicalIds(reports, tree);
+  const stackTraces = collectViolationStackTraces(reports, tree);
+
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
   const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
-  const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
+  const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
 
   // Always write validation report to disk
   const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
@@ -112,7 +117,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // with warnings, we fail.
   const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
   const validationFails = reports.some(r => !r.success) || (constructLibStrictMode && reports.some(r => r.violations.some(v => v.severity === 'warning')));
-  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports);
+  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports, DEFAULT_STACK_FRAME_FINDER);
   const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
 
   let preamble = '';
@@ -257,6 +262,25 @@ function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginRepo
 }
 
 /**
+ * For violations that have a resource logical ID but no construct path, try to infer the construct path from the logical ID and template path.
+ */
+function inferConstructPathsFromLogicalIds(reports: NamedValidationPluginReport[], tree: ConstructTree) {
+  for (const report of reports) {
+    for (const violation of report.violations) {
+      for (const resource of violation.violatingResources) {
+        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
+        if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
+          mutable(resource).constructPath = tree.getConstructByLogicalId(
+            path.basename(resource.templatePath),
+            resource.resourceLogicalId,
+          )?.node.path;
+        }
+      }
+    }
+  }
+}
+
+/**
  * Filter out suppressed violations. Collect all acknowledged rule IDs
  * from construct metadata across the tree, then remove matching violations
  * from reports. Fatal violations cannot be suppressed.
@@ -310,6 +334,40 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
     }
   }
   return suppressedByReport;
+}
+
+function collectViolationStackTraces(
+  reports: NamedValidationPluginReport[],
+  tree: ConstructTree,
+): ViolationStackTraces {
+  const ret = new ExtraObjectData<PolicyViolatingResource, string[]>();
+
+  for (const report of reports) {
+    for (const violation of report.violations) {
+      for (const resource of violation.violatingResources) {
+        const constructPath = resource.constructPath;
+        if (!constructPath) {
+          continue;
+        }
+
+        const stacks: string[] = [];
+
+        // Always creation trace
+        const creationTrace = tree.creationTraceByPath(constructPath);
+        if (creationTrace) {
+          stacks.push(creationTrace);
+        }
+
+        // Mutation traces
+        stacks.push(...resource.locations.flatMap(location => tree.mutationTracesByPath(constructPath, location)));
+
+        if (stacks.length > 0) {
+          ret.attach(resource, stacks);
+        }
+      }
+    }
+  }
+  return ret;
 }
 
 /**
@@ -537,7 +595,7 @@ function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
   return 'unknown';
 }
 
-function stripAnsi(x: string) {
+export function stripAnsi(x: string) {
   const pattern = [
     '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
     '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
