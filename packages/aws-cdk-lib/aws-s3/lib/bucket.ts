@@ -93,6 +93,13 @@ export interface IBucket extends IResource, IBucketRef {
   readonly isWebsite?: boolean;
 
   /**
+   * The effective default server-side encryption mode for this bucket.
+   *
+   * @default - unknown for imported or unresolved buckets
+   */
+  readonly encryption?: BucketEncryption;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -487,6 +494,13 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   /**
+   * The effective default server-side encryption mode for this bucket.
+   *
+   * @default - unknown
+   */
+  readonly encryption?: BucketEncryption;
+
+  /**
    * KMS encryption key associated with this bucket.
    *
    * @default - no encryption key
@@ -588,6 +602,13 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   public abstract readonly bucketWebsiteDomainName: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
+
+  /**
+   * The effective default server-side encryption mode for this bucket.
+   */
+  public get encryption(): BucketEncryption | undefined {
+    return undefined;
+  }
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -2236,6 +2257,7 @@ export class Bucket extends BucketBase {
       bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
       bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
       bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
+      encryption: attrs.encryption,
       encryptionKey: attrs.encryptionKey,
       isWebsite: attrs.isWebsite ?? false,
       autoCreatePolicy: false,
@@ -2308,6 +2330,10 @@ export class Bucket extends BucketBase {
 
       public get isWebsite(): boolean | undefined {
         return this.reflection.isWebsite;
+      }
+
+      public get encryption(): BucketEncryption | undefined {
+        return this.reflection.encryption;
       }
 
       public get disallowPublicAccess(): boolean | undefined {
@@ -2499,6 +2525,9 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
+  public get encryption(): BucketEncryption | undefined {
+    return this.reflection.encryption;
+  }
   public readonly encryptionKey?: kms.IKey;
   public get isWebsite(): boolean | undefined {
     return this.reflection.isWebsite;
@@ -4021,6 +4050,11 @@ class ReferencedBucket extends BucketBase {
   protected autoCreatePolicy: boolean;
   public disallowPublicAccess?: boolean | undefined;
   protected notificationsHandlerRole?: iam.IRole;
+  private readonly encryptionMode?: BucketEncryption;
+
+  public get encryption(): BucketEncryption | undefined {
+    return this.encryptionMode;
+  }
 
   constructor(scope: Construct, id: string, props: {
     account?: string;
@@ -4032,6 +4066,7 @@ class ReferencedBucket extends BucketBase {
     bucketWebsiteDomainName: string;
     bucketRegionalDomainName: string;
     bucketDualStackDomainName: string;
+    encryption?: BucketEncryption | undefined;
     encryptionKey?: kms.IKey | undefined;
     isWebsite?: boolean | undefined;
     policy?: BucketPolicy | undefined;
@@ -4053,6 +4088,7 @@ class ReferencedBucket extends BucketBase {
     this.bucketWebsiteDomainName = props.bucketWebsiteDomainName;
     this.bucketRegionalDomainName = props.bucketRegionalDomainName;
     this.bucketDualStackDomainName = props.bucketDualStackDomainName;
+    this.encryptionMode = props.encryption;
     this.encryptionKey = props.encryptionKey;
     this.isWebsite = props.isWebsite;
     this.policy = props.policy;

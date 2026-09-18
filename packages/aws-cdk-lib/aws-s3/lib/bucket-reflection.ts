@@ -1,7 +1,8 @@
+import { BucketEncryption } from './bucket';
 import type { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import type { CfnKey } from '../../aws-kms';
 import { CfnKeyMatcher } from '../../aws-kms/lib/private/cfn-key-matcher';
-import { Fn, Reference, Tokenization, UnscopedValidationError } from '../../core';
+import { Fn, Reference, Token, Tokenization, UnscopedValidationError } from '../../core';
 import { ConstructReflection, memoizedGetter, PropertyReflection } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IBucketRef } from '../../interfaces/generated/aws-s3-interfaces.generated';
@@ -118,5 +119,46 @@ export class BucketReflection {
     }
 
     return ConstructReflection.of(this._bucket).findRelatedCfnResource(new CfnKeyMatcher(kmsMasterKeyId)) as CfnKey | undefined;
+  }
+
+  /**
+   * The effective default server-side encryption mode for the bucket, if known.
+   */
+  get encryption(): BucketEncryption | undefined {
+    if (!this._bucket) {
+      return undefined;
+    }
+
+    const configuration = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration');
+    if (configuration.exists() === undefined || Token.isUnresolved(configuration.get())) {
+      return undefined;
+    }
+
+    const algorithm = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.sseAlgorithm');
+    const hasAlgorithm = algorithm.exists();
+    if (hasAlgorithm === undefined) {
+      return undefined;
+    }
+    if (!hasAlgorithm) {
+      return BucketEncryption.S3_MANAGED;
+    }
+
+    const sseAlgorithm = algorithm.get();
+    if (Token.isUnresolved(sseAlgorithm)) {
+      return undefined;
+    }
+    const keyId = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.kmsMasterKeyId');
+    const hasKeyId = keyId.exists();
+
+    switch (sseAlgorithm) {
+      case 'AES256':
+        return BucketEncryption.S3_MANAGED;
+      case 'aws:kms':
+        return hasKeyId === false ? BucketEncryption.KMS_MANAGED : BucketEncryption.KMS;
+      case 'aws:kms:dsse':
+        return hasKeyId === false ? BucketEncryption.DSSE_MANAGED : BucketEncryption.DSSE;
+      default:
+        return undefined;
+    }
   }
 }
