@@ -2809,3 +2809,92 @@ describe('database insights for instance', () => {
     }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
   });
 });
+
+describe('databaseName validation', () => {
+  let validationStack: cdk.Stack;
+  let validationVpc: ec2.Vpc;
+
+  beforeEach(() => {
+    validationStack = new cdk.Stack();
+    acknowledgeTestValidationRules(validationStack);
+    validationVpc = new ec2.Vpc(validationStack, 'VPC');
+  });
+
+  test('fails when databaseName contains invalid characters', () => {
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(validationStack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc: validationVpc,
+        databaseName: 'stage-db',
+      });
+    }).toThrow(/database name "stage-db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+
+  test('accepts a valid databaseName and renders it on the DBInstance', () => {
+    // WHEN
+    new rds.DatabaseInstance(validationStack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+      vpc: validationVpc,
+      databaseName: 'stagedb',
+    });
+
+    // THEN
+    Template.fromStack(validationStack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBName: 'stagedb',
+    });
+  });
+
+  test('accepts an underscore in databaseName for a postgres engine', () => {
+    // WHEN
+    new rds.DatabaseInstance(validationStack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_5 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+      vpc: validationVpc,
+      databaseName: 'stage_db',
+    });
+
+    // THEN
+    Template.fromStack(validationStack).hasResourceProperties('AWS::RDS::DBInstance', {
+      DBName: 'stage_db',
+    });
+  });
+
+  test('fails when databaseName contains an underscore for a mysql engine', () => {
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(validationStack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc: validationVpc,
+        databaseName: 'stage_db',
+      });
+    }).toThrow(/database name "stage_db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+
+  test('skips validation when databaseName is an unresolved token', () => {
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(validationStack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc: validationVpc,
+        databaseName: cdk.Lazy.string({ produce: () => 'stage-db' }),
+      });
+    }).not.toThrow();
+  });
+
+  test('fails when databaseName starts with a digit', () => {
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstance(validationStack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc: validationVpc,
+        databaseName: '1db',
+      });
+    }).toThrow(/database name "1db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+});
