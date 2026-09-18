@@ -1,8 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { PublicHostedZone } from '../../aws-route53';
 import { App, Aws, Stack } from '../../core';
-import { Certificate, DnsValidatedCertificate } from '../lib';
-import { apexDomain, getCertificateRegion, isDnsValidatedCertificate } from '../lib/util';
+import { Certificate, DnsValidatedCertificate, DnsValidatedCertificateV2 } from '../lib';
+import { apexDomain, getCertificateRegion, isDnsValidatedCertificate, isDnsValidatedCertificateV2 } from '../lib/util';
 
 describe('apex domain', () => {
   test('returns right domain', () => {
@@ -48,6 +48,7 @@ describe('isDnsValidatedCertificate', () => {
     });
 
     expect(isDnsValidatedCertificate(cert)).toBeFalsy();
+    expect(isDnsValidatedCertificateV2(cert)).toBeFalsy();
   });
 
   test('fromCertificateArn is not a DnsValidatedCertificate', () => {
@@ -56,6 +57,20 @@ describe('isDnsValidatedCertificate', () => {
     const cert = Certificate.fromCertificateArn(stack, 'Certificate', 'cert-arn');
 
     expect(isDnsValidatedCertificate(cert)).toBeFalsy();
+    expect(isDnsValidatedCertificateV2(cert)).toBeFalsy();
+  });
+
+  test('new DnsValidatedCertificateV2 is not a DnsValidatedCertificate', () => {
+    const stack = new Stack();
+
+    const hostedZone = PublicHostedZone.fromHostedZoneId(stack, 'ExampleDotCom', 'Z123456');
+    const cert = new DnsValidatedCertificateV2(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      hostedZone,
+    });
+
+    expect(isDnsValidatedCertificate(cert)).toBeFalsy();
+    expect(isDnsValidatedCertificateV2(cert)).toBeTruthy();
   });
 });
 
@@ -99,6 +114,21 @@ describe('getCertificateRegion', () => {
     );
 
     expect(getCertificateRegion(certificate)).toEqual('us-east-2');
+  });
+
+  test('from DnsValidatedCertificateV2 region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
+    const hostedZone = PublicHostedZone.fromHostedZoneId(stack, 'ExampleDotCom', 'Z123456');
+
+    const certificate = new DnsValidatedCertificateV2(stack, 'TestCertificate', {
+      domainName: 'www.example.com',
+      hostedZone,
+      region: 'us-east-1',
+    });
+
+    expect(getCertificateRegion(certificate)).toEqual('us-east-1');
   });
 
   test('region agnostic stack', () => {

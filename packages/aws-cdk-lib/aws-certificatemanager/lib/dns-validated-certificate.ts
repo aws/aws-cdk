@@ -71,7 +71,8 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
- * @deprecated use {@link Certificate} instead
+ * @deprecated use {@link Certificate} instead, or DnsValidatedCertificateV2
+ * for CloudFront-compatible DNS validated certificates.
  */
 @propertyInjectable
 @noBoxStackTraces
