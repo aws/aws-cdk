@@ -4,7 +4,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import type { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, validateDatabaseName } from './private/util';
 import type { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import type { CfnDBClusterProps } from './rds.generated';
 import { CfnDBCluster } from './rds.generated';
@@ -445,6 +445,8 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     super(scope, id);
 
     this._enableDataApi = Box.fromValue<boolean | undefined>(undefined);
+
+    validateDatabaseName(this, props.defaultDatabaseName, props.engine.engineType);
 
     if (props.vpc === undefined) {
       if (props.vpcSubnets !== undefined) {

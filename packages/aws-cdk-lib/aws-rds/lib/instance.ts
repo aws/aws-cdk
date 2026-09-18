@@ -7,7 +7,7 @@ import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateDatabaseName, validateManagedPasswordCredentials } from './private/util';
 import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1153,6 +1153,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.engine = props.engine;
 
     const engineType = props.engine.engineType;
+
+    validateDatabaseName(this, props.databaseName, engineType);
 
     if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
       throw new ValidationError(lit`EngineLifecycleSupportSpecifiedMy`, `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);

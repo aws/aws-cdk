@@ -9,7 +9,7 @@ import type { NetworkType } from './instance';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateManagedPasswordCredentials, validateManagedPasswordSnapshotCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateDatabaseName, validateManagedPasswordCredentials, validateManagedPasswordSnapshotCredentials } from './private/util';
 import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -833,6 +833,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    validateDatabaseName(this, props.defaultDatabaseName, props.engine.engineType);
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
