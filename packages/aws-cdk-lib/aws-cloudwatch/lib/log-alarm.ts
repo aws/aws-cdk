@@ -5,9 +5,9 @@ import type { IAlarm } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
-import type { IRole } from '../../aws-iam';
-import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { Annotations, ArnFormat, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { IRole, PolicyStatement } from '../../aws-iam';
+import { Grant, Role, ServicePrincipal } from '../../aws-iam';
+import { Annotations, ArnFormat, Stack, Token, ValidationError } from '../../core';
 import type { Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -18,9 +18,11 @@ import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interface
 /**
  * ARN service segments of the action types a log alarm dispatches.
  *
- * Anything else is accepted by the API and then ignored, so it is worth warning about.
+ * The check is a coarse screen for attaching an action type log alarms do not support at
+ * all. It matches on the service segment only, so an unsupported resource type inside a
+ * listed service does not warn.
  */
-const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm', 'cloudwatch']);
+const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm']);
 
 /**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
@@ -537,14 +539,34 @@ export class LogAlarm extends AlarmBase {
 
   private bindAndWarn(action: IAlarmAction): string {
     const arn = action.bind(this, this).alarmActionArn;
-    if (!Token.isUnresolved(arn) && arn.startsWith('arn:')) {
-      const service = arn.split(':')[2] ?? '';
-      if (service !== '' && !SUPPORTED_ACTION_SERVICES.has(service)) {
-        Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
-          `log alarms do not dispatch ${service} actions, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
-      }
+    const service = this.actionService(arn);
+    if (service !== undefined && !SUPPORTED_ACTION_SERVICES.has(service)) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
+        `log alarms do not dispatch ${service} actions, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
     }
     return arn;
+  }
+
+  /**
+   * Service segment of an action ARN, or `undefined` when it cannot be read.
+   *
+   * An `IAlarmAction` may return any string, and `splitArn` rejects anything that is not
+   * a well-formed ARN, so the value is only parsed once it carries the leading `arn:` and
+   * the non-empty partition, service and resource segments the parser requires. A service
+   * segment that resolves at deploy time is not a service name, so it reads as unknown
+   * rather than producing a warning that names a token.
+   */
+  private actionService(arn: string): string | undefined {
+    const segments = arn.split(':');
+    const parseable = !Token.isUnresolved(arn)
+      && arn.startsWith('arn:')
+      && segments.length >= 6
+      && segments[1] !== '' && segments[2] !== '' && segments[5] !== '';
+    if (!parseable) {
+      return undefined;
+    }
+    const service = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME).service;
+    return Token.isUnresolved(service) ? undefined : service;
   }
 
   private validateTagCount(propName: string, tags?: { [key: string]: string }): void {
@@ -621,28 +643,34 @@ export class LogAlarm extends AlarmBase {
    * it can only be granted on every resource.
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
-    role.addToPrincipalPolicy(new PolicyStatement({
+    Grant.addToPrincipal({
+      grantee: role,
       actions: ['logs:StartQuery', 'logs:GetQueryResults'],
-      resources: this.logGroupPolicyResources(logGroups),
-    }));
+      resourceArns: this.logGroupPolicyResources(logGroups),
+    });
     if (logGroups === undefined || logGroups.length === 0) {
-      role.addToPrincipalPolicy(new PolicyStatement({
+      Grant.addToPrincipal({
+        grantee: role,
         actions: ['logs:DescribeLogGroups'],
-        resources: ['*'],
-      }));
+        resourceArns: ['*'],
+      });
     }
   }
 
   private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
-    role.addToPrincipalPolicy(new PolicyStatement({
+    Grant.addToPrincipal({
+      grantee: role,
       actions: ['logs:GetQueryResults'],
-      resources: this.logGroupPolicyResources(logGroups),
-    }));
+      resourceArns: this.logGroupPolicyResources(logGroups),
+    });
   }
 
   private renderWarmUp(warmUp?: WarmUpConfiguration): CfnLogAlarm.WarmUpConfigurationProperty | undefined {
     if (warmUp === undefined) {
       return undefined;
+    }
+    if (warmUp.warmUpPeriod.isUnresolved() && warmUp.warmUpPeriod.unitLabel() !== 'minutes') {
+      throw new ValidationError(lit`UnresolvedWarmUpPeriodUnit`, `warmUpPeriod must be given as Duration.minutes() when its amount comes from a token, got Duration.${warmUp.warmUpPeriod.unitLabel()}`, this);
     }
     const minutes = warmUp.warmUpPeriod.toMinutes({ integral: false });
     if (!warmUp.warmUpPeriod.isUnresolved() && (!Number.isInteger(minutes) || minutes < 1 || minutes > 2880)) {
@@ -693,7 +721,7 @@ export class LogAlarm extends AlarmBase {
    */
   private renderRate(rate: Duration): string {
     if (rate.isUnresolved()) {
-      return `rate(${Tokenization.stringifyNumber(rate.toMinutes({ integral: false }))} minutes)`;
+      return `rate(${rate.formatTokenToNumber()})`;
     }
     const minutes = rate.toMinutes({ integral: false });
     if (!Number.isInteger(minutes) || minutes < 1) {

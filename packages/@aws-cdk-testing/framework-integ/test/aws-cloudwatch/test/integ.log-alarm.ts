@@ -70,3 +70,12 @@ integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
     Match.objectLike({ AlarmName: 'integ-log-alarm' }),
   ]),
 }));
+
+integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
+  AlarmNames: ['integ-log-alarm-auto-role'],
+  AlarmTypes: ['LogAlarm'],
+}).expect(ExpectedResult.objectLike({
+  LogAlarms: Match.arrayWith([
+    Match.objectLike({ AlarmName: 'integ-log-alarm-auto-role' }),
+  ]),
+}));

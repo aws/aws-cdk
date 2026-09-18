@@ -462,6 +462,49 @@ describe('LogAlarm', () => {
   });
 
   test.each([
+    ['hours', Duration.hours(Token.asNumber({ Ref: 'RateParam' })), 'hours'],
+    ['seconds', Duration.seconds(Token.asNumber({ Ref: 'RateParam' })), 'seconds'],
+  ])('renders a tokenized rate given in %s without converting units', (_name, rate, unit) => {
+    const props = baseProps();
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: { rate, startTimeOffset: Duration.minutes(5) },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: Match.objectLike({
+        ScheduleConfiguration: Match.objectLike({
+          ScheduleExpression: { 'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ` ${unit})`]] },
+        }),
+      }),
+    });
+  });
+
+  test.each([
+    ['hours', Duration.hours(Token.asNumber({ Ref: 'WarmUpParam' }))],
+    ['seconds', Duration.seconds(Token.asNumber({ Ref: 'WarmUpParam' }))],
+  ])('fails for a tokenized warmUpPeriod given in %s', (_name, warmUpPeriod) => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      warmUpConfiguration: { warmUpPeriod },
+    })).toThrow(/warmUpPeriod must be given as Duration.minutes\(\) when its amount comes from a token/);
+  });
+
+  test('accepts a tokenized warmUpPeriod given in minutes', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      warmUpConfiguration: { warmUpPeriod: Duration.minutes(Token.asNumber({ Ref: 'WarmUpParam' })) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      WarmUpConfiguration: { WarmUpPeriodDurationInMinutes: { Ref: 'WarmUpParam' } },
+    });
+  });
+
+  test.each([
     ['equal to startTimeOffset', Duration.minutes(5)],
     ['greater than startTimeOffset', Duration.minutes(10)],
   ])('fails when endTimeOffset is %s', (_name, endTimeOffset) => {
