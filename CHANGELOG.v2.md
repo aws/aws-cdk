@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.269.0](https://github.com/aws/aws-cdk/compare/v2.268.0...v2.269.0) (2026-09-10)
+
+
+### Features
+
+* **bedrockagentcore:** graduate Policy submodule to stable ([#38687](https://github.com/aws/aws-cdk/issues/38687)) ([2b95e32](https://github.com/aws/aws-cdk/commit/2b95e329041ce1f54fd4a075229740af88484bdf)), closes [#37219](https://github.com/aws/aws-cdk/issues/37219)
+* update L1 CloudFormation resource definitions ([#38784](https://github.com/aws/aws-cdk/issues/38784)) ([1b5e2e0](https://github.com/aws/aws-cdk/commit/1b5e2e06b5688638775cd37e7ab3544d2cdd278e))
+* **logs:** support DELIVERY log group class ([#38703](https://github.com/aws/aws-cdk/issues/38703)) ([b7a057a](https://github.com/aws/aws-cdk/commit/b7a057a1abfb386a9738623c27680c38710e527c)), closes [#34338](https://github.com/aws/aws-cdk/issues/34338)
+* **s3-deployment:** expose deployed object version IDs ([#38766](https://github.com/aws/aws-cdk/issues/38766)) ([09342df](https://github.com/aws/aws-cdk/commit/09342df0b437365940f252d25fdc2e7637c4c5fe)), closes [#38765](https://github.com/aws/aws-cdk/issues/38765)
+
+
+### Bug Fixes
+
+* **awslint:** use a default import for chalk ([#38110](https://github.com/aws/aws-cdk/issues/38110)) ([36d14e0](https://github.com/aws/aws-cdk/commit/36d14e0c11b4ce19a76e2cef8a71457068e52a26)), closes [#38109](https://github.com/aws/aws-cdk/issues/38109) [#38058](https://github.com/aws/aws-cdk/issues/38058)
+* **core:** cdk-nag warnings cannot be suppressed ([#38787](https://github.com/aws/aws-cdk/issues/38787)) ([211029f](https://github.com/aws/aws-cdk/commit/211029fb5ff35e180a43f9ac65ab9e5015aad416))
+* **core:** cdk-nag's findings duplicated in multi-environment apps ([#38707](https://github.com/aws/aws-cdk/issues/38707)) ([4b7b2e7](https://github.com/aws/aws-cdk/commit/4b7b2e74a67965e0cd326bb0a27b2d11a8f9aed8)), closes [#38483](https://github.com/aws/aws-cdk/issues/38483) [#38135](https://github.com/aws/aws-cdk/issues/38135)
+* **core:** tree.json generation is quadratic in the number of subtrees ([#38761](https://github.com/aws/aws-cdk/issues/38761)) ([3d034b6](https://github.com/aws/aws-cdk/commit/3d034b63d58aa8f78d61596a682468724753dfec)), closes [#38762](https://github.com/aws/aws-cdk/issues/38762)
+* **core:** unnecessary warnings around builtins and AZs ([#38673](https://github.com/aws/aws-cdk/issues/38673)) ([6860777](https://github.com/aws/aws-cdk/commit/68607775642942161ba2602351a963745b0d4756))
+* **core:** upgrade CloudFormation validation to latest version ([#38804](https://github.com/aws/aws-cdk/issues/38804)) ([d703eb6](https://github.com/aws/aws-cdk/commit/d703eb67cec1d52a0e43ae3d739557f4162729ca))
+* **dynamodb:** `TableV2` emits internal grants deprecation warnings ([#38806](https://github.com/aws/aws-cdk/issues/38806)) ([57b3043](https://github.com/aws/aws-cdk/commit/57b304363240cbe333e6b3222d9ddb7803f81258)), closes [#38709](https://github.com/aws/aws-cdk/issues/38709) [#38399](https://github.com/aws/aws-cdk/issues/38399) [#37892](https://github.com/aws/aws-cdk/issues/37892)
+* **ecs:** allow ephemeralStorageGiB for Windows Fargate platform version 1.0.0 ([#37589](https://github.com/aws/aws-cdk/issues/37589)) ([855dfeb](https://github.com/aws/aws-cdk/commit/855dfeb67c8cba8cd5cc58f6e72e9de36ff92cf3)), closes [#37510](https://github.com/aws/aws-cdk/issues/37510)
+* **ecs:** removing the last target group from a service is not deployed ([#38776](https://github.com/aws/aws-cdk/issues/38776)) ([73100f6](https://github.com/aws/aws-cdk/commit/73100f60b5bff1e3dfbdb79754a07099f3ca4845)), closes [#35446](https://github.com/aws/aws-cdk/issues/35446) [#35446](https://github.com/aws/aws-cdk/issues/35446) [#35452](https://github.com/aws/aws-cdk/issues/35452)
+* **lambda-go:** escape generated go build path arguments ([#38785](https://github.com/aws/aws-cdk/issues/38785)) ([279d101](https://github.com/aws/aws-cdk/commit/279d10118d703446d7f30e983564f8bd8f197259))
+* **s3-deployment:** sanitize all log outputs to mitigate CWE-117/93 ([#37670](https://github.com/aws/aws-cdk/issues/37670)) ([47a3a38](https://github.com/aws/aws-cdk/commit/47a3a38b13324098c0c6588de8bd912a3f63ca30)), closes [#37671](https://github.com/aws/aws-cdk/issues/37671) [#30746](https://github.com/aws/aws-cdk/issues/30746) [#28469](https://github.com/aws/aws-cdk/issues/28469) [#30211](https://github.com/aws/aws-cdk/issues/30211)
+
 ## [2.268.0](https://github.com/aws/aws-cdk/compare/v2.267.0...v2.268.0) (2026-09-02)
 
 

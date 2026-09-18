@@ -230,6 +230,7 @@
     "./aws-pinpoint": "./lib/services/aws-pinpoint/index.js",
     "./aws-pinpointemail": "./lib/services/aws-pinpointemail/index.js",
     "./aws-pipes": "./lib/services/aws-pipes/index.js",
+    "./aws-pricingplanmanager": "./lib/services/aws-pricingplanmanager/index.js",
     "./aws-proton": "./lib/services/aws-proton/index.js",
     "./aws-qbusiness": "./lib/services/aws-qbusiness/index.js",
     "./aws-qldb": "./lib/services/aws-qldb/index.js",
