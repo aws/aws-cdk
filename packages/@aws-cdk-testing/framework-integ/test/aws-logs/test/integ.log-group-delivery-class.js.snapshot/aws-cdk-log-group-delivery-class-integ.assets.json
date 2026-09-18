@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "7f84e7eec80f02abc80753171754fca0bbebad5ce6c8884e643d805ddea5c5a6": {
+      "displayName": "aws-cdk-log-group-delivery-class-integ Template",
+      "source": {
+        "path": "aws-cdk-log-group-delivery-class-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-62f60d36": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7f84e7eec80f02abc80753171754fca0bbebad5ce6c8884e643d805ddea5c5a6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
