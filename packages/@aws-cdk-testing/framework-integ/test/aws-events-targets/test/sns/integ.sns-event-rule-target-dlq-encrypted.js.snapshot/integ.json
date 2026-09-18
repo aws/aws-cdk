@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ.sns-event-rule-target-dlq-encrypted": {
+      "stacks": [
+        "aws-cdk-sns-event-target-dlq-encrypted"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
