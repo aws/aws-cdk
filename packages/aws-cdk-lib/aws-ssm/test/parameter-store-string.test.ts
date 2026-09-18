@@ -26,6 +26,7 @@ test('can reference SSMPS string - latest version', () => {
   });
 
   // THEN
+  expect(stack.resolve(ref.stringValue)).toEqual({ Ref: 'RefParameter' });
   Template.fromStack(stack).templateMatches({
     Parameters: {
       RefParameter: {
@@ -34,8 +35,6 @@ test('can reference SSMPS string - latest version', () => {
       },
     },
   });
-
-  expect(stack.resolve(ref.stringValue)).toEqual({ Ref: 'RefParameter' });
 });
 
 test('can reference SSMPS secure string', () => {
