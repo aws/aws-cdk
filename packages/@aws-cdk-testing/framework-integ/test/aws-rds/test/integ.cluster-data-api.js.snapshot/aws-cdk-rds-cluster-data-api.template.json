@@ -775,13 +775,13 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql17",
+    "DBClusterParameterGroupName": "default.aurora-postgresql18",
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "EnableHttpEndpoint": true,
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.9",
+    "EngineVersion": "18.4",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
