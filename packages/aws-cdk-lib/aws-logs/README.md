@@ -175,6 +175,52 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
+### Dealing with rate exceeded errors
+
+Stacks that contain many subscription filters (as a rule of thumb, more than
+about 30) can fail to deploy with an error like this:
+
+```
+Resource handler returned message: "Rate exceeded (Service: CloudWatchLogs, Status Code: 400, ...)"
+```
+
+CloudFormation creates all subscription filters in parallel, and the volume of
+API calls this produces can exceed the CloudWatch Logs API rate limit. If this
+happens to you, apply the `SubscriptionFilterSequencingAspect` to the stack (or
+any parent scope) to limit how many subscription filters deploy at the same
+time:
+
+```ts
+import { Aspects } from 'aws-cdk-lib';
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+declare const stream: kinesis.Stream;
+
+// This stack contains a large number of SubscriptionFilters
+for (let i = 0; i < 70; i++) {
+  const logGroup = new logs.LogGroup(this, `LogGroup${i}`);
+  new logs.SubscriptionFilter(this, `Subscription${i}`, {
+    logGroup,
+    destination: new destinations.KinesisDestination(stream),
+    filterPattern: logs.FilterPattern.allEvents(),
+  });
+}
+
+// Adding this Aspect limits the number of parallel calls to PutSubscriptionFilter
+Aspects.of(this).add(new logs.SubscriptionFilterSequencingAspect({
+  // Change the concurrency if desired (default: 5)
+  maxConcurrency: 3,
+}));
+```
+
+The default concurrency of 5 matches the default rate limit of the throttled
+API, so higher values do not speed up deployment. Lower the value if your
+deployments are still throttled, for example because other workloads in the
+account consume the same rate limit. Note that deployments that touch many
+subscription filters will take longer, since updates and deletes are limited
+to the same concurrency.
+
 ## Metric Filters
 
 CloudWatch Logs can extract and emit metrics based on a textual log stream.
