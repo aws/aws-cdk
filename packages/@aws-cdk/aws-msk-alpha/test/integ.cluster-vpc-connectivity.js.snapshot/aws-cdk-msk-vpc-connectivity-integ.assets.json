@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "516268145f36c10446ff7359ebf66a1ea5f36f4b5dc4c03f8756b8787c197ec8": {
+      "displayName": "aws-cdk-msk-vpc-connectivity-integ Template",
+      "source": {
+        "path": "aws-cdk-msk-vpc-connectivity-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-03646e27": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "516268145f36c10446ff7359ebf66a1ea5f36f4b5dc4c03f8756b8787c197ec8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
