@@ -1,5 +1,118 @@
 {
  "Resources": {
+  "AwsApiCallawssdkclients3tablesGetTableBucketCommand5da4f98a1568b040c4173d123dc9f72a": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "GetTableBucketCommand",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"arn\":\"",
+       {
+        "Fn::ImportValue": "AutoNamedTestStack:ExportsOutputFnGetAttAutoNamedBucket61C70CB1TableBucketARND7004566"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "AutoNamedTestStack:ExportsOutputFnGetAttAutoNamedBucket61C70CB1TableBucketARND7004566"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1777772209243"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3tables:GetTableBucket"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:GetTableBucketMaintenanceConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
   "AwsApiCallawssdkclients3tablesGetTableBucketMaintenanceConfigurationCommand2d702c8116bcf801e7ed6bc348182cc6": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
    "Properties": {
@@ -38,74 +151,21 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779368410396"
+    "salt": "1777772209244"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": [
-          "s3tables:GetTableBucketMaintenanceConfiguration"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Runtime": "nodejs24.x",
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
-    },
-    "Timeout": 120,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
   }
  },
  "Outputs": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketCommand5da4f98a1568b040c4173d123dc9f72a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallawssdkclients3tablesGetTableBucketCommand5da4f98a1568b040c4173d123dc9f72a",
+     "assertion"
+    ]
+   }
+  },
   "AssertionResultsAwsApiCallawssdkclients3tablesGetTableBucketMaintenanceConfigurationCommand2d702c8116bcf801e7ed6bc348182cc6": {
    "Value": {
     "Fn::GetAtt": [
