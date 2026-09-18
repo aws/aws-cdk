@@ -93,6 +93,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = '@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
@@ -1954,6 +1955,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+    type: FlagType.BugFix,
+    summary: 'Render the API Gateway access log destination ARN without the trailing `:*`',
+    detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
   },
 };
 
