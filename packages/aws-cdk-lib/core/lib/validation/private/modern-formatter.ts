@@ -8,9 +8,10 @@ import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } fr
 import { Colorize } from './color';
 import { isSuppressibleViolation } from './report';
 import { namespaceFromPluginName, normalizeValidationId, parseValidationId, pluginNameFromNamespace } from './validation-id';
+import type { StackFrameFinder } from '../../private/stack-trace';
 import { topUserFrame } from '../../private/stack-trace';
 
-export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {
+export function formatValidationReports(fileRoot: string, reports: PluginReportJson[], frameFinder: StackFrameFinder): string[] {
   const successfullyExecutedPlugins = reports.filter((r) => isPluginFailure(r) === undefined);
   const pluginFailures = reports.map(isPluginFailure).filter((e) => e !== undefined);
 
@@ -24,7 +25,7 @@ export function formatValidationReports(fileRoot: string, reports: PluginReportJ
 
   return [
     ...pluginFailures.map(formatPluginFailure),
-    ...violations.map((v) => formatViolationBlock(fileRoot, v)),
+    ...violations.map((v) => formatViolationBlock(fileRoot, v, frameFinder)),
   ];
 }
 
@@ -56,12 +57,20 @@ function normalizeSeverity(severity: string | undefined): string {
   return sanitize(severity);
 }
 
-function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
+function formatViolationBlock(fileRoot: string, v: FlattenedViolation, frameFinder: StackFrameFinder): string {
   const lines: string[] = [];
 
-  const location = sourceLocation(fileRoot, v.construct.stackTraces);
-  if (location) {
-    lines.push(Colorize.underline(sanitize(location)));
+  const locations = sourceLocations(fileRoot, v.construct.stackTraces, frameFinder);
+
+  const maxTraces = 5;
+
+  let additional = false;
+  for (const location of locations.slice(maxTraces)) {
+    lines.push(`${additional ? 'or ' : ''}${Colorize.underline(sanitize(location))}`);
+    additional = true;
+  }
+  if (locations.length > maxTraces) {
+    lines.push(Colorize.grey(`(and ${locations.length - maxTraces} more...)`));
   }
 
   const pluginNs = namespaceFromPluginName(v.pluginName);
@@ -128,14 +137,20 @@ function stripAckTag(description: string): string {
   return description.replace(/\s*\[ack:\s*[^\]]+\]\s*/g, '').trim();
 }
 
-function sourceLocation(fileRoot: string, stackTraces: string[] | undefined): string | undefined {
+function sourceLocations(fileRoot: string, stackTraces: string[] | undefined, frameFinder: StackFrameFinder): string[] {
+  const ret: string[] = [];
   for (const trace of stackTraces ?? []) {
-    const frame = topUserFrame(trace.split('\n'));
+    const frame = topUserFrame(trace.split('\n'), frameFinder);
     if (frame && frame.fileName) {
-      return `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
+      const candidate = `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
+
+      // No duplicates
+      if (!ret.includes(candidate)) {
+        ret.push(candidate);
+      }
     }
   }
-  return undefined;
+  return ret;
 }
 
 function formatPluginFailure(f: PluginError): string {

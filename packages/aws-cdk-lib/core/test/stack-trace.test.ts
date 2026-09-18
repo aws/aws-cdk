@@ -1,4 +1,4 @@
-import { captureStackTrace, renderCallStackJustMyCode, topUserFrame } from '../lib/private/stack-trace';
+import { captureStackTrace, DEFAULT_STACK_FRAME_FINDER, renderCallStackJustMyCode, topUserFrame } from '../lib/private/stack-trace';
 
 describe('captureStackTrace with jsii host trace', () => {
   const TRACE_SYMBOL = Symbol.for('jsii.context.hostStackTrace');
@@ -280,7 +280,7 @@ describe('topUserFrame', () => {
       '...new Queue in aws-cdk-lib...',
       'myFunction (/path/to/project/myfile.ts:10:5)',
       '...jsii runtime...',
-    ])).toEqual({
+    ], DEFAULT_STACK_FRAME_FINDER)).toEqual({
       fileName: '/path/to/project/myfile.ts',
       sourceLocation: '10:5',
       functionName: 'myFunction',
@@ -292,7 +292,7 @@ describe('topUserFrame', () => {
       '...aws-cdk-lib...',
       '(no user code in 10 frames, use --stack-trace-limit to capture more)',
       '<module> (/Users/otaviom/jsii/fubanga/app.py:28)',
-    ])).toEqual({
+    ], DEFAULT_STACK_FRAME_FINDER)).toEqual({
       fileName: '/Users/otaviom/jsii/fubanga/app.py',
       sourceLocation: '28',
       functionName: '<module>',

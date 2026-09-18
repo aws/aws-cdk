@@ -2671,7 +2671,7 @@ export class Bucket extends BucketBase {
    *
    * @param rule The rule to add
    */
-  @MethodMetadata()
+  // @MethodMetadata()
   public addLifecycleRule(rule: LifecycleRule) {
     this.lifecycleRules.push(rule);
 

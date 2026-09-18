@@ -35,7 +35,7 @@ export class AssemblyValidationReport {
     return new AssemblyValidationReport(newReport);
   }
 
-  private constructor(private readonly report: PolicyValidationReportJson) {
+  private constructor(public readonly report: PolicyValidationReportJson) {
   }
 
   /**
