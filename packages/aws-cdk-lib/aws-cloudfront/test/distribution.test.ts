@@ -1549,7 +1549,8 @@ describe('Distribution metrics tests', () => {
     expect(metricObj).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/CloudFront',
       metricName: metric.name,
-      dimensions: { DistributionId: dist.distributionId },
+      dimensions: { DistributionId: dist.distributionId, Region: 'Global' },
+      region: 'us-east-1',
       statistic: metric.statistic,
       period: Duration.minutes(5),
     }));
