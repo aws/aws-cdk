@@ -158,7 +158,7 @@ export class PrecreatedRole extends Resource implements IRole {
   }
 
   @MethodMetadata()
-  public grantAssumeRole(identity: IPrincipal): Grant {
-    return this.role.grantAssumeRole(identity);
+  public grantAssumeRole(grantee: IPrincipal): Grant {
+    return this.role.grantAssumeRole(grantee);
   }
 }
