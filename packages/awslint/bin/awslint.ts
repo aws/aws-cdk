@@ -1,7 +1,7 @@
 
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';

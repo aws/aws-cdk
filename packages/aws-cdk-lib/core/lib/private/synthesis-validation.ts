@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
-import { AnnotationPlugin, collectAnnotationReport } from './annotation-plugin';
-import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
+import { collectAnnotationReport } from './annotation-plugin';
+import type { Acknowledgement } from './collect-acknowledged-rule-ids';
+import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -13,14 +14,15 @@ import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
-import type { IPolicyValidationPlugin, PolicyValidationPluginReport } from '../validation';
+import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
 import { STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { isPluginFailure, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
+import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -57,15 +59,18 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   // When the default validation plugin is not explicitly opted-in, downgrade
   // its errors to warnings so synthesis does not fail.
-  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
+  const validateFlagExplicitlyEnabled = getBooleanContext(root, cxapi.VALIDATE_AGAINST_DEFAULT_RULES, false);
   let warningifiedAnyErrors = false;
   if (!validateFlagExplicitlyEnabled) {
     warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
   }
 
+  const tree = new ConstructTree(root);
+  inferConstructPathsFromLogicalIds(reports, tree);
+
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(tree);
   const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
 
   // Always write validation report to disk
@@ -256,69 +261,132 @@ function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginRepo
 }
 
 /**
+ * For violations that have a resource logical ID but no construct path, try to infer the construct path from the logical ID and template path.
+ */
+function inferConstructPathsFromLogicalIds(reports: NamedValidationPluginReport[], tree: ConstructTree) {
+  for (const report of reports) {
+    for (const violation of report.violations) {
+      for (const resource of violation.violatingResources) {
+        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
+        if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
+          mutable(resource).constructPath = tree.getConstructByLogicalId(
+            path.basename(resource.templatePath),
+            resource.resourceLogicalId,
+          )?.node.path;
+        }
+      }
+    }
+  }
+}
+
+/**
  * Filter out suppressed violations. Collect all acknowledged rule IDs
  * from construct metadata across the tree, then remove matching violations
  * from reports. Fatal violations cannot be suppressed.
  *
- * Rule matching: violations are matched as <pluginName>::<ruleName> with
- * spaces replaced by dashes. Users suppress with:
- *   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+ * This function modifies the given `reports` in-place, removing suppressed
+ * violations and updating the `success` field. It returns a map of report index
+ * to suppressed violations.
  */
 function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) {
   const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
-  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  const acknowledgedRules = collectAcknowledgedRules(root);
 
-  if (acknowledgedRules.size > 0) {
+  if (Object.keys(acknowledgedRules).length > 0) {
     for (let i = 0; i < reports.length; i++) {
-      const pluginName = reports[i].pluginName;
-      const active: typeof reports[0]['violations'] = [];
-      const suppressed: SuppressedViolation[] = [];
-      for (const v of reports[i].violations) {
-        if (!isSuppressibleViolation(v)) {
-          active.push(v);
-          continue;
-        }
+      const suppressed = suppressInReport(reports[i]);
 
-        const ackIds: string[] = [];
-        if (v.ruleName.includes('::')) {
-          ackIds.push(v.ruleName);
-
-          // Annotations are special; we renamed the suppression namespace at one point
-          // from "Construct-Annotations" to just "Annotation", and we also want
-          // to support the naked-rule-name form for backwards compatibility.
-          if (pluginName === AnnotationPlugin.NAME) {
-            const unnamespacedPart = v.ruleName.split('::').slice(1).join('::');
-            ackIds.push(`${pluginName}::${unnamespacedPart}`);
-          }
-        } else {
-          ackIds.push(`${pluginName}::${v.ruleName}`);
-        }
-
-        const ack = firstThat(ackIds.map(hyphenify), id => acknowledgedRules.get(id));
-
-        if (ack) {
-          suppressed.push({
-            ...v,
-            acknowledgedId: ack.key,
-            reason: ack.value.reason,
-            acknowledgedAt: ack.value.constructPath,
-            acknowledgedStackTrace: ack.value.stackTrace,
-          });
-        } else {
-          active.push(v);
-        }
-      }
       if (suppressed.length > 0) {
         suppressedByReport.set(i, suppressed);
-        reports[i] = {
-          ...reports[i],
-          violations: active,
-          success: active.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
-        };
+        mutable(reports[i]).success = reports[i].violations.every(v => v.severity !== 'error' && v.severity !== 'fatal');
       }
     }
   }
+
   return suppressedByReport;
+
+  function suppressInReport(report: NamedValidationPluginReport): SuppressedViolation[] {
+    const ruleNamespace = namespaceFromPluginName(report.pluginName);
+
+    const ret: SuppressedViolation[] = [];
+
+    for (let i = 0; i < report.violations.length; i++) {
+      const v = report.violations[i];
+      if (!isSuppressibleViolation(v)) {
+        continue;
+      }
+
+      const ruleName = normalizeValidationId(v.ruleName, ruleNamespace);
+      const pathBasedSuppressions = acknowledgedRules[ruleName];
+
+      if (!pathBasedSuppressions) {
+        continue;
+      }
+
+      const { suppressedGroups, unsuppressed } = groupResourcesBySuppressions(v.violatingResources, pathBasedSuppressions);
+      mutable(v).violatingResources = unsuppressed;
+
+      for (const suppressedGroup of suppressedGroups) {
+        ret.push({
+          ...v,
+          ...suppressedGroup.acknowledgement,
+          violatingResources: suppressedGroup.resources,
+        });
+      }
+
+      // If the violation is left with 0 violating resources, remove it from the report
+      if (v.violatingResources.length === 0) {
+        report.violations.splice(i, 1);
+        i--;
+      }
+    }
+    return ret;
+  }
+}
+
+function groupResourcesBySuppressions(resources: PolicyViolatingResource[], pathBasedSuppressions: Record<string, Acknowledgement>) {
+  interface SuppressionGroup {
+    acknowledgement: Acknowledgement;
+    resources: PolicyViolatingResource[];
+  }
+
+  const unsuppressed: PolicyViolatingResource[] = [];
+  const suppressed: Record<string, SuppressionGroup> = {};
+
+  for (const r of resources) {
+    const ack = findClosestAck(r);
+
+    if (ack) {
+      suppressed[ack.acknowledgedAt] ??= { acknowledgement: ack, resources: [] };
+      suppressed[ack.acknowledgedAt].resources.push(r);
+    } else {
+      unsuppressed.push(r);
+    }
+  }
+
+  return {
+    suppressedGroups: Object.values(suppressed),
+    unsuppressed,
+  };
+
+  /**
+   * Find an acknowledgement upwards in the construct tree for the given resource
+   */
+  function findClosestAck(r: PolicyViolatingResource): Acknowledgement | undefined {
+    let constructPath = r.constructPath ?? '';
+
+    let ret: Acknowledgement | undefined = pathBasedSuppressions[constructPath];
+    while (ret === undefined && constructPath !== '') {
+      const lastDot = constructPath.lastIndexOf('/');
+      if (lastDot === -1) {
+        constructPath = '';
+      } else {
+        constructPath = constructPath.substring(0, lastDot);
+      }
+      ret = pathBasedSuppressions[constructPath];
+    }
+    return ret;
+  }
 }
 
 /**
@@ -329,41 +397,60 @@ function doInvokeValidationPlugins(
   plugins: Array<[IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>]>,
   root: App,
 ) {
-  const preExistingFileHashes = snapshotFileHashes(outdir);
+  const untrustedPlugins = new Set(Array.from(plugins.values())
+    .map(p => p[0])
+    .filter(p => !isTrustedPlugin(p)));
 
-  return plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+
+  const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
+
+  if (preExistingFileHashes) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
+      const pluginNames = Array.from(untrustedPlugins).map(p => p.name);
+      throw new AssumptionError(lit`IllegalPluginOperation`, `One of the validation plugins (${pluginNames.join(', ')}) modified the cloud assembly`);
+    }
+  }
+
+  return ret;
 
   function invokeSinglePlugin(
     plugin: IPolicyValidationPlugin,
     stackArtifacts: private_cxapi.CloudFormationStackArtifact[],
   ): NamedValidationPluginReport[] {
-    const stacksByEnv = groupStacksByEnvironment(stackArtifacts);
+    // Nothing to validate; also keeps external plugins symmetric with the
+    // per-environment path, which produces no invocations for zero stacks.
+    if (stackArtifacts.length === 0) {
+      return [];
+    }
 
-    const reports = stacksByEnv.map(({ accountId, region, stacks }) => {
-      try {
-        const report = makeTemplatePathsRelative(plugin.validate({
-          // path.resolve() because templateFullPath might not be as full as you'd expect
-          templatePaths: stacks.map(s => s.templateFullPath),
-          stackTemplates: stacks.map(s => ({ stackConstructPath: s.hierarchicalId, templatePath: s.templateFullPath })),
-          appConstruct: root,
-          accountId: accountId !== cxapi.UNKNOWN_ACCOUNT ? accountId : undefined,
-          region: region !== cxapi.UNKNOWN_REGION ? region : undefined,
-        }));
+    const stackTemplates = stackArtifacts.map((s) => ({
+      stackConstructPath: s.hierarchicalId,
+      templatePath: s.templateFullPath,
+      accountId: s.environment.account !== cxapi.UNKNOWN_ACCOUNT ? s.environment.account : undefined,
+      region: s.environment.region !== cxapi.UNKNOWN_REGION ? s.environment.region : undefined,
+    } satisfies PolicyValidationStack));
 
-        if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
-          throw new AssumptionError(lit`IllegalPluginOperation`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-        }
+    // Global account and region
+    const accountId = stackTemplates.every(s => s.accountId === stackTemplates[0].accountId) ? stackTemplates[0].accountId : undefined;
+    const region = stackTemplates.every(s => s.region === stackTemplates[0].region) ? stackTemplates[0].region : undefined;
 
-        return { ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport;
-      } catch (e: any) {
-        if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
-          throw e;
-        }
-        return mkPluginFailure(plugin, e);
+    try {
+      const report = makeTemplatePathsRelative(plugin.validate({
+        templatePaths: stackTemplates.map(s => s.templatePath),
+        stackTemplates,
+        appConstruct: root,
+        accountId,
+        region,
+      }));
+
+      return [{ ...report, pluginName: plugin.name, pluginVersion: plugin.version } satisfies NamedValidationPluginReport];
+    } catch (e: any) {
+      if (e instanceof AssumptionError && e.name === 'IllegalPluginOperation') {
+        throw e;
       }
-    });
-
-    return mergeReports(reports);
+      return [mkPluginFailure(plugin, e)];
+    }
   }
 
   /**
@@ -388,24 +475,11 @@ function doInvokeValidationPlugins(
   }
 }
 
-interface StacksByEnvironment {
-  readonly accountId: string | undefined;
-  readonly region: string | undefined;
-  readonly stacks: private_cxapi.CloudFormationStackArtifact[];
-}
-
-function groupStacksByEnvironment(stacks: private_cxapi.CloudFormationStackArtifact[]): StacksByEnvironment[] {
-  const ret = new Map<string, StacksByEnvironment>();
-
-  for (const stack of stacks) {
-    const key = `${stack.environment.account || ''}::${stack.environment.region || ''}`;
-    if (!ret.has(key)) {
-      ret.set(key, { accountId: stack.environment.account, region: stack.environment.region, stacks: [] });
-    }
-    ret.get(key)!.stacks.push(stack);
-  }
-
-  return Array.from(ret.values());
+/**
+ * A plugin for which we don't need to validate that it didn't modify the assembly
+ */
+function isTrustedPlugin(x: IPolicyValidationPlugin) {
+  return x instanceof CloudFormationValidatePlugin;
 }
 
 /**
@@ -519,41 +593,6 @@ function mutable<A extends object>(obj: A): { -readonly [P in keyof A]: A[P] } {
   return obj as any;
 }
 
-/**
- * Merge the reports from multiple invocations of the same plugin into a single report.
- *
- * All non-errors are combined into a single report, and errors are combined by error message.
- */
-function mergeReports(reports: NamedValidationPluginReport[]): NamedValidationPluginReport[] {
-  const nonErrors = reports.filter(r => isPluginFailure(r) === undefined);
-  const errors = reports.filter(r => isPluginFailure(r) !== undefined);
-
-  const ret: NamedValidationPluginReport[] = [];
-  if (nonErrors.length > 0) {
-    const merged: NamedValidationPluginReport = nonErrors[0];
-    for (const candidate of nonErrors.slice(1)) {
-      merged.violations.push(...candidate.violations);
-      mutable(merged).metadata = { ...merged.metadata, ...candidate.metadata };
-      mutable(merged).success = merged.success && candidate.success;
-    }
-    ret.push(merged);
-  }
-
-  if (errors.length > 0) {
-    const errorMap = new Map<string, NamedValidationPluginReport>();
-    for (const candidate of errors) {
-      const errorMessage = isPluginFailure(candidate);
-      if (!errorMessage) continue;
-      if (!errorMap.has(errorMessage)) {
-        errorMap.set(errorMessage, candidate);
-      }
-    }
-    ret.push(...errorMap.values());
-  }
-
-  return ret;
-}
-
 function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
   const contextMode = root.node.tryGetContext(cxapi.CDK_APP_MODE_CONTEXT);
   if (contextMode === 'process' || contextMode === 'inmemory') {
@@ -583,18 +622,4 @@ function stripAnsi(x: string) {
 
   const re = new RegExp(pattern, 'g');
   return x.replaceAll(re, '');
-}
-
-function firstThat<A, B>(xs: A[], predicate: (x: A) => B | undefined): { key: A; value: B } | undefined {
-  for (const x of xs) {
-    const value = predicate(x);
-    if (value !== undefined) {
-      return { key: x, value };
-    }
-  }
-  return undefined;
-}
-
-function hyphenify(x: string) {
-  return x.replace(/ /g, '-');
 }

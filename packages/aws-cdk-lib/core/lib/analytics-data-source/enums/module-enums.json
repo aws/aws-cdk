@@ -480,6 +480,10 @@
       "3",
       "3.9"
     ],
+    "LibrarySet": [
+      "analytics",
+      "none"
+    ],
     "Runtime": [
       "Ray2.4"
     ],
@@ -526,24 +530,10 @@
       "SECONDS"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
-    "TableEncryption": [
-      "SSE-S3",
-      "SSE-KMS",
-      "SSE-KMS-MANAGED",
-      "CSE-KMS"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/security-configuration.ts": {
     "S3EncryptionMode": [
       "SSE-S3",
       "SSE-KMS"
-    ],
-    "CloudWatchEncryptionMode": [
-      "SSE-KMS"
-    ],
-    "JobBookmarksEncryptionMode": [
-      "CSE-KMS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/storage-parameter.ts": {
@@ -1053,6 +1043,61 @@
       "AUTOMATIC"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/audio-codec-settings.ts": {
+    "AudioCodecType": [
+      "AAC",
+      "AC3",
+      "EAC3",
+      "EAC3_ATMOS",
+      "MP2",
+      "WAV",
+      "PASSTHROUGH"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/channel.ts": {
+    "OutputLockingMode": [
+      "PIPELINE_LOCKING",
+      "EPOCH_LOCKING"
+    ],
+    "LinkedChannelType": [
+      "PRIMARY_CHANNEL",
+      "FOLLOWING_CHANNEL"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/enums.ts": {
+    "SegmentLengthUnits": [
+      "MILLISECONDS",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/input.ts": {
+    "InputType": [
+      "UDP_PUSH",
+      "RTP_PUSH",
+      "RTMP_PUSH",
+      "RTMP_PULL",
+      "URL_PULL",
+      "MP4_FILE",
+      "MEDIACONNECT",
+      "INPUT_DEVICE",
+      "AWS_CDI",
+      "TS_FILE",
+      "SRT_CALLER",
+      "SRT_LISTENER",
+      "MULTICAST",
+      "SMPTE_2110_RECEIVER_GROUP",
+      "SDI",
+      "MEDIACONNECT_ROUTER"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-medialive-alpha/lib/video-codec-settings.ts": {
+    "VideoCodecType": [
+      "H264",
+      "H265",
+      "AV1",
+      "FRAME_CAPTURE"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
     "InputType": [
       "CMAF",
@@ -1385,6 +1430,10 @@
     "RequestMetricsStatus": [
       "Enabled",
       "Disabled"
+    ],
+    "StorageClass": [
+      "STANDARD",
+      "INTELLIGENT_TIERING"
     ],
     "TableBucketEncryption": [
       "aws:kms",
@@ -2350,6 +2399,21 @@
       "USER_PREFERENCE",
       "EPISODIC",
       "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.ts": {
+    "StreamDeliveryContentType": [
+      "MEMORY_RECORDS"
+    ],
+    "StreamDeliveryContentLevel": [
+      "METADATA_ONLY",
+      "FULL_CONTENT"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
@@ -5276,6 +5340,181 @@
       "SOURCE_IP"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/catalog.ts": {
+    "CatalogEncryptionMode": [
+      "DISABLED",
+      "SSE-KMS",
+      "SSE-KMS-WITH-SERVICE-ROLE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/constants.ts": {
+    "WorkerType": [
+      "Standard",
+      "G.1X",
+      "G.2X",
+      "G.4X",
+      "G.8X",
+      "G.12X",
+      "G.16X",
+      "G.025X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
+    ],
+    "JobState": [
+      "SUCCEEDED",
+      "FAILED",
+      "TIMEOUT",
+      "STARTING",
+      "RUNNING",
+      "STOPPING",
+      "STOPPED"
+    ],
+    "MetricType": [
+      "gauge",
+      "count"
+    ],
+    "ExecutionClass": [
+      "FLEX",
+      "STANDARD"
+    ],
+    "GlueVersion": [
+      "0.9",
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "5.1"
+    ],
+    "JobLanguage": [
+      "scala",
+      "python"
+    ],
+    "PythonVersion": [
+      "2",
+      "3",
+      "3.9"
+    ],
+    "LibrarySet": [
+      "analytics",
+      "none"
+    ],
+    "JobType": [
+      "glueetl",
+      "gluestreaming",
+      "pythonshell"
+    ],
+    "MaxCapacity": [
+      0.0625,
+      1
+    ],
+    "PredicateLogical": [
+      "AND",
+      "ANY"
+    ],
+    "ConditionLogicalOperator": [
+      "EQUALS"
+    ],
+    "CrawlerState": [
+      "RUNNING",
+      "CANCELLING",
+      "CANCELLED",
+      "SUCCEEDED",
+      "FAILED",
+      "ERROR"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/partition-projection.ts": {
+    "PartitionProjectionType": [
+      "integer",
+      "date",
+      "enum",
+      "injected"
+    ],
+    "DateIntervalUnit": [
+      "YEARS",
+      "MONTHS",
+      "WEEKS",
+      "DAYS",
+      "HOURS",
+      "MINUTES",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/security-configuration.ts": {
+    "S3EncryptionMode": [
+      "SSE-S3",
+      "SSE-KMS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/storage-parameter.ts": {
+    "CompressionType": [
+      "none",
+      "bzip2",
+      "gzip",
+      "snappy"
+    ],
+    "InvalidCharHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW",
+      "REPLACE"
+    ],
+    "NumericOverflowHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW"
+    ],
+    "SurplusBytesHandlingAction": [
+      "SET_TO_NULL",
+      "DISABLED",
+      "FAIL",
+      "DROP_ROW",
+      "TRUNCATE"
+    ],
+    "SurplusCharHandlingAction": [
+      "SET_TO_NULL",
+      "DISABLED",
+      "FAIL",
+      "DROP_ROW",
+      "TRUNCATE"
+    ],
+    "ColumnCountMismatchHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW"
+    ],
+    "WriteParallel": [
+      "on",
+      "off"
+    ],
+    "OrcColumnMappingType": [
+      "name",
+      "position"
+    ],
+    "StorageParameters": [
+      "skip.header.line.count",
+      "data_cleansing_enabled",
+      "compression_type",
+      "invalid_char_handling",
+      "replacement_char",
+      "numeric_overflow_handling",
+      "surplus_bytes_handling",
+      "surplus_char_handling",
+      "column_count_mismatch_handling",
+      "num_rows",
+      "serialization.null.format",
+      "orc.schema.resolution",
+      "write.parallel",
+      "write.maxfilesize.mb",
+      "write.kms.key.id"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
@@ -5321,6 +5560,16 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/http-endpoint.ts": {
+    "HttpCompression": [
+      "GZIP",
+      "NONE"
+    ],
+    "HttpBackupMode": [
+      "FailedDataOnly",
+      "AllData"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
@@ -5555,7 +5804,8 @@
     ],
     "LogGroupClass": [
       "STANDARD",
-      "INFREQUENT_ACCESS"
+      "INFREQUENT_ACCESS",
+      "DELIVERY"
     ],
     "Distribution": [
       "ByLogStream",
@@ -6600,12 +6850,6 @@
       "nodejs20.x",
       "nodejs22.x",
       "nodejs24.x"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
-    "DependencyOperation": [
-      0,
-      1
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/fs/options.ts": {
