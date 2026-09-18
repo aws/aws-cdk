@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "ca0ffbacea38573799ca585ddcb0964ba5455f22152043778defebdd611fcdcc": {
+      "displayName": "aws-ecs-integ-ec2-service-monitoring Template",
+      "source": {
+        "path": "aws-ecs-integ-ec2-service-monitoring.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ab29e4fc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ca0ffbacea38573799ca585ddcb0964ba5455f22152043778defebdd611fcdcc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
