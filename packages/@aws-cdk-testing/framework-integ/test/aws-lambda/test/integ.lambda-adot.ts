@@ -1,3 +1,4 @@
+// Updated ADOT layer versions: Java SDK/Agent 1.32.0-2, JavaScript 1.30.2, Python 1.32.0, Generic 0.151.0
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
