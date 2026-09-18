@@ -113,7 +113,7 @@
     "exampleDependencies": {
       "@aws-cdk/aws-mediaconnect-alpha": "^0.0.0"
     }
-  }
+  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
