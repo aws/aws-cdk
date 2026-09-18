@@ -567,6 +567,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       'Resource',
       cfnProps,
     );
+    this.node.defaultChild = this.targetResource;
 
     if (this.credentialProviderConfigurations) {
       for (const provider of this.credentialProviderConfigurations) {
