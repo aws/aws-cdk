@@ -1237,3 +1237,59 @@ describe('Network Load Balancer', () => {
     });
   });
 });
+
+describe('MultipleTargetGroups Fargate patterns availabilityZoneRebalancing', () => {
+  test('ApplicationMultipleTargetGroupsFargateService omits AvailabilityZoneRebalancing by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: Match.absent(),
+    });
+  });
+
+  test('ApplicationMultipleTargetGroupsFargateService passes availabilityZoneRebalancing through', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new ApplicationMultipleTargetGroupsFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: 'ENABLED',
+    });
+  });
+
+  test('NetworkMultipleTargetGroupsFargateService passes availabilityZoneRebalancing through', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ContainerImage.fromRegistry('test'),
+      },
+      maxHealthyPercent: 200,
+      availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: 'ENABLED',
+    });
+  });
+});
