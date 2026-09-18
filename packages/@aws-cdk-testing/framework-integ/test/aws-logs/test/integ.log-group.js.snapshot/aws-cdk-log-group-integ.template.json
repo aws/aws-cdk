@@ -44,6 +44,18 @@
            {
             "Ref": "AWS::Partition"
            },
+           ":dataprotection::aws:data-identifier/DateOfBirth"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
            ":dataprotection::aws:data-identifier/EmailAddress"
           ]
          ]
@@ -79,6 +91,18 @@
             "Ref": "AWS::Partition"
            },
            ":dataprotection::aws:data-identifier/DriversLicense-US"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":dataprotection::aws:data-identifier/DateOfBirth"
           ]
          ]
         },
