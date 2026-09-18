@@ -441,6 +441,31 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 });
 ```
 
+### Encrypting environment variables
+
+Canary environment variables are encrypted at rest using an AWS-managed key by default.
+
+To use a customer-managed KMS key instead, specify the `environmentVariablesEncryptionKey` property. The canary's execution role is automatically granted `kms:Decrypt` permission on the key so the underlying Lambda function can read its environment variables.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const key = new kms.Key(this, 'myKey');
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_13_0,
+  environmentVariables: {
+    stage: 'prod',
+  },
+  environmentVariablesEncryptionKey: key,
+});
+```
+
 ### Tag replication
 
 You can configure a canary to replicate its tags to the underlying Lambda function. This is useful when you want the same tags that are applied to the canary to also be applied to the Lambda function that the canary uses.
