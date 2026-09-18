@@ -456,6 +456,7 @@ function mergeBuildEnvironments(a?: codebuild.BuildEnvironment, b?: codebuild.Bu
     computeType: b.computeType ?? a.computeType,
     dockerServer: b.dockerServer ?? a.dockerServer,
     fleet: b.fleet ?? a.fleet,
+    hostKernel: b.hostKernel ?? a.hostKernel,
     privileged: b.privileged ?? a.privileged,
     certificate: b.certificate ?? a.certificate,
     environmentVariables: {
