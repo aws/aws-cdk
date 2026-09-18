@@ -18,7 +18,7 @@ import { lit } from './private/literal-string';
 import { profileSpan } from './private/perf';
 import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
-import { isInternalPath, resolveLinkTarget } from './fs/utils';
+import { walkDirectory } from './fs/utils';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -583,42 +583,24 @@ function determineHashType(scope: Construct, assetHashType?: AssetHashType, cust
 
 /**
  * Walk the directory tree, throw if we find external symlinks
- * @param root true root of the directory
- * @param subRoot used for walking subdirectories
  */
 function validateInternalSymlinks(
   root: string,
   scope: Construct,
   followMode: SymlinkFollowMode,
   ignoreStrat: IgnoreStrategy,
-  subRoot: string = root,
 ) {
-  const entries = fs.readdirSync(subRoot, { withFileTypes: true });
-  for (const entry of entries) {
-    const childPath = path.join(subRoot, entry.name);
-    if (entry.isDirectory()) {
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
-    } else if (!entry.isSymbolicLink()) {
-      continue;
-    } else { // we have a symlink
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      // check whether this is internal or external
-      const linkPath = fs.readlinkSync(childPath);
-      const resolvedPath = resolveLinkTarget(childPath, linkPath);
-      if (!isInternalPath(root, resolvedPath)) {
+  walkDirectory(root, { follow: followMode, ignoreStrategy: ignoreStrat }, {
+    onSymlink: (entry) => {
+      if (!entry.internal) {
         throw new ValidationError(
           lit`BundlingFileSymlinkForbidden`,
-          `The file ${resolvedPath} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
           scope,
         );
       }
-    }
-  }
+    },
+  });
 }
 
 /**
