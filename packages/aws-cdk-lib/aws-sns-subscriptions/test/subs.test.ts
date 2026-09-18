@@ -2284,3 +2284,234 @@ test('queue subscription cross region with unresolved topic ARN uses global prin
     },
   });
 });
+
+test('lambda subscription cross region with topic in opt-in region uses regionalized principal', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: { account: '11111111111', region: 'ap-southeast-4' },
+  });
+  const functionStack = new Stack(app, 'FunctionStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+  });
+  const func = new lambda.Function(functionStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic1.addSubscription(new subs.LambdaSubscription(func));
+
+  Template.fromStack(functionStack).hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'sns.ap-southeast-4.amazonaws.com',
+  });
+});
+
+test('lambda subscription cross region with function in opt-in region uses regionalized principal', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+  const functionStack = new Stack(app, 'FunctionStack', {
+    env: { account: '11111111111', region: 'ap-southeast-4' },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+  });
+  const func = new lambda.Function(functionStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic1.addSubscription(new subs.LambdaSubscription(func));
+
+  Template.fromStack(functionStack).hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'sns.ap-southeast-4.amazonaws.com',
+  });
+});
+
+test('lambda subscription same region both opt-in uses global principal', () => {
+  const app = new App();
+  const myStack = new Stack(app, 'MyStack', {
+    env: { account: '11111111111', region: 'ap-southeast-4' },
+  });
+
+  const topic1 = new sns.Topic(myStack, 'Topic');
+  const func = new lambda.Function(myStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  topic1.addSubscription(new subs.LambdaSubscription(func));
+
+  Template.fromStack(myStack).hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'sns.amazonaws.com',
+  });
+});
+
+test('lambda subscription cross region default-to-default uses global principal', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: { account: '11111111111', region: 'eu-west-1' },
+  });
+  const functionStack = new Stack(app, 'FunctionStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+  });
+  const func = new lambda.Function(functionStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic1.addSubscription(new subs.LambdaSubscription(func));
+
+  Template.fromStack(functionStack).hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'sns.amazonaws.com',
+  });
+});
+
+test('lambda subscription cross region with unresolved topic ARN uses global principal', () => {
+  const app = new App();
+  const functionStack = new Stack(app, 'FunctionStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+
+  const func = new lambda.Function(functionStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  const topicArn = new CfnParameter(functionStack, 'TopicArn').valueAsString;
+  const topic1 = sns.Topic.fromTopicArn(functionStack, 'Topic', topicArn);
+
+  topic1.addSubscription(new subs.LambdaSubscription(func));
+
+  Template.fromStack(functionStack).hasResourceProperties('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    Principal: 'sns.amazonaws.com',
+  });
+});
+
+test('subscription with DLQ in opt-in region uses regionalized principal on DLQ policy', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+  const dlqStack = new Stack(app, 'DlqStack', {
+    env: { account: '11111111111', region: 'ap-southeast-4' },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+  });
+  const func = new lambda.Function(dlqStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  const dlq = new sqs.Queue(dlqStack, 'DLQ');
+
+  topic1.addSubscription(new subs.LambdaSubscription(func, {
+    deadLetterQueue: dlq,
+  }));
+
+  Template.fromStack(dlqStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'sns.ap-southeast-4.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['DLQ581697C4', 'Arn'] },
+        },
+      ],
+    },
+  });
+});
+
+test('subscription with DLQ in default region and topic in opt-in region uses regionalized principal', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: { account: '11111111111', region: 'ap-southeast-4' },
+  });
+  const dlqStack = new Stack(app, 'DlqStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+  });
+  const func = new lambda.Function(dlqStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  const dlq = new sqs.Queue(dlqStack, 'DLQ');
+
+  topic1.addSubscription(new subs.LambdaSubscription(func, {
+    deadLetterQueue: dlq,
+  }));
+
+  Template.fromStack(dlqStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'sns.ap-southeast-4.amazonaws.com',
+          },
+          Resource: { 'Fn::GetAtt': ['DLQ581697C4', 'Arn'] },
+        },
+      ],
+    },
+  });
+});
+
+test('subscription with DLQ same region as topic default uses global principal', () => {
+  const app = new App();
+  const myStack = new Stack(app, 'MyStack', {
+    env: { account: '11111111111', region: 'us-east-1' },
+  });
+
+  const topic1 = new sns.Topic(myStack, 'Topic');
+  const func = new lambda.Function(myStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+  const dlq = new sqs.Queue(myStack, 'DLQ');
+
+  topic1.addSubscription(new subs.LambdaSubscription(func, {
+    deadLetterQueue: dlq,
+  }));
+
+  Template.fromStack(myStack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sqs:SendMessage',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'sns.amazonaws.com',
+          },
+        },
+      ],
+    },
+  });
+});

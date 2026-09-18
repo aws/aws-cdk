@@ -1,0 +1,74 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "metadata": {},
+      "violations": [
+        {
+          "ruleName": "W9012",
+          "description": "Invalid pseudo-parameter override(s): AWS::AccountId override '12345678' is not a 12-digit AWS account ID",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "TopicStack",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F3031",
+          "description": "SourceArn: 'arn:aws:sns:ap-southeast-4:12345678:topicstackopicstackmytopicc43e67afe37944124dd6' does not match pattern '^arn:(aws[a-zA-Z0-9-]*):([a-zA-Z0-9\\-])+:((eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1})?:(\\d{12})?:(.*)$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FunctionStack.template.json",
+                "logicalId": "EchoAllowInvokeTopicStackMyTopicC43E67AF32CF6EFA",
+                "propertyPaths": [
+                  "Properties.SourceArn"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W3663",
+          "description": "Properties: Lambda Permission with a SourceArn that has no account id should also specify SourceAccount",
+          "suggestedFix": "Add SourceAccount property",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FunctionStack.template.json",
+                "logicalId": "EchoAllowInvokeTopicStackMyTopicC43E67AF32CF6EFA",
+                "propertyPaths": [
+                  "Properties"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
