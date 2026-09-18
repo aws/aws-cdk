@@ -124,6 +124,39 @@
     }
    }
   },
+  "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D11AC39DD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithoutIpAddressTypePropIPv457500ACB"
+       }
+      ]
+     ]
+    }
+   }
+  },
   "DistributionWithoutIpAddressTypePropIPv457500ACB": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
@@ -194,6 +227,39 @@
       "FunctionArn"
      ]
     },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithIPv467452C1E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithIPv4Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D09790183D60B9B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "cloudfront.amazonaws.com",
     "SourceArn": {
      "Fn::Join": [
@@ -309,6 +375,39 @@
     }
    }
   },
+  "DistributionWithIPv6Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92C9E5ABDB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithIPv69F24DA5D"
+       }
+      ]
+     ]
+    }
+   }
+  },
   "DistributionWithIPv69F24DA5D": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
@@ -380,6 +479,39 @@
       "FunctionArn"
      ]
     },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithDualstackCB183339"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithDualstackOrigin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E087EF55EB6": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "cloudfront.amazonaws.com",
     "SourceArn": {
      "Fn::Join": [
