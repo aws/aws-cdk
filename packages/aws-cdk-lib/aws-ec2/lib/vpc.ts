@@ -4,6 +4,7 @@ import type { ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import { ClientVpnEndpoint } from './client-vpn-endpoint';
 import type {
   CfnVPCCidrBlock,
+  IIPAMPoolRef,
   ISubnetRef,
   IVPCRef, SubnetReference, VPCReference,
 } from './ec2.generated';
@@ -2043,6 +2044,26 @@ function subnetTypeTagValue(type: SubnetType) {
 }
 
 /**
+ * Allocation of a subnet's IPv4 CIDR block from an Amazon VPC IP Address Manager (IPAM) pool
+ */
+export interface SubnetIpamAllocation {
+  /**
+   * The IPAM pool from which the CIDR block is allocated at deploy time
+   *
+   * The allocated CIDR block must lie within the CIDR of the VPC the subnet belongs to.
+   * To reference a pool that is not defined in this app, use `CfnIPAMPool.fromIpamPoolId()`.
+   */
+  readonly ipamPool: IIPAMPoolRef;
+
+  /**
+   * The netmask length of the CIDR block to allocate from the pool
+   *
+   * Must be between 16 and 28 (inclusive), the sizes allowed for an IPv4 subnet.
+   */
+  readonly netmaskLength: number;
+}
+
+/**
  * Specify configuration parameters for a VPC subnet
  */
 export interface SubnetProps {
@@ -2059,8 +2080,25 @@ export interface SubnetProps {
 
   /**
    * The CIDR notation for this subnet
+   *
+   * Exactly one of `cidrBlock` and `ipv4IpamAllocation` must be specified.
+   *
+   * @default - the CIDR block is allocated from the IPAM pool given in `ipv4IpamAllocation`
    */
-  readonly cidrBlock: string;
+  readonly cidrBlock?: string;
+
+  /**
+   * Allocate the IPv4 CIDR block of this subnet from an IPAM pool at deploy time
+   *
+   * When set, `ipv4CidrBlock` resolves to a deploy-time attribute of the subnet instead of a
+   * concrete string, so `SubnetFilter.byCidrMask()`, `SubnetFilter.byCidrRanges()` and
+   * `SubnetFilter.containsIpAddresses()` cannot be used with this subnet.
+   *
+   * Exactly one of `cidrBlock` and `ipv4IpamAllocation` must be specified.
+   *
+   * @default - the subnet uses the concrete `cidrBlock`
+   */
+  readonly ipv4IpamAllocation?: SubnetIpamAllocation;
 
   /**
    * Controls if a public IP is associated to an instance at launch
@@ -2123,6 +2161,11 @@ export class Subnet extends Resource implements ISubnet {
   public readonly availabilityZone: string;
 
   /**
+   * The IPv4 CIDR block for this subnet
+   *
+   * If the subnet is allocated from an IPAM pool (`ipv4IpamAllocation`), this is a
+   * deploy-time attribute of the subnet rather than a concrete string.
+   *
    * @attribute
    */
   public readonly ipv4CidrBlock: string;
@@ -2181,20 +2224,34 @@ export class Subnet extends Resource implements ISubnet {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.cidrBlock !== undefined && props.ipv4IpamAllocation !== undefined) {
+      throw new ValidationError(lit`CannotSpecifyBothCidrBlockAndIpv4IpamAllocation`, 'Cannot specify both \'cidrBlock\' and \'ipv4IpamAllocation\'; supply exactly one of them', this);
+    }
+    if (props.cidrBlock === undefined && props.ipv4IpamAllocation === undefined) {
+      throw new ValidationError(lit`MissingCidrBlockOrIpv4IpamAllocation`, 'Either \'cidrBlock\' or \'ipv4IpamAllocation\' must be specified', this);
+    }
+    const netmaskLength = props.ipv4IpamAllocation?.netmaskLength;
+    if (netmaskLength !== undefined && !Token.isUnresolved(netmaskLength) && (netmaskLength < 16 || netmaskLength > 28)) {
+      throw new ValidationError(lit`InvalidIpv4IpamAllocationNetmaskLength`, `'ipv4IpamAllocation.netmaskLength' must be between 16 and 28, got ${netmaskLength}`, this);
+    }
+
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
-    this.ipv4CidrBlock = props.cidrBlock;
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
+      ipv4IpamPoolId: props.ipv4IpamAllocation?.ipamPool.ipamPoolRef.ipamPoolId,
+      ipv4NetmaskLength: netmaskLength,
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
+    // With IPAM the CIDR block is only known at deploy time
+    this.ipv4CidrBlock = props.cidrBlock ?? subnet.attrCidrBlock;
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
