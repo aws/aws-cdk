@@ -175,6 +175,15 @@ describe('network utils', () => {
       expect(NetworkUtils.validateCidrPairOverlap('10.0.0.0/16', '10.0.1.0/24')).toBe(true);
       expect(NetworkUtils.validateCidrPairOverlap('192.168.1.0/24', '192.168.2.0/24')).toBe(false);
     });
+    test('validateCidrPairOverlap returns false for disjoint ranges with unequal octet widths', () => {
+      // 10.0.2.0/23 covers 10.0.2.0 - 10.0.3.255
+      // 10.0.20.0/24 covers 10.0.20.0 - 10.0.20.255
+      // These are numerically disjoint, but lexicographic comparison on the
+      // dotted-decimal strings incorrectly reports them as overlapping because
+      // the third octet "20" sorts before "3" as a string.
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.2.0/23', '10.0.20.0/24')).toBe(false);
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.20.0/24', '10.0.2.0/23')).toBe(false);
+    });
     test('validateCidrBlocksOverlap detects overlaps in arrays', () => {
       const [hasOverlap, cidr1, cidr2] = NetworkUtils.validateCidrBlocksOverlap(
         ['10.0.0.0/24', '10.0.1.0/24'],
