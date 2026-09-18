@@ -2897,4 +2897,17 @@ describe('databaseName validation', () => {
       });
     }).toThrow(/database name "1db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
   });
+
+  test('fails when DatabaseInstanceFromSnapshot databaseName is invalid', () => {
+    // THEN
+    expect(() => {
+      new rds.DatabaseInstanceFromSnapshot(validationStack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpc: validationVpc,
+        databaseName: 'stage-db',
+      });
+    }).toThrow(/database name "stage-db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
 });

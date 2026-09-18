@@ -1057,6 +1057,37 @@ describe('defaultDatabaseName validation', () => {
       });
     }).not.toThrow();
   });
+
+  test('fails when defaultDatabaseName contains an underscore for a mysql-family engine', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        defaultDatabaseName: 'stage_db',
+      });
+    }).toThrow(/database name "stage_db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+
+  test('fails when defaultDatabaseName starts with a digit', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+        vpc,
+        parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+        defaultDatabaseName: '1db',
+      });
+    }).toThrow(/database name "1db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
 });
 
 function testStack(app?: cdk.App, id?: string): cdk.Stack {

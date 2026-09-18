@@ -6599,6 +6599,23 @@ describe('defaultDatabaseName validation', () => {
       });
     }).toThrow(/database name "1db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
   });
+
+  test('fails when DatabaseClusterFromSnapshot defaultDatabaseName is invalid', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        snapshotIdentifier: 'snapshot-identifier',
+        writer: ClusterInstance.provisioned('writer'),
+        defaultDatabaseName: 'stage-db',
+      });
+    }).toThrow(/database name "stage-db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
 });
 
 function testStack(app?: cdk.App, stackId?: string) {
