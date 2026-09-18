@@ -1112,6 +1112,11 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
   /**
    * The name of the database.
    *
+   * The name must begin with a letter and contain only alphanumeric characters
+   * (underscores are also allowed for PostgreSQL-family engines). This constraint
+   * is validated at synthesis time, so a definitively-invalid name fails fast with a
+   * descriptive error instead of failing later at deploy time with the RDS API error.
+   *
    * @default - no name
    */
   readonly databaseName?: string;
