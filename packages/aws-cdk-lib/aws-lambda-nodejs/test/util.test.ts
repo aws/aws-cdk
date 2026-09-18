@@ -1,8 +1,9 @@
 import child_process from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray, tryGetModuleVersionFromRequire } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -153,6 +154,52 @@ describe('exec', () => {
     expect(() => exec('cmd', ['arg1', 'arg2'])).toThrow(new Error('bad error'));
 
     spawnSyncMock.mockRestore();
+  });
+});
+
+describe('tryGetModuleVersionFromRequire', () => {
+  test('resolves modules from process.cwd() (workspace-local node_modules)', () => {
+    // Mimic an npm workspace where the package lives under packages/my-app and
+    // esbuild is installed only in that workspace's node_modules (not hoisted).
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-esbuild-detect-'));
+    const workspaceDir = path.join(tmpRoot, 'packages', 'my-app');
+    const moduleDir = path.join(workspaceDir, 'node_modules', 'fake-esbuild');
+    fs.mkdirSync(moduleDir, { recursive: true });
+    fs.writeFileSync(path.join(workspaceDir, 'package.json'), JSON.stringify({ name: 'my-app' }));
+    fs.writeFileSync(path.join(moduleDir, 'package.json'), JSON.stringify({
+      name: 'fake-esbuild',
+      version: '9.9.9',
+    }));
+
+    const previousCwd = process.cwd();
+    try {
+      process.chdir(workspaceDir);
+      expect(tryGetModuleVersionFromRequire('fake-esbuild')).toBe('9.9.9');
+    } finally {
+      process.chdir(previousCwd);
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('falls back to require() when module is not resolvable from cwd', () => {
+    // Empty temp dir has no node_modules, so the cwd anchor misses. typescript is
+    // installed in this monorepo and still resolvable via the legacy require()
+    // anchor under aws-cdk-lib.
+    const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-esbuild-fallback-'));
+    fs.writeFileSync(path.join(tmpRoot, 'package.json'), JSON.stringify({ name: 'empty' }));
+    const previousCwd = process.cwd();
+    try {
+      process.chdir(tmpRoot);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      expect(tryGetModuleVersionFromRequire('typescript')).toBe(require('typescript/package.json').version);
+    } finally {
+      process.chdir(previousCwd);
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  test('returns undefined when module is not installed', () => {
+    expect(tryGetModuleVersionFromRequire('definitely-not-a-real-module-xyz')).toBeUndefined();
   });
 });
 
