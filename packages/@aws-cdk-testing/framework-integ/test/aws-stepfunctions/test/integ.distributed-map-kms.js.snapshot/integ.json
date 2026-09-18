@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "DistributedMapKms/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-distributed-map-kms"
+      ],
+      "assertionStack": "DistributedMapKms/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapKmsDefaultTestDeployAssert93CE1F0A"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
