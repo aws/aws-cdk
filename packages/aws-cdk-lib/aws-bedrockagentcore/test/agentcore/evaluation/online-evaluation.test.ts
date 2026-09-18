@@ -193,7 +193,7 @@ describe('OnlineEvaluationConfig', () => {
       });
     });
 
-    test('does not include ExecutionStatus when not specified', () => {
+    test('does not include ExecutionStatus when not specified and the feature flag is disabled', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
         onlineEvaluationConfigName: 'no_status_evaluation',
         evaluators: [EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)],
@@ -206,6 +206,47 @@ describe('OnlineEvaluationConfig', () => {
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
         ExecutionStatus: Match.absent(),
+      });
+    });
+
+    test('defaults executionStatus to ENABLED when not specified and the feature flag is enabled', () => {
+      const flaggedApp = new App({
+        context: { '@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled': true },
+      });
+      const flaggedStack = new Stack(flaggedApp, 'FlaggedStack');
+      new OnlineEvaluationConfig(flaggedStack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'no_status_evaluation',
+        evaluators: [EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      const template = Template.fromStack(flaggedStack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        ExecutionStatus: 'ENABLED',
+      });
+    });
+
+    test('explicit executionStatus DISABLED wins over the enabled feature flag', () => {
+      const flaggedApp = new App({
+        context: { '@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled': true },
+      });
+      const flaggedStack = new Stack(flaggedApp, 'FlaggedStack');
+      new OnlineEvaluationConfig(flaggedStack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'disabled_evaluation',
+        evaluators: [EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+        executionStatus: ExecutionStatus.DISABLED,
+      });
+
+      const template = Template.fromStack(flaggedStack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        ExecutionStatus: 'DISABLED',
       });
     });
   });
