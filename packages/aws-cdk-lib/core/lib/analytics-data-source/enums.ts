@@ -2568,8 +2568,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JobType": [
     "glueetl",
     "gluestreaming",
-    "pythonshell",
-    "glueray"
+    "pythonshell"
   ],
   "JsonMutatorType": [
     0,
@@ -2692,6 +2691,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TRACE",
     "OFF"
   ],
+  "LibrarySet": [
+    "analytics",
+    "none"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2775,7 +2778,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "LogGroupClass": [
     "STANDARD",
-    "INFREQUENT_ACCESS"
+    "INFREQUENT_ACCESS",
+    "DELIVERY"
   ],
   "LogLevel": [
     "OFF",
