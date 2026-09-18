@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "NetworkConnectorDefaultsTest/DefaultTest": {
+      "stacks": [
+        "NetworkConnectorDefaultsStack"
+      ],
+      "assertionStack": "NetworkConnectorDefaultsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NetworkConnectorDefaultsTestDefaultTestDeployAssert4239F1F2"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
