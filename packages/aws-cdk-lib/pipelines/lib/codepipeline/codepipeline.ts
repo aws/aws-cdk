@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type * as s3 from '../../../aws-s3';
-import type { Duration } from '../../../core';
+import type { Duration, RemovalPolicy } from '../../../core';
 import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
@@ -272,6 +272,29 @@ export interface CodePipelineProps {
    * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
+
+  /**
+   * The removal policy to apply to the artifact bucket created by the pipeline.
+   *
+   * Only applicable if `artifactBucket` is not provided.
+   * Passed directly through to the {@link cp.Pipeline}.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly artifactBucketRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to automatically delete objects in the artifact bucket when the bucket is removed
+   * from the stack or when the stack is deleted.
+   *
+   * Requires `artifactBucketRemovalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   * Only applicable if `artifactBucket` is not provided.
+   * Passed directly through to the {@link cp.Pipeline}.
+   *
+   * @default false
+   */
+  readonly artifactBucketAutoDeleteObjects?: boolean;
+
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
@@ -505,6 +528,20 @@ export class CodePipeline extends PipelineBase {
       if (this.props.artifactBucket !== undefined) {
         throw new ValidationError(lit`CannotSetArtifactBucketExisting`, 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
+      if (this.props.artifactBucketRemovalPolicy !== undefined) {
+        throw new ValidationError(
+          lit`CannotSetArtifactBucketRemovalPolicyExisting`,
+          'Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'',
+          this,
+        );
+      }
+      if (this.props.artifactBucketAutoDeleteObjects !== undefined) {
+        throw new ValidationError(
+          lit`CannotSetArtifactBucketAutoDeleteObjectsExisting`,
+          'Cannot set \'artifactBucketAutoDeleteObjects\' if an existing CodePipeline is given using \'codePipeline\'',
+          this,
+        );
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
@@ -524,6 +561,8 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        artifactBucketRemovalPolicy: this.props.artifactBucketRemovalPolicy,
+        artifactBucketAutoDeleteObjects: this.props.artifactBucketAutoDeleteObjects,
         usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }
