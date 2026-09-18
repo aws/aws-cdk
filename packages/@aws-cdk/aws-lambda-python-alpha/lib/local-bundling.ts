@@ -5,7 +5,7 @@ import type * as cdk from 'aws-cdk-lib/core';
 import { lit, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Packaging } from './packaging';
 import { DependenciesFile } from './packaging';
-import { defaultManyLinuxTags, runtimeToPythonVersion, validateArchitecture } from './platform';
+import { defaultPlatformTags, runtimeToPythonVersion, validateArchitecture } from './platform';
 import type { ICommandHooks } from './types';
 import { runCommand } from './util';
 
@@ -19,7 +19,7 @@ export interface LocalBundlingProps {
   readonly architecture: Architecture;
   readonly packaging: Packaging;
   readonly excludes: string[];
-  readonly manyLinuxTags?: string[];
+  readonly platformTags?: string[];
   readonly commandHooks?: ICommandHooks;
 }
 
@@ -30,7 +30,7 @@ export class LocalBundling implements cdk.ILocalBundling {
     validateArchitecture(props.architecture);
     const pythonVersion = runtimeToPythonVersion(props.runtime);
     const abiTag = `cp${pythonVersion.replace('.', '')}`;
-    const tags = props.manyLinuxTags ?? defaultManyLinuxTags(props.runtime, props.architecture);
+    const tags = props.platformTags ?? defaultPlatformTags(props.runtime, props.architecture);
     this.pipArgs = [
       ...tags.flatMap((tag) => ['--platform', tag]),
       '--python-version', pythonVersion,

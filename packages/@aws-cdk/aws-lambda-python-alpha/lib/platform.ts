@@ -27,12 +27,12 @@ export function validateArchitecture(architecture: Architecture): void {
   if (ARCH_SLUG[architecture.dockerPlatform] === undefined) {
     throw new UnscopedValidationError(
       lit`PythonLocalBundlingUnsupportedArchitecture`,
-      `Local bundling supports only x86_64 and arm64 Lambda architectures; got dockerPlatform '${architecture.dockerPlatform}'. Use Docker bundling or provide 'manyLinuxTags' to bypass the default tag mapping.`,
+      `Local bundling supports only x86_64 and arm64 Lambda architectures; got dockerPlatform '${architecture.dockerPlatform}'. Use Docker bundling or provide 'platformTags' to bypass the default tag mapping.`,
     );
   }
 }
 
-export function defaultManyLinuxTags(runtime: Runtime, architecture: Architecture): string[] {
+export function defaultPlatformTags(runtime: Runtime, architecture: Architecture): string[] {
   validateArchitecture(architecture);
   const archSlug = ARCH_SLUG[architecture.dockerPlatform];
   const minor = parsePythonMinor(runtime);

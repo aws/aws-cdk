@@ -96,10 +96,10 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes = [],
     } = props;
 
-    if (props.manyLinuxTags !== undefined && props.local !== true) {
+    if (props.platformTags !== undefined && props.local !== true) {
       throw new UnscopedValidationError(
-        lit`PythonManyLinuxTagsRequiresLocalBundling`,
-        'manyLinuxTags only applies to local bundling, but local is not true. Set local: true, or remove manyLinuxTags',
+        lit`PythonPlatformTagsRequiresLocalBundling`,
+        'platformTags only applies to local bundling, but local is not true. Set local: true, or remove platformTags',
       );
     }
 
@@ -156,7 +156,7 @@ export class Bundling implements CdkBundlingOptions {
         architecture,
         packaging,
         excludes,
-        manyLinuxTags: props.manyLinuxTags,
+        platformTags: props.platformTags,
         commandHooks,
       });
     }

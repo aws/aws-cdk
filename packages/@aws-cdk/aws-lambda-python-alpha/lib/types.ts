@@ -141,7 +141,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *            `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}` for
    *            Python 3.12 and above (Amazon Linux 2023).
    */
-  readonly manyLinuxTags?: string[];
+  readonly platformTags?: string[];
 }
 
 /**

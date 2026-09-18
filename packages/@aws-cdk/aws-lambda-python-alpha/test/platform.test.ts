@@ -1,6 +1,6 @@
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import {
-  defaultManyLinuxTags,
+  defaultPlatformTags,
   runtimeToAbiTag,
   runtimeToPythonVersion,
   validateArchitecture,
@@ -57,7 +57,7 @@ describe('validateArchitecture', () => {
   });
 });
 
-describe('defaultManyLinuxTags', () => {
+describe('defaultPlatformTags', () => {
   describe('AL2-base runtimes (python3.7 .. python3.11) use single manylinux2014 tag', () => {
     test.each([
       [Runtime.PYTHON_3_7, Architecture.X86_64, ['manylinux2014_x86_64']],
@@ -65,7 +65,7 @@ describe('defaultManyLinuxTags', () => {
       [Runtime.PYTHON_3_11, Architecture.X86_64, ['manylinux2014_x86_64']],
       [Runtime.PYTHON_3_11, Architecture.ARM_64, ['manylinux2014_aarch64']],
     ])('%s + %s', (runtime, arch, expected) => {
-      expect(defaultManyLinuxTags(runtime, arch)).toEqual(expected);
+      expect(defaultPlatformTags(runtime, arch)).toEqual(expected);
     });
   });
 
@@ -76,28 +76,28 @@ describe('defaultManyLinuxTags', () => {
       [Runtime.PYTHON_3_13, Architecture.X86_64, ['manylinux_2_28_x86_64', 'manylinux2014_x86_64']],
       [Runtime.PYTHON_3_14, Architecture.ARM_64, ['manylinux_2_28_aarch64', 'manylinux2014_aarch64']],
     ])('%s + %s', (runtime, arch, expected) => {
-      expect(defaultManyLinuxTags(runtime, arch)).toEqual(expected);
+      expect(defaultPlatformTags(runtime, arch)).toEqual(expected);
     });
   });
 
   test('boundary: python3.11 is AL2 rule, python3.12 is AL2023 rule', () => {
-    expect(defaultManyLinuxTags(Runtime.PYTHON_3_11, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
-    expect(defaultManyLinuxTags(Runtime.PYTHON_3_12, Architecture.X86_64)).toEqual([
+    expect(defaultPlatformTags(Runtime.PYTHON_3_11, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
+    expect(defaultPlatformTags(Runtime.PYTHON_3_12, Architecture.X86_64)).toEqual([
       'manylinux_2_28_x86_64',
       'manylinux2014_x86_64',
     ]);
   });
 
   test('legacy python3.6 falls back to manylinux2014 single tag', () => {
-    expect(defaultManyLinuxTags(Runtime.PYTHON_3_6, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
+    expect(defaultPlatformTags(Runtime.PYTHON_3_6, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
   });
 
   test('throws for unsupported architecture', () => {
     const weird = Architecture.custom('weird', 'linux/mips64');
-    expect(() => defaultManyLinuxTags(Runtime.PYTHON_3_11, weird)).toThrow(/linux\/mips64/);
+    expect(() => defaultPlatformTags(Runtime.PYTHON_3_11, weird)).toThrow(/linux\/mips64/);
   });
 
   test('throws for non-Python runtime', () => {
-    expect(() => defaultManyLinuxTags(Runtime.NODEJS_20_X, Architecture.X86_64)).toThrow(/only Python runtimes/i);
+    expect(() => defaultPlatformTags(Runtime.NODEJS_20_X, Architecture.X86_64)).toThrow(/only Python runtimes/i);
   });
 });

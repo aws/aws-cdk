@@ -259,15 +259,15 @@ test('validates outputPathSuffix when bundling is skipped', () => {
   })).toThrow(/outputPathSuffix \(\.\.\/asset-input\) should not escape \/asset-output/);
 });
 
-test('fails when manyLinuxTags is set without local bundling', () => {
+test('fails when platformTags is set without local bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
 
   expect(() => Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
-    manyLinuxTags: ['musllinux_1_2_x86_64'],
-  })).toThrow(/manyLinuxTags only applies to local bundling, but local is not true/);
+    platformTags: ['musllinux_1_2_x86_64'],
+  })).toThrow(/platformTags only applies to local bundling, but local is not true/);
 });
 
 test('Bundling a python code layer', () => {

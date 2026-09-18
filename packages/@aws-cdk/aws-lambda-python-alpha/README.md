@@ -207,7 +207,7 @@ new python.PythonFunction(this, 'function', {
   runtime: Runtime.PYTHON_3_12,
   bundling: {
     local: true,
-    manyLinuxTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64'],
+    platformTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64'],
   },
 });
 ```

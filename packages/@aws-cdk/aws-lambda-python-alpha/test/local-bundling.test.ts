@@ -69,7 +69,7 @@ interface BundlingFixtureOverrides {
   readonly entry: string;
   readonly runtime: Runtime;
   readonly architecture: Architecture;
-  readonly manyLinuxTags?: string[];
+  readonly platformTags?: string[];
   readonly assetExcludes?: string[];
   readonly commandHooks?: ICommandHooks;
 }
@@ -86,7 +86,7 @@ function makeLocalBundling(opts: BundlingFixtureOverrides): LocalBundling {
     architecture: opts.architecture,
     packaging,
     excludes,
-    manyLinuxTags: opts.manyLinuxTags,
+    platformTags: opts.platformTags,
     commandHooks: opts.commandHooks,
   });
 }
@@ -213,13 +213,13 @@ describe('parametrized sweeps', () => {
   });
 });
 
-describe('manyLinuxTags override', () => {
+describe('platformTags override', () => {
   test('user tags fully replace the defaults', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_12,
       architecture: Architecture.X86_64,
-      manyLinuxTags: ['musllinux_1_2_x86_64'],
+      platformTags: ['musllinux_1_2_x86_64'],
     });
 
     local.tryBundle(outputDir);

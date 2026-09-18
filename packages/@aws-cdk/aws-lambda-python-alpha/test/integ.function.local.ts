@@ -16,7 +16,7 @@ import * as lambda from '../lib';
  *   AL2 (manylinux2014 only): python3.10, python3.11
  *   AL2023 (manylinux_2_28 with manylinux2014 fallback): python3.12, python3.13, python3.14
  *
- * Also includes a manyLinuxTags override case to verify the tag-priority path
+ * Also includes a platformTags override case to verify the tag-priority path
  * works end-to-end.
  *
  * Host requirements: `python3` or `python` (with pip) on PATH.
@@ -29,7 +29,7 @@ interface MatrixEntry {
   readonly id: string;
   readonly runtime: Runtime;
   readonly architecture: Architecture;
-  readonly manyLinuxTags?: string[];
+  readonly platformTags?: string[];
 }
 
 class TestStack extends Stack {
@@ -55,24 +55,24 @@ class TestStack extends Stack {
       { id: 'al2023-py314-x86_64', runtime: Runtime.PYTHON_3_14, architecture: Architecture.X86_64 },
       { id: 'al2023-py314-arm64', runtime: Runtime.PYTHON_3_14, architecture: Architecture.ARM_64 },
 
-      // Explicit manyLinuxTags override — verifies tag priority / fallback
+      // Explicit platformTags override — verifies tag priority / fallback
       // (musllinux tried first, manylinux wheels picked up as fallback).
       {
         id: 'tags-override-musl-first',
         runtime: Runtime.PYTHON_3_12,
         architecture: Architecture.ARM_64,
-        manyLinuxTags: ['musllinux_1_2_aarch64', 'manylinux_2_28_aarch64'],
+        platformTags: ['musllinux_1_2_aarch64', 'manylinux_2_28_aarch64'],
       },
     ];
 
-    for (const { id: fnId, runtime, architecture, manyLinuxTags } of matrix) {
+    for (const { id: fnId, runtime, architecture, platformTags } of matrix) {
       const fn = new lambda.PythonFunction(this, `local-${fnId}`, {
         entry,
         runtime,
         architecture,
         bundling: {
           local: true,
-          ...(manyLinuxTags ? { manyLinuxTags } : {}),
+          ...(platformTags ? { platformTags } : {}),
         },
       });
       this.functionNames.push(fn.functionName);
