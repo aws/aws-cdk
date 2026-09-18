@@ -420,6 +420,40 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+#### Encrypted Volumes
+
+Set `encrypted` to encrypt an EBS volume with the default `aws/ebs` key. To encrypt with a
+customer managed key instead, also pass `kmsKey`. Make sure the key policy allows the Auto
+Scaling service to use the key, otherwise instances fail to launch.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+declare const key: kms.IKey;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+        encrypted: true,
+        kmsKey: key,
+      }),
+    },
+  ],
+});
+```
+
+`kmsKey` requires the Auto Scaling group to use a launch template, which is the default for
+new apps via the `@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig`
+feature flag. Launch configurations have no equivalent property, so synthesis fails with a
+validation error if the flag is disabled.
+
 ## Configuring Instances using CloudFormation Init
 
 It is possible to use the CloudFormation Init mechanism to configure the
