@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "7cced44170f966b1c7de209a1cfbb878b2d097955a19b8552ef34912b499e805": {
+    "e97a34b5e9a24fac15664e3098090c7cc1b8d8795c43476ae61e2f9f5c318754": {
       "displayName": "IntegStack Template",
       "source": {
         "path": "IntegStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-bf2a3508": {
+        "current_account-current_region-38bb1630": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7cced44170f966b1c7de209a1cfbb878b2d097955a19b8552ef34912b499e805.json",
+          "objectKey": "e97a34b5e9a24fac15664e3098090c7cc1b8d8795c43476ae61e2f9f5c318754.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

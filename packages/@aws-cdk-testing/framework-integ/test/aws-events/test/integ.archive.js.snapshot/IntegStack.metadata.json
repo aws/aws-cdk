@@ -1,0 +1,38 @@
+{
+  "/IntegStack/EventBridge": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/IntegStack/Archive": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/IntegStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/IntegStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/IntegStack/EventBridge/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBridgeF6D0CF9D"
+    }
+  ],
+  "/IntegStack/Archive/Archive": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyCustomArchive"
+    }
+  ]
+}
