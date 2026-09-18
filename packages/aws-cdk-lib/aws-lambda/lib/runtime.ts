@@ -444,6 +444,11 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
+   *
+   * Predefined runtimes use an untagged AWS SAM build image. Its contents can
+   * change independently of the AWS CDK version. To pin a specific image
+   * version, use `DockerImage.fromRegistry()` in the bundling options of
+   * `Code.fromAsset()`.
    */
   public readonly bundlingImage: DockerImage;
 
