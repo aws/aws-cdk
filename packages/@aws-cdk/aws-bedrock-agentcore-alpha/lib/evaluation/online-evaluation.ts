@@ -28,6 +28,7 @@ import {
   EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
 } from './perms';
 import {
+  ExecutionStatus,
   type OnlineEvaluationBaseProps,
   type OnlineEvaluationConfigAttributes,
 } from './types';
@@ -271,7 +272,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
-      executionStatus: props.executionStatus?.value,
+      executionStatus: (props.executionStatus ?? ExecutionStatus.ENABLED).value,
       tags: props.tags && Object.keys(props.tags).length > 0
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
