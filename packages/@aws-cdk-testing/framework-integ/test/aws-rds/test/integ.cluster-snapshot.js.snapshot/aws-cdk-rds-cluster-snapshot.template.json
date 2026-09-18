@@ -975,6 +975,33 @@
        "Resource": {
         "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28"
        }
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8bd03fd5197463556233c35d1c5205fb4a682764c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -996,7 +1023,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
     "Environment": {
@@ -1015,7 +1042,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c8bd03fd5197463556233c35d1c5205fb4a682764c"
      }
     },
     "Handler": "framework.onEvent",
@@ -1159,6 +1187,33 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8bd03fd5197463556233c35d1c5205fb4a682764c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1180,7 +1235,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
     "Environment": {
@@ -1340,6 +1395,33 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8bd03fd5197463556233c35d1c5205fb4a682764c/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1361,7 +1443,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
     "Environment": {

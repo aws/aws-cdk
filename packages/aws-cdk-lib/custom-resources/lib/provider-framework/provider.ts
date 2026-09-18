@@ -10,7 +10,7 @@ import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
 import type * as logs from '../../../aws-logs';
-import { Duration, ValidationError } from '../../../core';
+import { Duration, Stack, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
@@ -283,6 +283,31 @@ export class Provider extends Construct implements ICustomResourceProvider {
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
       waiterStateMachine.grantStartExecution(onEventFunction);
+
+      // The presigned CloudFormation response URL is held in SSM instead of being
+      // carried through the waiter state machine state. onEvent writes it, the
+      // completion and timeout handlers read it back and clean it up.
+      const responseUrlParameterPrefix = `/cdk/custom-resource-provider/${this.node.addr}`;
+      const responseUrlParameterArn = Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        resourceName: `${responseUrlParameterPrefix.slice(1)}/*`,
+      });
+
+      onEventFunction.addEnvironment(consts.RESPONSE_URL_PARAMETER_PREFIX_ENV, responseUrlParameterPrefix);
+      onEventFunction.addToRolePolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ssm:PutParameter', 'ssm:DeleteParameter'],
+        resources: [responseUrlParameterArn],
+      }));
+
+      for (const fn of [isCompleteFunction, timeoutFunction]) {
+        fn.addToRolePolicy(new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['ssm:GetParameter', 'ssm:DeleteParameter'],
+          resources: [responseUrlParameterArn],
+        }));
+      }
     }
 
     this.entrypoint = onEventFunction;
