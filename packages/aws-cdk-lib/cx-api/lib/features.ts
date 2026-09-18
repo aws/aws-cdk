@@ -159,6 +159,7 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const LOG_GROUP_GRANT_ENCRYPTION_KEY = '@aws-cdk/aws-logs:logGroupGrantEncryptionKey';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1954,6 +1955,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_GROUP_GRANT_ENCRYPTION_KEY]: {
+    type: FlagType.BugFix,
+    summary: 'Automatically grant a CloudWatch Logs LogGroup permission to use its customer-managed encryption key',
+    detailsMd: `
+      When a customer-managed KMS key is passed to a \`LogGroup\` via \`encryptionKey\`, CloudWatch Logs
+      cannot create the log group unless the key's resource policy grants the CloudWatch Logs service
+      principal permission to use the key. Previously the CDK did not add this grant, so a \`LogGroup\`
+      configured with a customer-managed key would fail to deploy with a \`CREATE_FAILED\` error unless
+      the user manually added a statement to the key policy.
+
+      When this flag is enabled, the \`LogGroup\` automatically adds the required statement to the
+      encryption key's resource policy, scoped to the log group via the
+      \`kms:EncryptionContext:aws:logs:arn\` condition. This only applies to keys that are managed in
+      the same CDK application (created via \`new kms.Key(...)\`); imported keys are unchanged and still
+      require a manual grant, because the CDK cannot modify a resource policy it does not own.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
