@@ -589,6 +589,23 @@ const domain = new Domain(this, 'Domain', {
 });
 ```
 
+## Deployment strategy
+
+You can configure the deployment strategy used during blue/green deployments
+when sufficient capacity is not available at update time. `CAPACITY_OPTIMIZED`
+first attempts a full blue/green swap, then falls back to deploying in batches
+if capacity is insufficient. This is recommended for clusters with 30 or more
+data nodes; completion time may increase since deployment is done in batches.
+
+> Visit [Blue/Green Deployment options](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options) for more details.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_11,
+  deploymentStrategy: DeploymentStrategy.CAPACITY_OPTIMIZED,
+});
+```
+
 ## Using Coordinator node with NodeOptions
 
 You can specify coordinator as a valid value for node type.
