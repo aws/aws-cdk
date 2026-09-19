@@ -1,4 +1,21 @@
 {
+  "/eks-pod-identities-external-role": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at EksClusterStack._silenceLiteralAzWarning (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new EksClusterStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-pod-identities-external-role.js:61:21)",
+        "    at <anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-pod-identities-external-role.js:106:15)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/eks-pod-identities-external-role/AdminRole": [
     {
       "type": "aws:cdk:analytics:construct",
