@@ -139,6 +139,25 @@ describe('account policy - transformer', () => {
     expect(Object.keys(renderedProcessor)).toEqual([expectedKey]);
   });
 
+  test('selectionCriteria escape hatch is passed through as-is', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AccountPolicy(stack, 'AccountPolicy', {
+      policyName: 'MyAccountPolicy',
+      policy: AccountPolicyDocument.transformer({
+        processors: [new VendedLogParser({ logType: VendedLogType.VPC })],
+        selectionCriteria: 'LogGroupNamePrefix = "/custom/"',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::AccountPolicy', {
+      SelectionCriteria: 'LogGroupNamePrefix = "/custom/"',
+    });
+  });
+
   test('logGroupNamePrefix is rendered as a selectionCriteria expression', () => {
     // GIVEN
     const stack = new Stack();

@@ -580,11 +580,14 @@ configure each log group individually. Account-level policies are created with `
 
 Use one of `AccountPolicyDocument`'s static factory methods to choose which kind of policy to
 create: `AccountPolicyDocument.subscriptionFilter()`, `AccountPolicyDocument.dataProtection()`,
-`AccountPolicyDocument.fieldIndex()`, or `AccountPolicyDocument.transformer()`.
+`AccountPolicyDocument.fieldIndex()`, `AccountPolicyDocument.transformer()`, or
+`AccountPolicyDocument.metricExtraction()`.
 
 CloudWatch Logs allows only one account-level data protection policy and one account-level
 subscription filter policy per account (per Region). Field index and transformer policies can
-have up to 20 account-level policies each, as long as their scopes don't overlap.
+have up to 20 account-level policies each, as long as their scopes don't overlap. Metric
+extraction policies allow only one unscoped policy, or up to 5 policies scoped with
+`selectionCriteria`, as long as their scopes don't overlap.
 
 ### Account-level subscription filter
 
@@ -649,6 +652,23 @@ new logs.AccountPolicy(this, 'AccountPolicy', {
   policy: logs.AccountPolicyDocument.transformer({
     processors: [jsonParser],
     logGroupNamePrefix: '/aws/lambda/',
+  }),
+});
+```
+
+### Account-level metric extraction policy
+
+Enables or disables metric extraction from embedded metric format (EMF) log events. Several AWS
+features (CloudWatch Container Insights, Application Signals) rely on EMF internally, so
+disabling extraction account-wide also turns those features off — use `selectionCriteria` to
+exclude their log groups if you don't want that side effect.
+
+```ts
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideMetricExtraction',
+  policy: logs.AccountPolicyDocument.metricExtraction({
+    enabled: false,
+    selectionCriteria: 'LogGroupNamePrefix NOT IN ["/aws/containerinsights", "/aws/ecs/containerinsights", "/aws/application-signals/data"]',
   }),
 });
 ```

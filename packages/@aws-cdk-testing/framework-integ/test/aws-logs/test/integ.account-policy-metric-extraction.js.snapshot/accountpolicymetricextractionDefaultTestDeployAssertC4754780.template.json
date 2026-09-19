@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCloudWatchLogsdescribeAccountPoliciesd24b2714bab5aad6e91a72ced5f70da3": {
+  "AwsApiCallCloudWatchLogsdescribeAccountPoliciesae4a021fa3c3f0a8c65ee41bd55e4141": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsdescribeAccountPol",
    "Properties": {
     "ServiceToken": {
@@ -11,24 +11,13 @@
     },
     "service": "CloudWatchLogs",
     "api": "describeAccountPolicies",
-    "expected": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"$ObjectLike\":{\"accountPolicies\":[{\"policyName\":\"AccountPolicySubscriptionFilterIntegTest\",\"policyType\":\"SUBSCRIPTION_FILTER_POLICY\",\"policyDocument\":\"{\\\"DestinationArn\\\":\\\"",
-       {
-        "Fn::ImportValue": "aws-cdk-account-policy-subscription-filter-integ:ExportsOutputFnGetAttFunction76856677Arn23A30A4C"
-       },
-       "\\\",\\\"FilterPattern\\\":\\\"\\\",\\\"Distribution\\\":\\\"ByLogStream\\\"}\"}]}}"
-      ]
-     ]
-    },
+    "expected": "{\"$ObjectLike\":{\"accountPolicies\":[{\"policyName\":\"AccountPolicyMetricExtractionIntegTest\",\"policyType\":\"METRIC_EXTRACTION_POLICY\",\"policyDocument\":\"{\\\"EmbeddedMetricFormat\\\":{\\\"Status\\\":\\\"Disabled\\\"}}\",\"selectionCriteria\":\"LogGroupNamePrefix IN [\\\"/aws/lambda/account-policy-metric-extraction-integ\\\"]\"}]}}",
     "parameters": {
-     "policyType": "\"SUBSCRIPTION_FILTER_POLICY\"",
-     "policyName": "\"AccountPolicySubscriptionFilterIntegTest\""
+     "policyType": "\"METRIC_EXTRACTION_POLICY\"",
+     "policyName": "\"AccountPolicyMetricExtractionIntegTest\""
     },
     "flattenResponse": "false",
-    "salt": "1789800278153"
+    "salt": "1789800414210"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,10 +89,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPoliciesd24b2714bab5aad6e91a72ced5f70da3": {
+  "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPoliciesae4a021fa3c3f0a8c65ee41bd55e4141": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsdescribeAccountPoliciesd24b2714bab5aad6e91a72ced5f70da3",
+     "AwsApiCallCloudWatchLogsdescribeAccountPoliciesae4a021fa3c3f0a8c65ee41bd55e4141",
      "assertion"
     ]
    }

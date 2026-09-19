@@ -61,6 +61,12 @@
       "data": "AccountPolicy1D7BC599"
     }
   ],
+  "/aws-cdk-account-policy-subscription-filter-integ/Exports/Output{\"Fn::GetAtt\":[\"Function76856677\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttFunction76856677Arn23A30A4C"
+    }
+  ],
   "/aws-cdk-account-policy-subscription-filter-integ/Function/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",

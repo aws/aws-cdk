@@ -8,7 +8,7 @@ import { FirehoseDestination, KinesisDestination, LambdaDestination } from '../.
 import { Bucket } from '../../aws-s3';
 import { ArnFormat, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
-import { AccountPolicy, AccountPolicyDocument, Distribution, FilterPattern } from '../lib';
+import { AccountPolicy, AccountPolicyDocument, AccountPolicyType, Distribution, FilterPattern } from '../lib';
 
 describe('account policy', () => {
   test('trivial instantiation of a subscription filter policy', () => {
@@ -31,8 +31,30 @@ describe('account policy', () => {
       PolicyDocument: JSON.stringify({
         DestinationArn: 'arn:bogus',
         FilterPattern: 'some pattern',
+        Distribution: 'ByLogStream',
       }),
     });
+  });
+
+  test('isAccountPolicy(), accountPolicyRef, and attributes are wired up correctly', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const policy = new AccountPolicy(stack, 'AccountPolicy', {
+      policyName: 'MyAccountPolicy',
+      policy: AccountPolicyDocument.subscriptionFilter({
+        destination: new FakeDestination(),
+        filterPattern: FilterPattern.allEvents(),
+      }),
+    });
+
+    // THEN
+    expect(AccountPolicy.isAccountPolicy(policy)).toBe(true);
+    expect(AccountPolicy.isAccountPolicy({})).toBe(false);
+    expect(policy.policyType).toBe(AccountPolicyType.SUBSCRIPTION_FILTER_POLICY);
+    expect(stack.resolve(policy.accountPolicyRef.policyName)).toBe('MyAccountPolicy');
+    expect(stack.resolve(policy.accountId)).toBeDefined();
   });
 
   test('excludeLogGroups is rendered as a NOT IN selectionCriteria expression', () => {

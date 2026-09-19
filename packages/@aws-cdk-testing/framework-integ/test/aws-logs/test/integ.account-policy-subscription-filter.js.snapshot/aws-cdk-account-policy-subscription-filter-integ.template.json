@@ -97,7 +97,7 @@
          "Arn"
         ]
        },
-       "\",\"FilterPattern\":\"\"}"
+       "\",\"FilterPattern\":\"\",\"Distribution\":\"ByLogStream\"}"
       ]
      ]
     },
@@ -107,6 +107,19 @@
    "DependsOn": [
     "AccountPolicyCanInvokeLambda2CC44308"
    ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttFunction76856677Arn23A30A4C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Function76856677",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-account-policy-subscription-filter-integ:ExportsOutputFnGetAttFunction76856677Arn23A30A4C"
+   }
   }
  },
  "Parameters": {

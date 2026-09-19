@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import type { DataProtectionPolicy } from './data-protection-policy';
 import type { FieldIndexPolicy } from './field-index-policy';
-import type { Distribution } from './log-group';
+import { Distribution } from './log-group';
 import { CfnAccountPolicy } from './logs.generated';
 import type { IFilterPattern } from './pattern';
 import type { AccountPolicyDocumentConfig } from './private/account-policy-config';
@@ -37,6 +37,11 @@ export enum AccountPolicyType {
    * A transformer policy.
    */
   TRANSFORMER_POLICY = 'TRANSFORMER_POLICY',
+
+  /**
+   * A metric extraction policy.
+   */
+  METRIC_EXTRACTION_POLICY = 'METRIC_EXTRACTION_POLICY',
 }
 
 /**
@@ -76,6 +81,14 @@ export abstract class AccountPolicyDocument {
    */
   public static transformer(props: TransformerAccountPolicyProps): AccountPolicyDocument {
     return new TransformerAccountPolicyDocument(props);
+  }
+
+  /**
+   * Creates a metric extraction policy that applies to every log group in the account (or
+   * a subset of them).
+   */
+  public static metricExtraction(props: MetricExtractionAccountPolicyProps): AccountPolicyDocument {
+    return new MetricExtractionAccountPolicyDocument(props);
   }
 
   /**
@@ -135,15 +148,11 @@ export class AccountPolicy extends Resource implements IAccountPolicyRef {
 
   /**
    * The name of this policy.
-   *
-   * @attribute
    */
   public readonly policyName: string;
 
   /**
    * The type of this policy.
-   *
-   * @attribute
    */
   public readonly policyType: AccountPolicyType;
 
@@ -274,7 +283,11 @@ export class SubscriptionFilterAccountPolicyDocument extends AccountPolicyDocume
         DestinationArn: destConfig.arn,
         RoleArn: destConfig.role?.roleArn,
         FilterPattern: this.props.filterPattern.logPatternString,
-        Distribution: this.props.distribution,
+        // CloudWatch Logs defaults an account-level subscription filter policy's Distribution
+        // to Random when omitted (confirmed via a live PutAccountPolicy call), not ByLogStream
+        // as the log-group-level SubscriptionFilter resource does. Set it explicitly so the
+        // documented `@default Distribution.BY_LOG_STREAM` behavior actually holds.
+        Distribution: this.props.distribution ?? Distribution.BY_LOG_STREAM,
       }),
       selectionCriteria: this.props.selectionCriteria ?? renderExcludeLogGroups(this.props.excludeLogGroups),
     };
@@ -582,6 +595,62 @@ export class TransformerAccountPolicyDocument extends AccountPolicyDocument {
       policyDocument: JSON.stringify(this.props.processors.map(processor => toAccountPolicyProcessor(processor._render()))),
       selectionCriteria: this.props.selectionCriteria
         ?? (this.props.logGroupNamePrefix !== undefined ? `LogGroupNamePrefix = "${this.props.logGroupNamePrefix}"` : undefined),
+    };
+  }
+}
+
+/**
+ * Properties for a metric extraction account policy.
+ */
+export interface MetricExtractionAccountPolicyProps {
+  /**
+   * Whether to extract metrics from embedded metric format (EMF) log events.
+   *
+   * Set to `false` to stop CloudWatch from creating metrics out of EMF-formatted log events,
+   * for example to reduce cost. Several AWS features (CloudWatch Container Insights,
+   * Application Signals) rely on EMF internally, so disabling extraction for their log groups
+   * turns those features off too — use `selectionCriteria` to exclude those log groups if you
+   * don't want that side effect.
+   */
+  readonly enabled: boolean;
+
+  /**
+   * Escape hatch: the raw `selectionCriteria` expression to send to CloudFormation.
+   *
+   * Supports `LogGroupName` or `LogGroupNamePrefix`, each combined with `IN` or `NOT IN` — a
+   * richer set of operators than the other account policy types support, so this is not
+   * modeled with a typed convenience prop. CloudWatch Logs allows up to 5 metric extraction
+   * policies per account when this is set (only 1 without it), as long as their scopes don't
+   * overlap.
+   *
+   * @default - applies to every log group in the account
+   */
+  readonly selectionCriteria?: string;
+}
+
+/**
+ * A CloudWatch Logs account policy that enables or disables embedded metric format (EMF)
+ * metric extraction for every log group in the account (or a subset of them).
+ *
+ * Create instances of this class using `AccountPolicyDocument.metricExtraction()`.
+ */
+export class MetricExtractionAccountPolicyDocument extends AccountPolicyDocument {
+  constructor(private readonly props: MetricExtractionAccountPolicyProps) {
+    super();
+  }
+
+  /**
+   * @internal
+   */
+  public _bind(_scope: Construct): AccountPolicyDocumentConfig {
+    return {
+      policyType: AccountPolicyType.METRIC_EXTRACTION_POLICY,
+      policyDocument: JSON.stringify({
+        EmbeddedMetricFormat: {
+          Status: this.props.enabled ? 'Enabled' : 'Disabled',
+        },
+      }),
+      selectionCriteria: this.props.selectionCriteria,
     };
   }
 }

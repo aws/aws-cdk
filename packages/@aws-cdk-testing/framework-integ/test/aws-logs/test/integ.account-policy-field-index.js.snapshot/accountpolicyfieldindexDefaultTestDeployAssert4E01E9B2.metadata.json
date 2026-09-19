@@ -10,5 +10,69 @@
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c"
+    }
+  ],
+  "/account-policy-field-index/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3"
+    }
   ]
 }

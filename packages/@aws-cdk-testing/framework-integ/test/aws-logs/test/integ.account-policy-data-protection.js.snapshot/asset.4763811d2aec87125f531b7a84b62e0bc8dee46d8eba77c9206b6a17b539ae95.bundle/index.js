@@ -178,8 +178,8 @@ var init_matcher = __esm({
        * DEPRECATED
        * @deprecated use recordFailure()
        */
-      push(matcher, path24, message) {
-        return this.recordFailure({ matcher, path: path24, message });
+      push(matcher, path23, message) {
+        return this.recordFailure({ matcher, path: path23, message });
       }
       /**
        * Record a new failure into this result at a specific path.
@@ -289,12 +289,12 @@ var init_matcher = __esm({
           parts.push(x.replace(/\n/g, `
 ${indents.join("")}`));
         }
-        function emitFailures(r, path24, scrapSet) {
-          for (const fail of r.failuresHere.get(path24) ?? []) {
+        function emitFailures(r, path23, scrapSet) {
+          for (const fail of r.failuresHere.get(path23) ?? []) {
             emit(`!! ${fail.message}
 `);
           }
-          scrapSet?.delete(path24);
+          scrapSet?.delete(path23);
         }
         function recurse(r) {
           const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ""));
@@ -1396,14 +1396,14 @@ var require_assets = __commonJS({
 var require_helpers = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/jsonschema/lib/helpers.js"(exports2, module2) {
     "use strict";
-    var ValidationError2 = exports2.ValidationError = function ValidationError3(message, instance, schema, path24, name, argument) {
-      if (Array.isArray(path24)) {
-        this.path = path24;
-        this.property = path24.reduce(function(sum, item) {
+    var ValidationError2 = exports2.ValidationError = function ValidationError3(message, instance, schema, path23, name, argument) {
+      if (Array.isArray(path23)) {
+        this.path = path23;
+        this.property = path23.reduce(function(sum, item) {
           return sum + makeSuffix(item);
         }, "instance");
-      } else if (path24 !== void 0) {
-        this.property = path24;
+      } else if (path23 !== void 0) {
+        this.property = path23;
       }
       if (message) {
         this.message = message;
@@ -1496,16 +1496,16 @@ var require_helpers = __commonJS({
         name: { value: "SchemaError", enumerable: false }
       }
     );
-    var SchemaContext = exports2.SchemaContext = function SchemaContext2(schema, options, path24, base, schemas) {
+    var SchemaContext = exports2.SchemaContext = function SchemaContext2(schema, options, path23, base, schemas) {
       this.schema = schema;
       this.options = options;
-      if (Array.isArray(path24)) {
-        this.path = path24;
-        this.propertyPath = path24.reduce(function(sum, item) {
+      if (Array.isArray(path23)) {
+        this.path = path23;
+        this.propertyPath = path23.reduce(function(sum, item) {
           return sum + makeSuffix(item);
         }, "instance");
       } else {
-        this.propertyPath = path24;
+        this.propertyPath = path23;
       }
       this.base = base;
       this.schemas = schemas;
@@ -1514,10 +1514,10 @@ var require_helpers = __commonJS({
       return (() => resolveUrl(this.base, target))();
     };
     SchemaContext.prototype.makeChild = function makeChild(schema, propertyName) {
-      var path24 = propertyName === void 0 ? this.path : this.path.concat([propertyName]);
+      var path23 = propertyName === void 0 ? this.path : this.path.concat([propertyName]);
       var id = schema.$id || schema.id;
       let base = (() => resolveUrl(this.base, id || ""))();
-      var ctx = new SchemaContext(schema, this.options, path24, base, Object.create(this.schemas));
+      var ctx = new SchemaContext(schema, this.options, path23, base, Object.create(this.schemas));
       if (id && !ctx.schemas[base]) {
         ctx.schemas[base] = schema;
       }
@@ -7449,7 +7449,7 @@ var require_cloud_artifact = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CloudArtifact = void 0;
     var fs19 = require("fs");
-    var path24 = require("path");
+    var path23 = require("path");
     var cxschema2 = require_lib2();
     var metadata_1 = require_metadata();
     var error_1 = require_error();
@@ -7468,7 +7468,7 @@ var require_cloud_artifact = __commonJS({
       static readMetadata(assemblyDirectory, x) {
         const ret = {};
         if (x.additionalMetadataFile) {
-          Object.assign(ret, JSON.parse(fs19.readFileSync(path24.join(assemblyDirectory, x.additionalMetadataFile), "utf-8")));
+          Object.assign(ret, JSON.parse(fs19.readFileSync(path23.join(assemblyDirectory, x.additionalMetadataFile), "utf-8")));
         }
         for (const [p, entries] of Object.entries(x.metadata ?? {})) {
           if (ret[p]) {
@@ -7578,7 +7578,7 @@ var require_asset_manifest_artifact = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.AssetManifestArtifact = void 0;
     var fs19 = require("fs");
-    var path24 = require("path");
+    var path23 = require("path");
     var cloud_artifact_1 = require_cloud_artifact();
     var error_1 = require_error();
     var ASSET_MANIFEST_ARTIFACT_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.AssetManifestArtifact");
@@ -7609,7 +7609,7 @@ var require_asset_manifest_artifact = __commonJS({
         if (!properties.file) {
           throw new error_1.CloudAssemblyError('Invalid AssetManifestArtifact. Missing "file" property');
         }
-        this.file = path24.resolve(this.assembly.directory, properties.file);
+        this.file = path23.resolve(this.assembly.directory, properties.file);
         this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
         this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
       }
@@ -7679,7 +7679,7 @@ var require_cloudformation_artifact = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CloudFormationStackArtifact = void 0;
     var fs19 = require("fs");
-    var path24 = require("path");
+    var path23 = require("path");
     var cxschema2 = require_lib2();
     var cloud_artifact_1 = require_cloud_artifact();
     var environment_1 = require_environment();
@@ -7740,7 +7740,7 @@ var require_cloudformation_artifact = __commonJS({
        * Full path to the template file
        */
       get templateFullPath() {
-        return path24.join(this.assembly.directory, this.templateFile);
+        return path23.join(this.assembly.directory, this.templateFile);
       }
       /**
        * The CloudFormation template for this stack.
@@ -7767,7 +7767,7 @@ var require_nested_cloud_assembly_artifact = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NestedCloudAssemblyArtifact = void 0;
-    var path24 = require("path");
+    var path23 = require("path");
     var cloud_artifact_1 = require_cloud_artifact();
     var NESTED_CLOUD_ASSEMBLY_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.NestedCloudAssemblyArtifact");
     var NestedCloudAssemblyArtifact = class extends cloud_artifact_1.CloudArtifact {
@@ -7801,7 +7801,7 @@ var require_nested_cloud_assembly_artifact = __commonJS({
        * Full path to the nested assembly directory
        */
       get fullPath() {
-        return path24.join(this.assembly.directory, this.directoryName);
+        return path23.join(this.assembly.directory, this.directoryName);
       }
     };
     exports2.NestedCloudAssemblyArtifact = NestedCloudAssemblyArtifact;
@@ -7927,7 +7927,7 @@ var require_cloud_assembly2 = __commonJS({
     exports2.CloudAssemblyBuilder = exports2.CloudAssembly = void 0;
     var fs19 = require("fs");
     var os4 = require("os");
-    var path24 = require("path");
+    var path23 = require("path");
     var cxschema2 = require_lib2();
     var cloudformation_artifact_1 = require_cloudformation_artifact();
     var nested_cloud_assembly_artifact_1 = require_nested_cloud_assembly_artifact();
@@ -7999,7 +7999,7 @@ var require_cloud_assembly2 = __commonJS({
       constructor(directory, loadOptions) {
         this.directory = directory;
         this.loadOptions = loadOptions;
-        this.manifest = cxschema2.Manifest.loadAssemblyManifest(path24.join(directory, MANIFEST_FILE), this.loadOptions);
+        this.manifest = cxschema2.Manifest.loadAssemblyManifest(path23.join(directory, MANIFEST_FILE), this.loadOptions);
         this.version = this.manifest.version;
         this.artifacts = this.renderArtifacts(this.loadOptions?.topoSort ?? true);
         this.runtime = this.manifest.runtime || { libraries: {} };
@@ -8195,9 +8195,9 @@ var require_cloud_assembly2 = __commonJS({
           missing: this.missing.length > 0 ? this.missing : void 0
         };
         manifest = filterUndefined2(manifest);
-        const manifestFilePath = path24.join(this.outdir, MANIFEST_FILE);
+        const manifestFilePath = path23.join(this.outdir, MANIFEST_FILE);
         cxschema2.Manifest.saveAssemblyManifest(manifest, manifestFilePath);
-        fs19.writeFileSync(path24.join(this.outdir, "cdk.out"), JSON.stringify({ version: manifest.version }));
+        fs19.writeFileSync(path23.join(this.outdir, "cdk.out"), JSON.stringify({ version: manifest.version }));
         return new CloudAssembly(this.outdir);
       }
       /**
@@ -8205,7 +8205,7 @@ var require_cloud_assembly2 = __commonJS({
        */
       createNestedAssembly(artifactId, displayName) {
         const directoryName = artifactId;
-        const innerAsmDir = path24.join(this.outdir, directoryName);
+        const innerAsmDir = path23.join(this.outdir, directoryName);
         this.addArtifact(artifactId, {
           type: cxschema2.ArtifactType.NESTED_CLOUD_ASSEMBLY,
           properties: {
@@ -8250,7 +8250,7 @@ var require_cloud_assembly2 = __commonJS({
       if (outdir) {
         return outdir;
       }
-      const tmpDir = fs19.mkdtempSync(path24.join(fs19.realpathSync(os4.tmpdir()), "cdk.out"));
+      const tmpDir = fs19.mkdtempSync(path23.join(fs19.realpathSync(os4.tmpdir()), "cdk.out"));
       TEMPORARY_ASSEMBLY_DIRS.push(tmpDir);
       return outdir ?? tmpDir;
     }
@@ -10967,18 +10967,19 @@ var init_annotations = __esm({
       /**
        * Given 'a/b/c', return ['a/b/c', 'a/b', 'a']
        */
-      searchPaths(path24) {
+      searchPaths(path23) {
         const ret = new Array();
         let start = 0;
-        while (start < path24.length) {
-          let i = path24.indexOf("/", start);
+        while (start < path23.length) {
+          let i = path23.indexOf("/", start);
           if (i !== -1) {
-            ret.push(path24.substring(0, i));
+            ret.push(path23.substring(0, i));
             start = i + 1;
           } else {
-            start = path24.length;
+            start = path23.length;
           }
         }
+        ret.push(path23);
         return ret.reverse();
       }
     };
@@ -13602,14 +13603,14 @@ var require_polyfills = __commonJS({
       fs19.fstatSync = statFixSync(fs19.fstatSync);
       fs19.lstatSync = statFixSync(fs19.lstatSync);
       if (fs19.chmod && !fs19.lchmod) {
-        fs19.lchmod = function(path24, mode, cb) {
+        fs19.lchmod = function(path23, mode, cb) {
           if (cb) process.nextTick(cb);
         };
         fs19.lchmodSync = function() {
         };
       }
       if (fs19.chown && !fs19.lchown) {
-        fs19.lchown = function(path24, uid, gid, cb) {
+        fs19.lchown = function(path23, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
         fs19.lchownSync = function() {
@@ -13676,9 +13677,9 @@ var require_polyfills = __commonJS({
         };
       })(fs19.readSync);
       function patchLchmod(fs20) {
-        fs20.lchmod = function(path24, mode, callback) {
+        fs20.lchmod = function(path23, mode, callback) {
           fs20.open(
-            path24,
+            path23,
             constants2.O_WRONLY | constants2.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -13694,8 +13695,8 @@ var require_polyfills = __commonJS({
             }
           );
         };
-        fs20.lchmodSync = function(path24, mode) {
-          var fd = fs20.openSync(path24, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
+        fs20.lchmodSync = function(path23, mode) {
+          var fd = fs20.openSync(path23, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
@@ -13716,8 +13717,8 @@ var require_polyfills = __commonJS({
       }
       function patchLutimes(fs20) {
         if (constants2.hasOwnProperty("O_SYMLINK") && fs20.futimes) {
-          fs20.lutimes = function(path24, at, mt, cb) {
-            fs20.open(path24, constants2.O_SYMLINK, function(er, fd) {
+          fs20.lutimes = function(path23, at, mt, cb) {
+            fs20.open(path23, constants2.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
@@ -13729,8 +13730,8 @@ var require_polyfills = __commonJS({
               });
             });
           };
-          fs20.lutimesSync = function(path24, at, mt) {
-            var fd = fs20.openSync(path24, constants2.O_SYMLINK);
+          fs20.lutimesSync = function(path23, at, mt) {
+            var fd = fs20.openSync(path23, constants2.O_SYMLINK);
             var ret;
             var threw = true;
             try {
@@ -13848,11 +13849,11 @@ var require_legacy_streams = __commonJS({
         ReadStream,
         WriteStream
       };
-      function ReadStream(path24, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path24, options);
+      function ReadStream(path23, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path23, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path24;
+        this.path = path23;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -13897,10 +13898,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path24, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path24, options);
+      function WriteStream(path23, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path23, options);
         Stream.call(this);
-        this.path = path24;
+        this.path = path23;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -14043,14 +14044,14 @@ var require_graceful_fs = __commonJS({
       fs20.createWriteStream = createWriteStream;
       var fs$readFile = fs20.readFile;
       fs20.readFile = readFile;
-      function readFile(path24, options, cb) {
+      function readFile(path23, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path24, options, cb);
-        function go$readFile(path25, options2, cb2, startTime) {
-          return fs$readFile(path25, options2, function(err) {
+        return go$readFile(path23, options, cb);
+        function go$readFile(path24, options2, cb2, startTime) {
+          return fs$readFile(path24, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path25, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path24, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14060,14 +14061,14 @@ var require_graceful_fs = __commonJS({
       }
       var fs$writeFile = fs20.writeFile;
       fs20.writeFile = writeFile;
-      function writeFile(path24, data, options, cb) {
+      function writeFile(path23, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path24, data, options, cb);
-        function go$writeFile(path25, data2, options2, cb2, startTime) {
-          return fs$writeFile(path25, data2, options2, function(err) {
+        return go$writeFile(path23, data, options, cb);
+        function go$writeFile(path24, data2, options2, cb2, startTime) {
+          return fs$writeFile(path24, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path25, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path24, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14078,14 +14079,14 @@ var require_graceful_fs = __commonJS({
       var fs$appendFile = fs20.appendFile;
       if (fs$appendFile)
         fs20.appendFile = appendFile;
-      function appendFile(path24, data, options, cb) {
+      function appendFile(path23, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path24, data, options, cb);
-        function go$appendFile(path25, data2, options2, cb2, startTime) {
-          return fs$appendFile(path25, data2, options2, function(err) {
+        return go$appendFile(path23, data, options, cb);
+        function go$appendFile(path24, data2, options2, cb2, startTime) {
+          return fs$appendFile(path24, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path25, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path24, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14116,31 +14117,31 @@ var require_graceful_fs = __commonJS({
       var fs$readdir = fs20.readdir;
       fs20.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path24, options, cb) {
+      function readdir(path23, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path25, options2, cb2, startTime) {
-          return fs$readdir(path25, fs$readdirCallback(
-            path25,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path24, options2, cb2, startTime) {
+          return fs$readdir(path24, fs$readdirCallback(
+            path24,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path25, options2, cb2, startTime) {
-          return fs$readdir(path25, options2, fs$readdirCallback(
-            path25,
+        } : function go$readdir2(path24, options2, cb2, startTime) {
+          return fs$readdir(path24, options2, fs$readdirCallback(
+            path24,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path24, options, cb);
-        function fs$readdirCallback(path25, options2, cb2, startTime) {
+        return go$readdir(path23, options, cb);
+        function fs$readdirCallback(path24, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path25, options2, cb2],
+                [path24, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -14211,7 +14212,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path24, options) {
+      function ReadStream(path23, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -14231,7 +14232,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path24, options) {
+      function WriteStream(path23, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -14249,22 +14250,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path24, options) {
-        return new fs20.ReadStream(path24, options);
+      function createReadStream(path23, options) {
+        return new fs20.ReadStream(path23, options);
       }
-      function createWriteStream(path24, options) {
-        return new fs20.WriteStream(path24, options);
+      function createWriteStream(path23, options) {
+        return new fs20.WriteStream(path23, options);
       }
       var fs$open = fs20.open;
       fs20.open = open;
-      function open(path24, flags, mode, cb) {
+      function open(path23, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path24, flags, mode, cb);
-        function go$open(path25, flags2, mode2, cb2, startTime) {
-          return fs$open(path25, flags2, mode2, function(err, fd) {
+        return go$open(path23, flags, mode, cb);
+        function go$open(path24, flags2, mode2, cb2, startTime) {
+          return fs$open(path24, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path25, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path24, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14447,10 +14448,10 @@ var require_fs = __commonJS({
 var require_utils = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/mkdirs/utils.js"(exports2, module2) {
     "use strict";
-    var path24 = require("path");
+    var path23 = require("path");
     module2.exports.checkPath = function checkPath(pth) {
       if (process.platform === "win32") {
-        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path24.parse(pth).root, ""));
+        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path23.parse(pth).root, ""));
         if (pathHasInvalidWinCharacters) {
           const error = new Error(`Path contains invalid characters: ${pth}`);
           error.code = "EINVAL";
@@ -14514,8 +14515,8 @@ var require_path_exists = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    function pathExists(path24) {
-      return fs19.access(path24).then(() => true).catch(() => false);
+    function pathExists(path23) {
+      return fs19.access(path23).then(() => true).catch(() => false);
     }
     module2.exports = {
       pathExists: u(pathExists),
@@ -14530,8 +14531,8 @@ var require_utimes = __commonJS({
     "use strict";
     var fs19 = require_fs();
     var u = require_universalify().fromPromise;
-    async function utimesMillis(path24, atime, mtime) {
-      const fd = await fs19.open(path24, "r+");
+    async function utimesMillis(path23, atime, mtime) {
+      const fd = await fs19.open(path23, "r+");
       let error = null;
       try {
         await fs19.futimes(fd, atime, mtime);
@@ -14548,8 +14549,8 @@ var require_utimes = __commonJS({
         throw error;
       }
     }
-    function utimesMillisSync(path24, atime, mtime) {
-      const fd = fs19.openSync(path24, "r+");
+    function utimesMillisSync(path23, atime, mtime) {
+      const fd = fs19.openSync(path23, "r+");
       let error = null;
       try {
         fs19.futimesSync(fd, atime, mtime);
@@ -14578,7 +14579,7 @@ var require_stat = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/util/stat.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var u = require_universalify().fromPromise;
     function getStats(src, dest, opts) {
       const statFunc = opts.dereference ? (file) => fs19.stat(file, { bigint: true }) : (file) => fs19.lstat(file, { bigint: true });
@@ -14606,8 +14607,8 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = await getStats(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path24.basename(src);
-          const destBaseName = path24.basename(dest);
+          const srcBaseName = path23.basename(src);
+          const destBaseName = path23.basename(dest);
           if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
             return { srcStat, destStat, isChangingCase: true };
           }
@@ -14629,8 +14630,8 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = getStatsSync(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path24.basename(src);
-          const destBaseName = path24.basename(dest);
+          const srcBaseName = path23.basename(src);
+          const destBaseName = path23.basename(dest);
           if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
             return { srcStat, destStat, isChangingCase: true };
           }
@@ -14649,9 +14650,9 @@ var require_stat = __commonJS({
       return { srcStat, destStat };
     }
     async function checkParentPaths(src, srcStat, dest, funcName) {
-      const srcParent = path24.resolve(path24.dirname(src));
-      const destParent = path24.resolve(path24.dirname(dest));
-      if (destParent === srcParent || destParent === path24.parse(destParent).root) return;
+      const srcParent = path23.resolve(path23.dirname(src));
+      const destParent = path23.resolve(path23.dirname(dest));
+      if (destParent === srcParent || destParent === path23.parse(destParent).root) return;
       let destStat;
       try {
         destStat = await fs19.stat(destParent, { bigint: true });
@@ -14665,9 +14666,9 @@ var require_stat = __commonJS({
       return checkParentPaths(src, srcStat, destParent, funcName);
     }
     function checkParentPathsSync(src, srcStat, dest, funcName) {
-      const srcParent = path24.resolve(path24.dirname(src));
-      const destParent = path24.resolve(path24.dirname(dest));
-      if (destParent === srcParent || destParent === path24.parse(destParent).root) return;
+      const srcParent = path23.resolve(path23.dirname(src));
+      const destParent = path23.resolve(path23.dirname(dest));
+      if (destParent === srcParent || destParent === path23.parse(destParent).root) return;
       let destStat;
       try {
         destStat = fs19.statSync(destParent, { bigint: true });
@@ -14684,8 +14685,8 @@ var require_stat = __commonJS({
       return destStat.ino !== void 0 && destStat.dev !== void 0 && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
     }
     function isSrcSubdir(src, dest) {
-      const srcArr = path24.resolve(src).split(path24.sep).filter((i) => i);
-      const destArr = path24.resolve(dest).split(path24.sep).filter((i) => i);
+      const srcArr = path23.resolve(src).split(path23.sep).filter((i) => i);
+      const destArr = path23.resolve(dest).split(path23.sep).filter((i) => i);
       return srcArr.every((cur, i) => destArr[i] === cur);
     }
     function errMsg(src, dest, funcName) {
@@ -14738,7 +14739,7 @@ var require_copy = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/copy/copy.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var { mkdirs } = require_mkdirs();
     var { pathExists } = require_path_exists();
     var { utimesMillis } = require_utimes();
@@ -14761,7 +14762,7 @@ var require_copy = __commonJS({
       await stat.checkParentPaths(src, srcStat, dest, "copy");
       const include = await runFilter(src, dest, opts);
       if (!include) return;
-      const destParent = path24.dirname(dest);
+      const destParent = path23.dirname(dest);
       const dirExists = await pathExists(destParent);
       if (!dirExists) {
         await mkdirs(destParent);
@@ -14814,8 +14815,8 @@ var require_copy = __commonJS({
         await fs19.mkdir(dest);
       }
       await asyncIteratorConcurrentProcess(await fs19.opendir(src), async (item) => {
-        const srcItem = path24.join(src, item.name);
-        const destItem = path24.join(dest, item.name);
+        const srcItem = path23.join(src, item.name);
+        const destItem = path23.join(dest, item.name);
         const include = await runFilter(srcItem, destItem, opts);
         if (include) {
           const { destStat: destStat2 } = await stat.checkPaths(srcItem, destItem, "copy", opts);
@@ -14829,7 +14830,7 @@ var require_copy = __commonJS({
     async function onLink(destStat, src, dest, opts) {
       let resolvedSrc = await fs19.readlink(src);
       if (opts.dereference) {
-        resolvedSrc = path24.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path23.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
         return fs19.symlink(resolvedSrc, dest);
@@ -14842,7 +14843,7 @@ var require_copy = __commonJS({
         throw e;
       }
       if (opts.dereference) {
-        resolvedDest = path24.resolve(process.cwd(), resolvedDest);
+        resolvedDest = path23.resolve(process.cwd(), resolvedDest);
       }
       if (resolvedSrc !== resolvedDest) {
         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
@@ -14864,7 +14865,7 @@ var require_copy_sync = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/copy/copy-sync.js"(exports2, module2) {
     "use strict";
     var fs19 = require_graceful_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var mkdirsSync = require_mkdirs().mkdirsSync;
     var utimesMillisSync = require_utimes().utimesMillisSync;
     var stat = require_stat();
@@ -14885,7 +14886,7 @@ var require_copy_sync = __commonJS({
       const { srcStat, destStat } = stat.checkPathsSync(src, dest, "copy", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "copy");
       if (opts.filter && !opts.filter(src, dest)) return;
-      const destParent = path24.dirname(dest);
+      const destParent = path23.dirname(dest);
       if (!fs19.existsSync(destParent)) mkdirsSync(destParent);
       return getStats(destStat, src, dest, opts);
     }
@@ -14954,8 +14955,8 @@ var require_copy_sync = __commonJS({
       }
     }
     function copyDirItem(item, src, dest, opts) {
-      const srcItem = path24.join(src, item);
-      const destItem = path24.join(dest, item);
+      const srcItem = path23.join(src, item);
+      const destItem = path23.join(dest, item);
       if (opts.filter && !opts.filter(srcItem, destItem)) return;
       const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
       return getStats(destStat, srcItem, destItem, opts);
@@ -14963,7 +14964,7 @@ var require_copy_sync = __commonJS({
     function onLink(destStat, src, dest, opts) {
       let resolvedSrc = fs19.readlinkSync(src);
       if (opts.dereference) {
-        resolvedSrc = path24.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path23.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
         return fs19.symlinkSync(resolvedSrc, dest);
@@ -14976,7 +14977,7 @@ var require_copy_sync = __commonJS({
           throw err;
         }
         if (opts.dereference) {
-          resolvedDest = path24.resolve(process.cwd(), resolvedDest);
+          resolvedDest = path23.resolve(process.cwd(), resolvedDest);
         }
         if (resolvedSrc !== resolvedDest) {
           if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
@@ -15015,11 +15016,11 @@ var require_remove = __commonJS({
     "use strict";
     var fs19 = require_graceful_fs();
     var u = require_universalify().fromCallback;
-    function remove(path24, callback) {
-      fs19.rm(path24, { recursive: true, force: true }, callback);
+    function remove(path23, callback) {
+      fs19.rm(path23, { recursive: true, force: true }, callback);
     }
-    function removeSync2(path24) {
-      fs19.rmSync(path24, { recursive: true, force: true });
+    function removeSync2(path23) {
+      fs19.rmSync(path23, { recursive: true, force: true });
     }
     module2.exports = {
       remove: u(remove),
@@ -15034,7 +15035,7 @@ var require_empty = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var mkdir = require_mkdirs();
     var remove = require_remove();
     var emptyDir = u(async function emptyDir2(dir) {
@@ -15044,7 +15045,7 @@ var require_empty = __commonJS({
       } catch {
         return mkdir.mkdirs(dir);
       }
-      return Promise.all(items.map((item) => remove.remove(path24.join(dir, item))));
+      return Promise.all(items.map((item) => remove.remove(path23.join(dir, item))));
     });
     function emptyDirSync(dir) {
       let items;
@@ -15054,7 +15055,7 @@ var require_empty = __commonJS({
         return mkdir.mkdirsSync(dir);
       }
       items.forEach((item) => {
-        item = path24.join(dir, item);
+        item = path23.join(dir, item);
         remove.removeSync(item);
       });
     }
@@ -15072,7 +15073,7 @@ var require_file = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/file.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path24 = require("path");
+    var path23 = require("path");
     var fs19 = require_fs();
     var mkdir = require_mkdirs();
     async function createFile(file) {
@@ -15082,7 +15083,7 @@ var require_file = __commonJS({
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path24.dirname(file);
+      const dir = path23.dirname(file);
       let dirStats = null;
       try {
         dirStats = await fs19.stat(dir);
@@ -15108,7 +15109,7 @@ var require_file = __commonJS({
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path24.dirname(file);
+      const dir = path23.dirname(file);
       try {
         if (!fs19.statSync(dir).isDirectory()) {
           fs19.readdirSync(dir);
@@ -15131,7 +15132,7 @@ var require_link = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/link.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path24 = require("path");
+    var path23 = require("path");
     var fs19 = require_fs();
     var mkdir = require_mkdirs();
     var { pathExists } = require_path_exists();
@@ -15150,7 +15151,7 @@ var require_link = __commonJS({
         throw err;
       }
       if (dstStat && areIdentical(srcStat, dstStat)) return;
-      const dir = path24.dirname(dstpath);
+      const dir = path23.dirname(dstpath);
       const dirExists = await pathExists(dir);
       if (!dirExists) {
         await mkdir.mkdirs(dir);
@@ -15170,7 +15171,7 @@ var require_link = __commonJS({
         err.message = err.message.replace("lstat", "ensureLink");
         throw err;
       }
-      const dir = path24.dirname(dstpath);
+      const dir = path23.dirname(dstpath);
       const dirExists = fs19.existsSync(dir);
       if (dirExists) return fs19.linkSync(srcpath, dstpath);
       mkdir.mkdirsSync(dir);
@@ -15187,12 +15188,12 @@ var require_link = __commonJS({
 var require_symlink_paths = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/symlink-paths.js"(exports2, module2) {
     "use strict";
-    var path24 = require("path");
+    var path23 = require("path");
     var fs19 = require_fs();
     var { pathExists } = require_path_exists();
     var u = require_universalify().fromPromise;
     async function symlinkPaths(srcpath, dstpath) {
-      if (path24.isAbsolute(srcpath)) {
+      if (path23.isAbsolute(srcpath)) {
         try {
           await fs19.lstat(srcpath);
         } catch (err) {
@@ -15204,8 +15205,8 @@ var require_symlink_paths = __commonJS({
           toDst: srcpath
         };
       }
-      const dstdir = path24.dirname(dstpath);
-      const relativeToDst = path24.join(dstdir, srcpath);
+      const dstdir = path23.dirname(dstpath);
+      const relativeToDst = path23.join(dstdir, srcpath);
       const exists = await pathExists(relativeToDst);
       if (exists) {
         return {
@@ -15221,11 +15222,11 @@ var require_symlink_paths = __commonJS({
       }
       return {
         toCwd: srcpath,
-        toDst: path24.relative(dstdir, srcpath)
+        toDst: path23.relative(dstdir, srcpath)
       };
     }
     function symlinkPathsSync(srcpath, dstpath) {
-      if (path24.isAbsolute(srcpath)) {
+      if (path23.isAbsolute(srcpath)) {
         const exists2 = fs19.existsSync(srcpath);
         if (!exists2) throw new Error("absolute srcpath does not exist");
         return {
@@ -15233,8 +15234,8 @@ var require_symlink_paths = __commonJS({
           toDst: srcpath
         };
       }
-      const dstdir = path24.dirname(dstpath);
-      const relativeToDst = path24.join(dstdir, srcpath);
+      const dstdir = path23.dirname(dstpath);
+      const relativeToDst = path23.join(dstdir, srcpath);
       const exists = fs19.existsSync(relativeToDst);
       if (exists) {
         return {
@@ -15246,7 +15247,7 @@ var require_symlink_paths = __commonJS({
       if (!srcExists) throw new Error("relative srcpath does not exist");
       return {
         toCwd: srcpath,
-        toDst: path24.relative(dstdir, srcpath)
+        toDst: path23.relative(dstdir, srcpath)
       };
     }
     module2.exports = {
@@ -15294,7 +15295,7 @@ var require_symlink = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/symlink.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path24 = require("path");
+    var path23 = require("path");
     var fs19 = require_fs();
     var { mkdirs, mkdirsSync } = require_mkdirs();
     var { symlinkPaths, symlinkPathsSync } = require_symlink_paths();
@@ -15309,11 +15310,11 @@ var require_symlink = __commonJS({
       }
       if (stats && stats.isSymbolicLink()) {
         let srcStat;
-        if (path24.isAbsolute(srcpath)) {
+        if (path23.isAbsolute(srcpath)) {
           srcStat = await fs19.stat(srcpath, { bigint: true });
         } else {
-          const dstdir = path24.dirname(dstpath);
-          const relativeToDst = path24.join(dstdir, srcpath);
+          const dstdir = path23.dirname(dstpath);
+          const relativeToDst = path23.join(dstdir, srcpath);
           try {
             srcStat = await fs19.stat(relativeToDst, { bigint: true });
           } catch {
@@ -15326,7 +15327,7 @@ var require_symlink = __commonJS({
       const relative6 = await symlinkPaths(srcpath, dstpath);
       srcpath = relative6.toDst;
       const toType = await symlinkType(relative6.toCwd, type);
-      const dir = path24.dirname(dstpath);
+      const dir = path23.dirname(dstpath);
       if (!await pathExists(dir)) {
         await mkdirs(dir);
       }
@@ -15340,11 +15341,11 @@ var require_symlink = __commonJS({
       }
       if (stats && stats.isSymbolicLink()) {
         let srcStat;
-        if (path24.isAbsolute(srcpath)) {
+        if (path23.isAbsolute(srcpath)) {
           srcStat = fs19.statSync(srcpath, { bigint: true });
         } else {
-          const dstdir = path24.dirname(dstpath);
-          const relativeToDst = path24.join(dstdir, srcpath);
+          const dstdir = path23.dirname(dstpath);
+          const relativeToDst = path23.join(dstdir, srcpath);
           try {
             srcStat = fs19.statSync(relativeToDst, { bigint: true });
           } catch {
@@ -15357,7 +15358,7 @@ var require_symlink = __commonJS({
       const relative6 = symlinkPathsSync(srcpath, dstpath);
       srcpath = relative6.toDst;
       type = symlinkTypeSync(relative6.toCwd, type);
-      const dir = path24.dirname(dstpath);
+      const dir = path23.dirname(dstpath);
       const exists = fs19.existsSync(dir);
       if (exists) return fs19.symlinkSync(srcpath, dstpath, type);
       mkdirsSync(dir);
@@ -15509,18 +15510,18 @@ var require_output_file = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists().pathExists;
     async function outputFile(file, data, encoding = "utf-8") {
-      const dir = path24.dirname(file);
+      const dir = path23.dirname(file);
       if (!await pathExists(dir)) {
         await mkdir.mkdirs(dir);
       }
       return fs19.writeFile(file, data, encoding);
     }
     function outputFileSync(file, ...args) {
-      const dir = path24.dirname(file);
+      const dir = path23.dirname(file);
       if (!fs19.existsSync(dir)) {
         mkdir.mkdirsSync(dir);
       }
@@ -15584,7 +15585,7 @@ var require_move = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/move/move.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var { copy } = require_copy2();
     var { remove } = require_remove();
     var { mkdirp } = require_mkdirs();
@@ -15594,8 +15595,8 @@ var require_move = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = await stat.checkPaths(src, dest, "move", opts);
       await stat.checkParentPaths(src, srcStat, dest, "move");
-      const destParent = path24.dirname(dest);
-      const parsedParentPath = path24.parse(destParent);
+      const destParent = path23.dirname(dest);
+      const parsedParentPath = path23.parse(destParent);
       if (parsedParentPath.root !== destParent) {
         await mkdirp(destParent);
       }
@@ -15636,7 +15637,7 @@ var require_move_sync = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/move/move-sync.js"(exports2, module2) {
     "use strict";
     var fs19 = require_graceful_fs();
-    var path24 = require("path");
+    var path23 = require("path");
     var copySync2 = require_copy2().copySync;
     var removeSync2 = require_remove().removeSync;
     var mkdirpSync = require_mkdirs().mkdirpSync;
@@ -15646,12 +15647,12 @@ var require_move_sync = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "move");
-      if (!isParentRoot(dest)) mkdirpSync(path24.dirname(dest));
+      if (!isParentRoot(dest)) mkdirpSync(path23.dirname(dest));
       return doRename(src, dest, overwrite, isChangingCase);
     }
     function isParentRoot(dest) {
-      const parent = path24.dirname(dest);
-      const parsedPath = path24.parse(parent);
+      const parent = path23.dirname(dest);
+      const parsedPath = path23.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase) {
@@ -33284,6 +33285,236 @@ var init_classes = __esm({
           ]
         }
       },
+      "aws-cdk-lib.aws-glue": {
+        "Catalog": {
+          "catalogName": "*",
+          "description": "*",
+          "encryptionAtRest": "*",
+          "connectionPasswordEncryption": {
+            "kmsKey": "*",
+            "returnConnectionPasswordEncrypted": "boolean"
+          }
+        },
+        "AccountCatalog": {
+          "encryptionAtRest": "*",
+          "connectionPasswordEncryption": {
+            "kmsKey": "*",
+            "returnConnectionPasswordEncrypted": "boolean"
+          }
+        },
+        "ImportedCatalog": {},
+        "Connection": {
+          "type": "*",
+          "connectionName": "*",
+          "description": "*",
+          "properties": "*",
+          "secret": "*",
+          "matchCriteria": "*",
+          "securityGroups": {
+            "securityGroupId": "*",
+            "allowAllOutbound": "boolean",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            },
+            "canInlineRule": "boolean",
+            "uniqueId": "*",
+            "connections": "*"
+          },
+          "network": "*",
+          "addProperty": [
+            "*",
+            "*"
+          ]
+        },
+        "DataQualityRuleset": {
+          "rulesetName": "*",
+          "description": "*",
+          "dqdl": "*",
+          "tags": "*",
+          "targetTable": "*",
+          "removalPolicy": "RemovalPolicy"
+        },
+        "Database": {
+          "databaseName": "*",
+          "locationUri": "*",
+          "description": "*",
+          "catalog": {
+            "catalogId": "*",
+            "catalogArn": "*",
+            "encryptionKey": "*",
+            "connectionPasswordKey": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "removalPolicy": "RemovalPolicy"
+        },
+        "ExternalTable": {
+          "connection": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "externalDataLocation": "*",
+          "tableName": "*",
+          "description": "*",
+          "database": {
+            "catalog": {
+              "catalogId": "*",
+              "catalogArn": "*",
+              "encryptionKey": "*",
+              "connectionPasswordKey": "*",
+              "stack": "*",
+              "node": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              }
+            },
+            "databaseArn": "*",
+            "databaseName": "*"
+          },
+          "columns": {
+            "name": "*",
+            "type": "*",
+            "comment": "*"
+          },
+          "partitionKeys": {
+            "name": "*",
+            "type": "*",
+            "comment": "*"
+          },
+          "partitionIndexes": {
+            "indexName": "*",
+            "keyNames": "*"
+          },
+          "dataFormat": "*",
+          "compressed": "boolean",
+          "storedAsSubDirectories": "boolean",
+          "enablePartitionFiltering": "boolean",
+          "storageParameters": "*",
+          "parameters": "*",
+          "hasEncryptedData": "boolean",
+          "partitionProjection": "*",
+          "grantRead": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ],
+          "grantWrite": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ],
+          "grantReadWrite": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ]
+        },
+        "S3Table": {
+          "storage": "*",
+          "s3Prefix": "*",
+          "clientSideEncryption": "*",
+          "tableName": "*",
+          "description": "*",
+          "database": {
+            "catalog": {
+              "catalogId": "*",
+              "catalogArn": "*",
+              "encryptionKey": "*",
+              "connectionPasswordKey": "*",
+              "stack": "*",
+              "node": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              }
+            },
+            "databaseArn": "*",
+            "databaseName": "*"
+          },
+          "columns": {
+            "name": "*",
+            "type": "*",
+            "comment": "*"
+          },
+          "partitionKeys": {
+            "name": "*",
+            "type": "*",
+            "comment": "*"
+          },
+          "partitionIndexes": {
+            "indexName": "*",
+            "keyNames": "*"
+          },
+          "dataFormat": "*",
+          "compressed": "boolean",
+          "storedAsSubDirectories": "boolean",
+          "enablePartitionFiltering": "boolean",
+          "storageParameters": "*",
+          "parameters": "*",
+          "hasEncryptedData": "boolean",
+          "partitionProjection": "*",
+          "grantRead": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ],
+          "grantWrite": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ],
+          "grantReadWrite": [
+            {
+              "grantPrincipal": {
+                "assumeRoleAction": "*",
+                "policyFragment": "*",
+                "principalAccount": "*"
+              }
+            }
+          ]
+        },
+        "SecurityConfiguration": {
+          "securityConfigurationName": "*",
+          "cloudWatchEncryption": "*",
+          "jobBookmarksEncryption": "*",
+          "s3Encryption": "*",
+          "removalPolicy": "RemovalPolicy"
+        }
+      },
       "aws-cdk-lib.aws-iam": {
         "AccessKey": {
           "serial": "*",
@@ -47116,6 +47347,673 @@ var init_classes = __esm({
           ]
         }
       },
+      "aws-glue.lib": {
+        "PySparkEtlJob": {
+          "notifyDelayAfter": "*",
+          "extraPythonFiles": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "jobRunQueuingEnabled": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "PySparkFlexEtlJob": {
+          "notifyDelayAfter": "*",
+          "extraPythonFiles": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "PySparkStreamingJob": {
+          "extraPythonFiles": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "jobRunQueuingEnabled": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "PythonShellJob": {
+          "pythonVersion": "PythonVersion",
+          "maxCapacity": "MaxCapacity",
+          "librarySet": "LibrarySet",
+          "extraPythonFiles": "*",
+          "jobRunQueuingEnabled": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "ScalaSparkEtlJob": {
+          "className": "*",
+          "notifyDelayAfter": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "jobRunQueuingEnabled": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "ScalaSparkFlexEtlJob": {
+          "notifyDelayAfter": "*",
+          "className": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "ScalaSparkStreamingJob": {
+          "className": "*",
+          "extraFiles": "*",
+          "extraJars": "*",
+          "extraJarsFirst": "boolean",
+          "jobRunQueuingEnabled": "boolean",
+          "workerConfiguration": {
+            "workerType": "WorkerType",
+            "numberOfWorkers": "*"
+          },
+          "sparkUI": {
+            "bucket": {
+              "bucketArn": "*",
+              "bucketName": "*",
+              "bucketWebsiteUrl": "*",
+              "bucketWebsiteDomainName": "*",
+              "bucketDomainName": "*",
+              "bucketDualStackDomainName": "*",
+              "bucketRegionalDomainName": "*",
+              "isWebsite": "boolean",
+              "encryptionKey": {
+                "keyArn": "*",
+                "keyId": "*",
+                "stack": "*",
+                "node": "*",
+                "env": {
+                  "account": "*",
+                  "region": "*"
+                }
+              },
+              "policy": "*",
+              "replicationRoleArn": "*"
+            },
+            "prefix": "*"
+          },
+          "enableMetrics": "boolean",
+          "enableObservabilityMetrics": "boolean",
+          "script": "*",
+          "role": {
+            "roleArn": "*",
+            "roleName": "*",
+            "assumeRoleAction": "*",
+            "policyFragment": "*",
+            "principalAccount": "*",
+            "grantPrincipal": {
+              "assumeRoleAction": "*",
+              "principalAccount": "*"
+            },
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "jobName": "*",
+          "description": "*",
+          "maxConcurrentRuns": "*",
+          "defaultArguments": "*",
+          "connections": {
+            "connectionName": "*",
+            "connectionArn": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "maxRetries": "*",
+          "timeout": "*",
+          "securityConfiguration": {
+            "securityConfigurationName": "*",
+            "stack": "*",
+            "node": "*",
+            "env": {
+              "account": "*",
+              "region": "*"
+            }
+          },
+          "tags": "*",
+          "glueVersion": "GlueVersion",
+          "continuousLogging": {
+            "enabled": "boolean",
+            "logGroup": {
+              "logGroupArn": "*",
+              "logGroupName": "*",
+              "env": {
+                "account": "*",
+                "region": "*"
+              },
+              "stack": "*",
+              "node": "*"
+            },
+            "logStreamPrefix": "*",
+            "quiet": "boolean",
+            "conversionPattern": "*"
+          }
+        },
+        "Workflow": {}
+      },
       "aws-iam.lib": {
         "ImmutableRole": {
           "roleArn": "*",
@@ -49936,8 +50834,7 @@ var init_enums = __esm({
       "JobType": [
         "glueetl",
         "gluestreaming",
-        "pythonshell",
-        "glueray"
+        "pythonshell"
       ],
       "JsonMutatorType": [
         0,
@@ -53471,8 +54368,8 @@ function makeUniqueResourceName(components, options) {
   const maxhumanLength = maxLength - HASH_LEN;
   return human.length > maxhumanLength ? `${splitInMiddle(human, maxhumanLength)}${hash}` : `${human}${hash}`;
 }
-function pathHash(path24) {
-  const md52 = md5hash(path24.join(PATH_SEP));
+function pathHash(path23) {
+  const md52 = md5hash(path23.join(PATH_SEP));
   return md52.slice(0, HASH_LEN).toUpperCase();
 }
 function removeNonAllowedSpecialCharacters(s, _separator, allowedSpecialCharacters) {
@@ -53480,9 +54377,9 @@ function removeNonAllowedSpecialCharacters(s, _separator, allowedSpecialCharacte
   const regex = new RegExp(pattern, "g");
   return s.replace(regex, "");
 }
-function removeDupes(path24) {
+function removeDupes(path23) {
   const ret = new Array();
-  for (const component of path24) {
+  for (const component of path23) {
     if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
       ret.push(component);
     }
@@ -53528,16 +54425,16 @@ function makeUniqueId(components) {
   const human = removeDupes2(components).filter((x) => x !== HIDDEN_FROM_HUMAN_ID2).map(removeNonAlphanumeric).join("").slice(0, MAX_HUMAN_LEN);
   return human + hash;
 }
-function pathHash2(path24) {
-  const md52 = md5hash(path24.join(PATH_SEP2));
+function pathHash2(path23) {
+  const md52 = md5hash(path23.join(PATH_SEP2));
   return md52.slice(0, HASH_LEN2).toUpperCase();
 }
 function removeNonAlphanumeric(s) {
   return s.replace(/[^A-Za-z0-9]/g, "");
 }
-function removeDupes2(path24) {
+function removeDupes2(path23) {
   const ret = new Array();
-  for (const component of path24) {
+  for (const component of path23) {
     if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
       ret.push(component);
     }
@@ -54132,7 +55029,7 @@ var init_assets = __esm({
 var require_ignore = __commonJS({
   "../../aws-cdk-lib/node_modules/@balena/dockerignore/ignore.js"(exports2, module2) {
     "use strict";
-    var path24 = require("path");
+    var path23 = require("path");
     var factory = (options) => new IgnoreBase(options);
     factory.default = factory;
     module2.exports = factory;
@@ -54141,22 +55038,22 @@ var require_ignore = __commonJS({
     }
     var REGEX_TRAILING_SLASH = /(?<=.)\/$/;
     var REGEX_TRAILING_BACKSLASH = /(?<=.)\\$/;
-    var REGEX_TRAILING_PATH_SEP = path24.sep === "\\" ? REGEX_TRAILING_BACKSLASH : REGEX_TRAILING_SLASH;
+    var REGEX_TRAILING_PATH_SEP = path23.sep === "\\" ? REGEX_TRAILING_BACKSLASH : REGEX_TRAILING_SLASH;
     var KEY_IGNORE = typeof Symbol !== "undefined" ? /* @__PURE__ */ Symbol.for("dockerignore") : "dockerignore";
     function cleanPath(file) {
-      return path24.normalize(file).replace(REGEX_TRAILING_PATH_SEP, "");
+      return path23.normalize(file).replace(REGEX_TRAILING_PATH_SEP, "");
     }
     function toSlash(file) {
-      if (path24.sep === "/") {
+      if (path23.sep === "/") {
         return file;
       }
       return file.replace(/\\/g, "/");
     }
     function fromSlash(file) {
-      if (path24.sep === "/") {
+      if (path23.sep === "/") {
         return file;
       }
-      return file.replace(/\//g, path24.sep);
+      return file.replace(/\//g, path23.sep);
     }
     var IgnoreBase = class {
       constructor({
@@ -54205,13 +55102,13 @@ var require_ignore = __commonJS({
         return pattern && typeof pattern === "string" && pattern.indexOf("#") !== 0 && pattern.trim() !== "";
       }
       filter(paths) {
-        return make_array(paths).filter((path25) => this._filter(path25));
+        return make_array(paths).filter((path24) => this._filter(path24));
       }
       createFilter() {
-        return (path25) => this._filter(path25);
+        return (path24) => this._filter(path24);
       }
-      ignores(path25) {
-        return !this._filter(path25);
+      ignores(path24) {
+        return !this._filter(path24);
       }
       // https://github.com/moby/moby/blob/v19.03.8/builder/dockerignore/dockerignore.go#L41-L53
       // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L29-L55
@@ -54250,36 +55147,36 @@ var require_ignore = __commonJS({
           origin,
           pattern,
           // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L54
-          dirs: pattern.split(path24.sep),
+          dirs: pattern.split(path23.sep),
           negative
         };
       }
       // @returns `Boolean` true if the `path` is NOT ignored
-      _filter(path25) {
-        if (!path25) {
+      _filter(path24) {
+        if (!path24) {
           return false;
         }
-        if (path25 in this._cache) {
-          return this._cache[path25];
+        if (path24 in this._cache) {
+          return this._cache[path24];
         }
-        return this._cache[path25] = this._test(path25);
+        return this._cache[path24] = this._test(path24);
       }
       // @returns {Boolean} true if a file is NOT ignored
       // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L62
       _test(file) {
         file = fromSlash(file);
-        const parentPath = cleanPath(path24.dirname(file));
-        const parentPathDirs = parentPath.split(path24.sep);
+        const parentPath = cleanPath(path23.dirname(file));
+        const parentPathDirs = parentPath.split(path23.sep);
         let matched = false;
         this._rules.forEach((rule) => {
           let match = this._match(file, rule);
           if (!match && parentPath !== ".") {
             if (rule.dirs.includes("**")) {
               for (let i = rule.dirs.filter((x) => x !== "**").length; i <= parentPathDirs.length; i++) {
-                match = match || this._match(parentPathDirs.slice(0, i).join(path24.sep), rule);
+                match = match || this._match(parentPathDirs.slice(0, i).join(path23.sep), rule);
               }
             } else if (rule.dirs.length <= parentPathDirs.length) {
-              match = this._match(parentPathDirs.slice(0, rule.dirs.length).join(path24.sep), rule);
+              match = this._match(parentPathDirs.slice(0, rule.dirs.length).join(path23.sep), rule);
             }
           }
           if (match) {
@@ -54298,13 +55195,13 @@ var require_ignore = __commonJS({
           return rule;
         }
         let regStr = "^";
-        let escapedSlash = path24.sep === "\\" ? "\\\\" : path24.sep;
+        let escapedSlash = path23.sep === "\\" ? "\\\\" : path23.sep;
         for (let i = 0; i < rule.pattern.length; i++) {
           const ch = rule.pattern[i];
           if (ch === "*") {
             if (rule.pattern[i + 1] === "*") {
               i++;
-              if (rule.pattern[i + 1] === path24.sep) {
+              if (rule.pattern[i + 1] === path23.sep) {
                 i++;
               }
               if (rule.pattern[i + 1] === void 0) {
@@ -54320,7 +55217,7 @@ var require_ignore = __commonJS({
           } else if (ch === "." || ch === "$") {
             regStr += `\\${ch}`;
           } else if (ch === "\\") {
-            if (path24.sep === "\\") {
+            if (path23.sep === "\\") {
               regStr += escapedSlash;
               continue;
             }
@@ -54572,17 +55469,17 @@ var require_ignore2 = __commonJS({
     var throwError = (message, Ctor) => {
       throw new Ctor(message);
     };
-    var checkPath = (path24, originalPath, doThrow) => {
-      if (!isString(path24)) {
+    var checkPath = (path23, originalPath, doThrow) => {
+      if (!isString(path23)) {
         return doThrow(
           `path must be a string, but got \`${originalPath}\``,
           TypeError
         );
       }
-      if (!path24) {
+      if (!path23) {
         return doThrow(`path must not be empty`, TypeError);
       }
-      if (checkPath.isNotRelative(path24)) {
+      if (checkPath.isNotRelative(path23)) {
         const r = "`path.relative()`d";
         return doThrow(
           `path should be a ${r} string, but got "${originalPath}"`,
@@ -54591,7 +55488,7 @@ var require_ignore2 = __commonJS({
       }
       return true;
     };
-    var isNotRelative = (path24) => REGEX_TEST_INVALID_PATH.test(path24);
+    var isNotRelative = (path23) => REGEX_TEST_INVALID_PATH.test(path23);
     checkPath.isNotRelative = isNotRelative;
     checkPath.convert = (p) => p;
     var Ignore = class {
@@ -54650,7 +55547,7 @@ var require_ignore2 = __commonJS({
       //   setting `checkUnignored` to `false` could reduce additional
       //   path matching.
       // @returns {TestResult} true if a file is ignored
-      _testOne(path24, checkUnignored) {
+      _testOne(path23, checkUnignored) {
         let ignored = false;
         let unignored = false;
         this._rules.forEach((rule) => {
@@ -54658,7 +55555,7 @@ var require_ignore2 = __commonJS({
           if (unignored === negative && ignored !== unignored || negative && !ignored && !unignored && !checkUnignored) {
             return;
           }
-          const matched = rule.regex.test(path24);
+          const matched = rule.regex.test(path23);
           if (matched) {
             ignored = !negative;
             unignored = negative;
@@ -54671,24 +55568,24 @@ var require_ignore2 = __commonJS({
       }
       // @returns {TestResult}
       _test(originalPath, cache, checkUnignored, slices) {
-        const path24 = originalPath && checkPath.convert(originalPath);
+        const path23 = originalPath && checkPath.convert(originalPath);
         checkPath(
-          path24,
+          path23,
           originalPath,
           this._allowRelativePaths ? RETURN_FALSE : throwError
         );
-        return this._t(path24, cache, checkUnignored, slices);
+        return this._t(path23, cache, checkUnignored, slices);
       }
-      _t(path24, cache, checkUnignored, slices) {
-        if (path24 in cache) {
-          return cache[path24];
+      _t(path23, cache, checkUnignored, slices) {
+        if (path23 in cache) {
+          return cache[path23];
         }
         if (!slices) {
-          slices = path24.split(SLASH);
+          slices = path23.split(SLASH);
         }
         slices.pop();
         if (!slices.length) {
-          return cache[path24] = this._testOne(path24, checkUnignored);
+          return cache[path23] = this._testOne(path23, checkUnignored);
         }
         const parent = this._t(
           slices.join(SLASH) + SLASH,
@@ -54696,24 +55593,24 @@ var require_ignore2 = __commonJS({
           checkUnignored,
           slices
         );
-        return cache[path24] = parent.ignored ? parent : this._testOne(path24, checkUnignored);
+        return cache[path23] = parent.ignored ? parent : this._testOne(path23, checkUnignored);
       }
-      ignores(path24) {
-        return this._test(path24, this._ignoreCache, false).ignored;
+      ignores(path23) {
+        return this._test(path23, this._ignoreCache, false).ignored;
       }
       createFilter() {
-        return (path24) => !this.ignores(path24);
+        return (path23) => !this.ignores(path23);
       }
       filter(paths) {
         return makeArray(paths).filter(this.createFilter());
       }
       // @returns {TestResult}
-      test(path24) {
-        return this._test(path24, this._testCache, true);
+      test(path23) {
+        return this._test(path23, this._testCache, true);
       }
     };
     var factory = (options) => new Ignore(options);
-    var isPathValid = (path24) => checkPath(path24 && checkPath.convert(path24), path24, RETURN_FALSE);
+    var isPathValid = (path23) => checkPath(path23 && checkPath.convert(path23), path23, RETURN_FALSE);
     factory.isPathValid = isPathValid;
     factory.default = factory;
     module2.exports = factory;
@@ -54724,7 +55621,7 @@ var require_ignore2 = __commonJS({
       const makePosix = (str) => /^\\\\\?\\/.test(str) || /["<>|\u0000-\u001F]+/u.test(str) ? str : str.replace(/\\/g, "/");
       checkPath.convert = makePosix;
       const REGIX_IS_WINDOWS_PATH_ABSOLUTE = /^[a-z]:\//i;
-      checkPath.isNotRelative = (path24) => REGIX_IS_WINDOWS_PATH_ABSOLUTE.test(path24) || isNotRelative(path24);
+      checkPath.isNotRelative = (path23) => REGIX_IS_WINDOWS_PATH_ABSOLUTE.test(path23) || isNotRelative(path23);
     }
   }
 });
@@ -55912,11 +56809,11 @@ var require_commonjs3 = __commonJS({
       return (f) => f.length === len && f !== "." && f !== "..";
     };
     var defaultPlatform = typeof process === "object" && process ? typeof process.env === "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
-    var path24 = {
+    var path23 = {
       win32: { sep: "\\" },
       posix: { sep: "/" }
     };
-    exports2.sep = defaultPlatform === "win32" ? path24.win32.sep : path24.posix.sep;
+    exports2.sep = defaultPlatform === "win32" ? path23.win32.sep : path23.posix.sep;
     exports2.minimatch.sep = exports2.sep;
     exports2.GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
     exports2.minimatch.GLOBSTAR = exports2.GLOBSTAR;
@@ -57789,8 +58686,8 @@ var init_bundling = __esm({
        *
        * @deprecated use DockerImage.fromBuild()
        */
-      static fromAsset(path24, options = {}) {
-        return DockerImage.fromBuild(path24, options);
+      static fromAsset(path23, options = {}) {
+        return DockerImage.fromBuild(path23, options);
       }
       /**
        * Provides a stable representation of this image for JSON serialization.
@@ -57857,12 +58754,12 @@ var init_bundling = __esm({
         reset(deprecated);
         this.image = image;
       }
-      static fromBuild(path24, options = {}) {
+      static fromBuild(path23, options = {}) {
         const buildArgs = options.buildArgs || {};
         if (options.file && (0, import_path.isAbsolute)(options.file)) {
           throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
         }
-        const hash = FileSystem.fingerprint(path24, { extraHash: JSON.stringify(options) });
+        const hash = FileSystem.fingerprint(path23, { extraHash: JSON.stringify(options) });
         const tag = `cdk-${hash}`;
         const usingBuildContexts = Object.keys(options.buildContexts ?? {}).length > 0;
         if (usingBuildContexts || !this.imageAlreadyExists(tag)) {
@@ -57870,7 +58767,7 @@ var init_bundling = __esm({
             "build",
             "-t",
             tag,
-            ...options.file ? ["-f", (0, import_path.join)(path24, options.file)] : [],
+            ...options.file ? ["-f", (0, import_path.join)(path23, options.file)] : [],
             ...options.platform ? ["--platform", options.platform] : [],
             ...options.network ? ["--network", options.network] : [],
             ...options.targetStage ? ["--target", options.targetStage] : [],
@@ -57879,7 +58776,7 @@ var init_bundling = __esm({
             ...options.cacheDisabled ? ["--no-cache"] : [],
             ...flatten(Object.entries(buildArgs).map(([k, v]) => ["--build-arg", `${k}=${v}`])),
             ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ["--build-context", `${k}=${v}`])),
-            path24
+            path23
           ];
           dockerExec(dockerArgs);
         }
@@ -70335,10 +71232,10 @@ ${indent}${str}`;
         return String(this.value);
       }
     };
-    function collectionFromPath(schema, path24, value) {
+    function collectionFromPath(schema, path23, value) {
       let v = value;
-      for (let i = path24.length - 1; i >= 0; --i) {
-        const k = path24[i];
+      for (let i = path23.length - 1; i >= 0; --i) {
+        const k = path23[i];
         if (Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -70356,17 +71253,17 @@ ${indent}${str}`;
       }
       return schema.createNode(v, false);
     }
-    var isEmptyPath = (path24) => path24 == null || typeof path24 === "object" && path24[Symbol.iterator]().next().done;
+    var isEmptyPath = (path23) => path23 == null || typeof path23 === "object" && path23[Symbol.iterator]().next().done;
     var Collection2 = class _Collection extends Node11 {
       constructor(schema) {
         super();
         PlainValue._defineProperty(this, "items", []);
         this.schema = schema;
       }
-      addIn(path24, value) {
-        if (isEmptyPath(path24)) this.add(value);
+      addIn(path23, value) {
+        if (isEmptyPath(path23)) this.add(value);
         else {
-          const [key, ...rest] = path24;
+          const [key, ...rest] = path23;
           const node = this.get(key, true);
           if (node instanceof _Collection) node.addIn(rest, value);
           else if (node === void 0 && this.schema) this.set(key, collectionFromPath(this.schema, rest, value));
@@ -72409,8 +73306,8 @@ ${pair.comment}` : item.comment;
     }
     function warnFileDeprecation(filename) {
       if (shouldWarn(true)) {
-        const path24 = filename.replace(/.*yaml[/\\]/i, "").replace(/\.js$/, "").replace(/\\/g, "/");
-        warn(`The endpoint 'yaml/${path24}' will be removed in a future release.`, "DeprecationWarning");
+        const path23 = filename.replace(/.*yaml[/\\]/i, "").replace(/\.js$/, "").replace(/\\/g, "/");
+        warn(`The endpoint 'yaml/${path23}' will be removed in a future release.`, "DeprecationWarning");
       }
     }
     var warned = {};
@@ -73320,22 +74217,22 @@ ${cbNode.commentBefore}` : cb;
         assertCollection(this.contents);
         return this.contents.add(value);
       }
-      addIn(path24, value) {
+      addIn(path23, value) {
         assertCollection(this.contents);
-        this.contents.addIn(path24, value);
+        this.contents.addIn(path23, value);
       }
       delete(key) {
         assertCollection(this.contents);
         return this.contents.delete(key);
       }
-      deleteIn(path24) {
-        if (resolveSeq.isEmptyPath(path24)) {
+      deleteIn(path23) {
+        if (resolveSeq.isEmptyPath(path23)) {
           if (this.contents == null) return false;
           this.contents = null;
           return true;
         }
         assertCollection(this.contents);
-        return this.contents.deleteIn(path24);
+        return this.contents.deleteIn(path23);
       }
       getDefaults() {
         return _Document.defaults[this.version] || _Document.defaults[this.options.version] || {};
@@ -73343,26 +74240,26 @@ ${cbNode.commentBefore}` : cb;
       get(key, keepScalar) {
         return this.contents instanceof resolveSeq.Collection ? this.contents.get(key, keepScalar) : void 0;
       }
-      getIn(path24, keepScalar) {
-        if (resolveSeq.isEmptyPath(path24)) return !keepScalar && this.contents instanceof resolveSeq.Scalar ? this.contents.value : this.contents;
-        return this.contents instanceof resolveSeq.Collection ? this.contents.getIn(path24, keepScalar) : void 0;
+      getIn(path23, keepScalar) {
+        if (resolveSeq.isEmptyPath(path23)) return !keepScalar && this.contents instanceof resolveSeq.Scalar ? this.contents.value : this.contents;
+        return this.contents instanceof resolveSeq.Collection ? this.contents.getIn(path23, keepScalar) : void 0;
       }
       has(key) {
         return this.contents instanceof resolveSeq.Collection ? this.contents.has(key) : false;
       }
-      hasIn(path24) {
-        if (resolveSeq.isEmptyPath(path24)) return this.contents !== void 0;
-        return this.contents instanceof resolveSeq.Collection ? this.contents.hasIn(path24) : false;
+      hasIn(path23) {
+        if (resolveSeq.isEmptyPath(path23)) return this.contents !== void 0;
+        return this.contents instanceof resolveSeq.Collection ? this.contents.hasIn(path23) : false;
       }
       set(key, value) {
         assertCollection(this.contents);
         this.contents.set(key, value);
       }
-      setIn(path24, value) {
-        if (resolveSeq.isEmptyPath(path24)) this.contents = value;
+      setIn(path23, value) {
+        if (resolveSeq.isEmptyPath(path23)) this.contents = value;
         else {
           assertCollection(this.contents);
-          this.contents.setIn(path24, value);
+          this.contents.setIn(path23, value);
         }
       }
       setSchema(id, customTags) {
@@ -76301,7 +77198,10 @@ function crossStackReferenceStrength(scope) {
   );
 }
 function resolveReferences(scope) {
-  const { refs, overrides } = findAllReferences(scope);
+  resolveReferencesInElements(iterateDfsPreorder(scope));
+}
+function resolveReferencesInElements(elements) {
+  const { refs, overrides } = findAllReferences(elements);
   for (const { source, value } of refs) {
     const consumer = stackOf(source);
     if (!value.hasValueForStack(consumer)) {
@@ -76435,10 +77335,10 @@ function resolveValue(consumer, reference, strengthOverride) {
 function renderReference(ref) {
   return `{${ref.target.node.path}[${ref.displayName}]}`;
 }
-function findAllReferences(root) {
+function findAllReferences(elements) {
   const refs = new Array();
   const overrides = new Array();
-  for (const consumer of iterateDfsPreorder(root)) {
+  for (const consumer of elements) {
     if (!CfnElement.isCfnElement(consumer)) {
       continue;
     }
@@ -76938,13 +77838,12 @@ function prepareApp(root) {
   reifyConstructDependencies(root);
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
-  const queue = findAllNestedStacks(root);
-  if (queue.length > 0) {
-    while (queue.length > 0) {
-      const nested = queue.shift();
+  const nestedStacks = findAllNestedStacks(root);
+  if (nestedStacks.length > 0) {
+    for (const nested of nestedStacks) {
       defineNestedStackAsset(nested);
     }
-    resolveReferences(root);
+    resolveReferencesInElements(nestedStacks.map((s) => s.nestedStackResource));
   }
 }
 function defineNestedStackAsset(nestedStack) {
@@ -77284,7 +78183,11 @@ function parseValidationId(id) {
   return { namespace, ruleId };
 }
 function normalizeValidationId(id, defaultNamespace) {
-  const parsed = typeof id === "string" ? parseValidationId(id) : id;
+  const p = typeof id === "string" ? parseValidationId(id) : id;
+  const parsed = {
+    namespace: p.namespace?.replaceAll(/ /g, "-"),
+    ruleId: p.ruleId.replaceAll(/ /g, "-")
+  };
   if (parsed.namespace && ["annotation", "Construct-Annotations"].includes(parsed.namespace)) {
     return `${ANNOTATION_PLUGIN_NAMESPACE}::${parsed.ruleId}`;
   }
@@ -77406,17 +78309,15 @@ var init_annotation_plugin = __esm({
 });
 
 // ../../aws-cdk-lib/core/lib/private/collect-acknowledged-rule-ids.ts
-function collectAcknowledgedRuleIds(root) {
-  const rules = /* @__PURE__ */ new Map();
+function collectAcknowledgedRules(root) {
+  const rules = {};
   for (const construct of iterateDfsPreorder(root)) {
     for (const entry of construct.node.metadata) {
       if (entry.type === "aws:cdk:acknowledged-rules" && entry.data) {
         for (const [id, reason] of Object.entries(entry.data)) {
-          rules.set(id, {
-            reason,
-            constructPath: construct.node.path,
-            stackTrace: entry.trace?.join("\n")
-          });
+          const rule = { reason, acknowledgedId: id, acknowledgedAt: construct.node.path, acknowledgedStackTrace: entry.trace?.join("\n") };
+          const pathMap = rules[id] ??= {};
+          pathMap[rule.acknowledgedAt] = rule;
         }
       }
     }
@@ -77759,8 +78660,8 @@ var require_bindings_wasm = __commonJS({
        * @param {string} path
        * @returns {any}
        */
-      sourceLocation(path24) {
-        const ptr0 = passStringToWasm0(path24, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      sourceLocation(path23) {
+        const ptr0 = passStringToWasm0(path23, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.wasmsemanticmodel_sourceLocation(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
@@ -78264,8 +79165,8 @@ var require_cloudformation_validate = __commonJS({
     var fs_1 = require("fs");
     var bridge = require_bindings_wasm();
     var TemplateFile2 = class {
-      constructor(path24) {
-        this.path = path24;
+      constructor(path23) {
+        this.path = path23;
       }
       readBytes() {
         return (0, fs_1.readFileSync)(this.path);
@@ -78273,8 +79174,8 @@ var require_cloudformation_validate = __commonJS({
     };
     exports2.TemplateFile = TemplateFile2;
     var RuleFile = class {
-      constructor(path24) {
-        this.path = path24;
+      constructor(path23) {
+        this.path = path23;
       }
       readContent() {
         return (0, fs_1.readFileSync)(this.path, "utf8");
@@ -78282,8 +79183,8 @@ var require_cloudformation_validate = __commonJS({
     };
     exports2.RuleFile = RuleFile;
     var SchemaFile = class {
-      constructor(path24, typeName) {
-        this.path = path24;
+      constructor(path23, typeName) {
+        this.path = path23;
         this.typeName = typeName;
       }
       readContent() {
@@ -78341,8 +79242,8 @@ var require_cloudformation_validate = __commonJS({
       toDiagnosticModel() {
         return this.inner.toDiagnosticModel();
       }
-      sourceLocation(path24) {
-        return this.inner.sourceLocation(path24);
+      sourceLocation(path23) {
+        return this.inner.sourceLocation(path23);
       }
       free() {
         this.inner.free();
@@ -78421,6 +79322,13 @@ function mapSeverity(severity) {
     default:
       return "warning";
   }
+}
+function defaultRegoRules() {
+  const rulesDir = path15.join(__dirname, "rules");
+  return fs11.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
+    name: f,
+    content: fs11.readFileSync(path15.join(rulesDir, f), "utf-8")
+  }));
 }
 function isContainedWithin(root, child) {
   const rel = path15.relative(root, child);
@@ -78537,8 +79445,12 @@ var init_cloudformation_validate_plugin = __esm({
       engine;
       constructor(props = {}) {
         const config = {};
-        if (props.regoRules) {
-          config.customRules = props.regoRules;
+        const regoRules = [
+          ...props.includeDefaultRules ?? true ? defaultRegoRules() : [],
+          ...props.regoRules ?? []
+        ];
+        if (regoRules.length > 0) {
+          config.customRules = regoRules;
         }
         if (props.guardRules) {
           config.guardRules = props.guardRules;
@@ -78784,8 +79696,8 @@ var init_construct_tree = __esm({
           libraryVersion: constructInfo?.version
         };
       }
-      stackTraceByPath(path24) {
-        const construct = this.getConstructByPath(path24);
+      stackTraceByPath(path23) {
+        const construct = this.getConstructByPath(path23);
         if (!construct) {
           return void 0;
         }
@@ -78805,8 +79717,8 @@ var init_construct_tree = __esm({
        * @param path the node.addr of the construct
        * @returns the Construct
        */
-      getConstructByPath(path24) {
-        return this._constructByPath.get(path24);
+      getConstructByPath(path23) {
+        return this._constructByPath.get(path23);
       }
       /**
        * Get a specific Construct by the CfnResource logical ID. This will
@@ -78964,11 +79876,10 @@ function isSuppressibleViolation(violation) {
   const isErrorAnnotation = violation.ruleMetadata?.["cdk:annotation"] && violation.severity?.toLowerCase() === "error";
   return !isFatal && !isErrorAnnotation;
 }
-var path16, PolicyValidationReportFormatter, KNOWN_SEVERITIES;
+var PolicyValidationReportFormatter, KNOWN_SEVERITIES;
 var init_report2 = __esm({
   "../../aws-cdk-lib/core/lib/validation/private/report.ts"() {
     "use strict";
-    path16 = __toESM(require("path"));
     init_trace();
     init_report();
     PolicyValidationReportFormatter = class {
@@ -78996,10 +79907,7 @@ var init_report2 = __esm({
               severity: violation.severity,
               violatingResources: violation.violatingResources,
               violatingConstructs: violation.violatingResources.map((resource) => {
-                const constructPath = resource.constructPath ?? (resource.templatePath && resource.resourceLogicalId ? this.tree.getConstructByLogicalId(
-                  path16.basename(resource.templatePath),
-                  resource.resourceLogicalId
-                )?.node.path : void 0);
+                const constructPath = resource.constructPath;
                 return {
                   constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : void 0,
                   constructPath,
@@ -79030,12 +79938,6 @@ var init_report2 = __esm({
           ruleMetadata: violation.ruleMetadata,
           violatingConstructs: violation.violatingResources.map((resource) => {
             let constructPath = resource.constructPath;
-            if (!constructPath && resource.templatePath && resource.resourceLogicalId) {
-              constructPath = this.tree.getConstructByLogicalId(
-                path16.basename(resource.templatePath),
-                resource.resourceLogicalId
-              )?.node.path;
-            }
             const constructInfo = constructPath ? this.tree.constructTraceLevelFromConstructPath(constructPath) : void 0;
             const result = {
               // The constructPath is not optional in the output JSON, so put an empty string here if we don't have it.
@@ -79276,14 +80178,16 @@ function validateTemplates(root, outdir, assembly) {
     if (!validateFlagExplicitlyEnabled) {
       warningifiedAnyErrors = downgradeCfnValidateErrorsToWarnings(reports);
     }
+    const tree = new ConstructTree(root);
+    inferConstructPathsFromLogicalIds(reports, tree);
     const suppressedByReport = collectSuppressions(root, reports);
-    const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+    const formatter = new PolicyValidationReportFormatter(tree);
     const reportJson = formatter.formatJson(reports, assembly.version, suppressedByReport);
-    const reportFile = path18.join(assembly.directory, VALIDATION_REPORT_FILE);
+    const reportFile = path17.join(assembly.directory, VALIDATION_REPORT_FILE);
     fs12.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
     if (getBooleanContext(root, VALIDATION_REPORT_JSON_CONTEXT, false)) {
       fs12.writeFileSync(
-        path18.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+        path17.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
         JSON.stringify(formatter.formatLegacyJson(reports), void 0, 2)
       );
     }
@@ -79386,46 +80290,93 @@ function downgradeCfnValidateErrorsToWarnings(reports) {
   }
   return warningifiedAnyErrors;
 }
-function collectSuppressions(root, reports) {
-  const suppressedByReport = /* @__PURE__ */ new Map();
-  const acknowledgedRules = collectAcknowledgedRuleIds(root);
-  if (acknowledgedRules.size > 0) {
-    for (let i = 0; i < reports.length; i++) {
-      const pluginName = reports[i].pluginName;
-      const active = [];
-      const suppressed = [];
-      for (const v of reports[i].violations) {
-        if (!isSuppressibleViolation(v)) {
-          active.push(v);
-          continue;
-        }
-        const ackIds = [];
-        const ruleName = normalizeValidationId(v.ruleName, namespaceFromPluginName(pluginName));
-        ackIds.push(ruleName);
-        const ack = firstThat(ackIds.map(hyphenify), (id) => acknowledgedRules.get(id));
-        if (ack) {
-          suppressed.push({
-            ...v,
-            acknowledgedId: ack.key,
-            reason: ack.value.reason,
-            acknowledgedAt: ack.value.constructPath,
-            acknowledgedStackTrace: ack.value.stackTrace
-          });
-        } else {
-          active.push(v);
+function inferConstructPathsFromLogicalIds(reports, tree) {
+  for (const report of reports) {
+    for (const violation of report.violations) {
+      for (const resource of violation.violatingResources) {
+        if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
+          mutable(resource).constructPath = tree.getConstructByLogicalId(
+            path17.basename(resource.templatePath),
+            resource.resourceLogicalId
+          )?.node.path;
         }
       }
+    }
+  }
+}
+function collectSuppressions(root, reports) {
+  const suppressedByReport = /* @__PURE__ */ new Map();
+  const acknowledgedRules = collectAcknowledgedRules(root);
+  if (Object.keys(acknowledgedRules).length > 0) {
+    for (let i = 0; i < reports.length; i++) {
+      const suppressed = suppressInReport(reports[i]);
       if (suppressed.length > 0) {
         suppressedByReport.set(i, suppressed);
-        reports[i] = {
-          ...reports[i],
-          violations: active,
-          success: active.every((v) => v.severity !== "error" && v.severity !== "fatal")
-        };
+        mutable(reports[i]).success = reports[i].violations.every((v) => v.severity !== "error" && v.severity !== "fatal");
       }
     }
   }
   return suppressedByReport;
+  function suppressInReport(report) {
+    const ruleNamespace = namespaceFromPluginName(report.pluginName);
+    const ret = [];
+    for (let i = 0; i < report.violations.length; i++) {
+      const v = report.violations[i];
+      if (!isSuppressibleViolation(v)) {
+        continue;
+      }
+      const ruleName = normalizeValidationId(v.ruleName, ruleNamespace);
+      const pathBasedSuppressions = acknowledgedRules[ruleName];
+      if (!pathBasedSuppressions) {
+        continue;
+      }
+      const { suppressedGroups, unsuppressed } = groupResourcesBySuppressions(v.violatingResources, pathBasedSuppressions);
+      mutable(v).violatingResources = unsuppressed;
+      for (const suppressedGroup of suppressedGroups) {
+        ret.push({
+          ...v,
+          ...suppressedGroup.acknowledgement,
+          violatingResources: suppressedGroup.resources
+        });
+      }
+      if (v.violatingResources.length === 0) {
+        report.violations.splice(i, 1);
+        i--;
+      }
+    }
+    return ret;
+  }
+}
+function groupResourcesBySuppressions(resources, pathBasedSuppressions) {
+  const unsuppressed = [];
+  const suppressed = {};
+  for (const r of resources) {
+    const ack = findClosestAck(r);
+    if (ack) {
+      suppressed[ack.acknowledgedAt] ??= { acknowledgement: ack, resources: [] };
+      suppressed[ack.acknowledgedAt].resources.push(r);
+    } else {
+      unsuppressed.push(r);
+    }
+  }
+  return {
+    suppressedGroups: Object.values(suppressed),
+    unsuppressed
+  };
+  function findClosestAck(r) {
+    let constructPath = r.constructPath ?? "";
+    let ret = pathBasedSuppressions[constructPath];
+    while (ret === void 0 && constructPath !== "") {
+      const lastDot = constructPath.lastIndexOf("/");
+      if (lastDot === -1) {
+        constructPath = "";
+      } else {
+        constructPath = constructPath.substring(0, lastDot);
+      }
+      ret = pathBasedSuppressions[constructPath];
+    }
+    return ret;
+  }
 }
 function doInvokeValidationPlugins(outdir, plugins, root) {
   const untrustedPlugins = new Set(Array.from(plugins.values()).map((p) => p[0]).filter((p) => !isTrustedPlugin(p)));
@@ -79470,7 +80421,7 @@ function doInvokeValidationPlugins(outdir, plugins, root) {
     for (const v of report.violations) {
       for (const r of v.violatingResources) {
         if (r.templatePath) {
-          mutable(r).templatePath = path18.relative(outdir, path18.resolve(r.templatePath));
+          mutable(r).templatePath = path17.relative(outdir, path17.resolve(r.templatePath));
         }
       }
     }
@@ -79518,7 +80469,7 @@ function collectFilePaths(dir) {
   const results = [];
   function walk(current) {
     for (const entry of fs12.readdirSync(current, { withFileTypes: true })) {
-      const full = path18.join(current, entry.name);
+      const full = path17.join(current, entry.name);
       if (entry.isDirectory()) {
         walk(full);
       } else if (entry.isFile() || entry.isSymbolicLink()) {
@@ -79583,25 +80534,13 @@ function stripAnsi(x) {
   const re = new RegExp(pattern, "g");
   return x.replaceAll(re, "");
 }
-function firstThat(xs, predicate) {
-  for (const x of xs) {
-    const value = predicate(x);
-    if (value !== void 0) {
-      return { key: x, value };
-    }
-  }
-  return void 0;
-}
-function hyphenify(x) {
-  return x.replace(/ /g, "-");
-}
-var crypto7, fs12, path18, LEGACY_POLICY_VALIDATION_FILE_PATH;
+var crypto7, fs12, path17, LEGACY_POLICY_VALIDATION_FILE_PATH;
 var init_synthesis_validation = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis-validation.ts"() {
     "use strict";
     crypto7 = __toESM(require("crypto"));
     fs12 = __toESM(require("fs"));
-    path18 = __toESM(require("path"));
+    path17 = __toESM(require("path"));
     init_annotation_plugin();
     init_collect_acknowledged_rule_ids();
     init_literal_string();
@@ -79982,9 +80921,14 @@ var init_validations = __esm({
        */
       acknowledge(...rules) {
         for (const rule of rules) {
-          const qualifiedId = normalizeValidationIdForAnnotations(rule.id);
+          const parsed = parseValidationId(rule.id);
+          const qualifiedId = normalizeValidationIdForAnnotations(parsed);
           this.recordAcknowledgment(qualifiedId, rule.reason);
           Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+          if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
+            const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
+            Annotations.of(this.scope).acknowledgeWarning(annotationId);
+          }
         }
       }
       recordAcknowledgment(id, reason) {
@@ -81006,7 +81950,7 @@ function addStackArtifactToAssembly(session, stack, stackProps, additionalStackD
   const metaFile = `${stack.artifactId}.metadata.json`;
   const hasMeta = Object.keys(meta).length > 0;
   if (hasMeta) {
-    fs14.writeFileSync(path19.join(session.assembly.outdir, metaFile), JSON.stringify(meta, void 0, 2), "utf-8");
+    fs14.writeFileSync(path18.join(session.assembly.outdir, metaFile), JSON.stringify(meta, void 0, 2), "utf-8");
   }
   session.assembly.addArtifact(stack.artifactId, {
     type: cloud_assembly_schema_exports.ArtifactType.AWS_CLOUDFORMATION_STACK,
@@ -81056,13 +82000,13 @@ function assertBound(x) {
 function nonEmptyDict(xs) {
   return Object.keys(xs).length > 0 ? xs : void 0;
 }
-var crypto8, fs14, path19, import_constructs19;
+var crypto8, fs14, path18, import_constructs19;
 var init_shared2 = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/_shared.ts"() {
     "use strict";
     crypto8 = __toESM(require("crypto"));
     fs14 = __toESM(require("fs"));
-    path19 = __toESM(require("path"));
+    path18 = __toESM(require("path"));
     import_constructs19 = __toESM(require_lib4());
     init_cloud_assembly_schema();
     init_errors();
@@ -81102,12 +82046,12 @@ function validateDockerImageAssetSource(asset) {
     }
   }
 }
-var fs15, path20, AssetManifestBuilder;
+var fs15, path19, AssetManifestBuilder;
 var init_asset_manifest_builder = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/asset-manifest-builder.ts"() {
     "use strict";
     fs15 = __toESM(require("fs"));
-    path20 = __toESM(require("path"));
+    path19 = __toESM(require("path"));
     init_cloud_assembly_schema();
     init_assets();
     init_errors();
@@ -81126,7 +82070,7 @@ var init_asset_manifest_builder = __esm({
        */
       defaultAddFileAsset(stack, asset, target, options) {
         validateFileAssetSource(asset);
-        const extension = asset.fileName != void 0 ? path20.extname(asset.fileName) : "";
+        const extension = asset.fileName != void 0 ? path19.extname(asset.fileName) : "";
         const objectKey = (target.bucketPrefix ?? "") + asset.sourceHash + (asset.packaging === "zip" /* ZIP_DIRECTORY */ ? ".zip" : extension);
         return this.addFileAsset(stack, asset.sourceHash, {
           path: asset.fileName,
@@ -81227,7 +82171,7 @@ var init_asset_manifest_builder = __esm({
       emitManifest(stack, session, options = {}, dependencies = []) {
         const artifactId = `${stack.artifactId}.assets`;
         const manifestFile = `${artifactId}.json`;
-        const outPath = path20.join(session.assembly.outdir, manifestFile);
+        const outPath = path19.join(session.assembly.outdir, manifestFile);
         const manifest = {
           version: cloud_assembly_schema_exports.Manifest.version(),
           files: this.files,
@@ -81307,7 +82251,7 @@ var init_cfn_rule = __esm({
 
 // ../../aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts
 function stackTemplateFileAsset(stack, session) {
-  const templatePath = path21.join(session.assembly.outdir, stack.templateFile);
+  const templatePath = path20.join(session.assembly.outdir, stack.templateFile);
   if (!fs16.existsSync(templatePath)) {
     throw new ValidationError(lit`StackTemplate`, `Stack template ${stack.stackName} not written yet: ${templatePath}`, stack);
   }
@@ -81357,12 +82301,12 @@ function stackLocationOrInstrinsics(stack) {
 function cfnify(s) {
   return s.indexOf("${") > -1 ? Fn.sub(s) : s;
 }
-var fs16, path21, StackSynthesizer;
+var fs16, path20, StackSynthesizer;
 var init_stack_synthesizer = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts"() {
     "use strict";
     fs16 = __toESM(require("fs"));
-    path21 = __toESM(require("path"));
+    path20 = __toESM(require("path"));
     init_shared2();
     init_cx_api();
     init_assets();
@@ -82337,12 +83281,12 @@ function makeCustomCoupledReference(value, strength) {
   }
   return new CustomCoupledReference(resolvable, strength);
 }
-var fs17, path22, import_constructs22, minimatch2, STACK_RESOURCE_LIMIT_CONTEXT, SUPPRESS_TEMPLATE_INDENTATION_CONTEXT, TEMPLATE_BODY_MAXIMUM_SIZE, VALID_STACK_NAME_REGEX, MAX_RESOURCES, _resolve_dec, _a6, _init9, _Stack, Stack, firstTwoAgnosticAzs;
+var fs17, path21, import_constructs22, minimatch2, STACK_RESOURCE_LIMIT_CONTEXT, SUPPRESS_TEMPLATE_INDENTATION_CONTEXT, TEMPLATE_BODY_MAXIMUM_SIZE, VALID_STACK_NAME_REGEX, MAX_RESOURCES, _resolve_dec, _a6, _init9, _Stack, Stack, firstTwoAgnosticAzs;
 var init_stack = __esm({
   "../../aws-cdk-lib/core/lib/stack.ts"() {
     "use strict";
     fs17 = __toESM(require("fs"));
-    path22 = __toESM(require("path"));
+    path21 = __toESM(require("path"));
     import_constructs22 = __toESM(require_lib4());
     init_annotations();
     init_app2();
@@ -83146,7 +84090,7 @@ var init_stack = __esm({
       _synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions) {
         const builder = session.assembly;
         const template = this._toCloudFormation();
-        const outPath = path22.join(builder.outdir, this.templateFile);
+        const outPath = path21.join(builder.outdir, this.templateFile);
         if (this.maxResources > 0) {
           const resources = template.Resources || {};
           const numberOfResources = Object.keys(resources).length;
@@ -84029,8 +84973,8 @@ var init_cfn_resource = __esm({
        *        will be created as needed.
        * @param value - The value. Could be primitive or complex.
        */
-      addOverride(path24, value) {
-        const parts = splitOnPeriods(path24);
+      addOverride(path23, value) {
+        const parts = splitOnPeriods(path23);
         let curr = this.rawOverrides;
         while (parts.length > 1) {
           const key = parts.shift();
@@ -84047,8 +84991,8 @@ var init_cfn_resource = __esm({
        * Syntactic sugar for `addOverride(path, undefined)`.
        * @param path The path of the value to delete
        */
-      addDeletionOverride(path24) {
-        this.addOverride(path24, void 0);
+      addDeletionOverride(path23) {
+        this.addOverride(path23, void 0);
       }
       /**
        * Adds an override to a resource property.
@@ -86197,12 +87141,12 @@ function getBooleanContext2(root, key, defaultValue) {
   if (raw === void 0) return defaultValue;
   return raw !== false && raw !== "false";
 }
-var fs18, path23, AssemblyValidationReport;
+var fs18, path22, AssemblyValidationReport;
 var init_assembly_validation_report = __esm({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/assembly-validation-report.ts"() {
     "use strict";
     fs18 = __toESM(require("fs"));
-    path23 = __toESM(require("path"));
+    path22 = __toESM(require("path"));
     init_core();
     init_literal_string();
     init_cx_api();
@@ -86222,9 +87166,16 @@ var init_assembly_validation_report = __esm({
           throw new AssumptionError(lit`MissingAppContext`, "In order to assert on validations with AssemblyValidationReport, create your App with { postCliContext: AssemblyValidationReport.APP_CONTEXT }");
         }
         const asm = app.synth();
-        const newFile = path23.join(asm.directory, "validation-report.json");
+        const newFile = path22.join(asm.directory, "validation-report.json");
         const newReport = JSON.parse(fs18.readFileSync(newFile, "utf-8"));
         return new _AssemblyValidationReport(newReport);
+      }
+      pluginReport(pluginName) {
+        const report = this.report.pluginReports.find((r) => r.pluginName === pluginName);
+        if (!report) {
+          throw new AssertionError(`No report found for plugin ${pluginName}`);
+        }
+        return report;
       }
       /**
        * All violations in all reports
@@ -87006,18 +87957,18 @@ var require_dist_cjs6 = __commonJS({
     __name2(_EndpointError, "EndpointError");
     var EndpointError2 = _EndpointError;
     var booleanEquals = /* @__PURE__ */ __name2((value1, value2) => value1 === value2, "booleanEquals");
-    var getAttrPathList = /* @__PURE__ */ __name2((path24) => {
-      const parts = path24.split(".");
+    var getAttrPathList = /* @__PURE__ */ __name2((path23) => {
+      const parts = path23.split(".");
       const pathList = [];
       for (const part of parts) {
         const squareBracketIndex = part.indexOf("[");
         if (squareBracketIndex !== -1) {
           if (part.indexOf("]") !== part.length - 1) {
-            throw new EndpointError2(`Path: '${path24}' does not end with ']'`);
+            throw new EndpointError2(`Path: '${path23}' does not end with ']'`);
           }
           const arrayIndex = part.slice(squareBracketIndex + 1, -1);
           if (Number.isNaN(parseInt(arrayIndex))) {
-            throw new EndpointError2(`Invalid array index: '${arrayIndex}' in path: '${path24}'`);
+            throw new EndpointError2(`Invalid array index: '${arrayIndex}' in path: '${path23}'`);
           }
           if (squareBracketIndex !== 0) {
             pathList.push(part.slice(0, squareBracketIndex));
@@ -87029,9 +87980,9 @@ var require_dist_cjs6 = __commonJS({
       }
       return pathList;
     }, "getAttrPathList");
-    var getAttr = /* @__PURE__ */ __name2((value, path24) => getAttrPathList(path24).reduce((acc, index) => {
+    var getAttr = /* @__PURE__ */ __name2((value, path23) => getAttrPathList(path23).reduce((acc, index) => {
       if (typeof acc !== "object") {
-        throw new EndpointError2(`Index '${index}' in '${path24}' not found in '${JSON.stringify(value)}'`);
+        throw new EndpointError2(`Index '${index}' in '${path23}' not found in '${JSON.stringify(value)}'`);
       } else if (Array.isArray(acc)) {
         return acc[parseInt(index)];
       }
@@ -87051,8 +88002,8 @@ var require_dist_cjs6 = __commonJS({
             return value;
           }
           if (typeof value === "object" && "hostname" in value) {
-            const { hostname: hostname2, port, protocol: protocol2 = "", path: path24 = "", query = {} } = value;
-            const url2 = new URL(`${protocol2}//${hostname2}${port ? `:${port}` : ""}${path24}`);
+            const { hostname: hostname2, port, protocol: protocol2 = "", path: path23 = "", query = {} } = value;
+            const url2 = new URL(`${protocol2}//${hostname2}${port ? `:${port}` : ""}${path23}`);
             url2.search = Object.entries(query).map(([k, v]) => `${k}=${v}`).join("&");
             return url2;
           }
@@ -88405,9 +89356,9 @@ var init_createPaginator = __esm({
     makePagedClientRequest = async (CommandCtor, client, input, ...args) => {
       return await client.send(new CommandCtor(input), ...args);
     };
-    get = (fromObject, path24) => {
+    get = (fromObject, path23) => {
       let cursor = fromObject;
-      const pathComponents = path24.split(".");
+      const pathComponents = path23.split(".");
       for (const step of pathComponents) {
         if (!cursor || typeof cursor !== "object") {
           return void 0;
@@ -89063,12 +90014,12 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             const password = request2.password ?? "";
             auth = `${username}:${password}`;
           }
-          let path24 = request2.path;
+          let path23 = request2.path;
           if (queryString) {
-            path24 += `?${queryString}`;
+            path23 += `?${queryString}`;
           }
           if (request2.fragment) {
-            path24 += `#${request2.fragment}`;
+            path23 += `#${request2.fragment}`;
           }
           let hostname = request2.hostname ?? "";
           if (hostname[0] === "[" && hostname.endsWith("]")) {
@@ -89080,7 +90031,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             headers: request2.headers,
             host: hostname,
             method: request2.method,
-            path: path24,
+            path: path23,
             port: request2.port,
             agent,
             auth
@@ -89354,16 +90305,16 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             reject(err);
           }, "rejectWithDestroy");
           const queryString = (0, import_querystring_builder.buildQueryString)(query || {});
-          let path24 = request2.path;
+          let path23 = request2.path;
           if (queryString) {
-            path24 += `?${queryString}`;
+            path23 += `?${queryString}`;
           }
           if (request2.fragment) {
-            path24 += `#${request2.fragment}`;
+            path23 += `#${request2.fragment}`;
           }
           const req = session.request({
             ...request2.headers,
-            [import_http22.constants.HTTP2_HEADER_PATH]: path24,
+            [import_http22.constants.HTTP2_HEADER_PATH]: path23,
             [import_http22.constants.HTTP2_HEADER_METHOD]: method
           });
           session.ref();
@@ -89592,13 +90543,13 @@ var require_dist_cjs20 = __commonJS({
           abortError.name = "AbortError";
           return Promise.reject(abortError);
         }
-        let path24 = request2.path;
+        let path23 = request2.path;
         const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
         if (queryString) {
-          path24 += `?${queryString}`;
+          path23 += `?${queryString}`;
         }
         if (request2.fragment) {
-          path24 += `#${request2.fragment}`;
+          path23 += `#${request2.fragment}`;
         }
         let auth = "";
         if (request2.username != null || request2.password != null) {
@@ -89607,7 +90558,7 @@ var require_dist_cjs20 = __commonJS({
           auth = `${username}:${password}@`;
         }
         const { port, method } = request2;
-        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path24}`;
+        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path23}`;
         const body = method === "GET" || method === "HEAD" ? void 0 : request2.body;
         const requestOptions = {
           body,
@@ -90410,8 +91361,8 @@ var init_requestBuilder = __esm({
         return this;
       }
       p(memberName, labelValueProvider, uriLabel, isGreedyLabel) {
-        this.resolvePathStack.push((path24) => {
-          this.path = resolvedPath2(path24, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
+        this.resolvePathStack.push((path23) => {
+          this.path = resolvedPath2(path23, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
         });
         return this;
       }
@@ -90969,11 +91920,11 @@ var require_slurpFile = __commonJS({
     var fs_1 = require("fs");
     var { readFile } = fs_1.promises;
     var filePromisesHash = {};
-    var slurpFile = (path24, options) => {
-      if (!filePromisesHash[path24] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path24] = readFile(path24, "utf8");
+    var slurpFile = (path23, options) => {
+      if (!filePromisesHash[path23] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
+        filePromisesHash[path23] = readFile(path23, "utf8");
       }
-      return filePromisesHash[path24];
+      return filePromisesHash[path23];
     };
     exports2.slurpFile = slurpFile;
   }
@@ -91475,8 +92426,8 @@ var require_dist_cjs29 = __commonJS({
               return endpoint.url.href;
             }
             if ("hostname" in endpoint) {
-              const { protocol, hostname, port, path: path24 } = endpoint;
-              return `${protocol}//${hostname}${port ? ":" + port : ""}${path24}`;
+              const { protocol, hostname, port, path: path23 } = endpoint;
+              return `${protocol}//${hostname}${port ? ":" + port : ""}${path23}`;
             }
           }
           return endpoint;
@@ -94992,10 +95943,10 @@ ${longDate}
 ${credentialScope}
 ${(0, import_util_hex_encoding.toHex)(hashedRequest)}`;
       }
-      getCanonicalPath({ path: path24 }) {
+      getCanonicalPath({ path: path23 }) {
         if (this.uriEscapePath) {
           const normalizedPathSegments = [];
-          for (const pathSegment of path24.split("/")) {
+          for (const pathSegment of path23.split("/")) {
             if ((pathSegment == null ? void 0 : pathSegment.length) === 0)
               continue;
             if (pathSegment === ".")
@@ -95006,11 +95957,11 @@ ${(0, import_util_hex_encoding.toHex)(hashedRequest)}`;
               normalizedPathSegments.push(pathSegment);
             }
           }
-          const normalizedPath = `${(path24 == null ? void 0 : path24.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path24 == null ? void 0 : path24.endsWith("/")) ? "/" : ""}`;
+          const normalizedPath = `${(path23 == null ? void 0 : path23.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path23 == null ? void 0 : path23.endsWith("/")) ? "/" : ""}`;
           const doubleEncoded = (0, import_util_uri_escape.escapeUri)(normalizedPath);
           return doubleEncoded.replace(/%2F/g, "/");
         }
-        return path24;
+        return path23;
       }
       async getSignature(longDate, credentialScope, keyPromise, canonicalRequest) {
         const stringToSign = await this.createStringToSign(longDate, credentialScope, canonicalRequest);
@@ -97526,13 +98477,13 @@ function __disposeResources(env2) {
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path24, preserveJsx) {
-  if (typeof path24 === "string" && /^\.\.?\//.test(path24)) {
-    return path24.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+function __rewriteRelativeImportExtension(path23, preserveJsx) {
+  if (typeof path23 === "string" && /^\.\.?\//.test(path23)) {
+    return path23.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
   }
-  return path24;
+  return path23;
 }
 var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
@@ -102928,14 +103879,14 @@ var require_dist_cjs48 = __commonJS({
       cfId: output.headers["x-amz-cf-id"]
     }), "deserializeMetadata");
     var throwDefaultError = (0, import_smithy_client4.withBaseException)(STSServiceException);
-    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path24, resolvedHostname, body) => {
+    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path23, resolvedHostname, body) => {
       const { hostname, protocol = "https", port, path: basePath } = await context.endpoint();
       const contents = {
         protocol,
         hostname,
         port,
         method: "POST",
-        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path24 : basePath + path24,
+        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path23 : basePath + path23,
         headers
       };
       if (resolvedHostname !== void 0) {
@@ -106812,14 +107763,14 @@ var require_dist_cjs53 = __commonJS({
       cfId: output.headers["x-amz-cf-id"]
     }), "deserializeMetadata");
     var throwDefaultError = (0, import_smithy_client4.withBaseException)(SFNServiceException);
-    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path24, resolvedHostname, body) => {
+    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path23, resolvedHostname, body) => {
       const { hostname, protocol = "https", port, path: basePath } = await context.endpoint();
       const contents = {
         protocol,
         hostname,
         port,
         method: "POST",
-        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path24 : basePath + path24,
+        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path23 : basePath + path23,
         headers
       };
       if (resolvedHostname !== void 0) {
@@ -108865,14 +109816,14 @@ function flatten2(root) {
   const ret = {};
   recurse(root);
   return ret;
-  function recurse(x, path24 = []) {
+  function recurse(x, path23 = []) {
     if (x && typeof x === "object") {
       for (const [key, value] of Object.entries(x)) {
-        recurse(value, [...path24, key]);
+        recurse(value, [...path23, key]);
       }
       return;
     }
-    ret[path24.join(".")] = x;
+    ret[path23.join(".")] = x;
   }
 }
 async function coerceSdkv3Response(value) {
@@ -109760,14 +110711,14 @@ var require_url_state_machine = __commonJS({
       return url2.replace(/\u0009|\u000A|\u000D/g, "");
     }
     function shortenPath(url2) {
-      const path24 = url2.path;
-      if (path24.length === 0) {
+      const path23 = url2.path;
+      if (path23.length === 0) {
         return;
       }
-      if (url2.scheme === "file" && path24.length === 1 && isNormalizedWindowsDriveLetter(path24[0])) {
+      if (url2.scheme === "file" && path23.length === 1 && isNormalizedWindowsDriveLetter(path23[0])) {
         return;
       }
-      path24.pop();
+      path23.pop();
     }
     function includesCredentials(url2) {
       return url2.username !== "" || url2.password !== "";

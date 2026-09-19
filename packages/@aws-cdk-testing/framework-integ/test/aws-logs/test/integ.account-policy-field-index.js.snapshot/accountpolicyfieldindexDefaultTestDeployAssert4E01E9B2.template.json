@@ -1,4 +1,142 @@
 {
+ "Resources": {
+  "AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsdescribeAccountPol",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatchLogs",
+    "api": "describeAccountPolicies",
+    "expected": "{\"$ObjectLike\":{\"accountPolicies\":[{\"policyName\":\"AccountPolicyFieldIndexDataSourceIntegTest\",\"policyType\":\"FIELD_INDEX_POLICY\",\"selectionCriteria\":\"DataSourceName = \\\"amazon_vpc\\\" AND DataSourceType = \\\"flow\\\"\"}]}}",
+    "parameters": {
+     "policyType": "\"FIELD_INDEX_POLICY\"",
+     "policyName": "\"AccountPolicyFieldIndexDataSourceIntegTest\""
+    },
+    "flattenResponse": "false",
+    "salt": "1789799070367"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "logs:DescribeAccountPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "logs:DescribeAccountPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4763811d2aec87125f531b7a84b62e0bc8dee46d8eba77c9206b6a17b539ae95.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsdescribeAccountPol",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatchLogs",
+    "api": "describeAccountPolicies",
+    "expected": "{\"$ObjectLike\":{\"accountPolicies\":[{\"policyName\":\"AccountPolicyFieldIndexPrefixIntegTest\",\"policyType\":\"FIELD_INDEX_POLICY\",\"selectionCriteria\":\"LogGroupNamePrefix = \\\"/aws/lambda/\\\"\"}]}}",
+    "parameters": {
+     "policyType": "\"FIELD_INDEX_POLICY\"",
+     "policyName": "\"AccountPolicyFieldIndexPrefixIntegTest\""
+    },
+    "flattenResponse": "false",
+    "salt": "1789799070369"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchLogsdescribeAccountPolicies674730f555294babca69d82a9722506c",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchLogsdescribeAccountPolicies0c51c61ee091b21df3e3953ec4c0cdd3",
+     "assertion"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

@@ -7,6 +7,7 @@ import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
 
 class AccountPolicySubscriptionFilterIntegStack extends Stack {
   public readonly policyName: string;
+  public readonly policyDocument: string;
 
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -25,6 +26,11 @@ class AccountPolicySubscriptionFilterIntegStack extends Stack {
       }),
     });
     this.policyName = accountPolicy.policyName;
+    this.policyDocument = JSON.stringify({
+      DestinationArn: fn.functionArn,
+      FilterPattern: '',
+      Distribution: 'ByLogStream',
+    });
   }
 }
 
@@ -47,6 +53,7 @@ integTest.assertions.awsApiCall('CloudWatchLogs', 'describeAccountPolicies', {
     {
       policyName: testCase.policyName,
       policyType: 'SUBSCRIPTION_FILTER_POLICY',
+      policyDocument: testCase.policyDocument,
     },
   ],
 }));
