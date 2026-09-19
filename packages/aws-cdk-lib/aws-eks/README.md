@@ -1703,7 +1703,7 @@ for your applications.
 If you want to manage IAM roles centrally (e.g., in a dedicated `IamConstruct`) or reuse an existing role created via
 `iam.Role.fromRoleArn()`, you can pass it to `ServiceAccount` via the `role` property.
 
-The `role` property accepts any `IRoleRef`, including `iam.Role`, `iam.Role.fromRoleArn()`, and L1 `iam.CfnRole`.
+The `role` property accepts any `IRole`, including `iam.Role` and roles imported with `iam.Role.fromRoleArn()`.
 **This option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.**
 
 The caller is responsible for configuring the trust policy of the role correctly. For Pod Identity, the role must allow
@@ -1734,9 +1734,21 @@ new eks.ServiceAccount(this, 'AppServiceAccount', {
 When `role` is specified, the auto-generation of an IAM role is skipped.
 The provided role's ARN is used directly in the `PodIdentityAssociation`.
 
-> **Note:** If you pass an L1 construct (`iam.CfnRole`) as the `role`, the `ServiceAccount` and `PodIdentityAssociation`
-> are created successfully. However, accessing `serviceAccount.role` to call methods such as `grant()` or
-> `addManagedPolicy()` will throw an error, as those methods are only available on L2 `IRole` instances.
+If you only have an L1 `iam.CfnRole`, import it as an `IRole` with `iam.Role.fromRoleArn()`:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const cluster: eks.Cluster;
+declare const cfnRole: iam.CfnRole;
+
+new eks.ServiceAccount(this, 'ServiceAccountWithCfnRole', {
+  cluster,
+  name: 'cfn-role-sa',
+  namespace: 'production',
+  identityType: eks.IdentityType.POD_IDENTITY,
+  role: iam.Role.fromRoleArn(this, 'ImportedRole', cfnRole.attrArn),
+});
+```
 
 ## Applying Kubernetes Resources
 

@@ -371,7 +371,7 @@ describe('service account', () => {
       );
     });
 
-    test('sa.role getter returns the provided L2 role', () => {
+    test('sa.role returns the provided role', () => {
       // GIVEN
       const app = new App();
       const stack = new Stack(app, 'Stack');
@@ -394,7 +394,42 @@ describe('service account', () => {
       expect(sa.role).toBe(existingRole);
     });
 
-    test('sa.role getter throws when L1 CfnRole is provided', () => {
+    test('grants on the service account are applied to the provided role', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // WHEN
+      iam.Grant.addToPrincipal({
+        grantee: sa,
+        actions: ['s3:GetObject'],
+        resourceArns: ['arn:aws:s3:::my-bucket/*'],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            { Action: 's3:GetObject', Effect: 'Allow', Resource: 'arn:aws:s3:::my-bucket/*' },
+          ],
+        },
+        Roles: [{ Ref: 'ExistingRole5EDF2D93' }],
+      });
+    });
+
+    test('accepts an L1 CfnRole imported with Role.fromRoleArn', () => {
       // GIVEN
       const app = new App();
       const stack = new Stack(app, 'Stack');
@@ -404,24 +439,38 @@ describe('service account', () => {
       });
       const cfnRole = new iam.CfnRole(stack, 'CfnRole', {
         assumeRolePolicyDocument: {
-          Statement: [{ Effect: 'Allow', Principal: { Service: 'pods.eks.amazonaws.com' }, Action: ['sts:AssumeRole', 'sts:TagSession'] }],
+          Statement: [{
+            Effect: 'Allow',
+            Principal: { Service: 'pods.eks.amazonaws.com' },
+            Action: ['sts:AssumeRole', 'sts:TagSession'],
+          }],
         },
       });
 
       // WHEN
-      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
         cluster,
         identityType: eks.IdentityType.POD_IDENTITY,
-        role: cfnRole,
+        role: iam.Role.fromRoleArn(stack, 'ImportedRole', cfnRole.attrArn),
       });
+      const t = Template.fromStack(stack);
 
-      // THEN - SA is created successfully, but accessing .role throws
-      expect(() => sa.role).toThrow(
-        'The provided role is not an instance of IRole.',
-      );
+      // THEN
+      // the L1 role's ARN should be used in PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        RoleArn: { 'Fn::GetAtt': ['CfnRole', 'Arn'] },
+      });
+      // no auto-generated role should exist: the only role with the Pod Identity trust policy is the CfnRole itself
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 1);
     });
 
-    test('sa.role getter returns auto-generated role when no role prop is provided', () => {
+    test('sa.role returns auto-generated role when no role prop is provided', () => {
       // GIVEN
       const app = new App();
       const stack = new Stack(app, 'Stack');
@@ -436,7 +485,7 @@ describe('service account', () => {
         identityType: eks.IdentityType.POD_IDENTITY,
       });
 
-      // THEN - role getter returns the auto-generated Role instance
+      // THEN - role returns the auto-generated Role instance
       expect(sa.role).toBeInstanceOf(iam.Role);
     });
   });
