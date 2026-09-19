@@ -84,7 +84,7 @@ export class CustomResourceLogRetention implements IAspect {
         const localNode = node.node.defaultChild as lambda.CfnFunction;
 
         if (localNode && !localNode.loggingConfig) {
-          const newLogGroup = this.createLogGroup(localNode);
+          const newLogGroup = this.getOrCreateLogGroup(localNode);
           localNode.addPropertyOverride('LoggingConfig', {
             LogGroup: newLogGroup.logGroupName,
           });
@@ -99,10 +99,14 @@ export class CustomResourceLogRetention implements IAspect {
   }
 
   /*
-   * Creates a new logGroup and associates with the singletonLambda
-   * Returns a Cloudwatch LogGroup
+   * Returns the log group shared by the singleton Lambda's custom resources.
    */
-  private createLogGroup(scope: lambda.CfnFunction): logs.ILogGroup {
+  private getOrCreateLogGroup(scope: lambda.CfnFunction): logs.ILogGroup {
+    const existingLogGroup = scope.node.tryFindChild('logGroup') as logs.LogGroup | undefined;
+    if (existingLogGroup) {
+      return existingLogGroup;
+    }
+
     const newLogGroup = new logs.LogGroup(scope, 'logGroup', {
       retention: this.logRetention,
     });
