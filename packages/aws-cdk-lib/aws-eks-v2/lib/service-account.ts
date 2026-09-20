@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { CfnPodIdentityAssociation } from './eks.generated';
 import { KubernetesManifest } from './k8s-manifest';
-import type { AddToPrincipalPolicyResult, IPrincipal, IRole, IRoleRef, PrincipalPolicyFragment } from '../../aws-iam';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from '../../aws-iam';
 import {
   OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
@@ -92,13 +92,12 @@ export interface ServiceAccountOptions {
    * For Pod Identity, the role must allow `pods.eks.amazonaws.com` to perform
    * `sts:AssumeRole` and `sts:TagSession`.
    *
-   * Accepts any `IRoleRef`, including L2 `iam.Role`, `iam.Role.fromRoleArn()`, and L1 `iam.CfnRole`.
-   * Note: If an L1 construct is provided, accessing `serviceAccount.role` will throw an error,
-   * as L1 constructs do not implement the `IRole` interface.
+   * To use an L1 `iam.CfnRole`, import it as an `IRole` with
+   * `iam.Role.fromRoleArn(scope, id, cfnRole.attrArn)`.
    *
    * @default - a new IAM role is created automatically
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRole;
 
   /**
    * Overwrite existing service account.
@@ -142,35 +141,12 @@ export interface ServiceAccountProps extends ServiceAccountOptions {
 export class ServiceAccount extends Construct implements IPrincipal {
   /**
    * The role which is linked to the service account.
-   *
-   * @throws if the provided `role` option is an L1 construct (e.g. `CfnRole`) rather than an L2 `IRole`.
    */
-  public get role(): IRole {
-    if (this._podIdentityRole !== undefined) {
-      if ('grant' in this._podIdentityRole) {
-        return this._podIdentityRole as IRole;
-      }
-      throw new ValidationError(
-        lit`ServiceAccountRole`,
-        'The provided role is not an instance of IRole. ' +
-        'Cannot access role grants when using an L1 construct (e.g. CfnRole) as the role.',
-        this,
-      );
-    }
-    return this._irsaRole!;
-  }
+  public readonly role: IRole;
 
-  public get assumeRoleAction(): string {
-    return this.role.assumeRoleAction;
-  }
-
-  public get grantPrincipal(): IPrincipal {
-    return this.role.grantPrincipal;
-  }
-
-  public get policyFragment(): PrincipalPolicyFragment {
-    return this.role.policyFragment;
-  }
+  public readonly assumeRoleAction: string;
+  public readonly grantPrincipal: IPrincipal;
+  public readonly policyFragment: PrincipalPolicyFragment;
 
   /**
    * The name of the service account.
@@ -181,9 +157,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
    * The namespace where the service account is located in.
    */
   public readonly serviceAccountNamespace: string;
-
-  private _irsaRole?: IRole;
-  private _podIdentityRole?: IRoleRef;
 
   constructor(scope: Construct, id: string, props: ServiceAccountProps) {
     super(scope, id);
@@ -210,8 +183,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
       );
     }
 
-    let roleArn: string;
-
+    let role: IRole;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
       * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
@@ -225,8 +197,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
       const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
-      this._irsaRole = new Role(this, 'Role', { assumedBy: principal });
-      roleArn = this._irsaRole.roleArn;
+      role = new Role(this, 'Role', { assumedBy: principal });
     } else {
       /**
        * Identity type is POD_IDENTITY.
@@ -236,8 +207,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
       // EKS Pod Identity does not support Fargate
       // TODO: raise an error when using Fargate
 
-      this._podIdentityRole = this.resolvePodIdentityRole(props);
-      roleArn = this._podIdentityRole.roleRef.roleArn;
+      role = this.resolvePodIdentityRole(props);
 
       // ensure the pod identity agent
       cluster.eksPodIdentityAgent;
@@ -246,10 +216,16 @@ export class ServiceAccount extends Construct implements IPrincipal {
       new CfnPodIdentityAssociation(this, 'Association', {
         clusterName: cluster.clusterName,
         namespace: props.namespace ?? 'default',
-        roleArn: roleArn,
+        roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
       });
     }
+
+    this.role = role;
+
+    this.assumeRoleAction = this.role.assumeRoleAction;
+    this.grantPrincipal = this.role.grantPrincipal;
+    this.policyFragment = this.role.policyFragment;
 
     // Note that we cannot use `cluster.addManifest` here because that would create the manifest
     // constrct in the scope of the cluster stack, which might be a different stack than this one.
@@ -269,7 +245,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
             ...props.labels,
           },
           annotations: {
-            'eks.amazonaws.com/role-arn': roleArn,
+            'eks.amazonaws.com/role-arn': this.role.roleArn,
             ...props.annotations,
           },
         },
@@ -296,7 +272,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
    * Resolves the IAM role to use for Pod Identity.
    * Returns the provided role if specified, otherwise auto-generates one.
    */
-  private resolvePodIdentityRole(props: ServiceAccountProps): IRoleRef {
+  private resolvePodIdentityRole(props: ServiceAccountProps): IRole {
     if (props.role) {
       return props.role;
     }

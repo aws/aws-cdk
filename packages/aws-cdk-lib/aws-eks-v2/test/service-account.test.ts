@@ -449,7 +449,7 @@ describe('service account', () => {
       })).toThrow('The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.');
     });
 
-    test('sa.role getter returns the provided L2 role', () => {
+    test('sa.role returns the provided role', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
       const existingRole = new iam.Role(stack, 'ExistingRole', {
@@ -463,11 +463,39 @@ describe('service account', () => {
         role: existingRole,
       });
 
-      // THEN: the getter should return the provided L2 role as-is
+      // THEN: the provided role is returned as-is
       expect(sa.role).toBe(existingRole);
     });
 
-    test('ServiceAccount creation succeeds when L1 CfnRole is provided, but sa.role getter throws', () => {
+    test('grants on the service account are applied to the provided role', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // WHEN
+      iam.Grant.addToPrincipal({
+        grantee: sa,
+        actions: ['s3:GetObject'],
+        resourceArns: ['arn:aws:s3:::my-bucket/*'],
+      });
+
+      // THEN: the policy is attached to the provided role
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Resource: 'arn:aws:s3:::my-bucket/*' }],
+        },
+        Roles: [{ Ref: 'ExistingRole5EDF2D93' }],
+      });
+    });
+
+    test('accepts an L1 CfnRole imported with Role.fromRoleArn', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
       const cfnRole = new iam.CfnRole(stack, 'CfnRole', {
@@ -480,27 +508,29 @@ describe('service account', () => {
         },
       });
 
-      // WHEN: ServiceAccount creation itself should succeed (no error in constructor)
-      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
         cluster,
         identityType: eks.IdentityType.POD_IDENTITY,
-        role: cfnRole,
+        role: iam.Role.fromRoleArn(stack, 'ImportedRole', cfnRole.attrArn),
       });
+      const t = Template.fromStack(stack);
 
-      // THEN: PodIdentityAssociation should be created successfully
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
-        ClusterName: { Ref: 'ClusterEB0386A7' },
-        Namespace: 'default',
-        ServiceAccount: 'stackmyserviceaccount58b9529e',
+      // THEN: the ARN of the L1 role reaches the PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        RoleArn: { 'Fn::GetAtt': ['CfnRole', 'Arn'] },
       });
-
-      // THEN: accessing sa.role should throw in the getter
-      expect(() => sa.role).toThrow(
-        'The provided role is not an instance of IRole.',
-      );
+      // no auto-generated role: CfnRole is the only role with the Pod Identity trust policy
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 1);
     });
 
-    test('sa.role getter returns auto-generated role when no role prop is provided with POD_IDENTITY', () => {
+    test('sa.role returns auto-generated role when no role prop is provided with POD_IDENTITY', () => {
       // GIVEN
       const { stack, cluster } = testFixtureCluster();
 
@@ -510,7 +540,7 @@ describe('service account', () => {
         identityType: eks.IdentityType.POD_IDENTITY,
       });
 
-      // THEN: the getter should return an IRole
+      // THEN: an IRole is returned
       expect(sa.role).toBeDefined();
       // addToPrincipalPolicy should be callable (functioning as IRole)
       expect(() => sa.addToPrincipalPolicy(
