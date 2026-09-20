@@ -4,6 +4,7 @@ import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnRouterInput } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IRouterInputRef, RouterInputReference } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IChannelRef } from 'aws-cdk-lib/aws-medialive';
 import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -217,7 +218,8 @@ export class RoutingScope {
 }
 
 /**
- * Routing tier based on your maximum bitrate requirements.
+ * Tier for a router input. The tier determines the capacity limits, performance characteristics,
+ * and associated costs. The `maximumBitrate` must fall within the limits of the selected tier.
  */
 export class RouterInputTier {
   /** Supports a maximum bitrate up to 100 megabits per second. */
@@ -263,12 +265,13 @@ export interface RouterInputProps {
    * @default - Generated automatically
    */
   readonly routerInputName?: string;
-  /** The maximum bitrate for the router input. */
+  /** The maximum bitrate for the router input. Must fall within the limits of the selected `tier`. */
   readonly maximumBitrate: Bitrate;
   /** Indicates whether the router input is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Select a tier based on your maximum bitrate requirements.
+   * Tier for this input. The tier determines the capacity limits, performance characteristics,
+   * and associated costs; `maximumBitrate` must fall within its limits.
    * @default RouterInputTier.INPUT_20
    */
   readonly tier?: RouterInputTier;
@@ -796,27 +799,26 @@ export interface MediaConnectFlowConfigurationWithoutConnectionProps {
  */
 export interface MediaLiveChannelConfigurationProps {
   /**
-   * ARN of the MediaLive channel to use as input.
-   *
-   * Note: This will change to accept a typed MediaLive channel reference
-   * when the @aws-cdk/aws-medialive-alpha L2 construct is released.
+   * The MediaLive channel to use as input.
    */
-  readonly mediaLiveChannelArn: string;
+  readonly channel: IChannelRef;
 
   /**
-   * The name of the MediaLive channel output to connect to this router input.
+   * The name of the individual output (within the channel's MediaConnect Router output
+   * group) to connect to this router input — not the name of the output group itself.
    */
-  readonly mediaLiveChannelOutputName: string;
+  readonly outputName: string;
 
   /**
    * The MediaLive pipeline to connect to this router input.
    */
-  readonly mediaLivePipelineId: MediaLivePipeline;
+  readonly pipeline: MediaLivePipeline;
 
   /**
-   * Optional transit encryption configuration.
+   * Optional transit encryption configuration. Must match the encryption type configured on the
+   * MediaLive channel's MediaConnect Router output group.
    *
-   * @default - Automatic encryption will be used
+   * @default - automatic encryption
    */
   readonly sourceTransitDecryption?: TransitEncryption;
 }
@@ -927,9 +929,9 @@ export abstract class RouterInputConfiguration {
    */
   public static mediaLiveChannel(props: MediaLiveChannelConfigurationProps): RouterInputConfiguration {
     return new MediaLiveChannelRouterInputConfig({
-      mediaLiveChannelArn: props.mediaLiveChannelArn,
-      mediaLiveChannelOutputName: props.mediaLiveChannelOutputName,
-      mediaLivePipelineId: props.mediaLivePipelineId,
+      mediaLiveChannelArn: props.channel.channelRef.channelArn,
+      mediaLiveChannelOutputName: props.outputName,
+      mediaLivePipelineId: props.pipeline,
       sourceTransitDecryption: props.sourceTransitDecryption,
     });
   }
