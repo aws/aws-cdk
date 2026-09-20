@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import { Rule } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
@@ -87,10 +87,14 @@ export class EcrSourceAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
-    options.role.addToPolicy(new iam.PolicyStatement({
+    const dependencies = new Array<IDependable>();
+    const actionRolePolicy = options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ecr:DescribeImages'],
       resources: [this.props.repository.repositoryRef.repositoryArn],
     }));
+    if (actionRolePolicy.policyDependable) {
+      dependencies.push(actionRolePolicy.policyDependable);
+    }
 
     new Rule(scope, Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
       targets: [
@@ -109,9 +113,10 @@ export class EcrSourceAction extends Action {
     });
 
     // the Action Role also needs to write to the Pipeline's bucket
-    options.bucket.grantWrite(options.role);
+    dependencies.push(options.bucket.grantWrite(options.role));
 
     return {
+      dependencies,
       configuration: {
         RepositoryName: this.props.repository.repositoryRef.repositoryName,
         ImageTag: this.props.imageTag ? this.props.imageTag : undefined, // `''` is falsy in JS/TS
