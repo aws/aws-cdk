@@ -242,7 +242,7 @@ export interface CustomizeRolesOptions {
    *
    * const stack = new Stack(app, 'MyStack');
    * new iam.Role(stack, 'MyRole', {
-   *  assumedBy: new iam.AccountPrincipal('1111111111'),
+   *  assumedBy: new iam.AccountPrincipal('111111111111'),
    * });
    *
    * iam.Role.customizeRoles(stack, {
@@ -779,7 +779,7 @@ export class Role extends Resource implements IRole {
 
   private validateRole(): string[] {
     const errors = new Array<string>();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
+    errors.push(...this.assumeRolePolicy?.validateForTrustPolicy() ?? []);
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }

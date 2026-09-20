@@ -6,9 +6,9 @@ Mappings:
 Conditions:
   AlwaysTrueCond:
     Fn::And:
-      - Fn::Not: 
+      - Fn::Not:
         - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
-      - Fn::Or: 
+      - Fn::Or:
         - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
         - Fn::Equals: [ Ref: "AWS::Region", completely-made-up-region]
 Resources:
@@ -43,9 +43,9 @@ Resources:
               AnotherParameter:
                 Fn::Base64: AnotherValue
       AccessControl:
-        Fn::ImportValue: 
+        Fn::ImportValue:
           Fn::Sub:
-            - "${Region}-foo-${!Immediate}-foo-${Vpc}-${Vpc.Id}-${Name}"
+            - "${Region}-foo-${!Immediate}-foo-${Vpc}-${Vpc.VpcId}-${Name}"
             - Name:
                 Ref: Vpc
               Region:

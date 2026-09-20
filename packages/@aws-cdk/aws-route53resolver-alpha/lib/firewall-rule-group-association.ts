@@ -16,7 +16,11 @@ export interface FirewallRuleGroupAssociationOptions {
    * association, to help prevent against accidentally altering DNS firewall
    * protections.
    *
-   * @default true
+   * Note that mutation protection also blocks CloudFormation from updating or
+   * deleting the association, so leave it disabled for associations whose
+   * lifecycle is managed by this stack.
+   *
+   * @default - mutation protection is disabled; the association can be modified or removed
    */
   readonly mutationProtection?: boolean;
 
@@ -120,9 +124,13 @@ export class FirewallRuleGroupAssociation extends Resource {
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {
+      name: props.name,
       firewallRuleGroupId: props.firewallRuleGroup.firewallRuleGroupId,
       priority: props.priority,
       vpcId: props.vpc.vpcId,
+      mutationProtection: props.mutationProtection === undefined
+        ? undefined
+        : (props.mutationProtection ? 'ENABLED' : 'DISABLED'),
     });
 
     this.firewallRuleGroupAssociationArn = association.attrArn;

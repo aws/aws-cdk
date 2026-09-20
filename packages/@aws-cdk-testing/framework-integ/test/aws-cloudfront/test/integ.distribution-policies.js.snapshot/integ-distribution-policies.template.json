@@ -200,6 +200,172 @@
      ]
     }
    }
+  },
+  "DistManagedPolicy49A90409": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "CachePolicyId": "2e54312d-136d-493c-8eb9-b001f22f67d2",
+       "Compress": true,
+       "PathPattern": "/cache-policy/AMPLIFY",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/cache-policy/CACHING_OPTIMIZED",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "b2884449-e4de-46a7-ac36-70bc7f1ddd6d",
+       "Compress": true,
+       "PathPattern": "/cache-policy/CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+       "Compress": true,
+       "PathPattern": "/cache-policy/CACHING_DISABLED",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "08627262-05a9-4f76-9ded-b50ca2e3a84f",
+       "Compress": true,
+       "PathPattern": "/cache-policy/ELEMENTAL_MEDIA_PACKAGE",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "acba4595-bd28-49b8-b9fe-13317c0390fa",
+       "PathPattern": "/origin-request-policy/USER_AGENT_REFERER_HEADERS",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "59781a5b-3903-41f3-afcb-af62929ccde1",
+       "PathPattern": "/origin-request-policy/CORS_CUSTOM_ORIGIN",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf",
+       "PathPattern": "/origin-request-policy/CORS_S3_ORIGIN",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+       "PathPattern": "/origin-request-policy/ALL_VIEWER",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "775133bc-15f2-49f9-abea-afb2e0bf67d2",
+       "PathPattern": "/origin-request-policy/ELEMENTAL_MEDIA_TAILOR",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "33f36d7e-f396-46d9-90e0-52428a34d9dc",
+       "PathPattern": "/origin-request-policy/ALL_VIEWER_AND_CLOUDFRONT_2022",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+       "PathPattern": "/origin-request-policy/ALL_VIEWER_EXCEPT_HOST_HEADER",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "OriginRequestPolicyId": "bf0718e1-ba1e-49d1-88b1-f726733018ae",
+       "PathPattern": "/origin-request-policy/HOST_HEADER_ONLY",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/response-headers-policy/CORS_ALLOW_ALL_ORIGINS",
+       "ResponseHeadersPolicyId": "60669652-455b-4ae9-85a4-c4c02393f86c",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/response-headers-policy/CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT",
+       "ResponseHeadersPolicyId": "5cc3b908-e619-4b99-88e5-2cf7f45965bd",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/response-headers-policy/SECURITY_HEADERS",
+       "ResponseHeadersPolicyId": "67f7725c-6f97-4210-82d7-5512b31e9d03",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/response-headers-policy/CORS_ALLOW_ALL_ORIGINS_AND_SECURITY_HEADERS",
+       "ResponseHeadersPolicyId": "e61eb60c-9c35-4d20-a928-2b84e02af89c",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "/response-headers-policy/CORS_ALLOW_ALL_ORIGINS_WITH_PREFLIGHT_AND_SECURITY_HEADERS",
+       "ResponseHeadersPolicyId": "eaab4381-ed33-4a86-88ca-d9558dc6cd63",
+       "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+       "ViewerProtocolPolicy": "allow-all"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributionpoliciesDistManagedPolicyOrigin1E69AEA56"
+      }
+     ]
+    }
+   }
   }
  },
  "Parameters": {

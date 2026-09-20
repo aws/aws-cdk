@@ -1,13 +1,4 @@
 {
-  "/EksClusterV2RemovalPolicyStack": [
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/EksClusterV2RemovalPolicyStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -38,7 +29,12 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": {
+        "grantClusterAdmin": [
+          "*",
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
@@ -53,7 +49,7 @@
       }
     }
   ],
-  "/EksClusterV2RemovalPolicyStack/TestRole": [
+  "/EksClusterV2RemovalPolicyStack/AccessEntryRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -69,6 +65,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "cluster": "*",
+        "principal": "*",
         "accessPolicies": [
           {
             "accessScope": {
@@ -111,58 +108,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1": [
@@ -289,49 +246,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Kubectl/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Kubectl85A5A23F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "...new KubectlV32Layer in @aws-cdk/lambda-layer-kubectl-v32...",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:59:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/Role": [
@@ -363,38 +289,19 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterEB0386A7"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:750:46)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlReadyBarrier": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlReadyBarrier200052AF"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:837:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/ClusterAdminRoleAccess": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "principal": "*",
         "cluster": "*",
         "accessPolicies": [
           {
@@ -444,95 +351,34 @@
       }
     }
   ],
-  "/EksClusterV2RemovalPolicyStack/TestRole/Resource": [
+  "/EksClusterV2RemovalPolicyStack/AccessEntryRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestRole6C9272DF"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:68:26)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
+      "data": "AccessEntryRole0AE13E39"
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AccessEntry/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AccessEntry5263FF03"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:359:29)",
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:71:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Addon/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AddonF8C56F86"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Addon (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/addon.js:173:29)",
-        "new Addon (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:78:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
-        "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:65:9)",
-        "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:62:28)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:53:21)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
-        "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:65:9)",
-        "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:62:28)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:53:21)",
-        "CfnUtilsProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Nodegroup/NodeGroupRole": [
@@ -580,16 +426,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Nodegroup62B4B2C1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:387:29)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:90:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/FargateProfileConstruct/PodExecutionRole": [
@@ -612,15 +448,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "FargateProfileConstruct951D7B76"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new FargateProfile (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/fargate-profile.js:127:26)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:95:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/PodIdentityServiceAccount/Role": [
@@ -638,15 +465,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PodIdentityServiceAccountAssociationDB15A073"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:120:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:102:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/ServiceAccount/Role": [
@@ -688,374 +506,108 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1EIPD7E02669"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1NATGateway4D7517AA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2Subnet691E08A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTable94F7E489"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
-        "new PublicSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2DefaultRoute97F91067"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
-        "Array.forEach (:)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2Subnet3788AAA1"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableA678073B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
-        "new PrivateSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
-        "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
-        "WrappedClass.createSubnets (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Vpc/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
-        "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
-        "WrappedClass.createNatGateways (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:51:21)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Kubectl/Code/AssetBucket": [
@@ -1068,52 +620,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterRoleFA261979"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:684:39)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/ControlPlaneSecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterControlPlaneSecurityGroupD274242C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
-        "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:715:58)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/ClusterSecurityGroup/from {IndirectPeer}:443": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "MutableImport.addIngressRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:139:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:62:38)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler": [
@@ -1176,21 +694,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterClusterAdminRoleAccessF2BFF759"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.js:359:29)",
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AccessEntry (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.grantClusterAdminAccess (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1025:30)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:879:49)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
@@ -1238,59 +741,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupDefaultCapacityDA0920A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:387:29)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1163:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:906:54)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/OidcProviderNative/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterOidcProviderNativeBAC9C7E2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider-native.js:171:29)",
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/oidc-provider.js:213:13)",
-        "new OidcProviderNative (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "get openIdConnectProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1187:51)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:89:33)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/EksPodIdentityAgentAddon/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterEksPodIdentityAgentAddonEF717E32"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Addon (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/addon.js:173:29)",
-        "new Addon (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "get eksPodIdentityAgent (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1218:45)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:118:21)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:102:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AlbControllerConstruct/alb-sa/Role": [
@@ -1458,52 +920,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "NodegroupNodeGroupRole038A128B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:363:32)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:90:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/FargateProfileConstruct/PodExecutionRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "FargateProfileConstructPodExecutionRole03537AE0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new FargateProfile (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/fargate-profile.js:108:59)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:95:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/PodIdentityServiceAccount/Role/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PodIdentityServiceAccountRole63ABADA7"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:107:22)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:102:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource": [
@@ -1526,17 +954,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ServiceAccountRoleFA0EEF4F"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:107:22)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:108:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource": [
@@ -1549,72 +966,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "HelmChart6800A2F9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new HelmChart (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/helm-chart.js:82:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:114:27)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/K8sManifest/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "K8sManifest97067E41"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:122:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/K8sObjectValue/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "K8sObjectValue73D325F4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesObjectValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-object-value.js:36:26)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:133:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/K8sPatch/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "K8sPatch9D1B42CC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesPatch (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-patch.js:51:9)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:142:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler/ServiceRole": [
@@ -1692,19 +1061,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandler2E05C68A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:145:25)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler/LogGroup": [
@@ -1719,38 +1075,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerHasEcrPublic69E09706"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:182:39)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/AwsCliLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderAwsCliLayer24064B0B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
-        "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:118:13)",
-        "new AwsCliLayer (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:164:48)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider/framework-onEvent": [
@@ -1794,21 +1124,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.js:363:32)",
-        "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:1163:20)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:906:54)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AlbControllerConstruct/alb-sa/ConditionJson/Resource": [
@@ -1825,18 +1140,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbControllerConstructalbsaRoleC6E245FC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:107:22)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy": [
@@ -1999,97 +1302,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbControllerConstruct0D542B18"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new HelmChart (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/helm-chart.js:82:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:414:23)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PodIdentityServiceAccountmanifestPodIdentityServiceAccountServiceAccountResource6089A15C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:135:9)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:102:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/ServiceAccount/ConditionJson/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ServiceAccountConditionJson6C40D905"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:50:26)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:108:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ServiceAccountmanifestServiceAccountServiceAccountResourceB533ED3E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:135:9)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:108:9)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerServiceRoleB460AA6D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:145:25)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
@@ -2132,21 +1368,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerLogGroup3ECFC1AD"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
-        "new LogGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:145:25)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/AwsCliLayer/Code/AssetBucket": [
@@ -2210,21 +1431,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider/framework-onEvent/LogGroup": [
@@ -2239,103 +1445,30 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbControllerConstructalbsaConditionJson766F08BF"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new CfnJson (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:50:26)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:87:32)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbControllerConstructalbsaRoleDefaultPolicyE0452BBC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "ServiceAccount.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:185:26)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:411:28)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/AlbControllerConstruct/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AlbControllerConstructalbsamanifestalbsaServiceAccountResourceC1E23635"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new KubernetesManifest (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-manifest.js:49:32)",
-        "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.js:135:9)",
-        "new AlbController (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.js:394:32)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:84:31)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderHandlerServiceRoleDefaultPolicy77317198"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:167:21)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterRemovalPolicyStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:52:25)",
-        "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-cluster-removal-policy.js:157:15)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
@@ -2386,42 +1519,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventLogGroup6586722A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new LogGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
-        "new LogGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
-        "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/kubectl-provider.js:187:26)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.js:864:41)",
-        "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
-      ]
     }
   ],
   "/EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
-        "WrappedClass.grantInvoke (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
-      ]
     }
   ]
 }

@@ -1,7 +1,8 @@
-import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { NetworkAcl, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { createTestSubnet } from './subnet-test-util';
+import { testStack } from './test-stack';
 import { AddressFamily, AwsServiceName, Ipam, IpamPoolPublicIpSource } from '../lib/ipam';
 import * as subnet from '../lib/subnet-v2';
 import * as vpc from '../lib/vpc-v2';
@@ -10,16 +11,11 @@ import * as vpc from '../lib/vpc-v2';
  * Test suite for the SubnetV2 class.
  * Verifies the correct behavior and functionality of creating and managing subnets within a VpcV2 instance.
  */
-describe('Subnet V2 with custom IP and routing', () => {
-  let stack: cdk.Stack;
+let stack: Stack;
 
+describe('Subnet V2 with custom IP and routing', () => {
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-    stack = new cdk.Stack(app);
+    stack = testStack();
   });
 
   test('should create a subnet with valid input parameters', () => {

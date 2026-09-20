@@ -1,4 +1,4 @@
-import { captureStackTrace, renderCallStackJustMyCode } from '../lib';
+import { captureStackTrace, renderCallStackJustMyCode, topUserFrame } from '../lib/private/stack-trace';
 
 describe('captureStackTrace with jsii host trace', () => {
   const TRACE_SYMBOL = Symbol.for('jsii.context.hostStackTrace');
@@ -113,6 +113,37 @@ describe('renderCallStackJustMyCode', () => {
     expect(renderCallStackJustMyCode(stack, false)).toEqual([
       '...aws-cdk-lib, new PythonFunction in @aws-cdk/aws-lambda-python-alpha...',
       'new PythonFunction (/path/to/project/myfile.js:70:5)',
+    ]);
+  });
+
+  test('hides decorator files', () => {
+    const stack: Parameters<typeof renderCallStackJustMyCode>[0] = [
+      {
+        fileName: '/path/to/project/aws-cdk-lib/aws-s3/lib/bucket.js',
+        functionName: 'new Bucket2',
+        sourceLocation: '2:512',
+      },
+      {
+        fileName: '/path/to/project/aws-cdk-lib/core/lib/prop-injectable.js',
+        functionName: 'new Bucket2',
+        sourceLocation: '2:512',
+      },
+      {
+        fileName: '/path/to/project/aws-cdk-lib/aws-lambda/lib/private/no-box-stack-traces.js',
+        functionName: 'new Bucket2',
+        sourceLocation: '1:16236',
+      },
+      {
+        fileName:
+          '/path/to/project/myfile.js',
+        functionName: 'main',
+        sourceLocation: '70:5',
+      },
+    ];
+
+    expect(renderCallStackJustMyCode(stack, false)).toEqual([
+      'new Bucket2 (/path/to/project/aws-cdk-lib/aws-s3/lib/bucket.js:2:512)',
+      'main (/path/to/project/myfile.js:70:5)',
     ]);
   });
 
@@ -240,5 +271,31 @@ describe('renderCallStackJustMyCode', () => {
       '...aws-cdk-lib, @aws-cdk/aws-lambda-python-alpha...',
       expect.stringContaining('use --stack-trace-limit to capture more'),
     ]);
+  });
+});
+
+describe('topUserFrame', () => {
+  test('simple trace', () => {
+    expect(topUserFrame([
+      '...new Queue in aws-cdk-lib...',
+      'myFunction (/path/to/project/myfile.ts:10:5)',
+      '...jsii runtime...',
+    ])).toEqual({
+      fileName: '/path/to/project/myfile.ts',
+      sourceLocation: '10:5',
+      functionName: 'myFunction',
+    });
+  });
+
+  test('jsii client trace', () => {
+    expect(topUserFrame([
+      '...aws-cdk-lib...',
+      '(no user code in 10 frames, use --stack-trace-limit to capture more)',
+      '<module> (/Users/otaviom/jsii/fubanga/app.py:28)',
+    ])).toEqual({
+      fileName: '/Users/otaviom/jsii/fubanga/app.py',
+      sourceLocation: '28',
+      functionName: '<module>',
+    });
   });
 });

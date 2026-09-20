@@ -16,6 +16,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -134,7 +138,6 @@ describe('Job', () => {
         script,
         jobName: 'RayCustomJobName',
         description: 'This is a description',
-        workerType: glue.WorkerType.Z_2X,
         numberOfWorkers: 5,
         runtime: glue.Runtime.RAY_TWO_FOUR,
         maxRetries: 3,
@@ -255,7 +258,6 @@ describe('Job', () => {
         script,
         jobName: 'RayCustomJobName',
         description: 'This is a description',
-        workerType: glue.WorkerType.Z_2X,
         numberOfWorkers: 5,
         runtime: glue.Runtime.RAY_TWO_FOUR,
         maxRetries: 3,
@@ -373,18 +375,6 @@ describe('Job', () => {
           XTagName: 'XTagValue',
         },
       });
-    });
-  });
-
-  describe('Invalid overrides should cause errors', () => {
-    testDeprecated('Create Ray Job overriding only workerType to cause an Error', () => {
-      expect(() => {
-        job = new glue.RayJob(stack, 'RayJob', {
-          role,
-          script,
-          workerType: glue.WorkerType.G_025X,
-        });
-      }).toThrow(new Error('Ray jobs only support Z.2X worker type'));
     });
   });
 
