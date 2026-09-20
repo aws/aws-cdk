@@ -1761,66 +1761,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'uniqueId': '*',
         'connections': '*'
       },
-      'subnet': {
-        'availabilityZone': '*',
-        'subnetId': '*',
-        'internetConnectivityEstablished': '*',
-        'ipv4CidrBlock': '*',
-        'routeTable': {
-          'routeTableId': '*'
-        },
-        'stack': '*',
-        'node': '*',
-        'env': {
-          'account': '*',
-          'region': '*'
-        }
-      },
-      'vpc': {
-        'vpcId': '*',
-        'vpcArn': '*',
-        'vpcCidrBlock': '*',
-        'publicSubnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        },
-        'availabilityZones': '*',
-        'vpnGatewayId': '*'
-      },
-      'vpcSubnets': {
-        'subnetType': 'SubnetType',
-        'availabilityZones': '*',
-        'subnetGroupName': '*',
-        'subnetName': '*',
-        'onePerAz': 'boolean',
-        'subnetFilters': '*',
-        'subnets': {
-          'availabilityZone': '*',
-          'subnetId': '*',
-          'internetConnectivityEstablished': '*',
-          'ipv4CidrBlock': '*',
-          'routeTable': {
-            'routeTableId': '*'
-          },
-          'stack': '*',
-          'node': '*',
-          'env': {
-            'account': '*',
-            'region': '*'
-          }
-        }
-      },
+      'network': '*',
       'addProperty': [
         '*',
         '*'
@@ -17630,6 +17571,236 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  'aws-cdk-lib.aws-glue': {
+    'Catalog': {
+      'catalogName': '*',
+      'description': '*',
+      'encryptionAtRest': '*',
+      'connectionPasswordEncryption': {
+        'kmsKey': '*',
+        'returnConnectionPasswordEncrypted': 'boolean'
+      }
+    },
+    'AccountCatalog': {
+      'encryptionAtRest': '*',
+      'connectionPasswordEncryption': {
+        'kmsKey': '*',
+        'returnConnectionPasswordEncrypted': 'boolean'
+      }
+    },
+    'ImportedCatalog': {},
+    'Connection': {
+      'type': '*',
+      'connectionName': '*',
+      'description': '*',
+      'properties': '*',
+      'secret': '*',
+      'matchCriteria': '*',
+      'securityGroups': {
+        'securityGroupId': '*',
+        'allowAllOutbound': 'boolean',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        },
+        'canInlineRule': 'boolean',
+        'uniqueId': '*',
+        'connections': '*'
+      },
+      'network': '*',
+      'addProperty': [
+        '*',
+        '*'
+      ]
+    },
+    'DataQualityRuleset': {
+      'rulesetName': '*',
+      'description': '*',
+      'dqdl': '*',
+      'tags': '*',
+      'targetTable': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'Database': {
+      'databaseName': '*',
+      'locationUri': '*',
+      'description': '*',
+      'catalog': {
+        'catalogId': '*',
+        'catalogArn': '*',
+        'encryptionKey': '*',
+        'connectionPasswordKey': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'ExternalTable': {
+      'connection': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'externalDataLocation': '*',
+      'tableName': '*',
+      'description': '*',
+      'database': {
+        'catalog': {
+          'catalogId': '*',
+          'catalogArn': '*',
+          'encryptionKey': '*',
+          'connectionPasswordKey': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'databaseArn': '*',
+        'databaseName': '*'
+      },
+      'columns': {
+        'name': '*',
+        'type': '*',
+        'comment': '*'
+      },
+      'partitionKeys': {
+        'name': '*',
+        'type': '*',
+        'comment': '*'
+      },
+      'partitionIndexes': {
+        'indexName': '*',
+        'keyNames': '*'
+      },
+      'dataFormat': '*',
+      'compressed': 'boolean',
+      'storedAsSubDirectories': 'boolean',
+      'enablePartitionFiltering': 'boolean',
+      'storageParameters': '*',
+      'parameters': '*',
+      'hasEncryptedData': 'boolean',
+      'partitionProjection': '*',
+      'grantRead': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantWrite': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantReadWrite': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'S3Table': {
+      'storage': '*',
+      's3Prefix': '*',
+      'clientSideEncryption': '*',
+      'tableName': '*',
+      'description': '*',
+      'database': {
+        'catalog': {
+          'catalogId': '*',
+          'catalogArn': '*',
+          'encryptionKey': '*',
+          'connectionPasswordKey': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'databaseArn': '*',
+        'databaseName': '*'
+      },
+      'columns': {
+        'name': '*',
+        'type': '*',
+        'comment': '*'
+      },
+      'partitionKeys': {
+        'name': '*',
+        'type': '*',
+        'comment': '*'
+      },
+      'partitionIndexes': {
+        'indexName': '*',
+        'keyNames': '*'
+      },
+      'dataFormat': '*',
+      'compressed': 'boolean',
+      'storedAsSubDirectories': 'boolean',
+      'enablePartitionFiltering': 'boolean',
+      'storageParameters': '*',
+      'parameters': '*',
+      'hasEncryptedData': 'boolean',
+      'partitionProjection': '*',
+      'grantRead': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantWrite': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ],
+      'grantReadWrite': [
+        {
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        }
+      ]
+    },
+    'SecurityConfiguration': {
+      'securityConfigurationName': '*',
+      'cloudWatchEncryption': '*',
+      'jobBookmarksEncryption': '*',
+      's3Encryption': '*',
+      'removalPolicy': 'RemovalPolicy'
+    }
+  },
   'aws-cdk-lib.aws-iam': {
     'AccessKey': {
       'serial': '*',
@@ -26184,6 +26355,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'librarySet': 'LibrarySet',
       'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
@@ -27338,6 +27510,30 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'interceptorConfigurations': {
         'interceptionPoint': 'InterceptionPoint'
       },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -27573,6 +27769,57 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addStreamDeliveryResource': [
         '*'
       ]
+    },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
     },
     'RuntimeEndpoint': {
       'endpointName': '*',
@@ -31385,6 +31632,673 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     }
+  },
+  'aws-glue.lib': {
+    'PySparkEtlJob': {
+      'notifyDelayAfter': '*',
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'PySparkFlexEtlJob': {
+      'notifyDelayAfter': '*',
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'PySparkStreamingJob': {
+      'extraPythonFiles': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'PythonShellJob': {
+      'pythonVersion': 'PythonVersion',
+      'maxCapacity': 'MaxCapacity',
+      'librarySet': 'LibrarySet',
+      'extraPythonFiles': '*',
+      'jobRunQueuingEnabled': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'ScalaSparkEtlJob': {
+      'className': '*',
+      'notifyDelayAfter': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'ScalaSparkFlexEtlJob': {
+      'notifyDelayAfter': '*',
+      'className': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'ScalaSparkStreamingJob': {
+      'className': '*',
+      'extraFiles': '*',
+      'extraJars': '*',
+      'extraJarsFirst': 'boolean',
+      'jobRunQueuingEnabled': 'boolean',
+      'workerConfiguration': {
+        'workerType': 'WorkerType',
+        'numberOfWorkers': '*'
+      },
+      'sparkUI': {
+        'bucket': {
+          'bucketArn': '*',
+          'bucketName': '*',
+          'bucketWebsiteUrl': '*',
+          'bucketWebsiteDomainName': '*',
+          'bucketDomainName': '*',
+          'bucketDualStackDomainName': '*',
+          'bucketRegionalDomainName': '*',
+          'isWebsite': 'boolean',
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'policy': '*',
+          'replicationRoleArn': '*'
+        },
+        'prefix': '*'
+      },
+      'enableMetrics': 'boolean',
+      'enableObservabilityMetrics': 'boolean',
+      'script': '*',
+      'role': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'jobName': '*',
+      'description': '*',
+      'maxConcurrentRuns': '*',
+      'defaultArguments': '*',
+      'connections': {
+        'connectionName': '*',
+        'connectionArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'maxRetries': '*',
+      'timeout': '*',
+      'securityConfiguration': {
+        'securityConfigurationName': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'glueVersion': 'GlueVersion',
+      'continuousLogging': {
+        'enabled': 'boolean',
+        'logGroup': {
+          'logGroupArn': '*',
+          'logGroupName': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          },
+          'stack': '*',
+          'node': '*'
+        },
+        'logStreamPrefix': '*',
+        'quiet': 'boolean',
+        'conversionPattern': '*'
+      }
+    },
+    'Workflow': {}
   },
   'aws-iam.lib': {
     'ImmutableRole': {
