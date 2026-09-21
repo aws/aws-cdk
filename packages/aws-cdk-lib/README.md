@@ -1731,10 +1731,9 @@ declare no `defaultChild` (for example
 resource: context added on them with no options matches nothing, and synthesis
 fails instead of silently dropping the declaration. Reading `defaultChild` on a
 construct with both a `Resource` and a `Default` child throws in the `constructs`
-library (`Cannot determine default child for <path>`); CDK does not catch that
-error, because it names the construct at fault. L3 authors can opt in to the
-default by setting `this.node.defaultChild` to the construct or resource that
-represents the pattern.
+library (`Cannot determine default child for <path>`), and synthesis fails with
+that error. L3 authors can opt in to the default by setting `this.node.defaultChild`
+to the construct or resource that represents the pattern.
 
 To reach more than the primary resource, set `propagate: true`. Propagation
 targets every `CfnResource` beneath the scope, helpers included, and a
@@ -1809,10 +1808,8 @@ if (lambdaFunction.deadLetterQueue) {
 }
 ```
 
-There is no "helpers only" mode, because CDK identifies a helper only by its
-absence from the `defaultChild` chain. Propagating from the L2 and excluding the
-primary resource's type has the same effect — everything left beneath the L2 is a
-helper:
+To target only an L2's helpers, propagate from the L2 and exclude the primary
+resource's type — everything left beneath the L2 is a helper:
 
 ```typescript
 declare const lambdaFunction: lambda.Function;
