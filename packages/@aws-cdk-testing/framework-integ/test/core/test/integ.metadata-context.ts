@@ -13,7 +13,7 @@ const stack = new Stack(app, 'MetadataContextTestStack', {
 TemplateMetadataContext.of(stack).add({
   arch: 'SQS buffer -> consumer; DLQ for poison msgs',
   must: ['all queues encrypted w/ SSE'],
-  refs: [
+  ref: [
     { at: 'context/shared/encryption.ctx.yaml', has: 'org CMK + tagging rules', scope: 'shared' },
   ],
   owner: 'framework-integ-team',
@@ -24,18 +24,18 @@ const queue = new sqs.Queue(stack, 'OrderQueue');
 ResourceMetadataContext.of(queue).add({
   why: 'buffer order events async; std queue (throughput > ordering)',
   must: ['VisTimeout >= 6x consumer timeout, else dup on retry'],
-  defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
-  propertyMutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
-  trust: { source: ContextTrustSource.AUTHORED, confidence: ContextTrustConfidence.HIGH },
+  mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+  mutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
+  trust: { src: ContextTrustSource.AUTHORED, conf: ContextTrustConfidence.HIGH },
 });
 
-// Scope-level context cascading to all primary resources beneath it
+// Scope-level context propagated to every resource beneath the scope
 const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
 ResourceMetadataContext.of(subsystem).add({
   why: 'fan-out of alert events to oncall channels',
 }, {
-  applyToDescendants: true,
+  propagate: true,
 });
 
 new integ.IntegTest(app, 'MetadataContextInteg', {

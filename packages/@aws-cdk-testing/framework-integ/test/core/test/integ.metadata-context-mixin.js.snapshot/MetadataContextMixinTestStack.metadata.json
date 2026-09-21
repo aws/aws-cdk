@@ -15,14 +15,13 @@
       "data": {
         "context": {
           "why": "append-only audit trail buffer",
-          "defaultMutability": "must-never-change",
+          "mutable": "must-never-change",
           "must": [
             "never shorten retention below 14d (audit requirement)"
           ]
         },
         "options": {
-          "applyToDescendants": false,
-          "applyToAllResources": false,
+          "propagate": false,
           "inheritAncestorContext": true
         }
       }
@@ -43,8 +42,7 @@
           ]
         },
         "options": {
-          "applyToDescendants": false,
-          "applyToAllResources": false,
+          "propagate": false,
           "inheritAncestorContext": true
         }
       }
@@ -71,8 +69,7 @@
           ]
         },
         "options": {
-          "applyToDescendants": false,
-          "applyToAllResources": false,
+          "propagate": false,
           "inheritAncestorContext": true
         }
       }

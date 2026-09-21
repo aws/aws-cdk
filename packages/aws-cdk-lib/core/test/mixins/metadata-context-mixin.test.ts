@@ -19,7 +19,7 @@ describe('MetadataContextMixin', () => {
     res.with(new MetadataContextMixin({
       why: 'buffers webhook events',
       must: ['VisTimeout >= 6x fn timeout'],
-      defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+      mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
     }));
 
     const template = toCloudFormation(stack);
@@ -70,7 +70,7 @@ describe('MetadataContextMixin', () => {
     const scope = new Construct(stack, 'SubSystem');
     const res = new CfnResource(scope, 'Res', { type: 'AWS::Fake::Thing' });
 
-    ResourceMetadataContext.of(scope).add({ why: 'cascaded rationale', must: ['cascaded rule'] }, { applyToDescendants: true });
+    ResourceMetadataContext.of(scope).add({ why: 'cascaded rationale', must: ['cascaded rule'] }, { propagate: true });
     res.with(new MetadataContextMixin({ why: 'mixin rationale', must: ['mixin rule'] }));
 
     const resources = Object.values<any>(toCloudFormation(stack).Resources);

@@ -11,10 +11,9 @@ export const RESOURCE_CONTEXT_METADATA_TYPE = 'aws:cdk:metadata-context';
 /**
  * Render explicitly authored props into the advisory schema.
  *
- * The public TypeScript/jsii prop names (`defaultMutability`,
- * `propertyMutability`) are rendered under the field names defined by the
- * published CloudFormation Metadata Context schema (`mutable`, `mutability`)
- * so the emitted vocabulary matches the schema exactly.
+ * The public property names are identical to the field names defined by the
+ * published CloudFormation Metadata Context schema, so rendering only drops
+ * absent fields and copies arrays/maps defensively.
  */
 export function renderResourceContext(context: ResourceContextProps): Record<string, any> {
   const out: Record<string, any> = {};
@@ -24,22 +23,22 @@ export function renderResourceContext(context: ResourceContextProps): Record<str
   if (context.must !== undefined && context.must.length > 0) {
     out.must = [...context.must];
   }
-  if (context.defaultMutability !== undefined) {
-    out.mutable = context.defaultMutability;
+  if (context.mutable !== undefined) {
+    out.mutable = context.mutable;
   }
-  if (context.propertyMutability !== undefined && Object.keys(context.propertyMutability).length > 0) {
-    out.mutability = { ...context.propertyMutability };
+  if (context.mutability !== undefined && Object.keys(context.mutability).length > 0) {
+    out.mutability = { ...context.mutability };
   }
   if (context.trust !== undefined) {
     const trust: Record<string, any> = {};
-    if (context.trust.source !== undefined) {
-      trust.src = context.trust.source;
+    if (context.trust.src !== undefined) {
+      trust.src = context.trust.src;
     }
-    if (context.trust.confidence !== undefined) {
-      trust.conf = context.trust.confidence;
+    if (context.trust.conf !== undefined) {
+      trust.conf = context.trust.conf;
     }
-    if (context.trust.citation !== undefined) {
-      trust.cite = context.trust.citation;
+    if (context.trust.cite !== undefined) {
+      trust.cite = context.trust.cite;
     }
     if (context.trust.note !== undefined) {
       trust.note = context.trust.note;
@@ -102,9 +101,9 @@ export function validateResourceContext(context: ResourceContextProps) {
   // minLength/minItems, so blank strings and empty arrays are structurally
   // valid and a block may carry only trust or only deps. CDK enforces just the
   // schema's nested requirements: trust provenance and the sparse
-  // propertyMutability rule.
+  // mutability rule.
   validateTrust(context.trust);
-  validatePropertyMutability(context);
+  validateMutability(context);
 }
 
 function validateTrust(trust: ResourceContextProps['trust']) {
@@ -113,23 +112,23 @@ function validateTrust(trust: ResourceContextProps['trust']) {
   }
   // The schema requires src and conf whenever a trust object is present; cite
   // and note stay optional, and blank strings are structurally valid.
-  if (trust.source === undefined) {
-    throw new UnscopedValidationError(lit`MissingMetadataContextTrustSource`, 'MetadataContext trust requires a \'source\' when trust is provided');
+  if (trust.src === undefined) {
+    throw new UnscopedValidationError(lit`MissingMetadataContextTrustSrc`, 'MetadataContext trust requires \'src\' when trust is provided');
   }
-  if (trust.confidence === undefined) {
-    throw new UnscopedValidationError(lit`MissingMetadataContextTrustConfidence`, 'MetadataContext trust requires a \'confidence\' when trust is provided');
+  if (trust.conf === undefined) {
+    throw new UnscopedValidationError(lit`MissingMetadataContextTrustConf`, 'MetadataContext trust requires \'conf\' when trust is provided');
   }
 }
 
-function validatePropertyMutability(context: ResourceContextProps) {
-  if (context.defaultMutability === undefined || context.propertyMutability === undefined) {
+function validateMutability(context: ResourceContextProps) {
+  if (context.mutable === undefined || context.mutability === undefined) {
     return;
   }
-  for (const [property, mutability] of Object.entries(context.propertyMutability)) {
-    if (mutability === context.defaultMutability) {
+  for (const [property, level] of Object.entries(context.mutability)) {
+    if (level === context.mutable) {
       throw new UnscopedValidationError(
-        lit`RedundantMetadataContextPropertyMutability`,
-        `MetadataContext propertyMutability entry '${property}' must not repeat defaultMutability ${JSON.stringify(context.defaultMutability)}; the map records deviations only`,
+        lit`RedundantMetadataContextMutability`,
+        `MetadataContext mutability entry '${property}' must not repeat mutable ${JSON.stringify(context.mutable)}; the map records deviations only`,
       );
     }
   }
@@ -141,9 +140,9 @@ export function validateTemplateContext(context: TemplateContextProps) {
   // The schema does require an `at` on every rich ref object, so enforce its
   // presence and type — but not that it is non-blank (an empty string is a
   // valid string).
-  for (const ref of context.refs ?? []) {
+  for (const ref of context.ref ?? []) {
     if (typeof ref.at !== 'string') {
-      throw new UnscopedValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext refs require an \'at\' path');
+      throw new UnscopedValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext ref entries require an \'at\' path');
     }
   }
 }

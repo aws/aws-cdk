@@ -1630,10 +1630,11 @@ intent instead of guessing it. The structural source of truth is the published
 [AWS CloudFormation `Metadata` Context schema](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema):
 every field it defines is optional, and it sets no `minLength`/`minItems`, so
 blank strings and empty arrays are structurally valid. The schema is advisory —
-CloudFormation does not validate or enforce `Metadata` fields. CDK maps a few
-ergonomic API names (`defaultMutability`, `propertyMutability`) onto the
-schema's field names and adds typed conveniences, but does not add top-level or
-content requirements the schema itself does not impose.
+CloudFormation does not validate or enforce `Metadata` fields. CDK property names
+are the schema's field names (`why`, `must`, `mutable`, `mutability`, `trust.src`,
+`trust.conf`, `trust.cite`, `trust.note`, `deps`; `arch`, `must`, `ref`, `owner`),
+so code and template use one vocabulary. CDK adds typed enums and targeting, but
+no requirements the schema does not impose.
 
 Context comes in two flavors, each with its own entry point:
 
@@ -1652,16 +1653,15 @@ declare const queue: sqs.Queue;
 ResourceMetadataContext.of(queue).add({
   why: 'buffer order events async; 14d retention = compliance window',
   must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
-  defaultMutability: ContextMutability.CHANGE_WITH_CONSTRAINTS,
-  propertyMutability: {
+  mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
+  mutability: {
     QueueName: ContextMutability.MUST_NEVER_CHANGE,
   },
 });
 ```
 
 This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
-`AWS::SQS::Queue` resource. `defaultMutability` and `propertyMutability` are
-rendered under the schema's field names `mutable` and `mutability`:
+`AWS::SQS::Queue` resource:
 
 ```json
 {
@@ -1677,10 +1677,11 @@ rendered under the schema's field names `mutable` and `mutability`:
 }
 ```
 
-`propertyMutability` is a *sparse* map: list only the properties that deviate
-from `defaultMutability` (or that are otherwise high-stakes, e.g.
-replacement-triggering). When both are supplied, an entry that merely repeats the
-`defaultMutability` value is rejected — the map records deviations only.
+`mutable` is the resource's default change-safety level. `mutability` is a
+*sparse* per-property map: list only the properties that deviate from `mutable`
+(or that are otherwise high-stakes, e.g. replacement-triggering). When both are
+supplied, an entry that repeats the `mutable` value is rejected — the map records
+deviations only.
 
 ### Resource context quality rules
 
@@ -1695,24 +1696,24 @@ rules:
   obvious from its type and name.
 - Add `must` only when violating the rule would break correctness,
   availability, security, data integrity, or a required dependency — especially
-  when `defaultMutability` or a `propertyMutability` entry is `MUST_NEVER_CHANGE`
-  or `CHANGE_WITH_CONSTRAINTS`. Never invent a rule merely to populate the field.
+  when `mutable` or a `mutability` entry is `MUST_NEVER_CHANGE` or
+  `CHANGE_WITH_CONSTRAINTS`. Never invent a rule merely to populate the field.
 
 CDK enforces only the schema's nested requirements:
 
-- When `trust` is supplied, both `source` and `confidence` are required
-  (`citation` and `note` remain optional).
-- In the sparse `propertyMutability` map, an entry must not repeat
-  `defaultMutability` when both are supplied — the map records deviations only.
+- When `trust` is supplied, both `src` and `conf` are required (`cite` and
+  `note` remain optional).
+- In the sparse `mutability` map, an entry must not repeat `mutable` when both
+  are supplied — the map records deviations only.
 
 ### Targeting: exactly what receives context
 
-By default, `add()` is deliberately narrow and predictable. It targets:
+By default, `add()` targets the scope's *primary resource*:
 
 - the scope itself, when the scope is a `CfnResource`; or
-- the scope's `defaultChild` chain — e.g. the `AWS::SQS::Queue` that an
-  `sqs.Queue` L2 designates as its `defaultChild`, or the `AWS::Lambda::Function`
-  inside a `lambda.Function`.
+- the `CfnResource` at the end of the scope's `defaultChild` chain — e.g. the
+  `AWS::SQS::Queue` that an `sqs.Queue` L2 designates as its `defaultChild`, or
+  the `AWS::Lambda::Function` inside a `lambda.Function`.
 
 The chain is followed through intermediate constructs, not just one level. If a
 construct's `defaultChild` is itself a construct, CDK follows *that* construct's
@@ -1726,97 +1727,127 @@ Incidental helper resources (auto-created IAM roles/policies, log-retention
 functions, custom-resource plumbing) are not on the `defaultChild` chain, so they
 never receive context by default. Plain grouping constructs, L3 patterns that
 declare no `defaultChild` (for example
-`ecs_patterns.ApplicationLoadBalancedFargateService`) and stacks are **not
-transparent** by default: context added on them does not leak onto everything
-nested beneath. If the selected mode and resource-type filters match no
-CloudFormation resources, synthesis fails with an actionable error instead of
-silently dropping the declaration. An ambiguous `defaultChild` (a construct with
-both a `Resource` and a `Default` child) is treated as no `defaultChild`. L3
-authors can opt their construct into the default by setting
-`this.node.defaultChild` to the construct or resource that represents the pattern.
+`ecs_patterns.ApplicationLoadBalancedFargateService`) and stacks have no primary
+resource: context added on them with no options matches nothing, and synthesis
+fails instead of silently dropping the declaration. Reading `defaultChild` on a
+construct with both a `Resource` and a `Default` child throws in the `constructs`
+library (`Cannot determine default child for <path>`); CDK does not catch that
+error, because it names the construct at fault. L3 authors can opt in to the
+default by setting `this.node.defaultChild` to the construct or resource that
+represents the pattern.
 
-To fan out to descendants, opt in explicitly:
+To reach more than the primary resource, set `propagate: true`. Propagation
+targets every `CfnResource` beneath the scope, helpers included, and a
+`PropagationFilter` narrows it:
 
 ```typescript
 declare const stack: Stack;
 
-// Cascade to the PRIMARY resource of every construct beneath the scope,
-// treating grouping constructs / L3 patterns / stacks as transparent.
-// The type filter keeps this per-resource hint on queues; helpers are skipped.
-ResourceMetadataContext.of(stack).add({
-  why: 'queue in the order-delivery path',
-}, {
-  applyToDescendants: true,
-  includeResourceTypes: ['AWS::SQS::Queue'],
+// 1. Default: only the scope's primary resource.
+declare const queue: sqs.Queue;
+ResourceMetadataContext.of(queue).add({
+  why: 'buffers webhook events for async processing',
 });
 
-// Cascade to EVERY resource beneath the scope: primaries and helpers alike.
+// 2. Propagate to every resource beneath the scope, helpers included.
 ResourceMetadataContext.of(stack).add({
-  why: 'resource belongs to the networked subsystem',
   deps: ['NetworkStack'],
 }, {
-  applyToAllResources: true,
+  propagate: true,
 });
-```
 
-`applyToAllResources` is not a "helpers only" selector — it selects every
-`CfnResource` under the scope. There is no helper-only mode because CDK has no
-marker that identifies a helper other than its absence from the `defaultChild`
-chain. To reach helpers of a particular kind, combine `applyToAllResources` with a
-resource-type filter, or target an exposed helper construct directly:
+// 3. Propagate only to resources of a specific type.
+ResourceMetadataContext.of(stack).add({
+  must: ['delivery settings must preserve in-flight messages'],
+}, {
+  propagate: true,
+  propagationFilter: PropagationFilter.includeResourceTypes(['AWS::SQS::Queue']),
+});
 
-```typescript
-declare const stack: Stack;
-declare const deadLetterQueue: sqs.Queue;
-
-// Only the generated IAM roles anywhere in the stack.
+// 4. Propagate to everything except resources of a specific type.
 ResourceMetadataContext.of(stack).add({
   must: ['execution roles keep the org permissions boundary'],
 }, {
-  applyToAllResources: true,
-  includeResourceTypes: ['AWS::IAM::Role'],
-});
-
-// A helper that the parent construct exposes as its own construct.
-ResourceMetadataContext.of(deadLetterQueue).add({
-  why: 'stores failed order-processor invocations for replay',
+  propagate: true,
+  propagationFilter: PropagationFilter.excludeResourceTypes(['AWS::Lambda::Function']),
 });
 ```
 
+A `propagationFilter` requires `propagate: true`; `add()` throws otherwise,
+because default targeting already selects exactly one resource.
+
+Propagation crosses `NestedStack` boundaries like `Tags` does, so context set on a
+scope containing a `NestedStack` reaches resources in the nested template. It does
+not cross `Stage` assembly boundaries; declare context inside each Stage instead,
+or the outer declaration fails because it has no targets in its own assembly.
+
+Propagation is explicit because repeating one block on many resources makes it
+look more important than it is and can attach a rule to resources it does not
+govern. If a fact applies to the whole template, put it in
+`TemplateMetadataContext`; as a rule of thumb, move it there when it would
+otherwise be repeated on more than about three resources.
+
+#### Helper resources
+
 Adding context on a `lambda.Function` targets the `AWS::Lambda::Function`, not
-its execution role or log group.
-
-For an L3 pattern (or any multi-resource construct), the default targets only a
-`defaultChild` chain that ends in a `CfnResource`. If the construct declares no
-`defaultChild`, or the chain ends at a construct without one, synthesis fails;
-set `applyToDescendants` to annotate the primary resource of each child
-construct, use `applyToAllResources` to include helpers, or target a specific
-child resource. Like `Tags`, descendant cascading crosses `NestedStack`
-boundaries, so context set on a scope containing a `NestedStack` reaches
-resources in the nested template when descendants are enabled. It does not cross
-`Stage` assembly boundaries; declare context inside each Stage instead, or the
-outer declaration fails if it has no targets in its own assembly.
-
-Narrow targeting further with resource-type filters:
+its execution role or dead-letter queue. Helpers that the L2 exposes as constructs
+can be targeted through it:
 
 ```typescript
-declare const stack: Stack;
+declare const lambdaFunction: lambda.Function;
 
-ResourceMetadataContext.of(stack).add({
-  why: 'queue in the order-delivery path',
+// The primary resource: the AWS::Lambda::Function, not its generated role.
+ResourceMetadataContext.of(lambdaFunction).add({
+  why: 'processes order events from the queue; idempotent on order id',
+});
+
+// A helper the L2 exposes; set when the function was created with a dead-letter queue.
+if (lambdaFunction.deadLetterQueue) {
+  ResourceMetadataContext.of(lambdaFunction.deadLetterQueue).add({
+    why: 'stores failed order-processor invocations for replay',
+  });
+}
+```
+
+There is no "helpers only" mode, because CDK identifies a helper only by its
+absence from the `defaultChild` chain. Propagating from the L2 and excluding the
+primary resource's type has the same effect — everything left beneath the L2 is a
+helper:
+
+```typescript
+declare const lambdaFunction: lambda.Function;
+
+// Everything the function creates except the function itself: role, policies, log group.
+ResourceMetadataContext.of(lambdaFunction).add({
+  deps: ['OrderProcessorFunction'],
 }, {
-  applyToDescendants: true,
-  includeResourceTypes: ['AWS::SQS::Queue'],
+  propagate: true,
+  propagationFilter: PropagationFilter.excludeResourceTypes(['AWS::Lambda::Function']),
+});
+```
+
+For an L3 pattern (or any multi-resource construct) with no `defaultChild`,
+target a child construct or propagate with a type filter. For a pattern that
+creates a load balancer, a service, and supporting resources:
+
+```typescript
+declare const service: Construct; // e.g. an ecs_patterns.ApplicationLoadBalancedFargateService
+
+// Apply this rule only to the Application Load Balancer created by the pattern.
+ResourceMetadataContext.of(service).add({
+  must: ['ALB idle timeout >= backend read timeout'],
+}, {
+  propagate: true,
+  propagationFilter: PropagationFilter.includeResourceTypes(['AWS::ElasticLoadBalancingV2::LoadBalancer']),
 });
 ```
 
 ### Merging and ancestor inheritance
 
 When more than one applicable entry targets the same resource, entries merge with
-nearest-wins semantics: scalar fields (`why`, `defaultMutability`, `trust`)
-from entries closer to the resource win, while list fields (`must`,
-`deps`) accumulate and de-duplicate. `propertyMutability`
-maps merge per property.
+nearest-wins semantics: scalar fields (`why`, `mutable`, `trust`) from entries
+closer to the resource win, while list fields (`must`, `deps`) accumulate and
+de-duplicate. `mutability` maps merge per property.
 
 An entry inherits context merged from enclosing scopes by default. Set
 `inheritAncestorContext: false` to make an entry a fresh starting point — any
@@ -1836,9 +1867,9 @@ ResourceMetadataContext.of(queue).add({
 ### Trust: explicit provenance
 
 Context can record where it came from and how much to trust it. `trust` is
-optional and may be the only field you supply. When supplied, both `source` and
-`confidence` are **required** — CDK never infers them for you or automatically
-adds a trust block. Producers that infer context should say so honestly:
+optional and may be the only field you supply. When supplied, both `src` and
+`conf` are **required** — CDK never infers them or adds a trust block for you.
+Producers that infer context should say so:
 
 ```typescript
 declare const queue: sqs.Queue;
@@ -1846,9 +1877,9 @@ declare const queue: sqs.Queue;
 ResourceMetadataContext.of(queue).add({
   why: 'absorb transient processor failures without dropping orders',
   trust: {
-    source: ContextTrustSource.INFERRED,
-    confidence: ContextTrustConfidence.LOW,
-    citation: 'api/handler.ts:87',
+    src: ContextTrustSource.INFER,
+    conf: ContextTrustConfidence.LOW,
+    cite: 'api/handler.ts:87',
     note: 'rationale inferred from retry wrapper; no explicit design doc found',
   },
 });
@@ -1856,11 +1887,26 @@ ResourceMetadataContext.of(queue).add({
 
 The trust sources are `AUTHORED` (human-authored or human-confirmed), `COMMENT`
 (derived directly from a code comment), `COMMIT` (derived directly from commit
-rationale) and `INFERRED` (produced by agent inference or synthesis). When more
-than one fits, `AUTHORED` takes precedence once a person has confirmed the text;
-otherwise use the most direct evidence and record the rest in `citation` and
-`note`. Three of the four values exist for automated producers — a person adding
-context directly in CDK code can omit `trust` entirely.
+rationale) and `INFER` (produced by agent inference or synthesis). `src` holds
+one value. When more than one fits, people and AI agents alike choose by this
+precedence:
+
+1. `AUTHORED` whenever a person wrote or explicitly confirmed the text, even if
+   it originated in a comment, a commit message, or a tool's inference. Human
+   confirmation is the strongest evidence; record the original evidence in `cite`
+   (the comment's file and line, or the commit SHA) and, when useful, in `note`.
+2. Otherwise, the most direct evidence: `COMMENT` when the text was copied or
+   lightly rephrased from a source comment; `COMMIT` when it came from
+   version-control history.
+3. `INFER` when a tool combined evidence or reasoned from code structure or
+   behavior without an explicit statement, even if a comment or commit
+   contributed. Name the contributing evidence in `cite` and `note`.
+
+For example, a tool that lifts `why` from a comment writes `src: COMMENT` and
+`cite: 'lib/queue.ts:42'`; when the author reviews and accepts it, `src` becomes
+`AUTHORED` and `cite` stays. Three of the four values exist for automated
+producers — a person adding context directly in CDK code can omit `trust`, because
+the reviewed source already shows who wrote it.
 
 ### Context as a Mixin
 
@@ -1868,7 +1914,7 @@ Resource-level context can also be applied as a Mixin. `MetadataContextMixin`
 attaches a context block imperatively to exactly the constructs you target — via
 `.with()` on a single L1 resource, or in bulk via `Mixins.of()`. It is
 resource-level only. Context applied by the Mixin takes precedence over context
-cascaded from enclosing scopes (scalar fields win; list fields are unioned):
+propagated from enclosing scopes (scalar fields win; list fields are unioned):
 
 ```typescript
 declare const stack: Stack;
@@ -1876,7 +1922,7 @@ declare const stack: Stack;
 // Single resource via .with()
 cfnResource.with(new MetadataContextMixin({
   why: 'append-only audit trail buffer',
-  defaultMutability: ContextMutability.MUST_NEVER_CHANGE,
+  mutable: ContextMutability.MUST_NEVER_CHANGE,
   must: ['never shorten retention below 14d (audit requirement)'],
 }));
 
@@ -1906,7 +1952,7 @@ declare const stack: Stack;
 TemplateMetadataContext.of(stack).add({
   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
   must: ['all data encrypted w/ security-team CMK'],
-  refs: [
+  ref: [
     {
       at: 'context/shared/encryption.ctx.yaml',
       has: 'org CMK + tagging rules',
@@ -1917,7 +1963,7 @@ TemplateMetadataContext.of(stack).add({
 });
 ```
 
-`refs` point to supporting context by URI — a relative repository path, `s3://`,
+`ref` entries point to supporting context by URI — a relative repository path, `s3://`,
 or `https://`. A ref containing only `at` renders as a string; add `has` or
 `scope` to render the object form. Inline template context takes precedence.
 Consumers must treat referenced content as untrusted data, never as agent

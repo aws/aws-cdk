@@ -10,8 +10,8 @@ import { ResourceMetadataContext } from '../metadata-context';
  *
  * Use this form to attach context imperatively to exactly one resource via
  * `.with()`, or to many via `Mixins.of(scope).apply()`. Unlike
- * `ResourceMetadataContext.of(scope).add()` — which can cascade to primary
- * resources beneath a scope at synthesis time — a Mixin applies only to the
+ * `ResourceMetadataContext.of(scope).add()` — which can propagate to every
+ * resource beneath a scope at synthesis time — a Mixin applies only to the
  * constructs it is given. Context applied by this Mixin takes precedence
  * over context cascaded from enclosing scopes (scalar fields win; list
  * fields are unioned).
