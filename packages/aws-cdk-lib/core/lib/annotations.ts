@@ -291,6 +291,11 @@ class Acknowledgements {
         start = path.length;
       }
     }
+    // Include the node's own full path, not just its ancestor prefixes. Without
+    // this, an acknowledgement recorded on a construct is not found by has() when
+    // a warning with the same id is later emitted on that same construct (the ack
+    // is stored under the exact path, but searchPaths only yielded ancestors).
+    ret.push(path);
     return ret.reverse();
   }
 }
