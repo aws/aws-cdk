@@ -1792,16 +1792,41 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
+Controls how `UserPoolDomainTarget` obtains the CloudFront domain name it points the
+alias record at.
 
-If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
+- Disabled: uses `UserPoolDomain.cloudFrontDomainName` (deprecated), which adds an
+  `AwsCustomResource` that calls `DescribeUserPoolDomain` at deploy time and reads
+  `DomainDescription.CloudFrontDistribution` from the response.
+- Enabled: uses `UserPoolDomain.cloudFrontEndpoint`, which reads the
+  `CloudFrontDistribution` attribute of the `AWS::Cognito::UserPoolDomain` resource
+  directly, with no custom resource.
+
+Both paths read the same `CloudFrontDistribution` value, so the alias record resolves
+to the same CloudFront domain name either way. Enabling the flag changes how the
+template obtains it, not what it points at.
+
+**What changes in the template when you enable it**
+
+- The `Custom::UserPoolCloudFrontDomainName` resource is removed, along with the IAM
+  policy statement granting `cognito-idp:DescribeUserPoolDomain`. That statement is
+  scoped to `*`, because the action does not support resource-level permissions, so
+  enabling the flag also drops a wildcard permission.
+- The record's `DNSName` becomes an `Fn::GetAtt` on the user pool domain instead of an
+  attribute of the custom resource.
+- The shared `AwsCustomResource` provider Lambda and its role are removed only if
+  nothing else in the stack still uses `AwsCustomResource`, since that function is a
+  per-stack singleton.
+
+Enabling is a single deployment, and no migration steps are required beyond it.
 
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep creating the custom resource when using `UserPoolDomainTarget`.
 
 
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
