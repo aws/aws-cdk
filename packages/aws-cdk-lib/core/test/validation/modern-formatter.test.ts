@@ -43,6 +43,44 @@ ERROR Test violation (test-plugin)
 `);
 });
 
+test('duplicate source locations are deduped', () => {
+  const output = defaultFormatValidateReports([
+    {
+      conclusion: 'failure',
+      pluginName: 'test-plugin',
+      violations: [
+        {
+          severity: 'error',
+          description: 'Test violation',
+          ruleName: 'test-rule',
+          violatingConstructs: [
+            {
+              constructPath: 'Stack/MyConstruct',
+              stackTraces: [
+                mkStackTrace('/root/src/file1.ts:10:20'),
+                mkStackTrace('/root/src/file1.ts:10:20'),
+                mkStackTrace('/root/src/file2.ts:10:20'),
+                mkStackTrace('/root/src/file2.ts:10:20'),
+                mkStackTrace('/root/src/file3.ts:10:20'),
+                mkStackTrace('/root/src/file3.ts:10:20'),
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ]);
+
+  expect(stripAnsi(output)).toMatchInlineSnapshot(`
+"src/file1.ts:10:20
+or src/file2.ts:10:20
+or src/file3.ts:10:20
+ERROR Test violation (test-plugin)
+   Stack/MyConstruct
+   Acknowledge with 'test-plugin::test-rule'"
+`);
+});
+
 function defaultFormatValidateReports(reports: PluginReportJson[]): string {
   return formatValidationReports('/root', reports, DEFAULT_STACK_FRAME_FINDER).join('\n');
 }
