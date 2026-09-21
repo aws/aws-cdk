@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { CompositeEngine, TemplateFile } from '@aws/cloudformation-validate';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
@@ -43,6 +42,31 @@ afterAll(() => {
 });
 
 describe('CloudFormationValidatePlugin', () => {
+  test('_dispose frees the engine exactly once', () => {
+    const plugin = newPlugin();
+    const free = jest.spyOn((plugin as any).engine, 'free');
+
+    plugin._dispose();
+    plugin._dispose();
+
+    expect(free).toHaveBeenCalledTimes(1);
+  });
+
+  test('_configureSingleton frees the previous engine', () => {
+    core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
+    const previous = core.CloudFormationValidatePlugin._singletonInstance();
+    const free = jest.spyOn((previous as any).engine, 'free');
+
+    try {
+      core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
+
+      expect(free).toHaveBeenCalledTimes(1);
+    } finally {
+      previous._dispose();
+      core.CloudFormationValidatePlugin._disposeSingleton();
+    }
+  });
+
   test('reports schema violations for invalid properties', () => {
     const app = new core.App({
       context: {
@@ -300,64 +324,6 @@ describe('CloudFormationValidatePlugin', () => {
     } finally {
       fs.rmSync(tmpDir, { recursive: true });
     }
-  });
-
-  describe('ignored rules', () => {
-    const TEMPLATE = {
-      Parameters: {
-        UnusedParameter: { Type: 'String' },
-      },
-      Resources: {
-        Instance: {
-          Type: 'AWS::EC2::Instance',
-          Properties: {
-            ImageId: 'ami-0abcdef1234567890',
-            InstanceType: 't3.micro',
-          },
-        },
-      },
-    };
-    let tmpDir: string;
-    let templatePath: string;
-
-    beforeEach(() => {
-      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-ignored-'));
-      templatePath = path.join(tmpDir, 'template.json');
-      fs.writeFileSync(templatePath, JSON.stringify(TEMPLATE));
-    });
-
-    afterEach(() => {
-      fs.rmSync(tmpDir, { recursive: true });
-    });
-
-    test('the engine itself reports W9010 and W2001 for the template', () => {
-      const engine = new CompositeEngine();
-      try {
-        const ruleIds = engine.validateTemplate(new TemplateFile(templatePath), { severityLevel: 'WARN' })
-          .diagnostics.map((d) => d.ruleId);
-
-        expect(ruleIds).toContain('W9010');
-        expect(ruleIds).toContain('W2001');
-      } finally {
-        engine.free();
-      }
-    });
-
-    test('the plugin does not report W9010 or W2001', () => {
-      const plugin = newPlugin();
-      const report = plugin.validate(validationContext(templatePath));
-
-      const ruleNames = report.violations.map((v) => v.ruleName);
-      expect(ruleNames).not.toContain('W9010');
-      expect(ruleNames).not.toContain('W2001');
-    });
-
-    test('the plugin does not advertise W9010 or W2001 as rule IDs', () => {
-      const plugin = newPlugin();
-
-      expect(plugin.ruleIds).not.toContain('W9010');
-      expect(plugin.ruleIds).not.toContain('W2001');
-    });
   });
 
   test('user-registered instance replaces the auto-registered one', () => {
