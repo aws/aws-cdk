@@ -1370,14 +1370,23 @@ export class Vpc extends VpcBase {
   /**
    * Import a VPC by supplying all attributes directly
    *
-   * NOTE: using `fromVpcAttributes()` with deploy-time parameters (like a `Fn.importValue()` or
-   * `CfnParameter` to represent a list of subnet IDs) sometimes accidentally works. It happens
-   * to work for constructs that need a list of subnets (like `AutoScalingGroup` and `eks.Cluster`)
-   * but it does not work for constructs that need individual subnets (like
-   * `Instance`). See https://github.com/aws/aws-cdk/issues/4118 for more
-   * information.
+   * Deploy-time values (such as `Fn.importValue()` or `CfnParameter` values) can be
+   * used here, with the following rules:
    *
-   * Prefer to use `Vpc.fromLookup()` instead.
+   * - Individual deploy-time values work reliably: one imported value per subnet ID,
+   *   combined with concrete availability zones.
+   * - Deploy-time lists work when their length is known at synthesis time: use
+   *   `Fn.importListValue(exportName, length)` or `Fn.split(delimiter, value, length)`
+   *   with an explicit length, so the subnets can be enumerated and zipped with the
+   *   availability zones.
+   * - Deploy-time lists of unknown length (such as a plain `Fn.split()` over an
+   *   imported value) sometimes accidentally work: they happen to work for constructs
+   *   that pass the whole list through to CloudFormation (like `AutoScalingGroup` and
+   *   `eks.Cluster`), but they do not work for constructs that need to select or
+   *   enumerate individual subnets (like `Instance`). See
+   *   https://github.com/aws/aws-cdk/issues/4118 for more information.
+   *
+   * If the VPC can be described at synthesis time, prefer `Vpc.fromLookup()`.
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
     return new ImportedVpc(scope, id, attrs, false);
