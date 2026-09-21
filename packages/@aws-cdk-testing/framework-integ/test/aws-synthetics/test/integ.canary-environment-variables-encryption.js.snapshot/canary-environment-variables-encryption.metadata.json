@@ -58,30 +58,6 @@
         "inlinePolicies": "*",
         "managedPolicies": []
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
     }
   ],
   "/canary-environment-variables-encryption/Canary/Resource": [
@@ -110,46 +86,10 @@
       "data": "CanaryServiceRoleD132250E"
     }
   ],
-  "/canary-environment-variables-encryption/Canary/ServiceRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
   "/canary-environment-variables-encryption/Canary/ArtifactsBucket/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CanaryArtifactsBucketPolicy63096C41"
-    }
-  ],
-  "/canary-environment-variables-encryption/Canary/ServiceRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CanaryServiceRoleDefaultPolicy447CDD49"
     }
   ]
 }

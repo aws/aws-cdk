@@ -196,32 +196,6 @@
     ]
    }
   },
-  "CanaryServiceRoleDefaultPolicy447CDD49": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EnvKeyCD7B3BF3",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "CanaryServiceRoleDefaultPolicy447CDD49",
-    "Roles": [
-     {
-      "Ref": "CanaryServiceRoleD132250E"
-     }
-    ]
-   }
-  },
   "Canary11957FE2": {
    "Type": "AWS::Synthetics::Canary",
    "Properties": {

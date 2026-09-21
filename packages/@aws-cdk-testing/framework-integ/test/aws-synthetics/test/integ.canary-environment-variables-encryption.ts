@@ -23,7 +23,7 @@ new Canary(stack, 'Canary', {
   environmentVariables: {
     stage: 'prod',
   },
-  environmentVariablesEncryptionKey: encryptKey,
+  environmentEncryption: encryptKey,
 });
 
 new IntegTest(app, 'IntegCanaryEnvironmentVariablesEncryptionTest', {

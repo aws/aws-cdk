@@ -445,7 +445,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 Canary environment variables are encrypted at rest using an AWS-managed key by default.
 
-To use a customer-managed KMS key instead, specify the `environmentVariablesEncryptionKey` property. The canary's execution role is automatically granted `kms:Decrypt` permission on the key so the underlying Lambda function can read its environment variables.
+To use a customer-managed KMS key instead, specify the `environmentEncryption` property. This mirrors `lambda.Function.environmentEncryption`, since a canary runs as a managed Lambda function.
 
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -462,7 +462,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   environmentVariables: {
     stage: 'prod',
   },
-  environmentVariablesEncryptionKey: key,
+  environmentEncryption: key,
 });
 ```
 
