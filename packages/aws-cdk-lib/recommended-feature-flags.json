@@ -89,5 +89,6 @@
   "@aws-cdk/core:defaultCrossStackReferences": "weak",
   "@aws-cdk/core:validateAgainstDefaultRules": true,
   "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
-  "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true
+  "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
+  "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025": true
 }
