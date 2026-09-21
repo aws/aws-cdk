@@ -65,7 +65,7 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation, frameFind
   const maxTraces = 5;
 
   let additional = false;
-  for (const location of locations.slice(maxTraces)) {
+  for (const location of locations.slice(0, maxTraces)) {
     lines.push(`${additional ? 'or ' : ''}${Colorize.underline(sanitize(location))}`);
     additional = true;
   }
@@ -192,4 +192,14 @@ function isPluginFailure(r: PluginReportJson): PluginError | undefined {
     return undefined;
   }
   return { error: r.metadata.error };
+}
+
+export function stripAnsi(x: string) {
+  const pattern = [
+    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
+  ].join('|');
+
+  const re = new RegExp(pattern, 'g');
+  return x.replaceAll(re, '');
 }

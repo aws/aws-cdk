@@ -4,8 +4,7 @@ import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal'
 import type { PropertyMutationMetadataEntry } from '../../cloud-assembly-schema';
 import { App, Stack } from '../../core';
 import type { StackFrameFinder } from '../../core/lib/private/stack-trace';
-import { stripAnsi } from '../../core/lib/private/synthesis-validation';
-import { formatValidationReports } from '../../core/lib/validation/private/modern-formatter';
+import { formatValidationReports, stripAnsi } from '../../core/lib/validation/private/modern-formatter';
 import type { CloudFormationStackArtifact } from '../../cx-api';
 import * as s3 from '../lib';
 

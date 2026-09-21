@@ -19,7 +19,7 @@ import { profileSpan } from './perf';
 import { DEFAULT_STACK_FRAME_FINDER } from './stack-trace';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
+import { formatValidationReports, humanFriendlyFilename, stripAnsi } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation, ViolationStackTraces } from '../validation/private/report';
 import { ExtraObjectData, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
@@ -593,16 +593,6 @@ function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
 
   // Unknown mode, either a legacy CLI or running via toolkit-lib.
   return 'unknown';
-}
-
-export function stripAnsi(x: string) {
-  const pattern = [
-    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
-  ].join('|');
-
-  const re = new RegExp(pattern, 'g');
-  return x.replaceAll(re, '');
 }
 
 function firstThat<A, B>(xs: A[], predicate: (x: A) => B | undefined): { key: A; value: B } | undefined {
