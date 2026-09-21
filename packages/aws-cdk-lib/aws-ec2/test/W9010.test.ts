@@ -112,12 +112,13 @@ describe('W9010 end-to-end via the validation report', () => {
     const key = ContextProvider.getKey(stack, {
       provider: cxschema.ContextProvider.AMI_PROVIDER,
       props: {
+        account: '1234',
+        region: 'us-east-1',
         owners: ['amazon'],
         filters: {
           'name': [name],
           'state': ['available'],
           'image-type': ['machine'],
-          'platform': undefined,
         },
       } as cxschema.AmiContextQuery,
     }).key;
