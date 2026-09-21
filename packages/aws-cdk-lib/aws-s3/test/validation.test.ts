@@ -97,9 +97,9 @@ test('invalid properties are attributed to the correct code line', () => {
 
   const reportText = stripAnsi(formatValidationReports(__dirname, report.report.pluginReports, finder).join('\n'));
   expect(reportText).toMatchInlineSnapshot(`
-"validation.test.ts:23:10
-or validation.test.ts:55:7
-or validation.test.ts:62:7
+"validation.test.ts:22:10
+or validation.test.ts:54:7
+or validation.test.ts:61:7
 WARNING LifecycleConfiguration.Rules.0.Id: length 300 exceeds maximum 255 (CloudFormation Validate)
    Stack/MyBucket/Resource (MyBucketF68F3FF0) constructs.Construct
    Acknowledge with 'CloudFormation-Validate::F3033'"

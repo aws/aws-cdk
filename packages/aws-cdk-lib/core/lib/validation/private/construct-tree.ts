@@ -120,11 +120,11 @@ export class ConstructTree {
     const components = constructPath.replace(/^\//, '').split('/');
 
     const rootPath: Array<ReturnType<ConstructTree['constructTraceLevelFromTreeNode']>> = [];
-    const stackTraces: Array<string | undefined> = [];
+    const stackTraces: Array<string[] | undefined> = [];
     let node: IConstruct | undefined = this.root;
     while (node) {
       rootPath.push(this.constructTraceLevelFromTreeNode(node));
-      stackTraces.push(this.creationTrace(node));
+      stackTraces.push(this.creationTrace(node)?.split('\n'));
 
       const component = components.shift()!;
       node = component !== undefined ? node.node.tryFindChild(component) : undefined;
