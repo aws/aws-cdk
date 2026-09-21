@@ -116,8 +116,8 @@ export interface DeploymentCircuitBreakerThresholdConfiguration {
   /**
    * The threshold value Amazon ECS uses to determine deployment failure.
    *
-   * For `COUNT`, this is the number of task launch failures.
-   * For `BOUNDED_PERCENT` and `UNBOUNDED_PERCENT`, this is the percentage of desired task count.
+   * For `COUNT`, this is the number of task launch failures (positive integer, no upper bound).
+   * For `BOUNDED_PERCENT` and `UNBOUNDED_PERCENT`, this is the percentage of desired task count (1–100).
    */
   readonly value: number;
 }
@@ -147,7 +147,7 @@ export interface DeploymentCircuitBreaker {
    * (consecutive failure counting). When `false`, failures accumulate across
    * the entire deployment (cumulative counting).
    *
-   * @default - Amazon ECS default behavior
+   * @default - true (Amazon ECS resets the failure count when a task becomes healthy)
    */
   readonly resetOnHealthyTask?: boolean;
 
@@ -1070,6 +1070,9 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
+    // TODO: Replace addPropertyOverride with native L1 props once the
+    // CloudFormation spec includes ResetOnHealthyTask and ThresholdConfiguration
+    // and the L1 is regenerated (see aws/aws-cdk#38244).
     if (props.circuitBreaker?.resetOnHealthyTask !== undefined) {
       this.resource.addPropertyOverride(
         'DeploymentConfiguration.DeploymentCircuitBreaker.ResetOnHealthyTask',
@@ -1575,10 +1578,15 @@ export abstract class BaseService extends Resource
         );
       }
 
-      if (!Token.isUnresolved(config.type) && config.type === DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT && config.value > 100) {
+      if (
+        !Token.isUnresolved(config.type) &&
+        (config.type === DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT ||
+          config.type === DeploymentCircuitBreakerThresholdType.UNBOUNDED_PERCENT) &&
+        config.value > 100
+      ) {
         throw new ValidationError(
-          lit`InvalidCircuitBreakerBoundedPercentValue`,
-          `thresholdConfiguration value for BOUNDED_PERCENT must be between 1 and 100, got ${config.value}`,
+          lit`InvalidCircuitBreakerPercentValue`,
+          `thresholdConfiguration value for ${config.type} must be between 1 and 100, got ${config.value}`,
           this,
         );
       }

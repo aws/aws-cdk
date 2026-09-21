@@ -525,7 +525,7 @@ test.each([
   });
 });
 
-test('circuitBreaker with resetOnHealthyTask synthesizes correctly', () => {
+test.each([true, false])('circuitBreaker with resetOnHealthyTask %p synthesizes correctly', (resetOnHealthyTask) => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -544,7 +544,7 @@ test('circuitBreaker with resetOnHealthyTask synthesizes correctly', () => {
     circuitBreaker: {
       enable: true,
       rollback: true,
-      resetOnHealthyTask: true,
+      resetOnHealthyTask,
     },
   });
 
@@ -555,7 +555,7 @@ test('circuitBreaker with resetOnHealthyTask synthesizes correctly', () => {
       DeploymentCircuitBreaker: {
         Enable: true,
         Rollback: true,
-        ResetOnHealthyTask: true,
+        ResetOnHealthyTask: resetOnHealthyTask,
       },
     },
   });
@@ -709,7 +709,10 @@ test.each([0, -1, 1.5])('fails when circuitBreaker thresholdConfiguration value 
   }).toThrow(/thresholdConfiguration value must be a positive integer/);
 });
 
-test('fails when circuitBreaker BOUNDED_PERCENT value exceeds 100', () => {
+test.each([
+  [ecs.DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT, 'BOUNDED_PERCENT'],
+  [ecs.DeploymentCircuitBreakerThresholdType.UNBOUNDED_PERCENT, 'UNBOUNDED_PERCENT'],
+])('fails when circuitBreaker %s value exceeds 100', (type, typeName) => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -727,15 +730,15 @@ test('fails when circuitBreaker BOUNDED_PERCENT value exceeds 100', () => {
       taskDefinition,
       circuitBreaker: {
         thresholdConfiguration: {
-          type: ecs.DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT,
+          type,
           value: 101,
         },
       },
     });
-  }).toThrow(/thresholdConfiguration value for BOUNDED_PERCENT must be between 1 and 100/);
+  }).toThrow(new RegExp(`thresholdConfiguration value for ${typeName} must be between 1 and 100`));
 });
 
-test('circuitBreaker UNBOUNDED_PERCENT value above 100 does not throw', () => {
+test('circuitBreaker thresholdConfiguration with token value skips validation', () => {
   // GIVEN
   const app = new App();
   const stack = new Stack(app, 'Stack');
@@ -747,15 +750,15 @@ test('circuitBreaker UNBOUNDED_PERCENT value above 100 does not throw', () => {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   });
 
-  // THEN
+  // WHEN — value is a token (unresolved), validation must be skipped
   expect(() => {
     new ecs.FargateService(stack, 'FargateService', {
       cluster,
       taskDefinition,
       circuitBreaker: {
         thresholdConfiguration: {
-          type: ecs.DeploymentCircuitBreakerThresholdType.UNBOUNDED_PERCENT,
-          value: 150,
+          type: ecs.DeploymentCircuitBreakerThresholdType.BOUNDED_PERCENT,
+          value: cdk.Token.asNumber(cdk.Lazy.string({ produce: () => '50' })),
         },
       },
     });

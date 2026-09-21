@@ -906,9 +906,9 @@ const service = new ecs.FargateService(this, 'Service', {
 
 The `thresholdConfiguration` supports three threshold types:
 
-- `COUNT` — trip the circuit breaker after a fixed number of task launch failures
-- `BOUNDED_PERCENT` — trip after a percentage of desired count failures, bounded by Amazon ECS min/max limits
-- `UNBOUNDED_PERCENT` — trip after a raw percentage of desired count failures with no bounds
+- `COUNT` — trip the circuit breaker after a fixed number of task launch failures (positive integer, no upper bound)
+- `BOUNDED_PERCENT` — trip after a percentage (1–100) of desired count failures, bounded by Amazon ECS min/max limits
+- `UNBOUNDED_PERCENT` — trip after a percentage (1–100) of desired count failures with no Amazon ECS bounds applied
 
 When `resetOnHealthyTask` is `true`, the failure counter resets each time a task reaches a healthy state
 (consecutive counting). When `false`, failures accumulate across the entire deployment (cumulative counting).
