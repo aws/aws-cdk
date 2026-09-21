@@ -45,6 +45,7 @@ import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021,
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025,
   CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS,
 } from '../../cx-api';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
@@ -276,7 +277,9 @@ export interface DistributionProps {
    * CloudFront serves your objects only to browsers or devices that support at
    * least the SSL version that you specify.
    *
-   * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
+   * @default - SecurityPolicyProtocol.TLS_V1_2_2025 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025' feature flag is set;
+   * otherwise SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set;
+   * otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
    */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 
@@ -890,9 +893,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderViewerCertificate(certificate: ICertificateRef,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
-    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
-      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
-    const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? this.defaultSecurityPolicy();
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
@@ -900,6 +901,20 @@ export class Distribution extends Resource implements IDistribution {
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
+  }
+
+  /**
+   * The security policy to use when `minimumProtocolVersion` is not set, most recent first.
+   */
+  private defaultSecurityPolicy(): SecurityPolicyProtocol {
+    const flags = FeatureFlags.of(this);
+    if (flags.isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025)) {
+      return SecurityPolicyProtocol.TLS_V1_2_2025;
+    }
+    if (flags.isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)) {
+      return SecurityPolicyProtocol.TLS_V1_2_2021;
+    }
+    return SecurityPolicyProtocol.TLS_V1_2_2019;
   }
 
   private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
