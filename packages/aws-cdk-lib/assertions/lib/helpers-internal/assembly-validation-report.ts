@@ -38,6 +38,14 @@ export class AssemblyValidationReport {
   private constructor(private readonly report: PolicyValidationReportJson) {
   }
 
+  public pluginReport(pluginName: string) {
+    const report = this.report.pluginReports.find(r => r.pluginName === pluginName);
+    if (!report) {
+      throw new AssertionError(`No report found for plugin ${pluginName}`);
+    }
+    return report;
+  }
+
   /**
    * All violations in all reports
    */
