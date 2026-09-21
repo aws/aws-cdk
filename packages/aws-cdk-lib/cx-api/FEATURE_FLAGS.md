@@ -2496,6 +2496,16 @@ The flag is read from the **consumer** stack's context, not the producer's.
 **Migration from strong to weak**: set to `"both"` and deploy, then set to
 `"weak"` and deploy again.
 
+The consumer switches to `Fn::GetStackOutput` on the *first* of those deployments, the
+one that sets `"both"`. CloudFormation resolves that intrinsic while it executes the
+change set, so until then the change set carries `{{changeSet:KNOWN_AFTER_APPLY}}` in
+its place. Where that value feeds a property that requires replacement, the resource is
+replaced, and so is everything whose own properties depend on it — including stateful
+resources such as `AWS::RDS::DBInstance`. Review a real change set before deploying the
+migration; `cdk diff` only reveals this when it has credentials to create one, and
+falls back to a template-only diff otherwise. See the "Reference strength" section of
+the `aws-cdk-lib` README for the full explanation.
+
 **Migration from weak to strong**: set directly to `"strong"` (single deployment).
 
 
