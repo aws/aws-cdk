@@ -117,7 +117,7 @@ export interface OpenIdConnectProviderProps {
  * 2. Discuss with the CDK team before proceeding
  * 3. Ensure any changes maintain strict backward compatibility
  *
- * @see http://openid.net/connect
+ * @see https://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
  * @resource AWS::CloudFormation::CustomResource
