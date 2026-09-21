@@ -4,9 +4,6 @@ import { Validations } from '../../../core';
 
 export function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string, additionalCacheKey?: string) {
   if (cachedInContext) {
-    // A cached lookup bakes the resolved AMI ID into the template as a literal,
-    // which is exactly what the machine image is supposed to do here. Silence
-    // the W9010 "hardcoded AMI" warning on the consuming construct.
     acknowledgeAmiLookupWarning(scope);
     return ssm.StringParameter.valueFromLookup(scope, parameterName, undefined, { additionalCacheKey });
   }
@@ -18,9 +15,7 @@ export function lookupImage(scope: Construct, cachedInContext: boolean | undefin
  *
  * Some machine images resolve an AMI ID at synth time (via a context lookup) and emit it into
  * the template as a literal `ami-xxxx` value. That is the intended behavior of these images, so
- * the W9010 warning is a false positive for the consuming construct. The acknowledgement is
- * recorded on `scope` (the construct consuming the AMI), so that genuinely hand-authored
- * hardcoded AMI IDs elsewhere in the app continue to be flagged as usual.
+ * the W9010 warning is a false positive for the consuming construct.
  */
 export function acknowledgeAmiLookupWarning(scope: Construct) {
   Validations.of(scope).acknowledge({
