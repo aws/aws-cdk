@@ -2482,16 +2482,22 @@ Controls the default type of cross-stack references. Accepted values are
 
 The flag is read from the **consumer** stack's context, not the producer's.
 
-- `"strong"` (default): Uses ExportWriter/ExportReader custom resources that
-  write values to SSM Parameters in the consuming region. This prevents the
-  producing stack from being deleted while consumers exist.
-- `"weak"`: Uses Fn::GetStackOutput to read an output directly from the
-  producing stack. Simpler (no extra infrastructure), but the producing stack
-  can be deleted independently of consumers.
+- `"strong"` (the behavior when the flag is unset): The producer exports the
+  value and the consumer imports it, which prevents the producing stack from
+  being deleted, or the value from being changed, while consumers exist.
+  Same-region references use a CloudFormation export and `Fn::ImportValue`;
+  cross-region references use ExportWriter/ExportReader custom resources that
+  write the value to an SSM Parameter in the consuming region.
+- `"weak"`: The producer adds a plain `Output` and the consumer reads it with
+  `Fn::GetStackOutput`. Simpler (no export to keep in sync), but the producing
+  stack can be deleted, or the value changed, independently of consumers.
 - `"both"`: A transitional state for migrating from strong to weak. The producer
-  keeps the ExportWriter (continues writing to SSM) and also adds an Output. The
-  consumer switches to Fn::GetStackOutput. This allows removing the ExportReader
-  without breaking anything.
+  keeps the strong export (the CloudFormation export or the ExportWriter) and
+  also adds the `Output`, while the consumer switches to `Fn::GetStackOutput`.
+  This allows removing the import side without breaking anything.
+
+Cross-account references are always weak, regardless of this flag. Requesting
+`"strong"` for one emits a warning and falls back to a weak reference.
 
 **Migration from strong to weak**: set to `"both"` and deploy, then set to
 `"weak"` and deploy again.
