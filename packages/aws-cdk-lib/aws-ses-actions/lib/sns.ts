@@ -2,7 +2,7 @@ import type * as ses from '../../aws-ses';
 import type * as sns from '../../aws-sns';
 
 /**
- * The type of email encoding to use for a SNS action.
+ * The type of email encoding to use for an SNS action.
  */
 export enum EmailEncoding {
   /**
@@ -17,7 +17,7 @@ export enum EmailEncoding {
 }
 
 /**
- * Construction properties for a SNS action.
+ * Construction properties for an SNS action.
  */
 export interface SnsProps {
   /**

@@ -123,7 +123,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
 
 /**
  * Checks whether your CloudFormation stacks are sending event notifications to
- * a SNS topic. Optionally checks whether specified SNS topics are used.
+ * an SNS topic. Optionally checks whether specified SNS topics are used.
  *
  * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-notification-check.html
  *

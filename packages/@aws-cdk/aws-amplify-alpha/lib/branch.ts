@@ -112,7 +112,7 @@ export interface BranchOptions {
    * Asset for deployment.
    *
    * The Amplify app must not have a sourceCodeProvider configured as this resource uses Amplify's
-   * startDeployment API to initiate and deploy a S3 asset onto the App.
+   * startDeployment API to initiate and deploy an S3 asset onto the App.
    *
    * @default - no asset
    */

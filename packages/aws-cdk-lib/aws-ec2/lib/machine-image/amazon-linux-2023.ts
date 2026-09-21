@@ -53,7 +53,7 @@ export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageS
  */
 export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
-   * Generates a SSM Parameter name for a specific amazon linux 2023 AMI
+   * Generates an SSM Parameter name for a specific amazon linux 2023 AMI
    *
    * Example values:
    *

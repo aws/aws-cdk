@@ -11,7 +11,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 enum ContainerProviderTypes {
 
   /**
-   * Supported container provider type for a EKS Cluster
+   * Supported container provider type for an EKS Cluster
    */
   EKS = 'EKS',
 }
@@ -72,19 +72,19 @@ interface EmrContainersCreateVirtualClusterOptions {
 }
 
 /**
- * Properties to define a EMR Containers CreateVirtualCluster Task using JSONPath on an EKS cluster
+ * Properties to define an EMR Containers CreateVirtualCluster Task using JSONPath on an EKS cluster
  *
  */
 export interface EmrContainersCreateVirtualClusterJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EmrContainersCreateVirtualClusterOptions { }
 
 /**
- * Properties to define a EMR Containers CreateVirtualCluster Task using JSONata on an EKS cluster
+ * Properties to define an EMR Containers CreateVirtualCluster Task using JSONata on an EKS cluster
  *
  */
 export interface EmrContainersCreateVirtualClusterJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersCreateVirtualClusterOptions { }
 
 /**
- * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
+ * Properties to define an EMR Containers CreateVirtualCluster Task on an EKS cluster
  */
 export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps, EmrContainersCreateVirtualClusterOptions { }
 
