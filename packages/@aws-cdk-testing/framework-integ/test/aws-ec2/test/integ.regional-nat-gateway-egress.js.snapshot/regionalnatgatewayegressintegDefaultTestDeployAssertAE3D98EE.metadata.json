@@ -1,0 +1,182 @@
+{
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
+        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:155:51)",
+        "Object.onceWrapper (node:events:639:26)",
+        "process.emit (node:events:524:28)"
+      ]
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279InvokeAC9615E4"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokec24bb20dc3456c976d70288dc91e6279"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabbInvokeE3ED99F2"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokec7507dfe343971c5933787d677c2fabb"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279WaitForRole3C24A1E3"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279WaitFor3BA78175"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabb"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabbWaitForRoleA34380A8"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabbWaitForFB3D0881"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279WaitForIsCompleteProviderInvokeC5539404"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec24bb20dc3456c976d70288dc91e6279/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec24bb20dc3456c976d70288dc91e6279WaitForTimeoutProviderInvokeF0E0B328"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabbWaitForIsCompleteProviderInvoke4EAD21D9"
+    }
+  ],
+  "/regional-nat-gateway-egress-integ/DefaultTest/DeployAssert/LambdaInvokec7507dfe343971c5933787d677c2fabb/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec7507dfe343971c5933787d677c2fabbWaitForTimeoutProviderInvoke1694B980"
+    }
+  ]
+}
