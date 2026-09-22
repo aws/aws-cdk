@@ -33,6 +33,9 @@ class RegionalNatGatewayStack extends cdk.Stack {
           { allocationIds: [eip2.attrAllocationId], availabilityZone: this.availabilityZones[1] },
         ],
       }),
+      // A Regional NAT Gateway with `availabilityZoneAddresses` only serves the listed
+      // Availability Zones, so the VPC is limited to the two zones configured above.
+      maxAzs: 2,
       subnetConfiguration: [
         { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       ],
