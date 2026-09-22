@@ -3,7 +3,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import os from 'os';
 import * as path from 'path';
-import { FileSystem } from 'aws-cdk-lib';
+import { FileSystem, SymlinkFollowMode } from 'aws-cdk-lib';
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import type { ICommandHooks } from '../lib';
 import { LocalBundling, _resetPythonCache } from '../lib/local-bundling';
@@ -572,5 +572,6 @@ describe('assetExcludes', () => {
     expect(src).toBe(ENTRY_PIP);
     expect(dest).toBe(outputDir);
     expect(options.exclude).toEqual(['.ignorelist']);
+    expect(options.follow).toBe(SymlinkFollowMode.ALWAYS);
   });
 });
