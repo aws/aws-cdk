@@ -20,7 +20,10 @@ TemplateMetadataContext.of(stack).add({
 });
 
 // Resource-level context on an L2: renders onto the primary AWS::SQS::Queue only
-const queue = new sqs.Queue(stack, 'OrderQueue');
+const queue = new sqs.Queue(stack, 'OrderQueue', {
+  // Explicit so the template states the encryption the template-level `must` promises.
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
 ResourceMetadataContext.of(queue).add({
   why: 'buffer order events async; std queue (throughput > ordering)',
   must: ['VisTimeout >= 6x consumer timeout, else dup on retry'],
