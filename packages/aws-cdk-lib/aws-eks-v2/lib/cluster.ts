@@ -38,6 +38,7 @@ import type { IResource, Duration, ArnComponents, RemovalPolicy } from '../../co
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
+import { quiet, reset } from '../../core/lib/private/jsii-deprecated';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
@@ -1635,18 +1636,6 @@ export class Cluster extends ClusterBase {
    * [disable-awslint:no-grants]
    *
    * @param id - The ID of the `AccessEntry` construct to be created.
-   * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
-   * @returns the access entry construct
-   */
-  /**
-   * Grants the specified IAM principal cluster admin access to the EKS cluster.
-   *
-   * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
-   * access permissions. This allows the IAM principal to perform the actions permitted
-   * by the cluster admin access.
-   * [disable-awslint:no-grants]
-   *
-   * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The ARN of the IAM principal (role or user) to be granted cluster admin access.
    * @returns the access entry construct
    * @deprecated Use `grantClusterAdminAccess` to pass an IAM principal construct directly.
@@ -2041,12 +2030,20 @@ export class Cluster extends ClusterBase {
     if (entry) {
       (entry as AccessEntry).addAccessPolicies(props.policies);
     } else {
+      // `grantAccess()` is not deprecated, but the only way to turn its `principal: string`
+      // ARN input into an `AccessEntry` is via the now-deprecated `AccessEntryProps.principal`
+      // (there is no equivalent for a bare ARN under `iamPrincipal`). Quiet the deprecation
+      // warning for this single, intentional internal use so callers of `grantAccess()` don't
+      // see it. If `principal` is ever removed from `AccessEntryProps`, this call stops
+      // compiling and forces `grantAccess()` itself to be redesigned.
+      const deprecated = quiet();
       const newEntry = new AccessEntry(this, props.id, {
         principal: props.principal,
         cluster: this,
         accessPolicies: props.policies,
         accessEntryType: props.accessEntryType,
       });
+      reset(deprecated);
       this.accessEntries.set(props.principal, newEntry);
     }
   }
