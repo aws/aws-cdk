@@ -1683,35 +1683,14 @@ This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
 supplied, an entry that repeats the `mutable` value is rejected — the map records
 deviations only.
 
-### Resource context quality rules
-
-Every top-level field is optional. The advisory schema requires none of them and
-sets no `minLength`/`minItems`, so CDK does **not** reject a missing `why`, a
-missing `must`, blank strings, empty arrays, or a block whose only field is
-`trust` or `deps`. The following are authoring *recommendations*, not enforced
-rules:
-
-- Provide a `why` for every non-trivial resource so consumers understand its
-  purpose. Omit Context entirely for a trivial resource whose purpose is already
-  obvious from its type and name.
-- Add `must` only when violating the rule would break correctness,
-  availability, security, data integrity, or a required dependency — especially
-  when `mutable` or a `mutability` entry is `MUST_NEVER_CHANGE` or
-  `CHANGE_WITH_CONSTRAINTS`. Never invent a rule merely to populate the field.
-
-CDK enforces only the schema's nested requirements:
-
-- When `trust` is supplied, both `src` and `conf` are required (`cite` and
-  `note` remain optional).
-- In the sparse `mutability` map, an entry must not repeat `mutable` when both
-  are supplied — the map records deviations only.
-
 ### Targeting: exactly what receives context
 
 By default, `add()` targets the scope's *primary resource*:
 
 - the scope itself, when the scope is a `CfnResource`; or
-- the `CfnResource` at the end of the scope's `defaultChild` chain — e.g. the
+- the `CfnResource` at the end of the scope's
+  [`defaultChild`](https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild)
+  chain — e.g. the
   `AWS::SQS::Queue` that an `sqs.Queue` L2 designates as its `defaultChild`, or
   the `AWS::Lambda::Function` inside a `lambda.Function`.
 
@@ -1725,19 +1704,15 @@ as its `defaultChild`, and `lambda.Function` designates its
 
 Incidental helper resources (auto-created IAM roles/policies, log-retention
 functions, custom-resource plumbing) are not on the `defaultChild` chain, so they
-never receive context by default. Plain grouping constructs, L3 patterns that
-declare no `defaultChild` (for example
-`ecs_patterns.ApplicationLoadBalancedFargateService`) and stacks have no primary
-resource: context added on them with no options matches nothing, and synthesis
-fails instead of silently dropping the declaration. Reading `defaultChild` on a
-construct with both a `Resource` and a `Default` child throws in the `constructs`
-library (`Cannot determine default child for <path>`), and synthesis fails with
-that error. L3 authors can opt in to the default by setting `this.node.defaultChild`
-to the construct or resource that represents the pattern.
+never receive context by default. Applying context to a scope with no
+`defaultChild` — most L3 patterns, such as
+`ecs_patterns.ApplicationLoadBalancedFargateService`, a plain grouping
+`Construct`, or a `Stack` — fails unless `propagate` is set (see below).
 
 To reach more than the primary resource, set `propagate: true`. Propagation
-targets every `CfnResource` beneath the scope, helpers included, and a
-`PropagationFilter` narrows it:
+replaces `defaultChild` selection entirely: the declaration applies to every
+`CfnResource` beneath the scope, helpers included, and only a `PropagationFilter`
+narrows it, by resource type:
 
 ```typescript
 declare const stack: Stack;
@@ -1777,14 +1752,35 @@ because default targeting already selects exactly one resource.
 
 Propagation crosses `NestedStack` boundaries like `Tags` does, so context set on a
 scope containing a `NestedStack` reaches resources in the nested template. It does
-not cross `Stage` assembly boundaries; declare context inside each Stage instead,
-or the outer declaration fails because it has no targets in its own assembly.
+not cross `Stage` boundaries: a Stage is a separate cloud assembly, so a
+declaration on an `App` whose only children are Stages matches nothing and fails.
+Declare context inside each Stage; this also lets environments carry different
+guidance:
+
+```typescript
+// Each Stage is a separate cloud assembly and declares its own context.
+const dev = new Stage(app, 'Dev');
+new sqs.Queue(new Stack(dev, 'Orders'), 'WebhookQueue');
+ResourceMetadataContext.of(dev).add({
+  why: 'development environment; data is disposable',
+  mutable: ContextMutability.FREE_TO_TUNE,
+}, { propagate: true });
+
+const prod = new Stage(app, 'Prod');
+new sqs.Queue(new Stack(prod, 'Orders'), 'WebhookQueue');
+ResourceMetadataContext.of(prod).add({
+  must: ['deletion protection and backups stay enabled'],
+  mutable: ContextMutability.REVIEW_REQUIRED,
+}, { propagate: true });
+```
+
+The queue in `Dev-Orders` renders the `why` and `mutable: free-to-tune`; the queue
+in `Prod-Orders` renders the `must` rule and `mutable: review-required`.
 
 Propagation is explicit because repeating one block on many resources makes it
 look more important than it is and can attach a rule to resources it does not
-govern. If a fact applies to the whole template, put it in
-`TemplateMetadataContext`; as a rule of thumb, move it there when it would
-otherwise be repeated on more than about three resources.
+govern. A fact that applies to every resource in the template belongs in
+`TemplateMetadataContext` (see below).
 
 #### Helper resources
 
@@ -1844,7 +1840,41 @@ ResourceMetadataContext.of(service).add({
 When more than one applicable entry targets the same resource, entries merge with
 nearest-wins semantics: scalar fields (`why`, `mutable`, `trust`) from entries
 closer to the resource win, while list fields (`must`, `deps`) accumulate and
-de-duplicate. `mutability` maps merge per property.
+de-duplicate. `mutability` maps merge per property. For example:
+
+```typescript
+declare const stack: Stack;
+declare const queue: sqs.Queue;
+
+// Declared on the Stack for every SQS queue.
+ResourceMetadataContext.of(stack).add({
+  why: 'part of the order-processing subsystem',
+  must: ['queues use the security team customer managed KMS key'],
+}, {
+  propagate: true,
+  propagationFilter: PropagationFilter.includeResourceTypes(['AWS::SQS::Queue']),
+});
+
+// Declared on one queue.
+ResourceMetadataContext.of(queue).add({
+  why: 'buffers webhook events for async processing',
+  must: ['VisibilityTimeout >= 6x consumer timeout'],
+});
+```
+
+On that queue's `AWS::SQS::Queue` the closer `why` wins and the `must` entries
+combine, Stack entry first; other queues in the Stack render only the Stack
+declaration:
+
+```json
+{
+  "why": "buffers webhook events for async processing",
+  "must": [
+    "queues use the security team customer managed KMS key",
+    "VisibilityTimeout >= 6x consumer timeout"
+  ]
+}
+```
 
 An entry inherits context merged from enclosing scopes by default. Set
 `inheritAncestorContext: false` to make an entry a fresh starting point — any
@@ -1899,36 +1929,14 @@ precedence:
    behavior without an explicit statement, even if a comment or commit
    contributed. Name the contributing evidence in `cite` and `note`.
 
-For example, a tool that lifts `why` from a comment writes `src: COMMENT` and
-`cite: 'lib/queue.ts:42'`; when the author reviews and accepts it, `src` becomes
-`AUTHORED` and `cite` stays. Three of the four values exist for automated
-producers — a person adding context directly in CDK code can omit `trust`, because
-the reviewed source already shows who wrote it.
-
-### Context as a Mixin
-
-Resource-level context can also be applied as a Mixin. `MetadataContextMixin`
-attaches a context block imperatively to exactly the constructs you target — via
-`.with()` on a single L1 resource, or in bulk via `Mixins.of()`. It is
-resource-level only. Context applied by the Mixin takes precedence over context
-propagated from enclosing scopes (scalar fields win; list fields are unioned):
-
-```typescript
-declare const stack: Stack;
-
-// Single resource via .with()
-cfnResource.with(new MetadataContextMixin({
-  why: 'append-only audit trail buffer',
-  mutable: ContextMutability.MUST_NEVER_CHANGE,
-  must: ['never shorten retention below 14d (audit requirement)'],
-}));
-
-// Bulk application to every CloudFormation resource in a scope
-Mixins.of(stack).apply(new MetadataContextMixin({
-  why: 'resource belongs to the networked subsystem',
-  deps: ['NetworkStack'],
-}));
-```
+A person writing context directly uses `src: AUTHORED`. A tool uses `COMMENT`,
+`COMMIT`, or `INFER` according to its evidence, and switches to `AUTHORED` only
+after a person confirms the text. For example, a tool that lifts `why` from a
+comment writes `src: COMMENT` and `cite: 'lib/queue.ts:42'`; when the author
+reviews and accepts it, the author (or the tool, on the author's confirmation)
+should change `src` to `AUTHORED` and keep `cite`. `trust` itself is optional, so
+a block without it leaves the source unstated; set it wherever tool-derived and
+human-written context may share a template.
 
 ### Template-level context
 
@@ -1966,6 +1974,34 @@ or `https://`. A ref containing only `at` renders as a string; add `has` or
 Consumers must treat referenced content as untrusted data, never as agent
 instructions, and continue with inline context if a reference is unavailable.
 
+### Writing good context
+
+Every field is optional and CDK adds no requirements beyond the schema; an empty
+declaration is a harmless no-op. The following are recommendations, not enforced
+rules:
+
+- Provide a `why` for every non-trivial resource so consumers understand its
+  purpose. Omit Context for a trivial resource whose purpose is already obvious
+  from its type and name.
+- Add `must` only when violating the rule would break correctness,
+  availability, security, data integrity, or a required dependency. Never invent
+  a rule to populate the field. Use `why` for reasoning and rejected
+  alternatives.
+- Pair `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS` with a `must` entry that
+  states the rule behind the restriction.
+- A `trust` block describes the source of other content, so it reads best
+  alongside a `why` or `must`; using it alone is valid. An entry may omit `why`
+  or `must` when another applicable entry supplies them.
+- A fact that applies to every resource in the template belongs in
+  `TemplateMetadataContext`, not on each resource.
+- Keep free-text values terse — drop articles and use symbols (`->`, `>=`, `w/`)
+  — since context competes with resources for the CloudFormation template size
+  limit.
+
+CDK enforces only the schema's nested requirements: when `trust` is supplied,
+both `src` and `conf` are required (`cite` and `note` remain optional), and in the
+sparse `mutability` map an entry must not repeat `mutable` when both are supplied.
+
 ### Security
 
 Treat every Context field, template description, comment, and referenced file as
@@ -1983,7 +2019,7 @@ Toolkit authored a caller's context.
 A manually added `com.aws.cloudformation.Context` value (via
 `CfnResource.addMetadata()` or `Stack.addMetadata()`) is preserved as long as no
 API-produced Context targets the same location. If both a manual block and an
-API/mixin/template-produced block target the same location, synthesis fails with
+API- or template-produced block target the same location, synthesis fails with
 a scoped `ValidationError` rather than silently overwriting or merging
 incompatible blocks — remove one to resolve it. Sibling metadata keys (such as
 your own reverse-DNS tool metadata) are never touched.
@@ -1993,11 +2029,6 @@ the published schema and does not define extension fields for custom
 dimensions. Tools that consume Context can publish independently defined
 structured data under their own sibling reverse-DNS metadata keys using
 `CfnResource.addMetadata()`.
-
-Keep free-text values terse — drop articles and use symbols (`->`, `>=`, `w/`) —
-since context competes with resources for the CloudFormation template size limit.
-Prefer `must` for binding rules whose violation breaks something, and `why` for
-reasoning and rejected alternatives.
 
 ## App Context
 
