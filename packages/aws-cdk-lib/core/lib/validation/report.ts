@@ -50,8 +50,10 @@ export interface PolicyViolatingResource {
   /**
    * The logical ID of the resource in the CloudFormation template.
    *
-   * Required for plugin-sourced violations that operate on CloudFormation
-   * templates. Mutually exclusive with `constructPath`.
+   * Intended for plugin-sourced violations that operate on CloudFormation
+   * templates.
+   *
+   * If set, the `constructPath` will be added later.
    *
    * @default - no resource logical ID
    */
