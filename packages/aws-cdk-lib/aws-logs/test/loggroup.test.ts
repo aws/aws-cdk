@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
@@ -145,6 +145,128 @@ describe('log group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupClass: LogGroupClass.STANDARD,
+    });
+  });
+
+  describe('DELIVERY log group class', () => {
+    test('sets the class and does not apply the default retention', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        RetentionInDays: Match.absent(),
+      });
+    });
+
+    test('fails when RetentionDays.INFINITE is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN - retention is not supported for DELIVERY, including INFINITE
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        retention: RetentionDays.INFINITE,
+      })).toThrow(/retention is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('allows an encryption key (KMS is supported for DELIVERY)', () => {
+      // GIVEN
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        encryptionKey: key,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        KmsKeyId: stack.resolve(key.keyArn),
+        RetentionInDays: Match.absent(),
+      });
+    });
+
+    test('allows deletion protection (supported for DELIVERY)', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        deletionProtectionEnabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        DeletionProtectionEnabled: true,
+      });
+    });
+
+    test('fails when retention is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        retention: RetentionDays.ONE_WEEK,
+      })).toThrow(/retention is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('fails when dataProtectionPolicy is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+      const dataProtectionPolicy = new DataProtectionPolicy({
+        name: 'test-policy-name',
+        description: 'test description',
+        identifiers: [DataIdentifier.EMAILADDRESS],
+      });
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        dataProtectionPolicy,
+      })).toThrow(/dataProtectionPolicy is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('fails when fieldIndexPolicies is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+      const fieldIndexPolicy = new FieldIndexPolicy({
+        fields: ['RequestId'],
+      });
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        fieldIndexPolicies: [fieldIndexPolicy],
+      })).toThrow(/fieldIndexPolicies is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('STANDARD class still applies the default retention (backwards compatible)', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.STANDARD,
+      });
+
+      // THEN - the default TWO_YEARS (731 days) retention is unchanged for non-DELIVERY classes
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'STANDARD',
+        RetentionInDays: 731,
+      });
     });
   });
 
