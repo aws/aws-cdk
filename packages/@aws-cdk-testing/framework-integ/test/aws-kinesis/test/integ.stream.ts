@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Size, Stack } from 'aws-cdk-lib';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 
 const app = new App();
@@ -9,6 +9,8 @@ const role = new iam.Role(stack, 'UserRole', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
 
-const stream = new Stream(stack, 'myStream');
+const stream = new Stream(stack, 'myStream', {
+  maxRecordSize: Size.kibibytes(1536),
+});
 
 stream.grantReadWrite(role);
