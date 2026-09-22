@@ -532,10 +532,26 @@ function collectFilePaths(dir: string): string[] {
         // `isDirectory()` is false for a symlink-to-directory, so we never recurse
         // through symlinks (avoids following links out of the cloud assembly / cycles).
         walk(full);
-      } else if (entry.isFile() || entry.isSymbolicLink()) {
-        // Collect regular files and symlinks (including symlink-to-directory). The
-        // symlink is hashed by its target path in hashFile(), never dereferenced.
+      } else if (entry.isFile()) {
+        // collect regular files
         results.push(full);
+      } else if (entry.isSymbolicLink()) {
+        /**
+         * Windows reparse points (OneDrive/Dropbox cloud placeholders, etc.)
+         * are classified as symlinks by readdir but as directories by lstat,
+         * so we implement an extra check with lstat here
+         * @see https://github.com/aws/aws-cdk/issues/38653
+         **/
+        let st: fs.Stats;
+        try {
+          st = fs.lstatSync(full);
+        } catch {
+          // nothing to snapshot
+          continue;
+        }
+        if (st.isFile() || st.isSymbolicLink()) {
+          results.push(full);
+        }
       }
     }
   }
