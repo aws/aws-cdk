@@ -5,6 +5,7 @@ import { FingerprintDiskCache } from './fingerprint-disk-cache';
 import { IgnoreStrategy } from './ignore';
 import type { FingerprintOptions } from './options';
 import { IgnoreMode, SymlinkFollowMode } from './options';
+import type { WalkSymlinkEntry } from './utils';
 import { walkDirectory } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
@@ -70,7 +71,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         ? contentFingerprintWithStats(entry.realPath, entry.stats, cache)
         : contentFingerprintOf(entry.realPath)),
 
-      onSymlink: (entry) => hashLinkTarget(entry.path, entry.linkTarget),
+      onSymlink: (entry) => hashLinkTarget(entry),
 
       onUnsupported: (entry) => {
         throw new UnscopedValidationError(
@@ -96,8 +97,16 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
     _hashField(hash, `file:${hashKey(symbolicPath)}`, contentHash);
   }
 
-  function hashLinkTarget(symbolicPath: string, linkTarget: string) {
-    _hashField(hash, `link:${hashKey(symbolicPath)}`, linkTarget);
+  /**
+   * An absolute target inside the tree is hashed relative to the root, so the asset hash does
+   * not change when the tree moves. Anything else is hashed as written.
+   */
+  function hashLinkTarget(entry: WalkSymlinkEntry) {
+    const target = entry.internal && path.isAbsolute(entry.linkTarget)
+      ? hashKey(entry.resolvedLinkTarget)
+      : entry.linkTarget;
+
+    _hashField(hash, `link:${hashKey(entry.path)}`, target);
   }
 
   function contentFingerprintOf(file: string): string {

@@ -95,6 +95,34 @@ describe('fs copy', () => {
     ]);
   });
 
+  // Built here rather than checked in as a fixture: the link target has to be an absolute path,
+  // which differs per machine, and `fixtures/` is re-extracted from a tarball on every build.
+  test('a link into the tree is copied as a link into the copy, so the copy stands on its own', () => {
+    // GIVEN — 'absolute-link' is written as an absolute path that only reaches back inside the
+    // tree through 'alias', a symlink living outside it. Copied verbatim it would point at the
+    // original tree rather than at the copy.
+    const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'copy-src')));
+    const srcDir = path.join(base, 'root');
+    fs.mkdirSync(path.join(srcDir, 'nested'), { recursive: true });
+    fs.writeFileSync(path.join(srcDir, 'nested', 'file.txt'), 'content');
+    fs.symlinkSync(srcDir, path.join(base, 'alias'));
+    fs.symlinkSync(path.join(base, 'alias', 'nested', 'file.txt'), path.join(srcDir, 'absolute-link'));
+
+    // WHEN — the default follow mode keeps links that point inside the tree as links
+    FileSystem.copyDirectory(srcDir, outdir);
+
+    // THEN
+    expect(tree(outdir)).toEqual([
+      'absolute-link => nested/file.txt',
+      'nested (D)',
+      '    file.txt',
+    ]);
+
+    // The copy still works once the tree it was made from is gone
+    fs.rmSync(base, { force: true, recursive: true });
+    expect(fs.readFileSync(path.join(outdir, 'absolute-link'), 'utf8')).toEqual('content');
+  });
+
   test('exclude', () => {
     // WHEN
     FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1'), outdir, {

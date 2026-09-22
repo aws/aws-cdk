@@ -191,6 +191,40 @@ describe('utils', () => {
       });
     });
 
+    // Where a link points is decided after resolving the symlinks in the directories leading
+    // up to its target, so a link is classified by where its target really sits.
+    describe('a symlink in the path leading to a link target', () => {
+      test('makes a link external when the directory it goes through leaves the tree', () => {
+        fs.mkdirSync(path.join(outside, 'dir'));
+        fs.writeFileSync(path.join(outside, 'dir', 'referent.txt'), 'outside');
+        // '<root>/symdir' is inside the tree but points out of it, so '<root>/nested/via-symdir'
+        // is really pointing at '<outside>/dir/referent.txt'.
+        fs.symlinkSync('../outside/dir', path.join(root, 'symdir'));
+        fs.mkdirSync(path.join(root, 'nested'));
+        fs.symlinkSync('../symdir/referent.txt', path.join(root, 'nested', 'via-symdir'));
+
+        // Followed under EXTERNAL, which only follows what is outside the tree.
+        expect(record({ follow: SymlinkFollowMode.EXTERNAL }).files).toContain('nested/via-symdir');
+        expect(record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL }).symlinks).toContain(
+          'nested/via-symdir => ../symdir/referent.txt (external)',
+        );
+      });
+
+      test('makes a link internal when the directory it goes through comes back into the tree', () => {
+        fs.writeFileSync(path.join(root, 'file.txt'), 'inside');
+        // '<tmp>/alias' is outside the tree and points at its root, so 'via-alias' is really
+        // pointing at '<root>/file.txt'.
+        fs.symlinkSync(root, path.join(tmp, 'alias'));
+        fs.symlinkSync(path.join(tmp, 'alias', 'file.txt'), path.join(root, 'via-alias'));
+
+        // Kept as a link under EXTERNAL, which only follows what is outside the tree.
+        const walked = record({ follow: SymlinkFollowMode.EXTERNAL });
+
+        expect(walked.files).toEqual(['file.txt']);
+        expect(walked.symlinks).toEqual([`via-alias => ${path.join(tmp, 'alias', 'file.txt')}`]);
+      });
+    });
+
     describe('directories', () => {
       test('a followed link to a directory has its contents reported under the link', () => {
         fs.mkdirSync(path.join(outside, 'dir'));
