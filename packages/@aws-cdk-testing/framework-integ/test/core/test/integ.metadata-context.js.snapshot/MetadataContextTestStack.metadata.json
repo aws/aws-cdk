@@ -2,7 +2,9 @@
   "/MetadataContextTestStack/OrderQueue": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
     },
     {
       "type": "aws:cdk:metadata-context",
