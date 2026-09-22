@@ -29,16 +29,16 @@
         }
       }
     },
-    "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f": {
+    "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f",
+        "path": "asset.35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-ee9ec962": {
+        "current_account-current_region-af785a8a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip",
+          "objectKey": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -57,16 +57,16 @@
         }
       }
     },
-    "4ca83ba7bc4f5fa6ee97a0b1ea31a878501ffbe2bf32bfc10fb9837c9c2dc595": {
+    "f4d5772c278195ca9df3119339b2f8361b10eda75c79f17f238d7da3630daa6f": {
       "displayName": "test-bucket-deployment-cloudfront Template",
       "source": {
         "path": "test-bucket-deployment-cloudfront.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-58f570fd": {
+        "current_account-current_region-02dd4279": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4ca83ba7bc4f5fa6ee97a0b1ea31a878501ffbe2bf32bfc10fb9837c9c2dc595.json",
+          "objectKey": "f4d5772c278195ca9df3119339b2f8361b10eda75c79f17f238d7da3630daa6f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
