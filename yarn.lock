@@ -2354,10 +2354,10 @@
     "@smithy/types" "^4.16.0"
     tslib "^2.6.2"
 
-"@aws/cloudformation-validate@1.11.0":
-  version "1.11.0"
-  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.11.0.tgz#965c22ec4e444b978853123364656be8fd300b98"
-  integrity sha512-kWNZKesoRwFpSTRVHx492svn3MHXVPXX6hBMZ6CN4daWgSOdp9s60q5K/xUc6ZoYWFSQyMS1N5ooV+f1dIWphg==
+"@aws/cloudformation-validate@1.12.0":
+  version "1.12.0"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.12.0.tgz#6176490bf5366b8046330da0ba36f1ac8512e32f"
+  integrity sha512-ZZ97yD94K8Kno6IDQJK86tBY9/bct0OHjiSx8K/Y6CRaCEKEva1iyteIP6AqXbT0POWYiRxTiXpafbVI6V2GZQ==
 
 "@aws/lambda-invoke-store@^0.3.0":
   version "0.3.0"
