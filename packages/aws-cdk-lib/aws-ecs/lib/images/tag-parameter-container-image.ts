@@ -20,7 +20,7 @@ export interface TagParameterContainerImageProps {
    *
    * @default false
    */
-  readonly imageDigest?: boolean;
+  readonly isImageDigest?: boolean;
 }
 
 /**
@@ -34,13 +34,13 @@ export interface TagParameterContainerImageProps {
  */
 export class TagParameterContainerImage extends ContainerImage {
   private readonly repository: ecr.IRepository;
-  private readonly imageDigest: boolean;
+  private readonly isImageDigest: boolean;
   private imageTagParameter?: cdk.CfnParameter;
 
   public constructor(repository: ecr.IRepository, props: TagParameterContainerImageProps = {}) {
     super();
     this.repository = repository;
-    this.imageDigest = props.imageDigest ?? false;
+    this.isImageDigest = props.isImageDigest ?? false;
   }
 
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
@@ -48,7 +48,7 @@ export class TagParameterContainerImage extends ContainerImage {
     const imageTagParameter = new cdk.CfnParameter(scope, 'ImageTagParam');
     this.imageTagParameter = imageTagParameter;
     return {
-      imageName: this.imageDigest
+      imageName: this.isImageDigest
         ? this.repository.repositoryUriForDigest(imageTagParameter.valueAsString)
         : this.repository.repositoryUriForTag(imageTagParameter.valueAsString),
     };

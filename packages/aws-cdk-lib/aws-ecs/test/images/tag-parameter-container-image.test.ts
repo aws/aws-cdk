@@ -64,11 +64,11 @@ describe('tag parameter container image', () => {
       });
     });
 
-    test('synthesizes image URI with "@" separator when imageDigest is true', () => {
+    test('synthesizes image URI with "@" separator when isImageDigest is true', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const repository = new ecr.Repository(stack, 'Repository');
-      const tagParameterContainerImage = new ecs.TagParameterContainerImage(repository, { imageDigest: true });
+      const tagParameterContainerImage = new ecs.TagParameterContainerImage(repository, { isImageDigest: true });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 
       // WHEN
