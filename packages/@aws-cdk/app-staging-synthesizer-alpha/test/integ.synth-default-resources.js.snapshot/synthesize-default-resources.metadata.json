@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:18:15)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:51:15)",
         "...node internals..."
       ]
     }
@@ -62,9 +62,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:24:1)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:57:1)",
         "...node internals..."
       ]
     }
@@ -101,9 +100,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:39:1)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:72:1)",
         "...node internals..."
       ]
     }
@@ -140,9 +138,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:47:1)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:80:1)",
         "...node internals..."
       ]
     }
@@ -163,11 +160,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:24:1)",
+        "new Role (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:57:1)",
         "...node internals..."
       ]
     }
@@ -186,11 +181,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:24:1)",
+        "new LogGroup (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:57:1)",
         "...node internals..."
       ]
     }
@@ -203,11 +196,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:39:1)",
+        "new Role (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:72:1)",
         "...node internals..."
       ]
     }
@@ -220,11 +211,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:39:1)",
+        "new LogGroup (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:72:1)",
         "...node internals..."
       ]
     }
@@ -237,11 +226,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:47:1)",
+        "new Role (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:80:1)",
         "...node internals..."
       ]
     }
@@ -254,11 +241,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:47:1)",
+        "new LogGroup (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:814:34)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:80:1)",
         "...node internals..."
       ]
     }

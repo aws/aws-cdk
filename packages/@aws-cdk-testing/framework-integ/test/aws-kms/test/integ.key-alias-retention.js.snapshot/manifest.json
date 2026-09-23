@@ -1,75 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "synthesize-default-resources.assets": {
+    "KeyAliasRetentionStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "synthesize-default-resources.assets.json"
-      },
-      "dependencies": [
-        "StagingStack-default-resourcesmax-ACCOUNT-REGION"
-      ]
-    },
-    "synthesize-default-resources": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "synthesize-default-resources.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "additionalDependencies": [
-          "synthesize-default-resources.assets"
-        ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/acfe7519eb1a112b48493b56fa6bdce07f09ca5160db91d9cf0fe4b48cda6b3c.json",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      },
-      "dependencies": [
-        "StagingStack-default-resourcesmax-ACCOUNT-REGION",
-        "synthesize-default-resources.assets"
-      ],
-      "additionalMetadataFile": "synthesize-default-resources.metadata.json",
-      "displayName": "synthesize-default-resources"
-    },
-    "StagingStack-default-resourcesmax-ACCOUNT-REGION": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackName": "StagingStack-default-resourcesmax"
-      },
-      "additionalMetadataFile": "StagingStack-default-resourcesmax-ACCOUNT-REGION.metadata.json",
-      "displayName": "StagingStack-default-resourcesmax-ACCOUNT-REGION"
-    },
-    "integtestsDefaultTestDeployAssert44C8D370.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "integtestsDefaultTestDeployAssert44C8D370.assets.json",
+        "file": "KeyAliasRetentionStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestsDefaultTestDeployAssert44C8D370": {
+    "KeyAliasRetentionStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestsDefaultTestDeployAssert44C8D370.template.json",
+        "templateFile": "KeyAliasRetentionStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e1d528d82e07b933dd4d2ec9518d1ee43bd8d9d8c612eacd03f1312a17b9e51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestsDefaultTestDeployAssert44C8D370.assets"
+          "KeyAliasRetentionStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -78,10 +31,45 @@
         }
       },
       "dependencies": [
-        "integtestsDefaultTestDeployAssert44C8D370.assets"
+        "KeyAliasRetentionStack.assets"
       ],
-      "additionalMetadataFile": "integtestsDefaultTestDeployAssert44C8D370.metadata.json",
-      "displayName": "integ-tests/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "KeyAliasRetentionStack.metadata.json",
+      "displayName": "KeyAliasRetentionStack"
+    },
+    "kmskeyaliasretentionDefaultTestDeployAssert579103E2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "kmskeyaliasretentionDefaultTestDeployAssert579103E2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "kmskeyaliasretentionDefaultTestDeployAssert579103E2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "kmskeyaliasretentionDefaultTestDeployAssert579103E2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/005e53f7d37933fa8277e0cbbcc538c839e68d3db42ce539509dd26af881fc43.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "kmskeyaliasretentionDefaultTestDeployAssert579103E2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "kmskeyaliasretentionDefaultTestDeployAssert579103E2.assets"
+      ],
+      "additionalMetadataFile": "kmskeyaliasretentionDefaultTestDeployAssert579103E2.metadata.json",
+      "displayName": "kms-key-alias-retention/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

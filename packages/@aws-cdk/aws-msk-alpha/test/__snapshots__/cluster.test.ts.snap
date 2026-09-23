@@ -1040,6 +1040,7 @@ exports[`MSK Cluster created with authentication enabled with combinations of sa
       "UpdateReplacePolicy": "Retain",
     },
     "kafkaSASLKeyAlias7A73E101": {
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AliasName": "alias/msk/test-cluster/sasl/scram",
         "TargetKeyId": {
@@ -1050,6 +1051,7 @@ exports[`MSK Cluster created with authentication enabled with combinations of sa
         },
       },
       "Type": "AWS::KMS::Alias",
+      "UpdateReplacePolicy": "Retain",
     },
     "sg1fromsg32181E6F4C07E": {
       "Properties": {

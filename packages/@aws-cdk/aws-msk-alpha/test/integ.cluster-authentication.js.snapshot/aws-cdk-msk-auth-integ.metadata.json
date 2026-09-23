@@ -1,14 +1,14 @@
 {
-  "/ScramSecretTestStack": [
+  "/aws-cdk-msk-auth-integ": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:12:15)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc": [
+  "/aws-cdk-msk-auth-integ/VPC": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -17,42 +17,63 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Cluster": [
+  "/aws-cdk-msk-auth-integ/CertificateAuthority": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificateAuthority"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:47:27)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "Description",
+      "data": "Signing authority for Certificates"
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Certificate": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Certificate"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:62:22)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "Description",
+      "data": "Certificate for signing requests from MSK-Cluster"
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/CertificateActivation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificateActivation"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:71:32)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
     }
   ],
-  "/ScramSecretTestStack/AWS679f53fac002430cb0da5b7982bd2287": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:is-custom-resource-handler-singleton",
-      "data": true
-    },
-    {
-      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 0
-    }
-  ],
-  "/ScramSecretTestStack/BootstrapVersion": [
+  "/aws-cdk-msk-auth-integ/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -73,7 +94,7 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/CheckBootstrapVersion": [
+  "/aws-cdk-msk-auth-integ/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
@@ -94,21 +115,22 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/Resource": [
+  "/aws-cdk-msk-auth-integ/VPC/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "Vpc8378EB38"
+      "data": "VPCB9E5F0B4"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -144,7 +166,7 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -180,7 +202,7 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet1": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -208,7 +230,7 @@
       "data": {}
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet2": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -236,35 +258,37 @@
       "data": {}
     }
   ],
-  "/ScramSecretTestStack/Vpc/IGW": [
+  "/aws-cdk-msk-auth-integ/VPC/IGW": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcIGWD7BA715C"
+      "data": "VPCIGWB7E252D3"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/VPCGW": [
+  "/aws-cdk-msk-auth-integ/VPC/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcVPCGWBF912B6E"
+      "data": "VPCVPCGW99B986DC"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Cluster/SecurityGroup": [
+  "/aws-cdk-msk-auth-integ/Cluster/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -273,7 +297,7 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Cluster/SASLKey": [
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -282,7 +306,7 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Cluster/Resource": [
+  "/aws-cdk-msk-auth-integ/Cluster/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterEB0386A7"
@@ -291,104 +315,16 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:486:30)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:14:17)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Cluster/KafkaUserinteg-user-1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "secretName": "*",
-        "generateSecretString": {
-          "secretStringTemplate": "*",
-          "generateStringKey": "*"
-        },
-        "encryptionKey": "*"
-      }
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/KafkaUserinteg-user-2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "secretName": "*",
-        "generateSecretString": {
-          "secretStringTemplate": "*",
-          "generateStringKey": "*"
-        },
-        "encryptionKey": "*"
-      }
-    }
-  ],
-  "/ScramSecretTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/ScramSecretTestStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
-        "new SingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
-        "new AwsCustomResourceSingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
-        "new AwsCustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
-        "WrappedClass.addUser (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:666:17)",
-        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefClusterEB0386A796A0E3FE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
-        "createImportValue (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
-        "resolveValue (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
-        "resolveReferences (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
-        "prepareApp (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
-        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)",
-        "process.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:157:51)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/Subnet": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+      "data": "VPCPublicSubnet1SubnetB4246D30"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -403,10 +339,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/RouteTable": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -421,10 +357,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -439,10 +375,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/DefaultRoute": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -452,15 +388,16 @@
         "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
         "Array.forEach (:)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/EIP": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/EIP": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1EIPD7E02669"
+      "data": "VPCPublicSubnet1EIP6AD938E8"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -470,15 +407,16 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet1/NATGateway": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -488,15 +426,16 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/Subnet": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2Subnet691E08A3"
+      "data": "VPCPublicSubnet2Subnet74179F39"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -511,10 +450,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/RouteTable": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2RouteTable94F7E489"
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -529,10 +468,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -547,10 +486,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/DefaultRoute": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -560,15 +499,16 @@
         "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
         "Array.forEach (:)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/EIP": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/EIP": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2EIP3C605A87"
+      "data": "VPCPublicSubnet2EIP4947BC00"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -578,15 +518,16 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PublicSubnet2/NATGateway": [
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/NATGateway": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPublicSubnet2NATGateway9182C01D"
+      "data": "VPCPublicSubnet2NATGateway3C070193"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -596,15 +537,16 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet1/Subnet": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet1Subnet536B997A"
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -619,10 +561,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet1/RouteTable": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -637,10 +579,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -655,10 +597,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -669,15 +611,16 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet2/Subnet": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -692,10 +635,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet2/RouteTable": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2RouteTableA678073B"
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -710,10 +653,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -728,10 +671,10 @@
       ]
     }
   ],
-  "/ScramSecretTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -742,12 +685,13 @@
         "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
         "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
         "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:13:13)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Cluster/SecurityGroup/Resource": [
+  "/aws-cdk-msk-auth-integ/Cluster/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterSecurityGroup0921994B"
@@ -757,12 +701,13 @@
       "data": [
         "new SecurityGroup (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
         "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:297:21)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:14:17)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Cluster/SASLKey/Resource": [
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterSASLKeyC4AE65F3"
@@ -772,12 +717,13 @@
       "data": [
         "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:700:30)",
         "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:448:51)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:14:17)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
   ],
-  "/ScramSecretTestStack/Cluster/SASLKey/Alias": [
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Alias": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -787,149 +733,7 @@
       }
     }
   ],
-  "/ScramSecretTestStack/Cluster/KafkaUserinteg-user-1/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterKafkaUserinteguser1F3911C0D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Secret (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:542:30)",
-        "/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658: (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658:6)",
-        "Array.map (:)",
-        "WrappedClass.addUser (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658:43)",
-        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:21:9)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/KafkaUserinteg-user-2/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterKafkaUserinteguser2F4FA232D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Secret (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:542:30)",
-        "/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658: (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658:6)",
-        "Array.map (:)",
-        "WrappedClass.addUser (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:658:43)",
-        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:21:9)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/BatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1/Provider": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/BatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1/Resource": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/BatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1/CustomResourcePolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/ScramSecretTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Function (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
-        "new SingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
-        "new AwsCustomResourceSingletonFunction (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
-        "new AwsCustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)"
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/SASLKey/Alias/Resource": [
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Alias/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterSASLKeyAliasCBD2665F"
@@ -941,41 +745,8 @@
         "WrappedClass.addAlias (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:152:27)",
         "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:720:22)",
         "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:448:51)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:14:17)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/BatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1/Resource/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterBatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a14F8F55B8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new AwsCustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
-        "WrappedClass.addUser (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:666:17)",
-        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:21:9)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/ScramSecretTestStack/Cluster/BatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1/CustomResourcePolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterBatchAssociateScramSecretsc88b10fc663ab7b14e8805011637e178797e4e55a1CustomResourcePolicy39D2933D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new AwsCustomResource (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
-        "WrappedClass.addUser (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:666:17)",
-        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.add-cluster-user.js:21:9)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
         "...node internals..."
       ]
     }
