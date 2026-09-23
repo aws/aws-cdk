@@ -1,0 +1,102 @@
+{
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/DistributionDomainName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionDomainName"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/EndpointArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointArn"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Endpoint/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Endpoint/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyA1BBD448"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Distribution/Origin1/MediaPackageV2OAC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront-origin/Distribution/Origin1/MediaPackageV2OAC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionOrigin1MediaPackageV2OAC7A801A77"
+    }
+  ]
+}

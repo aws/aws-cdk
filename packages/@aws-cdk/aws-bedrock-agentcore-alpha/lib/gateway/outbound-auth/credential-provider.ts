@@ -1,17 +1,21 @@
 import type { IResolvable } from 'aws-cdk-lib';
 import type { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
-import type { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import type { ApiKeyCredentialProviderProps } from './api-key';
+import type { Grant } from 'aws-cdk-lib/aws-iam';
+import type { ApiKeyCredentialLocation, ApiKeyCredentialProviderProps } from './api-key';
 import { ApiKeyCredentialProviderConfiguration } from './api-key';
 import { GatewayIamRoleCredentialProviderConfig } from './iam-role';
 import type { OAuthConfiguration } from './oauth';
 import { OAuthCredentialProviderConfiguration } from './oauth';
+import type { IApiKeyCredentialProvider } from '../../identity/api-key-credential-provider';
+import type { IOAuth2CredentialProvider } from '../../identity/oauth2-credential-provider';
+import type { IGateway } from '../gateway-base';
 
 /******************************************************************************
  *                                 Enums
  *****************************************************************************/
 /**
  * Credential provider types supported by gateway target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum CredentialProviderType {
   /**
@@ -36,6 +40,7 @@ export enum CredentialProviderType {
 
 /**
  * Abstract interface for gateway credential provider configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ICredentialProviderConfig {
   /**
@@ -50,15 +55,65 @@ export interface ICredentialProviderConfig {
   _render(): CfnGatewayTarget.CredentialProviderConfigurationProperty | IResolvable;
 
   /**
-   * Grant the role the permissions
+   * Grant the gateway's execution role the permissions needed for outbound authentication.
+   * @param gateway The gateway whose role needs outbound auth permissions [disable-awslint:prefer-ref-interface]
    */
-  grantNeededPermissionsToRole(role: IRole): Grant | undefined;
+  grantNeededPermissionsToRole(gateway: IGateway): Grant | undefined;
+}
+
+/**
+ * Optional gateway settings when binding an {@link IApiKeyCredentialProvider} to a target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export interface FromApiKeyIdentityOptions {
+  /**
+   * Where to place the API key on outbound requests.
+   *
+   * @default header `Authorization` with `Bearer ` prefix
+   */
+  readonly credentialLocation?: ApiKeyCredentialLocation;
+}
+
+/**
+ * OAuth scopes (and optional custom parameters) when binding an {@link IOAuth2CredentialProvider} to a gateway target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export interface FromOauthIdentityOptions {
+  /**
+   * OAuth scopes the gateway should request for this target.
+   */
+  readonly scopes: string[];
+
+  /**
+   * Additional OAuth parameters for the provider.
+   *
+   * @default - none
+   */
+  readonly customParameters?: { [key: string]: string };
 }
 
 /**
  * Factory class for creating different Gateway Credential Providers
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayCredentialProvider {
+  /**
+   * Create an API key outbound auth configuration from a Token Vault {@link IApiKeyCredentialProvider} construct.
+   *
+   * Prefer this over {@link GatewayCredentialProvider.fromApiKeyIdentityArn} when the provider is defined in CDK.
+   */
+  public static fromApiKeyIdentity(
+    provider: IApiKeyCredentialProvider,
+    options: FromApiKeyIdentityOptions = {},
+  ): ICredentialProviderConfig {
+    const binding = provider.bindForGatewayApiKeyTarget();
+    return new ApiKeyCredentialProviderConfiguration({
+      providerArn: binding.providerArn,
+      secretArn: binding.secretArn,
+      credentialLocation: options.credentialLocation,
+    });
+  }
+
   /**
    * Create an API key credential provider from Identity ARN
    * Use this method when you have the Identity ARN as a string
@@ -67,6 +122,24 @@ export abstract class GatewayCredentialProvider {
    */
   public static fromApiKeyIdentityArn(props: ApiKeyCredentialProviderProps): ICredentialProviderConfig {
     return new ApiKeyCredentialProviderConfiguration(props);
+  }
+
+  /**
+   * Create an OAuth outbound auth configuration from a Token Vault {@link IOAuth2CredentialProvider} construct.
+   *
+   * Prefer this over {@link GatewayCredentialProvider.fromOauthIdentityArn} when the provider is defined in CDK.
+   */
+  public static fromOauthIdentity(
+    provider: IOAuth2CredentialProvider,
+    options: FromOauthIdentityOptions,
+  ): ICredentialProviderConfig {
+    const binding = provider.bindForGatewayOAuthTarget(options.scopes, options.customParameters);
+    return new OAuthCredentialProviderConfiguration({
+      providerArn: binding.providerArn,
+      secretArn: binding.secretArn,
+      scopes: binding.scopes,
+      customParameters: binding.customParameters,
+    });
   }
 
   /**

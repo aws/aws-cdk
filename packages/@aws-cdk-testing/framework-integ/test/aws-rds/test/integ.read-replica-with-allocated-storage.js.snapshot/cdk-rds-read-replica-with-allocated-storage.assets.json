@@ -1,16 +1,16 @@
 {
-  "version": "50.0.0",
+  "version": "54.0.0",
   "files": {
-    "7ac3ce09a9fd8ca84513c17bd7e7d18d55d931c69ab0f0b2178f2f7244fe8256": {
+    "487fa49e24012c8a90f237ee899dfbf4922e0fd318f74f21c6208359a53eddfe": {
       "displayName": "cdk-rds-read-replica-with-allocated-storage Template",
       "source": {
         "path": "cdk-rds-read-replica-with-allocated-storage.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-51beefe5": {
+        "current_account-current_region-008b0257": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7ac3ce09a9fd8ca84513c17bd7e7d18d55d931c69ab0f0b2178f2f7244fe8256.json",
+          "objectKey": "487fa49e24012c8a90f237ee899dfbf4922e0fd318f74f21c6208359a53eddfe.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

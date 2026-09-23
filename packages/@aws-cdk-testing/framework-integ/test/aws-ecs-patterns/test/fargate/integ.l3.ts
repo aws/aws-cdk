@@ -22,7 +22,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService'
 });
 
 // Create NLB service
-new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
+const nlbFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -30,6 +30,7 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
 });
+nlbFargateService.service.connections.allowFrom(nlbFargateService.loadBalancer, ec2.Port.tcp(80));
 
 new integ.IntegTest(app, 'l3FargateTest', {
   testCases: [stack],

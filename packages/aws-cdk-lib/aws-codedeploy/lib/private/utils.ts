@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
 import type { Stack, IEnvironmentAware } from '../../../core';
-import { Token, ArnFormat, Arn, Fn, Aws, ValidationError } from '../../../core';
+import { Token, ArnFormat, Arn, Aws, ValidationError } from '../../../core';
 import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -15,11 +15,6 @@ export function arnForApplication(stack: Stack, applicationName: string): string
     resourceName: applicationName,
     arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   });
-}
-
-export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
-  const components = Arn.split(deploymentGroupArn, ArnFormat.COLON_RESOURCE_NAME);
-  return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
 export function arnForDeploymentConfig(name: string, resource?: IEnvironmentAware): string {

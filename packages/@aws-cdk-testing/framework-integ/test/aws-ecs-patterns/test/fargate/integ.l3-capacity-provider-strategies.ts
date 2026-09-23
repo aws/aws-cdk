@@ -35,7 +35,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateService'
 });
 
 // Create NLB service with capacity provider storategies
-new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
+const nlbFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -55,9 +55,16 @@ new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateService', {
     },
   ],
 });
+nlbFargateService.service.connections.allowFrom(nlbFargateService.loadBalancer, ec2.Port.tcp(80));
 
 new integ.IntegTest(app, 'l3CapacityProviderStrategiesTest', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

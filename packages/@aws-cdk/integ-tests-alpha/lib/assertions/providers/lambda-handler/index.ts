@@ -80,11 +80,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 export async function onTimeout(timeoutEvent: any) {
   // the event payload is passed through the `errorMessage` in the state machine
   // timeout event
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
-  const provider = createResourceHandler(isCompleteRequest, standardContext);
+  const eventPayload = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
+  const provider = createResourceHandler(eventPayload, standardContext);
   await provider.respond({
     status: 'FAILED',
-    reason: 'Operation timed out: ' + JSON.stringify(isCompleteRequest),
+    // Only the properties to the IsComplete Resource need to be included.
+    reason: 'Operation timed out: ' + JSON.stringify(eventPayload.ResourceProperties),
   });
 }
 

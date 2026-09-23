@@ -245,6 +245,29 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
+  test('linuxParameters without devices or tmpfs omits those properties', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        linuxParameters: new LinuxParameters(stack, 'linuxParameters', {
+          initProcessEnabled: true,
+        }),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        LinuxParameters: {
+          InitProcessEnabled: true,
+          Devices: Match.absent(),
+          Tmpfs: Match.absent(),
+        },
+      },
+    });
+  });
+
   test('respects logging', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {

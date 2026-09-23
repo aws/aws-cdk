@@ -33,6 +33,10 @@ const customEvaluator = new agentcore.Evaluator(stack, 'CustomEvaluator', {
       { label: 'Bad', definition: 'The response fails to address the query or contains inaccurate information.' },
     ]),
   }),
+  tags: {
+    Environment: 'IntegTest',
+    Team: 'CDKAbstractions',
+  },
 });
 
 // Create an online evaluation configuration with built-in and custom evaluators
@@ -49,10 +53,13 @@ new agentcore.OnlineEvaluationConfig(stack, 'BasicEvaluation', {
   }),
   description: 'Integration test evaluation with built-in and custom evaluators',
   executionStatus: agentcore.ExecutionStatus.ENABLED,
+  tags: {
+    Environment: 'IntegTest',
+    Project: 'OnlineEval',
+  },
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreOnlineEvaluation', {
   testCases: [stack],
 });
 
-app.synth();

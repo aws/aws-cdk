@@ -72,7 +72,7 @@
           {
            "Ref": "AWS::Region"
           },
-          "::foundation-model/amazon.titan-text-express-v1"
+          "::foundation-model/amazon.nova-micro-v1:0"
          ]
         ]
        }
@@ -153,7 +153,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Prompt1\",\"States\":{\"Prompt1\":{\"Next\":\"Prompt2\",\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       "{\"StartAt\":\"Prompt1\",\"States\":{\"Prompt1\":{\"Next\":\"Prompt2\",\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -165,14 +165,14 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       "::foundation-model/amazon.nova-micro-v1:0\",\"Body\":{\"messages\":[{\"role\":\"user\",\"content\":[{\"text\":\"test attack\"}]}],\"inferenceConfig\":{\"maxNewTokens\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
        {
         "Fn::GetAtt": [
          "Guardrail",
          "GuardrailId"
         ]
        },
-       "\",\"GuardrailVersion\":\"DRAFT\",\"Trace\":\"ENABLED\"}},\"Prompt2\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$\",\"ResultSelector\":{\"output.$\":\"$.Body.results[0].outputText\"},\"Resource\":\"arn:",
+       "\",\"GuardrailVersion\":\"DRAFT\",\"Trace\":\"ENABLED\"}},\"Prompt2\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -184,7 +184,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "::foundation-model/amazon.titan-text-express-v1\",\"Body\":{\"inputText\":\"test attack\",\"textGenerationConfig\":{\"maxTokenCount\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
+       "::foundation-model/amazon.nova-micro-v1:0\",\"Body\":{\"messages\":[{\"role\":\"user\",\"content\":[{\"text\":\"test attack\"}]}],\"inferenceConfig\":{\"maxNewTokens\":100,\"temperature\":1}},\"GuardrailIdentifier\":\"",
        {
         "Fn::GetAtt": [
          "Guardrail",

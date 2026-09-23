@@ -70,7 +70,10 @@ class AwsCdkSdkJsStack extends cdk.Stack {
         effect: iam.Effect.ALLOW,
         resources: ['*'],
         actions: [
-          'ssm:*',
+          'ssm:GetParameter',
+          'ssm:GetParameters',
+          'ssm:GetParametersByPath',
+          'ssm:DescribeParameters',
         ],
       }),
     );

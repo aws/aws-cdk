@@ -331,6 +331,14 @@ export class MaturitySetting extends ValidationRule {
       maturity = 'deprecated';
     }
 
+    if (maturity === 'developer-preview') {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Maturity "developer-preview" is no longer supported. Use "experimental" instead',
+      });
+      return;
+    }
+
     const packageLevels = this.determinePackageLevels(pkg);
 
     const hasL1s = packageLevels.some(level => level === 'l1');
@@ -435,7 +443,6 @@ export class MaturitySetting extends ValidationRule {
 const MATURITY_TO_STABILITY: Record<string, string> = {
   'cfn-only': 'experimental',
   'experimental': 'experimental',
-  'developer-preview': 'experimental',
   'stable': 'stable',
   'deprecated': 'deprecated',
 };
@@ -480,12 +487,20 @@ export class FeatureStabilityRule extends ValidationRule {
   private readonly badges: { [key: string]: string } = {
     'Not Implemented': 'https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge',
     'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
-    'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
     'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
   };
 
   public validate(pkg: PackageJson): void {
     if (pkg.json.private || !pkg.json.features) {
+      return;
+    }
+
+    const hasDevPreview = pkg.json.features.some((f: { stability: string }) => f.stability === 'Developer Preview');
+    if (hasDevPreview) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Feature stability "Developer Preview" is no longer supported. Use "Experimental" instead',
+      });
       return;
     }
 
@@ -549,7 +564,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
+    const noticeOrder = ['Experimental', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     for (const notice of filteredNotices) {

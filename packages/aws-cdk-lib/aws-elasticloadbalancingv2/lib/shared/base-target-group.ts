@@ -324,7 +324,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * Attributes of this target group
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: IBox<Attributes> = Box.fromValue({});
 
   private readonly _healthCheck: IBox<HealthCheck>;
   private readonly _targetType: IBox<TargetType | undefined>;
@@ -391,7 +391,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
-    this._targetsJson = Box.fromArray([]);
+    this._targetsJson = Box.fromArray();
 
     this._healthCheck = Box.fromValue<HealthCheck>(baseProps.healthCheck || {});
     this.vpc = baseProps.vpc;
@@ -399,7 +399,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
+      targetGroupAttributes: this.attributes.derive(renderAttributes).derive(v => v.length === 0 ? undefined : v),
       targetType: cdk.Token.asString(this._targetType),
       targets: this._targetsJson,
       vpcId: cdk.Token.asString(
@@ -482,7 +482,10 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       }
     }
 
-    this.attributes[key] = value;
+    this.attributes.update(attrs => {
+      attrs[key] = value;
+      return attrs;
+    });
   }
 
   /**

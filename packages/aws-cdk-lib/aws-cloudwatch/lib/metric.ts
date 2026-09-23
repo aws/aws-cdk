@@ -1,10 +1,10 @@
 import type { Construct, IConstruct } from 'constructs';
 import type { ComparisonOperator } from './alarm';
 import { Alarm } from './alarm';
-import type { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
+import type { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
 import type { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { normalizeStatistic, parseStatistic, parseStatisticToFields } from './private/statistic';
 import { Stats } from './stats';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
@@ -493,12 +493,12 @@ export class Metric implements IMetric {
     this.metricName = props.metricName;
 
     const parsedStat = parseStatistic(props.statistic || Stats.AVERAGE);
-    if (parsedStat.type === 'generic') {
+    if (parsedStat.type === 'unparseable') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
       const label = props.label ? `, label "${props.label}"` : '';
 
-      const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
+      const warning = `Unrecognized statistic "${parsedStat.originalInput}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
         ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
         ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
@@ -634,22 +634,14 @@ export class Metric implements IMetric {
       throw new cdk.UnscopedValidationError(lit`MathExpressionNotSupportedInAlarm`, 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    const parsed = parseStatistic(metricConfig.metricStat.statistic);
-
-    let extendedStatistic: string | undefined = undefined;
-    if (parsed.type === 'single') {
-      extendedStatistic = singleStatisticToString(parsed);
-    } else if (parsed.type === 'pair') {
-      extendedStatistic = pairStatisticToString(parsed);
-    }
+    const fields = parseStatisticToFields(metricConfig.metricStat.statistic);
 
     return {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
-      extendedStatistic,
+      ...fields,
       unit: this.unit,
     };
   }
@@ -1140,7 +1132,13 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+  // Remove CDK token patterns before extracting identifiers
+  // Token format: ${Token[TOKEN.123]} or ${Token[TOKEN.456]}
+  const withoutTokens = x.replace(/\$\{Token\[[^\]]+\]\}/g, '');
+  // Remove quoted strings (single and double) so we don't extract identifiers from string arguments
+  // CloudWatch math expressions use both quote styles: METRICS("errors"), DB_PERF_INSIGHTS('RDS', ...)
+  const withoutStrings = withoutTokens.replace(/"[^"]*"|'[^']*'/g, '');
+  return Array.from(matchAll(withoutStrings, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**

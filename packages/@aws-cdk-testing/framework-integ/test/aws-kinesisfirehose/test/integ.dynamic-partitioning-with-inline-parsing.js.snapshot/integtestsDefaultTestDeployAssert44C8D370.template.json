@@ -27,7 +27,7 @@
      "Record": "{\"Data\":\"{\\\"foo\\\":\\\"recordA\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition1\\\",\\\"blah\\\":\\\"blah\\\"},\\\"data\\\":\\\"data1\\\"}{\\\"foo\\\":\\\"recordB\\\",\\\"bar\\\":{\\\"baz\\\":\\\"Partition2\\\",\\\"blah\\\":\\\"quux\\\"},\\\"data\\\":\\\"data2\\\"}{\\\"data\\\":\\\"data3\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1769746132468"
+    "salt": "1779973496983"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -130,12 +130,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -179,7 +179,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769746132469"
+    "salt": "1779973496984"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -393,12 +393,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -435,12 +435,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -484,7 +484,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769746132472"
+    "salt": "1779973496988"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -638,7 +638,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1769746132473"
+    "salt": "1779973496989"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Capture } from 'aws-cdk-lib/assertions';
+import { CfnCrawler } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as glue from '../lib';
 import { TriggerSchedule } from '../lib/triggers/trigger-options';
@@ -24,14 +25,13 @@ describe('Workflow and Triggers', () => {
       script: glue.Code.fromAsset('test/job-script/hello_world.py'),
       role,
       glueVersion: glue.GlueVersion.V4_0,
-      workerType: glue.WorkerType.G_1X,
-      numberOfWorkers: 10,
+      workerConfiguration: { workerType: glue.WorkerType.G_1X, numberOfWorkers: 10 },
     });
   });
 
   test('creates a workflow with triggers and actions', () => {
     workflow.addOnDemandTrigger('OnDemandTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Workflow', {
@@ -65,13 +65,10 @@ describe('Workflow and Triggers', () => {
 
   test('creates a workflow with conditional trigger', () => {
     workflow.addConditionalTrigger('ConditionalTrigger', {
-      actions: [{ job }],
+      actions: [glue.Action.job(job)],
       predicate: {
         conditions: [
-          {
-            job,
-            state: glue.JobState.SUCCEEDED,
-          },
+          glue.Condition.job(job, glue.JobState.SUCCEEDED),
         ],
       },
     });
@@ -118,8 +115,9 @@ describe('Workflow and Triggers', () => {
   });
 
   test('creates a workflow with daily scheduled trigger', () => {
-    workflow.addDailyScheduledTrigger('DailyScheduledTrigger', {
-      actions: [{ job }],
+    workflow.addScheduledTrigger('DailyScheduledTrigger', {
+      actions: [glue.Action.job(job)],
+      schedule: TriggerSchedule.daily(),
       startOnCreation: true,
     });
 
@@ -151,8 +149,9 @@ describe('Workflow and Triggers', () => {
   });
 
   test('creates a workflow with weekly scheduled trigger', () => {
-    workflow.addWeeklyScheduledTrigger('WeeklyScheduledTrigger', {
-      actions: [{ job }],
+    workflow.addScheduledTrigger('WeeklyScheduledTrigger', {
+      actions: [glue.Action.job(job)],
+      schedule: TriggerSchedule.weekly(),
       startOnCreation: false,
     });
 
@@ -190,8 +189,8 @@ describe('Workflow and Triggers', () => {
       weekDay: 'THU',
     });
 
-    workflow.addCustomScheduledTrigger('CustomScheduledTrigger', {
-      actions: [{ job }],
+    workflow.addScheduledTrigger('CustomScheduledTrigger', {
+      actions: [glue.Action.job(job)],
       schedule: customSchedule,
       startOnCreation: true,
     });
@@ -223,9 +222,9 @@ describe('Workflow and Triggers', () => {
     );
   });
 
-  test('creates a workflow with notify event trigger', () => {
-    workflow.addNotifyEventTrigger('NotifyEventTrigger', {
-      actions: [{ job }],
+  test('creates a workflow with event trigger', () => {
+    workflow.addEventTrigger('EventTrigger', {
+      actions: [glue.Action.job(job)],
       eventBatchingCondition: {
         batchSize: 10,
         batchWindow: cdk.Duration.minutes(5),
@@ -265,6 +264,86 @@ describe('Workflow and Triggers', () => {
       }),
     );
   });
+
+  test('renders a crawler action with its options', () => {
+    const crawler = CfnCrawler.fromCrawlerName(stack, 'ImportedCrawler', 'my-crawler');
+
+    workflow.addOnDemandTrigger('OnDemandTrigger', {
+      actions: [glue.Action.crawler(crawler, {
+        timeout: cdk.Duration.minutes(30),
+      })],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'ON_DEMAND',
+      Actions: [{
+        CrawlerName: 'my-crawler',
+        Timeout: 30,
+      }],
+    });
+  });
+
+  test('renders a crawler condition', () => {
+    const crawler = CfnCrawler.fromCrawlerName(stack, 'ImportedCrawler', 'my-crawler');
+
+    workflow.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: {
+        conditions: [
+          glue.Condition.crawler(crawler, glue.CrawlerState.SUCCEEDED),
+        ],
+      },
+    });
+
+    const predicateReference = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      Predicate: predicateReference,
+    });
+
+    expect(predicateReference.asObject()).toEqual(
+      expect.objectContaining({
+        Conditions: [
+          {
+            CrawlerName: 'my-crawler',
+            CrawlState: 'SUCCEEDED',
+            LogicalOperator: 'EQUALS',
+          },
+        ],
+      }),
+    );
+  });
+
+  test('honors an overridden condition logical operator', () => {
+    workflow.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: {
+        conditions: [
+          glue.Condition.job(job, glue.JobState.FAILED, {
+            logicalOperator: glue.ConditionLogicalOperator.EQUALS,
+          }),
+        ],
+      },
+    });
+
+    const predicateReference = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      Predicate: predicateReference,
+    });
+
+    expect(predicateReference.asObject()).toEqual(
+      expect.objectContaining({
+        Conditions: [
+          {
+            JobName: { Ref: 'JobB9D00F9F' },
+            State: 'FAILED',
+            LogicalOperator: 'EQUALS',
+          },
+        ],
+      }),
+    );
+  });
 });
 
 describe('.fromWorkflowAttributes()', () => {
@@ -284,5 +363,67 @@ describe('.fromWorkflowAttributes()', () => {
       resource: 'workflow',
       resourceName: workflowName,
     }));
+  });
+});
+
+describe('import factories', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('fromWorkflowName derives the ARN from the name', () => {
+    const imported = glue.Workflow.fromWorkflowName(stack, 'Imported', 'my-workflow');
+
+    expect(imported.workflowName).toEqual('my-workflow');
+    expect(imported.workflowArn).toEqual(stack.formatArn({
+      service: 'glue',
+      resource: 'workflow',
+      resourceName: 'my-workflow',
+    }));
+  });
+
+  test('fromWorkflowArn extracts the name from the ARN', () => {
+    const workflowArn = 'arn:aws:glue:us-east-1:123456789012:workflow/my-workflow';
+
+    const imported = glue.Workflow.fromWorkflowArn(stack, 'Imported', workflowArn);
+
+    // The name is parsed out of the ARN, and the ARN is rebuilt from it in the
+    // importing stack's environment.
+    expect(imported.workflowName).toEqual('my-workflow');
+    expect(imported.workflowArn).toEqual(stack.formatArn({
+      service: 'glue',
+      resource: 'workflow',
+      resourceName: 'my-workflow',
+    }));
+  });
+
+  test('imported workflows expose every trigger type (all methods on IWorkflow)', () => {
+    const role = new iam.Role(stack, 'JobRole', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') });
+    const job = new glue.PySparkEtlJob(stack, 'Job', {
+      script: glue.Code.fromAsset('test/job-script/hello_world.py'),
+      role,
+    });
+
+    // Typed as IWorkflow — this only compiles because all four trigger methods
+    // are declared on the interface, not just on the concrete class.
+    const imported: glue.IWorkflow = glue.Workflow.fromWorkflowName(stack, 'Imported', 'my-workflow');
+
+    imported.addEventTrigger('EventTrigger', { actions: [glue.Action.job(job)] });
+    imported.addConditionalTrigger('ConditionalTrigger', {
+      actions: [glue.Action.job(job)],
+      predicate: { conditions: [glue.Condition.job(job, glue.JobState.SUCCEEDED)] },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::Glue::Trigger', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'EVENT',
+      WorkflowName: 'my-workflow',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Trigger', {
+      Type: 'CONDITIONAL',
+      WorkflowName: 'my-workflow',
+    });
   });
 });

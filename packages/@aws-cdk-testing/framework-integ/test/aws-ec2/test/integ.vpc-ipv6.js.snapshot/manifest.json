@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "Ipv6Vpc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23fe22f004999d36d40f4e5e81725335a1af1d9783b713eded11edb0dc03d811.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4a47b2135f45ab06d627d08cf0b78437ef4d4298f24c9fdb0a2e01e081b33f0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,494 +33,7 @@
       "dependencies": [
         "Ipv6Vpc.assets"
       ],
-      "metadata": {
-        "/Ipv6Vpc/Ipv6ProtocolVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "ipProtocol": "Dual_Stack",
-              "subnetConfiguration": [
-                {
-                  "name": "*",
-                  "subnetType": "Public",
-                  "ipv6AssignAddressOnCreation": true
-                },
-                {
-                  "name": "*",
-                  "subnetType": "Private",
-                  "ipv6AssignAddressOnCreation": true
-                },
-                {
-                  "name": "*",
-                  "subnetType": "Isolated",
-                  "ipv6AssignAddressOnCreation": true
-                }
-              ],
-              "natGatewayProvider": "*"
-            }
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpc49F5F0A0"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/ipv6cidr": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcipv6cidr80CB1C4B"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1Subnet5DF62249"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1RouteTableAA116EF8"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1RouteTableAssociation8A5BB68C"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1DefaultRouteFB426C2A"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1DefaultRoute680662544"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1EIP5773FDDD"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet1NATGateway349061B5"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2Subnet844C383C"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2RouteTableC85853F4"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2RouteTableAssociation4695FD47"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2DefaultRouteFB0B2EFC"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2DefaultRoute6FC9A0EC7"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2EIPFA61104A"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPublicSubnet2NATGateway42F14020"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet1Subnet6FC9B4F7"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet1RouteTable5B0AEEFF"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet1RouteTableAssociation3D5C9436"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet1DefaultRoute773F2D10"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet1/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet1DefaultRoute65DBE7D86"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet2SubnetDE00F20C"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet2RouteTable3E7C5767"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet2RouteTableAssociation4E94852E"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet2DefaultRouteDE7332F0"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/PriateSubnet2/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcPriateSubnet2DefaultRoute67E31091D"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet1Subnet9CE2A270"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet1RouteTableEADA89A4"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet1RouteTableAssociation5CB7D339"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet2SubnetE2E9EAFE"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet2RouteTableA4E9B0A1"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IsolatedSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIsolatedSubnet2RouteTableAssociation24761523"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcIGWA4CEC7DC"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcVPCGW70BC7BE6"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcEIGW603A60DAA"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/Ipv6Vpc/Ipv6ProtocolVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ipv6ProtocolVpcRestrictDefaultSecurityGroupCustomResource2E81707B"
-          }
-        ],
-        "/Ipv6Vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/Ipv6Vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/Ipv6Vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/Ipv6Vpc/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Ipv6Vpc/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "Ipv6Vpc.metadata.json",
       "displayName": "Ipv6Vpc"
     },
     "Ipv6TestingDefaultTestDeployAssertE9056115.assets": {
@@ -555,20 +68,7 @@
       "dependencies": [
         "Ipv6TestingDefaultTestDeployAssertE9056115.assets"
       ],
-      "metadata": {
-        "/Ipv6Testing/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Ipv6Testing/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "Ipv6TestingDefaultTestDeployAssertE9056115.metadata.json",
       "displayName": "Ipv6Testing/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -583,6 +83,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -601,6 +102,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -712,7 +214,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -866,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -897,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1051,10 +548,62 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

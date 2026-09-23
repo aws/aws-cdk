@@ -1070,6 +1070,8 @@ describe('virtual node', () => {
         // THEN
         Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::VirtualNode', {
           Spec: {
+            Backends: Match.absent(),
+            Listeners: Match.absent(),
             ServiceDiscovery: {
               DNS: {
                 Hostname: 'test',

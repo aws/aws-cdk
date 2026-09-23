@@ -18,6 +18,7 @@ import type { Construct } from 'constructs';
 
 /**
  * Interface for Evaluator resources.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IEvaluator extends IResource, IEvaluatorRef {
   /**
@@ -65,6 +66,7 @@ export interface IEvaluator extends IResource, IEvaluatorRef {
 /**
  * Abstract base class for Evaluator.
  * Contains methods and attributes valid for evaluators either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class EvaluatorBase extends Resource implements IEvaluator {
   public abstract readonly evaluatorArn: string;

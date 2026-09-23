@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { join, resolve } from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
@@ -10,6 +10,19 @@ import { Code, Repository } from '../lib';
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {
+    test('repository without triggers omits Triggers property', () => {
+      const stack = new Stack();
+
+      new Repository(stack, 'MyRepository', {
+        repositoryName: 'MyRepository',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeCommit::Repository', {
+        RepositoryName: 'MyRepository',
+        Triggers: Match.absent(),
+      });
+    });
+
     test('add an SNS trigger to repository', () => {
       const stack = new Stack();
 

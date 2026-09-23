@@ -24,7 +24,7 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
+    stringifiedConfig = stringifiedConfig + calculateLayersHash([...fn._layers].sort());
   }
 
   return md5hash(stringifiedConfig + additional);

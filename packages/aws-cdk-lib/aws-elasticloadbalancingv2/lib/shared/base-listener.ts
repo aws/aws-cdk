@@ -4,10 +4,11 @@ import type { Attributes } from './util';
 import { mapTagMapToCxschema, renderAttributes } from './util';
 import * as cxschema from '../../../cloud-assembly-schema';
 import type { IResource } from '../../../core';
-import { Annotations, ContextProvider, Lazy, Resource, Token } from '../../../core';
+import { Annotations, ContextProvider, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import type { IBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import type * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -77,6 +78,7 @@ export interface IListener extends IResource, aws_elasticloadbalancingv2.IListen
 /**
  * Base class for listeners
  */
+@noBoxStackTraces
 export abstract class BaseListener extends Resource implements IListener {
   /**
    * Queries the load balancer listener context provider for load balancer
@@ -132,7 +134,7 @@ export abstract class BaseListener extends Resource implements IListener {
   /**
    * Attributes set on this listener
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: IBox<Attributes> = Box.fromValue({});
 
   private readonly _defaultAction: IBox<IListenerAction | undefined>;
 
@@ -144,7 +146,7 @@ export abstract class BaseListener extends Resource implements IListener {
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
       defaultActions: this._defaultAction.derive(a => a?.renderActions() ?? []),
-      listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
+      listenerAttributes: this.attributes.derive(renderAttributes).derive(v => v.length === 0 ? undefined : v),
     });
 
     this.listenerArn = resource.ref;
@@ -157,7 +159,10 @@ export abstract class BaseListener extends Resource implements IListener {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-listenerattribute.html
    */
   public setAttribute(key: string, value: string | undefined) {
-    this.attributes[key] = value;
+    this.attributes.update(attributes => {
+      attributes[key] = value;
+      return attributes;
+    });
   }
 
   /**

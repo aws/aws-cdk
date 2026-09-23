@@ -80,19 +80,21 @@ const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
 
 const singleProviderRoleTestStack = new SingleProviderRoleStack(stack, 'single-provider-role-integ');
 
-new RedshiftEnv(stack, 'redshift-iamrole-integ');
+const redshiftEnv = new RedshiftEnv(stack, 'redshift-iamrole-integ');
 
-Aspects.of(singleProviderRoleTestStack).add({
-  visit(node: IConstruct) {
-    if (CfnResource.isCfnResource(node)) {
-      node.applyRemovalPolicy(RemovalPolicy.DESTROY);
-    }
-  },
+[singleProviderRoleTestStack, redshiftEnv].forEach(s => {
+  Aspects.of(s).add({
+    visit(node: IConstruct) {
+      if (CfnResource.isCfnResource(node)) {
+        node.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      }
+    },
+  });
 });
 
 new integ.IntegTest(app, 'IamRoleInteg', {
   testCases: [
-    stack,
+    redshiftEnv,
     singleProviderRoleTestStack,
   ],
 });

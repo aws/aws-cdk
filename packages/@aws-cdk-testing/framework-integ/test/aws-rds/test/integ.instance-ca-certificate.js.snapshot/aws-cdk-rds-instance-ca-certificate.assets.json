@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
-    "de7de63009c5dbf8ddda16ae99895d4b46d5eb696ea17c1faeb2f4498000354d": {
+    "4baea5191d8e51c61a3562f23feb9440d87c98a7da71ead108e2f0707323e075": {
       "displayName": "aws-cdk-rds-instance-ca-certificate Template",
       "source": {
         "path": "aws-cdk-rds-instance-ca-certificate.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-cab21a37": {
+        "current_account-current_region-a2a985a1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "de7de63009c5dbf8ddda16ae99895d4b46d5eb696ea17c1faeb2f4498000354d.json",
+          "objectKey": "4baea5191d8e51c61a3562f23feb9440d87c98a7da71ead108e2f0707323e075.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

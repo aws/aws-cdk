@@ -1,0 +1,16 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeHeaderAllowlistTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-header-allowlist"
+      ],
+      "regions": [
+        "us-west-2"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeHeaderAllowlistTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

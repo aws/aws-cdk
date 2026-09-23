@@ -1,0 +1,53 @@
+{
+ "Resources": {
+  "MirroredParam26DB81A44": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "KNOWN_PARAM_MULTI_2_MIRROR",
+    "Type": "String",
+    "Value": {
+     "Fn::GetStackOutput": {
+      "StackName": "CrossAccountMultiConsumerProducer",
+      "Region": "eu-central-1",
+      "RoleArn": "arn:aws:iam::111111111111:role/CrossAccountMultiConsumerProcerPublishGetStackOutputRoleC3B334CF",
+      "OutputName": "PublishOutputFnGetAttParamTwo374C16A1ValueC381F4FA"
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
