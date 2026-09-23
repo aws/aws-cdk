@@ -36,10 +36,12 @@
   "ViolatingReplicationGroup": {
    "Type": "AWS::ElastiCache::ReplicationGroup",
    "Properties": {
+    "AuthToken": "placeholder-never-deployed",
     "CacheNodeType": "cache.t4g.micro",
     "CacheParameterGroupName": {
      "Ref": "ParameterGroup"
     },
+    "DataTieringEnabled": true,
     "Engine": "redis",
     "NumNodeGroups": 2,
     "ReplicationGroupDescription": "default rego rules",

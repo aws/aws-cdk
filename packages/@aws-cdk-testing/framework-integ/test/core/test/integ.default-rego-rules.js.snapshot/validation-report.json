@@ -46,6 +46,44 @@
           ]
         },
         {
+          "ruleName": "CDK-ElastiCache-003",
+          "description": "AuthToken: AuthToken is set without encryption in transit; the create fails with \"The AUTH token is only supported when encryption-in-transit is enabled\"",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack/ViolatingReplicationGroup",
+              "constructFqn": "aws-cdk-lib.aws_elasticache.CfnReplicationGroup",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "DefaultRegoRulesStack.template.json",
+                "logicalId": "ViolatingReplicationGroup",
+                "propertyPaths": [
+                  "Properties.AuthToken"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "CDK-ElastiCache-004",
+          "description": "DataTieringEnabled: data tiering is enabled on node type cache.t4g.micro; the create fails with \"Data tiering is not supported for the node type cache.t4g.micro.\"",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "DefaultRegoRulesStack/ViolatingReplicationGroup",
+              "constructFqn": "aws-cdk-lib.aws_elasticache.CfnReplicationGroup",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "DefaultRegoRulesStack.template.json",
+                "logicalId": "ViolatingReplicationGroup",
+                "propertyPaths": [
+                  "Properties.DataTieringEnabled"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "ruleName": "CDK-GameLift-005",
           "description": "RoutingStrategy.FleetId: Alias with TERMINAL routing must not reference a fleet; either route to a fleet or set a terminal message, not both",
           "severity": "warning",

@@ -15,11 +15,12 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * the full template regardless of conditions, so the finding is still
  * reported at synth, while CloudFormation never creates the resource.
  *
- * The ElastiCache half of the stack sits behind that same condition in full:
- * a replication group is billed for as long as it exists and takes minutes to
- * create, and the rules it trips (CDK-ElastiCache-001 for cluster mode,
- * CDK-ElastiCache-002 for user group access control) are decided entirely
- * from the template, so creating one for real buys no extra signal.
+ * The ElastiCache half of the stack sits behind that same condition in full.
+ * Every one of the four rules it trips describes a shape that
+ * CreateReplicationGroup rejects outright, so the resource could not be
+ * created even if the test wanted to; each is decided entirely from the
+ * template, so deploying one for real buys no extra signal and only costs
+ * minutes of create time and the hourly charge while it lives.
  *
  * With the default warning posture the violations do not block deployment;
  * the snapshot captures the violating template and the validation report, so
@@ -62,11 +63,15 @@ const violatingReplicationGroup = new elasticache.CfnReplicationGroup(stack, 'Vi
   engine: 'redis',
   cacheNodeType: 'cache.t4g.micro',
   // Two node groups against a parameter group that leaves cluster mode off
-  // (CDK-ElastiCache-001), and user group access control without encryption
-  // in transit (CDK-ElastiCache-002).
+  // (CDK-ElastiCache-001); user group access control (CDK-ElastiCache-002)
+  // and an AUTH token (CDK-ElastiCache-003), neither with encryption in
+  // transit; and data tiering on a node type that does not support it
+  // (CDK-ElastiCache-004).
   numNodeGroups: 2,
   cacheParameterGroupName: parameterGroup.ref,
   userGroupIds: ['default-rego-rules'],
+  authToken: 'placeholder-never-deployed',
+  dataTieringEnabled: true,
 });
 violatingReplicationGroup.cfnOptions.condition = neverTrue;
 
