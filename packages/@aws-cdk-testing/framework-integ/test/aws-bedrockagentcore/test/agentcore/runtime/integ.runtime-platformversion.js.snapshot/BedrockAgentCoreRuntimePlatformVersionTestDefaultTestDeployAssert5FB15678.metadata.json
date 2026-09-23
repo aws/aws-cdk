@@ -1,0 +1,56 @@
+{
+  "/BedrockAgentCoreRuntimePlatformVersionTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/private/tmp/aws-cdk-pv/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/private/tmp/aws-cdk-pv/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/private/tmp/aws-cdk-pv/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/private/tmp/aws-cdk-pv/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-platformversion.js:30:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimePlatformVersionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreRuntimePlatformVersionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/private/tmp/aws-cdk-pv/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ]
+}

@@ -95,6 +95,13 @@ export interface RuntimeProps {
   readonly protocolConfiguration?: ProtocolType;
 
   /**
+   * The platform version of the runtime (e.g. `'V1'` or `'V2'`).
+   *
+   * @default - the service default platform version
+   */
+  readonly platformVersion?: string;
+
+  /**
    * Environment variables for the agent runtime
    * - Maximum 50 environment variables
    * - Key: Must be 1-100 characters, start with letter or underscore, contain only letters, numbers, and underscores
@@ -384,6 +391,7 @@ export class Runtime extends RuntimeBase {
       agentRuntimeArtifact: Lazy.any({ produce: () => this.renderAgentRuntimeArtifact() }),
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       protocolConfiguration: Lazy.string({ produce: () => this.protocolConfiguration.value }),
+      platformVersion: props.platformVersion,
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables(props.environmentVariables) }),
       tags: props.tags ?? {},

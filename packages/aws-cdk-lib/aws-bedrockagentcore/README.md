@@ -154,6 +154,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
 | `description` | `string` | No | Optional description for the agent runtime |
 | `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
+| `platformVersion` | `string` | No | The platform version of the runtime (for example `V1` or `V2`). Defaults to the service default platform version |
 | `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
 | `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
@@ -910,6 +911,24 @@ new logs.MetricFilter(this, 'ToolErrors', {
 ```
 
 The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
+
+#### Platform version
+
+Set `platformVersion` to choose the runtime platform (for example `V1` or `V2`). If omitted, the service default platform version is used.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  platformVersion: 'V2',
+});
+```
 
 ## Browser
 

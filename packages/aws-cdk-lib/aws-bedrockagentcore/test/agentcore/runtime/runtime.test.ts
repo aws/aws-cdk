@@ -3715,3 +3715,41 @@ describe('Runtime applicationLogGroup tests', () => {
   });
 });
 
+describe('Runtime platformVersion tests', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should set PlatformVersion on the CFN resource when provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      platformVersion: 'V2',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      PlatformVersion: 'V2',
+    });
+  });
+
+  test('Should omit PlatformVersion when not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    const resources = Template.fromStack(stack).findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0] as any;
+    expect(runtimeResource.Properties.PlatformVersion).toBeUndefined();
+  });
+});
