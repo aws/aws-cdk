@@ -1,0 +1,345 @@
+{
+  "/aws-cdk-bedrock-vector-knowledge-base/EncryptionPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptionPolicy"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/NetworkPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkPolicy"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/Collection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Collection"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/SupplementalDataBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "enforceSSL": true
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/MixinKnowledgeBaseRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/MixinKnowledgeBase": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MixinKnowledgeBase"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseOpenSearchServerlessStorage"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseSupplementalDataStorage"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/DataAccessPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataAccessPolicy"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/VectorIndex": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorIndex"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/SupplementalDataBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SupplementalDataBucket66333900"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/SupplementalDataBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KnowledgeBaseB1C941BD"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseOpenSearchServerlessStorage"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseSupplementalDataStorage"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/MixinKnowledgeBaseRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MixinKnowledgeBaseRole200BA271"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/MixinKnowledgeBaseRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/SupplementalDataBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SupplementalDataBucketPolicy9373345F"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KnowledgeBaseRoleA3794006"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/MixinKnowledgeBaseRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MixinKnowledgeBaseRoleDefaultPolicyFC7BF495"
+    }
+  ],
+  "/aws-cdk-bedrock-vector-knowledge-base/KnowledgeBase/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KnowledgeBaseRoleDefaultPolicyBA5BA301"
+    }
+  ]
+}

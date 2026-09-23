@@ -21,3 +21,5 @@ nyc.config.js
 *.jsii
 .jsii.tabl.json.gz
 .jsiirc.json
+!bedrock/mixins/.jsiirc.json
+*.generated.ts
