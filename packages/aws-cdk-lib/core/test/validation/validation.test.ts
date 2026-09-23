@@ -1,25 +1,33 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
+import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
+import { AssemblyValidationReport } from '../../../assertions/lib/helpers-internal/assembly-validation-report';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
+import type { App } from '../../lib';
+import { namespaceFromPluginName, normalizeValidationId } from '../../lib/validation/private/validation-id';
+
+const ANNOTATION_CAPTION = 'Annotation';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
+  // These tests were written against the "subprocess" behavior of validation
+  process.env.CDK_APP_MODE = 'process';
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('validations', () => {
   test('validation failure', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -31,7 +39,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -49,7 +57,7 @@ describe('validations', () => {
   });
 
   test('validation success', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', []),
         new FakePlugin('test-plugin2', []),
@@ -66,11 +74,12 @@ describe('validations', () => {
 
     app.synth();
     expect(process.exitCode).toBeUndefined();
-    expect(mockErrorOutput()).toEqual('');
+    // No errors from user-registered plugins; CloudFormation Validate may emit warnings
+    expect(mockErrorOutput()).not.toContain('ERROR');
   });
 
   test('multiple stacks', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -79,12 +88,12 @@ describe('validations', () => {
             {
               locations: ['test-location'],
               resourceLogicalId: 'DefaultResource',
-              templatePath: '/path/to/stack1.template.json',
+              templatePath: 'stack1.template.json',
             },
             {
               locations: ['test-location'],
               resourceLogicalId: 'DefaultResource',
-              templatePath: '/path/to/stack2.template.json',
+              templatePath: 'stack2.template.json',
             },
           ],
         }]),
@@ -104,7 +113,7 @@ describe('validations', () => {
   });
 
   test('multiple stages', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin1', [{
           description: 'do something',
@@ -112,7 +121,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+            templatePath: 'Stage1stack1DDED8B6C.template.json',
           }],
         }]),
       ],
@@ -125,7 +134,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+            templatePath: 'Stage1stack1DDED8B6C.template.json',
           }],
         }], '1.2.3'),
       ],
@@ -138,7 +147,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage2stack259BA718E.template.json',
+            templatePath: 'Stage2stack259BA718E.template.json',
           }],
         }]),
       ],
@@ -151,7 +160,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'DefaultResource',
-            templatePath: '/path/to/Stage2Stage3stack3A378CA7D.template.json',
+            templatePath: 'Stage2Stage3stack3A378CA7D.template.json',
           }],
         }]),
       ],
@@ -180,7 +189,7 @@ describe('validations', () => {
         violations: [],
       };
     });
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         {
           name: 'test-plugin',
@@ -230,7 +239,7 @@ describe('validations', () => {
         violations: [],
       };
     });
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         {
           name: 'test-plugin',
@@ -259,8 +268,93 @@ describe('validations', () => {
     }));
   });
 
+  test('plugin is invoked once with all templates when stacks span multiple environments', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage1 = new core.Stage(app, 'Stage1', { env: { account: '111111111111', region: 'us-east-1' } });
+    const stage2 = new core.Stage(app, 'Stage2', { env: { account: '222222222222', region: 'eu-west-1' } });
+    new core.Stack(stage1, 'stack1');
+    new core.Stack(stage2, 'stack2');
+    new core.Stack(app, 'stack3', { env: { account: '111111111111', region: 'eu-west-1' } });
+
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+    const context = mockValidate.mock.calls[0][0];
+    expect(context.templatePaths).toEqual(expect.arrayContaining([
+      expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
+      expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
+      expect.stringMatching(/stack3.template.json/),
+    ]));
+    expect(context.templatePaths).toHaveLength(3);
+    // No single environment covers all templates
+    expect(context.accountId).toBeUndefined();
+    expect(context.region).toBeUndefined();
+  });
+
+  test('plugin is not invoked when the app synthesizes no stacks', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+
+    app.synth();
+
+    expect(mockValidate).not.toHaveBeenCalled();
+  });
+
+  test('plugin receives the account and region when all stacks share one environment', () => {
+    const mockValidate = jest.fn().mockImplementation(() => {
+      return {
+        success: true,
+        violations: [],
+      };
+    });
+    const app = new NonStrictApp({
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stage = new core.Stage(app, 'Stage1', { env: { account: '111111111111', region: 'us-east-1' } });
+    new core.Stack(stage, 'stack1');
+    new core.Stack(app, 'stack2', { env: { account: '111111111111', region: 'us-east-1' } });
+
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledTimes(1);
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
+      accountId: '111111111111',
+      region: 'us-east-1',
+    }));
+  });
+
   test('multiple constructs', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -268,7 +362,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'SomeResource317FDD71',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -280,13 +374,22 @@ describe('validations', () => {
     expect(process.exitCode).toEqual(1);
 
     const report = mockErrorOutput();
-    // Assuming the rest of the report's content is checked by another test
+    // The user-registered plugin only reports SomeResource
+    expect(report).toContain('test recommendation');
     expect(report).toContain('Default/SomeResource');
-    expect(report).not.toContain('Default/AnotherResource');
+    // Verify via the JSON report that the user plugin only flagged SomeResource
+    const file = path.join(app.outdir, 'validation-report.json');
+    const jsonReport = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    const testPluginReport = jsonReport.pluginReports.find((r: any) => r.pluginName === 'test-plugin');
+    const paths = testPluginReport.violations.flatMap((v: any) =>
+      v.violatingConstructs.map((c: any) => c.constructPath),
+    );
+    expect(paths).toContain('Default/SomeResource/Resource');
+    expect(paths).not.toContain('Default/AnotherResource/Resource');
   });
 
   test('multiple plugins', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('plugin1', [{
           description: 'do something',
@@ -294,7 +397,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
         new FakePlugin('plugin2', [{
@@ -303,7 +406,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -320,7 +423,7 @@ describe('validations', () => {
   });
 
   test('multiple plugins with mixed results', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('plugin1', []),
         new FakePlugin('plugin2', [{
@@ -329,7 +432,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -347,7 +450,7 @@ describe('validations', () => {
   });
 
   test('plugin throws an error', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         // This plugin will throw an error
         new BrokenPlugin(),
@@ -359,7 +462,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -377,7 +480,7 @@ describe('validations', () => {
   });
 
   test('plugin tries to modify a template', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new RoguePlugin(),
       ],
@@ -386,11 +489,11 @@ describe('validations', () => {
     new FailResource(stack, 'DefaultResource');
     expect(() => {
       app.synth();
-    }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+    }).toThrow(/rogue-plugin.*modified the cloud assembly/);
   });
 
   test('plugin that writes new files to assembly is allowed', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         {
           name: 'file-writer-plugin',
@@ -414,7 +517,7 @@ describe('validations', () => {
   });
 
   test('plugin that deletes pre-existing file is caught', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         {
           name: 'deleter-plugin',
@@ -430,11 +533,11 @@ describe('validations', () => {
       type: 'Test::Resource::Fake',
       properties: { result: 'success' },
     });
-    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
+    expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -445,7 +548,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -463,45 +566,42 @@ describe('validations', () => {
     // JSON file is written in the new v2 format
     const file = path.join(app.outdir, 'validation-report.json');
     const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
-    expect(report).toEqual(expect.objectContaining({
-      version: expect.any(String),
-      title: 'Validation Report',
-      pluginReports: [
+    expect(report.version).toEqual(expect.any(String));
+    expect(report.title).toEqual('Validation Report');
+    const testPluginReport = report.pluginReports.find((r: any) => r.pluginName === 'test-plugin');
+    expect(testPluginReport).toEqual({
+      pluginName: 'test-plugin',
+      conclusion: 'failure',
+      violations: [
         {
-          pluginName: 'test-plugin',
-          conclusion: 'failure',
-          violations: [
+          ruleName: 'test-rule',
+          description: 'test recommendation',
+          severity: 'error',
+          ruleMetadata: { id: 'abcdefg' },
+          violatingConstructs: [
             {
-              ruleName: 'test-rule',
-              description: 'test recommendation',
-              severity: 'error',
-              ruleMetadata: { id: 'abcdefg' },
-              violatingConstructs: [
-                {
-                  constructPath: 'Default/Fake',
-                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
-                  libraryVersion: expect.any(String),
-                  cloudFormationResource: {
-                    templatePath: '/path/to/Default.template.json',
-                    logicalId: 'Fake',
-                    propertyPaths: ['test-location'],
-                  },
-                  stackTraces: expect.any(Array),
-                },
-              ],
+              constructPath: 'Default/Fake',
+              constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+              libraryVersion: expect.any(String),
+              cloudFormationResource: {
+                templatePath: 'Default.template.json',
+                logicalId: 'Fake',
+                propertyPaths: ['test-location'],
+              },
+              stackTraces: expect.any(Array),
             },
           ],
         },
       ],
-    }));
+    });
 
-    // No console output about validation
+    // No console output about validation (only default plugin warnings may appear)
     const allOutput = mockErrorOutput();
-    expect(allOutput).toEqual('');
+    expect(allOutput).not.toContain('ERROR');
   });
 
   test('failSynthOnValidationErrors="false" (string) works the same as boolean false', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -512,7 +612,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -535,11 +635,11 @@ describe('validations', () => {
     expect(fs.existsSync(file)).toBe(true);
 
     const allOutput = mockErrorOutput();
-    expect(allOutput).toEqual('');
+    expect(allOutput).not.toContain('ERROR');
   });
 
   test('Pretty print as default', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -550,7 +650,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -562,11 +662,11 @@ describe('validations', () => {
     redactAsmDir(app.synth());
     expect(process.exitCode).toEqual(1);
     const consoleOut = mockErrorOutput();
-    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+    expect(consoleOut).toContain('A copy of this report can be found');
   });
 
   test('both formats enabled by default', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -574,7 +674,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -594,7 +694,7 @@ describe('validations', () => {
   });
 
   test('failSynthOnValidationErrors=false succeeds even with validation failures', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -602,7 +702,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -625,7 +725,7 @@ describe('validations', () => {
   });
 
   test('validationReportJson=true writes legacy report alongside new report', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -633,7 +733,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -661,7 +761,7 @@ describe('validations', () => {
   });
 
   test('legacy report is NOT written by default', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -669,7 +769,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -686,7 +786,7 @@ describe('validations', () => {
   });
 
   test('Multi format', () => {
-    const app = new core.App({
+    const app = new NonStrictApp({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
           description: 'test recommendation',
@@ -697,7 +797,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['test-location'],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       ],
@@ -708,39 +808,36 @@ describe('validations', () => {
     expect(process.exitCode).toEqual(1);
     const file = path.join(app.outdir, 'validation-report.json');
     const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
-    expect(report).toEqual(expect.objectContaining({
-      version: expect.any(String),
-      title: 'Validation Report',
-      pluginReports: [
+    expect(report.version).toEqual(expect.any(String));
+    expect(report.title).toEqual('Validation Report');
+    const testPluginReport = report.pluginReports.find((r: any) => r.pluginName === 'test-plugin');
+    expect(testPluginReport).toEqual({
+      pluginName: 'test-plugin',
+      conclusion: 'failure',
+      violations: [
         {
-          pluginName: 'test-plugin',
-          conclusion: 'failure',
-          violations: [
+          ruleName: 'test-rule',
+          description: 'test recommendation',
+          severity: 'error',
+          ruleMetadata: { id: 'abcdefg' },
+          violatingConstructs: [
             {
-              ruleName: 'test-rule',
-              description: 'test recommendation',
-              severity: 'error',
-              ruleMetadata: { id: 'abcdefg' },
-              violatingConstructs: [
-                {
-                  constructPath: 'Default/Fake',
-                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
-                  libraryVersion: expect.any(String),
-                  cloudFormationResource: {
-                    templatePath: '/path/to/Default.template.json',
-                    logicalId: 'Fake',
-                    propertyPaths: ['test-location'],
-                  },
-                  stackTraces: expect.any(Array),
-                },
-              ],
+              constructPath: 'Default/Fake',
+              constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+              libraryVersion: expect.any(String),
+              cloudFormationResource: {
+                templatePath: 'Default.template.json',
+                logicalId: 'Fake',
+                propertyPaths: ['test-location'],
+              },
+              stackTraces: expect.any(Array),
             },
           ],
         },
       ],
-    }));
+    });
     const consoleOut = mockErrorOutput();
-    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
+    expect(consoleOut).toContain('A copy of this report can be found');
   });
 
   test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
@@ -758,7 +855,7 @@ describe('validations', () => {
     const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: true };
 
     test('annotation warnings appear in validation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -772,12 +869,71 @@ describe('validations', () => {
 
       // Should show the annotation report
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
+      expect(output).toContain('my-lib:SomeWarning');
+    });
+
+    test('annotation warnings have the right template path, even in nested assemblies', () => {
+      // GIVEN
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const r1 = new FailResource(stack, 'Resource');
+      core.Annotations.of(r1).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      const stage = new core.Stage(app, 'MyStage');
+      const stack2 = new core.Stack(stage, 'Stack2');
+      const r2 = new FailResource(stack2, 'Resource2');
+      core.Annotations.of(r2).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      // WHEN
+      const asm = redactAsmDir(app.synth());
+
+      // THEN
+      const validationReport: PolicyValidationReportJson = loadJson(path.join(asm.directory, 'validation-report.json'));
+      const report = validationReport.pluginReports.find(r => r.pluginName === 'Construct Annotations');
+      expect(report?.violations).toEqual([
+        expect.objectContaining({
+          ruleName: 'Annotation::my-lib:SomeWarning',
+          violatingConstructs: [
+            expect.objectContaining({
+              cloudFormationResource: expect.objectContaining({
+                logicalId: 'Resource',
+                templatePath: 'MyStack.template.json',
+              }),
+            }),
+            expect.objectContaining({
+              cloudFormationResource: expect.objectContaining({
+                logicalId: 'Resource2',
+                templatePath: 'assembly-MyStage/MyStageStack2DAB805FC.template.json',
+              }),
+            }),
+          ],
+        }),
+      ]);
+    });
+
+    test('annotation warnings in nested stage appear in validation report', () => {
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stage = new core.Stage(app, 'Stage');
+      const stack = new core.Stack(stage, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new FailResource(construct, 'Resource');
+
+      core.Annotations.of(construct).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      redactAsmDir(app.synth());
+
+      // Warnings alone should not fail
+      expect(process.exitCode).toBeUndefined();
+
+      // Should show the annotation report
+      const output = mockErrorOutput();
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toContain('my-lib:SomeWarning');
     });
 
     test('annotation errors cause validation failure', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -789,13 +945,13 @@ describe('validations', () => {
       expect(process.exitCode).toEqual(1);
 
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toContain('Something is broken');
       expect(output).toMatch(/Error/i);
     });
 
-    test('acknowledged warnings are excluded from annotation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+    test('Annotations.addWarningV2 can be acknowleged via Annotations.acknowledgeWarning', () => {
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -807,11 +963,11 @@ describe('validations', () => {
 
       // No annotations left, so no report at all
       const output = mockErrorOutput();
-      expect(output).not.toContain('Construct Annotations');
+      expect(output).not.toContain('AckedWarning');
     });
 
     test('partial acknowledgment only excludes acknowledged warnings', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -823,13 +979,13 @@ describe('validations', () => {
       redactAsmDir(app.synth());
 
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
-      expect(output).not.toContain('annotation::AckedRule');
-      expect(output).toContain('annotation::KeptRule');
+      expect(output).toContain(ANNOTATION_CAPTION);
+      expect(output).not.toContain('Annotation::AckedRule');
+      expect(output).toContain('Annotation::KeptRule');
     });
 
     test('annotation report works alongside plugin reports', () => {
-      const app = new core.App({
+      const app = new NonStrictApp({
         context: annotationReportContext,
         policyValidationBeta1: [
           new FakePlugin('test-plugin', [{
@@ -838,7 +994,7 @@ describe('validations', () => {
             violatingResources: [{
               locations: ['test-location'],
               resourceLogicalId: 'Fake',
-              templatePath: '/path/to/Default.template.json',
+              templatePath: 'Default.template.json',
             }],
           }]),
         ],
@@ -855,13 +1011,13 @@ describe('validations', () => {
       const output = mockErrorOutput();
       // Both plugin and annotation reports should appear
       expect(output).toContain('test-plugin');
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toContain('plugin-rule');
       expect(output).toContain('my-lib:StackWarning');
     });
 
     test('annotation report with no plugins registered still produces output', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -873,12 +1029,12 @@ describe('validations', () => {
       expect(process.exitCode).toEqual(1);
 
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toContain('Error without plugins');
     });
 
     test('annotations on constructs without CfnResource use construct path', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'Orphan');
       // No CfnResource child
@@ -888,14 +1044,14 @@ describe('validations', () => {
       redactAsmDir(app.synth());
 
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toContain('my-lib:OrphanWarning');
       // Construct path is provided directly
       expect(output).toContain('MyStack/Orphan');
     });
 
     test('Validations.of().addWarning appears in annotation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -905,12 +1061,12 @@ describe('validations', () => {
       redactAsmDir(app.synth());
 
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
-      expect(output).toContain('annotation::MyRule');
+      expect(output).toContain(ANNOTATION_CAPTION);
+      expect(output).toContain('Annotation::MyRule');
     });
 
     test('Validations.of().addError appears in annotation report and fails', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -922,20 +1078,20 @@ describe('validations', () => {
       expect(process.exitCode).toEqual(1);
 
       const output = mockErrorOutput();
-      expect(output).toContain('Construct Annotations');
+      expect(output).toContain(ANNOTATION_CAPTION);
       expect(output).toMatch(/error/i);
 
-      // Should not be acknowledgeable
-      expect(output).not.toMatch(/acknowledge/i);
-      expect(output).toContain('Rule annotation::MyError');
-      expect(output).toMatchSnapshot();
+      // The error violation itself should show "Rule" not "Acknowledge with"
+      const errorSection = output.split(`(${ANNOTATION_CAPTION})`)[0] + `(${ANNOTATION_CAPTION})`;
+      expect(errorSection).not.toMatch(/acknowledge/i);
+      expect(output).toContain('Rule Annotation::MyError');
     });
 
     test('extractRuleName regex matches addWarningV2 ack tag format', () => {
       // This test verifies the coupling between the [ack: <id>] tag format
       // produced by Annotations.addWarningV2 and the regex in extractRuleName.
       // If the tag format in annotations.ts changes, this test should fail.
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new FailResource(construct, 'Resource');
@@ -953,7 +1109,7 @@ describe('validations', () => {
     });
 
     test('plugin violations can be suppressed via Validations.acknowledge()', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'MyBucket', {
         type: 'AWS::S3::Bucket',
@@ -968,7 +1124,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['Properties/VersioningConfiguration'],
             resourceLogicalId: 'MyBucket',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -982,8 +1138,41 @@ describe('validations', () => {
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('cdk-nag warning identifiers can be acknowledged via Validations.acknowledge', () => {
+      // cdk-nag's warnings contain `::`, which Validations uses as a namespace separator.
+      const warningId = 'AwsSolutions-IAM4[Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole]';
+
+      const app = new NonStrictApp({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('AwsSolutions', [{
+          description: 'Something wrong with this resource',
+          ruleName: warningId,
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'MyBucket',
+            templatePath: 'Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: `AwsSolutions::${warningId}`, reason: 'Not needed for this bucket' });
+
+      redactAsmDir(app.synth());
+
+      const output = mockErrorOutput();
+      expect(output).not.toContain(warningId);
+    });
+
     test('suppressed violations appear in validation-report.json', () => {
-      const app = new core.App({
+      const app = new NonStrictApp({
         context: {
           ...annotationReportContext,
           '@aws-cdk/core:failSynthOnValidationErrors': false,
@@ -1003,7 +1192,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: ['Properties/VersioningConfiguration'],
             resourceLogicalId: 'MyBucket',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1031,7 +1220,7 @@ describe('validations', () => {
     });
 
     test('fatal plugin violations cannot be suppressed', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'Fake', {
         type: 'AWS::S3::Bucket',
@@ -1046,7 +1235,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: [],
             resourceLogicalId: 'BadResource',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1058,12 +1247,12 @@ describe('validations', () => {
 
       const output = mockErrorOutput();
       // Fatal violations remain despite acknowledgment
-      expect(output).toContain('E9001');
+      expect(output).toContain('Rule test-plugin::E9001');
       expect(output).toContain('Unknown resource type');
     });
 
     test('plugin names with spaces use dashes in suppression IDs', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'Fake', {
         type: 'AWS::S3::Bucket',
@@ -1078,7 +1267,7 @@ describe('validations', () => {
           violatingResources: [{
             locations: [],
             resourceLogicalId: 'Fake',
-            templatePath: '/path/to/Default.template.json',
+            templatePath: 'Default.template.json',
           }],
         }]),
       );
@@ -1093,7 +1282,7 @@ describe('validations', () => {
     });
 
     test('validation report JSON is always written to assembly directory', () => {
-      const app = new core.App({
+      const app = new NonStrictApp({
         context: annotationReportContext,
       });
       const stack = new core.Stack(app, 'MyStack');
@@ -1107,14 +1296,63 @@ describe('validations', () => {
       const reportPath = path.join(assembly.directory, 'validation-report.json');
       expect(fs.existsSync(reportPath)).toBe(true);
       const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
-      expect(report.pluginReports[0].pluginName).toEqual('Construct Annotations');
+      const annotationsReport = report.pluginReports.find((r: any) => r.pluginName === 'Construct Annotations');
+      expect(annotationsReport).toBeDefined();
+    });
+  });
+
+  describe.each([false, true])('with annotations appearing in the report file: %p', (annotationsInReport) => {
+    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: annotationsInReport };
+
+    describe.each(['Annotations.addWarningV2', 'Validations.addWarning'] as const)('with warnings added via %s', (addWarningMethod) => {
+      let app: NonStrictApp;
+      let stack: core.Stack;
+      let construct: Construct;
+      beforeEach(() => {
+        app = new NonStrictApp({ context: annotationReportContext });
+        stack = new core.Stack(app, 'MyStack');
+        construct = new Construct(stack, 'MyConstruct');
+        new FailResource(construct, 'Resource');
+
+        switch (addWarningMethod) {
+          case 'Validations.addWarning':
+            core.Validations.of(construct).addWarning('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+          case 'Annotations.addWarningV2':
+            core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+        }
+      });
+
+      // We make suppressible using both the old and new prefixes, to ensure that both are supported
+      test.each([
+        '',
+        'Construct-Annotations::',
+        'Annotation::',
+        'annotation::',
+      ])('can be acknowledged using Validations.acknowledge(%p...)', (prefix) => {
+        core.Validations.of(construct).acknowledge({
+          id: `${prefix}my-lib:AckedWarning`,
+          reason: 'Acceptable for testing',
+        });
+
+        const asm = redactAsmDir(app.synth());
+
+        // No annotations left, so no report at all
+        const output = mockErrorOutput();
+        expect(output).not.toContain('AckedWarning');
+
+        // The warnings shall not appear in the metadata either
+        const warnings = asm.getStackByName(stack.stackName).findMetadataByType('aws:cdk:warning');
+        expect(JSON.stringify(warnings)).not.toContain('AckedWarning');
+      });
     });
   });
 
   describe('Validations.of()', () => {
     test('addPlugins adds plugin to enclosing stage', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const plugin = new FakePlugin('test-plugin', []);
 
       // WHEN
@@ -1126,7 +1364,7 @@ describe('validations', () => {
 
     test('addPlugins from nested construct resolves to enclosing stage', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const plugin = new FakePlugin('test-plugin', []);
 
@@ -1147,7 +1385,7 @@ describe('validations', () => {
 
     test('plugin added via addPlugins runs during synth', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app);
       new FailResource(stack, 'Fake');
 
@@ -1158,7 +1396,7 @@ describe('validations', () => {
         violatingResources: [{
           locations: ['test-location'],
           resourceLogicalId: 'Fake',
-          templatePath: '/path/to/Default.template.json',
+          templatePath: 'Default.template.json',
         }],
       }]));
       redactAsmDir(app.synth());
@@ -1169,7 +1407,7 @@ describe('validations', () => {
 
     test('addWarning adds warning metadata to construct', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
@@ -1180,12 +1418,12 @@ describe('validations', () => {
       const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
       expect(warnings).toHaveLength(1);
       expect(warnings[0].data).toContain('Something is off');
-      expect(warnings[0].data).toContain('[ack: annotation::my-lib:MyWarning]');
+      expect(warnings[0].data).toContain('[ack: Annotation::my-lib:MyWarning]');
     });
 
     test('addError adds error metadata with id to construct', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
@@ -1195,12 +1433,12 @@ describe('validations', () => {
       // THEN
       const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
       expect(errors).toHaveLength(1);
-      expect(errors[0].data).toBe('Something is wrong (annotation::my-lib:MyError)');
+      expect(errors[0].data).toBe('Something is wrong (Annotation::my-lib:MyError)');
     });
 
     test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
@@ -1213,15 +1451,58 @@ describe('validations', () => {
       expect(warningsAfterAck).toHaveLength(0);
     });
 
+    test('relative templatePaths are absolutized correctly', () => {
+      const app = new NonStrictApp({
+        policyValidationBeta1: [
+          new RelativePathPlugin('test-plugin', [{
+            description: 'test recommendation',
+            ruleName: 'test-rule',
+            severity: 'medium',
+            ruleMetadata: {
+              id: 'abcdefg',
+            },
+            violatingResources: [{
+              locations: ['test-location'],
+              resourceLogicalId: 'Fake',
+              templatePath: 'cdk.out/Bla.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new FailResource(stack, 'Fake');
+
+      const assembly = app.synth();
+      const report = loadJson(path.join(assembly.directory, 'validation-report.json'));
+      expect(report).toEqual(expect.objectContaining({
+        pluginReports: expect.arrayContaining([
+          expect.objectContaining({
+            pluginName: 'test-plugin',
+            violations: expect.arrayContaining([
+              expect.objectContaining({
+                violatingConstructs: expect.arrayContaining([
+                  expect.objectContaining({
+                    cloudFormationResource: expect.objectContaining({
+                      templatePath: 'cdk.out/Bla.template.json',
+                    }),
+                  }),
+                ]),
+              }),
+            ]),
+          }),
+        ]),
+      }));
+    });
+
     test('acknowledge records to construct metadata', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
       // WHEN
       core.Validations.of(construct).acknowledge(
-        { id: 'annotation::SomeWarning', reason: 'Accepted risk per team review' },
+        { id: 'Annotation::SomeWarning', reason: 'Accepted risk per team review' },
         { id: 'some-plugin::RuleX', reason: 'Not applicable' },
       );
 
@@ -1230,14 +1511,14 @@ describe('validations', () => {
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
       expect(ackEntries).toHaveLength(2);
-      expect(ackEntries[0].data).toEqual({ 'annotation::SomeWarning': 'Accepted risk per team review' });
+      expect(ackEntries[0].data).toEqual({ 'Annotation::SomeWarning': 'Accepted risk per team review' });
       expect(ackEntries[1].data).toEqual({ 'some-plugin::RuleX': 'Not applicable' });
       expect(ackEntries[0].trace).toBeDefined();
     });
 
     test('multiple acknowledge calls accumulate in metadata', () => {
       // GIVEN
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
@@ -1250,12 +1531,12 @@ describe('validations', () => {
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
       expect(ackEntries).toHaveLength(2);
-      expect(ackEntries[0].data).toEqual({ 'annotation::RuleA': 'reason A' });
-      expect(ackEntries[1].data).toEqual({ 'annotation::RuleB': 'reason B' });
+      expect(ackEntries[0].data).toEqual({ 'Annotation::RuleA': 'reason A' });
+      expect(ackEntries[1].data).toEqual({ 'Annotation::RuleB': 'reason B' });
     });
 
     test('throws on invalid ID with multiple delimiters', () => {
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
@@ -1265,7 +1546,7 @@ describe('validations', () => {
     });
 
     test('throws on invalid ID with empty prefix', () => {
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
 
@@ -1283,7 +1564,7 @@ describe('validations', () => {
           return { success: true, violations: [] };
         },
       };
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app, 'MyStack');
       new FailResource(stack, 'Fake');
       core.Validations.of(app).addPlugins(plugin);
@@ -1294,7 +1575,7 @@ describe('validations', () => {
 
     test('non-Beta1 plugin with constructPath runs through synth', () => {
       // GIVEN - a plugin returning violations with optional fields (constructPath instead of resourceLogicalId)
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app);
       new FailResource(stack, 'Fake');
 
@@ -1319,7 +1600,7 @@ describe('validations', () => {
 
     test('non-Beta1 plugin accessed via policyValidationBeta1 getter has defaults for optional fields', () => {
       // GIVEN - a plugin returning violations without resourceLogicalId or templatePath
-      const app = new core.App();
+      const app = new NonStrictApp();
       core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
         description: 'test',
         ruleName: 'test-rule',
@@ -1340,7 +1621,7 @@ describe('validations', () => {
 
     test('non-Beta1 plugin with all fields populated works identically to Beta1', () => {
       // GIVEN - a non-Beta1 plugin that provides all fields (same as Beta1 would)
-      const app = new core.App();
+      const app = new NonStrictApp();
       const stack = new core.Stack(app);
       new FailResource(stack, 'Fake');
 
@@ -1349,7 +1630,7 @@ describe('validations', () => {
         ruleName: 'full-rule',
         violatingResources: [{
           resourceLogicalId: 'Fake',
-          templatePath: '/path/to/Default.template.json',
+          templatePath: 'Default.template.json',
           locations: ['Properties/Result'],
         }],
       }]));
@@ -1363,7 +1644,113 @@ describe('validations', () => {
       expect(output).toContain('Fake');
     });
   });
+
+  test.each([
+    ['StackA/ScopeA', 3],
+    ['StackA', 2],
+    ['', 0],
+  ])('suppressions respect scope: suppression at %p leaves %p violations', (suppressScope, warningCount) => {
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+    const stackB = new core.Stack(app, 'StackB');
+    new Construct(stackB, 'ScopeB');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA', 'StackB', 'StackB/ScopeB']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    core.Validations.of(constructAt(app, suppressScope)).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app);
+    expect(report.allViolations()).toHaveLength(warningCount);
+  });
+
+  test('properly splits the same violation from multiple resources', () => {
+    // Test that the internal data structure in the report splits appropriately.
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    // Only acknowledge the rule on StackA/ScopeA resource.
+    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app).pluginReport('ValidationPlugin');
+    expect(report).toMatchObject({
+      suppressedViolations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/ScopeA/Bucket',
+            }),
+          ],
+        }),
+      ],
+      violations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/Bucket',
+            }),
+          ],
+        }),
+      ],
+    });
+  });
 });
+
+function pluginThatReportsForEveryResource(ruleName: string = 'MyRule-001'): core.IPolicyValidationPlugin {
+  return {
+    name: 'ValidationPlugin',
+    validate(context) {
+      const violations = context.stackTemplates.flatMap((s) => {
+        const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
+        return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
+          description: 'dummy violation for demonstration',
+          ruleName,
+          violatingResources: [{
+            resourceLogicalId: logicalId,
+            templatePath: s.templatePath,
+            locations: [],
+          }],
+        } satisfies core.PolicyViolation));
+      });
+
+      return {
+        success: violations.length === 0,
+        violations,
+      };
+    },
+  };
+}
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
@@ -1376,7 +1763,40 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
-      violations: this.violations,
+      violations: this.violations.map(v => ({
+        ...v,
+        violatingResources: v.violatingResources.map(r => ({
+          ...r,
+          templatePath: path.join((_context.appConstruct as App).outdir, r.templatePath),
+        })),
+      })),
+      pluginVersion: this.version,
+    };
+  }
+}
+
+class RelativePathPlugin implements core.IPolicyValidationPluginBeta1 {
+  constructor(
+    public readonly name: string,
+    private readonly violations: core.PolicyViolationBeta1[],
+    public readonly version?: string,
+    public readonly ruleIds?: string []) {
+  }
+
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations.map(v => ({
+        ...v,
+        violatingResources: v.violatingResources.map(r => {
+          const absolutePath = path.join((_context.appConstruct as App).outdir, r.templatePath);
+
+          return {
+            ...r,
+            templatePath: path.relative(process.cwd(), absolutePath),
+          };
+        }),
+      })),
       pluginVersion: this.version,
     };
   }
@@ -1464,3 +1884,41 @@ class LevelTwoConstruct extends Construct {
     });
   }
 }
+
+class NonStrictApp extends core.App {
+  constructor(options?: core.AppProps) {
+    super(options);
+    this.node.setContext('@aws-cdk/core:strictCfnValidateErrors', false);
+  }
+}
+
+function loadJson(filePath: string): any {
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+}
+
+function constructAt(root: IConstruct, constructPath: string) {
+  const parts = constructPath ? constructPath.split('/') : [];
+
+  let current: IConstruct = root;
+  while (parts.length > 0) {
+    const part = parts.shift()!;
+    let next = current.node.tryFindChild(part);
+    if (!next) {
+      throw new Error(`At path ${current.node.path}: no child named ${part}`);
+    }
+    current = next;
+  }
+  return current;
+}
+
+describe('normalizeValidationId', () => {
+  test('normalize without prefix', () => {
+    const normalized = normalizeValidationId('my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-plugin::my-rule');
+  });
+
+  test('normalize with prefix', () => {
+    const normalized = normalizeValidationId('my custom plugin::my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-custom-plugin::my-rule');
+  });
+});

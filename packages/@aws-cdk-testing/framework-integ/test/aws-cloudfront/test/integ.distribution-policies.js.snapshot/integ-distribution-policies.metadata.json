@@ -1,0 +1,491 @@
+{
+  "/integ-distribution-policies": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:41:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/CachePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cachePolicyName": "*"
+      }
+    }
+  ],
+  "/integ-distribution-policies/MinTtlParam": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinTtlParam"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:45:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/DefaultTtlParam": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultTtlParam"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:49:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/MaxTtlParam": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MaxTtlParam"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:53:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/CachePolicyWithRef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "minTtl": "*",
+        "defaultTtl": "*",
+        "maxTtl": "*"
+      }
+    }
+  ],
+  "/integ-distribution-policies/OriginRequestPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "originRequestPolicyName": "*",
+        "cookieBehavior": "*",
+        "headerBehavior": "*",
+        "queryStringBehavior": "*"
+      }
+    }
+  ],
+  "/integ-distribution-policies/ResponseHeadersPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "responseHeadersPolicyName": "*",
+        "corsBehavior": {
+          "accessControlAllowCredentials": false,
+          "accessControlAllowHeaders": "*",
+          "accessControlAllowMethods": "*",
+          "accessControlAllowOrigins": "*",
+          "accessControlExposeHeaders": "*",
+          "accessControlMaxAge": "*",
+          "originOverride": true
+        },
+        "removeHeaders": "*",
+        "serverTimingSamplingRate": "*"
+      }
+    }
+  ],
+  "/integ-distribution-policies/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*",
+          "cachePolicy": "*",
+          "originRequestPolicy": "*",
+          "responseHeadersPolicy": "*"
+        }
+      }
+    }
+  ],
+  "/integ-distribution-policies/Dist-2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*",
+          "cachePolicy": "*",
+          "originRequestPolicy": "*",
+          "responseHeadersPolicy": "*"
+        }
+      }
+    }
+  ],
+  "/integ-distribution-policies/Dist-ManagedPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "additionalBehaviors": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "cachePolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "cachePolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "cachePolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "cachePolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "cachePolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "originRequestPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "responseHeadersPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "responseHeadersPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "responseHeadersPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "responseHeadersPolicy": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBehavior": [
+          "*",
+          {},
+          {
+            "responseHeadersPolicy": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-distribution-policies/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-distribution-policies/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-distribution-policies/CachePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CachePolicy26D8A535"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CachePolicy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/cache-policy.js:166:30)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:42:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/CachePolicyWithRef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CachePolicyWithRefD7C98251"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CachePolicy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/cache-policy.js:166:30)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:57:28)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/OriginRequestPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OriginRequestPolicy3EFDB4FA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OriginRequestPolicy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-request-policy.js:142:30)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:62:29)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/ResponseHeadersPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResponseHeadersPolicy13DBF9E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ResponseHeadersPolicy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/response-headers-policy.js:134:30)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:68:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:83:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/Dist-2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Dist24014FEC1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:91:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-policies/Dist-ManagedPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistManagedPolicy49A90409"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:99:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

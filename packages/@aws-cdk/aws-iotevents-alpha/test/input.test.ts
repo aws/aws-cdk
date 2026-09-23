@@ -6,6 +6,10 @@ import * as iotevents from '../lib';
 let stack: cdk.Stack;
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E3710',
+    reason: 'Service is shutdown',
+  });
 });
 
 test('Default property', () => {

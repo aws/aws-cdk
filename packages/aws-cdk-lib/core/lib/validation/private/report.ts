@@ -1,4 +1,3 @@
-import * as path from 'path';
 import type {
   PluginReportJson,
   PolicyValidationReportConclusion,
@@ -155,16 +154,7 @@ export class PolicyValidationReportFormatter {
             severity: violation.severity,
             violatingResources: violation.violatingResources,
             violatingConstructs: violation.violatingResources.map(resource => {
-              // Use constructPath from the input if provided (e.g. annotations),
-              // otherwise derive it from the logical ID via the construct tree.
-              const constructPath = resource.constructPath ?? (
-                resource.templatePath && resource.resourceLogicalId
-                  ? this.tree.getConstructByLogicalId(
-                    path.basename(resource.templatePath),
-                    resource.resourceLogicalId,
-                  )?.node.path
-                  : undefined
-              );
+              const constructPath = resource.constructPath;
               return {
                 constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
@@ -202,14 +192,6 @@ export class PolicyValidationReportFormatter {
       violatingConstructs: violation.violatingResources.map(resource => {
         let constructPath = resource.constructPath;
 
-        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
-        if (!constructPath && resource.templatePath && resource.resourceLogicalId) {
-          constructPath = this.tree.getConstructByLogicalId(
-            path.basename(resource.templatePath),
-            resource.resourceLogicalId,
-          )?.node.path;
-        }
-
         const constructInfo = constructPath
           ? this.tree.constructTraceLevelFromConstructPath(constructPath)
           : undefined;
@@ -226,8 +208,10 @@ export class PolicyValidationReportFormatter {
               propertyPaths: resource.locations.length > 0 ? resource.locations : undefined,
             }
             : undefined,
+
+          // TODO: Property-level stack trace
           stackTraces: constructPath
-            ? this.formatStackTraces(constructPath)
+            ? this.creationStackTrace(constructPath)
             : undefined,
         };
         return result;
@@ -269,18 +253,15 @@ export class PolicyValidationReportFormatter {
     return results;
   }
 
-  private formatStackTraces(constructPath: string): string[] | undefined {
-    const trace = this.reportTrace.formatJson(constructPath);
-    if (!trace) return undefined;
-    const lines: string[] = [];
-    let current: ConstructTrace | undefined = trace;
-    while (current) {
-      if (current.location) {
-        lines.push(current.location);
-      }
-      current = current.child;
-    }
-    return lines.length > 0 ? [lines.join('\n')] : undefined;
+  /**
+   * Returns all stack traces on the root path of the construct tree for the given construct path.
+   *
+   * First element of the array will be the stack trace of the root, the next
+   * the stack trace of the first stack, etc. The last element of the array will
+   * be the stack trace of the construct itself.
+   */
+  private creationStackTrace(constructPath: string): string[] | undefined {
+    return this.reportTrace.creationStackTraceByPath(constructPath);
   }
 }
 
@@ -307,6 +288,13 @@ export function mkPluginFailure(plugin: { name: string; version?: string }, e: E
       error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
     },
   };
+}
+
+export function isPluginFailure(rep: NamedValidationPluginReport): string | undefined {
+  if (!rep.success && rep.violations.length === 0) {
+    return rep.metadata?.error;
+  }
+  return undefined;
 }
 
 /**

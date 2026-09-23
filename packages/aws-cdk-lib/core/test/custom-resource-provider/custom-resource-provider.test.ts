@@ -4,8 +4,27 @@ import * as path from 'path';
 import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import type { AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, ISynthesisSession, CustomResourceProviderOptions } from '../../lib';
-import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime } from '../../lib';
+import type {
+  AssetStaging,
+  DockerImageAssetLocation,
+  DockerImageAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+  ISynthesisSession,
+  CustomResourceProviderOptions,
+} from '../../lib';
+import {
+  Validations,
+  App,
+  CustomResourceProvider,
+  Duration,
+  Size,
+  Stack,
+  CfnResource,
+  determineLatestNodeRuntimeName,
+  CustomResourceProviderBase,
+  CustomResourceProviderRuntime,
+} from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
@@ -18,6 +37,10 @@ describe('custom resource provider', () => {
     test('role is not created if preventSynthesis!=false', () => {
       // GIVEN
       const app = new App();
+      Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::W2531',
+        reason: 'The specific Node.js version used as the runtime for the custom resource does not matter for this test',
+      });
       const stack = new Stack(app, 'MyStack');
       stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
         usePrecreatedRoles: {
@@ -97,6 +120,10 @@ describe('custom resource provider', () => {
     test('role is created if preventSynthesis=false', () => {
       // GIVEN
       const app = new App();
+      Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::W2531',
+        reason: 'The specific Node.js version used as the runtime for the custom resource does not matter for this test',
+      });
       const stack = new Stack(app, 'MyStack');
       stack.node.setContext(CUSTOMIZE_ROLES_CONTEXT_KEY, {
         preventSynthesis: false,
