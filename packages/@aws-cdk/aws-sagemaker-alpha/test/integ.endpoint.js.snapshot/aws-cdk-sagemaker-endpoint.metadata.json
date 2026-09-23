@@ -1,0 +1,634 @@
+{
+  "/aws-cdk-sagemaker-endpoint": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/EndpointConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Invoker": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Model": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithArtifactModel7EBC6421"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Model (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:197:29)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:42:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Model": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithoutArtifactModel9AB56FA5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Model (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:197:29)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:45:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/EndpointConfig/EndpointConfig": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointConfigFD7B6F91"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EndpointConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint-config.js:145:29)",
+        "new EndpointConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:48:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Endpoint8024A810"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Endpoint (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.js:313:29)",
+        "new Endpoint (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:66:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Invoker/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Invoker060A9026"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:67:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Invoker/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Exports/Output{\"Fn::GetAtt\":[\"Endpoint8024A810\",\"EndpointName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithArtifactRole854ED848"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createSageMakerRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:305:35)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:194:44)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:42:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/ModelData38c7c5c5963da0c10a83dcb3e491a9da/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithoutArtifactRoleB9EF84FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createSageMakerRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:305:35)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/model.js:194:44)",
+        "new Model (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:45:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint/InstanceCount/Target": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "serviceNamespace": "sagemaker",
+        "scalableDimension": "*",
+        "resourceId": "*",
+        "role": "*",
+        "minCapacity": "*",
+        "maxCapacity": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "scaleToTrackMetric": [
+          "*",
+          {
+            "policyName": "*",
+            "disableScaleIn": "*",
+            "scaleInCooldown": "*",
+            "targetValue": "*",
+            "predefinedMetric": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Invoker/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InvokerDefaultPolicy3FF8208D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.js:185:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:70:10)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithArtifact/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithArtifactRoleDefaultPolicy63A6F076"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "Import.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.js:320:32)",
+        "Import.grantPull (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.js:359:26)",
+        "AssetImage.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/container-image.js:69:31)"
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/ModelWithoutArtifact/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelWithoutArtifactRoleDefaultPolicyCFDF486F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "Import.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.js:320:32)",
+        "Import.grantPull (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecr/lib/repository.js:359:26)",
+        "AssetImage.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/container-image.js:69:31)"
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint/InstanceCount/Target/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointInstanceCountTargetDA8C8EDB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.js:193:30)",
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BaseScalableAttribute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/base-scalable-attribute.js:38:23)",
+        "new ScalableInstanceCount (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/scalable-instance-count.js:16:9)",
+        "EndpointInstanceProductionVariant.autoScaleInstanceCount (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.js:153:45)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:72:41)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-sagemaker-endpoint/Endpoint/InstanceCount/Target/LimitRPS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointInstanceCountTargetLimitRPSE1D92DB6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TargetTrackingScalingPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/target-tracking-scaling-policy.js:38:26)",
+        "WrappedClass.scaleToTrackMetric (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.js:277:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ScalableInstanceCount.doScaleToTrackMetric (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/base-scalable-attribute.js:96:21)",
+        "ScalableInstanceCount.scaleOnInvocations (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/scalable-instance-count.js:41:15)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/test/integ.endpoint.js:75:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

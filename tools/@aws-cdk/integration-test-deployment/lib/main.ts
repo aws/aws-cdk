@@ -5,7 +5,6 @@ export interface MainConfig {
   endpoint?: string;
   pool?: string;
   atmosphereRoleArn?: string;
-  batchSize?: number;
   githubToken?: string;
   githubRepository?: string;
   prNumber?: string;
@@ -16,7 +15,7 @@ export interface MainConfig {
  * Extracted for testability.
  */
 export async function main(config: MainConfig): Promise<void> {
-  const { endpoint, pool, atmosphereRoleArn, batchSize, githubToken, githubRepository, prNumber } = config;
+  const { endpoint, pool, atmosphereRoleArn, githubToken, githubRepository, prNumber } = config;
 
   // Run preflight check if GitHub context is available
   if (githubToken && githubRepository && prNumber) {
@@ -65,5 +64,5 @@ export async function main(config: MainConfig): Promise<void> {
     throw new Error('CDK_ATMOSPHERE_OIDC_ROLE environment variable is required');
   }
 
-  await deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize });
+  await deployIntegTests({ atmosphereRoleArn, endpoint, pool });
 }

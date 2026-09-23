@@ -213,6 +213,80 @@ describe('PolicyStatement Builder', () => {
       const cedar = statement.toCedar();
       expect(cedar).toContain('context.sourceIp isInRange ip("192.168.1.0/24")');
     });
+
+    test('Should support isIn() with set literal (not string)', () => {
+      const statement = PolicyStatement.permit()
+        .forAllPrincipals()
+        .onAllActions()
+        .onAllResources()
+        .when()
+        .principalAttribute('role').isIn(['admin', 'engineer', 'manager'])
+        .done();
+
+      const cedar = statement.toCedar();
+      // Should NOT wrap the set in quotes - it should be a Cedar set literal
+      expect(cedar).toContain('principal.role in ["admin", "engineer", "manager"]');
+      // Should NOT be a string literal
+      expect(cedar).not.toContain('principal.role in "["admin", "engineer", "manager"]"');
+    });
+
+    test('Should support isIn() with numeric values', () => {
+      const statement = PolicyStatement.permit()
+        .forAllPrincipals()
+        .onAllActions()
+        .onAllResources()
+        .when()
+        .principalAttribute('accessLevel').isIn([1, 2, 3, 5, 8])
+        .done();
+
+      const cedar = statement.toCedar();
+      expect(cedar).toContain('principal.accessLevel in [1, 2, 3, 5, 8]');
+      expect(cedar).not.toContain('"[1, 2, 3, 5, 8]"');
+    });
+
+    test('Should support isIn() with mixed string and numeric values', () => {
+      const statement = PolicyStatement.permit()
+        .forAllPrincipals()
+        .onAllActions()
+        .onAllResources()
+        .when()
+        .resourceAttribute('tags').isIn(['production', 'staging', 1, 2])
+        .done();
+
+      const cedar = statement.toCedar();
+      expect(cedar).toContain('resource.tags in ["production", "staging", 1, 2]');
+      expect(cedar).not.toContain('"["production", "staging", 1, 2]"');
+    });
+
+    test('Should NOT quote IP range check (ip function)', () => {
+      const statement = PolicyStatement.permit()
+        .forAllPrincipals()
+        .onAllActions()
+        .onAllResources()
+        .when()
+        .contextAttribute('sourceIp').isInRange('10.0.0.0/8')
+        .done();
+
+      const cedar = statement.toCedar();
+      // Should use ip() function syntax
+      expect(cedar).toContain('context.sourceIp isInRange ip("10.0.0.0/8")');
+      // Should NOT wrap the entire ip() call in quotes
+      expect(cedar).not.toContain('"ip("10.0.0.0/8")"');
+    });
+
+    test('Should still quote regular string values', () => {
+      const statement = PolicyStatement.permit()
+        .forAllPrincipals()
+        .onAllActions()
+        .onAllResources()
+        .when()
+        .principalAttribute('name').equalTo('Alice')
+        .done();
+
+      const cedar = statement.toCedar();
+      // Regular strings SHOULD be quoted
+      expect(cedar).toContain('principal.name == "Alice"');
+    });
   });
 
   describe('Unless conditions', () => {

@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "definition": "*",
+        "definitionBody": "*",
         "stateMachineName": "*"
       }
     }

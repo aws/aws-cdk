@@ -1,5 +1,5 @@
-import * as child_process from 'child_process';
-import * as sinon from 'sinon';
+import child_process from 'child_process';
+import sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
 import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
 

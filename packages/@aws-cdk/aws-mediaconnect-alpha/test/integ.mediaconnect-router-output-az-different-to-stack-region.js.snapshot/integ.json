@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-output-az-different-to-stack-region/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-output-az-different-to-stack-region"
+      ],
+      "assertionStack": "cdk-integ-emx-router-output-az-different-to-stack-region/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouteroutputazdifferenttostackregionDefaultTestDeployAssert8AE4CC5A"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

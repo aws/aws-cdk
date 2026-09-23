@@ -121,10 +121,11 @@ class ConditionExpression {
     private readonly attribute: string,
     private readonly operator: string,
     private readonly value: string | number | boolean,
+    private readonly isCedarExpression: boolean = false,
   ) {}
 
   public toCedar(): string {
-    const formattedValue = typeof this.value === 'string' && !this.value.startsWith('ip(')
+    const formattedValue = (typeof this.value === 'string' && !this.isCedarExpression)
       ? `"${this.value}"`
       : this.value;
     return `${this.attribute} ${this.operator} ${formattedValue}`;
@@ -375,7 +376,7 @@ export class ConditionalAttributeAccessor {
    */
   public isInRange(ipRange: string): ConditionalPolicyStatement {
     this.conditionBuilder._addCondition(
-      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`),
+      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`, true),
     );
     return this.parent;
   }
@@ -398,7 +399,7 @@ export class ConditionalAttributeAccessor {
       typeof v === 'string' ? `"${v}"` : v,
     ).join(', ');
     this.conditionBuilder._addCondition(
-      new ConditionExpression(this.path, 'in', `[${formattedValues}]`),
+      new ConditionExpression(this.path, 'in', `[${formattedValues}]`, true),
     );
     return this.parent;
   }
@@ -476,7 +477,7 @@ export class AttributeAccessor {
    */
   public isInRange(ipRange: string): ConditionBuilder {
     return this.parent._addCondition(
-      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`),
+      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`, true),
     );
   }
 
@@ -497,7 +498,7 @@ export class AttributeAccessor {
       typeof v === 'string' ? `"${v}"` : v,
     ).join(', ');
     return this.parent._addCondition(
-      new ConditionExpression(this.path, 'in', `[${formattedValues}]`),
+      new ConditionExpression(this.path, 'in', `[${formattedValues}]`, true),
     );
   }
 }

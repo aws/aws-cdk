@@ -1,4 +1,20 @@
 {
+  "/ecs-external-service-imported-taskdef": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:46:13)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/ecs-external-service-imported-taskdef/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -43,6 +59,26 @@
   ],
   "/ecs-external-service-imported-taskdef/ServiceWithImportedTaskDef": [
     {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:531:47)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:174:13)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:57:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     },
@@ -50,17 +86,16 @@
       "type": "aws:cdk:info",
       "data": "Using an imported TaskDefinition. EXTERNAL (ECS Anywhere) compatibility cannot be verified. Ensure the task definition is configured for ECS Anywhere.",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:136:14)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:197:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:24:17)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:180:14)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:198:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:57:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
@@ -69,17 +104,16 @@
       "type": "aws:cdk:info",
       "data": "Using an imported TaskDefinition. Container configuration validations will be skipped.",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:136:14)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:199:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:24:17)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:180:14)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:200:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:57:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
@@ -88,17 +122,16 @@
       "type": "aws:cdk:warning",
       "data": "minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:205:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:24:17)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:206:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:57:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
@@ -106,6 +139,26 @@
   ],
   "/ecs-external-service-imported-taskdef/DaemonServiceWithImportedTaskDef": [
     {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:531:47)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:174:13)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:63:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     },
@@ -113,17 +166,16 @@
       "type": "aws:cdk:info",
       "data": "Using an imported TaskDefinition. EXTERNAL (ECS Anywhere) compatibility cannot be verified. Ensure the task definition is configured for ECS Anywhere.",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:136:14)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:197:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:30:23)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:180:14)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:198:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:63:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
@@ -132,17 +184,16 @@
       "type": "aws:cdk:info",
       "data": "Using an imported TaskDefinition. Container configuration validations will be skipped.",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:136:14)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:199:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:30:23)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:180:14)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:200:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:63:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]
@@ -151,17 +202,16 @@
       "type": "aws:cdk:warning",
       "data": "minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]",
       "trace": [
-        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
-        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:205:47)",
-        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:31:13)",
-        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:30:23)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Object..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/external/external-service.js:206:47)",
+        "new ExternalService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:63:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
       ]

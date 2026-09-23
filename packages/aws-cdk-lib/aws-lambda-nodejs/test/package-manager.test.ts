@@ -1,4 +1,4 @@
-import * as os from 'os';
+import os from 'os';
 import { LogLevel } from '../lib';
 import { LockFile, PackageManager } from '../lib/package-manager';
 

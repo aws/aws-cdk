@@ -99,7 +99,7 @@ export class PasswordUser extends UserBase {
     }
 
     this.resource = new CfnUser(this, 'Resource', {
-      engine: this.engine,
+      engine: this.engine.engineType,
       userId: props.userId,
       userName: this.userName,
       accessString: this.accessString,

@@ -44,7 +44,10 @@ export class ClusterResourceHandler extends ResourceHandler {
     const resp = await this.eks.createCluster({
       ...this.newProps,
       name: clusterName,
-    });
+      // deletionProtection is not yet in the SDK types, so we need to explicitly
+      // pass it to prevent SDK v3 from stripping the unknown property during serialization.
+      deletionProtection: (this.newProps as any).deletionProtection,
+    } as any);
 
     if (!resp.cluster) {
       throw new Error(`Error when trying to create cluster ${clusterName}: CreateCluster returned without cluster information`);
@@ -196,7 +199,8 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode ||
+      updates.updateDeletionProtection || updates.updateControlPlaneScalingConfig) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -261,6 +265,16 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+
+      if (updates.updateDeletionProtection) {
+        (config as any).deletionProtection = (this.newProps as any).deletionProtection;
+      }
+
+      if (updates.updateControlPlaneScalingConfig) {
+        // removing the configuration means falling back to the default tier, so we
+        // have to send it explicitly - omitting it would leave the cluster untouched.
+        (config as any).controlPlaneScalingConfig = { tier: controlPlaneScalingTierOf(this.newProps) };
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -413,6 +427,10 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     }
   }
 
+  if (typeof (parsed.deletionProtection) === 'string') {
+    parsed.deletionProtection = parsed.deletionProtection === 'true';
+  }
+
   return parsed;
 }
 
@@ -429,6 +447,24 @@ interface UpdateMap {
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
   updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
+  updateDeletionProtection: boolean; // deletionProtection
+  updateControlPlaneScalingConfig: boolean; // controlPlaneScalingConfig.tier
+}
+
+/**
+ * The control plane scaling tier a cluster runs on when no explicit tier is configured.
+ */
+const DEFAULT_CONTROL_PLANE_SCALING_TIER = 'standard';
+
+/**
+ * Returns the control plane scaling tier the given props resolve to.
+ *
+ * `controlPlaneScalingConfig` is not yet in the SDK types, so it is read off the
+ * parsed props explicitly. An absent configuration means the cluster runs on the
+ * default tier.
+ */
+function controlPlaneScalingTierOf(props: Partial<EKS.CreateClusterCommandInput>): string {
+  return (props as any).controlPlaneScalingConfig?.tier ?? DEFAULT_CONTROL_PLANE_SCALING_TIER;
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -473,6 +509,10 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
       newProps.bootstrapSelfManagedAddons,
       oldProps.bootstrapSelfManagedAddons,
     ),
+    updateDeletionProtection: (newProps as any).deletionProtection !== (oldProps as any).deletionProtection,
+    // an absent configuration is equivalent to the default tier, so switching between
+    // the two is not an actual change and must not trigger an update.
+    updateControlPlaneScalingConfig: controlPlaneScalingTierOf(newProps) !== controlPlaneScalingTierOf(oldProps),
   };
 }
 

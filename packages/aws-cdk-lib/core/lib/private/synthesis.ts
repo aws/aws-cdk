@@ -1,35 +1,19 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
-import { iterateDfsPreorder } from './construct-iteration';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
-import * as cxschema from '../../../cloud-assembly-schema';
-import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
-import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FeatureFlags } from '../feature-flags';
-import { FileSystem } from '../fs';
-import { Stack } from '../stack';
+import { UnscopedValidationError } from '../errors';
+import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
-import { Stage } from '../stage';
-import type { IPolicyValidationPlugin } from '../validation';
-import { ConstructTree } from '../validation/private/construct-tree';
-import type { NamedValidationPluginReport } from '../validation/private/report';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
-import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
-
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
-const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
-const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
+import { validateTemplates } from './synthesis-validation';
 
 /**
  * Options for `synthesize()`
@@ -66,7 +50,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
-  const builder = Stage.isStage(root)
+  const builder = STAGE_TYPE.isMarked(root)
     ? _convertCloudAssemblyBuilder(root._assemblyBuilder)
     : new private_cxapi.CloudAssemblyBuilder(options.outdir);
 
@@ -78,225 +62,9 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   const assembly = builder.buildAssembly();
 
-  invokeValidationPlugins(root, builder.outdir, assembly);
+  validateTemplates(root, builder.outdir, assembly);
 
   return assembly;
-}
-
-/**
- * Find all the assemblies in the app, including all levels of nested assemblies
- * and return a map where the assemblyId is the key
- */
-function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Map<string, private_cxapi.CloudAssembly> {
-  const assemblies = new Map<string, private_cxapi.CloudAssembly>();
-  assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
-    const stage = construct as Stage;
-    if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
-      assemblies.set(
-        stage.artifactId,
-        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
-      );
-    }
-  });
-  return assemblies;
-}
-
-/**
- * The plugin name used for annotation-based violations in the validation report.
- */
-const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
-
-/**
- * Collect annotation metadata (warnings and errors) from the construct tree
- * and convert them into a NamedValidationPluginReport that can be merged
- * into the same report pipeline as plugin violations.
- *
- * Unlike `visit()`, this walks the entire construct tree including across
- * Stage boundaries. This is intentional: the validation report is a single
- * global output (not per-stage), and a plugin registered at the App level
- * sees templates from all stages. Annotations should have the same visibility.
- */
-function collectAnnotationReport(root: IConstruct, outdir: string): NamedValidationPluginReport | undefined {
-  // Group violations by rule so that multiple constructs triggering the same
-  // rule appear as one violation with multiple violatingResources, matching
-  // how plugins report violations. The key includes description so that
-  // generic aws-cdk:error/aws-cdk:warning annotations with different messages
-  // are kept separate.
-  const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
-
-  for (const construct of iterateDfsPreorder(root)) {
-    for (const entry of construct.node.metadata) {
-      if (entry.type !== cxschema.ArtifactMetadataEntryType.WARN && entry.type !== cxschema.ArtifactMetadataEntryType.ERROR) {
-        continue;
-      }
-
-      const message = entry.data as string;
-      const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
-      const ruleName = extractRuleName(message, severity);
-
-      // Resolve template path if the construct is inside a Stack
-      let templatePath: string | undefined;
-      try {
-        templatePath = path.join(outdir, Stack.of(construct).templateFile);
-      } catch {
-        // Construct is not inside a Stack (e.g. attached to App or Stage)
-      }
-
-      const violatingResource: PolicyViolatingResource = {
-        constructPath: construct.node.path,
-        templatePath,
-        locations: [],
-      };
-
-      const key = `${ruleName}|${severity}|${message}`;
-      const existing = violationMap.get(key);
-      if (existing) {
-        existing.violatingResources.push(violatingResource);
-      } else {
-        violationMap.set(key, {
-          ruleName,
-          description: message,
-          severity,
-          violatingResources: [violatingResource],
-        });
-      }
-    }
-  }
-
-  const violations = Array.from(violationMap.values());
-  if (violations.length === 0) {
-    return undefined;
-  }
-
-  const hasErrors = violations.some(v => v.severity === 'error');
-  return {
-    pluginName: ANNOTATION_PLUGIN_NAME,
-    success: !hasErrors,
-    violations,
-  };
-}
-
-/**
- * Extract a rule name from an annotation message.
- *
- * Annotations added via `addWarningV2` or `addInfoV2` include an `[ack: <id>]`
- * tag in the message. When present, the id is used as the rule name — this is
- * the deterministic, preferred path.
- *
- * Annotations added via the older `addWarning`, `addError`, or `addInfo` APIs
- * do not include an ack tag. In that case, a generic identifier based on the
- * severity is used (e.g. `aws-cdk:warning`, `aws-cdk:error`). These annotations
- * cannot be acknowledged, so uniqueness of the rule name is not required. The
- * full message is available in the violation's `description` field.
- *
- * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
- * in `annotations.ts`. There is no structured metadata field for the ack id —
- * it is embedded in the message string. If the tag format changes, this regex
- * must be updated to match. See the test 'extractRuleName regex matches
- * addWarningV2 ack tag format' which verifies this coupling.
- */
-function extractRuleName(message: string, severity: string): string {
-  const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
-  if (ackMatch) {
-    return ackMatch[1];
-  }
-  return `aws-cdk:${severity}`;
-}
-
-/**
- * Invoke validation plugins for all stages in an App.
- */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
-  if (!App.isApp(root)) return;
-  let hash: string | undefined;
-  const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
-  visitAssemblies(root, 'post', construct => {
-    if (Stage.isStage(construct)) {
-      for (const plugin of construct._validationPlugins) {
-        if (!templatePathsByPlugin.has(plugin)) {
-          templatePathsByPlugin.set(plugin, []);
-        }
-        let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
-        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
-      }
-    }
-  });
-
-  const reports: NamedValidationPluginReport[] = [];
-  if (templatePathsByPlugin.size > 0) {
-    // eslint-disable-next-line no-console
-    console.error('Performing Policy Validations\n');
-  }
-
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
-
-  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
-    try {
-      const report = plugin.validate({ templatePaths: paths });
-      reports.push({ ...report, pluginName: plugin.name });
-    } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
-    }
-    if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
-    }
-  }
-
-  // Collect annotation-based violations and merge into the report pipeline
-  // when the feature flag is enabled. When disabled, annotations are only
-  // displayed through the CLI's standard metadata output.
-  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationReport = collectAnnotationReport(root, assembly.directory);
-    if (annotationReport) {
-      reports.push(annotationReport);
-    }
-  }
-
-  if (reports.length > 0) {
-    const tree = new ConstructTree(root);
-    const formatter = new PolicyValidationReportFormatter(tree);
-    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
-    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
-    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatPretty) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-    }
-    if (formatJson) {
-      const output = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    }
-    const failed = reports.some(r => !r.success);
-    if (failed) {
-      let message = formatJson
-        ? `Validation failed. See the validation report in '${reportFile}' for details`
-        : 'Validation failed. See the validation report above for details';
-      if (formatPretty && formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
-      }
-      // eslint-disable-next-line no-console
-      console.error(message);
-      process.exitCode = 1;
-    } else {
-      // eslint-disable-next-line no-console
-      console.error('Policy Validation Successful!');
-    }
-  }
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
@@ -329,7 +97,7 @@ function getCustomSynthesis(construct: IConstruct): ICustomSynthesis | undefined
  */
 function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
   for (const child of root.node.children) {
-    if (Stage.isStage(child)) {
+    if (STAGE_TYPE.isMarked(child)) {
       child.synth(options);
     } else {
       synthNestedAssemblies(child, options);
@@ -381,7 +149,7 @@ function invokeAspects(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
+      if (!STAGE_TYPE.isMarked(child)) {
         recurse(child, allAspectsHere);
       }
     }
@@ -457,7 +225,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
+      if (!STAGE_TYPE.isMarked(child)) {
         const childDidSomething = recurse(child, allAspectsHere);
         ret = childDidSomething !== 'nothing' ? childDidSomething : ret;
 
@@ -524,7 +292,7 @@ function getAspectApplications(node: IConstruct): AspectApplication[] {
  */
 function injectMetadataResources(root: IConstruct) {
   visit(root, 'post', construct => {
-    if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
+    if (!STACK_TYPE.isMarked(construct) || !construct._versionReportingEnabled) { return; }
 
     // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
     // synthesize() may be called more than once on a stack in unit tests, and the below would break
@@ -565,7 +333,7 @@ function synthesizeTree(root: IConstruct, builder: private_cxapi.CloudAssemblyBu
       validateOnSynth,
     };
 
-    if (Stack.isStack(construct)) {
+    if (STACK_TYPE.isMarked(construct)) {
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
@@ -600,24 +368,6 @@ function validateTree(root: IConstruct) {
 }
 
 /**
- * Visit the given construct tree in either pre or post order, only looking at Assemblies
- */
-function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
-  if (order === 'pre') {
-    cb(root);
-  }
-
-  for (const child of root.node.children) {
-    if (!Stage.isStage(child)) { continue; }
-    visitAssemblies(child, order, cb);
-  }
-
-  if (order === 'post') {
-    cb(root);
-  }
-}
-
-/**
  * Visit the given construct tree in either pre or post order, stopping at Assemblies
  */
 function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
@@ -626,7 +376,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   }
 
   for (const child of root.node.children) {
-    if (Stage.isStage(child)) { continue; }
+    if (STAGE_TYPE.isMarked(child)) { continue; }
     visit(child, order, cb);
   }
 

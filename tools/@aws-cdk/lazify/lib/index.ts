@@ -47,17 +47,19 @@ export function transformFileContents(filename: string, contents: string, progre
   progress?.(`${topLevelAssignments.length} declarations`, '... ');
 
   const topLevelRequires = topLevelAssignments
-    .flatMap(([stmt, a]) => a.initializer && ts.isCallExpression(a.initializer)
-      && ts.isIdentifier(a.initializer.expression) && a.initializer.expression.text === 'require'
-      && ts.isStringLiteral(a.initializer.arguments[0])
-      && ts.isIdentifier(a.name)
-      ? [[stmt, a.name, a.initializer.arguments[0].text] as const] : []);
+    .flatMap(([stmt, a]) => {
+      if (!a.initializer || !ts.isIdentifier(a.name)) {
+        return [];
+      }
+      const required = unwrapRequireLike(a.initializer);
+      return required ? [[stmt, a.name, required.moduleName, required.wrapper] as const] : [];
+    });
 
   progress?.(`${topLevelRequires.length} requires`, '... ');
 
   let file = sourceFile;
 
-  for (const [stmt, binding, moduleName] of topLevelRequires) {
+  for (const [stmt, binding, moduleName, wrapper] of topLevelRequires) {
     const result = ts.transform(file, [(ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
       const factory = ctx.factory;
       const gen = new ExpressionGenerator(factory);
@@ -80,8 +82,8 @@ export function transformFileContents(filename: string, contents: string, progre
           return createVariable(factory, binding,
             factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
               factory.createBlock([
-                // tmp = require(...)
-                createVariable(factory, 'tmp', factory.createCallExpression(factory.createIdentifier('require'), [], [factory.createStringLiteral(moduleName)])),
+                // tmp = require(...) (optionally wrapped in an esModuleInterop helper)
+                createVariable(factory, 'tmp', requireExpression(factory, moduleName, wrapper)),
 
                 // <this_fn> = () => tmp
                 gen.assignmentStatement(binding.text,
@@ -177,15 +179,17 @@ export function transformFileContents(filename: string, contents: string, progre
         && ts.isPropertyAccessExpression(node.expression.left)
         && ts.isIdentifier(node.expression.left.expression)
         && node.expression.left.expression.text === 'exports'
-        && ts.isCallExpression(node.expression.right)
-        && ts.isIdentifier(node.expression.right.expression)
-        && node.expression.right.expression.text === 'require'
-        && ts.isStringLiteral(node.expression.right.arguments[0])) {
+        && ts.isCallExpression(node.expression.right)) {
         // exports.module = require('./module');
+        // (or, with esModuleInterop, exports.module = __importStar(require('./module')); )
 
-        const exportName = node.expression.left.name.text;
-        const moduleName = node.expression.right.arguments[0].text;
-        return gen.moduleGetterOnce(exportName, moduleName, (x) => x);
+        const required = unwrapRequireLike(node.expression.right);
+        if (required) {
+          const exportName = node.expression.left.name.text;
+          const { moduleName, wrapper } = required;
+          return gen.moduleGetterOnce(exportName, moduleName, (x) =>
+            wrapper ? factory.createCallExpression(factory.createIdentifier(wrapper), undefined, [x]) : x);
+        }
       }
 
       return ts.visitEachChild(node, child => visit(child), ctx);
@@ -207,6 +211,42 @@ function createVariable(factory: ts.NodeFactory, name: string | ts.BindingName, 
     factory.createVariableDeclarationList([
       factory.createVariableDeclaration(name, undefined, undefined, expression),
     ]));
+}
+
+/**
+ * Recognize `require("x")` and the esModuleInterop-wrapped forms
+ * `__importStar(require("x"))` / `__importDefault(require("x"))`.
+ *
+ * With `esModuleInterop: true`, TypeScript compiles `import * as x from 'x'` and
+ * `import x from 'x'` to `const x = __importStar(require("x"))` /
+ * `__importDefault(require("x"))`. We must still recognize these so the require is
+ * made lazy; the wrapper is returned so it can be re-applied around the deferred
+ * require (keeping the interop shape identical).
+ */
+function unwrapRequireLike(expr: ts.Expression): { moduleName: string; wrapper?: string } | undefined {
+  if (!ts.isCallExpression(expr) || !ts.isIdentifier(expr.expression)) {
+    return undefined;
+  }
+  if (expr.expression.text === 'require'
+    && expr.arguments.length === 1 && ts.isStringLiteral(expr.arguments[0])) {
+    return { moduleName: expr.arguments[0].text };
+  }
+  if ((expr.expression.text === '__importStar' || expr.expression.text === '__importDefault')
+    && expr.arguments.length === 1) {
+    const inner = unwrapRequireLike(expr.arguments[0]);
+    if (inner && !inner.wrapper) {
+      return { moduleName: inner.moduleName, wrapper: expr.expression.text };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Build `require("moduleName")`, optionally wrapped in an esModuleInterop helper.
+ */
+function requireExpression(factory: ts.NodeFactory, moduleName: string, wrapper?: string): ts.Expression {
+  const req = factory.createCallExpression(factory.createIdentifier('require'), [], [factory.createStringLiteral(moduleName)]);
+  return wrapper ? factory.createCallExpression(factory.createIdentifier(wrapper), [], [req]) : req;
 }
 
 class ExpressionGenerator {

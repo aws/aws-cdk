@@ -26,7 +26,7 @@ taskDefinition.addContainer('web', {
 
 // Stack 2: Import the task definition by ARN and create a service with it
 const consumerStack = new cdk.Stack(app, 'aws-ecs-integ-imported-taskdef-consumer');
-consumerStack.addDependency(producerStack);
+consumerStack.addStackDependency(producerStack);
 
 const importedVpc = ec2.Vpc.fromVpcAttributes(consumerStack, 'Vpc', {
   vpcId: vpc.vpcId,

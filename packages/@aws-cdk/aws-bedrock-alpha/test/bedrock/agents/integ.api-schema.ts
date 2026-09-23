@@ -19,7 +19,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');
 // Create Lambda functions for the action group executors
 // Create Lambda functions for the action group executors
 const assetActionGroupFunction = new lambda.Function(stack, 'AssetActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -41,7 +41,7 @@ const assetActionGroupFunction = new lambda.Function(stack, 'AssetActionGroupFun
 });
 
 const inlineActionGroupFunction = new lambda.Function(stack, 'InlineActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -63,7 +63,7 @@ const inlineActionGroupFunction = new lambda.Function(stack, 'InlineActionGroupF
 });
 
 const s3ActionGroupFunction = new lambda.Function(stack, 'S3ActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

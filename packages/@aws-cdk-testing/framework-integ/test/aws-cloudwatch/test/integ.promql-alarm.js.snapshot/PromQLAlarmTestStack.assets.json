@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "3e522c0018f68ed78eac240715824d3b989c961e4e20f0f45d9cb0919a18f71f": {
+      "displayName": "PromQLAlarmTestStack Template",
+      "source": {
+        "path": "PromQLAlarmTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-debda7de": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3e522c0018f68ed78eac240715824d3b989c961e4e20f0f45d9cb0919a18f71f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

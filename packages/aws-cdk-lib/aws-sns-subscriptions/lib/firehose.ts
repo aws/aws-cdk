@@ -63,7 +63,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // if the topic and delivery stream are created in different stacks
     // then we need to make sure the topic is created first
     if (topic instanceof sns.Topic && topic.stack !== this.deliveryStream.stack) {
-      this.deliveryStream.stack.addDependency(topic.stack);
+      this.deliveryStream.stack.addStackDependency(topic.stack);
     }
 
     return {

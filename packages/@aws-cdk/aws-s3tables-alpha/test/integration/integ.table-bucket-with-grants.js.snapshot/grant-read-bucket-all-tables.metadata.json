@@ -1,0 +1,123 @@
+{
+  "/grant-read-bucket-all-tables": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:80:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/grant-read-bucket-all-tables/grant-read-bucket-all-tables": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/grant-read-bucket-all-tables/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:118:5)"
+      ]
+    }
+  ],
+  "/grant-read-bucket-all-tables/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:118:5)"
+      ]
+    }
+  ],
+  "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/grant-read-bucket-all-tables": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "grantreadbucketalltables5CEE7975"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableBucket (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:369:29)",
+        "new TableBucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new GrantTestBase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:20:28)",
+        "new GrantReadAllTablesTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:37:1)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:80:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/grant-read-bucket-all-tables/Exports/Output{\"Fn::GetAtt\":[\"grantreadbucketalltables5CEE7975\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttgrantreadbucketalltables5CEE7975TableBucketARN4625BF90"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "GrantReadAllTablesTest.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:118:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/grant-read-bucket-all-tables/grant-read-bucket-all-tables/DefaultPolicy/DefaultPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "grantreadbucketalltablesDefaultPolicy26602145"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableBucketPolicy (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket-policy.js:91:30)",
+        "new TableBucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:117:38)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:151:33)",
+        "WrappedClass.grantRead (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:131:21)",
+        "GrantReadAllTablesTest.grantAccess (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:42:26)",
+        "new GrantTestBase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:26:14)",
+        "new GrantReadAllTablesTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:37:1)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket-with-grants.js:80:5)"
+      ]
+    }
+  ]
+}

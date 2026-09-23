@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "EmptyLoadBalancersTest/DefaultTest": {
+      "stacks": [
+        "integ-ecs-empty-load-balancers"
+      ],
+      "assertionStack": "EmptyLoadBalancersTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EmptyLoadBalancersTestDefaultTestDeployAssertFCB4C730"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

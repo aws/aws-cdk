@@ -282,7 +282,10 @@ lifecycle events:
   https://github.com/aws/aws-cdk/issues/5524).
 * If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-* If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails during a `Stack Update`, CloudFormation will
+  report the error but succeed the `Update`, and abandon the resource.
+* If a `Delete` event fails during any other stack operation, CloudFormation
+  will fail and block the stack operation, requiring human intervention.
 
 ### Important cases to handle
 

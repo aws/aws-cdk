@@ -273,4 +273,86 @@ describe('annotations', () => {
       },
     ]);
   });
+
+  // Regression: ack FIRST then warning on the SAME construct. Before the searchPaths
+  // fix this emitted the warning anyway, because emit-time has() searched only the
+  // construct's ancestor paths and missed the ack recorded on the construct itself.
+  test('acknowledgeWarning before addWarningV2 on the same construct suppresses the warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).acknowledgeWarning('MESSAGE', 'I Ack this ahead of time');
+    Annotations.of(c1).addWarningV2('MESSAGE', 'You should know this!');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([]);
+  });
+
+  // CONTROL A: reverse order (warning first, then ack) on the same construct.
+  // Should PASS: removeWarningDeep is self-inclusive.
+  test('addWarningV2 before acknowledgeWarning on the same construct suppresses the warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).addWarningV2('MESSAGE', 'You should know this!');
+    Annotations.of(c1).acknowledgeWarning('MESSAGE', 'I Ack this');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([]);
+  });
+
+  // CONTROL B: ack on parent FIRST, then warning on a CHILD.
+  // Should PASS: child's searchPaths includes the parent's path.
+  test('acknowledgeWarning on parent before addWarningV2 on a child suppresses the warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+    const c2 = new Construct(c1, 'C2');
+
+    // WHEN
+    Annotations.of(c1).acknowledgeWarning('MESSAGE', 'I Ack this ahead of time');
+    Annotations.of(c2).addWarningV2('MESSAGE', 'You should know this!');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([]);
+  });
+
+  // OPTIONAL: ack on the Stack root FIRST, then a warning on a nested construct.
+  // Records whether emit-time suppression works at root scope.
+  test('acknowledgeWarning on the stack before addWarningV2 on a nested construct suppresses the warning', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(stack).acknowledgeWarning('MESSAGE', 'I Ack this ahead of time');
+    Annotations.of(c1).addWarningV2('MESSAGE', 'You should know this!');
+
+    // THEN
+    expect(getWarnings(app.synth())).toEqual([]);
+  });
+
+  // Info messages share the same acknowledgement lookup (searchPaths/has), so the
+  // same ack-before-emit ordering must be suppressed for addInfoV2 as well.
+  test('acknowledgeInfo before addInfoV2 on the same construct suppresses the info', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Annotations.of(c1).acknowledgeInfo('INFO', 'I Ack this ahead of time');
+    Annotations.of(c1).addInfoV2('INFO', 'This is an info message');
+
+    // THEN
+    expect(getInfos(app.synth())).toEqual([]);
+  });
 });

@@ -16,7 +16,7 @@
      "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PublicSubnetWithIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1770745613229"
+    "salt": "1779366854943"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -83,12 +83,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -116,7 +116,7 @@
      "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PublicSubnetWithoutIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1770745613231"
+    "salt": "1779366854945"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
      "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PrivateSubnetDefault\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1770745613231"
+    "salt": "1779366854946"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

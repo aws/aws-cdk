@@ -51,7 +51,7 @@ jobs:
           target: "pull-requests"
           area-is-keyword: true
           default-area: >
-            {"reviewers":{"teamReviewers":["aws-cdk-owners"]}}
+            {"reviewers":{"teamReviewers":["aws-cdk-team"]}}
           parameters: >
             [{"area":"pullrequests","keywords":["pullrequestkeyword"]}]
 

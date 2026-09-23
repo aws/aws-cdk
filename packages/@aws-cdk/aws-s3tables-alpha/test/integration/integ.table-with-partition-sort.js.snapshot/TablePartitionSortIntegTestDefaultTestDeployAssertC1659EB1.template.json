@@ -28,7 +28,7 @@
      "namespace": "\"partition_sort_ns\""
     },
     "flattenResponse": "false",
-    "salt": "1773347128798"
+    "salt": "1779368409362"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -86,7 +86,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
@@ -132,7 +132,7 @@
      "name": "\"test_table\""
     },
     "flattenResponse": "false",
-    "salt": "1773347128805"
+    "salt": "1779368409364"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

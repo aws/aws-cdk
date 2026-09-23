@@ -104,6 +104,18 @@ export interface EbsDeviceOptionsBase {
    * @default - 125 MiB/s.
    */
   readonly throughput?: number;
+
+  /**
+   * The Amazon EBS Provisioned Rate for Volume Initialization, at which to download
+   * the snapshot blocks from Amazon S3 to the volume.
+   *
+   * Valid range is between 100 and 300 MiB/s.
+   * This parameter is supported only for volumes created from snapshots.
+   *
+   * @see https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate
+   * @default undefined - The volume initialization rate is not set.
+   */
+  readonly volumeInitializationRate?: Size;
 }
 
 /**
@@ -824,9 +836,9 @@ export class Volume extends VolumeBase {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
       const sizeRanges: { [key: string]: { Min: number; Max: number } } = {};
       sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 65536 };
       sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 4, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 4, Max: 65536 };
       sizeRanges[EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD] = { Min: 125, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.COLD_HDD] = { Min: 125, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.MAGNETIC] = { Min: 1, Max: 1024 };
