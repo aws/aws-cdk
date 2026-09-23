@@ -409,6 +409,28 @@ describe('default ElastiCache rules', () => {
     }));
   });
 
+  test('CDK-ElastiCache-001 fires when the parameter group sets no parameters at all', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    const parameterGroup = new core.CfnResource(stack, 'ParameterGroup', {
+      type: 'AWS::ElastiCache::ParameterGroup',
+      properties: { ...PARAMETER_GROUP_BASE },
+    });
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        NumNodeGroups: 2,
+        CacheParameterGroupName: parameterGroup.ref,
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-001',
+      description: expect.stringContaining('does not set cluster-enabled to yes'),
+    }));
+  });
+
   test('CDK-ElastiCache-001 does not fire when the parameter group turns cluster mode on', () => {
     const app = testApp();
     const stack = new core.Stack(app, 'TestStack');
