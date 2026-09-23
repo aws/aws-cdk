@@ -971,6 +971,13 @@
       }
     ]
   },
+  "aws-healthagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthAgent"
+      }
+    ]
+  },
   "aws-healthimaging": {
     "scopes": [
       {
@@ -1580,6 +1587,13 @@
     "scopes": [
       {
         "namespace": "AWS::Personalize"
+      }
+    ]
+  },
+  "aws-pi": {
+    "scopes": [
+      {
+        "namespace": "AWS::PI"
       }
     ]
   },
