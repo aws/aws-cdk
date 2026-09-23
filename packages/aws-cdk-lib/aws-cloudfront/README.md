@@ -1143,6 +1143,44 @@ new cloudfront.Distribution(this, 'myCdn', {
 });
 ```
 
+### Cache Tag Invalidation
+
+CloudFront supports tag-based invalidation, which lets you invalidate cached objects based on semantic tags
+rather than URL paths. This gives you flexible control over cache invalidation without requiring your URL
+structure to match your invalidation strategy.
+
+To enable tag-based invalidation, configure `cacheTagConfig` with the HTTP header name that your origin uses
+to return cache tags:
+
+```ts
+new cloudfront.Distribution(this, 'MyDist', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com'),
+  },
+  cacheTagConfig: {
+    headerName: 'x-amz-meta-cache-tag',
+  },
+});
+```
+
+Your origin must include the specified header in responses with comma-separated tag values:
+
+```
+x-amz-meta-cache-tag: product:electronics, category:tv, brand:example
+```
+
+You can then invalidate all cached objects with a specific tag using the AWS CLI:
+
+```bash
+aws cloudfront create-invalidation --distribution-id DISTRIBUTION_ID --paths "#brand:example"
+```
+
+For S3 origins, you can attach cache tags as object metadata. S3 surfaces object metadata as response headers
+prefixed with `x-amz-meta-`, so a metadata key of `cache-tag` would be returned as `x-amz-meta-cache-tag`.
+
+See [Invalidating content by cache tags](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/invalidation-by-tags.html)
+in the CloudFront Developer Guide.
+
 ## Migrating from the original CloudFrontWebDistribution to the newer Distribution construct
 
 It's possible to migrate a distribution from the original to the modern API.
