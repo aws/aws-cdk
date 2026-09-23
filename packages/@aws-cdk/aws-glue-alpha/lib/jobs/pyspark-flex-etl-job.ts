@@ -81,11 +81,10 @@ export class PySparkFlexEtlJob extends SparkJob {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -124,14 +123,10 @@ export class PySparkFlexEtlJob extends SparkJob {
   }
 
   /**
-   *Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: PySparkFlexEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.PYTHON;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: PySparkFlexEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.PYTHON);
+    this.setupExtraCodeArguments(props);
   }
 }

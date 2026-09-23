@@ -98,19 +98,14 @@ export class RayJob extends Job {
     this.grantPrincipal = this.role;
 
     // Enable CloudWatch metrics and continuous logging by default as a best practice
-    const continuousLoggingArgs = this.setupContinuousLogging(this.role, props.continuousLogging);
+    this.setupContinuousLogging(this.role, props.continuousLogging, props.securityConfiguration);
 
-    // Conditionally include metrics arguments (default to enabled for backward compatibility)
-    const profilingMetricsArgs = (props.enableMetrics ?? true) ? { '--enable-metrics': '' } : {};
-    const observabilityMetricsArgs = (props.enableObservabilityMetrics ?? true) ? { '--enable-observability-metrics': 'true' } : {};
+    // Conditionally emit metrics arguments (default to enabled for backward compatibility)
+    this.setManagedArgument('--enable-metrics', (props.enableMetrics ?? true) ? '' : undefined);
+    this.setManagedArgument('--enable-observability-metrics', (props.enableObservabilityMetrics ?? true) ? 'true' : undefined);
 
-    // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.checkNoReservedArgs(props.defaultArguments),
-      ...continuousLoggingArgs,
-      ...profilingMetricsArgs,
-      ...observabilityMetricsArgs,
-    };
+    // Merge the construct-managed arguments with the user's escape-hatch arguments.
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
