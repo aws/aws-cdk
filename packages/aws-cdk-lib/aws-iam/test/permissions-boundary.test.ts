@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
-import { App, AspectPriority, Aspects, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack } from '../../core';
+import { App, AspectPriority, Aspects, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack, Validations } from '../../core';
 import * as iam from '../lib';
 
 let app: App;
@@ -118,7 +118,17 @@ test('apply boundary to users created via CfnResource', () => {
 });
 
 test('apply boundary to roles created via CfnResource', () => {
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3003',
+    reason: 'Missing properties, no matter',
+  });
+
   // GIVEN
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3003',
+    reason: 'Missing properties, no matter',
+  });
+
   const role = new CfnResource(stack, 'Role', {
     type: 'AWS::IAM::Role',
   });
