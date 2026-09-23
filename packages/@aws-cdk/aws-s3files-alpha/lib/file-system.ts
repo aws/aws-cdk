@@ -1,4 +1,4 @@
-import { ArnFormat, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, Token, ValidationError } from 'aws-cdk-lib';
+import { Arn, type Duration, type IResource, RemovalPolicy, Resource, type Size, Stack, Token, ValidationError } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -142,9 +142,9 @@ export interface FileSystemProps {
   readonly role?: iam.IRole;
 
   /**
-   * The KMS key used for encryption.
+   * The KMS key used to encrypt the file system.
    *
-   * @default - the bucket's own encryption configuration is used
+   * @default - a service-owned key is used to encrypt the file system
    */
   readonly kmsKey?: kms.IKey;
 
@@ -205,7 +205,7 @@ export interface FileSystemAttributes {
 /**
  * Represents an S3 Files FileSystem.
  */
-export interface IFileSystem extends IResource, ec2.IConnectable, iam.IResourceWithPolicyV2, IFileSystemRef {
+export interface IFileSystem extends IResource, ec2.IConnectable, iam.IResourceWithPolicyV2, iam.IGrantable, IFileSystemRef {
   /**
    * The ARN of the file system.
    *
@@ -245,43 +245,43 @@ export interface IFileSystem extends IResource, ec2.IConnectable, iam.IResourceW
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Bytes read from the file system. */
+  /** Bytes read from the file system. Default statistic: Sum. */
   metricDataReadBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Bytes written to the file system. */
+  /** Bytes written to the file system. Default statistic: Sum. */
   metricDataWriteBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Metadata bytes read from the file system. */
+  /** Metadata bytes read from the file system. Default statistic: Sum. */
   metricMetadataReadBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Metadata bytes written to the file system. */
+  /** Metadata bytes written to the file system. Default statistic: Sum. */
   metricMetadataWriteBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Total size of the file system in bytes. Emitted every 15 minutes. */
+  /** Total size of the file system in bytes. Emitted every 15 minutes. Default statistic: Average. */
   metricStorageBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Total number of inodes in the file system. Emitted every 15 minutes. */
+  /** Total number of inodes in the file system. Emitted every 15 minutes. Default statistic: Sum. */
   metricInodes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Number of files and directories pending export to the S3 bucket. */
+  /** Number of files and directories pending export to the S3 bucket. Default statistic: Sum. */
   metricPendingExports(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Number of objects that failed to import after retries. */
+  /** Number of objects that failed to import after retries. Default statistic: Sum. */
   metricImportFailures(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Number of files and directories that failed export and will not be retried. */
+  /** Number of files and directories that failed export and will not be retried. Default statistic: Sum. */
   metricExportFailures(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Age of in-progress imports from the linked S3 bucket, in seconds. */
+  /** Age of in-progress imports from the linked S3 bucket, in seconds. Default statistic: Maximum. */
   metricImportAge(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Age of in-progress exports to the linked S3 bucket, in seconds. */
+  /** Age of in-progress exports to the linked S3 bucket, in seconds. Default statistic: Maximum. */
   metricExportAge(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Number of files in the lost+found directory. */
+  /** Number of files in the lost+found directory. Default statistic: Sum. */
   metricLostAndFoundFiles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
-  /** Number of active client connections to the file system. */
+  /** Number of active client connections to the file system. Default statistic: Sum. */
   metricClientConnections(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
@@ -290,6 +290,12 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly fileSystemId: string;
   public abstract readonly connections: ec2.Connections;
   public abstract readonly mountTargetsAvailable: IDependable;
+
+  /**
+   * The principal to grant permissions to. This is the IAM role the S3 Files
+   * service assumes to access the bucket on behalf of the file system.
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   public get fileSystemRef(): FileSystemReference {
     return { fileSystemArn: this.fileSystemArn };
@@ -391,13 +397,23 @@ export class FileSystem extends FileSystemBase {
       public readonly fileSystemId: string;
       public readonly connections: ec2.Connections;
       public readonly mountTargetsAvailable: IDependable = new DependencyGroup();
+      public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
 
       constructor() {
         super(scope, id);
 
         if (attrs.fileSystemArn) {
           this.fileSystemArn = attrs.fileSystemArn;
-          this.fileSystemId = Stack.of(scope).splitArn(attrs.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+          const resourceName = Arn.extractResourceName(attrs.fileSystemArn, 'file-system');
+          // A nested resource name means an invalid file system ARN was passed.
+          if (!Token.isUnresolved(resourceName) && resourceName.includes('/')) {
+            throw new ValidationError(
+              lit`FileSystemArnInvalid`,
+              'fileSystemArn must be of the form arn:<partition>:s3files:<region>:<account>:' +
+              `file-system/<fileSystemId>, got: '${attrs.fileSystemArn}'`,
+              scope);
+          }
+          this.fileSystemId = resourceName;
         } else {
           this.fileSystemId = attrs.fileSystemId!;
           this.fileSystemArn = Stack.of(scope).formatArn({
@@ -426,6 +442,7 @@ export class FileSystem extends FileSystemBase {
   public readonly fileSystemId: string;
   public readonly connections: ec2.Connections;
   public readonly mountTargetsAvailable: IDependable;
+  public readonly grantPrincipal: iam.IPrincipal;
 
   private readonly _resource: CfnFileSystem;
   private _resourcePolicy?: CfnFileSystemPolicy;
@@ -440,6 +457,7 @@ export class FileSystem extends FileSystemBase {
     this.validateProps(props);
 
     const role = props.role ?? this.createServiceRole(props);
+    this.grantPrincipal = role.grantPrincipal;
 
     const securityGroup = props.vpcConfiguration.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpcConfiguration.vpc,
@@ -551,6 +569,14 @@ export class FileSystem extends FileSystemBase {
       }),
     });
 
+    // Restrict bucket access to the account that owns the bucket, per the
+    // S3 Files IAM prerequisites.
+    const bucketAccountCondition = {
+      StringEquals: {
+        'aws:ResourceAccount': props.bucket.env.account,
+      },
+    };
+
     // Bucket-level permissions. S3 Files requires S3 Versioning on the bucket.
     role.addToPolicy(new iam.PolicyStatement({
       actions: [
@@ -559,6 +585,7 @@ export class FileSystem extends FileSystemBase {
         's3:GetBucketLocation',
       ],
       resources: [props.bucket.bucketArn],
+      conditions: bucketAccountCondition,
     }));
 
     // Object-level permissions, including versioning and multipart uploads.
@@ -577,6 +604,7 @@ export class FileSystem extends FileSystemBase {
         's3:AbortMultipartUpload',
       ],
       resources: [objectResource],
+      conditions: bucketAccountCondition,
     }));
 
     role.addToPolicy(new iam.PolicyStatement({

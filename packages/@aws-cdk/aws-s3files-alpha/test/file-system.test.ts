@@ -332,6 +332,73 @@ describe('FileSystem', () => {
     });
 
     expect(fs.fileSystemArn).toBe('arn:aws:s3files:us-east-1:123456789012:file-system/fs-12345678');
+    expect(fs.fileSystemId).toBe('fs-12345678');
+  });
+
+  test('throws when importing a nested/invalid fileSystemArn', () => {
+    const stack = new Stack();
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-12345');
+
+    expect(() => {
+      FileSystem.fromFileSystemAttributes(stack, 'Imported', {
+        fileSystemArn: 'arn:aws:s3files:us-east-1:123456789012:file-system/fs-12345678/access-point/fsap-1',
+        securityGroup: sg,
+      });
+    }).toThrow(/fileSystemArn must be of the form/);
+  });
+
+  test('exposes the service role as grantPrincipal (IGrantable)', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    const fs = new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+    });
+
+    // grantPrincipal is usable as an IGrantable target
+    bucket.grantRead(fs);
+
+    expect(fs.grantPrincipal).toBeDefined();
+    const template = Template.fromStack(stack);
+    // A policy attached to the service role now includes the granted read action
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: Match.arrayWith(['s3:GetObject']) }),
+        ]),
+      },
+    });
+  });
+
+  test('adds the bucket account condition to S3 statements', () => {
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: true });
+
+    new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpcConfiguration: {
+        vpc,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['s3:ListBucket']),
+            Condition: { StringEquals: { 'aws:ResourceAccount': { Ref: 'AWS::AccountId' } } },
+          }),
+        ]),
+      },
+    });
   });
 
   test('grant read adds correct actions', () => {

@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { Fn, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -149,6 +149,29 @@ describe('AccessPoint', () => {
         accessPointId: 'fsap-12345678',
       });
     }).toThrow(/fileSystem is required when importing an access point by accessPointId/);
+  });
+
+  test('throws on a malformed accessPointArn', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      AccessPoint.fromAccessPointAttributes(stack, 'Imported', {
+        accessPointArn: 'arn:aws:s3files:us-east-1:123456789012:file-system/fs-12345678',
+      });
+    }).toThrow(/accessPointArn must be of the form/);
+  });
+
+  test('imports from a token accessPointArn (cross-stack) via Fn.select/Fn.split', () => {
+    const stack = new Stack();
+
+    const ap = AccessPoint.fromAccessPointAttributes(stack, 'Imported', {
+      accessPointArn: Fn.importValue('SomeApArn'),
+    });
+
+    // The id resolves through the token path to Fn::Select(2, Fn::Split('/', ...))
+    expect(stack.resolve(ap.accessPointId)).toEqual({
+      'Fn::Select': [2, { 'Fn::Split': ['/', { 'Fn::Select': [1, { 'Fn::Split': [':file-system/', { 'Fn::ImportValue': 'SomeApArn' }] }] }] }],
+    });
   });
 
   test('works with lambda.FileSystem.fromS3FilesAccessPoint', () => {

@@ -1,4 +1,4 @@
-import { ArnFormat, Fn, type IResource, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib';
+import { Arn, Fn, type IResource, Resource, Token, ValidationError } from 'aws-cdk-lib';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -187,13 +187,24 @@ export class AccessPoint extends AccessPointBase {
         if (attrs.accessPointArn) {
           // ARN format: arn:...:file-system/${FileSystemId}/access-point/${AccessPointId}
           this.accessPointArn = attrs.accessPointArn;
-          const resourceName = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-          // resourceName is `${FileSystemId}/access-point/${AccessPointId}`; the
-          // access point id is the third segment. `split().pop()` is a no-op on
-          // unresolved tokens, so use Fn.select/Fn.split in that case.
-          this.accessPointId = Token.isUnresolved(resourceName)
-            ? Fn.select(2, Fn.split('/', resourceName))
-            : resourceName.split('/').pop()!;
+          // `extractResourceName` splits on the `:file-system/` marker, so the
+          // nested `${FileSystemId}/access-point/${AccessPointId}` tail survives
+          // for both resolved and token ARNs.
+          const resourceName = Arn.extractResourceName(attrs.accessPointArn, 'file-system');
+          if (Token.isUnresolved(resourceName)) {
+            // The access point id is the third `/`-delimited segment.
+            this.accessPointId = Fn.select(2, Fn.split('/', resourceName));
+          } else {
+            const parts = resourceName.split('/');
+            if (parts.length !== 3 || parts[1] !== 'access-point') {
+              throw new ValidationError(
+                lit`AccessPointArnInvalid`,
+                'accessPointArn must be of the form arn:<partition>:s3files:<region>:<account>:' +
+                `file-system/<fileSystemId>/access-point/<accessPointId>, got: '${attrs.accessPointArn}'`,
+                scope);
+            }
+            this.accessPointId = parts[2];
+          }
         } else {
           this.accessPointId = attrs.accessPointId!;
           // The access point ARN is the file system ARN with the access point

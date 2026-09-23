@@ -53,6 +53,12 @@ The construct automatically:
   EventBridge permissions for the S3 Files service
 * Sets `AcceptBucketWarning: true` on the CFN resource
 
+> **Note:** This construct always sets `AcceptBucketWarning: true`, which
+> acknowledges the S3 Files bucket-sharing warning on your behalf. For buckets
+> with a very large number of objects, enabling S3 Files triggers a one-time
+> import that can take a long time and incur request costs. Make sure you
+> understand the implications before pointing S3 Files at a large bucket.
+
 ## Encryption
 
 Encrypt the file system with a customer-managed KMS key:

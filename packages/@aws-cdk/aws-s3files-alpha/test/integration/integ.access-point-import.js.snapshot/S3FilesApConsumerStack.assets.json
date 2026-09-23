@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4fc0e6ac6357a558479751fa59f4d82e622ec0372a4c43db2ccd8218877eadbb": {
+      "displayName": "S3FilesApConsumerStack Template",
+      "source": {
+        "path": "S3FilesApConsumerStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a33dad9d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4fc0e6ac6357a558479751fa59f4d82e622ec0372a4c43db2ccd8218877eadbb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

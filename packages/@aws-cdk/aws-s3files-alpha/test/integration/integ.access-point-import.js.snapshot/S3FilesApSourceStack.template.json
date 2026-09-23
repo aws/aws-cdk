@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc"
+      "Value": "S3FilesApSourceStack/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PublicSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PublicSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PublicSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PublicSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PrivateSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc/PrivateSubnet1"
+      "Value": "S3FilesApSourceStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -198,7 +198,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "S3FilesKmsStack/Vpc"
+      "Value": "S3FilesApSourceStack/Vpc"
      }
     ]
    }
@@ -330,59 +330,9 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
-  "Key961B73FD": {
-   "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketEncryption": {
-     "ServerSideEncryptionConfiguration": [
-      {
-       "ServerSideEncryptionByDefault": {
-        "KMSMasterKeyID": {
-         "Fn::GetAtt": [
-          "Key961B73FD",
-          "Arn"
-         ]
-        },
-        "SSEAlgorithm": "aws:kms"
-       }
-      }
-     ]
-    },
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -680,27 +630,6 @@
         ]
        },
        "Sid": "EventBridgeRead"
-      },
-      {
-       "Action": [
-        "kms:Decrypt",
-        "kms:Encrypt",
-        "kms:GenerateDataKey",
-        "kms:ReEncryptFrom",
-        "kms:ReEncryptTo"
-       ],
-       "Condition": {
-        "StringLike": {
-         "kms:ViaService": "s3.*.amazonaws.com"
-        }
-       },
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Key961B73FD",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -739,12 +668,6 @@
       "Arn"
      ]
     },
-    "KmsKeyId": {
-     "Fn::GetAtt": [
-      "Key961B73FD",
-      "Arn"
-     ]
-    },
     "RoleArn": {
      "Fn::GetAtt": [
       "FileSystemServiceRole31A18070",
@@ -776,18 +699,29 @@
      "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
    }
+  },
+  "FileSystemAccessPointF8178182": {
+   "Type": "AWS::S3Files::AccessPoint",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "FileSystem8A8E25C0"
+    },
+    "RootDirectory": {
+     "Path": "/data"
+    }
+   }
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B": {
+  "ExportsOutputFnGetAttFileSystemAccessPointF8178182AccessPointArnF44959EB": {
    "Value": {
     "Fn::GetAtt": [
-     "FileSystem8A8E25C0",
-     "FileSystemId"
+     "FileSystemAccessPointF8178182",
+     "AccessPointArn"
     ]
    },
    "Export": {
-    "Name": "S3FilesKmsStack:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
+    "Name": "S3FilesApSourceStack:ExportsOutputFnGetAttFileSystemAccessPointF8178182AccessPointArnF44959EB"
    }
   }
  },

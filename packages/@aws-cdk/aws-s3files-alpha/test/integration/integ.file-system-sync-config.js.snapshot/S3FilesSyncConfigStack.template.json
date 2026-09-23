@@ -532,6 +532,13 @@
         "s3:ListBucket",
         "s3:ListBucketVersions"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:ResourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -550,6 +557,13 @@
         "s3:ListMultipartUploadParts",
         "s3:PutObject"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:ResourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
