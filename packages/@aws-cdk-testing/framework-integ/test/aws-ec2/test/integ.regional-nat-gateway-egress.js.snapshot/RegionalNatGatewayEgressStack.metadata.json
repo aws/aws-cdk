@@ -7,12 +7,22 @@
       },
       "trace": [
         "    at Validations.acknowledge (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at RegionalNatGatewayEgressStack._silenceLiteralAzWarning (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1460:47)",
-        "    at get availabilityZones (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:841:18)",
-        "    at new RegionalNatGatewayEgressStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:63:85)",
-        "    at <anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:93:15)",
+        "    at RegionalNatGatewayEgressStack._silenceLiteralAzWarning (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new RegionalNatGatewayEgressStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:70:85)",
+        "    at <anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:101:15)",
         "    ...node internals..."
       ]
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
     }
   ],
   "/RegionalNatGatewayEgressStack/NatEip": [
@@ -45,7 +55,26 @@
   "/RegionalNatGatewayEgressStack/ManualModeProbe": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Private"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
   "/RegionalNatGatewayEgressStack/AutomaticModeVpc": [
@@ -66,7 +95,26 @@
   "/RegionalNatGatewayEgressStack/AutomaticModeProbe": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Private"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
   "/RegionalNatGatewayEgressStack/BootstrapVersion": [
@@ -79,6 +127,57 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEcho41FBE38C"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/FunctionUrl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "function": "*",
+        "authType": "NONE"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/invoke-function-url": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoinvokefunctionurlCC2BAB62"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/invoke-function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoinvokefunctionA612F9DE"
     }
   ],
   "/RegionalNatGatewayEgressStack/ManualModeVpc/Resource": [
@@ -313,6 +412,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefAutomaticModeProbe324C6D4D16E8595B"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoServiceRoleE4956266"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoLogGroup32674E6C"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/FunctionUrl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoFunctionUrl9EFEB490"
     }
   ],
   "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1/Subnet": [

@@ -1,18 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
-// `checkip.amazonaws.com` echoes the caller's source address, which for a function in a
-// private subnet is the public address of the NAT gateway its traffic left through.
+// Reached over the public internet from outside the VPC, so the address it echoes back is the
+// public address of the NAT gateway the caller's traffic left through.
+const ECHO_SOURCE_IP = `exports.handler = async (event) => ({
+  statusCode: 200,
+  body: event.requestContext.http.sourceIp,
+});`;
+
 const RETURN_SOURCE_IP = `exports.handler = async () => {
-  const res = await fetch('https://checkip.amazonaws.com');
+  const res = await fetch(process.env.ECHO_URL);
   return (await res.text()).trim();
-};`;
-
-const RETURN_STATUS_CODE = `exports.handler = async () => {
-  const res = await fetch('https://checkip.amazonaws.com');
-  return res.status;
 };`;
 
 class RegionalNatGatewayEgressStack extends cdk.Stack {
@@ -20,8 +20,17 @@ class RegionalNatGatewayEgressStack extends cdk.Stack {
   public readonly manualModeEipAddress: string;
   public readonly automaticModeFunctionName: string;
 
+  private readonly echoUrl: string;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const echo = new lambda.Function(this, 'SourceIpEcho', {
+      runtime: lambda.Runtime.NODEJS_24_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(ECHO_SOURCE_IP),
+    });
+    this.echoUrl = echo.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE }).url;
 
     const eip = new ec2.CfnEIP(this, 'NatEip');
     const manualModeVpc = new ec2.Vpc(this, 'ManualModeVpc', {
@@ -38,7 +47,7 @@ class RegionalNatGatewayEgressStack extends cdk.Stack {
       ],
     });
     this.manualModeEipAddress = eip.attrPublicIp;
-    this.manualModeFunctionName = this.egressProbe('ManualModeProbe', manualModeVpc, RETURN_SOURCE_IP).functionName;
+    this.manualModeFunctionName = this.egressProbe('ManualModeProbe', manualModeVpc).functionName;
 
     const automaticModeVpc = new ec2.Vpc(this, 'AutomaticModeVpc', {
       maxAzs: 1,
@@ -47,14 +56,15 @@ class RegionalNatGatewayEgressStack extends cdk.Stack {
         { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       ],
     });
-    this.automaticModeFunctionName = this.egressProbe('AutomaticModeProbe', automaticModeVpc, RETURN_STATUS_CODE).functionName;
+    this.automaticModeFunctionName = this.egressProbe('AutomaticModeProbe', automaticModeVpc).functionName;
   }
 
-  private egressProbe(id: string, vpc: ec2.IVpc, code: string): lambda.Function {
+  private egressProbe(id: string, vpc: ec2.IVpc): lambda.Function {
     return new lambda.Function(this, id, {
       runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(code),
+      code: lambda.Code.fromInline(RETURN_SOURCE_IP),
+      environment: { ECHO_URL: this.echoUrl },
       timeout: cdk.Duration.seconds(30),
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -75,9 +85,9 @@ test.assertions.invokeFunction({ functionName: stack.manualModeFunctionName })
   .expect(ExpectedResult.objectLike({ Payload: `"${stack.manualModeEipAddress}"` }))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(10), interval: cdk.Duration.seconds(30) });
 
-// Automatic mode allocates its own addresses and expands to an Availability Zone only once
-// it detects an ENI there, which AWS documents as taking 15-20 minutes on average, so this
-// assertion only checks that egress succeeds.
+// Automatic mode allocates its own addresses and expands to an Availability Zone only once it
+// detects an ENI there, which AWS documents as taking 15-20 minutes on average, so this
+// assertion only checks that the echo observed a public address for the call.
 test.assertions.invokeFunction({ functionName: stack.automaticModeFunctionName })
-  .expect(ExpectedResult.objectLike({ Payload: '200' }))
+  .expect(ExpectedResult.objectLike({ Payload: Match.stringLikeRegexp('^"\\d+\\.\\d+\\.\\d+\\.\\d+"$') }))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(30), interval: cdk.Duration.minutes(1) });

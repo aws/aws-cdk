@@ -1,5 +1,114 @@
 {
  "Resources": {
+  "SourceIpEchoServiceRoleE4956266": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "SourceIpEcho41FBE38C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => ({\n  statusCode: 200,\n  body: event.requestContext.http.sourceIp,\n});"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SourceIpEchoServiceRoleE4956266",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "SourceIpEchoServiceRoleE4956266"
+   ]
+  },
+  "SourceIpEchoLogGroup32674E6C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "SourceIpEcho41FBE38C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "SourceIpEchoFunctionUrl9EFEB490": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SourceIpEchoinvokefunctionurlCC2BAB62": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    },
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   }
+  },
+  "SourceIpEchoinvokefunctionA612F9DE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
   "NatEip": {
    "Type": "AWS::EC2::EIP"
   },
@@ -375,7 +484,17 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async () => {\n  const res = await fetch('https://checkip.amazonaws.com');\n  return (await res.text()).trim();\n};"
+     "ZipFile": "exports.handler = async () => {\n  const res = await fetch(process.env.ECHO_URL);\n  return (await res.text()).trim();\n};"
+    },
+    "Environment": {
+     "Variables": {
+      "ECHO_URL": {
+       "Fn::GetAtt": [
+        "SourceIpEchoFunctionUrl9EFEB490",
+        "FunctionUrl"
+       ]
+      }
+     }
     },
     "Handler": "index.handler",
     "Role": {
@@ -652,7 +771,17 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async () => {\n  const res = await fetch('https://checkip.amazonaws.com');\n  return res.status;\n};"
+     "ZipFile": "exports.handler = async () => {\n  const res = await fetch(process.env.ECHO_URL);\n  return (await res.text()).trim();\n};"
+    },
+    "Environment": {
+     "Variables": {
+      "ECHO_URL": {
+       "Fn::GetAtt": [
+        "SourceIpEchoFunctionUrl9EFEB490",
+        "FunctionUrl"
+       ]
+      }
+     }
     },
     "Handler": "index.handler",
     "Role": {
