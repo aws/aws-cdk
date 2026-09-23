@@ -3,6 +3,7 @@ import type { CaCertificate } from './ca-certificate';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
+import type { EngineVersion } from './engine-version';
 import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
@@ -1599,6 +1600,17 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    * @default - The replica will inherit the allocated storage of the source database instance
    */
   readonly allocatedStorage?: number;
+
+  /**
+   * The engine version of this database instance.
+   *
+   * Specification of this parameter is not needed if it matches the source instance engine
+   * version.  It should only be specified if the replica version needs to be different, e.g. as
+   * part of a minor version upgrade.
+   *
+   * @default - The version of the source database
+   */
+  readonly engineVersion?: EngineVersion;
 }
 
 /**
@@ -1639,21 +1651,23 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (props.sourceDatabaseInstance.engine
-        && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
+    const sourceEngine = props.sourceDatabaseInstance.engine;
+    const engineVersion: EngineVersion | undefined = props.engineVersion;
+
+    if (sourceEngine
+        && !sourceEngine.supportsReadReplicaBackups
         && props.backupRetention) {
-      throw new ValidationError(lit`CannotSetBackupRetentionEngine`, `Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
+      throw new ValidationError(lit`CannotSetBackupRetentionEngine`, `Cannot set 'backupRetention', as engine '${engineDescription(sourceEngine)}' does not support automatic backups for read replicas`, this);
     }
 
-    const engineType = props.sourceDatabaseInstance.engine?.engineType;
+    const engineType = sourceEngine?.engineType;
     if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
       throw new ValidationError(lit`EngineLifecycleSupportSpecifiedMy`, `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
-    // The read replica instance always uses the same engine as the source instance
-    // but some CF validations require the engine to be explicitly passed when some
-    // properties are specified.
-    const shouldPassEngine = props.domain != null;
+    // Some CF validations require the engine to be explicitly passed when some
+    // properties are specified, even if the engine is inherited from the source
+    const shouldPassEngine = props.domain != null || engineVersion != null;
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
@@ -1662,6 +1676,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       kmsKeyId: props.storageEncryptionKey?.keyRef.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? engineType : undefined,
+      engineVersion: engineVersion?.fullVersion,
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 

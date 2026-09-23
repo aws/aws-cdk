@@ -642,7 +642,11 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
-Or you can [restore a DB instance from a Multi-AZ DB cluster snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html)
+The engine version of a read replica can also be set using the `engineVersion` parameter.  The engine version
+of a replica should typically correspond to the version of the source database, but it may be necessary for
+them to be different if you are performing a minor version upgrade.
+
+Alternatively, you can [restore a DB instance from a Multi-AZ DB cluster snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html)
 
 ```ts
 declare const vpc: ec2.Vpc;
