@@ -570,6 +570,25 @@ describe('default ElastiCache rules', () => {
     }));
   });
 
+  test('CDK-ElastiCache-004 fires when data tiering is spelled as a string', () => {
+    const app = testApp();
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyReplicationGroup', {
+      type: 'AWS::ElastiCache::ReplicationGroup',
+      properties: {
+        ...REPLICATION_GROUP_BASE,
+        CacheNodeType: 'cache.t4g.micro',
+        // CloudFormation coerces this to a boolean, so the rule must read it as one
+        DataTieringEnabled: 'true',
+      },
+    });
+
+    expect(pluginViolations(loadValidationReport(app.synth()))).toContainEqual(expect.objectContaining({
+      ruleName: 'CDK-ElastiCache-004',
+      description: expect.stringContaining('data tiering is enabled on node type cache.t4g.micro'),
+    }));
+  });
+
   test('CDK-ElastiCache-004 does not fire when the node type is unresolved at synth time', () => {
     const app = testApp();
     const stack = new core.Stack(app, 'TestStack');
