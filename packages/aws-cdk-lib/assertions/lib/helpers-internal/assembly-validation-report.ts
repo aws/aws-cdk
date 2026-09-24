@@ -16,11 +16,34 @@ import { AssertionError } from '../private/error';
  * in this codebase without necessarily committing to any public API yet.
  */
 export class AssemblyValidationReport {
+  /**
+   * During testing, create an App() with this as `postCliContext` in order to be able to use `AssemblyValidationReport.fromApp(app)`.
+   */
   public static readonly APP_CONTEXT = {
     [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
     [cxapi.STRICT_CFN_VALIDATE_ERRORS]: false,
   };
 
+  /**
+   * Disable the test suppressions that are automatically applied to all tests via the global App init hook (jest-global-app-testhook.ts).
+   *
+   * Returns a function that must be called to restore the global App init hook to its previous state.
+   */
+  public static disableTestSuppressions() {
+    const previousAppHook = (globalThis as any)[APP_INIT_HOOK_SYMBOL];
+    (globalThis as any)[APP_INIT_HOOK_SYMBOL] = () => {
+      // Intentionally empty: this is where the tests normally silence a bunch of default rules.
+      // Unset it.
+    };
+
+    return () => {
+      (globalThis as any)[APP_INIT_HOOK_SYMBOL] = previousAppHook;
+    };
+  }
+
+  /**
+   * Synthesize the given app and return its validation report.
+   */
   public static fromApp(app: App) {
     if (getBooleanContext(app, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true)
       || getBooleanContext(app, cxapi.STRICT_CFN_VALIDATE_ERRORS, false)) {
@@ -85,3 +108,5 @@ function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean)
   if (raw === undefined) return defaultValue;
   return raw !== false && raw !== 'false';
 }
+
+const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
