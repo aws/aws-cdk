@@ -95,6 +95,28 @@ describe('fs copy', () => {
     ]);
   });
 
+  test('BlockExternal: fails on a symlink pointing outside the tree', () => {
+    // THEN
+    expect(() => FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
+      follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+    })).toThrow(/is an external symbolic link which is forbidden/);
+  });
+
+  test('BlockExternal: follow only internal symlinks', () => {
+    // WHEN — 'subdir4' holds 'local-link4.txt', pointing at its sibling 'file4.txt'
+    FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1', 'subdir4'), outdir, {
+      follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+    });
+
+    // THEN — the internal link is followed, so it arrives as a regular file rather than a link
+    expect(tree(outdir)).toEqual([
+      'file4.txt',
+      'local-link4.txt',
+    ]);
+    expect(fs.readFileSync(path.join(outdir, 'local-link4.txt'), 'utf8'))
+      .toEqual(fs.readFileSync(path.join(__dirname, 'fixtures', 'test1', 'subdir4', 'file4.txt'), 'utf8'));
+  });
+
   // Built here rather than checked in as a fixture: the link target has to be an absolute path,
   // which differs per machine, and `fixtures/` is re-extracted from a tarball on every build.
   test('a link into the tree is copied as a link into the copy, so the copy stands on its own', () => {
