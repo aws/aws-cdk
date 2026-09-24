@@ -5,12 +5,12 @@ import { UnscopedValidationError, ValidationError } from '../errors';
 import { Names } from '../names';
 import type { IResolvable, IResolveContext } from '../resolvable';
 import type { IResource } from '../resource';
-import { Stack } from '../stack';
 import { Token } from '../token';
+import { stackOf } from './core-construct-finders';
 import { lit } from './literal-string';
 
 export function generatePhysicalName(resource: IResource): string {
-  const stack = Stack.of(resource);
+  const stack = stackOf(resource);
   const stackPart = new PrefixNamePart(stack.stackName, 25);
   const idPart = new SuffixNamePart(Names.nodeUniqueId(resource.node), 24);
 

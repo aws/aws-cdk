@@ -26,11 +26,11 @@
     "typescript": "~5.9.3"
   },
   "dependencies": {
-    "axios": "^1.17.0",
-    "esbuild": "^0.28.0",
+    "axios": "^1.18.1",
+    "esbuild": "^0.28.1",
     "extract-zip": "^2.0.1",
     "tmp": "^0.2.7",
-    "ts-morph": "~27.0.0"
+    "ts-morph": "~27.0.2"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0"

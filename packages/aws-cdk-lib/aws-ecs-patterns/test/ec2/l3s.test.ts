@@ -10,11 +10,13 @@ import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedEc2Service', () => {
   test('ECS loadbalanced construct', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -84,6 +86,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('multiple capacity provider strategies are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -143,6 +146,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('test ECS loadbalanced construct with memoryReservationMiB', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -177,6 +181,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('creates AWS Cloud Map service for Private DNS namespace with application load balanced ec2 service', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -253,6 +258,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('throws if desiredTaskCount is 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -279,6 +285,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('having *HealthyPercent properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -313,6 +320,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('includes provided protocol version properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -347,6 +355,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('having deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -380,6 +389,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('with circuit breaker', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -417,6 +427,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('accepts previously created load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -457,6 +468,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('accepts imported load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
@@ -502,6 +514,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('test ECS loadbalanced construct default/open security group', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -533,6 +546,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
   test('test ECS loadbalanced construct closed security group', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -567,6 +581,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('setting vpc and cluster throws error', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -583,6 +598,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('multiple capacity provider strategies are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -642,6 +658,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('NLB - throws if desiredTaskCount is 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -668,6 +685,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('having *HealthyPercent properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -702,6 +720,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('having  deployment controller', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -735,6 +754,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('with circuit breaker', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -772,6 +792,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('accepts previously created load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -808,6 +829,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('accepts imported load balancer', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
@@ -854,6 +876,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('specify IPV6 address type for NLB', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -883,6 +906,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('setting listenerCertificate create ELB listener with port 443, TLS protocal and certificate, Target group with port 443 and TLS protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const certificate = Certificate.fromCertificateArn(stack, 'Cert', 'helloworld');
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -922,6 +946,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
   test('not setting listenerCertificate create ELB listener with port 80 and TCP protocal, Target group with port 80 and TCP protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'AutoScalingGroupProvider1', {

@@ -14,11 +14,17 @@ import {
   Vpc,
 } from '../lib';
 
+let stack: cdk.Stack;
+beforeEach(() => {
+  stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3010',
+    reason: 'Hardcoded us-east-1a',
+  });
+});
+
 describe('volume', () => {
   test('basic volume', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -45,9 +51,23 @@ describe('volume', () => {
     });
   });
 
+  test('DeletionPolicy snapshot', () => {
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(8),
+      volumeName: 'MyVolume',
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Snapshot',
+    });
+  });
+
   test('fromVolumeAttributes', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const encryptionKey = new kms.Key(stack, 'Key');
     const volumeId = 'vol-000000';
     const availabilityZone = 'us-east-1a';
@@ -67,7 +87,6 @@ describe('volume', () => {
 
   test('tagged volume', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const volume = new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(8),
@@ -90,9 +109,6 @@ describe('volume', () => {
   });
 
   test('autoenableIO', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -107,9 +123,6 @@ describe('volume', () => {
   });
 
   test('encryption', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -125,7 +138,6 @@ describe('volume', () => {
 
   test('encryption with kms', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const encryptionKey = new kms.Key(stack, 'Key');
 
     // WHEN
@@ -198,9 +210,6 @@ describe('volume', () => {
   });
 
   test('iops', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -217,9 +226,6 @@ describe('volume', () => {
   });
 
   test('multi-attach', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -236,9 +242,6 @@ describe('volume', () => {
   });
 
   test('snapshotId', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -252,9 +255,6 @@ describe('volume', () => {
   });
 
   test('throughput', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -270,9 +270,6 @@ describe('volume', () => {
   });
 
   test('volume: standard', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -287,9 +284,6 @@ describe('volume', () => {
   });
 
   test('volume: io1', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -305,9 +299,6 @@ describe('volume', () => {
   });
 
   test('volume: io2', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -323,9 +314,6 @@ describe('volume', () => {
   });
 
   test('volume: gp2', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -340,9 +328,6 @@ describe('volume', () => {
   });
 
   test('volume: gp3', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -357,9 +342,6 @@ describe('volume', () => {
   });
 
   test('volume: st1', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -374,9 +356,6 @@ describe('volume', () => {
   });
 
   test('volume: sc1', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -392,7 +371,6 @@ describe('volume', () => {
 
   test('grantAttachVolume to any instance', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
     const volume = new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -460,9 +438,6 @@ describe('volume', () => {
   });
 
   test('EBS_DEFAULT_GP3 feature flag', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
     // WHEN
     stack.node.setContext(cxapi.EBS_DEFAULT_GP3, true);
     new Volume(stack, 'Volume', {
@@ -479,7 +454,6 @@ describe('volume', () => {
   describe('grantAttachVolume to any instance with encryption', () => {
     test('with default key policies', () => {
       // GIVEN
-      const stack = new cdk.Stack();
       const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
       const encryptionKey = new kms.Key(stack, 'Key');
       const volume = new Volume(stack, 'Volume', {
@@ -532,7 +506,6 @@ describe('volume', () => {
 
   test('grantAttachVolume to any instance with KMS.fromKeyArn() encryption', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
     const kmsKey = new kms.Key(stack, 'Key');
     // kmsKey policy is not strictly necessary for the test.
@@ -602,7 +575,6 @@ describe('volume', () => {
 
   test('grantAttachVolume to specific instances', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
     const vpc = new Vpc(stack, 'Vpc');
     const instance1 = new Instance(stack, 'Instance1', {
@@ -685,7 +657,6 @@ describe('volume', () => {
 
   test('grantAttachVolume to instance self', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const vpc = new Vpc(stack, 'Vpc');
     const instance = new Instance(stack, 'Instance', {
       vpc,
@@ -754,7 +725,6 @@ describe('volume', () => {
 
   test('grantAttachVolume to instance self with suffix', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const vpc = new Vpc(stack, 'Vpc');
     const instance = new Instance(stack, 'Instance', {
       vpc,
@@ -823,7 +793,6 @@ describe('volume', () => {
 
   test('grantDetachVolume to any instance', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
     const volume = new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
@@ -892,7 +861,6 @@ describe('volume', () => {
 
   test('grantDetachVolume from specific instance', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
     const vpc = new Vpc(stack, 'Vpc');
     const instance1 = new Instance(stack, 'Instance1', {
@@ -975,7 +943,6 @@ describe('volume', () => {
 
   test('grantDetachVolume from instance self', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const vpc = new Vpc(stack, 'Vpc');
     const instance = new Instance(stack, 'Instance', {
       vpc,
@@ -1044,7 +1011,6 @@ describe('volume', () => {
 
   test('grantDetachVolume from instance self with suffix', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const vpc = new Vpc(stack, 'Vpc');
     const instance = new Instance(stack, 'Instance', {
       vpc,
@@ -1116,7 +1082,6 @@ describe('volume', () => {
   test('validation fromVolumeAttributes', () => {
     // GIVEN
     let idx: number = 0;
-    const stack = new cdk.Stack();
     const volume = new Volume(stack, 'Volume', {
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(8),
@@ -1151,7 +1116,6 @@ describe('volume', () => {
 
   test('validation required props', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const key = new kms.Key(stack, 'Key');
     let idx: number = 0;
 
@@ -1208,7 +1172,6 @@ describe('volume', () => {
 
   test('validation snapshotId', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     const volume = new Volume(stack, 'ForToken', {
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(8),
@@ -1245,7 +1208,6 @@ describe('volume', () => {
 
   test('validation iops', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     let idx: number = 0;
 
     // THEN
@@ -1367,7 +1329,6 @@ describe('volume', () => {
 
   test('validation multi-attach', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     let idx: number = 0;
 
     // THEN
@@ -1410,15 +1371,14 @@ describe('volume', () => {
 
   test('validation size in range', () => {
     // GIVEN
-    const stack = new cdk.Stack();
     let idx: number = 0;
 
     // THEN
     for (const testData of [
       [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD, 1, 16384],
-      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 1, 16384],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 1, 65536],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 4, 16384],
-      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 4, 16384],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 4, 65536],
       [EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD, 125, 16384],
       [EbsDeviceVolumeType.COLD_HDD, 125, 16384],
       [EbsDeviceVolumeType.MAGNETIC, 1, 1024],
@@ -1475,7 +1435,6 @@ describe('volume', () => {
   });
 
   test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
-    const stack = new cdk.Stack();
     expect(() => {
       new Volume(stack, 'Volume', {
         availabilityZone: 'us-east-1a',
@@ -1489,7 +1448,6 @@ describe('volume', () => {
   test.each([
     ...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
   ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
-    const stack = new cdk.Stack();
     const iops = [
       EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
       EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
@@ -1506,7 +1464,6 @@ describe('volume', () => {
   });
 
   test('Invalid iops to throughput ratio', () => {
-    const stack = new cdk.Stack();
     expect(() => {
       new Volume(stack, 'Volume', {
         availabilityZone: 'us-east-1a',
@@ -1520,9 +1477,6 @@ describe('volume', () => {
 
   describe('volume initialization rate', () => {
     test('set valid initialization rate', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-
       // WHEN
       new Volume(stack, 'Volume', {
         availabilityZone: 'us-east-1a',
@@ -1545,9 +1499,6 @@ describe('volume', () => {
       cdk.Size.kibibytes(1),
       cdk.Size.gibibytes(1),
     ])('throws if initialization rate is not between 100 and 300 MiB/s', (rate) => {
-      // GIVEN
-      const stack = new cdk.Stack();
-
       // WHEN/THEN
       expect(() => {
         new Volume(stack, 'Volume', {

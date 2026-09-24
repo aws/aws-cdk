@@ -1,0 +1,56 @@
+{
+  "/DistributionPolicies/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-policies.js:148:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/DistributionPolicies/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/DistributionPolicies/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ]
+}

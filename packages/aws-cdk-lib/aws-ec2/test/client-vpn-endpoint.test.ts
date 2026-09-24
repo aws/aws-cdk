@@ -5,6 +5,8 @@ import { Stack } from '../../core';
 import * as ec2 from '../lib';
 import { ClientVpnUserBasedAuthentication } from '../lib/client-vpn-endpoint';
 
+const dummySamlMetadata = '<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">' + 'x'.repeat(1000) + '</md:EntityDescriptor>';
+
 let stack: Stack;
 let vpc: ec2.IVpc;
 beforeEach(() => {
@@ -14,7 +16,7 @@ beforeEach(() => {
 
 test('client vpn endpoint', () => {
   const samlProvider = new SamlProvider(stack, 'Provider', {
-    metadataDocument: SamlMetadataDocument.fromXml('xml'),
+    metadataDocument: SamlMetadataDocument.fromXml(dummySamlMetadata),
   });
 
   vpc.addClientVpnEndpoint('Endpoint', {

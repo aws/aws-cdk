@@ -443,4 +443,3 @@ test('ensure correct Docker CLI arguments are returned', () => {
   const fromSrc = DockerBuildSecret.fromSrc('path.json');
   expect(fromSrc).toEqual('src=path.json');
 });
-

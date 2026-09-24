@@ -17,9 +17,9 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
       queryDefinitionName: 'QueryDefinition',
       queryString: new QueryString({
         fields: ['@timestamp', '@message'],
-        parse: '@message "[*] *" as loggingType, loggingMessage',
+        parseStatements: ['@message "[*] *" as loggingType, loggingMessage'],
         filterStatements: [''],
-        stats: 'count(loggingMessage) as loggingErrors',
+        statsStatements: ['count(loggingMessage) as loggingErrors'],
         sort: '@timestamp desc',
         limit: 20,
         display: 'loggingMessage',

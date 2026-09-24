@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "CloudFormationValidatePluginTest/DefaultTest": {
+      "stacks": [
+        "CloudFormationValidatePluginStack"
+      ],
+      "assertionStack": "CloudFormationValidatePluginTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudFormationValidatePluginTestDefaultTestDeployAssertD7DAFB01"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
