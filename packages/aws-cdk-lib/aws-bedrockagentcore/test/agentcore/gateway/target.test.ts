@@ -12,6 +12,7 @@
  */
 
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template, Match } from '../../../../assertions';
 import * as apigateway from '../../../../aws-apigateway';
 import * as iam from '../../../../aws-iam';
@@ -481,6 +482,24 @@ describe('GatewayTarget Tests', () => {
       });
     });
 
+    test('Should set metadata configuration on Smithy target via target props', () => {
+      GatewayTarget.forSmithy(stack, 'SmithyTarget', {
+        gateway,
+        gatewayTargetName: 'smithy-target',
+        smithyModel: ApiSchema.fromInline('{}'),
+        metadataConfiguration: {
+          allowedRequestHeaders: ['Authorization'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'smithy-target',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['Authorization'],
+        },
+      });
+    });
+
     test('Should set metadata configuration on MCP Server target via target props', () => {
       GatewayTarget.forMcpServer(stack, 'McpServerTarget', {
         gateway: gateway,
@@ -500,22 +519,28 @@ describe('GatewayTarget Tests', () => {
       });
     });
 
-    test('Should prefer top-level metadataConfiguration over target configuration metadataConfiguration', () => {
-      // Use the deprecated nested approach AND the top-level approach simultaneously.
-      // The top-level value should win.
-      GatewayTarget.forApiGateway(stack, 'ApiGwTarget', {
+    testDeprecated('Should prefer top-level metadataConfiguration over target configuration metadataConfiguration', () => {
+      // Conflicting values and a legacy-only header verify that the top-level
+      // configuration replaces the deprecated configuration rather than merging it.
+      new GatewayTarget(stack, 'ApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'apigw-target-precedence',
-        restApi: restApi,
-        stage: 'prod',
-        apiGatewayToolConfiguration: {
-          toolFilters: [
-            {
-              filterPath: '/test',
-              methods: [ApiGatewayHttpMethod.GET],
-            },
-          ],
-        },
+        targetConfiguration: ApiGatewayTargetConfiguration.create({
+          restApi: restApi,
+          stage: 'prod',
+          apiGatewayToolConfiguration: {
+            toolFilters: [
+              {
+                filterPath: '/test',
+                methods: [ApiGatewayHttpMethod.GET],
+              },
+            ],
+          },
+          metadataConfiguration: {
+            allowedQueryParameters: ['legacy'],
+            allowedRequestHeaders: ['X-Legacy'],
+          },
+        }),
         metadataConfiguration: {
           allowedQueryParameters: ['top-level-only'],
         },
@@ -525,11 +550,12 @@ describe('GatewayTarget Tests', () => {
         Name: 'apigw-target-precedence',
         MetadataConfiguration: {
           AllowedQueryParameters: ['top-level-only'],
+          AllowedRequestHeaders: Match.absent(),
         },
       });
     });
 
-    test('Should fall back to ApiGatewayTargetConfiguration.metadataConfiguration when top-level not set', () => {
+    testDeprecated('Should fall back to ApiGatewayTargetConfiguration.metadataConfiguration when top-level not set', () => {
       // Backward compatibility path: only the deprecated location is set, and the rendered template
       // should still contain the metadata configuration.
       const target = new GatewayTarget(stack, 'ApiGwTargetLegacy', {
