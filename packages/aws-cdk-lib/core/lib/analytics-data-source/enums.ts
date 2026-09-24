@@ -2568,8 +2568,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JobType": [
     "glueetl",
     "gluestreaming",
-    "pythonshell",
-    "glueray"
+    "pythonshell"
   ],
   "JsonMutatorType": [
     0,
