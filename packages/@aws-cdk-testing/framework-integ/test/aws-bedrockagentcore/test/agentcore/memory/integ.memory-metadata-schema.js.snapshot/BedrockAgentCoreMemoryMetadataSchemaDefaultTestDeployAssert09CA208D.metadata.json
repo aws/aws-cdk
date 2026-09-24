@@ -1,4 +1,25 @@
 {
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/annotations.ts:220:23)",
+        "Annotations.addWarningV2 (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/annotations.ts:75:12)",
+        "resolveValue (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/private/refs.ts:192:32)",
+        "resolveReferences (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/private/refs.ts:104:24)",
+        "prepareApp (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:38:20)",
+        "synthesize (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/private/synthesis.ts:44:13)",
+        "App.synth (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/app.ts:323:23)",
+        "process.<anonymous> (/tmp/aws-cdk-pr-38344.HIvHxp/packages/aws-cdk-lib/core/lib/app.ts:269:45)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)",
+        "process.emit (node:domain:489:12)",
+        "process.emit.sharedData.processEmitHook.installedValue [as emit] (/tmp/aws-cdk-pr-38344.HIvHxp/node_modules/@cspotcode/source-map-support/source-map-support.js:745:40)"
+      ]
+    }
+  ],
   "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -9,6 +30,44 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemoryd368d051610b53be0e602c8613ad51d7/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemoryd368d051610b53be0e602c8613ad51d7/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetMemoryd368d051610b53be0e602c8613ad51d7"
+    }
+  ],
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/BedrockAgentCoreMemoryMetadataSchema/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemoryd368d051610b53be0e602c8613ad51d7/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetMemoryd368d051610b53be0e602c8613ad51d7"
     }
   ]
 }

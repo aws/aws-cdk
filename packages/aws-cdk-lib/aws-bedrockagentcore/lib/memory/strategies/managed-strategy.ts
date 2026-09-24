@@ -195,8 +195,8 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
     if (this.reflectionConfiguration) {
       throwIfInvalid(this._validateReflectionConfiguration, this.reflectionConfiguration);
     }
-    throwIfInvalid(validateMetadataSchema, this.metadataSchema);
-    throwIfInvalid(validateMetadataSchema, this.reflectionConfiguration?.metadataSchema);
+    throwIfInvalid(schema => validateMetadataSchema(schema, undefined, strategyType), this.metadataSchema);
+    throwIfInvalid(schema => validateMetadataSchema(schema, undefined, strategyType), this.reflectionConfiguration?.metadataSchema);
   }
 
   /**

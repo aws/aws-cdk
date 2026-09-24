@@ -1,16 +1,29 @@
 {
   "version": "54.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "922dddfaaa7b4304f635599479a9b19a80ff87c7450cbd3887354df251538e18": {
+      "source": {
+        "path": "asset.922dddfaaa7b4304f635599479a9b19a80ff87c7450cbd3887354df251538e18.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-13af5138": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "922dddfaaa7b4304f635599479a9b19a80ff87c7450cbd3887354df251538e18.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "55e46166c075b3bb638b3144d9115ad82931ab84fa27045f25cb6b81094be9c9": {
       "displayName": "BedrockAgentCoreMemoryMetadataSchemaDefaultTestDeployAssert09CA208D Template",
       "source": {
         "path": "BedrockAgentCoreMemoryMetadataSchemaDefaultTestDeployAssert09CA208D.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-667aa74e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "55e46166c075b3bb638b3144d9115ad82931ab84fa27045f25cb6b81094be9c9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

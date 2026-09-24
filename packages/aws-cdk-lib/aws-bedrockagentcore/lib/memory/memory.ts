@@ -14,6 +14,9 @@
 import type { IConstruct, Construct } from 'constructs';
 import type { IMemoryStrategy } from './memory-strategy';
 import { MemoryPerms } from './perms';
+import { validateStrategyIndexedKeys } from './private/metadata';
+import type { IndexedKey } from './strategies/metadata-schema';
+import { validateIndexedKeys } from './strategies/metadata-schema';
 import type { CfnMemoryProps, IMemoryRef, MemoryReference } from '../../../aws-bedrockagentcore';
 import { CfnMemory } from '../../../aws-bedrockagentcore';
 import type {
@@ -597,6 +600,16 @@ export interface MemoryProps {
    */
   readonly memoryStrategies?: IMemoryStrategy[];
   /**
+   * Metadata keys available for filtering memory records.
+   *
+   * Specify between 1 and 10 keys. Keys used with `STRICTLY_CONSISTENT` metadata
+   * extraction must be indexed with type `STRING`.
+   * Indexed keys can be added after creation, but cannot be removed.
+   *
+   * @default - No user-defined metadata keys are indexed
+   */
+  readonly indexedKeys?: IndexedKey[];
+  /**
    * The IAM role that provides permissions for the memory to access AWS services
    * when using custom strategies.
    *
@@ -854,6 +867,7 @@ export class Memory extends MemoryBase {
 
     // Validate memory tags
     throwIfInvalid(this._validateMemoryTags, this.tags, this);
+    throwIfInvalid(validateIndexedKeys, props.indexedKeys, this);
 
     // Memory strategies are already validated when building them, so no need to validate them here
 
@@ -867,6 +881,7 @@ export class Memory extends MemoryBase {
       encryptionKeyArn: this.kmsKey?.keyArn,
       memoryExecutionRoleArn: this.executionRole?.roleArn,
       memoryStrategies: Lazy.any({ produce: () => this._renderMemoryStrategies() }, { omitEmptyArray: true }),
+      indexedKeys: props.indexedKeys,
       streamDeliveryResources: Lazy.any(
         { produce: () => this._renderStreamDeliveryResources() },
         { omitEmptyArray: true },
@@ -891,6 +906,11 @@ export class Memory extends MemoryBase {
 
     // Add stream delivery resources to the memory
     for (const resource of props?.streamDeliveryResources ?? []) {this.addStreamDeliveryResource(resource);}
+
+    this.node.addValidation({
+      validate: () => this.memoryStrategies.flatMap(strategy =>
+        validateStrategyIndexedKeys(strategy.render(), this.__resource.indexedKeys)),
+    });
   }
 
   // ------------------------------------------------------

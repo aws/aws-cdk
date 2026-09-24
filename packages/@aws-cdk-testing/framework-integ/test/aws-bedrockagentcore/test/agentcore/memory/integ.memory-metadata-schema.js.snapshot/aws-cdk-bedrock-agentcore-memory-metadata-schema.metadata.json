@@ -28,18 +28,25 @@
   "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/Memory": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MemoryWithMetadataSchemaMemory7123D307"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/Exports/Output{\"Fn::GetAtt\":[\"MemoryWithMetadataSchemaMemory7123D307\",\"MemoryId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryIdA67447F3"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/Exports/Output{\"Fn::GetAtt\":[\"MemoryWithMetadataSchemaMemory7123D307\",\"MemoryArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryArnF8E7390D"
     }
   ],
   "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/ServiceRole/Resource": [

@@ -15,6 +15,7 @@ import type { IConstruct } from 'constructs';
 import type * as bedrockagentcore from '../../../../aws-bedrockagentcore';
 import { Token } from '../../../../core';
 import { validateFieldPattern, validateStringFieldLength } from '../../common/validation-helpers';
+import { MemoryStrategyType } from '../memory-strategy';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -64,6 +65,39 @@ export enum MetadataValueType {
    * Numeric value.
    */
   NUMBER = 'NUMBER',
+}
+
+/**
+ * How a metadata value is populated on memory records.
+ */
+export enum MetadataExtractionType {
+  /**
+   * The LLM extracts the value from conversational content.
+   */
+  LLM_INFERRED = 'LLM_INFERRED',
+  /**
+   * The value is copied from event metadata without LLM inference.
+   *
+   * Events with different values are extracted and consolidated separately.
+   * The key must be indexed and have type `STRING`.
+   */
+  STRICTLY_CONSISTENT = 'STRICTLY_CONSISTENT',
+}
+
+/**
+ * A metadata key indexed for filtering memory records.
+ */
+export interface IndexedKey {
+  /**
+   * The metadata key name to index.
+   *
+   * Must be 1-128 characters and match the pattern `^[a-zA-Z0-9\s._:/=+@-]*$`.
+   */
+  readonly key: string;
+  /**
+   * The data type of the indexed key.
+   */
+  readonly type: MetadataValueType;
 }
 
 /**
@@ -168,7 +202,7 @@ export interface MetadataExtractionConfig {
  * A metadata field definition within a strategy's schema.
  *
  * The `key` is the metadata field name. To be queryable via metadata filters at search
- * time, the key must match a key indexed by the memory strategy.
+ * time, the key must match a key in the memory's `indexedKeys`.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-memory-metadataschemaentry.html
  */
@@ -181,11 +215,24 @@ export interface MetadataSchemaEntry {
   readonly key: string;
   /**
    * The data type of this metadata value.
-   * @default - Service default (`STRING`)
+   * @default - The service determines the value type
    */
   readonly type?: MetadataValueType;
   /**
+   * Whether the value is inferred by the LLM or copied from event metadata.
+   *
+   * `STRICTLY_CONSISTENT` requires an indexed `STRING` key and cannot be combined
+   * with `extractionConfig`. A strategy supports at most three such keys.
+   * Supported by semantic, user preference, and episodic strategies, including
+   * custom overrides, but not summarization strategies.
+   *
+   * @default - The service uses LLM_INFERRED
+   */
+  readonly extractionType?: MetadataExtractionType;
+  /**
    * Configuration controlling how this metadata value is extracted.
+   *
+   * Applicable only to LLM-inferred metadata.
    * @default - Service default extraction
    */
   readonly extractionConfig?: MetadataExtractionConfig;
@@ -224,9 +271,13 @@ export function renderMemoryRecordSchema(
 function renderMetadataSchemaEntry(
   entry: MetadataSchemaEntry,
 ): bedrockagentcore.CfnMemory.MetadataSchemaEntryProperty {
+  if (Token.isUnresolved(entry)) {
+    return entry;
+  }
   return {
     key: entry.key,
     type: entry.type,
+    extractionType: entry.extractionType,
     extractionConfig: entry.extractionConfig
       ? renderExtractionConfig(entry.extractionConfig)
       : undefined,
@@ -236,6 +287,9 @@ function renderMetadataSchemaEntry(
 function renderExtractionConfig(
   config: MetadataExtractionConfig,
 ): bedrockagentcore.CfnMemory.ExtractionConfigProperty | undefined {
+  if (Token.isUnresolved(config)) {
+    return config;
+  }
   if (!config.llmExtractionConfig) {
     return undefined;
   }
@@ -256,6 +310,7 @@ function renderExtractionConfig(
 export function validateMetadataSchema(
   entries?: MetadataSchemaEntry[],
   scope?: IConstruct,
+  strategyType?: MemoryStrategyType,
 ): string[] {
   const errors: string[] = [];
   if (!entries) {
@@ -270,11 +325,58 @@ export function validateMetadataSchema(
     );
   }
   const seenKeys = new Set<string>();
+  let deterministicKeys = 0;
   for (const entry of entries) {
+    if (Token.isUnresolved(entry)) {
+      continue;
+    }
     errors.push(...validateMetadataSchemaEntry(entry, scope));
+    if (entry.extractionType === MetadataExtractionType.STRICTLY_CONSISTENT) {
+      deterministicKeys++;
+    }
     if (entry.key != null && !Token.isUnresolved(entry.key)) {
       if (seenKeys.has(entry.key)) {
         errors.push(`Metadata schema contains duplicate key "${entry.key}"`);
+      }
+      seenKeys.add(entry.key);
+    }
+  }
+  if (deterministicKeys > 3) {
+    errors.push(`metadata schema supports at most 3 STRICTLY_CONSISTENT keys, got ${deterministicKeys}`);
+  }
+  if (deterministicKeys > 0 && strategyType === MemoryStrategyType.SUMMARIZATION) {
+    errors.push('STRICTLY_CONSISTENT metadata is not supported by summarization strategies');
+  }
+  return errors;
+}
+
+/**
+ * Validates the metadata keys indexed by a memory.
+ * @internal
+ */
+export function validateIndexedKeys(keys?: IndexedKey[], scope?: IConstruct): string[] {
+  if (keys === undefined || Token.isUnresolved(keys)) {
+    return [];
+  }
+  const errors: string[] = [];
+  if (keys.length < 1 || keys.length > 10) {
+    errors.push(`indexedKeys must contain between 1 and 10 keys, got ${keys.length}`);
+  }
+  const seenKeys = new Set<string>();
+  for (const entry of keys) {
+    if (Token.isUnresolved(entry)) {
+      continue;
+    }
+    errors.push(...validateStringFieldLength({
+      value: entry.key,
+      fieldName: 'Indexed metadata key',
+      minLength: METADATA_KEY_MIN_LENGTH,
+      maxLength: METADATA_KEY_MAX_LENGTH,
+    }, scope));
+    errors.push(...validateFieldPattern(entry.key, 'Indexed metadata key', METADATA_KEY_PATTERN, undefined, scope));
+    if (entry.key !== undefined && !Token.isUnresolved(entry.key)) {
+      if (seenKeys.has(entry.key)) {
+        errors.push(`indexedKeys contains duplicate key ${JSON.stringify(entry.key)}`);
       }
       seenKeys.add(entry.key);
     }
@@ -291,6 +393,14 @@ function validateMetadataSchemaEntry(entry: MetadataSchemaEntry, scope?: IConstr
     maxLength: METADATA_KEY_MAX_LENGTH,
   }, scope));
   errors.push(...validateFieldPattern(entry.key, 'Metadata schema entry key', METADATA_KEY_PATTERN, undefined, scope));
+  if (entry.extractionType === MetadataExtractionType.STRICTLY_CONSISTENT) {
+    if (entry.type !== undefined && !Token.isUnresolved(entry.type) && entry.type !== MetadataValueType.STRING) {
+      errors.push(`STRICTLY_CONSISTENT metadata must use type STRING, got ${JSON.stringify(entry.type)}`);
+    }
+    if (entry.extractionConfig !== undefined && !Token.isUnresolved(entry.extractionConfig)) {
+      errors.push('STRICTLY_CONSISTENT metadata cannot specify extractionConfig');
+    }
+  }
   if (entry.extractionConfig?.llmExtractionConfig) {
     errors.push(...validateLlmExtractionConfig(entry.extractionConfig.llmExtractionConfig, entry.type, scope));
   }
@@ -323,7 +433,7 @@ function validateLlmExtractionConfig(config: LlmExtractionConfig, entryType?: Me
       errors.push('validation must set exactly one of stringValidation, stringListValidation or numberValidation, got none');
     } else if (setFields.length > 1) {
       errors.push(`validation must set exactly one of stringValidation, stringListValidation or numberValidation, got ${setFields.map(f => f.field).join(', ')}`);
-    } else if (entryType !== undefined && setFields[0].matchesType !== entryType) {
+    } else if (entryType !== undefined && !Token.isUnresolved(entryType) && setFields[0].matchesType !== entryType) {
       errors.push(`validation must use ${EXPECTED_VALIDATION_FIELD[entryType]} to match the entry type ${entryType}, got ${setFields[0].field}`);
     }
   }

@@ -5,7 +5,8 @@ import { Duration } from '../../../../core';
 import * as cdk from '../../../../core';
 import { Memory } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
-import { MetadataValueType } from '../../../lib/memory/strategies/metadata-schema';
+import type { MetadataSchemaEntry } from '../../../lib/memory/strategies/metadata-schema';
+import { MetadataExtractionType, MetadataValueType } from '../../../lib/memory/strategies/metadata-schema';
 
 const TEST_STACK = new cdk.Stack(new cdk.App(), 'ModelStack');
 const TEST_MODEL = FoundationModel.fromFoundationModelId(
@@ -364,7 +365,7 @@ describe('Memory metadata schema validation', () => {
   });
 
   test('skips array length validation when the schema is an unresolved token', () => {
-    const tokenSchema = cdk.Token.asAny([]) as any;
+    const tokenSchema = cdk.Token.asAny(cdk.Lazy.any({ produce: () => [] })) as unknown as MetadataSchemaEntry[];
     expect(() =>
       MemoryStrategy.usingSemantic({
         strategyName: 'token_schema',
@@ -376,7 +377,9 @@ describe('Memory metadata schema validation', () => {
 
   test('renders an unresolved token schema through to the template without crashing', () => {
     const stack = newStack();
-    const tokenSchema = cdk.Token.asAny([{ key: 'from_token', type: 'STRING' }]) as any;
+    const tokenSchema = cdk.Token.asAny(cdk.Lazy.any({
+      produce: () => [{ key: 'from_token', type: 'STRING' }],
+    })) as unknown as MetadataSchemaEntry[];
 
     new Memory(stack, 'test-memory', {
       memoryName: 'memory_token_schema',
@@ -484,5 +487,227 @@ describe('Memory metadata schema validation', () => {
         ],
       }),
     ).toThrow(/definition must not be empty/);
+  });
+});
+
+describe('Metadata extraction types', () => {
+  test('renders deterministic metadata on a managed strategy with a custom extraction model', () => {
+    const stack = newStack();
+    new Memory(stack, 'Memory', {
+      indexedKeys: [{ key: 'department', type: MetadataValueType.STRING }],
+      memoryStrategies: [MemoryStrategy.usingSemantic({
+        strategyName: 'custom_extraction',
+        namespaces: ['/n'],
+        customExtraction: { model: TEST_MODEL, appendToPrompt: 'extract' },
+        metadataSchema: [{
+          key: 'department',
+          type: MetadataValueType.STRING,
+          extractionType: MetadataExtractionType.STRICTLY_CONSISTENT,
+        }],
+      })],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        CustomMemoryStrategy: Match.objectLike({
+          MemoryRecordSchema: {
+            MetadataSchema: [{ Key: 'department', Type: 'STRING', ExtractionType: 'STRICTLY_CONSISTENT' }],
+          },
+        }),
+      }],
+    });
+  });
+
+  test.each([
+    ['semantic', MemoryStrategy.usingSemantic, 'SemanticMemoryStrategy'],
+    ['user preference', MemoryStrategy.usingUserPreference, 'UserPreferenceMemoryStrategy'],
+    ['episodic', MemoryStrategy.usingEpisodic, 'EpisodicMemoryStrategy'],
+  ] as const)('renders both extraction types for %s', (_name, createStrategy, cfnKey) => {
+    const stack = newStack();
+    new Memory(stack, 'Memory', {
+      indexedKeys: [{ key: 'department', type: MetadataValueType.STRING }],
+      memoryStrategies: [createStrategy({
+        strategyName: 'metadata_strategy',
+        namespaces: ['/actors/{actorId}'],
+        metadataSchema: [
+          {
+            key: 'department',
+            type: MetadataValueType.STRING,
+            extractionType: MetadataExtractionType.STRICTLY_CONSISTENT,
+          },
+          {
+            key: 'topic',
+            type: MetadataValueType.STRING,
+            extractionType: MetadataExtractionType.LLM_INFERRED,
+            extractionConfig: { llmExtractionConfig: { definition: 'The topic' } },
+          },
+        ],
+      })],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        [cfnKey]: Match.objectLike({
+          MemoryRecordSchema: {
+            MetadataSchema: [
+              {
+                Key: 'department',
+                Type: 'STRING',
+                ExtractionType: 'STRICTLY_CONSISTENT',
+                ExtractionConfig: Match.absent(),
+              },
+              {
+                Key: 'topic',
+                Type: 'STRING',
+                ExtractionType: 'LLM_INFERRED',
+                ExtractionConfig: { LlmExtractionConfig: { Definition: 'The topic' } },
+              },
+            ],
+          },
+        }),
+      }],
+    });
+  });
+
+  test('preserves service defaults when type and extractionType are omitted', () => {
+    const stack = newStack();
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [MemoryStrategy.usingSemantic({
+        strategyName: 'default_types',
+        namespaces: ['/n'],
+        metadataSchema: [{
+          key: 'score',
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The score',
+              validation: { numberValidation: { minValue: 0 } },
+            },
+          },
+        }],
+      })],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        SemanticMemoryStrategy: Match.objectLike({
+          MemoryRecordSchema: {
+            MetadataSchema: [Match.objectLike({
+              Key: 'score',
+              Type: Match.absent(),
+              ExtractionType: Match.absent(),
+              ExtractionConfig: {
+                LlmExtractionConfig: {
+                  Definition: 'The score',
+                  Validation: { NumberValidation: { MinValue: 0 } },
+                },
+              },
+            })],
+          },
+        }),
+      }],
+    });
+  });
+
+  test.each([MetadataValueType.NUMBER, MetadataValueType.STRING_LIST])('fails for deterministic metadata of type %s', type => {
+    expect(() => MemoryStrategy.usingSemantic({
+      strategyName: 'invalid_type',
+      namespaces: ['/n'],
+      metadataSchema: [{ key: 'department', type, extractionType: MetadataExtractionType.STRICTLY_CONSISTENT }],
+    })).toThrow('STRICTLY_CONSISTENT metadata must use type STRING');
+  });
+
+  test('fails when deterministic metadata has an extraction config', () => {
+    expect(() => MemoryStrategy.usingSemantic({
+      strategyName: 'invalid_config',
+      namespaces: ['/n'],
+      metadataSchema: [{
+        key: 'department',
+        extractionType: MetadataExtractionType.STRICTLY_CONSISTENT,
+        extractionConfig: { llmExtractionConfig: { definition: 'The department' } },
+      }],
+    })).toThrow('STRICTLY_CONSISTENT metadata cannot specify extractionConfig');
+  });
+
+  test.each([0, 1, 3])('accepts %i deterministic keys', count => {
+    expect(() => MemoryStrategy.usingSemantic({
+      strategyName: 'valid_count',
+      namespaces: ['/n'],
+      metadataSchema: [
+        { key: 'topic' },
+        ...Array.from({ length: count }, (_, i) => ({
+          key: `key${i}`,
+          extractionType: MetadataExtractionType.STRICTLY_CONSISTENT,
+        })),
+      ],
+    })).not.toThrow();
+  });
+
+  test('fails for more than three deterministic keys', () => {
+    expect(() => MemoryStrategy.usingSemantic({
+      strategyName: 'invalid_count',
+      namespaces: ['/n'],
+      metadataSchema: Array.from({ length: 4 }, (_, i) => ({
+        key: `key${i}`,
+        extractionType: MetadataExtractionType.STRICTLY_CONSISTENT,
+      })),
+    })).toThrow('metadata schema supports at most 3 STRICTLY_CONSISTENT keys, got 4');
+  });
+
+  test('fails for deterministic metadata on a summarization strategy', () => {
+    expect(() => MemoryStrategy.usingSummarization({
+      strategyName: 'invalid_summary',
+      namespaces: ['/n'],
+      metadataSchema: [{ key: 'department', extractionType: MetadataExtractionType.STRICTLY_CONSISTENT }],
+    })).toThrow('STRICTLY_CONSISTENT metadata is not supported by summarization strategies');
+  });
+
+  test('accepts unresolved metadata types without comparing their token encodings', () => {
+    const stack = newStack();
+    const type = new cdk.CfnParameter(stack, 'MetadataType');
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [MemoryStrategy.usingSemantic({
+        strategyName: 'token_type',
+        namespaces: ['/n'],
+        metadataSchema: [{
+          key: 'score',
+          type: type.valueAsString as MetadataValueType,
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The score',
+              validation: { numberValidation: { minValue: 0 } },
+            },
+          },
+        }],
+      })],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        SemanticMemoryStrategy: Match.objectLike({
+          MemoryRecordSchema: {
+            MetadataSchema: [Match.objectLike({ Key: 'score', Type: { Ref: 'MetadataType' } })],
+          },
+        }),
+      }],
+    });
+  });
+
+  test('preserves an unresolved extraction type', () => {
+    const stack = newStack();
+    const extractionType = new cdk.CfnParameter(stack, 'ExtractionType');
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [MemoryStrategy.usingSemantic({
+        strategyName: 'token_extraction',
+        namespaces: ['/n'],
+        metadataSchema: [{ key: 'topic', extractionType: extractionType.valueAsString as MetadataExtractionType }],
+      })],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        SemanticMemoryStrategy: Match.objectLike({
+          MemoryRecordSchema: {
+            MetadataSchema: [{ Key: 'topic', ExtractionType: { Ref: 'ExtractionType' } }],
+          },
+        }),
+      }],
+    });
   });
 });

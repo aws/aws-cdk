@@ -11,10 +11,14 @@ import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-memory-metadata-schema');
 
-new agentcore.Memory(stack, 'MemoryWithMetadataSchema', {
+const memory = new agentcore.Memory(stack, 'MemoryWithMetadataSchema', {
   memoryName: 'memory_with_metadata_schema',
   description: 'Memory with metadata schema across managed and episodic strategies',
   expirationDuration: cdk.Duration.days(60),
+  indexedKeys: [
+    { key: 'department', type: agentcore.MetadataValueType.STRING },
+    { key: 'topic', type: agentcore.MetadataValueType.STRING },
+  ],
   memoryStrategies: [
     agentcore.MemoryStrategy.usingSemantic({
       strategyName: 'semanticWithMetadata',
@@ -22,8 +26,14 @@ new agentcore.Memory(stack, 'MemoryWithMetadataSchema', {
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
       metadataSchema: [
         {
+          key: 'department',
+          type: agentcore.MetadataValueType.STRING,
+          extractionType: agentcore.MetadataExtractionType.STRICTLY_CONSISTENT,
+        },
+        {
           key: 'topic',
           type: agentcore.MetadataValueType.STRING,
+          extractionType: agentcore.MetadataExtractionType.LLM_INFERRED,
           extractionConfig: {
             llmExtractionConfig: {
               definition: 'The main subject of the conversation',
@@ -63,8 +73,39 @@ new agentcore.Memory(stack, 'MemoryWithMetadataSchema', {
   ],
 });
 
-new integ.IntegTest(app, 'BedrockAgentCoreMemoryMetadataSchema', {
+const test = new integ.IntegTest(app, 'BedrockAgentCoreMemoryMetadataSchema', {
   testCases: [stack],
   // Bedrock Agent Core is only available in these regions
   regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'],
 });
+
+const getMemory = test.assertions.awsApiCall('bedrock-agentcore-control', 'getMemory', {
+  memoryId: memory.memoryId,
+}).expect(integ.ExpectedResult.objectLike({
+  memory: {
+    indexedKeys: integ.Match.arrayWith([
+      { key: 'department', type: 'STRING' },
+    ]),
+    strategies: integ.Match.arrayWith([
+      integ.Match.objectLike({
+        name: 'semanticWithMetadata',
+        memoryRecordSchema: {
+          metadataSchema: integ.Match.arrayWith([
+            { key: 'department', type: 'STRING', extractionType: 'STRICTLY_CONSISTENT' },
+          ]),
+        },
+      }),
+    ]),
+  },
+}));
+
+// The assertion framework derives an IAM action from the SDK client name.
+// Replace that policy with the service's IAM prefix and the tested memory ARN.
+const providerRole = getMemory.provider.handlerRoleArn.target;
+if (cdk.CfnResource.isCfnResource(providerRole)) {
+  providerRole.addPropertyOverride('Policies.0.PolicyDocument.Statement', [{
+    Effect: 'Allow',
+    Action: ['bedrock-agentcore:GetMemory'],
+    Resource: [memory.memoryArn],
+  }]);
+}

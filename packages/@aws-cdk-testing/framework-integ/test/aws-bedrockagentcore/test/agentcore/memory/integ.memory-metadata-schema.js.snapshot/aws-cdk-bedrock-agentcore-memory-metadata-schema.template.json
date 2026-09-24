@@ -51,6 +51,16 @@
    "Properties": {
     "Description": "Memory with metadata schema across managed and episodic strategies",
     "EventExpiryDuration": 60,
+    "IndexedKeys": [
+     {
+      "Key": "department",
+      "Type": "STRING"
+     },
+     {
+      "Key": "topic",
+      "Type": "STRING"
+     }
+    ],
     "MemoryExecutionRoleArn": {
      "Fn::GetAtt": [
       "MemoryWithMetadataSchemaServiceRole5BA30A0D",
@@ -63,6 +73,11 @@
        "Description": "Semantic memory with metadata fields for filtering",
        "MemoryRecordSchema": {
         "MetadataSchema": [
+         {
+          "ExtractionType": "STRICTLY_CONSISTENT",
+          "Key": "department",
+          "Type": "STRING"
+         },
          {
           "ExtractionConfig": {
            "LlmExtractionConfig": {
@@ -79,6 +94,7 @@
             }
            }
           },
+          "ExtractionType": "LLM_INFERRED",
           "Key": "topic",
           "Type": "STRING"
          },
@@ -137,6 +153,30 @@
      }
     ],
     "Name": "memory_with_metadata_schema"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryIdA67447F3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MemoryWithMetadataSchemaMemory7123D307",
+     "MemoryId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-bedrock-agentcore-memory-metadata-schema:ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryIdA67447F3"
+   }
+  },
+  "ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryArnF8E7390D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MemoryWithMetadataSchemaMemory7123D307",
+     "MemoryArn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-bedrock-agentcore-memory-metadata-schema:ExportsOutputFnGetAttMemoryWithMetadataSchemaMemory7123D307MemoryArnF8E7390D"
    }
   }
  },
