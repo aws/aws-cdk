@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "UniqueResourceNameDiscriminatorTest/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "UniqueResourceNameDiscriminatorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "UniqueResourceNameDiscriminatorTestDefaultTestDeployAssert914D3353"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
