@@ -149,6 +149,26 @@ new neptune.DatabaseInstance(this, 'Instance', {
 });
 ```
 
+## Public Endpoints
+
+By default, new Neptune databases are created with public endpoints disabled. You can specify `publiclyAccessible` to enable public access on an instance:
+
+```ts fixture=with-cluster
+new neptune.DatabaseInstance(this, 'Instance', {
+  cluster,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  publiclyAccessible: true,
+});
+```
+
+For more details, refer to the
+following link: <https://docs.aws.amazon.com/neptune/latest/userguide/neptune-public-endpoints.html>
+
+Note:
+
+- Public endpoint setting is available on the Neptune instance and not the Neptune cluster.
+- IAM authentication is required for clusters with public endpoints enabled.
+
 ## Port
 
 By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:
