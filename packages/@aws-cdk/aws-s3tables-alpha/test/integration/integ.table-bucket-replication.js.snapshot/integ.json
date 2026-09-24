@@ -1,0 +1,15 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "TableBucketReplicationIntegTest/DefaultTest": {
+      "stacks": [
+        "InAccountReplicationStack",
+        "BringYourOwnRoleReplicationStack",
+        "KmsReplicationStack"
+      ],
+      "assertionStack": "TableBucketReplicationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketReplicationIntegTestDefaultTestDeployAssert4F7E9876"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

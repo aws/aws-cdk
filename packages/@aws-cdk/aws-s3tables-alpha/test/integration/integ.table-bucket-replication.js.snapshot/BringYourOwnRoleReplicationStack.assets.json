@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "15b06839b2204a51f65af1bad7f53804b469c9573461c9be1e8d0209941c0144": {
+      "displayName": "BringYourOwnRoleReplicationStack Template",
+      "source": {
+        "path": "BringYourOwnRoleReplicationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f531e97a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "15b06839b2204a51f65af1bad7f53804b469c9573461c9be1e8d0209941c0144.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
