@@ -1,8 +1,8 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c": {
-      "displayName": "SmithyTarget/Schema06820540665c527cb557f9660879f643",
+      "displayName": "SmithyTarget/Schema814c958fbd279d47cc0f4e8ed529b303",
       "source": {
         "path": "asset.986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json",
         "packaging": "file"
