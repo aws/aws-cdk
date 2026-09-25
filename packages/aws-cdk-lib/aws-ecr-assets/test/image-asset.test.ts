@@ -307,6 +307,81 @@ test('assets have a display name based on their construct path', () => {
   }
 });
 
+describe('dockerfile-specific ignore file', () => {
+  const directory = path.join(__dirname, 'dockerfile-specific-ignore');
+
+  function stagedDir(flagOn: boolean, file?: string) {
+    const app = new App(flagOn ? {
+      context: { [cxapi.DOCKERFILE_SPECIFIC_IGNORE_FILE]: true },
+    } : undefined);
+    const stack = new Stack(app);
+    const image = new DockerImageAsset(stack, 'Asset', {
+      directory,
+      file,
+    });
+    const session = app.synth();
+    return path.join(session.directory, `asset.${image.assetHash}`);
+  }
+
+  function expectFiles(staged: string, expected: Record<string, boolean>) {
+    for (const [rel, present] of Object.entries(expected)) {
+      expect(fs.existsSync(path.join(staged, rel))).toBe(present);
+    }
+  }
+
+  test('flag off uses only .dockerignore for default and custom Dockerfiles', () => {
+    for (const file of [undefined, 'Dockerfile.Custom']) {
+      const staged = stagedDir(false, file);
+      expectFiles(staged, {
+        'ignored-by-context-root.txt': false,
+        'ignored-by-dockerfile.txt': true,
+        'ignored-by-custom-dockerfile.txt': true,
+        '.dockerignore': true,
+      });
+    }
+  });
+
+  test('flag on honors Dockerfile.dockerignore for the default Dockerfile', () => {
+    const staged = stagedDir(true);
+    expectFiles(staged, {
+      'ignored-by-context-root.txt': true,
+      'ignored-by-dockerfile.txt': false,
+      'ignored-by-custom-dockerfile.txt': true,
+      'Dockerfile.dockerignore': true,
+    });
+  });
+
+  test('flag on honors Dockerfile.Custom.dockerignore', () => {
+    const staged = stagedDir(true, 'Dockerfile.Custom');
+    expectFiles(staged, {
+      'ignored-by-context-root.txt': true,
+      'ignored-by-dockerfile.txt': true,
+      'ignored-by-custom-dockerfile.txt': false,
+      'Dockerfile.Custom.dockerignore': true,
+    });
+  });
+
+  test('flag on falls back to .dockerignore when no sibling ignore exists', () => {
+    const staged = stagedDir(true, 'Dockerfile.Fallback');
+    expectFiles(staged, {
+      'ignored-by-context-root.txt': false,
+      'ignored-by-dockerfile.txt': true,
+      'ignored-by-custom-dockerfile.txt': true,
+      'docker/ignored-by-nested-dockerfile.txt': true,
+      '.dockerignore': true,
+    });
+  });
+
+  test('flag on uses nested Dockerfile-specific ignore and force-includes the relative path', () => {
+    const staged = stagedDir(true, 'docker/nested.Dockerfile');
+    expectFiles(staged, {
+      'docker/ignored-by-nested-dockerfile.txt': false,
+      'ignored-by-context-root.txt': true,
+      'docker/nested.Dockerfile.dockerignore': true,
+    });
+  });
+});
+
 function isStackArtifact(x: any): x is cxapi.CloudFormationStackArtifact {
   return x instanceof cxapi.CloudFormationStackArtifact;
 }
