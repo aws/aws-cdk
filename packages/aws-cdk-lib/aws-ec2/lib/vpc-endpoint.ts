@@ -766,6 +766,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
   public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
   public static readonly SAGEMAKER_STUDIO = new InterfaceVpcEndpointAwsService('studio', 'aws.sagemaker');
+  public static readonly SCHEDULER = new InterfaceVpcEndpointAwsService('scheduler');
+  public static readonly SCHEDULER_FIPS = new InterfaceVpcEndpointAwsService('scheduler-fips');
   public static readonly SECRETS_MANAGER = new InterfaceVpcEndpointAwsService('secretsmanager');
   public static readonly SECURITYHUB = new InterfaceVpcEndpointAwsService('securityhub');
   public static readonly SECURITYLAKE = new InterfaceVpcEndpointAwsService('securitylake');
