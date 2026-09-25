@@ -88,5 +88,7 @@
   "@aws-cdk/core:annotationsInValidationReport": true,
   "@aws-cdk/core:defaultCrossStackReferences": "weak",
   "@aws-cdk/core:validateAgainstDefaultRules": true,
-  "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true
+  "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
+  "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
+  "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true
 }
