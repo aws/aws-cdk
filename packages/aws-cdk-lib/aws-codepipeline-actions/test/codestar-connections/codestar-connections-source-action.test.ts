@@ -201,6 +201,62 @@ describe('CodeStar Connections source Action', () => {
     });
   });
 
+  test('exposes PR-specific variables', () => {
+    const stack = new Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+      actionName: 'BitBucket',
+      owner: 'aws',
+      repo: 'aws-cdk',
+      output: sourceOutput,
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+    });
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [sourceAction],
+        },
+        {
+          stageName: 'Build',
+          actions: [
+            new cpactions.CodeBuildAction({
+              actionName: 'CodeBuild',
+              project: new codebuild.PipelineProject(stack, 'MyProject'),
+              input: sourceOutput,
+              environmentVariables: {
+                SourceBranchName: { value: sourceAction.variables.sourceBranchName },
+                DestinationBranchName: { value: sourceAction.variables.destinationBranchName },
+                PullRequestId: { value: sourceAction.variables.pullRequestId },
+                PullRequestTitle: { value: sourceAction.variables.pullRequestTitle },
+              },
+            }),
+          ],
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+              'Configuration': {
+                'EnvironmentVariables': '[{"name":"SourceBranchName","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.SourceBranchName}"},{"name":"DestinationBranchName","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.DestinationBranchName}"},{"name":"PullRequestId","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.PullRequestId}"},{"name":"PullRequestTitle","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.PullRequestTitle}"}]',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   test('fail if variable from unused action is referenced', () => {
     const app = new App();
     const stack = new Stack(app);
