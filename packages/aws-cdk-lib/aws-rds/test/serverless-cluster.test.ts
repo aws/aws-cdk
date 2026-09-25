@@ -991,6 +991,109 @@ describe('serverless cluster', () => {
   });
 });
 
+describe('defaultDatabaseName validation', () => {
+  test('fails when defaultDatabaseName contains invalid characters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+        vpc,
+        parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+        defaultDatabaseName: 'stage-db',
+      });
+    }).toThrow(/database name "stage-db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+
+  test('accepts a valid defaultDatabaseName and renders it on the DBCluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new ServerlessCluster(stack, 'ServerlessDatabase', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      vpc,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+      defaultDatabaseName: 'stagedb',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DatabaseName: 'stagedb',
+    });
+  });
+
+  test('accepts an underscore in defaultDatabaseName for a postgres-family engine', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new ServerlessCluster(stack, 'ServerlessDatabase', {
+      engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+      vpc,
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+      defaultDatabaseName: 'stage_db',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DatabaseName: 'stage_db',
+    });
+  });
+
+  test('skips validation when defaultDatabaseName is an unresolved token', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+        vpc,
+        parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+        defaultDatabaseName: cdk.Lazy.string({ produce: () => 'stage-db' }),
+      });
+    }).not.toThrow();
+  });
+
+  test('fails when defaultDatabaseName contains an underscore for a mysql-family engine', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        defaultDatabaseName: 'stage_db',
+      });
+    }).toThrow(/database name "stage_db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+
+  test('fails when defaultDatabaseName starts with a digit', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // THEN
+    expect(() => {
+      new ServerlessCluster(stack, 'ServerlessDatabase', {
+        engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
+        vpc,
+        parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
+        defaultDatabaseName: '1db',
+      });
+    }).toThrow(/database name "1db" is invalid. the database name must begin with a letter and contain only alphanumeric characters/);
+  });
+});
+
 function testStack(app?: cdk.App, id?: string): cdk.Stack {
   const stack = new cdk.Stack(app, id, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
