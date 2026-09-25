@@ -100,9 +100,9 @@ const bucketArn = (suffix: string = '') => ({
 
 const MIXINS: Array<[string, (stack: cdk.Stack) => cdk.Mixin, RegExp]> = [
   ['KnowledgeBaseOpenSearchServerlessStorage', (stack) => new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack)),
-    /a vector store can only be configured on a knowledge base of type VECTOR, got "KENDRA"/],
+    /VectorStore can only be configured on a knowledge base of type VECTOR, got "KENDRA"/],
   ['KnowledgeBaseSupplementalDataStorage', (stack) => new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack)),
-    /supplemental data storage can only be configured on a knowledge base of type VECTOR, got "KENDRA"/],
+    /SupplementalDataStorage can only be configured on a knowledge base of type VECTOR, got "KENDRA"/],
 ];
 
 describe('knowledge base mixins', () => {

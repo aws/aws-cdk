@@ -1,4 +1,4 @@
-import { Match, Matcher, Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as opensearchserverless from 'aws-cdk-lib/aws-opensearchserverless';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -58,7 +58,7 @@ describe('VectorKnowledgeBase', () => {
           VectorKnowledgeBaseConfiguration: {
             EmbeddingModelArn: TITAN_V2_MODEL_ARN,
             EmbeddingModelConfiguration: {
-              BedrockEmbeddingModelConfiguration: { Dimensions: 1024, EmbeddingDataType: Match.absent() },
+              BedrockEmbeddingModelConfiguration: { Dimensions: 1024, EmbeddingDataType: 'FLOAT32' },
             },
             SupplementalDataStorageConfiguration: Match.absent(),
           },
@@ -133,11 +133,11 @@ describe('VectorKnowledgeBase', () => {
     const customModel = (props: bedrock.BedrockFoundationModelProps) => new bedrock.BedrockFoundationModel('custom.embed-model-v1', props);
 
     test.each<[string, bedrock.BedrockFoundationModel, bedrock.VectorType | undefined, unknown]>([
-      ['configurable-dimension model', bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024, undefined, { Dimensions: 1024 }],
-      ['fixed-dimension model', bedrock.BedrockFoundationModel.COHERE_EMBED_ENGLISH_V3, undefined, Match.absent()],
+      ['configurable-dimension model', bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024, undefined, { Dimensions: 1024, EmbeddingDataType: 'FLOAT32' }],
+      ['fixed-dimension model', bedrock.BedrockFoundationModel.COHERE_EMBED_ENGLISH_V3, undefined, { Dimensions: Match.absent(), EmbeddingDataType: 'FLOAT32' }],
       ['configurable-dimension model with vector type', bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024, bedrock.VectorType.BINARY, { Dimensions: 1024, EmbeddingDataType: 'BINARY' }],
       ['fixed-dimension model with vector type', bedrock.BedrockFoundationModel.COHERE_EMBED_ENGLISH_V3, bedrock.VectorType.FLOATING_POINT, { Dimensions: Match.absent(), EmbeddingDataType: 'FLOAT32' }],
-      ['model without supportedVectorType with vector type', customModel({ supportsKnowledgeBase: true }), bedrock.VectorType.BINARY, { EmbeddingDataType: 'BINARY' }],
+      ['model without supportedVectorType with vector type', customModel({ supportsKnowledgeBase: true }), bedrock.VectorType.BINARY, { Dimensions: Match.absent(), EmbeddingDataType: 'BINARY' }],
     ])('renders BedrockEmbeddingModelConfiguration for a %s', (_label, embeddingsModel, vectorType, expected) => {
       const stack = new cdk.Stack();
       newKnowledgeBase(stack, { embeddingsModel, vectorType });
@@ -149,9 +149,7 @@ describe('VectorKnowledgeBase', () => {
             EmbeddingModelArn: {
               'Fn::Join': ['', Match.arrayWith([`::foundation-model/${embeddingsModel.modelId}`])],
             },
-            EmbeddingModelConfiguration: Matcher.isMatcher(expected)
-              ? expected
-              : { BedrockEmbeddingModelConfiguration: expected },
+            EmbeddingModelConfiguration: { BedrockEmbeddingModelConfiguration: expected },
           },
         },
       });
@@ -252,8 +250,10 @@ describe('VectorKnowledgeBase', () => {
     test.each<[string, RegExp | undefined, (stack: cdk.Stack) => Partial<bedrock.VectorKnowledgeBaseProps>]>([
       ['embeddingsModel that does not support knowledge bases', /embeddingsModel "anthropic.claude-3-5-sonnet-20240620-v1:0" cannot be used with knowledge bases/,
         () => ({ embeddingsModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0 })],
-      ['vectorType not supported by the embeddingsModel', /vectorType "BINARY" is not supported by embeddingsModel "amazon.titan-embed-text-v1"; choose a vector type listed in the model's supportedVectorType/,
+      ['vectorType not supported by the embeddingsModel', /vectorType "BINARY" is not supported by embeddingsModel "amazon.titan-embed-text-v1"; supported vector types are "FLOAT32"/,
         () => ({ embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V1, vectorType: bedrock.VectorType.BINARY })],
+      ['omitted vectorType when the embeddingsModel does not support the floating-point default', /vectorType "FLOAT32" is not supported by embeddingsModel "custom.binary-only-v1"/,
+        () => ({ embeddingsModel: new bedrock.BedrockFoundationModel('custom.binary-only-v1', { supportsKnowledgeBase: true, supportedVectorType: [bedrock.VectorType.BINARY] }) })],
       ['empty knowledgeBaseName', /knowledgeBaseName .* must be 1-100 characters/, () => ({ knowledgeBaseName: '' })],
       ['knowledgeBaseName with consecutive hyphens', /knowledgeBaseName .* must be 1-100 characters/, () => ({ knowledgeBaseName: 'my--kb' })],
       ['knowledgeBaseName with a leading hyphen', /knowledgeBaseName .* must be 1-100 characters/, () => ({ knowledgeBaseName: '-mykb' })],
