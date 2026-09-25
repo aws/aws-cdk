@@ -154,6 +154,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
 | `description` | `string` | No | Optional description for the agent runtime |
 | `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
+| `platformVersion` | `RuntimePlatformVersion` | No | The platform version that controls how AgentCore Runtime starts the agent. Defaults to `RuntimePlatformVersion.V1` |
 | `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
 | `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
@@ -804,6 +805,26 @@ new agentcore.Runtime(this, 'test-runtime', {
   requestHeaderConfiguration: {
     allowlistedHeaders: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
   },
+});
+```
+
+#### Platform version
+
+The platform version controls how AgentCore Runtime starts your agent. `RuntimePlatformVersion.V2` starts the agent by restoring a prepared snapshot instead of initializing the environment on every cold start, which keeps cold start latency consistent regardless of concurrency or container image size.
+
+V2 is only available in a subset of AWS Regions, create and update operations take several minutes to reach `READY`, and the agent must report healthy from `/ping` within 120 seconds of startup. For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-how-it-works.html#runtime-platform-versions).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  platformVersion: agentcore.RuntimePlatformVersion.V2,
 });
 ```
 

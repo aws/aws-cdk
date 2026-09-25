@@ -20,6 +20,7 @@ import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
   ProtocolType,
+  RuntimePlatformVersion,
 } from '../../../lib/runtime/types';
 
 describe('Runtime default tests', () => {
@@ -428,6 +429,57 @@ describe('Runtime with MCP protocol tests', () => {
       Description: 'A test runtime with MCP protocol',
       ProtocolConfiguration: 'MCP',
       NetworkConfiguration: { NetworkMode: 'PUBLIC' },
+    });
+  });
+});
+
+describe('Runtime platform version tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    // TODO: Remove this acknowledge once the bundled CFN validation schema includes PlatformVersion
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'PlatformVersion is a newly launched property not yet in the bundled schema' });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime-platform-version',
+    });
+  });
+
+  test.each([
+    [RuntimePlatformVersion.V1, 'V1'],
+    [RuntimePlatformVersion.V2, 'V2'],
+  ])('Should render platform version %s', (platformVersion, expected) => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_platform_version',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+      platformVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'test_runtime_platform_version',
+      PlatformVersion: expected,
+    });
+  });
+
+  test('Should omit platform version when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime_platform_version',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      AgentRuntimeName: 'test_runtime_platform_version',
+      PlatformVersion: Match.absent(),
     });
   });
 });

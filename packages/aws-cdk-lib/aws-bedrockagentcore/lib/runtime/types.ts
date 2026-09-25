@@ -55,6 +55,33 @@ export class ProtocolType {
 }
 
 /**
+ * The platform version that controls how AgentCore Runtime starts an agent.
+ *
+ * This is unrelated to the runtime versions that capture the configuration history
+ * of an AgentCore Runtime.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-how-it-works.html#runtime-platform-versions
+ */
+export enum RuntimePlatformVersion {
+  /**
+   * Initializes the agent environment on every cold start.
+   */
+  V1 = 'V1',
+
+  /**
+   * Starts the agent by restoring a prepared snapshot, which keeps cold start latency
+   * consistent regardless of concurrency or container image size.
+   *
+   * V2 is only available in a subset of AWS Regions, create and update operations take
+   * several minutes to reach `READY`, and the agent must report healthy from `/ping`
+   * within 120 seconds of startup.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-v2-optimize.html
+   */
+  V2 = 'V2',
+}
+
+/**
  * Configuration for HTTP request headers that will be passed through to the runtime.
  */
 export interface RequestHeaderConfiguration {
