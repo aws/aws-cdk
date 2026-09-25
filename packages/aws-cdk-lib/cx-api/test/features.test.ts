@@ -53,6 +53,8 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
     [feats.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false,
+    [feats.IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: false,
+    [feats.IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: false,
 
   });
 });

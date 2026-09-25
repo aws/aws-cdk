@@ -8,7 +8,7 @@ import { Policy } from './policy';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { AttachedPolicies } from './private/util';
+import { AttachedPolicies, defaultPolicyNameFor } from './private/util';
 import type { SecretValue } from '../../core';
 import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
@@ -17,6 +17,7 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM user
@@ -214,7 +215,8 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          const { useUniqueName, name } = defaultPolicyNameFor(this, IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME, 'Policy');
+          this.defaultPolicy = new Policy(this, name, useUniqueName ? { policyName: name } : undefined);
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);
