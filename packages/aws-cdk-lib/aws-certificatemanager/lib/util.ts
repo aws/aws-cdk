@@ -1,5 +1,6 @@
 import type { ICertificate } from './certificate';
 import type { DnsValidatedCertificate } from './dns-validated-certificate';
+import { DnsValidatedCertificateV2 } from './dns-validated-certificate-v2';
 import { publicSuffixes } from './public-suffixes';
 import { Arn, ArnFormat, Stack, Token } from '../../core';
 
@@ -24,8 +25,16 @@ export function isDnsValidatedCertificate(cert: ICertificate): cert is DnsValida
   return cert.hasOwnProperty('domainName');
 }
 
+export function isDnsValidatedCertificateV2(cert: ICertificate): cert is DnsValidatedCertificateV2 {
+  return DnsValidatedCertificateV2.isDnsValidatedCertificateV2(cert);
+}
+
 export function getCertificateRegion(cert: ICertificate): string | undefined {
   const { certificateArn, stack } = cert;
+
+  if (isDnsValidatedCertificateV2(cert)) {
+    return cert.certificateRegion;
+  }
 
   if (isDnsValidatedCertificate(cert)) {
     const requestResource = cert.node.findChild('CertificateRequestorResource').node.defaultChild;
