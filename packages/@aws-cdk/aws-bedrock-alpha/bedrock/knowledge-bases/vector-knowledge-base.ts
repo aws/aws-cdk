@@ -107,10 +107,6 @@ export class VectorKnowledgeBase extends KnowledgeBaseBase implements IVectorKno
       public readonly knowledgeBaseArn = attrs.knowledgeBaseArn;
       public readonly knowledgeBaseId = Stack.of(scope).splitArn(attrs.knowledgeBaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly type = KnowledgeBaseType.VECTOR;
-      public readonly knowledgeBaseStatus?: string;
-      public readonly knowledgeBaseFailureReasons?: string[];
-      public readonly knowledgeBaseCreatedAt?: string;
-      public readonly knowledgeBaseUpdatedAt?: string;
       public readonly role = attrs.role;
       public readonly grantPrincipal: iam.IPrincipal = attrs.role?.grantPrincipal ?? new iam.UnknownPrincipal({ resource: this });
     }
@@ -120,10 +116,6 @@ export class VectorKnowledgeBase extends KnowledgeBaseBase implements IVectorKno
 
   public readonly knowledgeBaseArn: string;
   public readonly knowledgeBaseId: string;
-  public readonly knowledgeBaseStatus?: string;
-  public readonly knowledgeBaseFailureReasons?: string[];
-  public readonly knowledgeBaseCreatedAt?: string;
-  public readonly knowledgeBaseUpdatedAt?: string;
 
   public readonly type = KnowledgeBaseType.VECTOR;
   /**
@@ -174,9 +166,5 @@ export class VectorKnowledgeBase extends KnowledgeBaseBase implements IVectorKno
 
     this.knowledgeBaseArn = resource.attrKnowledgeBaseArn;
     this.knowledgeBaseId = resource.attrKnowledgeBaseId;
-    this.knowledgeBaseStatus = resource.attrStatus;
-    this.knowledgeBaseFailureReasons = resource.attrFailureReasons;
-    this.knowledgeBaseCreatedAt = resource.attrCreatedAt;
-    this.knowledgeBaseUpdatedAt = resource.attrUpdatedAt;
   }
 }

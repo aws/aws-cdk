@@ -44,34 +44,6 @@ export interface IKnowledgeBase extends IResource, bedrock.IKnowledgeBaseRef, ia
   readonly knowledgeBaseId: string;
 
   /**
-   * The status of the knowledge base.
-   *
-   * @attribute
-   */
-  readonly knowledgeBaseStatus?: string;
-
-  /**
-   * The reasons the last operation on the knowledge base failed, if any.
-   *
-   * @attribute
-   */
-  readonly knowledgeBaseFailureReasons?: string[];
-
-  /**
-   * The time the knowledge base was created.
-   *
-   * @attribute
-   */
-  readonly knowledgeBaseCreatedAt?: string;
-
-  /**
-   * The time the knowledge base was last updated.
-   *
-   * @attribute
-   */
-  readonly knowledgeBaseUpdatedAt?: string;
-
-  /**
    * The type of the knowledge base.
    */
   readonly type: KnowledgeBaseType;
@@ -166,10 +138,6 @@ export interface KnowledgeBaseAttributes {
 export abstract class KnowledgeBaseBase extends Resource implements IKnowledgeBase {
   public abstract readonly knowledgeBaseArn: string;
   public abstract readonly knowledgeBaseId: string;
-  public abstract readonly knowledgeBaseStatus?: string;
-  public abstract readonly knowledgeBaseFailureReasons?: string[];
-  public abstract readonly knowledgeBaseCreatedAt?: string;
-  public abstract readonly knowledgeBaseUpdatedAt?: string;
   public abstract readonly type: KnowledgeBaseType;
   public abstract readonly role?: iam.IRoleRef;
   public abstract readonly grantPrincipal: iam.IPrincipal;
