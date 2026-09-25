@@ -1,0 +1,191 @@
+{
+ "Resources": {
+  "IntegApi3BAA7F96": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "IntegApi"
+   }
+  },
+  "IntegApiDeployment8A677AAE3f8eef85e21e440def6262aabdaadd42": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "IntegApi3BAA7F96"
+    }
+   },
+   "DependsOn": [
+    "IntegApiGETF18D674D"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "IntegApiDeploymentStageprod8A6EDE49": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "IntegApiDeployment8A677AAE3f8eef85e21e440def6262aabdaadd42"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi3BAA7F96"
+    },
+    "StageName": "prod"
+   }
+  },
+  "IntegApiGETF18D674D": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"Hello, world\"}"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "IntegApi3BAA7F96",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "IntegApi3BAA7F96"
+    }
+   }
+  },
+  "DualstackDomain29972AF5": {
+   "Type": "AWS::ApiGateway::DomainName",
+   "Properties": {
+    "DomainName": "dualstack-*.example.com",
+    "EndpointConfiguration": {
+     "IpAddressType": "dualstack",
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "RegionalCertificateArn": "arn:aws:acm:test-region:12345678:certificate/86468209-a272-595d-b831-0efb6421265z"
+   }
+  },
+  "DualstackDomainMapintegapigwdomainnamedualstackIntegApi6813D622F57260B3": {
+   "Type": "AWS::ApiGateway::BasePathMapping",
+   "Properties": {
+    "DomainName": {
+     "Ref": "DualstackDomain29972AF5"
+    },
+    "RestApiId": {
+     "Ref": "IntegApi3BAA7F96"
+    },
+    "Stage": {
+     "Ref": "IntegApiDeploymentStageprod8A6EDE49"
+    }
+   }
+  },
+  "DualstackDomainRecord": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::GetAtt": [
+       "DualstackDomain29972AF5",
+       "RegionalDomainName"
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "DualstackDomain29972AF5",
+       "RegionalHostedZoneId"
+      ]
+     }
+    },
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "dualstack-*.example.com",
+    "Type": "AAAA"
+   }
+  }
+ },
+ "Outputs": {
+  "IntegApiEndpoint93724527": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "IntegApi3BAA7F96"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "IntegApiDeploymentStageprod8A6EDE49"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ExportsOutputRefDualstackDomain29972AF5493E8213": {
+   "Value": {
+    "Ref": "DualstackDomain29972AF5"
+   },
+   "Export": {
+    "Name": "integ-apigw-domain-name-dualstack:ExportsOutputRefDualstackDomain29972AF5493E8213"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
