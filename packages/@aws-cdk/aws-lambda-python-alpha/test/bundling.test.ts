@@ -6,7 +6,18 @@ import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
-jest.spyOn(DockerImage, 'fromBuild');
+// `Bundling`'s constructor eagerly calls `DockerImage.fromBuild()`, which shells out
+// to `docker build`. These are unit tests that only assert on the arguments passed to
+// `fromBuild`/`fromAsset` (the bundling run itself is skipped), so no image is ever
+// needed. Stub the return with a spy so no Docker daemon or package index is required
+// and the tests are deterministic. Previously the tests relied on the `child_process`
+// mock below to fake the build; that mock is bypassed intermittently in CI (a memoized
+// lazy `require('child_process')` inside aws-cdk-lib can resolve to the real module when
+// another test file loads it first), which let a real `docker build` run against
+// test.pypi.org and fail. Stubbing `fromBuild` directly removes that dependency.
+// `jest.clearAllMocks()` in `beforeEach` only clears call records, so this return value
+// persists across tests. The spy still records calls, so the assertions below hold.
+jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
