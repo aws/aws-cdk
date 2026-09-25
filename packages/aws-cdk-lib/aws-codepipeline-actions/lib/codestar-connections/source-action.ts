@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Action } from '../action';
@@ -128,8 +128,9 @@ export class CodeStarConnectionsSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+    const dependencies = new Array<IDependable>();
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-update-role-new-services
-    options.role.addToPolicy(new iam.PolicyStatement({
+    const actionRolePolicy = options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'codestar-connections:UseConnection',
       ],
@@ -137,10 +138,13 @@ export class CodeStarConnectionsSourceAction extends Action {
         this.props.connectionArn,
       ],
     }));
+    if (actionRolePolicy.policyDependable) {
+      dependencies.push(actionRolePolicy.policyDependable);
+    }
 
     // the action needs to write the output to the pipeline bucket
-    options.bucket.grantReadWrite(options.role);
-    options.bucket.grantPutAcl(options.role);
+    dependencies.push(options.bucket.grantReadWrite(options.role));
+    dependencies.push(options.bucket.grantPutAcl(options.role));
 
     // if codeBuildCloneOutput is true,
     // save the connectionArn in the Artifact instance
@@ -151,6 +155,7 @@ export class CodeStarConnectionsSourceAction extends Action {
     }
 
     return {
+      dependencies,
       configuration: {
         ConnectionArn: this.props.connectionArn,
         FullRepositoryId: `${this.props.owner}/${this.props.repo}`,

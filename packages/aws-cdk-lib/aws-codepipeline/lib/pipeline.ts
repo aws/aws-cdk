@@ -876,6 +876,10 @@ export class Pipeline extends PipelineBase {
       bucket: crossRegionInfo.artifactBucket,
     });
 
+    if (actionConfig.dependencies) {
+      this.codePipeline.node.addDependency(...actionConfig.dependencies);
+    }
+
     return new FullActionDescriptor({
       // must be 'action', not 'richAction',
       // as those are returned by the IStage.actions property,
