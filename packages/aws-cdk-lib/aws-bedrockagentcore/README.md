@@ -101,6 +101,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
+    - [Memory Record Metadata Schema](#memory-record-metadata-schema)
   - [Policy Engine](#policy-engine)
     - [PolicyEngine Properties](#policyengine-properties)
     - [Understanding Cedar Policies in AgentCore](#understanding-cedar-policies-in-agentcore)
@@ -2780,6 +2781,117 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+### Memory Record Metadata Schema
+
+You can declare a metadata schema on a strategy to populate metadata fields on its
+memory records. Set `indexedKeys` on the memory to choose which fields can be used in
+metadata filters during retrieval. A field extracted by the LLM can also be stored
+without indexing it.
+
+The schema accepts between 1 and 20 entries. Each entry has a `key` (1-128 characters,
+matching `^[a-zA-Z0-9\s._:/=+@-]*$`), an optional `type` (`STRING`, `STRING_LIST`, or
+`NUMBER`), and an optional `extractionType`:
+
+- `LLM_INFERRED` uses the LLM to extract the value from conversational content.
+  Configure `extractionConfig.llmExtractionConfig` to describe the field and constrain
+  the extracted values. The service uses this extraction type when it is omitted.
+- `STRICTLY_CONSISTENT` copies the value supplied in event metadata without LLM
+  inference. Events with different deterministic values are extracted and consolidated
+  separately.
+
+`STRICTLY_CONSISTENT` keys must have type `STRING`, be included in the memory's
+`indexedKeys`, and omit `extractionConfig`. Semantic, user preference, and episodic
+strategies (including custom overrides) support at most three deterministic keys
+per strategy. Summarization strategies do not support deterministic metadata.
+
+`indexedKeys` accepts between 1 and 10 keys, each with a name and a required type.
+Indexed keys can be added after memory creation, but cannot be removed. Adding an
+indexed key does not backfill existing records. Changing deterministic keys also
+changes the grouping used for extraction and consolidation, isolating records created
+under the previous configuration from new records.
+
+The following example indexes the supplied department and the inferred topic.
+The inferred priority is stored as metadata without being indexed:
+
+```typescript fixture=default
+new agentcore.Memory(this, 'MemoryWithMetadata', {
+  memoryName: 'memory_with_metadata',
+  indexedKeys: [
+    { key: 'department', type: agentcore.MetadataValueType.STRING },
+    { key: 'topic', type: agentcore.MetadataValueType.STRING },
+  ],
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingSemantic({
+      strategyName: 'semantic_with_metadata',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      metadataSchema: [
+        {
+          key: 'department',
+          type: agentcore.MetadataValueType.STRING,
+          extractionType: agentcore.MetadataExtractionType.STRICTLY_CONSISTENT,
+        },
+        {
+          key: 'topic',
+          type: agentcore.MetadataValueType.STRING,
+          extractionType: agentcore.MetadataExtractionType.LLM_INFERRED,
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The main subject of the conversation',
+              llmExtractionInstruction: 'Identify the topic of the conversation',
+              validation: {
+                stringValidation: { allowedValues: ['billing', 'support', 'sales'] },
+              },
+            },
+          },
+        },
+        {
+          key: 'priority',
+          type: agentcore.MetadataValueType.NUMBER,
+          extractionConfig: {
+            llmExtractionConfig: {
+              definition: 'The priority on a 0-10 scale',
+              validation: { numberValidation: { minValue: 0, maxValue: 10 } },
+            },
+          },
+        },
+      ],
+    }),
+  ],
+});
+```
+
+When `type` is omitted from a schema entry, CDK leaves it unset for the service to
+determine. CDK checks validation rules against an explicitly specified type.
+
+See [Structured metadata for long-term memories](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/long-term-memory-metadata.html)
+for event ingestion and metadata filter examples.
+
+For episodic strategies, you can configure a separate metadata schema for memories
+extracted from raw events versus memories produced by reflection:
+
+```typescript fixture=default
+new agentcore.Memory(this, 'EpisodicMemoryWithMetadata', {
+  memoryName: 'episodic_with_metadata',
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingEpisodic({
+      strategyName: 'episodic_dual_schema',
+      namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
+      // Schema for memories extracted from raw events
+      metadataSchema: [
+        { key: 'event_kind', type: agentcore.MetadataValueType.STRING },
+      ],
+      reflectionConfiguration: {
+        namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
+        // Independent schema for memories produced by reflection
+        metadataSchema: [
+          { key: 'reflection_topic', type: agentcore.MetadataValueType.STRING_LIST },
+        ],
+      },
+    }),
+  ],
+});
 ```
 
 ### Memory with Stream Delivery
