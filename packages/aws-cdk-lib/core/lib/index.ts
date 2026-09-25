@@ -80,3 +80,8 @@ export * from './grants';
 export * from './private/intrinsic';
 export * from './names';
 export * from './time-zone';
+
+// Generic value matcher engine (also re-exported by `aws-cdk-lib/assertions`).
+export * from './matcher/matcher';
+export * from './matcher/match';
+export * from './matcher/capture';
