@@ -1,10 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
+import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
+import { AssemblyValidationReport } from '../../../assertions/lib/helpers-internal/assembly-validation-report';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 import type { App } from '../../lib';
+import { namespaceFromPluginName, normalizeValidationId } from '../../lib/validation/private/validation-id';
 
 const ANNOTATION_CAPTION = 'Annotation';
 
@@ -15,12 +18,11 @@ beforeEach(() => {
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('validations', () => {
@@ -964,31 +966,6 @@ describe('validations', () => {
       expect(output).not.toContain('AckedWarning');
     });
 
-    // We make suppressible using both the old and new prefixes, to ensure that both are supported
-    test.each([
-      '',
-      'Construct-Annotations::',
-      'Annotation::',
-      'annotation::',
-    ])('Annotations.addWarningV2 can be acknowledged via Validations with prefix: %p', (prefix) => {
-      const app = new NonStrictApp({ context: annotationReportContext });
-      const stack = new core.Stack(app, 'MyStack');
-      const construct = new Construct(stack, 'MyConstruct');
-      new FailResource(construct, 'Resource');
-
-      core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
-      core.Validations.of(construct).acknowledge({
-        id: `${prefix}my-lib:AckedWarning`,
-        reason: 'Acceptable for testing',
-      });
-
-      redactAsmDir(app.synth());
-
-      // No annotations left, so no report at all
-      const output = mockErrorOutput();
-      expect(output).not.toContain('AckedWarning');
-    });
-
     test('partial acknowledgment only excludes acknowledged warnings', () => {
       const app = new NonStrictApp({ context: annotationReportContext });
       const stack = new core.Stack(app, 'MyStack');
@@ -1324,6 +1301,54 @@ describe('validations', () => {
     });
   });
 
+  describe.each([false, true])('with annotations appearing in the report file: %p', (annotationsInReport) => {
+    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: annotationsInReport };
+
+    describe.each(['Annotations.addWarningV2', 'Validations.addWarning'] as const)('with warnings added via %s', (addWarningMethod) => {
+      let app: NonStrictApp;
+      let stack: core.Stack;
+      let construct: Construct;
+      beforeEach(() => {
+        app = new NonStrictApp({ context: annotationReportContext });
+        stack = new core.Stack(app, 'MyStack');
+        construct = new Construct(stack, 'MyConstruct');
+        new FailResource(construct, 'Resource');
+
+        switch (addWarningMethod) {
+          case 'Validations.addWarning':
+            core.Validations.of(construct).addWarning('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+          case 'Annotations.addWarningV2':
+            core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+            break;
+        }
+      });
+
+      // We make suppressible using both the old and new prefixes, to ensure that both are supported
+      test.each([
+        '',
+        'Construct-Annotations::',
+        'Annotation::',
+        'annotation::',
+      ])('can be acknowledged using Validations.acknowledge(%p...)', (prefix) => {
+        core.Validations.of(construct).acknowledge({
+          id: `${prefix}my-lib:AckedWarning`,
+          reason: 'Acceptable for testing',
+        });
+
+        const asm = redactAsmDir(app.synth());
+
+        // No annotations left, so no report at all
+        const output = mockErrorOutput();
+        expect(output).not.toContain('AckedWarning');
+
+        // The warnings shall not appear in the metadata either
+        const warnings = asm.getStackByName(stack.stackName).findMetadataByType('aws:cdk:warning');
+        expect(JSON.stringify(warnings)).not.toContain('AckedWarning');
+      });
+    });
+  });
+
   describe('Validations.of()', () => {
     test('addPlugins adds plugin to enclosing stage', () => {
       // GIVEN
@@ -1619,7 +1644,113 @@ describe('validations', () => {
       expect(output).toContain('Fake');
     });
   });
+
+  test.each([
+    ['StackA/ScopeA', 3],
+    ['StackA', 2],
+    ['', 0],
+  ])('suppressions respect scope: suppression at %p leaves %p violations', (suppressScope, warningCount) => {
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+    const stackB = new core.Stack(app, 'StackB');
+    new Construct(stackB, 'ScopeB');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA', 'StackB', 'StackB/ScopeB']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    core.Validations.of(constructAt(app, suppressScope)).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app);
+    expect(report.allViolations()).toHaveLength(warningCount);
+  });
+
+  test('properly splits the same violation from multiple resources', () => {
+    // Test that the internal data structure in the report splits appropriately.
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    // Only acknowledge the rule on StackA/ScopeA resource.
+    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app).pluginReport('ValidationPlugin');
+    expect(report).toMatchObject({
+      suppressedViolations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/ScopeA/Bucket',
+            }),
+          ],
+        }),
+      ],
+      violations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/Bucket',
+            }),
+          ],
+        }),
+      ],
+    });
+  });
 });
+
+function pluginThatReportsForEveryResource(ruleName: string = 'MyRule-001'): core.IPolicyValidationPlugin {
+  return {
+    name: 'ValidationPlugin',
+    validate(context) {
+      const violations = context.stackTemplates.flatMap((s) => {
+        const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
+        return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
+          description: 'dummy violation for demonstration',
+          ruleName,
+          violatingResources: [{
+            resourceLogicalId: logicalId,
+            templatePath: s.templatePath,
+            locations: [],
+          }],
+        } satisfies core.PolicyViolation));
+      });
+
+      return {
+        success: violations.length === 0,
+        violations,
+      };
+    },
+  };
+}
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
@@ -1764,3 +1895,30 @@ class NonStrictApp extends core.App {
 function loadJson(filePath: string): any {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
+
+function constructAt(root: IConstruct, constructPath: string) {
+  const parts = constructPath ? constructPath.split('/') : [];
+
+  let current: IConstruct = root;
+  while (parts.length > 0) {
+    const part = parts.shift()!;
+    let next = current.node.tryFindChild(part);
+    if (!next) {
+      throw new Error(`At path ${current.node.path}: no child named ${part}`);
+    }
+    current = next;
+  }
+  return current;
+}
+
+describe('normalizeValidationId', () => {
+  test('normalize without prefix', () => {
+    const normalized = normalizeValidationId('my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-plugin::my-rule');
+  });
+
+  test('normalize with prefix', () => {
+    const normalized = normalizeValidationId('my custom plugin::my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-custom-plugin::my-rule');
+  });
+});
