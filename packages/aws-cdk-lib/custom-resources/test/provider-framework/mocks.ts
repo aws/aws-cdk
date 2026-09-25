@@ -4,6 +4,7 @@ import type * as https from 'https';
 import { parse as urlparse } from 'url';
 import type { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 import type { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
+import type { DeleteParameterCommandInput, GetParameterCommandInput, PutParameterCommandInput } from '@aws-sdk/client-ssm';
 import * as consts from '../../lib/provider-framework/runtime/consts';
 
 export const MOCK_REQUEST = {
@@ -16,6 +17,7 @@ export const MOCK_REQUEST = {
 export const MOCK_ON_EVENT_FUNCTION_ARN = 'arn:lambda:user:on:event';
 export const MOCK_IS_COMPLETE_FUNCTION_ARN = 'arn:lambda:user:is:complete';
 export const MOCK_SFN_ARN = 'arn:of:state:machine';
+export const MOCK_RESPONSE_URL_PARAMETER_PREFIX = '/cdk/custom-resource-provider/mockprovideraddr';
 
 export let stringifyPayload = true;
 export let onEventImplMock: AWSCDKAsyncCustomResource.OnEventHandler | undefined;
@@ -23,14 +25,40 @@ export let isCompleteImplMock: AWSCDKAsyncCustomResource.IsCompleteHandler | und
 export let startStateMachineInput: StartExecutionCommandInput | undefined;
 export let cfnResponse: AWSLambda.CloudFormationCustomResourceResponse;
 
+/** In-memory stand-in for SSM Parameter Store. */
+export let parameterStore: Record<string, string>;
+
 export function setup() {
   process.env[consts.WAITER_STATE_MACHINE_ARN_ENV] = MOCK_SFN_ARN;
+  process.env[consts.RESPONSE_URL_PARAMETER_PREFIX_ENV] = MOCK_RESPONSE_URL_PARAMETER_PREFIX;
 
   stringifyPayload = true;
   onEventImplMock = undefined;
   isCompleteImplMock = undefined;
   cfnResponse = {} as any;
   startStateMachineInput = undefined;
+  parameterStore = {};
+}
+
+export async function putParameterMock(req: PutParameterCommandInput): Promise<void> {
+  if (!req.Name || !req.Value) {
+    throw new Error('putParameter requires both Name and Value');
+  }
+  if (parameterStore[req.Name] !== undefined && !req.Overwrite) {
+    throw new Error(`parameter "${req.Name}" already exists`);
+  }
+  parameterStore[req.Name] = req.Value;
+}
+
+export async function getParameterMock(req: GetParameterCommandInput): Promise<string | undefined> {
+  return parameterStore[req.Name!];
+}
+
+export async function deleteParameterMock(req: DeleteParameterCommandInput): Promise<void> {
+  if (parameterStore[req.Name!] === undefined) {
+    throw new Error(`parameter "${req.Name}" not found`);
+  }
+  delete parameterStore[req.Name!];
 }
 
 export async function httpRequestMock(options: https.RequestOptions, body: string) {
