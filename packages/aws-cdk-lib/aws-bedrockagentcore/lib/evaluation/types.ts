@@ -355,7 +355,8 @@ export interface OnlineEvaluationBaseProps {
    *
    * Controls whether the evaluation actively processes agent traces.
    *
-   * @default ExecutionStatus.ENABLED
+   * @default - ExecutionStatus.ENABLED if the '@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled'
+   * feature flag is enabled; otherwise no execution status is emitted and the service default applies
    */
   readonly executionStatus?: ExecutionStatus;
 }

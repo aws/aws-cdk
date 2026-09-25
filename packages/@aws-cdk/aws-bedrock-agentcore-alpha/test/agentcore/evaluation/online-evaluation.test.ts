@@ -193,7 +193,7 @@ describe('OnlineEvaluationConfig', () => {
       });
     });
 
-    test('does not include ExecutionStatus when not specified', () => {
+    test('defaults executionStatus to ENABLED when not specified', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
         onlineEvaluationConfigName: 'no_status_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
@@ -205,7 +205,7 @@ describe('OnlineEvaluationConfig', () => {
 
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
-        ExecutionStatus: Match.absent(),
+        ExecutionStatus: 'ENABLED',
       });
     });
   });
