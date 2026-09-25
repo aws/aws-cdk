@@ -320,6 +320,43 @@ describe('artifacts', () => {
       });
     });
 
+    test('fails validation if a non-compute action has an output artifact with artifactFiles', () => {
+      const stack = new cdk.Stack();
+
+      const sourceOutput = new codepipeline.Artifact('SourceOutput');
+      const buildOutput = new codepipeline.Artifact('BuildOutput', ['my-dir/**/*']);
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new FakeSourceAction({
+                actionName: 'source1',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new FakeBuildAction({
+                actionName: 'build1',
+                input: sourceOutput,
+                output: buildOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const errors = validate(stack);
+
+      expect(errors.length).toEqual(1);
+      const error = errors[0];
+      expect(error).toMatch(/Action 'build1' is not a compute action, so its output Artifact 'BuildOutput' cannot specify files. File paths on an output artifact are only supported for compute actions/);
+    });
+
     test('throw if artifactFiles length is less than 1', () => {
       expect(() => {
         new codepipeline.Artifact('CommandsArtifact', []);
