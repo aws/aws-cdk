@@ -1,0 +1,242 @@
+{
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signInCaseSensitive": false
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGateway1B526651"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/LambdaTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunction22AD90FC"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayServiceRole3DD40004"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayUserPoolD42124C9"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/DefaultClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "generateSecret": true,
+        "oAuth": {
+          "flows": {
+            "clientCredentials": true
+          },
+          "scopes": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/LambdaTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayLambdaTargetC1D88771"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionServiceRole6ABD93C7"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/TestFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionLogGroupE7744A08"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayServiceRoleDefaultPolicyD85768FE"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayUserPoolResourceServerFE3C38D1"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayUserPoolDefaultClient6FFD6AE6"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolIntegTest/McpProtocolGateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpProtocolGatewayUserPoolDomainC85F2B4E"
+    }
+  ]
+}
