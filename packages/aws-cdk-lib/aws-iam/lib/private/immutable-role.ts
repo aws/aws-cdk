@@ -34,6 +34,7 @@ export class ImmutableRole extends Resource implements IRole {
   public readonly principalAccount: string | undefined;
   public readonly roleArn: string;
   public readonly roleName: string;
+  public readonly mutable = false;
   private readonly _stack: IRole['stack'];
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
