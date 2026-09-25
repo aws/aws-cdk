@@ -2820,6 +2820,13 @@
       "ON_DEMAND"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/host-kernel.ts": {
+    "HostKernel": [
+      "LINUX_KERNEL_4",
+      "LINUX_KERNEL_6",
+      "LINUX_KERNEL_LATEST"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
@@ -5676,6 +5683,12 @@
     "UntrustedArtifactOnDeployment": [
       "Enforce",
       "Warn"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.ts": {
+    "S3ObjectStorageMode": [
+      "COPY",
+      "REFERENCE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/destination.ts": {
