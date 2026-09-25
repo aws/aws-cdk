@@ -1938,6 +1938,25 @@ new ec2.Volume(this, 'Volume', {
 });
 ```
 
+#### Availability Zone ID
+
+AZ IDs (e.g., `use1-az1`) are consistent physical zone identifiers across all AWS accounts,
+unlike AZ names (e.g., `us-east-1a`) which are randomly mapped per account. Use AZ IDs when
+you need resources in the same physical zone across multiple AWS accounts.
+
+You can use `availabilityZoneId` instead of `availabilityZone` when creating a Volume:
+
+```ts
+new ec2.Volume(this, 'Volume', {
+  availabilityZoneId: 'use1-az1',
+  size: Size.gibibytes(500),
+  encrypted: true,
+});
+```
+
+> **Note:** `availabilityZone` and `availabilityZoneId` are mutually exclusive. Providing both
+> will throw a synth-time validation error.
+
 #### Volume initialization rate
 
 When creating an EBS volume from a snapshot, you can specify the [volume initialization rate](https://docs.aws.amazon.com/ebs/latest/userguide/initalize-volume.html#volume-initialization-rate) at which the snapshot blocks are downloaded from Amazon S3 to the volume.
@@ -2564,6 +2583,36 @@ const subnet1 = ec2.Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
 // Supply only subnet id
 const subnet2 = ec2.Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
 ```
+
+### Availability Zone ID
+
+AZ IDs (e.g., `use1-az1`) are consistent physical zone identifiers across all AWS accounts,
+unlike AZ names (e.g., `us-east-1a`) which are randomly mapped per account. Use AZ IDs when
+you need resources in the same physical zone across multiple AWS accounts.
+
+You can create a Subnet using `availabilityZoneId` instead of `availabilityZone`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const subnet = new ec2.Subnet(this, 'Subnet', {
+  vpcId: vpc.vpcId,
+  cidrBlock: '10.0.0.0/24',
+  availabilityZoneId: 'use1-az1',
+});
+```
+
+You can also pass `availabilityZoneId` when importing a subnet via `fromSubnetAttributes()`:
+
+```ts
+const imported = ec2.Subnet.fromSubnetAttributes(this, 'ImportedSubnet', {
+  subnetId: 'subnet-12345',
+  availabilityZoneId: 'use1-az1',
+});
+```
+
+> **Note:** `availabilityZone` and `availabilityZoneId` are mutually exclusive on `SubnetProps`.
+> Providing both will throw a synth-time validation error.
 
 ## Launch Templates
 

@@ -2962,3 +2962,80 @@ function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
     },
   };
 }
+
+describe('Subnet', () => {
+  test('subnet with availabilityZoneId', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-12345',
+      cidrBlock: '10.0.0.0/24',
+      availabilityZoneId: 'use1-az1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      AvailabilityZoneId: 'use1-az1',
+    });
+  });
+
+  test('subnet availabilityZoneId is accessible as attribute', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const subnet = new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-12345',
+      cidrBlock: '10.0.0.0/24',
+      availabilityZoneId: 'use1-az1',
+    });
+
+    // THEN
+    expect(subnet.availabilityZoneId).toEqual('use1-az1');
+    expect(() => subnet.availabilityZone).toThrow('`availabilityZone` is not available when the subnet was created with `availabilityZoneId`');
+  });
+
+  test('subnet throws if both availabilityZone and availabilityZoneId are provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => {
+      new Subnet(stack, 'Subnet', {
+        vpcId: 'vpc-12345',
+        cidrBlock: '10.0.0.0/24',
+        availabilityZone: 'us-east-1a',
+        availabilityZoneId: 'use1-az1',
+      });
+    }).toThrow("Cannot specify both 'availabilityZone' and 'availabilityZoneId'");
+  });
+
+  test('subnet throws if neither availabilityZone nor availabilityZoneId is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // THEN
+    expect(() => {
+      new Subnet(stack, 'Subnet', {
+        vpcId: 'vpc-12345',
+        cidrBlock: '10.0.0.0/24',
+      } as any);
+    }).toThrow("Must provide either 'availabilityZone' or 'availabilityZoneId'");
+  });
+
+  test('fromSubnetAttributes with availabilityZoneId', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const subnet = Subnet.fromSubnetAttributes(stack, 'Subnet', {
+      subnetId: 'subnet-12345',
+      availabilityZoneId: 'use1-az1',
+    });
+
+    // THEN
+    expect(subnet.availabilityZoneId).toEqual('use1-az1');
+  });
+});
