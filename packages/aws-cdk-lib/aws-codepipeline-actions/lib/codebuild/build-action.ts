@@ -1,10 +1,12 @@
 import type { Construct } from 'constructs';
 import { CodeStarConnectionsSourceAction } from '..';
 import * as codebuild from '../../../aws-codebuild';
+import { createLoggingPolicyStatement, createReportGroupPolicyStatement } from '../../../aws-codebuild/lib/project-role-permissions';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import * as cxapi from '../../../cx-api';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
 
@@ -110,6 +112,21 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default false
    */
   readonly combineBatchBuildArtifacts?: boolean;
+
+  /**
+   * A service role to use for this CodeBuild action, overriding the CodeBuild
+   * project's default service role for builds triggered by this pipeline action.
+   *
+   * Maps to the CodePipeline `ServiceRoleArnOverride` action configuration property.
+   * When supplied, the pipeline role is granted `iam:PassRole` on this role.
+   *
+   * If the `@aws-cdk/aws-codepipeline-actions:autoScopeCodeBuildRoleForFullClone`
+   * feature flag is enabled and this prop is not supplied, a scoped role may be
+   * auto-created if the CodeBuild action has CodeConnections Full Clone sources.
+   *
+   * @default - no override; the CodeBuild project's default service role is used
+   */
+  readonly serviceRoleOverride?: iam.IRole;
 }
 
 /**
@@ -117,6 +134,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class CodeBuildAction extends Action {
   private readonly props: CodeBuildActionProps;
+  private _serviceRole?: iam.IRole;
 
   constructor(props: CodeBuildActionProps) {
     super({
@@ -147,13 +165,35 @@ export class CodeBuildAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  /**
+   * The service role override used by this action. Only populated after the action has been added
+   * to a pipeline (i.e. after bind), and `undefined` if read before.
+   *
+   * Customizing the auto-created role is possible by granting extra permissions via this getter.
+   * To use a tighter or fully-managed role, pass an explicit `serviceRoleOverride` instead.
+   */
+  public get serviceRole(): iam.IRole | undefined { return this._serviceRole; }
+
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
+    const autoScopeEnabled = cdk.FeatureFlags.of(scope).isEnabled(cxapi.AUTO_SCOPE_CODEBUILD_ROLE_FOR_FULL_CLONE);
+
+    // Check whether the service role override can be auto created. This requires an
+    // CDK-owned project (to place the role in its stack) and non-token connection ARNs
+    // for the source actions (we need to parse the connection arn, which will only be known at deploy time)
+    const pipelineStack = cdk.Stack.of(scope);
+    const projectStack = cdk.Stack.of(this.props.project);
+    const isCrossAccount = pipelineStack.account !== projectStack.account;
+    const fullCloneByConnection = this.groupFullCloneReposByConnection();
+    const willAutoCreateSRO = autoScopeEnabled
+      && !this.props.serviceRoleOverride
+      && fullCloneByConnection.size > 0
+      && this.props.project instanceof codebuild.Project
+      && Array.from(fullCloneByConnection.keys()).every(arn => !cdk.Token.isUnresolved(arn));
+
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {
-      const pipelineStack = cdk.Stack.of(scope);
-      const projectStack = cdk.Stack.of(this.props.project);
-      if (pipelineStack.account !== projectStack.account) {
+      if (isCrossAccount) {
         throw new cdk.ValidationError(
           lit`CrossAccountActionCannotHaveOutputs`,
           'A cross-account CodeBuild action cannot have outputs. ' +
@@ -193,14 +233,16 @@ export class CodeBuildAction extends Action {
 
     for (const inputArtifact of this.actionProperties.inputs || []) {
       // if any of the inputs come from the CodeStarConnectionsSourceAction
-      // with codeBuildCloneOutput=true,
-      // grant the Project's Role to use the connection
+      // with codeBuildCloneOutput=true, grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
-        this.props.project.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['codestar-connections:UseConnection'],
-          resources: [connectionArn],
-        }));
+        // Skip adding these if we auto create the per pipeline service role
+        if (!(willAutoCreateSRO && fullCloneByConnection.has(connectionArn))) {
+          this.props.project.addToRolePolicy(new iam.PolicyStatement({
+            actions: ['codestar-connections:UseConnection'],
+            resources: [connectionArn],
+          }));
+        }
       }
 
       // if any of the inputs come from the CodeCommitSourceAction
@@ -232,8 +274,130 @@ export class CodeBuildAction extends Action {
         configuration.CombineArtifacts = 'true';
       }
     }
+    // If serviceRoleOverride not provided, and feature flag enabled, try to auto create the role
+    let overrideRole: iam.IRole | undefined;
+    if (this.props.serviceRoleOverride) {
+      overrideRole = this.props.serviceRoleOverride;
+    } else if (willAutoCreateSRO) {
+      overrideRole = this.createScopedServiceRole(stage, options, fullCloneByConnection);
+      cdk.Annotations.of(scope).addInfoV2(
+        '@aws-cdk/aws-codepipeline-actions:codeBuildServiceRoleAutoScoped',
+        `Auto-created a scoped-down CodeBuild service role for action '${this.actionProperties.actionName}' with baseline permissions. ` +
+        'If the project needs additional permissions (e.g. VPC networking, ECR image pull, Secrets Manager, ' +
+        'SSM sessions, a custom encryption key, or custom role policies), add them via ' +
+        "'buildAction.serviceRole', or pass an explicit 'serviceRoleOverride'.",
+      );
+    } else if (autoScopeEnabled && fullCloneByConnection.size > 0) {
+      // Flag on + Full Clone source, but we can't safely auto-create a repository-scoped
+      // role (the project is imported, or a connection ARN is an unresolved token)
+      cdk.Annotations.of(scope).addInfoV2(
+        '@aws-cdk/aws-codepipeline-actions:codeBuildServiceRoleNotAutoScoped',
+        `Could not auto-create a repository-scoped CodeBuild service role for action '${this.actionProperties.actionName}' ` +
+        'because the CodeBuild project is imported or the action has a token source connection. ' +
+        "The build will use the project's default service role. " +
+        "To scope it to the source repositories, create and pass an explicit 'serviceRoleOverride'.",
+      );
+    }
+
+    if (overrideRole) {
+      this._serviceRole = overrideRole;
+      configuration.ServiceRoleArnOverride = overrideRole.roleArn;
+      this.grantPipelinePassRole(options.role, overrideRole);
+    }
     return {
       configuration,
     };
+  }
+
+  /**
+   * Reads the CodeConnections Full Clone metadata from all of this action's input artifacts,
+   * grouped by connection ARN. Returns a map of connection ARN → set of repository ids.
+   * The map's insertion order follows first-seen connection order for deterministic statement emission.
+   */
+  private groupFullCloneReposByConnection(): Map<string, Set<string>> {
+    const byConnection = new Map<string, Set<string>>();
+    for (const inputArtifact of this.actionProperties.inputs || []) {
+      // Only Full Clone actions have _CONNECTION_ARN_PROPERTY set
+      const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
+      const fullRepositoryId = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._FULL_REPOSITORY_ID_PROPERTY);
+      if (connectionArn && fullRepositoryId) {
+        let repos = byConnection.get(connectionArn);
+        if (!repos) {
+          repos = new Set<string>();
+          byConnection.set(connectionArn, repos);
+        }
+        repos.add(fullRepositoryId);
+      }
+    }
+    return byConnection;
+  }
+
+  /**
+   * Grants the pipeline role `iam:PassRole` on the given service role, scoped to the CodeBuild service.
+   */
+  private grantPipelinePassRole(pipelineRole: iam.IRole, overrideRole: iam.IRole): void {
+    pipelineRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['iam:PassRole'],
+      resources: [overrideRole.roleArn],
+      conditions: { StringEquals: { 'iam:PassedToService': 'codebuild.amazonaws.com' } },
+    }));
+  }
+
+  /**
+   * Creates CodeBuild service role scoped on the repository Ids of the Full Clone source(s)
+   * feeding this action, in the project's stack. Baseline: build logs, report groups, the artifact
+   * bucket (and its KMS key, if any), plus one dedicated `UseConnection` grant per
+   * connection with a FullRepositoryId condition per repo.
+   */
+  private createScopedServiceRole(
+    stage: codepipeline.IStage,
+    options: codepipeline.ActionBindOptions,
+    fullCloneByConnection: Map<string, Set<string>>,
+  ): iam.Role {
+    const projectStack = cdk.Stack.of(this.props.project);
+    // Since action names are only unique within a stage, use pipeline + stage + action as id to avoid collisions.
+    const roleId = `${cdk.Names.nodeUniqueId(stage.pipeline.node)}-${stage.stageName}-${this.actionProperties.actionName}-CodeBuildServiceRole`;
+    const role = new iam.Role(projectStack, roleId, {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+    });
+
+    // Mirror permissions that the default project role has
+    role.addToPrincipalPolicy(createLoggingPolicyStatement(this.props.project, this.props.project.projectName));
+    role.addToPrincipalPolicy(createReportGroupPolicyStatement(this.props.project, this.props.project.projectName));
+
+    // Pipeline artifact bucket and KMS key
+    if ((this.actionProperties.outputs || []).length > 0) {
+      options.bucket.grantReadWrite(role);
+    } else {
+      options.bucket.grantRead(role);
+    }
+    options.bucket.encryptionKey?.grantEncryptDecrypt(role);
+
+    for (const [connectionArn, repoSet] of fullCloneByConnection) {
+      // Need to check if the connection is using `codestar-connections` or `codeconnections` prefix
+      const connectionService = projectStack.splitArn(connectionArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).service;
+      const repos = Array.from(repoSet).sort();
+      role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: [`${connectionService}:UseConnection`],
+        resources: [connectionArn],
+        conditions: { StringEquals: { [`${connectionService}:FullRepositoryId`]: repos.length === 1 ? repos[0] : repos } },
+      }));
+    }
+
+    // CodeCommit Full Clone inputs feeding the same action also clone at build time, so the
+    // service role must carry the repository-scoped git pull grant that bound() otherwise only
+    // puts on the project's default role (which the override role replaces at execution).
+    for (const inputArtifact of this.actionProperties.inputs || []) {
+      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
+      if (codecommitRepositoryArn) {
+        role.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['codecommit:GitPull'],
+          resources: [codecommitRepositoryArn],
+        }));
+      }
+    }
+
+    return role;
   }
 }
