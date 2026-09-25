@@ -413,6 +413,30 @@ describe('tests', () => {
     });
   });
 
+  test('Access logging on environment-agnostic stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.logAccessLogs(bucket);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+          }),
+        ]),
+      },
+    });
+  });
+
   test('access logging with prefix', () => {
     // GIVEN
     const app = new cdk.App();
