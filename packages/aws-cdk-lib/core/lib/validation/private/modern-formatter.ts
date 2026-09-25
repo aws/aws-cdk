@@ -7,9 +7,11 @@ import path from 'path';
 import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
 import { isSuppressibleViolation } from './report';
+import { namespaceFromPluginName, normalizeValidationId, parseValidationId, pluginNameFromNamespace } from './validation-id';
+import type { StackFrameFinder } from '../../private/stack-trace';
 import { topUserFrame } from '../../private/stack-trace';
 
-export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {
+export function formatValidationReports(fileRoot: string, reports: PluginReportJson[], frameFinder: StackFrameFinder): string[] {
   const successfullyExecutedPlugins = reports.filter((r) => isPluginFailure(r) === undefined);
   const pluginFailures = reports.map(isPluginFailure).filter((e) => e !== undefined);
 
@@ -23,7 +25,7 @@ export function formatValidationReports(fileRoot: string, reports: PluginReportJ
 
   return [
     ...pluginFailures.map(formatPluginFailure),
-    ...violations.map((v) => formatViolationBlock(fileRoot, v)),
+    ...violations.map((v) => formatViolationBlock(fileRoot, v, frameFinder)),
   ];
 }
 
@@ -55,18 +57,29 @@ function normalizeSeverity(severity: string | undefined): string {
   return sanitize(severity);
 }
 
-function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
+function formatViolationBlock(fileRoot: string, v: FlattenedViolation, frameFinder: StackFrameFinder): string {
   const lines: string[] = [];
 
-  const location = sourceLocation(fileRoot, v.construct.stackTraces);
-  if (location) {
-    lines.push(Colorize.underline(sanitize(location)));
+  const locations = sourceLocations(fileRoot, v.construct.stackTraces, frameFinder);
+
+  const maxTraces = 5;
+
+  let additional = false;
+  for (const location of locations.slice(0, maxTraces)) {
+    lines.push(`${additional ? 'or ' : ''}${Colorize.underline(sanitize(location))}`);
+    additional = true;
   }
+  if (locations.length > maxTraces) {
+    lines.push(Colorize.grey(`(and ${locations.length - maxTraces} more...)`));
+  }
+
+  const pluginNs = namespaceFromPluginName(v.pluginName);
+  const parsed = parseValidationId(v.ruleName);
 
   lines.push([
     Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
     Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(`(${namespace(v)})`),
+    Colorize.grey(`(${sanitize(parsed.namespace ? pluginNameFromNamespace(parsed.namespace) : v.pluginName)})`),
   ].join(' '));
 
   const constructInfo = formatConstructInfo(fileRoot, v.construct);
@@ -76,11 +89,12 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
     lines.push(`   Suggested fix: ${sanitize(v.suggestedFix).replace(/\n/g, '\n   ')}`);
   }
 
+  const ackId = normalizeValidationId(v.ruleName, pluginNs);
   if (isSuppressibleViolation(v)) {
-    lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId(v)}'`)}`);
+    lines.push(`   ${Colorize.grey(`Acknowledge with '${sanitize(ackId)}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
-    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId(v))}`)}`);
+    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId)}`)}`);
   }
 
   return lines.join('\n');
@@ -123,14 +137,20 @@ function stripAckTag(description: string): string {
   return description.replace(/\s*\[ack:\s*[^\]]+\]\s*/g, '').trim();
 }
 
-function sourceLocation(fileRoot: string, stackTraces: string[] | undefined): string | undefined {
+function sourceLocations(fileRoot: string, stackTraces: string[] | undefined, frameFinder: StackFrameFinder): string[] {
+  const ret: string[] = [];
   for (const trace of stackTraces ?? []) {
-    const frame = topUserFrame(trace.split('\n'));
+    const frame = topUserFrame(trace.split('\n'), frameFinder);
     if (frame && frame.fileName) {
-      return `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
+      const candidate = `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
+
+      // No duplicates
+      if (!ret.includes(candidate)) {
+        ret.push(candidate);
+      }
     }
   }
-  return undefined;
+  return ret;
 }
 
 function formatPluginFailure(f: PluginError): string {
@@ -174,10 +194,12 @@ function isPluginFailure(r: PluginReportJson): PluginError | undefined {
   return { error: r.metadata.error };
 }
 
-function namespace(v: FlattenedViolation): string {
-  return v.ruleName.includes('::') ? sanitize(v.ruleName.split('::')[0]) : sanitize(v.pluginName);
-}
+export function stripAnsi(x: string) {
+  const pattern = [
+    '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+    '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
+  ].join('|');
 
-function ackId(v: FlattenedViolation): string {
-  return (v.ruleName.includes('::') ? sanitize(v.ruleName) : `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`).replace(/ /g, '-');
+  const re = new RegExp(pattern, 'g');
+  return x.replaceAll(re, '');
 }

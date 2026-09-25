@@ -267,5 +267,35 @@ describe('BedrockFoundationModel', () => {
       expect(BedrockFoundationModel.MISTRAL_LARGE_2402_V1.supportsAgents).toBe(true);
       expect(BedrockFoundationModel.MISTRAL_LARGE_2402_V1.supportsCrossRegion).toBe(false);
     });
+
+    test('OpenAI models are configured correctly', () => {
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.modelId).toBe('openai.gpt-5.6-sol');
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.supportsCrossRegion).toBe(true);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_TERRA.modelId).toBe('openai.gpt-5.6-terra');
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_TERRA.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_TERRA.supportsCrossRegion).toBe(true);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_LUNA.modelId).toBe('openai.gpt-5.6-luna');
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_LUNA.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_5_6_LUNA.supportsCrossRegion).toBe(true);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_120B_V1.modelId).toBe('openai.gpt-oss-120b-1:0');
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_120B_V1.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_120B_V1.supportsCrossRegion).toBe(false);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_20B_V1.modelId).toBe('openai.gpt-oss-20b-1:0');
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_20B_V1.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_20B_V1.supportsCrossRegion).toBe(false);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_120B.modelId).toBe('openai.gpt-oss-safeguard-120b');
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_120B.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_120B.supportsCrossRegion).toBe(false);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_20B.modelId).toBe('openai.gpt-oss-safeguard-20b');
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_20B.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_OSS_SAFEGUARD_20B.supportsCrossRegion).toBe(false);
+    });
   });
 });
