@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { AdditionalSchemaSource, Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import { CompositeEngine, TemplateFile, version } from '@aws/cloudformation-validate';
+import type { AdditionalSchemaSource, CompositeEngineConfig, Engine, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 import { profileSpan, recordPerformanceEntry } from '../private/perf';
 
-const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const VALIDATE_METRIC = 'CloudFormationValidate.validate';
 const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 interface MutableViolation {
@@ -121,7 +121,18 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    * @internal
    */
   public static _configureSingleton(props: CloudFormationValidatePluginProps) {
+    CloudFormationValidatePlugin._disposeSingleton();
     CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin(props);
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory and forget the instance
+   *
+   * @internal
+   */
+  public static _disposeSingleton() {
+    CloudFormationValidatePlugin._instance?._dispose();
+    CloudFormationValidatePlugin._instance = undefined;
   }
 
   private static _instance: CloudFormationValidatePlugin | undefined;
@@ -129,15 +140,16 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
   private readonly engine: Engine;
+  private disposed = false;
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
-    const config: EngineConfig = {};
+    const config: CompositeEngineConfig = {};
     const regoRules = [
       ...(props.includeDefaultRules ?? true) ? defaultRegoRules() : [],
       ...props.regoRules ?? [],
     ];
     if (regoRules.length > 0) {
-      config.customRules = regoRules;
+      config.regoRules = regoRules;
     }
     if (props.guardRules) {
       config.guardRules = props.guardRules;
@@ -147,7 +159,20 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
         additionalSchemas: loadSchemasFromDirectory(props._additionalSchemasDirectory),
       };
     }
-    this.engine = new RegoEngine(config);
+    this.engine = new CompositeEngine(config);
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory
+   *
+   * @internal
+   */
+  public _dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.disposed = true;
+    this.engine.free();
   }
 
   public get version(): string | undefined {
@@ -167,9 +192,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
     for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
       const report = (() => {
-        using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
+        using _span = profileSpan(VALIDATE_METRIC, { telemetry: true });
 
-        return this.engine.validateDetailed(templateFile, {
+        return this.engine.validateTemplate(templateFile, {
+          detailLevel: 'STANDARD',
           pseudoParameterOverrides: {
             accountId,
             region,
