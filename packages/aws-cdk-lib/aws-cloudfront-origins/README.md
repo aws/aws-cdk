@@ -853,7 +853,12 @@ new cloudfront.Distribution(this, 'Distribution', {
 
 ### Configuring IP Address Type
 
-You can specify which IP protocol CloudFront uses when connecting to your Lambda Function URL origin. By default, CloudFront uses IPv4 only.
+You can specify which IP protocol CloudFront uses when connecting to your Lambda Function URL origin.
+
+The default behavior is determined by the feature flag `@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault`:
+
+- When the flag is enabled: Dual-stack (IPv4 + IPv6) - recommended for better connectivity
+- When the flag is disabled: IPv4 only - maintains backward compatibility
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -862,16 +867,16 @@ import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
 declare const fn: lambda.Function;
 const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
 
-// Uses default IPv4 only
+// Uses default behavior (determined by feature flag)
 new cloudfront.Distribution(this, 'Distribution', {
-  defaultBehavior: { 
+  defaultBehavior: {
     origin: new origins.FunctionUrlOrigin(fnUrl)
   },
 });
 
 // Explicitly specify IP address type
 new cloudfront.Distribution(this, 'Distribution', {
-  defaultBehavior: { 
+  defaultBehavior: {
     origin: new origins.FunctionUrlOrigin(fnUrl, {
       ipAddressType: OriginIpAddressType.DUALSTACK, // Use both IPv4 and IPv6
     })
@@ -880,9 +885,12 @@ new cloudfront.Distribution(this, 'Distribution', {
 ```
 
 Supported values for `ipAddressType`:
-- `OriginIpAddressType.IPV4` - CloudFront uses IPv4 only to connect to the origin (default)
-- `OriginIpAddressType.IPV6` - CloudFront uses IPv6 only to connect to the origin  
+
+- `OriginIpAddressType.IPV4` - CloudFront uses IPv4 only to connect to the origin
+- `OriginIpAddressType.IPV6` - CloudFront uses IPv6 only to connect to the origin
 - `OriginIpAddressType.DUALSTACK` - CloudFront uses both IPv4 and IPv6 to connect to the origin
+
+**Note**: Explicitly specifying `ipAddressType` will override the feature flag setting. If you want to maintain IPv4-only behavior when the feature flag is enabled, explicitly set `ipAddressType: OriginIpAddressType.IPV4`.
 
 ### Lambda Function URL with Origin Access Control (OAC)
 You can configure the Lambda Function URL with Origin Access Control (OAC) for enhanced security. When using OAC with Signing SIGV4_ALWAYS, it is recommended to set the Lambda Function URL authType to AWS_IAM to ensure proper authorization.
