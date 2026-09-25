@@ -377,7 +377,15 @@ your domain name, and provide one (or more) domain names from the certificate fo
 
 The certificate must be present in the AWS Certificate Manager (ACM) service in the US East (N. Virginia) region; the certificate
 may either be created by ACM, or created elsewhere and imported into ACM. When a certificate is used, the distribution will support HTTPS connections
-from SNI only and a minimum protocol version of TLSv1.2_2021 if the `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` feature flag is set, and TLSv1.2_2019 otherwise.
+from SNI only, and the minimum protocol version is selected as follows:
+
+| Condition | Minimum protocol version |
+| --- | --- |
+| `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025` is enabled | `TLSv1.2_2025` |
+| `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` is enabled | `TLSv1.2_2021` |
+| Neither flag is enabled | `TLSv1.2_2019` |
+
+An explicit `minimumProtocolVersion` always takes precedence over both flags.
 
 ```ts
 // To use your own domain name in a Distribution, you must associate a certificate

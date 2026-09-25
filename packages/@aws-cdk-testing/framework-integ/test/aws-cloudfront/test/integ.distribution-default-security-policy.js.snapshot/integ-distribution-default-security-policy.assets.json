@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "cfd15322b26e7b173fa82b26c597d99eb709432aeaa896d51ecc87e971887197": {
+      "displayName": "integ-distribution-default-security-policy Template",
+      "source": {
+        "path": "integ-distribution-default-security-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-1-8812edc2": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "cfd15322b26e7b173fa82b26c597d99eb709432aeaa896d51ecc87e971887197.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

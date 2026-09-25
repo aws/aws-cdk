@@ -1749,3 +1749,82 @@ describe('gRPC', () => {
     }).toThrow(msg);
   });
 });
+
+describe('feature flag: CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025', () => {
+  const FLAG_2025 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025';
+  const FLAG_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+  const CERTIFICATE_ARN = 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012';
+
+  function stackWithFlags(context: Record<string, boolean>): Stack {
+    const flagApp = new App({ context });
+    return new Stack(flagApp, 'FlagStack', { env: { account: '1234', region: 'testregion' } });
+  }
+
+  function distributionWithCertificate(flagStack: Stack, minimumProtocolVersion?: SecurityPolicyProtocol) {
+    new Distribution(flagStack, 'MyDist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com'],
+      certificate: acm.Certificate.fromCertificateArn(flagStack, 'Cert', CERTIFICATE_ARN),
+      minimumProtocolVersion,
+    });
+  }
+
+  test.each([
+    [true, true, 'TLSv1.2_2025'],
+    [true, false, 'TLSv1.2_2025'],
+    [false, true, 'TLSv1.2_2021'],
+    [false, false, 'TLSv1.2_2019'],
+  ])('with the 2025 flag %s and the 2021 flag %s, the default policy is %s', (flag2025, flag2021, expected) => {
+    const flagStack = stackWithFlags({ [FLAG_2025]: flag2025, [FLAG_2021]: flag2021 });
+
+    distributionWithCertificate(flagStack);
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        ViewerCertificate: Match.objectLike({
+          MinimumProtocolVersion: expected,
+        }),
+      }),
+    });
+  });
+
+  test('an explicit minimumProtocolVersion wins over the flag', () => {
+    const flagStack = stackWithFlags({ [FLAG_2025]: true, [FLAG_2021]: true });
+
+    distributionWithCertificate(flagStack, SecurityPolicyProtocol.TLS_V1_2_2019);
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        ViewerCertificate: Match.objectLike({
+          MinimumProtocolVersion: 'TLSv1.2_2019',
+        }),
+      }),
+    });
+  });
+
+  test('TLSv1.3_2025 remains available as an explicit opt-in', () => {
+    const flagStack = stackWithFlags({ [FLAG_2025]: true, [FLAG_2021]: true });
+
+    distributionWithCertificate(flagStack, SecurityPolicyProtocol.TLS_V1_3_2025);
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        ViewerCertificate: Match.objectLike({
+          MinimumProtocolVersion: 'TLSv1.3_2025',
+        }),
+      }),
+    });
+  });
+
+  test('a distribution without a certificate is unaffected by the flag', () => {
+    const flagStack = stackWithFlags({ [FLAG_2025]: true, [FLAG_2021]: true });
+
+    new Distribution(flagStack, 'MyDist', { defaultBehavior: { origin: defaultOrigin() } });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        ViewerCertificate: Match.absent(),
+      }),
+    });
+  });
+});

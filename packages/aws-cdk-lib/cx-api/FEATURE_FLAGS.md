@@ -119,6 +119,7 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2025](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2025) | Default the Distribution viewer security policy to TLSv1.2_2025 | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -139,6 +140,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
@@ -2580,6 +2582,41 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025
+
+*Default the Distribution viewer security policy to TLSv1.2_2025*
+
+Flag type: New default behavior
+
+When enabled, a `Distribution` configured with a custom `certificate` that does not
+specify an explicit `minimumProtocolVersion` defaults to
+`SecurityPolicyProtocol.TLS_V1_2_2025` instead of `SecurityPolicyProtocol.TLS_V1_2_2021`.
+
+The security policy is selected in this order:
+
+1. An explicit `minimumProtocolVersion`, which always wins.
+2. `TLSv1.2_2025`, if this flag is enabled.
+3. `TLSv1.2_2021`, if `@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021` is enabled.
+4. `TLSv1.2_2019` otherwise.
+
+Distributions that use the default `*.cloudfront.net` certificate are unaffected, because
+CloudFront manages the security policy for those.
+
+`TLSv1.2_2025` is chosen rather than `TLSv1.3_2025` because `TLSv1.3_2025` does not
+support TLS 1.2 at all, so making it the default would drop any viewer that cannot
+negotiate TLS 1.3. `TLSv1.2_2025` keeps TLS 1.2 as the floor while still offering TLS 1.3,
+and narrows the cipher list relative to `TLSv1.2_2021`. Choose `TLSv1.3_2025` explicitly
+via `minimumProtocolVersion` if you want to require TLS 1.3.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set `minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021` explicitly on the distribution to keep the old default.
 
 
 <!-- END details -->

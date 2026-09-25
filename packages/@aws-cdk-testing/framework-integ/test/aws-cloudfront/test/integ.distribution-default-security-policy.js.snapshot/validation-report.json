@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.9.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9012",
+          "description": "Invalid pseudo-parameter override(s): AWS::AccountId override '12345678' is not a 12-digit AWS account ID",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-distribution-default-security-policy",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            },
+            {
+              "constructPath": "integ-distribution-default-security-policy-assertions",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
