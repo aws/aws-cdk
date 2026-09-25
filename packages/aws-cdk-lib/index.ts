@@ -146,6 +146,7 @@ export * as aws_greengrass from './aws-greengrass';
 export * as aws_greengrassv2 from './aws-greengrassv2';
 export * as aws_groundstation from './aws-groundstation';
 export * as aws_guardduty from './aws-guardduty';
+export * as aws_healthagent from './aws-healthagent';
 export * as aws_healthimaging from './aws-healthimaging';
 export * as aws_healthlake from './aws-healthlake';
 export * as aws_iam from './aws-iam';

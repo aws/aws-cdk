@@ -5,7 +5,7 @@ import { CDK_CORE } from './cdk';
 import type { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
 import type { TypeConverter } from './type-converter';
-import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
+import { flattenFunctionNameFromType, propertyNameFromCloudFormation, santitizeFieldName } from '../naming';
 
 export interface ResolverResult {
   /** Property name */
@@ -31,7 +31,7 @@ export class ResolverBuilder {
 
   public buildResolver(prop: Property, cfnName: string, isTypeProp = false): ResolverResult {
     const shouldGenerateRelationships = isTypeProp ? this.relationshipDecider.enableNestedRelationships : true;
-    const name = propertyNameFromCloudFormation(cfnName);
+    const name = santitizeFieldName(propertyNameFromCloudFormation(cfnName));
     const baseType = this.converter.typeFromProperty(prop);
 
     // Whether or not a property is made `IResolvable` originally depended on
