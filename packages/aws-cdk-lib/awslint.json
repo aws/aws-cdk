@@ -1491,6 +1491,8 @@
     "prefer-ref-interface:aws-cdk-lib.aws_eks.NodegroupProps.nodeRole",
     "prefer-ref-interface:aws-cdk-lib.aws_eks.NodegroupProps.cluster",
     "prefer-ref-interface:aws-cdk-lib.aws_eks.ServiceAccountProps.cluster",
+    "prefer-ref-interface:aws-cdk-lib.aws_eks.ServiceAccountProps.role",
+    "prefer-ref-interface:aws-cdk-lib.aws_eks.ServiceAccountOptions.role",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancerProps.vpc",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerAttributes.securityGroup",
     "prefer-ref-interface:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerProps.loadBalancer",

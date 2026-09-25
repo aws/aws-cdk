@@ -1698,6 +1698,58 @@ This simplifies the process of configuring IAM permissions for your Kubernetes a
 the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
 for your applications.
 
+#### Using an existing IAM role with Pod Identity
+
+If you want to manage IAM roles centrally (e.g., in a dedicated `IamConstruct`) or reuse an existing role created via
+`iam.Role.fromRoleArn()`, you can pass it to `ServiceAccount` via the `role` property.
+
+The `role` property accepts any `IRole`, including `iam.Role` and roles imported with `iam.Role.fromRoleArn()`.
+**This option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.**
+
+The caller is responsible for configuring the trust policy of the role correctly. For Pod Identity, the role must allow
+`pods.eks.amazonaws.com` to perform `sts:AssumeRole` and `sts:TagSession`.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const cluster: eks.Cluster;
+
+// Create and manage the IAM role separately
+const appRole = new iam.Role(this, 'AppRole', {
+  assumedBy: new iam.SessionTagsPrincipal(
+    new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+  ),
+});
+appRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'));
+
+// Pass the existing role to ServiceAccount
+new eks.ServiceAccount(this, 'AppServiceAccount', {
+  cluster,
+  name: 'app-sa',
+  namespace: 'production',
+  identityType: eks.IdentityType.POD_IDENTITY,
+  role: appRole,
+});
+```
+
+When `role` is specified, the auto-generation of an IAM role is skipped.
+The provided role's ARN is used directly in the `PodIdentityAssociation`.
+
+If you only have an L1 `iam.CfnRole`, import it as an `IRole` with `iam.Role.fromRoleArn()`:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const cluster: eks.Cluster;
+declare const cfnRole: iam.CfnRole;
+
+new eks.ServiceAccount(this, 'ServiceAccountWithCfnRole', {
+  cluster,
+  name: 'cfn-role-sa',
+  namespace: 'production',
+  identityType: eks.IdentityType.POD_IDENTITY,
+  role: iam.Role.fromRoleArn(this, 'ImportedRole', cfnRole.attrArn),
+});
+```
+
 ## Applying Kubernetes Resources
 
 The library supports several popular resource deployment mechanisms, among which are:
