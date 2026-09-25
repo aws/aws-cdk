@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FsxOntapVolumeIntegTest/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxOntapVolume"
+      ],
+      "assertionStack": "FsxOntapVolumeIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxOntapVolumeIntegTestDefaultTestDeployAssert772D3A05"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
