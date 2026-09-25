@@ -1,0 +1,26 @@
+{
+  "/PipelineStackDeployGate/Prod/Stack2/OtherQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PipelineStackDeployGate/Prod/Stack2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PipelineStackDeployGate/Prod/Stack2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PipelineStackDeployGate/Prod/Stack2/OtherQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OtherQueue60B686DC"
+    }
+  ]
+}

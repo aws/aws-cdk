@@ -135,6 +135,9 @@ export class PipelineGraph {
     const retGraph: AGraph = Graph.of(stage.stageName, { type: 'group' });
 
     const stackGraphs = new Map<StackDeployment, AGraph>();
+    const prepareGraphs: AGraph[] = [];
+    const deployNodes: AGraphNode[] = [];
+    const hasDeployGate = stage.deployGate.length > 0;
 
     for (const stack of stage.stacks) {
       const stackGraphName = findUniqueName(retGraph, [
@@ -142,7 +145,6 @@ export class PipelineGraph {
         ...stack.account ? [stack.account] : [],
         ...stack.region ? [stack.region] : [],
       ]);
-      const stackGraph: AGraph = Graph.of(stackGraphName, { type: 'stack-group', stack });
       const prepareNode: AGraphNode | undefined = this.prepareStep ? aGraphNode('Prepare', { type: 'prepare', stack }) : undefined;
       const deployNode: AGraphNode = aGraphNode('Deploy', {
         type: 'execute',
@@ -151,60 +153,107 @@ export class PipelineGraph {
         withoutChangeSet: prepareNode === undefined,
       });
 
-      retGraph.add(stackGraph);
-      stackGraph.add(deployNode);
+      deployNodes.push(deployNode);
 
-      // node or node collection that represents first point of contact in each stack
-      let firstDeployNode;
-      if (prepareNode) {
-        stackGraph.add(prepareNode);
-        deployNode.dependOn(prepareNode);
-        firstDeployNode = prepareNode;
+      // When deployGate is used, split each stack into two sibling sub-graphs:
+      // prepareGraph (contains Prepare + changeSet steps) and deployGraph (contains
+      // Deploy + stack post steps). The gate nodes sit between them in retGraph.
+      // This keeps all gate-related edges at the retGraph level, so sortedChildren()
+      // and sortedLeaves() both see a clean DAG with no cycles.
+      //
+      // Without deployGate, use the original single stackGraph to preserve
+      // existing behavior exactly.
+      let stackGraph: AGraph;
+      if (hasDeployGate && prepareNode) {
+        const prepareGraph: AGraph = Graph.of(stackGraphName, { type: 'stack-group', stack });
+        const deployGraph: AGraph = Graph.of(stackGraphName + '-Deploy', { type: 'stack-group', stack });
+        prepareGraph.add(prepareNode);
+        deployGraph.add(deployNode);
+        retGraph.add(prepareGraph);
+        retGraph.add(deployGraph);
+        deployGraph.dependOn(prepareGraph);
+        prepareGraphs.push(prepareGraph);
+        stackGraph = prepareGraph; // used for stackGraphs map (dependency wiring)
+
+        // add changeset steps inside prepareGraph
+        if (stack.changeSet.length > 0) {
+          this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, prepareGraph);
+        }
+
+        // add pre steps (stack-level) inside prepareGraph, post inside deployGraph
+        const preNodes = this.addPrePost(stack.pre, [], prepareGraph);
+        this.addPrePost([], stack.post, deployGraph);
+        let firstDeployNode: AGraphNode | GraphNodeCollection<GraphAnnotation> = prepareNode;
+        if (preNodes.nodes.length > 0) {
+          firstDeployNode = preNodes;
+        }
+
+        stackGraphs.set(stack, prepareGraph);
+
+        const cloudAssembly = this.cloudAssemblyFileSet;
+        firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
+
+        if (this.publishTemplate) {
+          if (!stack.templateAsset) {
+            throw new ValidationError(lit`TemplateAssetMissing`, `"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`, this.pipeline);
+          }
+          firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
+        }
+
+        for (const asset of stack.assets) {
+          firstDeployNode.dependOn(this.publishAsset(asset));
+        }
+
+        if (this.queries.stackOutputsReferenced(stack).length > 0) {
+          this.stackOutputDependencies.for(stack).dependOn(deployNode);
+        }
       } else {
-        firstDeployNode = deployNode;
-      }
+        // Original path: single stackGraph
+        stackGraph = Graph.of(stackGraphName, { type: 'stack-group', stack });
+        retGraph.add(stackGraph);
+        stackGraph.add(deployNode);
 
-      // add changeset steps at the stack level
-      if (stack.changeSet.length > 0) {
+        let firstDeployNode: AGraphNode | GraphNodeCollection<GraphAnnotation>;
         if (prepareNode) {
-          this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
+          stackGraph.add(prepareNode);
+          deployNode.dependOn(prepareNode);
+          firstDeployNode = prepareNode;
         } else {
-          throw new ValidationError(lit`ChangeSetStepsNotSupported`, `Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`, this.pipeline);
-        }
-      }
-
-      // add pre and post steps at the stack level
-      const preNodes = this.addPrePost(stack.pre, stack.post, stackGraph);
-      if (preNodes.nodes.length > 0) {
-        firstDeployNode = preNodes;
-      }
-
-      stackGraphs.set(stack, stackGraph);
-
-      const cloudAssembly = this.cloudAssemblyFileSet;
-
-      firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
-
-      // add the template asset
-      if (this.publishTemplate) {
-        if (!stack.templateAsset) {
-          throw new ValidationError(lit`TemplateAssetMissing`, `"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`, this.pipeline);
+          firstDeployNode = deployNode;
         }
 
-        firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
-      }
+        if (stack.changeSet.length > 0) {
+          if (prepareNode) {
+            this.addChangeSetNode(stack.changeSet, prepareNode, deployNode, stackGraph);
+          } else {
+            throw new ValidationError(lit`ChangeSetStepsNotSupported`, `Cannot use \'changeSet\' steps for stack \'${stack.stackName}\': the pipeline does not support them or they have been disabled`, this.pipeline);
+          }
+        }
 
-      // Depend on Assets
-      // FIXME: Custom Cloud Assembly currently doesn't actually help separating
-      // out templates from assets!!!
-      for (const asset of stack.assets) {
-        const assetNode = this.publishAsset(asset);
-        firstDeployNode.dependOn(assetNode);
-      }
+        const preNodes = this.addPrePost(stack.pre, stack.post, stackGraph);
+        if (preNodes.nodes.length > 0) {
+          firstDeployNode = preNodes;
+        }
 
-      // Add stack output synchronization point
-      if (this.queries.stackOutputsReferenced(stack).length > 0) {
-        this.stackOutputDependencies.for(stack).dependOn(deployNode);
+        stackGraphs.set(stack, stackGraph);
+
+        const cloudAssembly = this.cloudAssemblyFileSet;
+        firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
+
+        if (this.publishTemplate) {
+          if (!stack.templateAsset) {
+            throw new ValidationError(lit`TemplateAssetMissing`, `"publishTemplate" is enabled, but stack ${stack.stackArtifactId} does not have a template asset`, this.pipeline);
+          }
+          firstDeployNode.dependOn(this.publishAsset(stack.templateAsset));
+        }
+
+        for (const asset of stack.assets) {
+          firstDeployNode.dependOn(this.publishAsset(asset));
+        }
+
+        if (this.queries.stackOutputsReferenced(stack).length > 0) {
+          this.stackOutputDependencies.for(stack).dependOn(deployNode);
+        }
       }
     }
 
@@ -223,6 +272,32 @@ export class PipelineGraph {
     }
 
     this.addPrePost(stage.pre, stage.post, retGraph);
+
+    // Stage-wide deployGate barrier. Gate nodes sit in retGraph between the
+    // prepareGraphs and deployGraphs (which are sibling sub-graphs when deployGate
+    // is active). All edges are at retGraph level — no cross-level edges that
+    // would cause sortedChildren() or sortedLeaves() to see a cycle.
+    if (stage.deployGate.length > 0) {
+      if (!this.prepareStep) {
+        throw new ValidationError(
+          lit`DeployGateRequiresPrepareStep`,
+          'cannot use \'deployGate\' steps in stage \'' + stage.stageName + '\': change sets are ' +
+          'disabled for this pipeline (\'useChangeSets: false\'), so there is no \'Prepare\' action to wait for',
+          this.pipeline,
+        );
+      }
+      const deployGateNodes: AGraphNode[] = stage.deployGate
+        .map(step => this.addStepNode(step, retGraph))
+        .filter((n): n is AGraphNode => n !== undefined);
+      for (const gateNode of deployGateNodes) {
+        gateNode.dependOn(...prepareGraphs);
+      }
+      if (deployGateNodes.length > 0) {
+        for (const deployNode of deployNodes) {
+          deployNode.dependOn(...deployGateNodes);
+        }
+      }
+    }
 
     return retGraph;
   }
