@@ -1,0 +1,131 @@
+{
+ "version": "38.0.1",
+ "artifacts": {
+  "aws-cdk-applicationautoscaling-high-resolution.assets": {
+   "type": "cdk:asset-manifest",
+   "properties": {
+    "file": "aws-cdk-applicationautoscaling-high-resolution.assets.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+   }
+  },
+  "aws-cdk-applicationautoscaling-high-resolution": {
+   "type": "aws:cloudformation:stack",
+   "environment": "aws://unknown-account/unknown-region",
+   "properties": {
+    "templateFile": "aws-cdk-applicationautoscaling-high-resolution.template.json",
+    "terminationProtection": false,
+    "validateOnSynth": false,
+    "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+    "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+    "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94f25a90bf9245971cbebe4b44312734da46c5f89920e1f4772a28d0374b5d9b.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+    "additionalDependencies": [
+     "aws-cdk-applicationautoscaling-high-resolution.assets"
+    ],
+    "lookupRole": {
+     "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+     "requiresBootstrapStackVersion": 8,
+     "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+    }
+   },
+   "dependencies": [
+    "aws-cdk-applicationautoscaling-high-resolution.assets"
+   ],
+   "metadata": {
+    "/aws-cdk-applicationautoscaling-high-resolution/ECSScalableTarget/Role/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSScalableTargetRole1F62DAFC"
+     }
+    ],
+    "/aws-cdk-applicationautoscaling-high-resolution/ECSScalableTarget/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSScalableTarget71AACFBD"
+     }
+    ],
+    "/aws-cdk-applicationautoscaling-high-resolution/ECSScalableTarget/CpuHighResolution/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSScalableTargetCpuHighResolutionCDCE9399"
+     }
+    ],
+    "/aws-cdk-applicationautoscaling-high-resolution/ECSScalableTarget/MemoryHighResolution/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSScalableTargetMemoryHighResolutionE747F8B2"
+     }
+    ],
+    "/aws-cdk-applicationautoscaling-high-resolution/BootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+     }
+    ],
+    "/aws-cdk-applicationautoscaling-high-resolution/CheckBootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+     }
+    ]
+   },
+   "displayName": "aws-cdk-applicationautoscaling-high-resolution"
+  },
+  "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C.assets": {
+   "type": "cdk:asset-manifest",
+   "properties": {
+    "file": "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C.assets.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+   }
+  },
+  "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C": {
+   "type": "aws:cloudformation:stack",
+   "environment": "aws://unknown-account/unknown-region",
+   "properties": {
+    "templateFile": "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C.template.json",
+    "terminationProtection": false,
+    "validateOnSynth": false,
+    "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+    "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+    "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+    "additionalDependencies": [
+     "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C.assets"
+    ],
+    "lookupRole": {
+     "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+     "requiresBootstrapStackVersion": 8,
+     "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+    }
+   },
+   "dependencies": [
+    "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C.assets"
+   ],
+   "metadata": {
+    "/HighResolutionEcsMetricsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+     }
+    ],
+    "/HighResolutionEcsMetricsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+     }
+    ]
+   },
+   "displayName": "HighResolutionEcsMetricsTest/DefaultTest/DeployAssert"
+  },
+  "Tree": {
+   "type": "cdk:tree",
+   "properties": {
+    "file": "tree.json"
+   }
+  }
+ }
+}
