@@ -7,6 +7,7 @@
 
 #set($inputString = '')
 #set($includeHeaders = %INCLUDE_HEADERS%)
+#set($headerNames = [%HEADER_NAMES%])
 #set($includeQueryString = %INCLUDE_QUERYSTRING%)
 #set($includePath = %INCLUDE_PATH%)
 #set($includeAuthorizer = %INCLUDE_AUTHORIZER%)
@@ -18,14 +19,21 @@
 
     #if ($includeHeaders)
         #set($inputString = "$inputString, @@header@@:{")
+        ## When $headerNames is non-empty, only forward headers whose lowercased
+        ## name is in the list. The comma is emitted before every entry except the
+        ## first, because $foreach.hasNext does not account for skipped headers.
+        #set($firstHeader = true)
         #foreach($paramName in $allParams.header.keySet())
-            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@")
-            #if($foreach.hasNext)
-                #set($inputString = "$inputString,")
+            #if($headerNames.isEmpty() || $headerNames.contains($paramName.toLowerCase()))
+                #if(!$firstHeader)
+                    #set($inputString = "$inputString,")
+                #end
+                #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@")
+                #set($firstHeader = false)
             #end
         #end
         #set($inputString = "$inputString }")
-        
+
     #end
 
     #if ($includeQueryString)
