@@ -2,7 +2,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -87,7 +88,7 @@ abstract class ModelBase extends cdk.Resource implements IModel {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new Error('Cannot manage network access without configuring a VPC');
+      throw new UnscopedValidationError(lit`ModelNoVpcConfigured`, 'Cannot manage network access without configuring a VPC');
     }
     return this._connections;
   }
@@ -108,6 +109,27 @@ abstract class ModelBase extends cdk.Resource implements IModel {
 
     this.role.addToPrincipalPolicy(statement);
   }
+}
+
+/**
+ * Specifies how containers in a multi-container endpoint are invoked.
+ */
+export enum InferenceExecutionMode {
+  /**
+   * Containers are invoked in a serial pipeline where the output of one container
+   * is passed as input to the next container.
+   *
+   * This is the default behavior when InferenceExecutionConfig is not specified.
+   */
+  SERIAL = 'Serial',
+
+  /**
+   * Containers can be invoked independently by specifying the target container
+   * in the InvokeEndpoint request.
+   *
+   * When using Direct mode, all containers must have a unique containerHostname.
+   */
+  DIRECT = 'Direct',
 }
 
 /**
@@ -220,6 +242,21 @@ export interface ModelProps {
    * @default false
    */
   readonly networkIsolation?: boolean;
+
+  /**
+   * The inference execution mode for a multi-container model.
+   *
+   * When set to SERIAL, containers are invoked as an inference pipeline where the output
+   * of one container is passed as input to the next. When set to DIRECT, each container
+   * can be invoked independently by specifying the target container hostname.
+   *
+   * When using DIRECT mode, all containers must have a unique `containerHostname` set.
+   *
+   * @see https://docs.aws.amazon.com/sagemaker/latest/dg/multi-container-endpoints.html
+   *
+   * @default - no inference execution config is set (SageMaker defaults to Serial)
+   */
+  readonly inferenceExecutionMode?: InferenceExecutionMode;
 }
 
 /**
@@ -299,6 +336,8 @@ export class Model extends ModelBase {
   public readonly grantPrincipal: iam.IPrincipal;
   private readonly subnets: ec2.SelectedSubnets | undefined;
   private readonly containers: CfnModel.ContainerDefinitionProperty[] = [];
+  private readonly containerDefinitions: ContainerDefinition[] = [];
+  private readonly inferenceExecutionMode?: InferenceExecutionMode;
   private readonly resource: CfnModel;
 
   constructor(scope: Construct, id: string, props: ModelProps = {}) {
@@ -315,6 +354,8 @@ export class Model extends ModelBase {
     this.role = props.role || this.createSageMakerRole();
     this.grantPrincipal = this.role;
 
+    this.inferenceExecutionMode = props.inferenceExecutionMode;
+
     (props.containers || []).map(c => this.addContainer(c));
 
     this.resource = new CfnModel(this, 'Model', {
@@ -324,6 +365,9 @@ export class Model extends ModelBase {
       vpcConfig: cdk.Lazy.any({ produce: () => this.renderVpcConfig() }),
       containers: cdk.Lazy.any({ produce: () => this.renderContainers() }),
       enableNetworkIsolation: props.networkIsolation,
+      inferenceExecutionConfig: this.inferenceExecutionMode
+        ? { mode: this.inferenceExecutionMode }
+        : undefined,
     });
 
     /*
@@ -364,15 +408,38 @@ export class Model extends ModelBase {
    */
   @MethodMetadata()
   public addContainer(container: ContainerDefinition): void {
+    this.containerDefinitions.push(container);
     this.containers.push(this.renderContainer(container));
   }
 
   private validateContainers(): void {
     // validate number of containers
     if (this.containers.length < 1) {
-      throw new Error('Must configure at least 1 container for model');
+      throw new ValidationError(lit`ModelMinContainers`, 'Must configure at least 1 container for model', this);
     } else if (this.containers.length > 15) {
-      throw new Error('Cannot have more than 15 containers in inference pipeline');
+      throw new ValidationError(lit`ModelMaxContainers`, 'Cannot have more than 15 containers in inference pipeline', this);
+    }
+
+    // validate Direct mode requirements
+    if (this.inferenceExecutionMode === InferenceExecutionMode.DIRECT) {
+      const missingHostnames = this.containerDefinitions.filter(c => !c.containerHostname);
+      if (missingHostnames.length > 0) {
+        throw new ValidationError(
+          lit`ModelDirectModeRequiresHostnames`,
+          'When using Direct inference execution mode, all containers must have a unique containerHostname',
+          this,
+        );
+      }
+
+      const hostnames = this.containerDefinitions.map(c => c.containerHostname).filter(Boolean);
+      const uniqueHostnames = new Set(hostnames);
+      if (uniqueHostnames.size !== hostnames.length) {
+        throw new ValidationError(
+          lit`ModelDirectModeDuplicateHostnames`,
+          'When using Direct inference execution mode, all container hostnames must be unique',
+          this,
+        );
+      }
     }
   }
 
@@ -396,13 +463,13 @@ export class Model extends ModelBase {
 
   private configureNetworking(props: ModelProps): ec2.Connections | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new Error('Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC');
+      throw new ValidationError(lit`ModelVpcRequired`, 'Cannot configure \'securityGroups\' or \'allowAllOutbound\' without configuring a VPC', this);
     }
 
     if (!props.vpc) { return undefined; }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new Error('Configure \'allowAllOutbound\' directly on the supplied SecurityGroups');
+      throw new ValidationError(lit`ModelSecurityGroupConflict`, 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroups', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
