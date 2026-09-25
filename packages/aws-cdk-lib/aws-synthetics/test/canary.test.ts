@@ -1193,6 +1193,69 @@ describe('artifact encryption test', () => {
   });
 });
 
+describe('environment variables encryption key', () => {
+  test('is not set on the canary by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: Match.absent(),
+    });
+  });
+
+  test('sets KmsKeyArn from the provided key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'EnvKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentEncryption: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: stack.resolve(key.keyArn),
+    });
+  });
+
+  test('accepts an imported key by ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = kms.Key.fromKeyArn(stack, 'EnvKey', 'arn:aws:kms:us-east-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentEncryption: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: 'arn:aws:kms:us-east-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+    });
+  });
+});
+
 test('can configure resourcesToReplicateTags', () => {
   // GIVEN
   const stack = new Stack();
