@@ -71,18 +71,19 @@ describe('Vpc V2 with full control', () => {
     });
   });
 
-  test('VPC throws error with incorrect cidr range (IPv4)', () => {
-    expect(() => {
-      new vpc.VpcV2(stack, 'TestVpc', {
-        primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
-        secondaryAddressBlocks: [vpc.IpAddresses.ipv4('192.168.0.0/16', {
-          cidrBlockName: 'SecondaryIpv4',
-        })],
-        enableDnsHostnames: true,
-        enableDnsSupport: true,
-      },
-      );
-    }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
+  test('VPC allows 198.18.0.0/15 (benchmark) secondary with RFC 1918 primary (fixes #36111)', () => {
+    // This should now work - primary is RFC 1918 (10.x) and secondary is benchmark range (198.18.x/198.19.x)
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4('198.18.0.0/26', {
+        cidrBlockName: 'BenchmarkSecondary',
+      })],
+      enableDnsHostnames: true,
+      enableDnsSupport: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      CidrBlock: '198.18.0.0/26',
+    });
   });
 
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
