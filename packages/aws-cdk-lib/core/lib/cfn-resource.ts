@@ -23,6 +23,7 @@ import { ValidationError } from './errors';
 import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
 import { lit } from './private/literal-string';
+import { renderResourceMetadata } from './private/metadata-context-metadata';
 import { captureStackTrace } from './private/stack-trace';
 import { Stack } from './stack';
 import { isCfnResource, STACK_TYPE } from './private/core-construct-finders';
@@ -555,7 +556,7 @@ export class CfnResource extends CfnRefElement {
             DeletionPolicy: capitalizePropertyNames(this, this.cfnOptions.deletionPolicy),
             Version: this.cfnOptions.version,
             Description: this.cfnOptions.description,
-            Metadata: ignoreEmpty(this.cfnOptions.metadata),
+            Metadata: ignoreEmpty(renderResourceMetadata(this, this.cfnOptions.metadata)),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
           }, (resourceDef, context) => {
             const renderedProps = this.renderProperties(resourceDef.Properties || {});
