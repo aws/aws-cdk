@@ -795,7 +795,10 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout) {
+      throw new Error('timeout is not supported with FileDefinitionBody. Use StringDefinitionBody or ChainDefinitionBody instead.');
+    }
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -814,9 +817,13 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    const definition = JSON.parse(this.body);
+    if (sfnProps.timeout) {
+      definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+    }
     return {
-      definitionString: this.body,
+      definitionString: JSON.stringify(definition),
     };
   }
 }
