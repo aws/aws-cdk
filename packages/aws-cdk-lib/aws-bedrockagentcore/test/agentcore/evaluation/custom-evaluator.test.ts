@@ -14,7 +14,7 @@
 import { Match, Template } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
 import * as lambda from '../../../../aws-lambda';
-import { App, Duration, Lazy, Stack } from '../../../../core';
+import { App, Duration, Lazy, Stack, RemovalPolicy } from '../../../../core';
 import {
   BuiltinEvaluator,
   DataSourceConfig,
@@ -38,6 +38,26 @@ describe('Evaluator', () => {
   });
 
   describe('LLM-as-a-Judge evaluator', () => {
+    test('applyRemovalPolicy sets removal policy on the underlying resource', () => {
+      const evaluator = new Evaluator(stack, 'TestEvaluatorRemoval', {
+        evaluatorName: 'test_evaluator_removal',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate whether the agent response is helpful.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'The response is helpful.' },
+            { label: 'Bad', definition: 'The response is not helpful.' },
+          ]),
+        }),
+      });
+      evaluator.applyRemovalPolicy(RemovalPolicy.RETAIN);
+      Template.fromStack(stack).hasResource('AWS::BedrockAgentCore::Evaluator', {
+        UpdateReplacePolicy: 'Retain',
+        DeletionPolicy: 'Retain',
+      });
+    });
+
     test('creates evaluator with categorical rating scale', () => {
       new Evaluator(stack, 'TestEvaluator', {
         evaluatorName: 'test_evaluator',

@@ -1,4 +1,5 @@
 {
+ "Metadata": { "Test": "test" },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
