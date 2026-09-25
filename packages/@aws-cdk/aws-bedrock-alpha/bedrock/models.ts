@@ -105,6 +105,17 @@ export interface BedrockFoundationModelProps {
   readonly vectorDimensions?: number;
 
   /**
+   * Whether the number of vector dimensions can be chosen when the model is used
+   * by a knowledge base.
+   * Only applicable for embedding models. When true, `vectorDimensions` is
+   * passed to the knowledge base; when false, the model's dimension is fixed and
+   * `vectorDimensions` is informational only.
+   *
+   * @default false
+   */
+  readonly supportsConfigurableDimensions?: boolean;
+
+  /**
    * Embeddings models have different supported vector types.
    * Defines whether the model supports floating-point or binary vectors.
    *
@@ -302,6 +313,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 1024,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -320,6 +332,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 512,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -338,6 +351,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 256,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -1141,6 +1155,12 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   public readonly vectorDimensions?: number;
 
   /**
+   * Whether the number of vector dimensions can be chosen when the model is used
+   * by a knowledge base. Only applicable for embedding models.
+   */
+  public readonly supportsConfigurableDimensions: boolean;
+
+  /**
    * Whether this model supports integration with Bedrock Knowledge Base.
    * When true, the model can be used for knowledge base operations.
    */
@@ -1166,6 +1186,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     this.supportsCrossRegion = props.supportsCrossRegion ?? false;
     this.supportsAgents = props.supportsAgents ?? false;
     this.vectorDimensions = props.vectorDimensions;
+    this.supportsConfigurableDimensions = props.supportsConfigurableDimensions ?? false;
     this.supportsKnowledgeBase = props.supportsKnowledgeBase ?? false;
     this.supportedVectorType = props.supportedVectorType;
   }

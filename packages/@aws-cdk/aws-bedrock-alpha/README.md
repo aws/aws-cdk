@@ -22,7 +22,7 @@
 
 [Amazon Bedrock](https://aws.amazon.com/bedrock/) is a fully managed service that offers a choice of high-performing foundation models (FMs) from leading AI companies and Amazon through a single API, along with a broad set of capabilities you need to build generative AI applications with security, privacy, and responsible AI.
 
-This construct library facilitates the deployment of Bedrock Agents, enabling you to create sophisticated AI applications that can interact with your systems and data sources.
+This construct library facilitates the deployment of Bedrock Agents, Guardrails, Prompts, Inference Profiles and Knowledge Bases, enabling you to create sophisticated AI applications that can interact with your systems and data sources.
 
 ## Table of contents
 
@@ -63,6 +63,14 @@ This construct library facilitates the deployment of Bedrock Agents, enabling yo
   - [Prompt Routers](#prompt-routers)
   - [Inference Profile Permissions](#inference-profile-permissions)
   - [Inference Profiles Import Methods](#inference-profiles-import-methods)
+- [Knowledge Bases](#knowledge-bases)
+  - [Create a Vector Knowledge Base](#create-a-vector-knowledge-base)
+  - [Knowledge Base Properties](#knowledge-base-properties)
+  - [Knowledge Base Permissions](#knowledge-base-permissions)
+  - [Importing Knowledge Bases](#importing-knowledge-bases)
+- [Mixins](#mixins)
+  - [KnowledgeBaseOpenSearchServerlessStorage](#knowledgebaseopensearchserverlessstorage)
+  - [KnowledgeBaseSupplementalDataStorage](#knowledgebasesupplementaldatastorage)
 
 ## Agents
 
@@ -1552,3 +1560,239 @@ const lambdaFunction = new lambda.Function(this, 'MyFunction', {
 
 importedFromCfn.grantProfileUsage(lambdaFunction);
 ```
+
+
+## Knowledge Bases
+
+[Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html)
+give foundation models and agents contextual information from your own data
+sources (Retrieval Augmented Generation). A *vector knowledge base* converts
+your documents into vector embeddings with an embeddings model, stores them in a
+vector store, and retrieves the most relevant chunks for a query.
+
+### Create a Vector Knowledge Base
+
+A `VectorKnowledgeBase` needs an embeddings model and a vector store. The vector
+store must already exist: create the OpenSearch Serverless collection and its
+vector index, then reference them.
+
+```ts fixture=default
+declare const collection: opensearchserverless.ICollectionRef;
+
+const knowledgeBase = new bedrock.VectorKnowledgeBase(this, 'KnowledgeBase', {
+  embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+  vectorStore: bedrock.VectorStore.openSearchServerless({
+    collection,
+    vectorIndexName: 'bedrock-knowledge-base-default-index',
+    vectorField: 'bedrock-knowledge-base-default-vector',
+    textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+    metadataField: 'AMAZON_BEDROCK_METADATA',
+  }),
+});
+```
+
+The construct creates a service role trusted by `bedrock.amazonaws.com`, scoped
+to knowledge bases in your account, and grants it permission to invoke the
+embeddings model and to access the collection (`aoss:APIAccessAll`).
+
+Specify the index name and the names of its vector, text and metadata fields
+exactly as they are defined in your index:
+
+```ts fixture=default
+declare const collection: opensearchserverless.ICollectionRef;
+
+const vectorStore = bedrock.VectorStore.openSearchServerless({
+  collection,
+  vectorIndexName: 'product-docs',
+  vectorField: 'embedding',
+  textField: 'chunk',
+  metadataField: 'metadata',
+});
+```
+
+The vector index should use the `faiss` engine, as the Amazon Bedrock User Guide
+instructs, and a `knn_vector` field whose dimension matches the embeddings model
+(for example 1024 for `TITAN_EMBED_TEXT_V2_1024`). The collection's data access
+policy must also allow the knowledge base role to read and write documents in
+the index; the construct cannot create either of these for you. See
+[Prerequisites for your own vector store](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-setup.html)
+in the Amazon Bedrock User Guide.
+
+### Knowledge Base Properties
+
+```ts fixture=default
+declare const collection: opensearchserverless.ICollectionRef;
+declare const role: iam.Role;
+declare const multimodalBucket: s3.IBucket;
+
+new bedrock.VectorKnowledgeBase(this, 'KnowledgeBase', {
+  knowledgeBaseName: 'product-documentation',
+  description: 'Product manuals and release notes',
+  embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
+  // Store binary vectors: less precise, but cheaper to store and search
+  vectorType: bedrock.VectorType.BINARY,
+  vectorStore: bedrock.VectorStore.openSearchServerless({
+    collection,
+    vectorIndexName: 'bedrock-knowledge-base-default-index',
+    vectorField: 'bedrock-knowledge-base-default-vector',
+    textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+    metadataField: 'AMAZON_BEDROCK_METADATA',
+  }),
+  // Where images, audio and video extracted from multimodal documents are stored
+  supplementalDataStorageBucket: multimodalBucket,
+  // Bring your own service role; the model and vector store permissions are added to it
+  role,
+  tags: {
+    Team: 'Documentation',
+  },
+});
+```
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `embeddingsModel` | Yes | A `BedrockFoundationModel` with `supportsKnowledgeBase` set to true. Changing it replaces the knowledge base |
+| `vectorStore` | Yes | Where embeddings are stored; created with a `VectorStore` factory method. Changing it replaces the knowledge base |
+| `vectorType` | No | `VectorType.FLOATING_POINT` or `VectorType.BINARY`; the embeddings model must support it. Defaults to floating-point |
+| `supplementalDataStorageBucket` | No | S3 bucket in which multimedia content extracted from multimodal documents is stored; Amazon Bedrock manages the layout within the bucket, and the service role is granted access to it. Required for multimodal ingestion |
+| `knowledgeBaseName` | No | 1-100 letters, digits, hyphens and underscores; no consecutive hyphens or underscores. Defaults to a generated name |
+| `description` | No | 1-200 characters |
+| `role` | No | Service role assumed by Amazon Bedrock. Defaults to a new role |
+| `tags` | No | Tags applied to the knowledge base |
+
+### Knowledge Base Permissions
+
+Permissions to query a knowledge base are granted through the `grants`
+property. `retrieveAndGenerate` applies to all knowledge bases because the
+`bedrock:RetrieveAndGenerate` action does not support resource-level
+permissions; combine it with `retrieve` to scope the retrieval step to this
+knowledge base. Generating a response also requires `bedrock:InvokeModel` on
+the generation model, which `BedrockFoundationModel.grantInvoke()` provides.
+
+```ts fixture=default
+declare const knowledgeBase: bedrock.IKnowledgeBase;
+declare const role: iam.Role;
+
+// Retrieve chunks from this knowledge base
+knowledgeBase.grants.retrieve(role);
+
+// Retrieve chunks and generate a response with a foundation model
+knowledgeBase.grants.retrieveAndGenerate(role);
+bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0.grantInvoke(role);
+
+// Download or view the source documents behind Retrieve results (GetDocumentContent)
+knowledgeBase.grants.getDocumentContent(role);
+```
+
+To add permissions to the knowledge base service role, for example to let it
+read a data source, use `addToRolePolicy()`. For an imported knowledge base
+whose role was not provided, the statement cannot be applied and a warning is
+emitted with the statement to add manually.
+
+```ts fixture=default
+declare const knowledgeBase: bedrock.IKnowledgeBase;
+
+knowledgeBase.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject', 's3:ListBucket'],
+  resources: ['arn:aws:s3:::my-documents', 'arn:aws:s3:::my-documents/*'],
+}));
+```
+
+### Importing Knowledge Bases
+
+Reference a knowledge base created outside of this stack by ARN or by ID.
+Provide the service role if constructs in this stack need to grant permissions
+to it.
+
+```ts fixture=default
+declare const role: iam.Role;
+
+const byArn = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(this, 'ImportedByArn',
+  'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB12345678');
+
+// Assumed to be in the same account and region as this stack
+const byId = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseId(this, 'ImportedById', 'KB12345678');
+
+const withRole = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseAttributes(this, 'ImportedWithRole', {
+  knowledgeBaseArn: 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB12345678',
+  role,
+});
+```
+
+## Mixins
+
+Mixins add a feature to an L1 or L2 construct with `.with()`. See the
+[mixins overview](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins)
+in the `aws-cdk-lib` documentation.
+
+### KnowledgeBaseOpenSearchServerlessStorage
+
+Configures an `AWS::Bedrock::KnowledgeBase` to use an existing Amazon OpenSearch
+Serverless vector index as its vector store. This is the mixin that
+`VectorStore.openSearchServerless()` applies for you; use it directly when you
+build a knowledge base from the L1 construct.
+
+```ts fixture=default
+declare const collection: opensearchserverless.ICollectionRef;
+declare const role: iam.Role;
+
+new aws_bedrock_cfn.CfnKnowledgeBase(this, 'KnowledgeBase', {
+  name: 'product-documentation',
+  roleArn: role.roleArn,
+  knowledgeBaseConfiguration: {
+    type: 'VECTOR',
+    vectorKnowledgeBaseConfiguration: {
+      embeddingModelArn: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024.modelArn,
+    },
+  },
+}).with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage({
+  collection,
+  vectorIndexName: 'bedrock-knowledge-base-default-index',
+  vectorField: 'bedrock-knowledge-base-default-vector',
+  textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+  metadataField: 'AMAZON_BEDROCK_METADATA',
+  role,
+}));
+```
+
+Applying the mixin:
+
+- sets `StorageConfiguration` to type `OPENSEARCH_SERVERLESS` with the given
+  collection, index name and field mapping. The mixin does not merge with an
+  existing storage configuration: it throws if the knowledge base already has
+  one, and fails at synthesis if the knowledge base is not of type `VECTOR`.
+- grants `aoss:APIAccessAll` on the collection to the service role and makes the
+  knowledge base depend on that policy.
+
+It does not create the index or the collection's data access policy.
+
+### KnowledgeBaseSupplementalDataStorage
+
+Configures the Amazon S3 bucket in which a vector knowledge base stores the
+images, audio and video segments it extracts from multimodal documents. This is
+the mixin that the `supplementalDataStorageBucket` property of
+`VectorKnowledgeBase` applies for you; use it directly when you build a
+knowledge base from the L1 construct.
+
+```ts fixture=default
+declare const knowledgeBase: aws_bedrock_cfn.CfnKnowledgeBase;
+declare const bucket: s3.IBucket;
+declare const role: iam.Role;
+
+knowledgeBase.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({
+  bucket,
+  role,
+}));
+```
+
+Applying the mixin:
+
+- sets `SupplementalDataStorageConfiguration` on the knowledge base's
+  `VectorKnowledgeBaseConfiguration`, merging with the existing configuration
+  and replacing any supplemental data storage location already configured. It
+  fails at synthesis if the knowledge base is not of type `VECTOR`.
+- grants the service role `s3:ListBucket` on the bucket and `s3:GetObject`,
+  `s3:PutObject` and `s3:DeleteObject` on its objects, and makes the knowledge
+  base depend on that policy.
+
+Multimodal ingestion also requires a data source configured with a multimodal
+parser; see [Choosing your multimodal processing approach](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multimodal-choose-approach.html).

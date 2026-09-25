@@ -42,6 +42,18 @@ export * from './inference-profiles/cross-region-inference-profile';
 export * from './inference-profiles/prompt-router';
 
 // ===================================
+// Knowledge Bases
+// ===================================
+export * from './knowledge-bases/knowledge-base';
+export * from './knowledge-bases/vector-knowledge-base';
+export * from './knowledge-bases/vector-store';
+
+// ===================================
+// Mixins
+// ===================================
+export * as mixins from './mixins';
+
+// ===================================
 // Models
 // ===================================
 export * from './models';
