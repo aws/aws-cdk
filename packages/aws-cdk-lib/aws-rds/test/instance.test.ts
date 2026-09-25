@@ -818,6 +818,57 @@ describe('instance', () => {
     });
   });
 
+  test.each([
+    ['metricDatabaseConnections', 'DatabaseConnections'],
+    ['metricFreeStorageSpace', 'FreeStorageSpace'],
+    ['metricFreeableMemory', 'FreeableMemory'],
+    ['metricNetworkReceiveThroughput', 'NetworkReceiveThroughput'],
+    ['metricNetworkTransmitThroughput', 'NetworkTransmitThroughput'],
+    ['metricReadLatency', 'ReadLatency'],
+    ['metricWriteLatency', 'WriteLatency'],
+    ['metricReadThroughput', 'ReadThroughput'],
+    ['metricWriteThroughput', 'WriteThroughput'],
+    ['metricSwapUsage', 'SwapUsage'],
+    ['metricDiskQueueDepth', 'DiskQueueDepth'],
+    ['metricBurstBalance', 'BurstBalance'],
+    ['metricReplicaLag', 'ReplicaLag'],
+  ])('can use %s helper', (method, metricName) => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve((instance as any)[method]())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName,
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('metric helpers honor props overrides', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricCPUUtilization({
+      statistic: 'Maximum',
+      period: cdk.Duration.minutes(1),
+    }))).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(1),
+      statistic: 'Maximum',
+    });
+  });
+
   test('can resolve endpoint port and socket address', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
