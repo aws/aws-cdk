@@ -62,7 +62,7 @@ exports.handler = async () => {
 
 The canary will automatically produce a CloudWatch Dashboard:
 
-![UI Screenshot](images/ui-screenshot.png)
+![UI Screenshot](https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/aws-synthetics/images/ui-screenshot.png)
 
 The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) (for nodejs based one) and Chromium.
 
