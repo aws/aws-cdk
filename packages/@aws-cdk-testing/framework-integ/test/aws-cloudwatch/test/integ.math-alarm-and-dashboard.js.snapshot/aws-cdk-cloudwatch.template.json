@@ -96,20 +96,6 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "queue",
-         "QueueName"
-        ]
-       },
-       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
-       {
-        "Fn::GetAtt": [
-         "queue",
-         "QueueName"
-        ]
-       },
        "\",{\"label\":\"Visible Messages\",\"period\":10,\"yAxis\":\"right\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
        {
         "Fn::GetAtt": [
@@ -117,7 +103,21 @@
          "QueueName"
         ]
        },
-       "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{},\"accountId\":\"123456789012\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"region\":\"",
+       "\",{\"label\":\"NotVisible Messages\",\"period\":30,\"yAxis\":\"right\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "queue",
+         "QueueName"
+        ]
+       },
+       "\",{\"label\":\"Visible Messages\",\"id\":\"m1\",\"visible\":false,\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesNotVisible\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "queue",
+         "QueueName"
+        ]
+       },
+       "\",{\"label\":\"NotVisible Messages\",\"id\":\"m2\",\"visible\":false,\"period\":60}]],\"annotations\":{\"horizontal\":[{\"label\":\"Total Messages >= 100 for 3 datapoints within 3 minutes\",\"value\":100,\"yAxis\":\"left\"}]},\"yAxis\":{},\"accountId\":\"123456789012\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"pie\",\"title\":\"Percentage of messages in each queue as pie chart\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
