@@ -11137,6 +11137,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'principalAccount': '*'
           }
         },
+        'hostKernel': 'HostKernel',
         'privileged': 'boolean',
         'certificate': {
           'bucket': {
