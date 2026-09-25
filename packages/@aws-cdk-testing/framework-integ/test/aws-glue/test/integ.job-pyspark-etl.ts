@@ -39,7 +39,7 @@ new glue.PySparkEtlJob(stack, 'OverridePySparkETLJob', {
   script: script,
   role: iam_role,
   description: 'Optional Override PySpark ETL Job',
-  glueVersion: glue.GlueVersion.V5_1,
+  glueVersion: glue.GlueVersion.V6_0,
   workerConfiguration: { workerType: glue.WorkerType.G_1X, numberOfWorkers: 20 },
   timeout: cdk.Duration.minutes(15),
   jobName: 'Optional Override PySpark ETL Job',

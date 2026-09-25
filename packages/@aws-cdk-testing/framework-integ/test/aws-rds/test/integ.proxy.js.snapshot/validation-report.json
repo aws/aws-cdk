@@ -1,0 +1,51 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.8.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9008",
+          "description": "StorageEncrypted: RDS instance should have StorageEncrypted set to true",
+          "suggestedFix": "Set StorageEncrypted to true",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-proxy/dbInstance/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-proxy.template.json",
+                "logicalId": "dbInstance4076B1EC",
+                "propertyPaths": [
+                  "Properties.StorageEncrypted"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "database-proxy-integ-test/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
