@@ -1,0 +1,13 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "integ-aws-ecs-ec2-imported-taskdef/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-ec2-imported-taskdef"
+      ],
+      "assertionStack": "integ-aws-ecs-ec2-imported-taskdef/DefaultTest/DeployAssert",
+      "assertionStackName": "integawsecsec2importedtaskdefDefaultTestDeployAssertC7448011"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}
