@@ -70,6 +70,20 @@ secret.grantRead(role);
 secret.grantWrite(role);
 ```
 
+## Block public resource policies
+
+To ask Secrets Manager to reject resource policies that grant public access,
+set `blockPublicPolicy` when creating a secret or a standalone resource policy:
+
+```ts
+const secret = new secretsmanager.Secret(this, 'Secret', {
+  blockPublicPolicy: true,
+});
+```
+
+When the secret creates its resource policy lazily, the setting is forwarded to
+`AWS::SecretsManager::ResourcePolicy`.
+
 If, as in the following example, your secret was created with a KMS key:
 
 ```ts
