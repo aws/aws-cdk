@@ -3,7 +3,7 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
+import { ArnFormat, Fn, Stack, Token, ValidationError, withResolved } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -309,16 +309,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
+      // Scope batch:SubmitJob to the specific job definition name (any revision)
+      // and the job queue. Falls back to a wildcard when the inputs are dynamic
+      // (JsonPath/JSONata) and cannot be resolved at synth or deploy time.
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
         resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
-          Stack.of(this).formatArn({
-            service: 'batch',
-            resource: 'job-definition',
-            resourceName: '*',
-          }),
+          this.formatJobDefinitionResource(),
           this.props.jobQueueArn,
         ],
         actions: ['batch:SubmitJob'],
@@ -333,6 +330,41 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
       }),
     ];
+  }
+
+  private formatJobDefinitionResource(): string {
+    const wildcardResource = Stack.of(this).formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: '*',
+    });
+
+    // State-machine-time expressions cannot be resolved at synth/deploy time,
+    // so we keep the broad fallback for those.
+    if (isJsonPathOrJsonataExpression(this.props.jobDefinitionArn)) {
+      return wildcardResource;
+    }
+
+    const { resourceName } = Stack.of(this).splitArn(
+      this.props.jobDefinitionArn,
+      ArnFormat.SLASH_RESOURCE_NAME,
+    );
+
+    if (!resourceName) {
+      return wildcardResource;
+    }
+
+    // resourceName is "${name}" or "${name}:${revision}". Static strings can be
+    // parsed in TypeScript; tokens defer the parsing to CloudFormation.
+    const jobDefName = Token.isUnresolved(resourceName)
+      ? Fn.select(0, Fn.split(':', resourceName))
+      : resourceName.split(':')[0];
+
+    return Stack.of(this).formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: `${jobDefName}:*`,
+    });
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
