@@ -523,6 +523,31 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+#### Removing the Artifact Bucket
+
+When the pipeline creates the artifact bucket itself (i.e. you do not pass
+`artifactBucket` or an existing `codePipeline`), the bucket is retained by
+default when the pipeline stack is destroyed. To have the bucket and its
+objects deleted along with the stack, set `artifactBucketRemovalPolicy` to
+`RemovalPolicy.DESTROY` and `artifactBucketAutoDeleteObjects` to `true`:
+
+Example:
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  // Delete the auto-created artifact bucket (and its objects) with the stack
+  artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  artifactBucketAutoDeleteObjects: true,
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn:
+        'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
+    }),
+    commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+  }),
+});
+```
+
 #### Deploying without change sets
 
 Deployment is done by default with `CodePipeline` engine using change sets,

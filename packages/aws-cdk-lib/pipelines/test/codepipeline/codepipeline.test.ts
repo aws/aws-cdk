@@ -765,6 +765,46 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
+test('artifactBucketRemovalPolicy and artifactBucketAutoDeleteObjects are applied to the generated artifact bucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    artifactBucketAutoDeleteObjects: true,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResource('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+  template.hasResource('Custom::S3AutoDeleteObjects', {});
+});
+
+test('artifactBucketRemovalPolicy cannot be combined with artifactBucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact', {
+      bucketName: 'my-custom-artifact-bucket',
+    }),
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+  // THEN
+  expect(() => Template.fromStack(pipelineStack))
+    .toThrow(/Cannot set 'artifactBucketRemovalPolicy' or 'artifactBucketAutoDeleteObjects' when 'artifactBucket' is specified/);
+});
+
+test('artifactBucketRemovalPolicy cannot be combined with codePipeline', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new cdkp.CodePipeline(pipelineStack, 'Cdk', {
+    synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+    codePipeline: new Pipeline(pipelineStack, 'Pipeline'),
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+  // THEN
+  expect(() => Template.fromStack(pipelineStack))
+    .toThrow(/Cannot set 'artifactBucketRemovalPolicy' if an existing CodePipeline is given/);
+});
+
 test('throws when deploy role session tags are used', () => {
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
