@@ -240,6 +240,17 @@ test('validates outputPathSuffix when bundling is skipped', () => {
   })).toThrow(/outputPathSuffix \(\.\.\/asset-input\) should not escape \/asset-output/);
 });
 
+test('fails when platformTags is set without local bundling', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+
+  expect(() => Bundling.bundle({
+    entry: entry,
+    runtime: Runtime.PYTHON_3_12,
+    architecture: Architecture.X86_64,
+    platformTags: ['musllinux_1_2_x86_64'],
+  })).toThrow(/platformTags only applies to local bundling, but local is not true/);
+});
+
 test('Bundling a python code layer', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
 
@@ -681,6 +692,70 @@ test('Bundling a function with uv dependencies', () => {
   expect(files).toContain('uv.lock');
   // Contains hidden files.
   expect(files).toContain('.ignorefile');
+});
+
+describe('local bundling wiring', () => {
+  test('local: true exposes a local bundler with a tryBundle function', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: expect.objectContaining({
+          tryBundle: expect.any(Function),
+        }),
+      }),
+    }));
+  });
+
+  test('local: true does not trigger docker build', () => {
+    (DockerImage.fromBuild as jest.Mock).mockClear();
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: true,
+    });
+
+    expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+  });
+
+  test('local: false leaves local undefined', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: false,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: undefined,
+      }),
+    }));
+  });
+
+  test('default (no local option) leaves local undefined', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: undefined,
+      }),
+    }));
+  });
 });
 
 test('uv automatic assetExcludes does not mutate caller array', () => {
