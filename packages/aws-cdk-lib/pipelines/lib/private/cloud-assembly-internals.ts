@@ -1,5 +1,9 @@
 import type * as cxapi from '../../../cx-api';
 
+/**
+ * Checks whether the passed argument is an asset manifest.
+ * @param s Argument that is to be checked.
+ */
 export function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifact {
   // instanceof is too risky, and we're at a too late stage to properly fix.
   // return s instanceof cxapi.AssetManifestArtifact;
