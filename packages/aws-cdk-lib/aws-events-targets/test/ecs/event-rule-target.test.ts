@@ -1097,6 +1097,42 @@ test.each([
   });
 });
 
+test('launch type EXTERNAL is included for non-AWS_VPC network mode', () => {
+  // GIVEN
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+    networkMode: ecs.NetworkMode.BRIDGE, // Non-AWS_VPC network mode
+    compatibility: ecs.Compatibility.EXTERNAL,
+    cpu: '256',
+    memoryMiB: '512',
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    launchType: ecs.LaunchType.EXTERNAL,
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        EcsParameters: {
+          LaunchType: 'EXTERNAL',
+          TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+        },
+      },
+    ],
+  });
+});
+
 test('When using non-imported TaskDefinition, the IAM policy `Resource` should use `Ref` to reference the TaskDefinition', () => {
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
