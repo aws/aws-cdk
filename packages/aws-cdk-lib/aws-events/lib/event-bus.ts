@@ -649,7 +649,7 @@ export class EventBusPolicy extends Resource {
 
     new CfnEventBusPolicy(this, 'Resource', {
       statementId: props.statementId!,
-      statement: props.statement,
+      statement: props.statement.toJSON(),
       eventBusName: props.eventBus.eventBusName,
     });
   }
