@@ -1698,6 +1698,25 @@ This simplifies the process of configuring IAM permissions for your Kubernetes a
 the installation of the Pod Identity Agent add-on, and the association between the role and the service account, making it easier to manage AWS credentials
 for your applications.
 
+If you need control over the add-on, for example to pin its version, declare the `eks-pod-identity-agent` add-on yourself
+before creating the service account. `ServiceAccount` detects an `Addon` (or `CfnAddon`) with that name that targets the
+same cluster and reuses it instead of installing a second one:
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.Addon(this, 'PodIdentityAgent', {
+  cluster,
+  addonName: 'eks-pod-identity-agent',
+  addonVersion: 'v1.3.4-eksbuild.1',
+});
+
+new eks.ServiceAccount(this, 'ServiceAccount', {
+  cluster,
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
 ## Applying Kubernetes Resources
 
 The library supports several popular resource deployment mechanisms, among which are:
