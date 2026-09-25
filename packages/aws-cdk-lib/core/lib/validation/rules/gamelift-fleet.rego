@@ -125,11 +125,11 @@ windows_launch_root := "C:\\game"
 linux_launch_root := "/local/game"
 
 # The Build a fleet references, when it is defined in the same template.
-# follow_ref() returns the referenced build's logical ID; for an imported build
+# resolve() follows the Ref to the build's logical ID; for an imported build
 # the BuildId is a literal fleet-external ID and the resource lookup fails,
 # so the cross-resource rules stay silent.
 build_for_fleet(fleet_name) := build if {
-	build_name := follow_ref(fleet_name, "Properties.BuildId")
+	build_name := resolve(fleet_name, "Properties.BuildId")
 	is_string(build_name)
 	build := input.resources[build_name]
 	build.resourceType == "AWS::GameLift::Build"
