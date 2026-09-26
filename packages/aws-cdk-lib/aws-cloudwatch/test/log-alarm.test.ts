@@ -1,5 +1,5 @@
 import { Annotations, Match, Template } from '../../assertions';
-import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { Role, ServicePrincipal } from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
 import { Duration, Stack, Token } from '../../core';
 import type { IAlarmAction } from '../lib';
@@ -171,7 +171,63 @@ describe('LogAlarm', () => {
     alarm.addAlarmAction(aiopsAction);
 
     Annotations.fromStack(stack).hasWarning('/Default/Alarm',
-      Match.stringLikeRegexp('log alarms do not dispatch aiops actions'));
+      Match.stringLikeRegexp('log alarms do not dispatch this action type'));
+  });
+
+  test.each([
+    ['an SNS subscription', 'arn:aws:sns:us-east-1:123456789012:my-topic:8b7c4d2e-1111-2222-3333-444455556666'],
+    ['a Lambda layer', 'arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1'],
+    ['a Systems Manager automation definition', 'arn:aws:ssm:us-east-1:123456789012:automation-definition/my-runbook'],
+  ])('warns for %s', (_name, alarmActionArn) => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Alarm',
+      Match.stringLikeRegexp('log alarms do not dispatch this action type'));
+  });
+
+  test.each([
+    ['a Lambda function', 'arn:aws:lambda:us-east-1:123456789012:function:my-function'],
+    ['a Lambda function alias', 'arn:aws:lambda:us-east-1:123456789012:function:my-function:live'],
+    ['a Systems Manager OpsItem', 'arn:aws:ssm:us-east-1:123456789012:opsitem:3#CATEGORY=Availability'],
+  ])('does not warn for %s', (_name, alarmActionArn) => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('do not dispatch'));
+  });
+
+  test('warns that query permissions are unscoped when logGroups is not set', () => {
+    const props = baseProps();
+    const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
+    void logGroups;
+    new LogAlarm(stack, 'Alarm', { ...props, scheduledQueryConfiguration: sqcWithout });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Alarm',
+      Match.stringLikeRegexp('logGroups is not set, so the scheduled query role is granted query permissions on every log group'));
+  });
+
+  test('does not warn about unscoped query permissions when logGroups is set', () => {
+    new LogAlarm(stack, 'Alarm', baseProps());
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('logGroups is not set'));
+  });
+
+  test('fails for an empty aggregationExpression', () => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: { ...props.scheduledQueryConfiguration, aggregationExpression: '' },
+    })).toThrow(/aggregationExpression must be between 1 and 2048 characters, got 0/);
+  });
+
+  test('fails for a queryResultsToAlarm below 1', () => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      queryResultsToAlarm: 0,
+    })).toThrow(/queryResultsToAlarm must be a positive integer/);
   });
 
   test('does not warn for a supported (SNS) action', () => {
@@ -341,24 +397,6 @@ describe('LogAlarm', () => {
           }),
         ]),
       }),
-    });
-  });
-
-  test('addToRolePolicy adds a statement to the scheduled query role', () => {
-    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
-
-    alarm.addToRolePolicy(new PolicyStatement({
-      actions: ['logs:GetLogRecord'],
-      resources: ['*'],
-    }));
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({ Action: 'logs:GetLogRecord', Resource: '*' }),
-        ]),
-      }),
-      Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
     });
   });
 
@@ -711,7 +749,7 @@ describe('LogAlarm', () => {
         ...baseProps().scheduledQueryConfiguration,
         aggregationExpression: 'x'.repeat(2049),
       },
-    })).toThrow(/aggregationExpression can be at most 2048 characters/);
+    })).toThrow(/aggregationExpression must be between 1 and 2048 characters/);
   });
 
   test('fails for a non-integer queryResultsToAlarm', () => {

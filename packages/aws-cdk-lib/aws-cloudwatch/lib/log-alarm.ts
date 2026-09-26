@@ -5,10 +5,10 @@ import type { IAlarm } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
-import type { IRole, PolicyStatement } from '../../aws-iam';
+import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
 import { Annotations, ArnFormat, Stack, Token, ValidationError } from '../../core';
-import type { Duration } from '../../core';
+import type { ArnComponents, Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -16,13 +16,17 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
- * ARN service segments of the action types a log alarm dispatches.
+ * The action ARN shapes a log alarm dispatches, keyed by ARN service segment.
  *
- * The check is a coarse screen for attaching an action type log alarms do not support at
- * all. It matches on the service segment only, so an unsupported resource type inside a
- * listed service does not warn.
+ * An SNS topic ARN has no resource type, so a topic is an ARN with nothing after its
+ * name; a subscription ARN carries a trailing identifier. Lambda actions are functions,
+ * optionally qualified by version or alias, and Systems Manager actions are OpsItems.
  */
-const SUPPORTED_ACTION_SERVICES = new Set(['sns', 'lambda', 'ssm']);
+const DISPATCHABLE_ACTIONS: { [service: string]: (arn: ArnComponents) => boolean } = {
+  sns: arn => arn.resourceName === undefined,
+  lambda: arn => arn.resource === 'function',
+  ssm: arn => arn.resource === 'opsitem',
+};
 
 /**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
@@ -34,9 +38,9 @@ export interface ScheduledQuerySchedule {
    * Rendered to a `rate(...)` schedule expression, so only whole numbers of
    * minutes or hours are supported.
    *
-   * A rate whose amount is only known at deploy time must be given as
-   * `Duration.minutes()`. A duration built from a token cannot be converted
-   * between units, so any other unit is rejected at synthesis time.
+   * A rate whose amount is only known at deploy time must be given in minutes or
+   * hours, and is rendered in that unit, which is always plural. Such a rate must not resolve to 1, because
+   * the schedule expression requires the singular unit for a value of 1.
    */
   readonly rate: Duration;
 
@@ -414,8 +418,8 @@ export class LogAlarm extends AlarmBase {
       throw new ValidationError(lit`InvalidQueryString`, `queryString must be between 1 and 10000 characters, got ${sqc.queryString.length}`, this);
     }
 
-    if (!Token.isUnresolved(sqc.aggregationExpression) && sqc.aggregationExpression.length > 2048) {
-      throw new ValidationError(lit`InvalidAggregationExpression`, `aggregationExpression can be at most 2048 characters, got ${sqc.aggregationExpression.length}`, this);
+    if (!Token.isUnresolved(sqc.aggregationExpression) && (sqc.aggregationExpression.length < 1 || sqc.aggregationExpression.length > 2048)) {
+      throw new ValidationError(lit`InvalidAggregationExpression`, `aggregationExpression must be between 1 and 2048 characters, got ${sqc.aggregationExpression.length}`, this);
     }
 
     if (!sqc.schedule.startTimeOffset.isUnresolved()) {
@@ -447,6 +451,10 @@ export class LogAlarm extends AlarmBase {
     this.scheduledQueryRole = sqc.scheduledQueryRole
       ?? this.createServiceRole('ScheduledQueryRole', 'logs.amazonaws.com', 'logs', 'scheduled-query');
     this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
+    if (sqc.logGroups === undefined) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions',
+        'logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them');
+    }
 
     const includesLogLines = props.actionLogLineCount !== undefined
       && (Token.isUnresolved(props.actionLogLineCount) || props.actionLogLineCount > 0);
@@ -539,24 +547,25 @@ export class LogAlarm extends AlarmBase {
 
   private bindAndWarn(action: IAlarmAction): string {
     const arn = action.bind(this, this).alarmActionArn;
-    const service = this.actionService(arn);
-    if (service !== undefined && !SUPPORTED_ACTION_SERVICES.has(service)) {
+    const components = this.actionArnComponents(arn);
+    const dispatches = components && DISPATCHABLE_ACTIONS[components.service];
+    if (components !== undefined && (dispatches === undefined || !dispatches(components))) {
       Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
-        `log alarms do not dispatch ${service} actions, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
+        `log alarms do not dispatch this action type, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
     }
     return arn;
   }
 
   /**
-   * Service segment of an action ARN, or `undefined` when it cannot be read.
+   * Components of an action ARN, or `undefined` when they cannot be read.
    *
    * An `IAlarmAction` may return any string, and `splitArn` rejects anything that is not
    * a well-formed ARN, so the value is only parsed once it carries the leading `arn:` and
-   * the non-empty partition, service and resource segments the parser requires. A service
-   * segment that resolves at deploy time is not a service name, so it reads as unknown
-   * rather than producing a warning that names a token.
+   * the non-empty partition, service and resource segments the parser requires. Segments
+   * that resolve at deploy time are not a shape that can be checked, so they read as
+   * unknown rather than producing a warning that names a token.
    */
-  private actionService(arn: string): string | undefined {
+  private actionArnComponents(arn: string): ArnComponents | undefined {
     const segments = arn.split(':');
     const parseable = !Token.isUnresolved(arn)
       && arn.startsWith('arn:')
@@ -565,8 +574,10 @@ export class LogAlarm extends AlarmBase {
     if (!parseable) {
       return undefined;
     }
-    const service = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME).service;
-    return Token.isUnresolved(service) ? undefined : service;
+    const components = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME);
+    const unresolved = Token.isUnresolved(components.service) || Token.isUnresolved(components.resource)
+      || (components.resourceName !== undefined && Token.isUnresolved(components.resourceName));
+    return unresolved ? undefined : components;
   }
 
   private validateTagCount(propName: string, tags?: { [key: string]: string }): void {
@@ -592,15 +603,6 @@ export class LogAlarm extends AlarmBase {
       },
       tags: this.renderTags(config.tags),
     };
-  }
-
-  /**
-   * Add a statement to the policy of the role that runs the scheduled query.
-   *
-   * No-ops if the role was imported as immutable.
-   */
-  public addToRolePolicy(statement: PolicyStatement): void {
-    this.scheduledQueryRole.addToPrincipalPolicy(statement);
   }
 
   /**
