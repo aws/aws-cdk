@@ -1,0 +1,24 @@
+import { Construct } from 'constructs';
+import { Stack, Tags } from 'aws-cdk-lib';
+import { VectorBucket, VectorBucketEncryption, VectorIndex, VectorDataType, DistanceMetric } from '@aws-cdk/aws-s3vectors-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    const vectorBucket = new VectorBucket(scope, 'ExampleVectorBucket', {
+      vectorBucketName: 'example-vector-bucket',
+    });
+    const vectorIndex = new VectorIndex(scope, 'ExampleVectorIndex', {
+      vectorBucket,
+      indexName: 'example-index',
+      dimension: 1024,
+      dataType: VectorDataType.FLOAT32,
+      distanceMetric: DistanceMetric.COSINE,
+    });
+
+    const stack = this;
+    /// here
+  }
+}
