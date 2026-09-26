@@ -343,16 +343,17 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants query permissions to a caller-supplied role, scoped to the log groups', () => {
+  test('grants query permissions to a caller-supplied role, starting queries only on the log groups', () => {
     new LogAlarm(stack, 'Alarm', baseProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
+            Action: 'logs:StartQuery',
             Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
           }),
+          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: '*' }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
@@ -368,7 +369,7 @@ describe('LogAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
-          Match.objectLike({ Action: 'logs:DescribeLogGroups', Resource: '*' }),
+          Match.objectLike({ Action: ['logs:GetQueryResults', 'logs:DescribeLogGroups'], Resource: '*' }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
@@ -392,7 +393,7 @@ describe('LogAlarm', () => {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
+            Action: 'logs:StartQuery',
             Resource: { 'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('log-group:\\*')])] },
           }),
         ]),
@@ -501,7 +502,7 @@ describe('LogAlarm', () => {
 
   test.each([
     ['hours', Duration.hours(Token.asNumber({ Ref: 'RateParam' })), 'hours'],
-    ['seconds', Duration.seconds(Token.asNumber({ Ref: 'RateParam' })), 'seconds'],
+    ['days', Duration.days(Token.asNumber({ Ref: 'RateParam' })), 'days'],
   ])('renders a tokenized rate given in %s without converting units', (_name, rate, unit) => {
     const props = baseProps();
     new LogAlarm(stack, 'Alarm', {
@@ -519,6 +520,20 @@ describe('LogAlarm', () => {
         }),
       }),
     });
+  });
+
+  test.each([
+    ['seconds', Duration.seconds(Token.asNumber({ Ref: 'RateParam' }))],
+    ['milliseconds', Duration.millis(Token.asNumber({ Ref: 'RateParam' }))],
+  ])('fails for a tokenized rate given in %s', (_name, rate) => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: { rate, startTimeOffset: Duration.minutes(5) },
+      },
+    })).toThrow(/schedule rate must be given as Duration.minutes\(\), Duration.hours\(\), or Duration.days\(\) when its amount comes from a token/);
   });
 
   test.each([
@@ -644,7 +659,7 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants logs:GetQueryResults to the log line role, scoped to the log groups', () => {
+  test('grants logs:GetQueryResults to the log line role', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
       actionLogLineCount: 10,
@@ -653,10 +668,7 @@ describe('LogAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: 'logs:GetQueryResults',
-            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
-          }),
+          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: '*' }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^AlarmLogLineRole') }],

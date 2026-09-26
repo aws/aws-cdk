@@ -38,9 +38,10 @@ export interface ScheduledQuerySchedule {
    * Rendered to a `rate(...)` schedule expression, so only whole numbers of
    * minutes or hours are supported.
    *
-   * A rate whose amount is only known at deploy time must be given in minutes or
-   * hours, and is rendered in that unit, which is always plural. Such a rate must not resolve to 1, because
-   * the schedule expression requires the singular unit for a value of 1.
+   * A rate whose amount is only known at deploy time must be given in minutes,
+   * hours, or days, and is rendered in that unit, which is always plural. Such a
+   * rate must not resolve to 1, because the schedule expression requires the
+   * singular unit for a value of 1.
    */
   readonly rate: Duration;
 
@@ -464,7 +465,7 @@ export class LogAlarm extends AlarmBase {
     this.actionLogLineRole = props.actionLogLineRole
       ?? (includesLogLines ? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm') : undefined);
     if (this.actionLogLineRole !== undefined) {
-      this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
+      this.grantReadLogLines(this.actionLogLineRole);
     }
 
     this.alarm = new CfnLogAlarm(this, 'Resource', {
@@ -639,31 +640,31 @@ export class LogAlarm extends AlarmBase {
    * caller. Passing an imported immutable role (`Role.fromRoleArn` with
    * `mutable: false`) turns these additions into no-ops.
    *
-   * `logs:DescribeLogGroups` is granted only when the query selects its own log
-   * groups, because that is the only case in which the service enumerates them on
-   * the role's behalf. The action supports no resource types, so when it is granted
-   * it can only be granted on every resource.
+   * `logs:StartQuery` is scoped to the log groups. Results are retrieved by query ID,
+   * so `logs:GetQueryResults` is granted on every resource. `logs:DescribeLogGroups` is
+   * granted only when the query selects its own log groups, because that is the only
+   * case in which the service enumerates them on the role's behalf, and it supports no
+   * resource types.
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
+    const selectsOwnLogGroups = logGroups === undefined || logGroups.length === 0;
     Grant.addToPrincipal({
       grantee: role,
-      actions: ['logs:StartQuery', 'logs:GetQueryResults'],
+      actions: ['logs:StartQuery'],
       resourceArns: this.logGroupPolicyResources(logGroups),
     });
-    if (logGroups === undefined || logGroups.length === 0) {
-      Grant.addToPrincipal({
-        grantee: role,
-        actions: ['logs:DescribeLogGroups'],
-        resourceArns: ['*'],
-      });
-    }
+    Grant.addToPrincipal({
+      grantee: role,
+      actions: selectsOwnLogGroups ? ['logs:GetQueryResults', 'logs:DescribeLogGroups'] : ['logs:GetQueryResults'],
+      resourceArns: ['*'],
+    });
   }
 
-  private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
+  private grantReadLogLines(role: IRole): void {
     Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:GetQueryResults'],
-      resourceArns: this.logGroupPolicyResources(logGroups),
+      resourceArns: ['*'],
     });
   }
 
@@ -723,6 +724,10 @@ export class LogAlarm extends AlarmBase {
    */
   private renderRate(rate: Duration): string {
     if (rate.isUnresolved()) {
+      const unit = rate.unitLabel();
+      if (unit !== 'minutes' && unit !== 'hours' && unit !== 'days') {
+        throw new ValidationError(lit`InvalidScheduleRateUnit`, `schedule rate must be given as Duration.minutes(), Duration.hours(), or Duration.days() when its amount comes from a token, got Duration.${unit}`, this);
+      }
       return `rate(${rate.formatTokenToNumber()})`;
     }
     const minutes = rate.toMinutes({ integral: false });
