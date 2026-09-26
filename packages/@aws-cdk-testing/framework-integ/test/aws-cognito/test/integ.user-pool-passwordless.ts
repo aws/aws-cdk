@@ -1,6 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { FeaturePlan, PasskeyUserVerification, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { FeaturePlan, PasskeyFactorMode, PasskeyUserVerification, UserPool } from 'aws-cdk-lib/aws-cognito';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-passwordless');
@@ -11,6 +11,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
   },
   passkeyRelyingPartyId: 'example.com',
   passkeyUserVerification: PasskeyUserVerification.REQUIRED,
+  passkeyFactorMode: PasskeyFactorMode.MULTI_FACTOR_WITH_USER_VERIFICATION,
   removalPolicy: RemovalPolicy.DESTROY,
   deletionProtection: false,
 });
