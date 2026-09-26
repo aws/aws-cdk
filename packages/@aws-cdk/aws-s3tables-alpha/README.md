@@ -29,8 +29,8 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 ```ts
 // Build a Table bucket
 const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
-    tableBucketName: 'example-bucket-1',
     // optional fields:
+    tableBucketName: 'example-bucket-1', // if omitted, CDK generates a unique name that satisfies the S3 Tables naming rules
     unreferencedFileRemoval: {
         status: UnreferencedFileRemovalStatus.ENABLED,
         noncurrentDays: 20,
@@ -38,6 +38,13 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
     }
 });
 ```
+
+When `tableBucketName` is omitted, CDK derives the name from the stack name and the
+construct path. Because the path is part of the input, the generated name is **not
+stable across stack or construct renames** — renaming or moving the construct will
+produce a different name and replace the bucket. If you need a fixed, predictable
+name (for example, to reference the bucket from outside CDK or across separate
+deployments), pass `tableBucketName` explicitly.
 
 ### Define an S3 Tables Namespace
 

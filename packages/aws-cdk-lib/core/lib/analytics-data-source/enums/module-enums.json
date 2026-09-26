@@ -2820,6 +2820,13 @@
       "ON_DEMAND"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/host-kernel.ts": {
+    "HostKernel": [
+      "LINUX_KERNEL_4",
+      "LINUX_KERNEL_6",
+      "LINUX_KERNEL_LATEST"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/image-pull-principal-type.ts": {
     "ImagePullPrincipalType": [
       "CODEBUILD",
@@ -5340,6 +5347,181 @@
       "SOURCE_IP"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/catalog.ts": {
+    "CatalogEncryptionMode": [
+      "DISABLED",
+      "SSE-KMS",
+      "SSE-KMS-WITH-SERVICE-ROLE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/constants.ts": {
+    "WorkerType": [
+      "Standard",
+      "G.1X",
+      "G.2X",
+      "G.4X",
+      "G.8X",
+      "G.12X",
+      "G.16X",
+      "G.025X",
+      "R.1X",
+      "R.2X",
+      "R.4X",
+      "R.8X"
+    ],
+    "JobState": [
+      "SUCCEEDED",
+      "FAILED",
+      "TIMEOUT",
+      "STARTING",
+      "RUNNING",
+      "STOPPING",
+      "STOPPED"
+    ],
+    "MetricType": [
+      "gauge",
+      "count"
+    ],
+    "ExecutionClass": [
+      "FLEX",
+      "STANDARD"
+    ],
+    "GlueVersion": [
+      "0.9",
+      "1.0",
+      "2.0",
+      "3.0",
+      "4.0",
+      "5.0",
+      "5.1"
+    ],
+    "JobLanguage": [
+      "scala",
+      "python"
+    ],
+    "PythonVersion": [
+      "2",
+      "3",
+      "3.9"
+    ],
+    "LibrarySet": [
+      "analytics",
+      "none"
+    ],
+    "JobType": [
+      "glueetl",
+      "gluestreaming",
+      "pythonshell"
+    ],
+    "MaxCapacity": [
+      0.0625,
+      1
+    ],
+    "PredicateLogical": [
+      "AND",
+      "ANY"
+    ],
+    "ConditionLogicalOperator": [
+      "EQUALS"
+    ],
+    "CrawlerState": [
+      "RUNNING",
+      "CANCELLING",
+      "CANCELLED",
+      "SUCCEEDED",
+      "FAILED",
+      "ERROR"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/partition-projection.ts": {
+    "PartitionProjectionType": [
+      "integer",
+      "date",
+      "enum",
+      "injected"
+    ],
+    "DateIntervalUnit": [
+      "YEARS",
+      "MONTHS",
+      "WEEKS",
+      "DAYS",
+      "HOURS",
+      "MINUTES",
+      "SECONDS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/security-configuration.ts": {
+    "S3EncryptionMode": [
+      "SSE-S3",
+      "SSE-KMS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/storage-parameter.ts": {
+    "CompressionType": [
+      "none",
+      "bzip2",
+      "gzip",
+      "snappy"
+    ],
+    "InvalidCharHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW",
+      "REPLACE"
+    ],
+    "NumericOverflowHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW"
+    ],
+    "SurplusBytesHandlingAction": [
+      "SET_TO_NULL",
+      "DISABLED",
+      "FAIL",
+      "DROP_ROW",
+      "TRUNCATE"
+    ],
+    "SurplusCharHandlingAction": [
+      "SET_TO_NULL",
+      "DISABLED",
+      "FAIL",
+      "DROP_ROW",
+      "TRUNCATE"
+    ],
+    "ColumnCountMismatchHandlingAction": [
+      "DISABLED",
+      "FAIL",
+      "SET_TO_NULL",
+      "DROP_ROW"
+    ],
+    "WriteParallel": [
+      "on",
+      "off"
+    ],
+    "OrcColumnMappingType": [
+      "name",
+      "position"
+    ],
+    "StorageParameters": [
+      "skip.header.line.count",
+      "data_cleansing_enabled",
+      "compression_type",
+      "invalid_char_handling",
+      "replacement_char",
+      "numeric_overflow_handling",
+      "surplus_bytes_handling",
+      "surplus_char_handling",
+      "column_count_mismatch_handling",
+      "num_rows",
+      "serialization.null.format",
+      "orc.schema.resolution",
+      "write.parallel",
+      "write.maxfilesize.mb",
+      "write.kms.key.id"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.ts": {
     "AccessKeyStatus": [
       "Active",
@@ -5501,6 +5683,12 @@
     "UntrustedArtifactOnDeployment": [
       "Enforce",
       "Warn"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.ts": {
+    "S3ObjectStorageMode": [
+      "COPY",
+      "REFERENCE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/destination.ts": {

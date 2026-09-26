@@ -421,6 +421,7 @@
       "FLINK_1_18",
       "FLINK_1_19",
       "FLINK_1_20",
+      "FLINK_2_2",
       "ZEPPELIN_FLINK_3_0",
       "ZEPPELIN_FLINK_2_0",
       "ZEPPELIN_FLINK_1_0",
@@ -3876,6 +3877,111 @@
       "V7_8",
       "V7_9",
       "V7_10"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/connection.ts": {
+    "ConnectionType": [
+      "JDBC",
+      "KAFKA",
+      "MONGODB",
+      "VIEW_VALIDATION_REDSHIFT",
+      "VIEW_VALIDATION_ATHENA",
+      "NETWORK",
+      "MARKETPLACE",
+      "CUSTOM",
+      "FACEBOOKADS",
+      "GOOGLEADS",
+      "GOOGLESHEETS",
+      "GOOGLEANALYTICS4",
+      "HUBSPOT",
+      "INSTAGRAMADS",
+      "INTERCOM",
+      "JIRACLOUD",
+      "MARKETO",
+      "NETSUITEERP",
+      "SALESFORCE",
+      "SALESFORCEMARKETINGCLOUD",
+      "SALESFORCEPARDOT",
+      "SAPODATA",
+      "SERVICENOW",
+      "SLACK",
+      "SNAPCHATADS",
+      "STRIPE",
+      "ZENDESK",
+      "ZOHOCRM",
+      "BIGQUERY",
+      "AZURESQL",
+      "AZURECOSMOS",
+      "OPENSEARCH",
+      "MYSQL",
+      "POSTGRESQL",
+      "ORACLE",
+      "SQLSERVER",
+      "SAPHANA",
+      "TERADATA",
+      "VERTICA",
+      "DYNAMODB"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/data-format.ts": {
+    "InputFormat": [
+      "AVRO",
+      "CLOUDTRAIL",
+      "ORC",
+      "PARQUET",
+      "TEXT"
+    ],
+    "OutputFormat": [
+      "HIVE_IGNORE_KEY_TEXT",
+      "AVRO",
+      "ORC",
+      "PARQUET"
+    ],
+    "SerializationLibrary": [
+      "AVRO",
+      "CLOUDTRAIL",
+      "GROK",
+      "HIVE_JSON",
+      "LAZY_SIMPLE",
+      "OPEN_CSV",
+      "OPENX_JSON",
+      "ORC",
+      "PARQUET",
+      "REGEXP"
+    ],
+    "ClassificationString": [
+      "AVRO",
+      "CSV",
+      "JSON",
+      "XML",
+      "PARQUET",
+      "ORC"
+    ],
+    "DataFormat": [
+      "APACHE_LOGS",
+      "AVRO",
+      "CLOUDTRAIL_LOGS",
+      "CSV",
+      "JSON",
+      "LOGSTASH",
+      "ORC",
+      "PARQUET",
+      "TSV"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-glue/lib/schema.ts": {
+    "Schema": [
+      "BOOLEAN",
+      "BINARY",
+      "BIG_INT",
+      "DOUBLE",
+      "FLOAT",
+      "INTEGER",
+      "SMALL_INT",
+      "TINY_INT",
+      "DATE",
+      "TIMESTAMP",
+      "STRING"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/common.ts": {
