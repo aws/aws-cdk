@@ -159,7 +159,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 1024
    */
   readonly memoryLimit?: number;
 
@@ -325,8 +325,11 @@ export class BucketDeployment extends Construct {
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
   private requestDestinationArn: IBox<boolean> = Box.fromValue(false);
+  private requestObjectVersionIds: IBox<boolean> = Box.fromValue(false);
   private readonly destinationBucket: s3.IBucket;
   private readonly sources: IArrayBox<SourceConfig>;
+  private readonly extract: boolean;
+  private readonly outputObjectKeys: boolean;
 
   /**
    * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
@@ -352,6 +355,8 @@ export class BucketDeployment extends Construct {
     }
 
     this.destinationBucket = props.destinationBucket;
+    this.extract = props.extract ?? true;
+    this.outputObjectKeys = props.outputObjectKeys ?? true;
 
     const accessPointPath = '/lambda';
     let accessPoint;
@@ -385,6 +390,13 @@ export class BucketDeployment extends Construct {
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
+      // The deployment handler is CDK-managed internal code, not user code, so the architecture is
+      // fixed rather than configurable. Both the handler and the bundled AWS CLI v1 layer are
+      // architecture-independent Python: the layer's only native extension is PyYAML's optional C
+      // accelerator, which is built for a different Python ABI than this runtime and is therefore
+      // never loaded (PyYAML falls back to its pure-Python implementation). So we always run the
+      // handler on ARM_64 (Graviton), which costs less per millisecond of execution.
+      architecture: lambda.Architecture.ARM_64,
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
@@ -395,7 +407,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 1024,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -484,6 +496,9 @@ export class BucketDeployment extends Construct {
         OutputObjectKeys: props.outputObjectKeys ?? true,
         // Passing through the ARN sequences dependency on the deployment
         DestinationBucketArn: this.requestDestinationArn.derive(v => v ? this.destinationBucket.bucketArn : undefined),
+        // Only threaded through (and only queried by the handler) when `objectVersionIds` is read.
+        // Deriving to `undefined` keeps the property out of the template for existing users.
+        OutputObjectVersionIds: this.requestObjectVersionIds.derive(v => v ? true : undefined),
       },
     });
 
@@ -580,6 +595,42 @@ export class BucketDeployment extends Construct {
   public get objectKeys(): string[] {
     const objectKeys = cdk.Token.asList(this.cr.getAtt('SourceObjectKeys'));
     return objectKeys;
+  }
+
+  /**
+   * The S3 version IDs of the objects deployed to the destination bucket.
+   *
+   * Returns a list of tokenized version IDs, positionally matching `objectKeys`: the version ID at
+   * a given index corresponds to the object key at the same index.
+   *
+   * This is useful when a consumer must reference a specific, immutable version of a deployed
+   * object — for example a Lambda function that references its code in S3 by version rather than
+   * copying it.
+   *
+   * Requires versioning to be enabled on the destination bucket; otherwise the returned version IDs
+   * will be empty strings. Only supported with `extract` set to `false`, where each source zip maps
+   * 1:1 to a destination object. Reading this accessor with `extract` set to `true` (the default)
+   * throws. It also requires `outputObjectKeys` to remain enabled (the default), since the returned
+   * list is defined to be positionally aligned with `objectKeys`; reading it with
+   * `outputObjectKeys` set to `false` throws.
+   *
+   * @remarks
+   * `objectVersionIds` is positionally aligned with `objectKeys`: the version ID at index `i`
+   * corresponds to the object key at index `i`. The handler builds both lists in a single
+   * deterministic pass over the sources, in `sources` order.
+   *
+   * For example, use `Fn.select(0, deployment.objectVersionIds)` to reference the version ID of the
+   * first source file in your bucket deployment.
+   */
+  public get objectVersionIds(): string[] {
+    if (this.extract) {
+      throw new ValidationError(lit`ObjectVersionIdsRequiresExtractFalse`, "'objectVersionIds' is only supported when 'extract' is set to false", this);
+    }
+    if (!this.outputObjectKeys) {
+      throw new ValidationError(lit`ObjectVersionIdsRequiresOutputObjectKeys`, "'objectVersionIds' requires 'outputObjectKeys' to be enabled (the default), so it stays positionally aligned with 'objectKeys'", this);
+    }
+    this.requestObjectVersionIds.set(true);
+    return cdk.Token.asList(this.cr.getAtt('SourceObjectVersionIds'));
   }
 
   /**
@@ -737,6 +788,14 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
 
   public get bucket(): s3.IBucket {
     return this.deployedBucket;
+  }
+
+  /**
+   * `objectVersionIds` is not supported for `DeployTimeSubstitutedFile`, which always extracts its
+   * file (`extract` is forced to `true`), so there is no single deployed object to version.
+   */
+  public get objectVersionIds(): string[] {
+    throw new ValidationError(lit`ObjectVersionIdsNotSupportedForSubstitutedFile`, "'objectVersionIds' is not supported for 'DeployTimeSubstitutedFile' since its file is always extracted", this);
   }
 }
 

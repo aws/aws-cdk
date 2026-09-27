@@ -79,13 +79,21 @@ export interface IPolicyValidationContext {
 
   /**
    * The account ID for these templates, if known
+   *
+   * Only set if all stacks have the exact same account ID.
+   *
+   * @deprecated Use `stackTemplates` instead, which contains the account ID for each stack.
    */
-  readonly accountId: string | undefined;
+  readonly accountId?: string;
 
   /**
    * The region for these templates, if known
+   *
+   * Only set if all stacks have the exact same region.
+   *
+   * @deprecated Use `stackTemplates` instead, which contains the region for each stack.
    */
-  readonly region: string | undefined;
+  readonly region?: string;
 
   /**
    * The root construct of the app being validated.
@@ -111,6 +119,20 @@ export interface PolicyValidationStack {
    * The path to the template file on disk
    */
   readonly templatePath: string;
+
+  /**
+   * The account ID for this stack, if known
+   *
+   * @default - the account ID is unknown
+   */
+  readonly accountId: string | undefined;
+
+  /**
+   * The region for this stack, if known
+   *
+   * @default - the region is unknown
+   */
+  readonly region: string | undefined;
 }
 
 /**
