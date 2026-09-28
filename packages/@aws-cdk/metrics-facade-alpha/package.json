@@ -99,6 +99,7 @@
     "./aws-memorydb": "./lib/services/aws-memorydb/index.js",
     "./aws-neptune": "./lib/services/aws-neptune/index.js",
     "./aws-opsworks": "./lib/services/aws-opsworks/index.js",
+    "./aws-outposts": "./lib/services/aws-outposts/index.js",
     "./aws-qldb": "./lib/services/aws-qldb/index.js",
     "./aws-quicksight": "./lib/services/aws-quicksight/index.js",
     "./aws-rds": "./lib/services/aws-rds/index.js",
