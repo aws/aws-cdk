@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "787eaf6890292e904f3e59a8916972a69f1a5696b31a6e7b4b0b5ef689c9be76": {
+      "displayName": "canary-replicas Template",
+      "source": {
+        "path": "canary-replicas.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bfd0099b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "787eaf6890292e904f3e59a8916972a69f1a5696b31a6e7b4b0b5ef689c9be76.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

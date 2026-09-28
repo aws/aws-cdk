@@ -111,6 +111,83 @@ export enum ResourceToReplicateTags {
 }
 
 /**
+ * VPC configuration for a canary replica.
+ *
+ * Because a replica runs in a different region than the stack, its VPC, subnets
+ * and security groups are referenced by string ID rather than by CDK construct
+ * (constructs are bound to the stack's region and cannot represent cross-region
+ * resources).
+ */
+export interface CanaryReplicaVpcConfig {
+  /**
+   * The IDs of the subnets in the replica's region where the replica canary will run.
+   */
+  readonly subnetIds: string[];
+
+  /**
+   * The IDs of the security groups in the replica's region for the replica canary.
+   */
+  readonly securityGroupIds: string[];
+
+  /**
+   * The ID of the VPC in the replica's region where the replica canary will run.
+   *
+   * @default - determined by the provided subnets
+   */
+  readonly vpcId?: string;
+
+  /**
+   * Whether to allow outbound IPv6 traffic on a replica canary connected to dual-stack subnets.
+   *
+   * @default false
+   */
+  readonly ipv6AllowedForDualStack?: boolean;
+}
+
+/**
+ * Configuration for a replica location of a multi-location canary.
+ *
+ * A replica runs the same canary in an additional AWS region. Because replicas
+ * are cross-region, resources such as KMS keys, VPCs and subnets are referenced
+ * by string identifier rather than by CDK construct.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html
+ */
+export interface CanaryReplica {
+  /**
+   * The AWS region where the replica canary runs, for example `us-west-2`.
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the customer-managed KMS key used to encrypt the replica canary's
+   * Lambda function environment variables at rest.
+   *
+   * This is a string ARN rather than a `kms.IKey` because the key lives in the
+   * replica's region, not the stack's region. When provided, the canary's
+   * execution role is granted `kms:Decrypt` on this ARN. You must also ensure
+   * the key policy in the replica's region allows the execution role to decrypt.
+   *
+   * @default - Lambda uses an AWS managed key to encrypt the environment variables at rest.
+   */
+  readonly environmentEncryptionKeyArn?: string;
+
+  /**
+   * VPC configuration for the replica canary in its region.
+   *
+   * @default - the replica canary is not run in a VPC.
+   */
+  readonly vpcConfig?: CanaryReplicaVpcConfig;
+
+  /**
+   * Which resources should have their tags replicated to this replica.
+   *
+   * @default - No resources will have their tags replicated to this replica.
+   */
+  readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
+}
+
+/**
  * Options for specifying the s3 location that stores the data of each canary run. The artifacts bucket location **cannot**
  * be updated once the canary is created.
  */
@@ -389,6 +466,20 @@ export interface CanaryProps {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html
    */
   readonly browserConfigs?: BrowserType[];
+
+  /**
+   * Additional regions in which to run this canary (multi-location canary).
+   *
+   * The primary canary runs in the stack's region; each replica runs the same
+   * canary in the specified region using the same script, schedule and
+   * configuration. You can specify up to 50 replicas, and each must target a
+   * distinct region.
+   *
+   * @default - the canary runs only in the stack's region.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html
+   */
+  readonly replicas?: CanaryReplica[];
 }
 
 /**
@@ -573,6 +664,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
 
     this.validateDryRunAndUpdate(props.runtime, props.dryRunAndUpdate);
     this.validateBrowserConfigs(props.runtime, props.browserConfigs);
+    this.validateReplicas(props.replicas);
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
@@ -598,8 +690,11 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       })),
       resourcesToReplicateTags: props.resourcesToReplicateTags,
       kmsKeyArn: props.environmentEncryption?.keyRef.keyArn,
+      replicas: this.createReplicas(props.replicas),
     });
     this._resource = resource;
+
+    this.grantReplicaPermissions(props.replicas);
 
     if (props.resourcesToReplicateTags?.length === 0) {
       // Silence a CloudFormation-Validate warning that it would emit about an empty array here
@@ -664,6 +759,93 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       if (isSeleniumRuntime) {
         throw new ValidationError(lit`FirefoxNotSupportedWithPythonSelenium`, 'Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.', this);
       }
+    }
+  }
+
+  private validateReplicas(replicas?: CanaryReplica[]) {
+    if (!replicas) {
+      return;
+    }
+
+    if (replicas.length === 0) {
+      throw new ValidationError(lit`EmptyReplicas`, 'replicas must contain at least one replica if specified.', this);
+    }
+
+    if (replicas.length > 50) {
+      throw new ValidationError(lit`TooManyReplicas`, `You can specify up to 50 replicas, got: ${replicas.length}.`, this);
+    }
+
+    const seen = new Set<string>();
+    for (const replica of replicas) {
+      if (cdk.Token.isUnresolved(replica.region)) {
+        continue;
+      }
+      if (replica.region.trim() === '') {
+        throw new ValidationError(lit`EmptyReplicaRegion`, 'Each replica must specify a non-empty region.', this);
+      }
+      if (seen.has(replica.region)) {
+        throw new ValidationError(lit`DuplicateReplicaRegion`, `replicas must not contain duplicate regions, got duplicate: ${replica.region}.`, this);
+      }
+      seen.add(replica.region);
+    }
+  }
+
+  private createReplicas(replicas?: CanaryReplica[]): CfnCanary.ReplicaProperty[] | undefined {
+    if (!replicas || replicas.length === 0) {
+      return undefined;
+    }
+
+    return replicas.map(replica => ({
+      location: replica.region,
+      kmsKeyArn: replica.environmentEncryptionKeyArn,
+      resourcesToReplicateTags: replica.resourcesToReplicateTags,
+      vpcConfig: replica.vpcConfig ? {
+        vpcId: replica.vpcConfig.vpcId,
+        subnetIds: replica.vpcConfig.subnetIds,
+        securityGroupIds: replica.vpcConfig.securityGroupIds,
+        ipv6AllowedForDualStack: replica.vpcConfig.ipv6AllowedForDualStack,
+      } : undefined,
+    }));
+  }
+
+  /**
+   * Grants the execution role the permissions replicas need in their regions:
+   * decrypt on any replica-specific KMS keys, and CloudWatch Logs write access
+   * scoped to the replica regions via the `aws:RequestedRegion` condition.
+   */
+  private grantReplicaPermissions(replicas?: CanaryReplica[]) {
+    if (!replicas || replicas.length === 0) {
+      return;
+    }
+
+    const kmsKeyArns = replicas
+      .map(replica => replica.environmentEncryptionKeyArn)
+      .filter((arn): arn is string => arn !== undefined);
+    if (kmsKeyArns.length > 0) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        resources: kmsKeyArns,
+      }));
+    }
+
+    // Replicas write their logs in their own regions. Scope the grant to the
+    // replica regions using the aws:RequestedRegion condition rather than
+    // embedding the region in the resource ARN.
+    const regions = replicas
+      .map(replica => replica.region)
+      .filter(region => !cdk.Token.isUnresolved(region));
+    if (regions.length > 0) {
+      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+        resources: [cdk.Stack.of(this).formatArn({
+          service: 'logs',
+          region: '*',
+          resource: 'log-group',
+          arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+          resourceName: '/aws/lambda/cwsyn-*',
+        })],
+        conditions: { StringEquals: { 'aws:RequestedRegion': regions } },
+      }));
     }
   }
 
