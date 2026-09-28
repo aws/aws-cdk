@@ -84,6 +84,20 @@ describe('stack', () => {
     expect(stack.artifactId).toBe(expected);
   });
 
+  test('getter values involving tokens return the same value every invocation', () => {
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    expect(stack.availabilityZones).toEqual(stack.availabilityZones);
+    expect(stack.partition).toEqual(stack.partition);
+    expect(stack.urlSuffix).toEqual(stack.urlSuffix);
+    expect(stack.stackId).toEqual(stack.stackId);
+    expect(stack.notificationArns).toEqual(stack.notificationArns);
+  });
+
   test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
@@ -2428,7 +2442,7 @@ describe('stack', () => {
     const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '11111111111', region: 'es-norst-2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '111111111111', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -2992,7 +3006,7 @@ describe('stack', () => {
   test('account id passed in stack environment must be a string', () => {
     // GIVEN
     const envConfig: any = {
-      account: 11111111111,
+      account: 111111111111,
     };
 
     // WHEN
