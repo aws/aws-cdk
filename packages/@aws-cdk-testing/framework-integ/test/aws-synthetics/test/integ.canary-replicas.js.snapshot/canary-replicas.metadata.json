@@ -1,0 +1,140 @@
+{
+  "/canary-replicas/Canary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "test": "*",
+        "schedule": "*",
+        "runtime": "*",
+        "provisionedResourceCleanup": true
+      }
+    }
+  ],
+  "/canary-replicas/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/canary-replicas/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/canary-replicas/Canary/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS_MANAGED",
+        "enforceSSL": true,
+        "lifecycleRules": "*"
+      }
+    }
+  ],
+  "/canary-replicas/Canary/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*",
+        "managedPolicies": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/canary-replicas/Canary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Canary11957FE2"
+    }
+  ],
+  "/canary-replicas/Canary/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucket4A60D32B"
+    }
+  ],
+  "/canary-replicas/Canary/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/canary-replicas/Canary/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryServiceRoleD132250E"
+    }
+  ],
+  "/canary-replicas/Canary/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/canary-replicas/Canary/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryArtifactsBucketPolicy63096C41"
+    }
+  ],
+  "/canary-replicas/Canary/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CanaryServiceRoleDefaultPolicy447CDD49"
+    }
+  ]
+}
