@@ -4,7 +4,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { Duration, Lazy, Size, Stack } from '../../core';
+import { Aws, Duration, Lazy, Size, Stack } from '../../core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
@@ -1298,6 +1298,30 @@ describe('replicas (multi-location)', () => {
     });
   });
 
+  test('a token region renders as a replica Location and is excluded from the logs condition', () => {
+    const stack = new Stack();
+    // A token region (e.g. Aws.REGION) is allowed as a replica Location, but is
+    // skipped in the aws:RequestedRegion condition since it cannot be resolved.
+    newCanary(stack, [{ region: Aws.REGION }, { region: 'eu-west-1' }]);
+
+    const template = Template.fromStack(stack);
+    // Both replicas are rendered, including the token region.
+    template.hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{ Location: stack.resolve(Aws.REGION) }, { Location: 'eu-west-1' }],
+    });
+    // Only the resolvable region scopes the logs grant.
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+            Condition: { StringEquals: { 'aws:RequestedRegion': ['eu-west-1'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
   test('with VPC config, KMS key ARN and tag replication', () => {
     const stack = new Stack();
     newCanary(stack, [{
@@ -1308,6 +1332,7 @@ describe('replicas (multi-location)', () => {
         vpcId: 'vpc-123',
         subnetIds: ['subnet-1', 'subnet-2'],
         securityGroupIds: ['sg-1'],
+        ipv6AllowedForDualStack: true,
       },
     }]);
     Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
@@ -1319,6 +1344,7 @@ describe('replicas (multi-location)', () => {
           VpcId: 'vpc-123',
           SubnetIds: ['subnet-1', 'subnet-2'],
           SecurityGroupIds: ['sg-1'],
+          Ipv6AllowedForDualStack: true,
         },
       }],
     });
