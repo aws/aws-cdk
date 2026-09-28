@@ -424,6 +424,144 @@ describe('app', () => {
   });
 });
 
+describe('draft mode', () => {
+  test('isDraftModeSynth returns false by default', () => {
+    const app = new App();
+    expect(app.isDraftModeSynth).toBe(false);
+  });
+
+  test('isDraftModeSynth returns true when context is boolean true', () => {
+    const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
+    expect(app.isDraftModeSynth).toBe(true);
+  });
+
+  test('isDraftModeSynth returns true when context is string true', () => {
+    const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: 'true' } });
+    expect(app.isDraftModeSynth).toBe(true);
+  });
+
+  test('isDraftModeSynth returns false for other values', () => {
+    for (const val of ['false', false, 'yes', 0, 1, null, undefined]) {
+      const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: val } });
+      expect(app.isDraftModeSynth).toBe(false);
+    }
+  });
+
+  test('isDraftModeSynth works via postCliContext', () => {
+    const app = new App({ postCliContext: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
+    expect(app.isDraftModeSynth).toBe(true);
+  });
+
+  test('suggests draft mode when draft mode is enabled with many stacks', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
+      for (let i = 0; i < 21; i++) {
+        new Stack(app, `Stack${i}`);
+      }
+      app.synth();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[aws-cdk:draft-mode]'),
+      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('App.of(this).isDraftModeSynth'),
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  test('does not suggest draft mode when draft mode is not enabled', () => {
+    let callCount = 0;
+    jest.spyOn(performance, 'now').mockImplementation(() => {
+      callCount++;
+      if (callCount <= 2) return 1000;
+      return 7000;
+    });
+
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const app = new App();
+      new Stack(app, 'Stack1');
+      new Stack(app, 'Stack2');
+      new Stack(app, 'Stack3');
+      app.synth();
+
+      expect(consoleErrorSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('[aws-cdk:draft-mode]'),
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+      jest.spyOn(performance, 'now').mockRestore();
+    }
+  });
+
+  test('does not suggest draft mode when stack count is at the threshold', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
+      for (let i = 0; i < 20; i++) {
+        new Stack(app, `Stack${i}`);
+      }
+      app.synth();
+
+      // 20 stacks is the max allowed, so no warning
+      expect(consoleErrorSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('[aws-cdk:draft-mode]'),
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  test('does not suggest draft mode when synth is fast and draft mode is off', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const app = new App();
+      for (let i = 0; i < 20; i++) {
+        new Stack(app, `Stack${i}`);
+      }
+      app.synth();
+
+      // Draft mode not enabled — no message regardless of stack count
+      expect(consoleErrorSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('[aws-cdk:draft-mode]'),
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  test('draft mode suggestion threshold is overridable via context', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      const app = new App({
+        context: {
+          [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true,
+          '@aws-cdk/core.draftModeMaxStacks': 3,
+        },
+      });
+      new Stack(app, 'Stack1');
+      new Stack(app, 'Stack2');
+      new Stack(app, 'Stack3');
+      new Stack(app, 'Stack4');
+      app.synth();
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[aws-cdk:draft-mode]'),
+      );
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+});
+
 class MyConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);

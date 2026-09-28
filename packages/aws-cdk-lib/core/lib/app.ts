@@ -2,6 +2,7 @@ import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
+import { appOf, APP_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -13,7 +14,6 @@ import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
-import { appOf, APP_TYPE } from './private/core-construct-finders';
 
 /**
  * Can hold a function to globally initialize Apps.
@@ -26,6 +26,16 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
  * Report performance counters if synthesis time exceeds this
  */
 const DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 10_000;
+
+/**
+ * If the app has more stacks than this in draft mode, suggest reducing the number
+ */
+const DEFAULT_DRAFT_MODE_MAX_STACKS = 20;
+
+/**
+ * A context key that can be set to control the draft mode max stacks threshold
+ */
+const DRAFT_MODE_MAX_STACKS_CTX = '@aws-cdk/core.draftModeMaxStacks';
 
 /**
  * A context key that can be set to control the emission threshold
@@ -204,6 +214,34 @@ export class App extends Stage {
   }
 
   /**
+   * Whether this app is synthesizing in draft mode.
+   *
+   * Draft mode is enabled when the user runs `cdk synth --draft`.
+   *
+   * App authors should inspect this flag during synthesis time, and if it is
+   * set only instantiate a subset of stacks to cut down on iteration speed
+   * of large applications.
+   *
+   * Example:
+   *
+   * ```ts
+   * new MyApplication(app, 'Preprod', { stage: 'preprod' });
+   * new MyApplication(app, 'Prod1', { stage: 'prod1' });
+   *
+   * // Other prod stages only if draft mode is not enabled
+   * if (!App.of(this).isDraftModeSynth) {
+   *   new MyApplication(app, 'Prod2', { stage: 'prod2' });
+   *   new MyApplication(app, 'Prod3', { stage: 'prod3' });
+   *   new MyApplication(app, 'Prod4', { stage: 'prod4' });
+   *   // ...
+   * }
+   * ```
+   */
+  public get isDraftModeSynth(): boolean {
+    return parseAsBoolean(this.node.tryGetContext(cxapi.DRAFT_MODE_SYNTH_CONTEXT));
+  }
+
+  /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @internal
@@ -331,6 +369,8 @@ export class App extends Stage {
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
+
+    this.suggestDraftMode(stackCount);
     resetCounters();
 
     return ret;
@@ -352,6 +392,18 @@ export class App extends Stage {
     }
     const threshold = parseAsNumber(this.node.tryGetContext(SLOW_SYNTH_THRESHOLD_CTX)) ?? DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS;
     return perStackTime >= threshold;
+  }
+
+  private suggestDraftMode(stackCount: number): void {
+    const maxStacks = parseAsNumber(this.node.tryGetContext(DRAFT_MODE_MAX_STACKS_CTX)) ?? DEFAULT_DRAFT_MODE_MAX_STACKS;
+    if (this.isDraftModeSynth && stackCount > maxStacks) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `Draft mode synthesis was requested with 'cdk synth --draft', but this application still created ${stackCount} stacks.\n`
+        + 'In your code, inspect \'App.of(this).isDraftModeSynth\' and if it is set to \'true\', '
+        + 'instantiate only a small, representative subset of stacks in order to get fast validation results.',
+      );
+    }
   }
 }
 
@@ -421,4 +473,20 @@ function parseAsNumber(x: unknown) {
   }
   const r = parseInt(`${x}`, 10);
   return isNaN(r) ? undefined : r;
+}
+
+/**
+ * Parse a context value as a boolean, or return undefined
+ *
+ * Handles both actual booleans and the strings 'true'/'false'
+ * (CLI `--context` values arrive as strings).
+ */
+function parseAsBoolean(x: unknown): boolean {
+  if (typeof x === 'boolean') {
+    return x;
+  }
+  if (x === 'true') {
+    return true;
+  }
+  return false;
 }
