@@ -165,6 +165,6 @@ export class VectorKnowledgeBase extends KnowledgeBaseBase implements IVectorKno
     }
 
     this.knowledgeBaseArn = resource.attrKnowledgeBaseArn;
-    this.knowledgeBaseId = resource.attrKnowledgeBaseId;
+    this.knowledgeBaseId = resource.ref;
   }
 }

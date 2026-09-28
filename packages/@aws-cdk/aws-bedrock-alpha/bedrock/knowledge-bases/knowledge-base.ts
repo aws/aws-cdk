@@ -2,6 +2,7 @@ import type { IResource } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
 import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import type * as iam from 'aws-cdk-lib/aws-iam';
+import { KnowledgeBaseReflection } from './knowledge-base-reflection';
 import { KnowledgeBaseGrants } from '../../lib/bedrock-grants.generated';
 
 /**
@@ -62,6 +63,11 @@ export interface IKnowledgeBase extends IResource, bedrock.IKnowledgeBaseRef, ia
    * Grant permissions on this knowledge base to IAM principals.
    */
   readonly grants: KnowledgeBaseGrants;
+
+  /**
+   * Resolves the underlying `CfnKnowledgeBase` from the construct tree
+   */
+  readonly reflections: KnowledgeBaseReflection;
 
   /**
    * Adds a statement to the IAM policy of the knowledge base service role.
@@ -151,6 +157,10 @@ export abstract class KnowledgeBaseBase extends Resource implements IKnowledgeBa
 
   public get grants(): KnowledgeBaseGrants {
     return KnowledgeBaseGrants.fromKnowledgeBase(this);
+  }
+
+  public get reflections(): KnowledgeBaseReflection {
+    return KnowledgeBaseReflection.of(this);
   }
 
   public addToRolePolicy(statement: iam.PolicyStatement): void {

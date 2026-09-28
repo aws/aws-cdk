@@ -67,6 +67,7 @@ This construct library facilitates the deployment of Bedrock Agents, Guardrails,
   - [Create a Vector Knowledge Base](#create-a-vector-knowledge-base)
   - [Knowledge Base Properties](#knowledge-base-properties)
   - [Knowledge Base Permissions](#knowledge-base-permissions)
+  - [Knowledge Base Reflections](#knowledge-base-reflections)
   - [Importing Knowledge Bases](#importing-knowledge-bases)
 - [Mixins](#mixins)
   - [KnowledgeBaseOpenSearchServerlessStorage](#knowledgebaseopensearchserverlessstorage)
@@ -1695,6 +1696,20 @@ knowledgeBase.addToRolePolicy(new iam.PolicyStatement({
   actions: ['s3:GetObject', 's3:ListBucket'],
   resources: ['arn:aws:s3:::my-documents', 'arn:aws:s3:::my-documents/*'],
 }));
+```
+
+### Knowledge Base Reflections
+
+The `reflections` facade resolves the underlying `CfnKnowledgeBase` from the
+construct tree. Use it to read CloudFormation attributes such as `Status`,
+`FailureReasons`, `CreatedAt` and `UpdatedAt`. Accessing `reflections.knowledgeBase`
+throws for imported knowledge bases, because they have no underlying resource in the app.
+
+```ts fixture=default
+declare const knowledgeBase: bedrock.IKnowledgeBase;
+
+const cfnKnowledgeBase = knowledgeBase.reflections.knowledgeBase;
+const status = cfnKnowledgeBase.attrStatus;
 ```
 
 ### Importing Knowledge Bases

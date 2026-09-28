@@ -45,6 +45,7 @@ export * from './inference-profiles/prompt-router';
 // Knowledge Bases
 // ===================================
 export * from './knowledge-bases/knowledge-base';
+export * from './knowledge-bases/knowledge-base-reflection';
 export * from './knowledge-bases/vector-knowledge-base';
 export * from './knowledge-bases/vector-store';
 
