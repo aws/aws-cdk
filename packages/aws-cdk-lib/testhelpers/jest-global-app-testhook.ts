@@ -14,6 +14,10 @@ if (hasTemporarySchemas()) {
   });
 }
 
+afterAll(() => {
+  cdk.CloudFormationValidatePlugin._disposeSingleton();
+});
+
 const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
 (globalThis as any)[APP_INIT_HOOK_SYMBOL] = (app: cdk.App) => {
   cdk.Validations.of(app).acknowledge(
