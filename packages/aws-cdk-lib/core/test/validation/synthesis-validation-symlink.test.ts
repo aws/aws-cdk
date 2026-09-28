@@ -12,15 +12,15 @@ import { App, CfnResource, Stack } from '../../lib';
  * contained a symlink-to-directory (e.g. produced by asset staging with
  * SymlinkFollowMode.NEVER, or Docker bundling output).
  *
- * Root cause was in core/lib/private/synthesis-validation.ts:
- *  - collectFilePaths() treated the dir-symlink as a plain file (isDirectory()
- *    is false for a symlink), then
- *  - hashFile() called fs.readFileSync() on it -> EISDIR.
+ * Root cause was in core/lib/private/synthesis-validation.ts: the pre-plugin
+ * tamper-detection snapshot hashed every file in the assembly outdir
+ * (snapshotFileHashes() walked the entire dir via collectFilePaths()), and a
+ * dir-symlink in that tree caused EISDIR inside hashFile().
  *
- * This is the core-only variant: it seeds a symlink-to-directory directly into
- * the cloud assembly outdir before synth, which is exactly what
- * snapshotFileHashes() walks at the start of doInvokeValidationPlugins(). It
- * avoids a cross-module dependency on aws-s3-assets from core/test.
+ * The tamper-scrutiny path now only hashes the stack template files handed to
+ * validation plugins (not the whole outdir), which both avoids the symlink
+ * crash and fixes the O(outdir-size) performance regression (#38614). We keep
+ * this test to guard against regressions that re-expand the hash scope.
  */
 describe('policy validation plugins tolerate symlinks in the cloud assembly (#38295)', () => {
   let outdir: string;
