@@ -168,6 +168,10 @@ export interface CanaryReplica {
    * execution role is granted `kms:Decrypt` on this ARN. You must also ensure
    * the key policy in the replica's region allows the execution role to decrypt.
    *
+   * The automatic grant only applies to a canary-managed (mutable) execution
+   * role. If you supply an imported, immutable `role`, you must grant the
+   * equivalent `kms:Decrypt` permission to it yourself.
+   *
    * @default - Lambda uses an AWS managed key to encrypt the environment variables at rest.
    */
   readonly environmentEncryptionKeyArn?: string;
@@ -474,6 +478,12 @@ export interface CanaryProps {
    * canary in the specified region using the same script, schedule and
    * configuration. You can specify up to 50 replicas, and each must target a
    * distinct region.
+   *
+   * When replicas are configured, the canary-managed execution role is granted
+   * cross-region CloudWatch Logs permissions (and `kms:Decrypt` for any replica
+   * `environmentEncryptionKeyArn`). If you supply an imported, immutable `role`,
+   * these grants are not applied and you must add the equivalent permissions
+   * yourself.
    *
    * @default - the canary runs only in the stack's region.
    *
@@ -798,7 +808,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     return replicas.map(replica => ({
       location: replica.region,
       kmsKeyArn: replica.environmentEncryptionKeyArn,
-      resourcesToReplicateTags: replica.resourcesToReplicateTags,
+      // Omit an empty array to avoid the CloudFormation-Validate F3032 warning
+      // that CloudFormation raises for an empty resourcesToReplicateTags.
+      resourcesToReplicateTags: replica.resourcesToReplicateTags?.length ? replica.resourcesToReplicateTags : undefined,
       vpcConfig: replica.vpcConfig ? {
         vpcId: replica.vpcConfig.vpcId,
         subnetIds: replica.vpcConfig.subnetIds,
