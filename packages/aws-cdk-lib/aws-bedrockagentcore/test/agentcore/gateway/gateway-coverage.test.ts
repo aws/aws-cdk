@@ -1635,4 +1635,31 @@ describe('Gateway outbound auth workload identity grants', () => {
     expect(gatewayName).toMatch(/[A-Z]/);
     expect(grantedWorkloadIdentityPrefixes(template)).toEqual([gatewayName.toLowerCase()]);
   });
+
+  test.each(Object.entries(providers))('%s grant passes a deploy-time gateway name through unchanged', (_, provider) => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: cdk.Fn.importValue('SharedGatewayName') });
+    gateway.addMcpServerTarget('Orders', {
+      gatewayTargetName: 'orders',
+      endpoint: 'https://example.com/mcp',
+      credentialProviderConfigurations: [provider()],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Resource: Match.arrayWith([
+              {
+                'Fn::Join': ['', Match.arrayWith([
+                  ':workload-identity-directory/default/workload-identity/',
+                  { 'Fn::ImportValue': 'SharedGatewayName' },
+                  '-*',
+                ])],
+              },
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
 });
