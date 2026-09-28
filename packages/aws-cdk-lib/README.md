@@ -1803,7 +1803,7 @@ if (!app.isDraftModeSynth) {
 
 Then synthesize with:
 
-```
+```sh
 $ cdk synth --draft
 ```
 
