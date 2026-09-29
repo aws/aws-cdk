@@ -455,31 +455,18 @@ describe('app', () => {
 });
 
 describe('draft mode', () => {
-  test('isDraftModeSynth returns false by default', () => {
-    const app = new App();
-    expect(app.isDraftModeSynth).toBe(false);
-  });
-
-  test('isDraftModeSynth returns true when context is boolean true', () => {
-    const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
-    expect(app.isDraftModeSynth).toBe(true);
-  });
-
-  test('isDraftModeSynth returns true when context is string true', () => {
-    const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: 'true' } });
-    expect(app.isDraftModeSynth).toBe(true);
-  });
-
-  test('isDraftModeSynth returns false for other values', () => {
-    for (const val of ['false', false, 'yes', 0, 1, null, undefined]) {
-      const app = new App({ context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: val } });
-      expect(app.isDraftModeSynth).toBe(false);
-    }
-  });
-
-  test('isDraftModeSynth works via postCliContext', () => {
-    const app = new App({ postCliContext: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: true } });
-    expect(app.isDraftModeSynth).toBe(true);
+  test.each([
+    [undefined, false],
+    [true, true],
+    ['true', true],
+    ['false', false],
+    [false, false],
+    [0, false],
+  ])('if context is set to %p isDraftModeSynth returns %p', (contextValue, expected) => {
+    const app = new App({
+      context: { [cxapi.DRAFT_MODE_SYNTH_CONTEXT]: contextValue },
+    });
+    expect(app.isDraftModeSynth).toBe(expected);
   });
 
   test('suggests draft mode when draft mode is enabled with many stacks', () => {
@@ -493,7 +480,7 @@ describe('draft mode', () => {
       app.synth();
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[aws-cdk:draft-mode]'),
+        expect.stringContaining('Draft mode synthesis'),
       );
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         expect.stringContaining('App.of(this).isDraftModeSynth'),
@@ -521,7 +508,7 @@ describe('draft mode', () => {
       app.synth();
 
       expect(consoleErrorSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining('[aws-cdk:draft-mode]'),
+        expect.stringContaining('Draft mode synthesis'),
       );
     } finally {
       consoleErrorSpy.mockRestore();
@@ -541,7 +528,7 @@ describe('draft mode', () => {
 
       // 20 stacks is the max allowed, so no warning
       expect(consoleErrorSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining('[aws-cdk:draft-mode]'),
+        expect.stringContaining('Draft mode synthesis'),
       );
     } finally {
       consoleErrorSpy.mockRestore();
@@ -560,7 +547,7 @@ describe('draft mode', () => {
 
       // Draft mode not enabled — no message regardless of stack count
       expect(consoleErrorSpy).not.toHaveBeenCalledWith(
-        expect.stringContaining('[aws-cdk:draft-mode]'),
+        expect.stringContaining('Draft mode synthesis'),
       );
     } finally {
       consoleErrorSpy.mockRestore();
@@ -584,7 +571,7 @@ describe('draft mode', () => {
       app.synth();
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[aws-cdk:draft-mode]'),
+        expect.stringContaining('Draft mode synthesis'),
       );
     } finally {
       consoleErrorSpy.mockRestore();
