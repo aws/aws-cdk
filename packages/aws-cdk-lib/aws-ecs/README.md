@@ -1247,6 +1247,8 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
+To scale on SQS queue depth, see [Autoscaling consumers on queue depth](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_sqs-readme.html#autoscaling-consumers-on-queue-depth).
+
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
@@ -1679,8 +1681,9 @@ Managed Termination Protection to work.
 
 Managed instance draining facilitates graceful termination of Amazon ECS instances.
 This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
-Infrastructure maintenance and updates are preformed without disruptions to workloads.
-To use managed instance draining, set enableManagedDraining to true.
+Infrastructure maintenance and updates are performed without disruptions to workloads.
+When `enableManagedDraining` is not specified (recommended), CloudFormation will implicitly
+enable managed draining. Set it to `true` for explicit enablement or `false` to disable.
 
 ```ts
 declare const vpc: ec2.Vpc;

@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-object-versions/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-object-versions"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-test-bucket-deployment-object-versions/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentobjectversionsDefaultTestDeployAssertF63C2655"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
