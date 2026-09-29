@@ -321,12 +321,6 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
-  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
-  // and customers cannot control the generated expression.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
-  'E1018',
-
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
   'W9002',
@@ -335,14 +329,6 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
   // span accounts.
   'W9013',
-
-  // WHAT: value type tracking (parameter default should be a string)
-  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-  'E2001',
 
   // WHAT: built-in function not recognized
   // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.
