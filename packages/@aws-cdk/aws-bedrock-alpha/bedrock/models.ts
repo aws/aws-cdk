@@ -467,6 +467,9 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    *
    * Only available through the `global` and `us` cross-region inference profiles.
    *
+   * Using this model requires opting in to the `aws_review` data
+   * retention mode; see the Amazon Bedrock model card for details.
+   *
    * Features:
    * - Supports vision (Image input modality)
    * - Cross-region support
