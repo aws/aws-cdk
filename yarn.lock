@@ -3465,14 +3465,6 @@
     chalk "^4.1.2"
     semver "^7.8.0"
 
-"@jsii/check-node@1.138.0", "@jsii/check-node@^1.138.0":
-  version "1.138.0"
-  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.138.0.tgz#e3b734b74183fea1f52a2fa49828d8f19cc84642"
-  integrity sha512-/QtjGPcW5MioI+fBukvaNQeGct0iScLFcZ05tRgs7ys2WIyNydoFSMn+SXWIZdmSND2dr2PN7ezC8h6hWYn48g==
-  dependencies:
-    chalk "^4.1.2"
-    semver "^7.8.5"
-
 "@jsii/check-node@1.139.0":
   version "1.139.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.139.0.tgz#749a766ec56907b2a1c56dae33d10fe506a376e7"
@@ -3489,25 +3481,33 @@
     chalk "^4.1.2"
     semver "^7.8.5"
 
+"@jsii/check-node@^1.138.0":
+  version "1.138.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.138.0.tgz#e3b734b74183fea1f52a2fa49828d8f19cc84642"
+  integrity sha512-/QtjGPcW5MioI+fBukvaNQeGct0iScLFcZ05tRgs7ys2WIyNydoFSMn+SXWIZdmSND2dr2PN7ezC8h6hWYn48g==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.8.5"
+
 "@jsii/spec@1.132.0":
   version "1.132.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.132.0.tgz#b6465fcd6a4ffeab2706fa2daed1fa937baf60e7"
   integrity sha512-70rcZ8tx2ISWf5HqFHNQe56VOKcAtTn0XFlLgZByWKHGZYpitf5T/Qe+ayvmTK8++luufb0h455l1JDpQDp0nQ==
-
-"@jsii/spec@1.138.0", "@jsii/spec@^1.138.0":
-  version "1.138.0"
-  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.138.0.tgz#90199510b33be0248ae214587f7e40fe85ff381d"
-  integrity sha512-zp8+IbcAEG/XbTQf88xsg/3bJUYt9dDzGFkK9YKhnbwzylcAUzTm7Ca/hVFDdIaP9I00Z+yZ/bioaUV58w0cNQ==
 
 "@jsii/spec@1.139.0":
   version "1.139.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.139.0.tgz#4e21bf6538665861d7496d04eaf338a06289a574"
   integrity sha512-+l1B0h4WAg6KOQ7PGykW/FvxeFmyt74U0/n41cus9Jdjv3VfQJKynsv5r9Ng23B1KwWqJkS5YvJuv2yGYoULdw==
 
-"@jsii/spec@1.140.0":
+"@jsii/spec@1.140.0", "@jsii/spec@^1.140.0":
   version "1.140.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.140.0.tgz#a9a92005e189b6ea47808cb1f003ac69d8182882"
   integrity sha512-1rGS+iJtejQ3ybSJfV0if9PzZuSQmORbVF3MkqE0csatF//Rj8raCqptZLMX6rkdfZ8C2Jsw5hU4PrmuCzBk6A==
+
+"@jsii/spec@^1.138.0":
+  version "1.138.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.138.0.tgz#90199510b33be0248ae214587f7e40fe85ff381d"
+  integrity sha512-zp8+IbcAEG/XbTQf88xsg/3bJUYt9dDzGFkK9YKhnbwzylcAUzTm7Ca/hVFDdIaP9I00Z+yZ/bioaUV58w0cNQ==
 
 "@lerna/create@8.2.4":
   version "8.2.4"
@@ -6148,13 +6148,13 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-generate-synthetic-examples@^0.2.55:
-  version "0.2.55"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.55.tgz#097b2f57a0c57fbbc3c8b55615ebf4905e5e4cbd"
-  integrity sha512-uPOsPR93vWee0U1Wpyp0IcAPrHnD7nNcy7MHCnF5J6/VcspiV3GRDDzDEHAfycRY46iOuc9Pt2STDCammQw58g==
+cdk-generate-synthetic-examples@^0.2.58:
+  version "0.2.58"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.58.tgz#7d6a2380842d2a5c7d10d84c41fdac7e48171d74"
+  integrity sha512-4GddEOzMmmvTZkcpRM+gtqFJ+qtT4l5r6cvN5FYiJZqR7ijfX9C09SgIOa7WHHC7+bBW+4g6pKK/QKJ8k2WkdQ==
   dependencies:
-    "@jsii/spec" "^1.138.0"
-    jsii-reflect "^1.138.0"
+    "@jsii/spec" "^1.140.0"
+    jsii-reflect "^1.140.0"
     yargs "^17.7.3"
 
 cdk8s-plus-27@2.9.5:
@@ -9867,18 +9867,6 @@ jsii-reflect@1.140.0, jsii-reflect@^1.140.0:
     oo-ascii-tree "^1.140.0"
     yargs "^17.7.3"
 
-jsii-reflect@^1.138.0:
-  version "1.138.0"
-  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.138.0.tgz#9e8afea2e565e17cb1e8f334050e19893f9e2f21"
-  integrity sha512-P+fhvKDpthnETulludn497SQpnHDprGaOaINMtx7coabs6scRDjoXe5Hi65rJF3xySac82IinbfPUnCCkGiG4w==
-  dependencies:
-    "@jsii/check-node" "1.138.0"
-    "@jsii/spec" "1.138.0"
-    chalk "^4"
-    fs-extra "^10.1.0"
-    oo-ascii-tree "^1.138.0"
-    yargs "^17.7.3"
-
 jsii-rosetta@~5.9.56:
   version "5.9.56"
   resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.56.tgz#9d2338d0e9a8dd86acc2b44b2addfb16755abc3a"
@@ -11637,11 +11625,6 @@ onetime@5.1.2, onetime@^5.1.0, onetime@^5.1.2:
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
   dependencies:
     mimic-fn "^2.1.0"
-
-oo-ascii-tree@^1.138.0:
-  version "1.138.0"
-  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.138.0.tgz#a7650b301b2c8fddaf3e3f176019748a7323c68b"
-  integrity sha512-vviXaVFx9G/Ec59OofWCNJ6V8WxS5tEIucqFiEEKwfHN39NjW3vLPVL/3PmDm2aluPMkW0CDQta4i/MflE7ulQ==
 
 oo-ascii-tree@^1.140.0:
   version "1.140.0"
