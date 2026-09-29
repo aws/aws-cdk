@@ -852,6 +852,13 @@
       }
     ]
   },
+  "aws-eventsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EventsV2"
+      }
+    ]
+  },
   "aws-evidently": {
     "scopes": [
       {
@@ -968,6 +975,13 @@
     "scopes": [
       {
         "namespace": "AWS::GuardDuty"
+      }
+    ]
+  },
+  "aws-healthagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthAgent"
       }
     ]
   },
@@ -1429,6 +1443,13 @@
       }
     ]
   },
+  "aws-networkmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkMonitor"
+      }
+    ]
+  },
   "aws-nimblestudio": {
     "scopes": [
       {
@@ -1580,6 +1601,13 @@
     "scopes": [
       {
         "namespace": "AWS::Personalize"
+      }
+    ]
+  },
+  "aws-pi": {
+    "scopes": [
+      {
+        "namespace": "AWS::PI"
       }
     ]
   },

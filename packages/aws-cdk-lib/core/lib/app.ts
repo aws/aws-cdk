@@ -2,6 +2,7 @@ import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
+import { iterateDfsPreorder } from './private/construct-iteration';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -328,6 +329,15 @@ export class App extends Stage {
 
     const totalAppTimeMs = performance.now() - this.initMark;
     const stackCount = ret.stacksRecursively.length;
+
+    // Record how many constructs we had to iterate over to synthesize the app, to get a sense for
+    // how synthesis time scales with number of constructs.
+    recordPerformanceEntry('count:Constructs', {
+      count: countConstructs(this),
+      durationMs: 0,
+      telemetry: true,
+    });
+
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
@@ -353,6 +363,14 @@ export class App extends Stage {
     const threshold = parseAsNumber(this.node.tryGetContext(SLOW_SYNTH_THRESHOLD_CTX)) ?? DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS;
     return perStackTime >= threshold;
   }
+}
+
+function countConstructs(construct: IConstruct): number {
+  let ret = 0;
+  for (const _ of iterateDfsPreorder(construct)) {
+    ret++;
+  }
+  return ret;
 }
 
 /**
