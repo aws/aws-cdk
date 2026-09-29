@@ -1,24 +1,18 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
+import type { ITriggerRef } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
-import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
 import {
-  ConditionLogicalOperator,
   PredicateLogical,
 } from '../constants';
 import type {
-  Action,
   OnDemandTriggerOptions,
-  WeeklyScheduleTriggerOptions,
-  DailyScheduleTriggerOptions,
-  CustomScheduledTriggerOptions,
-  NotifyEventTriggerOptions,
+  ScheduledTriggerOptions,
+  EventTriggerOptions,
   ConditionalTriggerOptions,
-} from './trigger-options';
-import {
-  TriggerSchedule,
 } from './trigger-options';
 
 /**
@@ -41,24 +35,32 @@ export interface IWorkflow extends cdk.IResource {
   readonly workflowArn: string;
 
   /**
-   * Add an on-demand trigger to the workflow
+   * Add an on-demand trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): CfnTrigger;
+  addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): ITriggerRef;
 
   /**
-   * Add an daily-scheduled trigger to the workflow
+   * Add a scheduled trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addDailyScheduledTrigger(id: string, options: DailyScheduleTriggerOptions): CfnTrigger;
+  addScheduledTrigger(id: string, options: ScheduledTriggerOptions): ITriggerRef;
 
   /**
-   * Add an weekly-scheduled trigger to the workflow
+   * Add an EventBridge event-based trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger;
+  addEventTrigger(id: string, options: EventTriggerOptions): ITriggerRef;
 
   /**
-   * Add an custom-scheduled trigger to the workflow
+   * Add a conditional (predicate-based) trigger to the workflow.
+   *
+   * @returns a reference to the created trigger.
    */
-  addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger;
+  addConditionalTrigger(id: string, options: ConditionalTriggerOptions): ITriggerRef;
 }
 
 /**
@@ -133,191 +135,81 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addOnDemandTrigger(id: string, options: OnDemandTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'ON_DEMAND',
-      actions: options.actions?.map(this.renderAction.bind(this)),
+      actions: options.actions?.map(action => action._render()),
       description: options.description || undefined,
     });
-
-    return trigger;
   }
 
   /**
-   * Add a daily-scheduled trigger to the workflow.
+   * Add a scheduled trigger to the workflow.
    *
    * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
-   * @returns The created CfnTrigger resource.
+   * @param options Additional options for the trigger, including the schedule.
+   * @returns a reference to the created trigger.
    */
-  public addDailyScheduledTrigger(id: string, options: DailyScheduleTriggerOptions): CfnTrigger {
-    const dailySchedule = TriggerSchedule.cron({
-      minute: '0',
-      hour: '0',
-    });
-
-    const trigger = new CfnTrigger(this, id, {
+  public addScheduledTrigger(id: string, options: ScheduledTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction.bind(this)),
-      schedule: dailySchedule.expressionString,
-      startOnCreation: options.startOnCreation ?? false,
-    });
-
-    return trigger;
-  }
-
-  /**
-   * Add a weekly-scheduled trigger to the workflow.
-   *
-   * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
-   * @returns The created CfnTrigger resource.
-   */
-  public addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger {
-    const weeklySchedule = TriggerSchedule.cron({
-      minute: '0',
-      hour: '0',
-      weekDay: 'SUN',
-    });
-
-    const trigger = new CfnTrigger(this, id, {
-      ...options,
-      workflowName: this.workflowName,
-      type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction.bind(this)),
-      schedule: weeklySchedule.expressionString,
-      startOnCreation: options.startOnCreation ?? false,
-    });
-
-    return trigger;
-  }
-
-  /**
-   * Add a custom-scheduled trigger to the workflow.
-   *
-   * @param id The id of the trigger.
-   * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
-   * @returns The created CfnTrigger resource.
-   */
-  public addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
-      ...options,
-      workflowName: this.workflowName,
-      type: 'SCHEDULED',
-      actions: options.actions?.map(this.renderAction.bind(this)),
+      actions: options.actions?.map(action => action._render()),
       schedule: options.schedule.expressionString,
       startOnCreation: options.startOnCreation ?? false,
     });
-
-    return trigger;
   }
 
   /**
-   * Add an Event Bridge based trigger to the workflow.
+   * Add an EventBridge event-based trigger to the workflow.
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addNotifyEventTrigger(id: string, options: NotifyEventTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addEventTrigger(id: string, options: EventTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'EVENT',
-      actions: options.actions?.map(this.renderAction.bind(this)),
+      actions: options.actions?.map(action => action._render()),
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,
     });
-
-    return trigger;
   }
 
   /**
-   * Add a Condition (Predicate) based trigger to the workflow.
+   * Add a conditional (predicate-based) trigger to the workflow.
    *
    * @param id The id of the trigger.
    * @param options Additional options for the trigger.
-   * @throws If both job and crawler are provided, or if neither job nor crawler is provided for any condition.
-   * @throws If a job is provided without a job state, or if a crawler is provided without a crawler state for any condition.
-   * @returns The created CfnTrigger resource.
+   * @returns a reference to the created trigger.
    */
-  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): CfnTrigger {
-    const trigger = new CfnTrigger(this, id, {
+  public addConditionalTrigger(id: string, options: ConditionalTriggerOptions): ITriggerRef {
+    return new CfnTrigger(this, id, {
       ...options,
       workflowName: this.workflowName,
       type: 'CONDITIONAL',
-      actions: options.actions?.map(this.renderAction.bind(this)),
+      actions: options.actions?.map(action => action._render()),
       predicate: this.renderPredicate(options),
       eventBatchingCondition: this.renderEventBatchingCondition(options),
       description: options.description ?? undefined,
     });
-
-    return trigger;
-  }
-
-  private renderAction(action: Action): CfnTrigger.ActionProperty {
-    // Validate that either job or crawler is provided, but not both
-    if (!action.job && !action.crawler) {
-      throw new cdk.ValidationError(lit`ActionJobOrCrawlerRequired`, 'You must provide either a job or a crawler for the action.', this);
-    } else if (action.job && action.crawler) {
-      throw new cdk.ValidationError(lit`ActionJobAndCrawlerMutuallyExclusive`, 'You cannot provide both a job and a crawler for the action.', this);
-    }
-
-    return {
-      jobName: action.job?.jobName,
-      arguments: action.arguments,
-      timeout: action.timeout?.toMinutes(),
-      securityConfiguration: action.securityConfiguration?.securityConfigurationName,
-      crawlerName: action.crawler?.name,
-    };
   }
 
   private renderPredicate(props: ConditionalTriggerOptions): CfnTrigger.PredicateProperty {
-    const conditions = props.predicate.conditions?.map(condition => {
-      // Validate that either job or crawler is provided, but not both
-      if (!condition.job && !condition.crawlerName) {
-        throw new cdk.ValidationError(lit`ConditionJobOrCrawlerRequired`, 'You must provide either a job or a crawler for the condition.', this);
-      } else if (condition.job && condition.crawlerName) {
-        throw new cdk.ValidationError(lit`ConditionJobAndCrawlerMutuallyExclusive`, 'You cannot provide both a job and a crawler for the condition.', this);
-      }
-
-      // Validate that if job is provided, job state is also provided
-      if (condition.job && !condition.state) {
-        throw new cdk.ValidationError(lit`ConditionJobStateRequired`, 'If you provide a job for the condition, you must also provide a job state.', this);
-      }
-
-      // Validate that if crawler is provided, crawler state is also provided
-      if (condition.crawlerName && !condition.crawlState) {
-        throw new cdk.ValidationError(lit`ConditionCrawlerStateRequired`, 'If you provide a crawler for the condition, you must also provide a crawler state.', this);
-      }
-
-      return {
-        logicalOperator: condition.logicalOperator ?? ConditionLogicalOperator.EQUALS,
-        jobName: condition.job?.jobName ?? undefined,
-        state: condition.state ?? undefined,
-        crawlerName: condition.crawlerName ?? undefined,
-        crawlState: condition.crawlState ?? undefined,
-      };
-    });
-
     return {
       logical: props.predicate.conditions?.length === 1 ? undefined : props.predicate.logical ?? PredicateLogical.AND,
-      conditions: conditions,
+      conditions: props.predicate.conditions?.map(condition => condition._render()),
     };
   }
 
-  private renderEventBatchingCondition(props: NotifyEventTriggerOptions): CfnTrigger.EventBatchingConditionProperty {
+  private renderEventBatchingCondition(props: EventTriggerOptions): CfnTrigger.EventBatchingConditionProperty {
     const defaultBatchSize = 1;
     const defaultBatchWindow = cdk.Duration.seconds(900).toSeconds();
 
@@ -369,7 +261,7 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
  *
  * // Add an on-demand trigger to the Workflow
  * workflow.addOnDemandTrigger('OnDemandTrigger', {
- *   actions: [{ job: job }],
+ *   actions: [glue.Action.job(job)],
  * });
  * ```
  */

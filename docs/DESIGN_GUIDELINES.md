@@ -1893,7 +1893,13 @@ implementation of AWS constructs.
 ### General Principles
 
 * Do not future proof.
-* No fluent APIs.
+* Avoid fluent APIs (method chaining that returns `this`). This is a
+  consistency rule, not a technical limitation: most of the library configures
+  through props objects at construction time, and chaining that returns `this`
+  permanently reserves the method's return value. Prefer
+  `new PolicyStatement({ actions: [...], effect: Effect.DENY })` over
+  `new PolicyStatement().actions(...).deny()`. A fluent API requires a written
+  justification, accepted at maintainer discretion.
 * Good APIs “speak” in the language of the user. The terminology your API uses
   should be intuitive and represent the mental model your user brings over,
   not one that you made up and you force them to learn.

@@ -231,6 +231,7 @@ export class LayerVersion extends LayerVersionBase {
         s3Bucket: code.s3Location.bucketName,
         s3Key: code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location.objectVersion,
+        s3ObjectStorageMode: code.s3ObjectStorageMode,
       },
       description: props.description,
       layerName: this.physicalName,
