@@ -3,6 +3,7 @@ import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
 import { iterateDfsPreorder } from './private/construct-iteration';
+import { appOf, APP_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -14,7 +15,6 @@ import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
-import { appOf, APP_TYPE } from './private/core-construct-finders';
 
 /**
  * Can hold a function to globally initialize Apps.
