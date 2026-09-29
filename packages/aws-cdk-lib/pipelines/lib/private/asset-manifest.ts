@@ -18,7 +18,7 @@ export class AssetManifestReader {
   /**
    * Load an asset manifest from the given file
    */
-  public static fromFile(fileName: string) {
+  public static fromFile(fileName: string): AssetManifestReader {
     try {
       const obj = Manifest.loadAssetManifest(fileName);
 
@@ -33,7 +33,7 @@ export class AssetManifestReader {
    * If the argument given is a directory, the default asset file name will be used.
    * @param filePath Path to load an asset manifest from.
    */
-  public static fromPath(filePath: string) {
+  public static fromPath(filePath: string): AssetManifestReader {
     let st;
     try {
       st = fs.statSync(filePath);
