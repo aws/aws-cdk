@@ -1,3 +1,4 @@
+import type { MetadataEntry, PropertyMutationMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
@@ -123,7 +124,7 @@ export class ConstructTree {
     let node: IConstruct | undefined = this.root;
     while (node) {
       rootPath.push(this.constructTraceLevelFromTreeNode(node));
-      stackTraces.push(this.stackTrace(node));
+      stackTraces.push(this.creationTrace(node)?.split('\n'));
 
       const component = components.shift()!;
       node = component !== undefined ? node.node.tryFindChild(component) : undefined;
@@ -195,12 +196,12 @@ export class ConstructTree {
     };
   }
 
-  public stackTraceByPath(path: string) {
+  public creationTraceByPath(path: string) {
     const construct = this.getConstructByPath(path);
     if (!construct) {
       return undefined;
     }
-    return this.stackTrace(construct);
+    return this.creationTrace(construct);
   }
 
   /**
@@ -208,8 +209,29 @@ export class ConstructTree {
    *
    * Returns a stack trace if stack trace information is found, or `undefined` if not.
    */
-  private stackTrace(construct: IConstruct): string[] | undefined {
-    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data;
+  private creationTrace(construct: IConstruct): string | undefined {
+    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data?.join('\n');
+  }
+
+  public mutationTracesByPath(constructPath: string, propertyPath: string) {
+    const construct = this.getConstructByPath(constructPath);
+    if (!construct) {
+      return [];
+    }
+    return this.mutationTraces(construct, propertyPath);
+  }
+
+  /**
+   * Return mutation traces for the given construct and property path
+   *
+   * The `propertyPath` must start with `Properties.`, and can contain nested properties, e.g. `Properties.MyProperty.NestedProperty`.
+   * We will report the best information that we have.
+   */
+  private mutationTraces(construct: IConstruct, propertyPath: string): string[] {
+    return construct?.node.metadata
+      .filter(isPropertyMutationMetadataEntry)
+      .filter(meta => propertyAssignmentMatchesPropertyPath(meta, propertyPath))
+      .map(meta => meta.data.stackTrace.join('\n'));
   }
 
   /**
@@ -234,4 +256,17 @@ export class ConstructTree {
   }
 }
 
+function propertyAssignmentMatchesPropertyPath(meta: PropertyMetadataEntry, propertyPath: string): boolean {
+  return propertyPath === `Properties.${meta.data.propertyName}` || propertyPath.startsWith(`Properties.${meta.data.propertyName}.`);
+}
+
 const STACK_TRACE_HINT = 'Run with \'--debug\' to include location info';
+
+interface PropertyMetadataEntry {
+  type: 'aws:cdk:propertyAssignment';
+  data: PropertyMutationMetadataEntry;
+}
+
+function isPropertyMutationMetadataEntry(entry: MetadataEntry): entry is PropertyMetadataEntry {
+  return entry.type === ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
+}

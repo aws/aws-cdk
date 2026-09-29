@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "IntegCanaryEnvironmentVariablesEncryptionTest/DefaultTest": {
+      "stacks": [
+        "canary-environment-variables-encryption"
+      ],
+      "assertionStack": "IntegCanaryEnvironmentVariablesEncryptionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryEnvironmentVariablesEncryptionTestDefaultTestDeployAssertBD99E110"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

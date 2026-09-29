@@ -1,0 +1,904 @@
+{
+ "Resources": {
+  "SourceIpEchoServiceRoleE4956266": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "SourceIpEcho41FBE38C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => ({\n  statusCode: 200,\n  body: event.requestContext.http.sourceIp,\n});"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SourceIpEchoServiceRoleE4956266",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "SourceIpEchoServiceRoleE4956266"
+   ]
+  },
+  "SourceIpEchoLogGroup32674E6C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "SourceIpEcho41FBE38C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "SourceIpEchoFunctionUrl9EFEB490": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "NONE",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SourceIpEchoinvokefunctionurlCC2BAB62": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    },
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   }
+  },
+  "SourceIpEchoinvokefunctionA612F9DE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SourceIpEcho41FBE38C",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
+  "NatEip": {
+   "Type": "AWS::EC2::EIP"
+  },
+  "ManualModeVpcD2BB252A": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/ManualModeVpc"
+     }
+    ]
+   }
+  },
+  "ManualModeVpcPrivateSubnet1SubnetE346C724": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/16",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ManualModeVpcD2BB252A"
+    }
+   }
+  },
+  "ManualModeVpcPrivateSubnet1RouteTableF8F25A2A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ManualModeVpcD2BB252A"
+    }
+   }
+  },
+  "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ManualModeVpcPrivateSubnet1RouteTableF8F25A2A"
+    },
+    "SubnetId": {
+     "Ref": "ManualModeVpcPrivateSubnet1SubnetE346C724"
+    }
+   }
+  },
+  "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "ManualModeVpcRegionalNatGateway9B258FF3",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "ManualModeVpcPrivateSubnet1RouteTableF8F25A2A"
+    }
+   }
+  },
+  "ManualModeVpcIGWE835A8AC": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/ManualModeVpc"
+     }
+    ]
+   }
+  },
+  "ManualModeVpcVPCGW24A1A902": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "ManualModeVpcIGWE835A8AC"
+    },
+    "VpcId": {
+     "Ref": "ManualModeVpcD2BB252A"
+    }
+   }
+  },
+  "ManualModeVpcRegionalNatGateway9B258FF3": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AvailabilityMode": "regional",
+    "AvailabilityZoneAddresses": [
+     {
+      "AllocationIds": [
+       {
+        "Fn::GetAtt": [
+         "NatEip",
+         "AllocationId"
+        ]
+       }
+      ],
+      "AvailabilityZone": {
+       "Fn::Select": [
+        0,
+        {
+         "Fn::GetAZs": ""
+        }
+       ]
+      }
+     }
+    ],
+    "ConnectivityType": "public",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/ManualModeVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ManualModeVpcD2BB252A"
+    }
+   },
+   "DependsOn": [
+    "ManualModeVpcIGWE835A8AC"
+   ]
+  },
+  "ManualModeVpcRestrictDefaultSecurityGroupCustomResource91B28002": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ManualModeVpcD2BB252A",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "ManualModeVpcD2BB252A",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "AutomaticModeVpc4A6FADD8",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "ManualModeProbeServiceRole0715D02E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574",
+    "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458"
+   ]
+  },
+  "ManualModeProbeSecurityGroup37C45D49": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function RegionalNatGatewayEgressStackManualModeProbeC77AD7D7",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ManualModeVpcD2BB252A"
+    }
+   },
+   "DependsOn": [
+    "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574",
+    "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458"
+   ]
+  },
+  "ManualModeProbe20297005": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => {\n  const res = await fetch(process.env.ECHO_URL);\n  return (await res.text()).trim();\n};"
+    },
+    "Environment": {
+     "Variables": {
+      "ECHO_URL": {
+       "Fn::GetAtt": [
+        "SourceIpEchoFunctionUrl9EFEB490",
+        "FunctionUrl"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ManualModeProbeServiceRole0715D02E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 30,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "ManualModeProbeSecurityGroup37C45D49",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "ManualModeVpcPrivateSubnet1SubnetE346C724"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "ManualModeProbeServiceRole0715D02E",
+    "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574",
+    "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458"
+   ]
+  },
+  "ManualModeProbeLogGroupBFA2822D": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ManualModeProbe20297005"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574",
+    "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AutomaticModeVpc4A6FADD8": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/AutomaticModeVpc"
+     }
+    ]
+   }
+  },
+  "AutomaticModeVpcPrivateSubnet1Subnet9F80FC5F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/16",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "AutomaticModeVpc4A6FADD8"
+    }
+   }
+  },
+  "AutomaticModeVpcPrivateSubnet1RouteTable970803D7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "AutomaticModeVpc4A6FADD8"
+    }
+   }
+  },
+  "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "AutomaticModeVpcPrivateSubnet1RouteTable970803D7"
+    },
+    "SubnetId": {
+     "Ref": "AutomaticModeVpcPrivateSubnet1Subnet9F80FC5F"
+    }
+   }
+  },
+  "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Fn::GetAtt": [
+      "AutomaticModeVpcRegionalNatGateway22462E08",
+      "NatGatewayId"
+     ]
+    },
+    "RouteTableId": {
+     "Ref": "AutomaticModeVpcPrivateSubnet1RouteTable970803D7"
+    }
+   }
+  },
+  "AutomaticModeVpcIGW0B90EB7F": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/AutomaticModeVpc"
+     }
+    ]
+   }
+  },
+  "AutomaticModeVpcVPCGWD196BFE8": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "AutomaticModeVpcIGW0B90EB7F"
+    },
+    "VpcId": {
+     "Ref": "AutomaticModeVpc4A6FADD8"
+    }
+   }
+  },
+  "AutomaticModeVpcRegionalNatGateway22462E08": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AvailabilityMode": "regional",
+    "ConnectivityType": "public",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RegionalNatGatewayEgressStack/AutomaticModeVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "AutomaticModeVpc4A6FADD8"
+    }
+   },
+   "DependsOn": [
+    "AutomaticModeVpcIGW0B90EB7F"
+   ]
+  },
+  "AutomaticModeVpcRestrictDefaultSecurityGroupCustomResourceA5E68F30": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AutomaticModeVpc4A6FADD8",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AutomaticModeProbeServiceRoleACCE46F6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D",
+    "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954"
+   ]
+  },
+  "AutomaticModeProbeSecurityGroup2175FE5A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function RegionalNatGatewayEgressStackAutomaticModeProbe00BA4893",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "AutomaticModeVpc4A6FADD8"
+    }
+   },
+   "DependsOn": [
+    "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D",
+    "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954"
+   ]
+  },
+  "AutomaticModeProbe324C6D4D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => {\n  const res = await fetch(process.env.ECHO_URL);\n  return (await res.text()).trim();\n};"
+    },
+    "Environment": {
+     "Variables": {
+      "ECHO_URL": {
+       "Fn::GetAtt": [
+        "SourceIpEchoFunctionUrl9EFEB490",
+        "FunctionUrl"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AutomaticModeProbeServiceRoleACCE46F6",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 30,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "AutomaticModeProbeSecurityGroup2175FE5A",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "AutomaticModeVpcPrivateSubnet1Subnet9F80FC5F"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "AutomaticModeProbeServiceRoleACCE46F6",
+    "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D",
+    "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954"
+   ]
+  },
+  "AutomaticModeProbeLogGroupEE0CA3E5": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "AutomaticModeProbe324C6D4D"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D",
+    "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttNatEipPublicIp43CDB27B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NatEip",
+     "PublicIp"
+    ]
+   },
+   "Export": {
+    "Name": "RegionalNatGatewayEgressStack:ExportsOutputFnGetAttNatEipPublicIp43CDB27B"
+   }
+  },
+  "ExportsOutputRefManualModeProbe2029700530D9707F": {
+   "Value": {
+    "Ref": "ManualModeProbe20297005"
+   },
+   "Export": {
+    "Name": "RegionalNatGatewayEgressStack:ExportsOutputRefManualModeProbe2029700530D9707F"
+   }
+  },
+  "ExportsOutputRefAutomaticModeProbe324C6D4D16E8595B": {
+   "Value": {
+    "Ref": "AutomaticModeProbe324C6D4D"
+   },
+   "Export": {
+    "Name": "RegionalNatGatewayEgressStack:ExportsOutputRefAutomaticModeProbe324C6D4D16E8595B"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
