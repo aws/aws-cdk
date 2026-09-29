@@ -1,11 +1,17 @@
 {
-  "/aws-cdk-neptune-global-cluster-integ": [
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/workspaces/aws-cdk/packages/@aws-cdk/aws-neptune-alpha/test/integ.global-cluster.js:46:15)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-neptune-global-cluster-integ/GlobalCluster": [
@@ -14,81 +20,369 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-neptune-global-cluster-integ/Custom::CrossRegionExportWriterCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
   "/aws-cdk-neptune-global-cluster-integ/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
     }
   ],
   "/aws-cdk-neptune-global-cluster-integ/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpc0877506E"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
-      ]
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcIGW641E95A5"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcVPCGW1BDE076A"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/Subnets": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryCluster20EA3E97"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/Instance1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryClusterInstance19303E010"
     }
   ],
   "/aws-cdk-neptune-global-cluster-integ/GlobalCluster/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GlobalClusterD272DED1"
-    },
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/ExportsWriteruseast2828FA26B/Resource": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new GlobalCluster (/workspaces/aws-cdk/packages/@aws-cdk/aws-neptune-alpha/lib/global-cluster.js:106:30)",
-        "<anonymous> (/workspaces/aws-cdk/packages/@aws-cdk/aws-neptune-alpha/test/integ.global-cluster.js:47:23)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
     }
   ],
   "/aws-cdk-neptune-global-cluster-integ/Exports/Output{\"Ref\":\"GlobalClusterD272DED1\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefGlobalClusterD272DED1CACDDCED"
-    },
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/Exports/Output{\"Ref\":\"PrimaryCluster20EA3E97\"}": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
-        "createImportValue (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
-        "resolveValue (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
-        "resolveReferences (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
-        "prepareApp (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
-        "process.<anonymous> (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPrimaryCluster20EA3E973F242BEA"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1Subnet7A950DC0"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1RouteTableF9082148"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1RouteTableAssociationA7DB0F97"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1DefaultRoute61F2973D"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1EIP0A2BC2EE"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet1NATGatewayCABFD5C8"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2Subnet7A456187"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2RouteTable909D5B4F"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2RouteTableAssociation01366EF5"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2DefaultRoute37EA8C57"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2EIPB65F13A0"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPublicSubnet2NATGatewayA42C6C17"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet1Subnet53BC8B69"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet1RouteTable9F058AB6"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet1RouteTableAssociation2E330C31"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet1DefaultRouteE079D67B"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet2Subnet2573FA4E"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet2RouteTable6F86CEA4"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet2RouteTableAssociation44AB78FA"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryVpcPrivateSubnet2DefaultRouteDE2A21E9"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/Subnets/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryClusterSubnetsAD375118"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/PrimaryCluster/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrimaryClusterSecurityGroup67F6D676"
+    }
+  ],
+  "/aws-cdk-neptune-global-cluster-integ/ExportsWriteruseast2828FA26B/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsWriteruseast2828FA26B86FBEFA7"
     }
   ]
 }

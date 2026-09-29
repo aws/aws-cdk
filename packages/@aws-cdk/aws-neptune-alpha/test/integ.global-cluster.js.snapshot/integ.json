@@ -3,11 +3,17 @@
   "testCases": {
     "GlobalClusterTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-neptune-global-cluster-integ"
+        "aws-cdk-neptune-global-cluster-integ",
+        "aws-cdk-neptune-global-cluster-secondary-integ"
       ],
-      "assertionStack": "GlobalClusterTest/DefaultTest/DeployAssert",
-      "assertionStackName": "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1"
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "GlobalClusterAssertStack",
+      "assertionStackName": "GlobalClusterAssertStack"
     }
   },
-  "minimumCliVersion": "2.1126.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

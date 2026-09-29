@@ -1,0 +1,78 @@
+{
+  "/GlobalClusterAssertStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GlobalClusterAssertStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeGlobalClusters471b31451e1d783a81190d1426159664/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeGlobalClusters471b31451e1d783a81190d1426159664/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallNeptunedescribeGlobalClusters471b31451e1d783a81190d1426159664"
+    }
+  ],
+  "/GlobalClusterAssertStack/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/GlobalClusterAssertStack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeDBClusters8065d26f34917b22b5cb93930b559649/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeDBClusters8065d26f34917b22b5cb93930b559649/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallNeptunedescribeDBClusters8065d26f34917b22b5cb93930b559649"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeGlobalClusters471b31451e1d783a81190d1426159664/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallNeptunedescribeGlobalClusters471b31451e1d783a81190d1426159664"
+    }
+  ],
+  "/GlobalClusterAssertStack/AwsApiCallNeptunedescribeDBClusters8065d26f34917b22b5cb93930b559649/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallNeptunedescribeDBClusters8065d26f34917b22b5cb93930b559649"
+    }
+  ]
+}

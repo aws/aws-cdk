@@ -11,21 +11,21 @@
     },
     "aws-cdk-neptune-global-cluster-integ": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-neptune-global-cluster-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8e59fb164b0f98fac612b31d9eb1354fac9b128300aa95145be01aaf5bc843c3.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/95e05a99cbf7dce4824f23820a685a981aac331cd5f5044eea837f839c271a49.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-neptune-global-cluster-integ.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -36,41 +36,77 @@
       "additionalMetadataFile": "aws-cdk-neptune-global-cluster-integ.metadata.json",
       "displayName": "aws-cdk-neptune-global-cluster-integ"
     },
-    "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.assets": {
+    "aws-cdk-neptune-global-cluster-secondary-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.assets.json",
+        "file": "aws-cdk-neptune-global-cluster-secondary-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1": {
+    "aws-cdk-neptune-global-cluster-secondary-integ": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-east-2",
       "properties": {
-        "templateFile": "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.template.json",
+        "templateFile": "aws-cdk-neptune-global-cluster-secondary-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5feae288715df9cc4dd4879dd025c20df1d5980c6bfb23d2cdf7c58cfb4c1b35.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/45c4bbbac08af2141e1aaaeb8fe5bec0829744d2d87e32c9a416eda892a78f25.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.assets"
+          "aws-cdk-neptune-global-cluster-secondary-integ.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
         "aws-cdk-neptune-global-cluster-integ",
-        "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.assets"
+        "aws-cdk-neptune-global-cluster-secondary-integ.assets"
       ],
-      "additionalMetadataFile": "GlobalClusterTestDefaultTestDeployAssert2DC6F3D1.metadata.json",
-      "displayName": "GlobalClusterTest/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "aws-cdk-neptune-global-cluster-secondary-integ.metadata.json",
+      "displayName": "aws-cdk-neptune-global-cluster-secondary-integ"
+    },
+    "GlobalClusterAssertStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "GlobalClusterAssertStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "GlobalClusterAssertStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "GlobalClusterAssertStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/c8084d5de5afd6954e63e4020cb8791407fc0c759fafd5d9de77c39bc865c478.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "GlobalClusterAssertStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-neptune-global-cluster-integ",
+        "GlobalClusterAssertStack.assets"
+      ],
+      "additionalMetadataFile": "GlobalClusterAssertStack.metadata.json",
+      "displayName": "GlobalClusterAssertStack"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -599,20 +635,23 @@
             "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
           },
           "@aws-cdk/core:annotationsInValidationReport": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
             "recommendedValue": "weak",
-            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "explanation": "Controls whether cross-stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
             }
+          },
+          "@aws-cdk/core:validateAgainstDefaultRules": {
+            "recommendedValue": true,
+            "explanation": "Treat CloudFormation Validate findings as errors"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1126.0"
+  "minimumCliVersion": "2.1131.0"
 }
