@@ -17,10 +17,6 @@ export class ReportTrace {
     return this.tree.traceFromPath(constructPath);
   }
 
-  public creationStackTraceByPath(constructPath: string) {
-    return this.tree.stackTraceByPath(constructPath);
-  }
-
   /**
    * This will render something like this:
    *
