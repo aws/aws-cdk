@@ -269,6 +269,18 @@ describe('BedrockFoundationModel', () => {
     });
 
     test('OpenAI models are configured correctly', () => {
+      expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.modelId).toBe('openai.gpt-6-astra');
+      expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.supportsCrossRegion).toBe(true);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_6_SOL.modelId).toBe('openai.gpt-6-sol');
+      expect(BedrockFoundationModel.OPENAI_GPT_6_SOL.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_6_SOL.supportsCrossRegion).toBe(true);
+
+      expect(BedrockFoundationModel.OPENAI_GPT_6_LUNA.modelId).toBe('openai.gpt-6-luna');
+      expect(BedrockFoundationModel.OPENAI_GPT_6_LUNA.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_6_LUNA.supportsCrossRegion).toBe(true);
+
       expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.modelId).toBe('openai.gpt-5.6-sol');
       expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.supportsAgents).toBe(false);
       expect(BedrockFoundationModel.OPENAI_GPT_5_6_SOL.supportsCrossRegion).toBe(true);

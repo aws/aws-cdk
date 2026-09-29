@@ -1031,7 +1031,48 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    ***************************************************************************/
 
   /**
-   * OpenAI's GPT-5.6 Sol model, the most capable OpenAI model on Bedrock.
+   * OpenAI's GPT-6 Astra model, the most capable OpenAI model on Bedrock.
+   * Built for complex reasoning, coding, computer use, research, and
+   * document creation.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex reasoning, coding, computer use, research
+   */
+  public static readonly OPENAI_GPT_6_ASTRA = new BedrockFoundationModel('openai.gpt-6-astra', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Sol model, built for complex coding and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex coding, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_SOL = new BedrockFoundationModel('openai.gpt-6-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Luna model, designed for focused, high-volume tasks.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Focused, high-volume tasks
+   */
+  public static readonly OPENAI_GPT_6_LUNA = new BedrockFoundationModel('openai.gpt-6-luna', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Sol model, the most capable model of the GPT-5.6 family.
    * Frontier reasoning and agentic performance across coding, cybersecurity,
    * and scientific research.
    *
