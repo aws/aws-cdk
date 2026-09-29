@@ -1,16 +1,29 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d": {
+      "source": {
+        "path": "asset.7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-8f7a1944": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "fce1bba280e056447f14542ee83ea58b22b43a803e3aee7ec7fd60ff9049024b": {
       "displayName": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48 Template",
       "source": {
         "path": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-1851ad6f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "fce1bba280e056447f14542ee83ea58b22b43a803e3aee7ec7fd60ff9049024b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

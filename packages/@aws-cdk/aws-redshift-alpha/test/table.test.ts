@@ -357,4 +357,49 @@ describe('cluster table', () => {
       })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
     });
   });
+
+  test.each(['', '.orders', 'dev..orders', 'analytics.'])('fails empty table name components in %j', (name) => {
+    expect(() => new redshift.Table(stack, 'Table', {
+      ...databaseOptions,
+      tableColumns,
+      tableName: name,
+    })).toThrow(`table name ${JSON.stringify(name)} must not contain empty components`);
+  });
+
+  describe.each(['created', 'imported'])('%s table names', (kind) => {
+    test.each([
+      ['unqualified', (): string => 'orders', 'orders'],
+      ['qualified', (): string => 'analytics.orders', 'analytics.orders'],
+      ['public schema', (): string => 'public.orders', 'public.orders'],
+      ['quoted components', (): string => 'sales team.order log', 'sales team.order log'],
+      ['lazy', (): string => cdk.Lazy.string({ produce: (): string => 'analytics.orders' }), 'analytics.orders'],
+      ['export', (): string => cdk.Fn.importValue('ExportedTableName'), { 'Fn::ImportValue': 'ExportedTableName' }],
+      ['parameter', (): string => new cdk.CfnParameter(stack, 'TableNameParam', { type: 'String' }).valueAsString, { Ref: 'TableNameParam' }],
+    ] as const)('preserves a %s name through table grants', (_label, name, expectedName) => {
+      const props = { ...databaseOptions, tableColumns, tableName: name() };
+      const table = kind === 'created'
+        ? new redshift.Table(stack, 'Table', props)
+        : redshift.Table.fromTableAttributes(stack, 'Table', props);
+      const user = redshift.User.fromUserAttributes(stack, 'User', {
+        ...databaseOptions,
+        username: 'alice',
+        password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+      });
+
+      table.grant(user, redshift.TableAction.SELECT);
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('Custom::RedshiftDatabaseQuery', kind === 'created' ? 2 : 1);
+      if (kind === 'created') {
+        template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+          handler: 'table',
+          tableName: { prefix: expectedName, generateSuffix: 'false' },
+        });
+      }
+      template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'user-table-privileges',
+        tablePrivileges: [{ tableId: 'Table', tableName: expectedName, actions: ['SELECT'] }],
+      });
+    });
+  });
 });
