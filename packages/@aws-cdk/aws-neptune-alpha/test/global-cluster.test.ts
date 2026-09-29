@@ -145,14 +145,24 @@ test('fails when both sourceCluster and storageEncrypted are provided', () => {
 test.each([
   ['', /between 1 and 63 characters/],
   ['a'.repeat(64), /between 1 and 63 characters/],
-  ['1invalid', /must start with a lowercase letter/],
-  ['Invalid', /must start with a lowercase letter/],
-  ['ends-', /must start with a lowercase letter/],
-  ['two--hyphens', /must start with a lowercase letter/],
+  ['1invalid', /must start with a letter/],
+  ['-invalid', /must start with a letter/],
+  ['ends-', /must start with a letter/],
+  ['two--hyphens', /must start with a letter/],
 ])('fails for invalid globalClusterIdentifier %j', (identifier, expected) => {
-  expect(() => new GlobalCluster(stack, 'Global', {
+  expect(() => new GlobalCluster(stack, `GlobalInvalid-${identifier}`, {
     globalClusterIdentifier: identifier,
   })).toThrow(expected);
+});
+
+test.each([
+  'MyGlobalCluster',
+  'my-global-cluster-123',
+  'Cluster-With-Mixed-Case',
+])('accepts valid globalClusterIdentifier %j', (identifier) => {
+  expect(() => new GlobalCluster(stack, `GlobalValid-${identifier}`, {
+    globalClusterIdentifier: identifier,
+  })).not.toThrow();
 });
 
 test('does not validate a tokenized globalClusterIdentifier', () => {

@@ -175,8 +175,8 @@ export class GlobalCluster extends GlobalClusterBase {
       throw new ValidationError(lit`InvalidGlobalClusterIdentifierLength`, `globalClusterIdentifier must be between 1 and 63 characters long, got ${identifier.length} characters: ${JSON.stringify(identifier)}`, this);
     }
 
-    if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(identifier)) {
-      throw new ValidationError(lit`InvalidGlobalClusterIdentifier`, `globalClusterIdentifier must start with a lowercase letter and contain only lowercase letters, digits and hyphens, and must not end with a hyphen or contain two consecutive hyphens, got: ${JSON.stringify(identifier)}`, this);
+    if (!/^[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*$/.test(identifier)) {
+      throw new ValidationError(lit`InvalidGlobalClusterIdentifier`, `globalClusterIdentifier must start with a letter and contain only letters, digits and hyphens, and must not end with a hyphen or contain two consecutive hyphens, got: ${JSON.stringify(identifier)}`, this);
     }
   }
 }
