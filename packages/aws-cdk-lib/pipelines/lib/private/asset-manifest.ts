@@ -89,13 +89,13 @@ export class AssetManifestReader {
   /**
    * Describe the asset manifest as a list of strings
    */
-  public list() {
+  public list(): string[] {
     return [
       ...describeAssets('file', this.manifest.files || {}),
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>) {
+    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>): string[] {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
@@ -237,7 +237,7 @@ export class DestinationIdentifier {
   /**
    * Return a string representation for this asset identifier
    */
-  public toString() {
+  public toString(): string {
     return this.destinationId ? `${this.assetId}:${this.destinationId}` : this.assetId;
   }
 }
@@ -286,7 +286,7 @@ export class DestinationPattern {
   /**
    * Whether or not this pattern matches the given identifier
    */
-  public matches(id: DestinationIdentifier) {
+  public matches(id: DestinationIdentifier): boolean {
     return (this.assetId === undefined || this.assetId === id.assetId)
       && (this.destinationId === undefined || this.destinationId === id.destinationId);
   }
@@ -302,7 +302,7 @@ export class DestinationPattern {
 /**
  * Prefix box-drawing characters to make lines look like a hanging tree
  */
-function prefixTreeChars(xs: string[], prefix = '') {
+function prefixTreeChars(xs: string[], prefix = ''): string[] { 
   const ret = new Array<string>();
   for (let i = 0; i < xs.length; i++) {
     const isLast = i === xs.length - 1;
