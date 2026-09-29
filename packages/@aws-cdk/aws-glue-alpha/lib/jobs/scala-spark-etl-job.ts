@@ -69,11 +69,12 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
  * Spark ETL Jobs class
  *
  * ETL jobs support pySpark and Scala languages, for which there are separate
- * but similar constructors. ETL jobs default to the G2 worker type, but you
+ * but similar constructors. ETL jobs default to the G1 worker type, but you
  * can override this default with other supported worker type values
  * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
  * override to 3.0. The following ETL features are enabled by default:
- * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
+ * --enable-metrics, --enable-continuous-cloudwatch-log. The Spark UI
+ * (--enable-spark-ui) is off by default; enable it by setting the `sparkUI` prop.
  * You can find more details about version, worker type and other features
  * in Glue's public documentation.
  */
@@ -92,10 +93,10 @@ export class ScalaSparkEtlJob extends SparkJob {
     addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -131,15 +132,11 @@ export class ScalaSparkEtlJob extends SparkJob {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: ScalaSparkEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.SCALA;
-    args['--class'] = props.className;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: ScalaSparkEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.SCALA);
+    this.setManagedArgument('--class', props.className);
+    this.setupExtraCodeArguments(props);
   }
 }
