@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve, sep } from 'path';
 import type { Construct } from 'constructs';
 import { renderData } from './render-data';
 import type * as iam from '../../aws-iam';
@@ -196,6 +196,15 @@ export class Source {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         try {
           const outputPath = join(workdir, objectKey);
+          // `objectKey` is a destination S3 object key relative to the deployment root, not a
+          // local filesystem path. Guard against keys containing parent-directory segments
+          // (e.g. `../`) that would resolve outside the staging directory and write the
+          // rendered file to an unintended location.
+          const resolvedWorkdir = resolve(workdir);
+          const resolvedOutputPath = resolve(outputPath);
+          if (resolvedOutputPath !== resolvedWorkdir && !resolvedOutputPath.startsWith(resolvedWorkdir + sep)) {
+            throw new ValidationError(lit`Source`, `objectKey must be a relative path within the S3 deployment; got '${objectKey}', which resolves outside the deployment staging directory`, scope);
+          }
           const rendered = renderData(data);
           fs.mkdirSync(dirname(outputPath), { recursive: true });
           fs.writeFileSync(outputPath, rendered.text);

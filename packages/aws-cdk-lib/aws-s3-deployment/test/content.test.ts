@@ -134,3 +134,63 @@ test('Source.data with empty string does not throw error', () => {
     expect(actual.zipObjectKey).toBeDefined();
   }).not.toThrow();
 });
+
+describe('Source.data() validates objectKey stays within the staging directory', () => {
+  const makeHandler = (stack: Stack) => new lambda.Function(stack, 'Handler', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('foo'),
+    handler: 'index.handler',
+  });
+
+  test.each([
+    '../outside.txt',
+    '../../outside.txt',
+    'a/../../outside.txt',
+  ])('Source.data() throws when objectKey %s resolves outside the staging directory', (objectKey) => {
+    const stack = new Stack();
+    const handler = makeHandler(stack);
+
+    expect(() => {
+      Source.data(objectKey, 'hello, world').bind(stack, { handlerRole: handler.role! });
+    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+  });
+
+  test('Source.jsonData() inherits the same validation', () => {
+    const stack = new Stack();
+    const handler = makeHandler(stack);
+
+    expect(() => {
+      Source.jsonData('../outside.json', { foo: 'bar' }).bind(stack, { handlerRole: handler.role! });
+    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+  });
+
+  test('Source.yamlData() inherits the same validation', () => {
+    const stack = new Stack();
+    const handler = makeHandler(stack);
+
+    expect(() => {
+      Source.yamlData('../outside.yaml', { foo: 'bar' }).bind(stack, { handlerRole: handler.role! });
+    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+  });
+
+  test('Source.data() still accepts normal nested keys', () => {
+    const stack = new Stack();
+    const handler = makeHandler(stack);
+
+    expect(() => {
+      const actual = Source.data('nested/dir/config.txt', 'hello, world').bind(stack, { handlerRole: handler.role! });
+      expect(actual.bucket).toBeDefined();
+      expect(actual.zipObjectKey).toBeDefined();
+    }).not.toThrow();
+  });
+
+  test('Source.data() accepts a key with interior ".." that stays within the staging dir', () => {
+    const stack = new Stack();
+    const handler = makeHandler(stack);
+
+    // 'a/../b.txt' normalizes to 'b.txt', which is still inside the staging directory.
+    expect(() => {
+      Source.data('a/../b.txt', 'hello, world').bind(stack, { handlerRole: handler.role! });
+    }).not.toThrow();
+  });
+});
