@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.272.0](https://github.com/aws/aws-cdk/compare/v2.271.0...v2.272.0) (2026-09-30)
 
 
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can
+   contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+   aws-servicediscovery: AWS::ServiceDiscovery::Instance: primary identifier is now ServiceId and InstanceId, so InstanceReference now requires serviceId.
+
 ### Features
 
 * update L1 CloudFormation resource definitions ([#38864](https://github.com/aws/aws-cdk/issues/38864)) ([3bd350b](https://github.com/aws/aws-cdk/commit/3bd350bd1da34749a38aeff3df72147cf340dc71))
