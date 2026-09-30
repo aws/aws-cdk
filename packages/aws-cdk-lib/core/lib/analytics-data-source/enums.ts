@@ -1790,7 +1790,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "3.0",
     "4.0",
     "5.0",
-    "5.1"
+    "5.1",
+    "6.0"
   ],
   "GraphWidgetView": [
     "timeSeries",
