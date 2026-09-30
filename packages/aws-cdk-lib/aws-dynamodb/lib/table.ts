@@ -35,6 +35,7 @@ import {
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
   FeatureFlags,
+  Validations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IReadableBox } from '../../core/lib/helpers-internal';
@@ -1287,6 +1288,7 @@ export class Table extends TableBase {
   private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
   private readonly _vectorIndexes: IArrayBox<CfnTable.VectorIndexProperty>;
   private readonly _vectorIndexNames = new Set<string>();
+  private _searchSchemaAttributeDefinitionsAcknowledged = false;
   private readonly _hasIndexBox: IReadableBox<boolean>;
 
   /**
@@ -1567,6 +1569,10 @@ export class Table extends TableBase {
       };
     });
 
+    if (searchSchema) {
+      this.acknowledgeSearchSchemaAttributeDefinitions();
+    }
+
     this._vectorIndexes.push({
       indexName: props.indexName,
       vectorAttribute: { attributeName: props.vectorAttribute },
@@ -1773,6 +1779,23 @@ export class Table extends TableBase {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new ValidationError(lit`DuplicateIndexName`, `a duplicate index name, ${indexName}, is not allowed`, this);
     }
+  }
+
+  /**
+   * DynamoDB requires every vector index search schema attribute to be declared
+   * in AttributeDefinitions, but the CloudFormation-Validate rule E3039 only
+   * counts key schema attributes and reports search schema attributes as unused
+   * definitions. Acknowledge the rule once for this table.
+   */
+  private acknowledgeSearchSchemaAttributeDefinitions() {
+    if (this._searchSchemaAttributeDefinitionsAcknowledged) {
+      return;
+    }
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::E3039',
+      reason: 'Vector index search schema attributes must be declared in AttributeDefinitions even though no key schema references them',
+    });
+    this._searchSchemaAttributeDefinitionsAcknowledged = true;
   }
 
   /**

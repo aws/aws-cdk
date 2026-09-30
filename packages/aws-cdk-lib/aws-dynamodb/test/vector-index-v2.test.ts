@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
-import { App, Lazy, Stack, Validations } from '../../core';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { App, Lazy, Stack } from '../../core';
 import {
   AttributeType,
   Billing,
@@ -21,24 +21,13 @@ beforeEach(() => {
   stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
 });
 
-// VectorIndexes is a preview property not yet in the public CloudFormation schema, so
-// the built-in CloudFormation-Validate plugin flags it (F3002). Acknowledge it scoped
-// to the table construct only, so unrelated schema regressions are not masked.
-// TODO: remove once VectorIndexes is public in the CloudFormation schema.
-function ackVectorIndexPreview(table: TableV2): TableV2 {
-  Validations.of(table).acknowledge(
-    { id: 'CloudFormation-Validate::F3002', reason: 'VectorIndexes is a preview property not yet in the public CloudFormation schema' },
-  );
-  return table;
-}
-
 test('addVectorIndex renders VectorIndexes into the global table', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
 
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -52,7 +41,7 @@ test('addVectorIndex renders VectorIndexes into the global table', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
     VectorIndexes: [
       {
-        IndexName: 'vi',
+        IndexName: 'vectorIndex',
         VectorAttribute: { AttributeName: 'embedding' },
         Dimensions: 128,
         DistanceFunction: 'COSINE',
@@ -67,27 +56,27 @@ test('addVectorIndex renders VectorIndexes into the global table', () => {
 });
 
 test('vector indexes can be provided via props', () => {
-  ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
     vectorIndexes: [{
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 64,
       distanceFunction: VectorDistanceFunction.EUCLIDEAN,
     }],
-  }));
+  });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vi', SearchSchema: Match.absent() })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', SearchSchema: Match.absent() })],
   });
 });
 
 test('search schema attributes are added to attribute definitions, vector attribute is not', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 64,
     distanceFunction: VectorDistanceFunction.DOT_PRODUCT,
@@ -115,7 +104,7 @@ test('throws when the table is not in PAY_PER_REQUEST billing mode', () => {
   });
 
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -127,7 +116,7 @@ test.each([0, 4097])('throws when dimensions %d is out of range', (dimensions) =
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -156,7 +145,7 @@ test('throws when INCLUDE projection has no nonKeyAttributes', () => {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -219,9 +208,9 @@ test('throws when a vector index name collides with an LSI name', () => {
 });
 
 test('multiple vector indexes render on the same table', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
   table.addVectorIndex({
     indexName: 'vi1',
     vectorAttribute: 'embedding1',
@@ -244,11 +233,11 @@ test('multiple vector indexes render on the same table', () => {
 });
 
 test('vector index without a search schema on the imperative path renders no SearchSchema', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 256,
     distanceFunction: VectorDistanceFunction.DOT_PRODUCT,
@@ -256,16 +245,16 @@ test('vector index without a search schema on the imperative path renders no Sea
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vi', SearchSchema: Match.absent() })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', SearchSchema: Match.absent() })],
   });
 });
 
 test('search schema with only INLINE_FILTER elements renders', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -288,15 +277,15 @@ test('search schema with only INLINE_FILTER elements renders', () => {
 });
 
 test('on-demand billing with maximum throughput permits a vector index', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
     billing: Billing.onDemand({
       maxReadRequestUnits: 100,
       maxWriteRequestUnits: 50,
     }),
-  }));
+  });
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -304,7 +293,7 @@ test('on-demand billing with maximum throughput permits a vector index', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
     BillingMode: 'PAY_PER_REQUEST',
-    VectorIndexes: [Match.objectLike({ IndexName: 'vi' })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex' })],
   });
 });
 
@@ -313,7 +302,7 @@ test('throws when dimensions is not an integer', () => {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 2.5,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -321,18 +310,18 @@ test('throws when dimensions is not an integer', () => {
 });
 
 test('tokenized dimensions is not validated at synth and resolves in the template', () => {
-  const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+  const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
-  }));
+  });
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: Lazy.number({ produce: () => 128 }),
     distanceFunction: VectorDistanceFunction.COSINE,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vi', Dimensions: 128 })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', Dimensions: 128 })],
   });
 });
 
@@ -341,7 +330,7 @@ test('throws when a search schema attribute conflicts with an existing attribute
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -356,7 +345,7 @@ test('throws when search schema contains duplicate attribute names', () => {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -372,7 +361,7 @@ test('throws when search schema contains more than one HASH element', () => {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -385,11 +374,11 @@ test('throws when search schema contains more than one HASH element', () => {
 
 describe('grantVectorSearch', () => {
   test('grants SearchVectors on the index resources only', () => {
-    const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-    }));
+    });
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -414,11 +403,11 @@ describe('grantVectorSearch', () => {
   });
 
   test('grantReadData does not include SearchVectors', () => {
-    const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
-    }));
+    });
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -436,12 +425,12 @@ describe('grantVectorSearch', () => {
 
   test('also grants read access to a customer-managed KMS key', () => {
     const key = new kms.Key(stack, 'Key');
-    const table = ackVectorIndexPreview(new TableV2(stack, 'Table', {
+    const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       encryption: TableEncryptionV2.customerManagedKey(key),
-    }));
+    });
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -461,6 +450,39 @@ describe('grantVectorSearch', () => {
       },
     });
   });
+
+  test('throws when the grantee is a ServicePrincipal', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+
+    expect(() => table.grantVectorSearch(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('throws when the grantee is a wrapped ServicePrincipal', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    expect(() => table.grantVectorSearch(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
 });
 
 test('throws when search schema is an empty array', () => {
@@ -468,7 +490,7 @@ test('throws when search schema is an empty array', () => {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
   });
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,

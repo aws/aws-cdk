@@ -1,6 +1,6 @@
 import { Match, Template } from '../../assertions';
-import { App, Lazy, Stack, Validations } from '../../core';
 import * as iam from '../../aws-iam';
+import { App, Lazy, Stack } from '../../core';
 import {
   AttributeType,
   BillingMode,
@@ -19,30 +19,18 @@ beforeEach(() => {
   stack = new Stack(app, 'Stack');
 });
 
-// VectorIndexes is a preview property that is not yet part of the public
-// CloudFormation resource schema, so the built-in CloudFormation-Validate
-// plugin flags it as an unexpected property (F3002). Acknowledge it scoped to
-// the table construct only, so unrelated schema regressions are not masked.
-// TODO: remove once VectorIndexes is public in the CloudFormation schema.
-function ackVectorIndexPreview(table: Table): Table {
-  Validations.of(table).acknowledge(
-    { id: 'CloudFormation-Validate::F3002', reason: 'VectorIndexes is a preview property not yet in the public CloudFormation schema' },
-  );
-  return table;
-}
-
 function newTable(): Table {
-  return ackVectorIndexPreview(new Table(stack, 'Table', {
+  return new Table(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
     billingMode: BillingMode.PAY_PER_REQUEST,
-  }));
+  });
 }
 
 test('addVectorIndex renders VectorIndexes into the table', () => {
   const table = newTable();
 
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -56,7 +44,7 @@ test('addVectorIndex renders VectorIndexes into the table', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
     VectorIndexes: [
       {
-        IndexName: 'vi',
+        IndexName: 'vectorIndex',
         VectorAttribute: { AttributeName: 'embedding' },
         Dimensions: 128,
         DistanceFunction: 'COSINE',
@@ -74,7 +62,7 @@ test('search schema attributes are added to attribute definitions, vector attrib
   const table = newTable();
 
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 64,
     distanceFunction: VectorDistanceFunction.EUCLIDEAN,
@@ -100,7 +88,7 @@ test('vector index without a search schema renders no SearchSchema', () => {
   const table = newTable();
 
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 256,
     distanceFunction: VectorDistanceFunction.DOT_PRODUCT,
@@ -110,7 +98,7 @@ test('vector index without a search schema renders no SearchSchema', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
     VectorIndexes: [
       Match.objectLike({
-        IndexName: 'vi',
+        IndexName: 'vectorIndex',
         SearchSchema: Match.absent(),
       }),
     ],
@@ -126,7 +114,7 @@ test('throws when the table is not in PAY_PER_REQUEST billing mode', () => {
   });
 
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -136,7 +124,7 @@ test('throws when the table is not in PAY_PER_REQUEST billing mode', () => {
 test.each([0, 4097])('throws when dimensions %d is out of range', (dimensions) => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -176,7 +164,7 @@ test('throws when a GSI name collides with a vector index name', () => {
 test('throws when INCLUDE projection has no nonKeyAttributes', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -187,7 +175,7 @@ test('throws when INCLUDE projection has no nonKeyAttributes', () => {
 test('throws when dimensions is not an integer', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 2.5,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -197,14 +185,14 @@ test('throws when dimensions is not an integer', () => {
 test('tokenized dimensions is not validated at synth and resolves in the template', () => {
   const table = newTable();
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: Lazy.number({ produce: () => 128 }),
     distanceFunction: VectorDistanceFunction.COSINE,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vi', Dimensions: 128 })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', Dimensions: 128 })],
   });
 });
 
@@ -270,7 +258,7 @@ test('throws when a vector index name collides with an LSI name', () => {
 test('search schema with only INLINE_FILTER elements renders', () => {
   const table = newTable();
   table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -295,7 +283,7 @@ test('search schema with only INLINE_FILTER elements renders', () => {
 test('throws when a search schema attribute conflicts with an existing attribute type', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -308,7 +296,7 @@ test('throws when a search schema attribute conflicts with an existing attribute
 test('throws when search schema contains duplicate attribute names', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -322,7 +310,7 @@ test('throws when search schema contains duplicate attribute names', () => {
 test('throws when search schema contains more than one HASH element', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
@@ -337,7 +325,7 @@ describe('grantVectorSearch', () => {
   test('grants SearchVectors on the index resources only', () => {
     const table = newTable();
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -364,7 +352,7 @@ describe('grantVectorSearch', () => {
   test('grantReadData does not include SearchVectors', () => {
     const table = newTable();
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -381,13 +369,13 @@ describe('grantVectorSearch', () => {
   });
 
   test('also grants read access to a customer-managed KMS key', () => {
-    const table = ackVectorIndexPreview(new Table(stack, 'EncryptedTable', {
+    const table = new Table(stack, 'EncryptedTable', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       encryption: TableEncryption.CUSTOMER_MANAGED,
-    }));
+    });
     table.addVectorIndex({
-      indexName: 'vi',
+      indexName: 'vectorIndex',
       vectorAttribute: 'embedding',
       dimensions: 128,
       distanceFunction: VectorDistanceFunction.COSINE,
@@ -407,12 +395,41 @@ describe('grantVectorSearch', () => {
       },
     });
   });
+
+  test('throws when the grantee is a ServicePrincipal', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+
+    expect(() => table.grantVectorSearch(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('throws when the grantee is a wrapped ServicePrincipal', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    expect(() => table.grantVectorSearch(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
 });
 
 test('throws when search schema is an empty array', () => {
   const table = newTable();
   expect(() => table.addVectorIndex({
-    indexName: 'vi',
+    indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
