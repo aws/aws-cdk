@@ -1,0 +1,274 @@
+{
+  "/WebSocketApiSharedIntegrationInteg/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mystage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/ApiEndpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiEndpoint"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "environment": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapi32E6CE11"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mystage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mystage114C35EC"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyVerifier929FEABD"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Exports/Output{\"Ref\":\"PolicyVerifier929FEABD\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPolicyVerifier929FEABD6D2954B0"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerServiceRoleFCDC14AE"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRouteSharedIntegrationPermissionF3D3DC2E"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRoute45A0ED6A"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidisconnectRouteSharedIntegrationPermission2F352C87"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$disconnect-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidisconnectRoute421A8CB9"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route/SharedIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidefaultRouteSharedIntegrationPermission0F0C792E"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$default-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapidefaultRouteE9382DF8"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyVerifierServiceRoleA6BEE1DE"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/mywsapi/$connect-Route/SharedIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mywsapiconnectRouteSharedIntegration4C96571D"
+    }
+  ],
+  "/WebSocketApiSharedIntegrationInteg/PolicyVerifier/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyVerifierServiceRoleDefaultPolicy1764B359"
+    }
+  ]
+}

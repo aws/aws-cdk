@@ -68,7 +68,12 @@ export function parseValidationId(id: string): ValidationId {
  * Normalize the given validation ID to a fully qualified ID, using the `annotation` namespace if no namespace is provided.
  */
 export function normalizeValidationId(id: string | ValidationId, defaultNamespace: ValidationNs): string {
-  const parsed = typeof id === 'string' ? parseValidationId(id) : id;
+  const p = typeof id === 'string' ? parseValidationId(id) : id;
+
+  const parsed = {
+    namespace: p.namespace?.replaceAll(/ /g, '-') as ValidationNs | undefined,
+    ruleId: p.ruleId.replaceAll(/ /g, '-'),
+  };
 
   // Allow aliases for this namespace, but normalize it to the actual namespace we settled on.
   if (parsed.namespace && ['annotation', 'Construct-Annotations'].includes(parsed.namespace)) {
@@ -81,7 +86,7 @@ export function normalizeValidationId(id: string | ValidationId, defaultNamespac
 /**
  * Normalize the given validation ID to a fully qualified ID, using the `Annotation` namespace if no namespace is provided.
  */
-export function normalizeValidationIdForAnnotations(id: string): string {
+export function normalizeValidationIdForAnnotations(id: string | ValidationId): string {
   return normalizeValidationId(id, ANNOTATION_PLUGIN_NAMESPACE);
 }
 
@@ -107,4 +112,4 @@ export function pluginNameFromNamespace(namespace: ValidationNs): string {
 }
 
 export const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
-const ANNOTATION_PLUGIN_NAMESPACE = namespaceFromPluginName('Annotation');
+export const ANNOTATION_PLUGIN_NAMESPACE = namespaceFromPluginName('Annotation');
