@@ -302,7 +302,7 @@ export class DestinationPattern {
 /**
  * Prefix box-drawing characters to make lines look like a hanging tree
  */
-function prefixTreeChars(xs: string[], prefix = ''): string[] { 
+function prefixTreeChars(xs: string[], prefix = ''): string[] {
   const ret = new Array<string>();
   for (let i = 0; i < xs.length; i++) {
     const isLast = i === xs.length - 1;
