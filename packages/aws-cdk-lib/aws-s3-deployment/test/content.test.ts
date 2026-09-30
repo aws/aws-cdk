@@ -152,7 +152,7 @@ describe('Source.data() validates objectKey stays within the staging directory',
 
     expect(() => {
       Source.data(objectKey, 'hello, world').bind(stack, { handlerRole: handler.role! });
-    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+    }).toThrow(/points outside the deployment root/);
   });
 
   test('Source.jsonData() inherits the same validation', () => {
@@ -161,7 +161,7 @@ describe('Source.data() validates objectKey stays within the staging directory',
 
     expect(() => {
       Source.jsonData('../outside.json', { foo: 'bar' }).bind(stack, { handlerRole: handler.role! });
-    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+    }).toThrow(/points outside the deployment root/);
   });
 
   test('Source.yamlData() inherits the same validation', () => {
@@ -170,7 +170,7 @@ describe('Source.data() validates objectKey stays within the staging directory',
 
     expect(() => {
       Source.yamlData('../outside.yaml', { foo: 'bar' }).bind(stack, { handlerRole: handler.role! });
-    }).toThrow(/objectKey must be a relative path within the S3 deployment/);
+    }).toThrow(/points outside the deployment root/);
   });
 
   test('Source.data() still accepts normal nested keys', () => {
