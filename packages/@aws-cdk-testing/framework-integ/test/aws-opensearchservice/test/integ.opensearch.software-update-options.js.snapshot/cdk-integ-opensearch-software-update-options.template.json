@@ -36,6 +36,16 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "ExportsOutputRefDomain66AC69E084F15077": {
+   "Value": {
+    "Ref": "Domain66AC69E0"
+   },
+   "Export": {
+    "Name": "cdk-integ-opensearch-software-update-options:ExportsOutputRefDomain66AC69E084F15077"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

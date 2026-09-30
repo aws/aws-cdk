@@ -29,5 +29,11 @@
       "type": "aws:cdk:logicalId",
       "data": "Domain66AC69E0"
     }
+  ],
+  "/cdk-integ-opensearch-software-update-options/Exports/Output{\"Ref\":\"Domain66AC69E0\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDomain66AC69E084F15077"
+    }
   ]
 }

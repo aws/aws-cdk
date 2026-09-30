@@ -2689,7 +2689,7 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
     });
   });
 
-  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+  test('SoftwareUpdateOptions is absent when neither enableAutoSoftwareUpdate nor useLatestServiceSoftwareForBlueGreen is specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
     });
