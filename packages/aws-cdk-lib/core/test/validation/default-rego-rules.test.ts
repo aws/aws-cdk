@@ -12,6 +12,11 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.clearAllMocks();
+  disposePlugins();
+});
+
+afterAll(() => {
+  core.CloudFormationValidatePlugin._disposeSingleton();
 });
 
 const originalContextJson = process.env.CDK_CONTEXT_JSON;
@@ -309,7 +314,7 @@ describe('default GameLift rules', () => {
 
   test('an explicitly registered plugin with custom rules still evaluates the default rules', () => {
     const app = testApp();
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+    core.Validations.of(app).addPlugins(newPlugin({
       regoRules: [{
         name: 'my-custom.rego',
         content: [
@@ -368,7 +373,7 @@ describe('default GameLift rules', () => {
 
   test('includeDefaultRules: false opts out of the default rules', () => {
     const app = testApp();
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+    core.Validations.of(app).addPlugins(newPlugin({
       includeDefaultRules: false,
     }));
     const stack = new core.Stack(app, 'TestStack');
@@ -398,6 +403,21 @@ function testApp() {
       [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
     },
   });
+}
+
+let constructedPlugins: core.CloudFormationValidatePlugin[] = [];
+
+function newPlugin(props?: core.CloudFormationValidatePluginProps) {
+  const constructed = new core.CloudFormationValidatePlugin(props);
+  constructedPlugins.push(constructed);
+  return constructed;
+}
+
+function disposePlugins() {
+  for (const constructed of constructedPlugins) {
+    constructed._dispose();
+  }
+  constructedPlugins = [];
 }
 
 function loadValidationReport(asm: cxapi.CloudAssembly) {
