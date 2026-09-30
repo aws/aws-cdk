@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.272.0](https://github.com/aws/aws-cdk/compare/v2.271.0...v2.272.0) (2026-09-30)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38864](https://github.com/aws/aws-cdk/issues/38864)) ([3bd350b](https://github.com/aws/aws-cdk/commit/3bd350bd1da34749a38aeff3df72147cf340dc71))
+* **ec2:** regional NAT Gateway ([#36538](https://github.com/aws/aws-cdk/issues/36538)) ([3901dde](https://github.com/aws/aws-cdk/commit/3901dde0afe283d1bc814b2a80bef333f7a97e87)), closes [#36198](https://github.com/aws/aws-cdk/issues/36198)
+* **glue:** support Glue version 6.0 ([#38632](https://github.com/aws/aws-cdk/issues/38632)) ([372e021](https://github.com/aws/aws-cdk/commit/372e0219047fcc2e3a8b6f36ec37f0ce01cfc0e3)), closes [#38631](https://github.com/aws/aws-cdk/issues/38631)
+* **synthetics:** add environmentEncryption KMS key prop to Canary ([#38750](https://github.com/aws/aws-cdk/issues/38750)) ([ec884bc](https://github.com/aws/aws-cdk/commit/ec884bc2580c5fe9aa5fbbedf77f34fada52da3d)), closes [#38797](https://github.com/aws/aws-cdk/issues/38797)
+
+
+### Bug Fixes
+
+* **bedrockagentcore:** browser grantUse is missing ConnectBrowserAutomationStream ([#38657](https://github.com/aws/aws-cdk/issues/38657)) ([aff4a2f](https://github.com/aws/aws-cdk/commit/aff4a2f3c7258f7a206663baf3b3857bbcccd1b8)), closes [#38656](https://github.com/aws/aws-cdk/issues/38656) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/perms.ts#L61-L65](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/perms.ts/issues/L61-L65) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/perms.ts#L21-L28](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/perms.ts/issues/L21-L28)
+* **core:** synth crashes with EISDIR on cloud-placeholder directories in cdk.out ([#38672](https://github.com/aws/aws-cdk/issues/38672)) ([269052d](https://github.com/aws/aws-cdk/commit/269052d635d40455b59dd4ad2117ac1bca4ceb87)), closes [#38653](https://github.com/aws/aws-cdk/issues/38653) [#38299](https://github.com/aws/aws-cdk/issues/38299)
+* **lambda-nodejs:** local bundling fails under AllSigned PowerShell execution policy ([#38447](https://github.com/aws/aws-cdk/issues/38447)) ([edd162d](https://github.com/aws/aws-cdk/commit/edd162d84af71a0dd7876229115a231599e37df9)), closes [#38439](https://github.com/aws/aws-cdk/issues/38439) [#37412](https://github.com/aws/aws-cdk/issues/37412)
+
 ## [2.271.0](https://github.com/aws/aws-cdk/compare/v2.270.0...v2.271.0) (2026-09-25)
 
 
