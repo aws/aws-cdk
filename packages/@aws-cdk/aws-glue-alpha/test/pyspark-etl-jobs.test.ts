@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template, Match, Annotations } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -147,14 +147,60 @@ describe('Job', () => {
     });
   });
 
+  describe('Continuous logging encryption warning', () => {
+    const warningId = '@aws-cdk/aws-glue-alpha:unencryptedContinuousLogging';
+
+    test('warns when continuous logging is enabled by default and no security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/PySparkETLJob', Match.stringLikeRegexp('Continuous CloudWatch logging is enabled but no SecurityConfiguration'));
+    });
+
+    test('warns when continuous logging is explicitly enabled and no security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        continuousLogging: { enabled: true },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/PySparkETLJob', Match.stringLikeRegexp('Continuous CloudWatch logging is enabled but no SecurityConfiguration'));
+    });
+
+    test('does not warn when a security configuration is attached', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/PySparkETLJob', Match.stringLikeRegexp(warningId));
+    });
+
+    test('does not warn when continuous logging is explicitly disabled', () => {
+      new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        continuousLogging: { enabled: false },
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/PySparkETLJob', Match.stringLikeRegexp(warningId));
+    });
+  });
+
   describe('Create PySpark ETL Job with G2 worker type with 2 workers', () => {
     beforeEach(() => {
       job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
         role,
         script,
         jobName: 'PySparkETLJob',
-        workerType: glue.WorkerType.G_2X,
-        numberOfWorkers: 2,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
       });
     });
 
@@ -203,8 +249,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PySparkETLJob',
-        workerType: glue.WorkerType.G_4X,
-        numberOfWorkers: 4,
+        workerConfiguration: { workerType: glue.WorkerType.G_4X, numberOfWorkers: 4 },
       });
     });
 
@@ -253,8 +298,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PySparkETLJob',
-        workerType: glue.WorkerType.G_8X,
-        numberOfWorkers: 8,
+        workerConfiguration: { workerType: glue.WorkerType.G_8X, numberOfWorkers: 8 },
       });
     });
 
@@ -361,8 +405,7 @@ describe('Job', () => {
             bucket: sparkUIBucket,
             prefix: 'prefix',
           },
-          numberOfWorkers: 8,
-          workerType: glue.WorkerType.G_8X,
+          workerConfiguration: { workerType: glue.WorkerType.G_8X, numberOfWorkers: 8 },
           continuousLogging: { enabled: false },
         });
       }).toThrow('Invalid prefix format (value: prefix)');
@@ -446,7 +489,7 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V3_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -456,7 +499,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
       });
     });
@@ -559,7 +601,7 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V3_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -569,7 +611,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
         jobRunQueuingEnabled: true,
       });

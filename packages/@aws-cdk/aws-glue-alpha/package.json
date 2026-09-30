@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-glue-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::Glue",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-glue",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -103,8 +103,8 @@
   "engines": {
     "node": ">= 20.0.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },

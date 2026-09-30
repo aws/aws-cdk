@@ -1,12 +1,12 @@
 import type { IConstruct } from 'constructs';
-import { Dependable } from 'constructs';
-import { resolveReferences } from './refs';
+import { resolveReferences, resolveReferencesInElements } from './refs';
 import { CfnResource } from '../cfn-resource';
+import { debugModeEnabled } from '../debug';
 import type { Stack } from '../stack';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
-import { writePropertyAssignmentMetadataForConstruct } from './resolve';
-import { debugModeEnabled } from '../debug';
 import { STACK_TYPE, stageOf } from './core-construct-finders';
+import { reifyConstructDependencies } from './deps';
+import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
   if (!debugModeEnabled()) return;
@@ -33,33 +33,18 @@ function writePropertyAssignmentMetadata(root: IConstruct) {
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: IConstruct) {
-  // apply dependencies between resources in depending subtrees
-  for (const dependency of findTransitiveDeps(root)) {
-    const targetCfnResources = findCfnResources(dependency.target);
-
-    // Gets iterated multiple times so make the iterator concrete
-    const sourceCfnResources = Array.from(findCfnResources(dependency.source));
-
-    for (const target of targetCfnResources) {
-      for (const source of sourceCfnResources) {
-        source.addResourceDependency(target);
-      }
-    }
-  }
+  reifyConstructDependencies(root);
 
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
 
-  // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare its template asset.
-  //
-  // Depth-first since the a nested stack's template hash will be reflected in
-  // its parent's template, which then changes the parent's hash, etc.
-  const queue = findAllNestedStacks(root);
+  // Depth-first (children first) list of nested stacks, since a nested stack's
+  // template hash will be reflected in its parent's template, which then
+  // changes the parent's hash, etc.
+  const nestedStacks = findAllNestedStacks(root);
 
-  if (queue.length > 0) {
-    while (queue.length > 0) {
-      const nested = queue.shift()!;
+  if (nestedStacks.length > 0) {
+    for (const nested of nestedStacks) {
       defineNestedStackAsset(nested);
     }
 
@@ -68,12 +53,17 @@ export function prepareApp(root: IConstruct) {
     // Adding nested stack assets may have added CfnParameters to the top-level
     // stack which are referenced in a deeper-level stack. The values of these
     // parameters need to be carried through to the right location via Nested
-    // Stack parameters, which `resolveReferences()` will do.
+    // Stack parameters, which reference resolution will do.
+    //
+    // Everything a nested stack asset introduces (the template URL, the stack
+    // parameters and the copied tags) is consumed by that nested stack's own
+    // `AWS::CloudFormation::Stack` resource, so only those resources need to be
+    // revisited.
     //
     // Yes, this may add `Parameter` elements to a template whose hash has
     // already been calculated, but the invariant that if the functional part
     // of the template changes its hash will change is still upheld.
-    resolveReferences(root);
+    resolveReferencesInElements(nestedStacks.map(s => s.nestedStackResource!));
   }
 }
 
@@ -113,46 +103,6 @@ function findAllNestedStacks(root: IConstruct) {
   return result;
 }
 
-/**
- * Find all resources in a set of constructs
- */
-function* findCfnResources(root: IConstruct): IterableIterator<CfnResource> {
-  for (const node of iterateDfsPreorder(root)) {
-    if (CfnResource.isCfnResource(node)) {
-      yield node;
-    }
-  }
-}
-
 interface INestedStackPrivateApi {
   _prepareTemplateAsset(): boolean;
-}
-
-/**
- * Return all dependencies registered on this node or any of its children
- */
-function findTransitiveDeps(root: IConstruct): Dependency[] {
-  const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
-  const ret = new Array<Dependency>();
-
-  for (const source of iterateDfsPreorder(root)) {
-    for (const dependable of source.node.dependencies) {
-      for (const target of Dependable.of(dependable).dependencyRoots) {
-        let foundTargets = found.get(source);
-        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
-
-        if (!foundTargets.has(target)) {
-          ret.push({ source, target });
-          foundTargets.add(target);
-        }
-      }
-    }
-  }
-
-  return ret;
-}
-
-interface Dependency {
-  readonly source: IConstruct;
-  readonly target: IConstruct;
 }
