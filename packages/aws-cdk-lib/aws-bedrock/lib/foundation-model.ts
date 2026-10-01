@@ -389,6 +389,9 @@ export class FoundationModelIdentifier {
   /** Base model "openai.gpt-6-luna". */
   public static readonly OPENAI_GPT_6_LUNA = new FoundationModelIdentifier('openai.gpt-6-luna');
 
+  /** Base model "openai.gpt-6.1-sol". */
+  public static readonly OPENAI_GPT_6_1_SOL = new FoundationModelIdentifier('openai.gpt-6.1-sol');
+
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 

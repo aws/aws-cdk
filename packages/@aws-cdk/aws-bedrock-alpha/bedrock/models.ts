@@ -1031,6 +1031,20 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    ***************************************************************************/
 
   /**
+   * OpenAI's GPT-6.1 Sol model, with performance approaching GPT-6 Astra at Sol pricing.
+   * Advances coding, professional work, and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Coding, professional work, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_1_SOL = new BedrockFoundationModel('openai.gpt-6.1-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
    * OpenAI's GPT-6 Astra model, the most capable OpenAI model on Bedrock.
    * Built for complex reasoning, coding, computer use, research, and
    * document creation.

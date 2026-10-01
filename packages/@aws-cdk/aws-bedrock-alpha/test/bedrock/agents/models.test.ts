@@ -269,6 +269,10 @@ describe('BedrockFoundationModel', () => {
     });
 
     test('OpenAI models are configured correctly', () => {
+      expect(BedrockFoundationModel.OPENAI_GPT_6_1_SOL.modelId).toBe('openai.gpt-6.1-sol');
+      expect(BedrockFoundationModel.OPENAI_GPT_6_1_SOL.supportsAgents).toBe(false);
+      expect(BedrockFoundationModel.OPENAI_GPT_6_1_SOL.supportsCrossRegion).toBe(true);
+
       expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.modelId).toBe('openai.gpt-6-astra');
       expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.supportsAgents).toBe(false);
       expect(BedrockFoundationModel.OPENAI_GPT_6_ASTRA.supportsCrossRegion).toBe(true);
