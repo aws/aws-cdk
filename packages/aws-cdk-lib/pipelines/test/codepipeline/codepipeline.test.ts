@@ -216,61 +216,34 @@ test.each([
 });
 
 test.each([
-  [ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
-  [ExecutionMode.QUEUED, 'QUEUED'],
-  [ExecutionMode.PARALLEL, 'PARALLEL'],
-])('can specify execution mode %s for v2 pipeline', (type, expected) => {
-  const stack = new cdk.Stack();
-  const repo = new ccommit.Repository(stack, 'Repo', {
-    repositoryName: 'MyRepo',
-  });
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
-  new CodePipeline(stack, 'Pipeline', {
-    synth: new cdkp.ShellStep('Synth', {
-      input: cdkInput,
-      installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
-    }),
-    pipelineType: PipelineType.V2,
-    executionMode: type,
-  });
+  [PipelineType.V2, undefined, Match.absent()],
+  [PipelineType.V1, ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
+  [PipelineType.V2, ExecutionMode.QUEUED, 'QUEUED'],
+  [PipelineType.V2, ExecutionMode.PARALLEL, 'PARALLEL'],
+])('pipeline type %s with execution mode %s', (pipelineType, executionMode, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { pipelineType, executionMode });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
     ExecutionMode: expected,
   });
 });
 
-test('can specify execution mode SUPERSEDED for v1 pipeline', () => {
-  const stack = new cdk.Stack();
-  const repo = new ccommit.Repository(stack, 'Repo', {
-    repositoryName: 'MyRepo',
-  });
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
-  new CodePipeline(stack, 'Pipeline', {
-    synth: new cdkp.ShellStep('Synth', {
-      input: cdkInput,
-      installCommands: ['npm ci'],
-      commands: [
-        'npm run build',
-        'npx cdk synth',
-      ],
-    }),
-    pipelineType: PipelineType.V1,
-    executionMode: ExecutionMode.SUPERSEDED,
+test('warns when execution mode is PARALLEL', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    pipelineType: PipelineType.V2,
+    executionMode: ExecutionMode.PARALLEL,
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    ExecutionMode: 'SUPERSEDED',
-  });
+  Annotations.fromStack(pipelineStack).hasWarning('*', Match.stringLikeRegexp('PARALLEL execution mode'));
+});
+
+test.each([undefined, ExecutionMode.SUPERSEDED, ExecutionMode.QUEUED])('does not warn when execution mode is %s', (executionMode) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { pipelineType: PipelineType.V2, executionMode });
+
+  Annotations.fromStack(pipelineStack).hasNoWarning('*', Match.stringLikeRegexp('PARALLEL execution mode'));
 });
 
 test('throws if executionMode is QUEUED but pipeline type is not V2', () => {

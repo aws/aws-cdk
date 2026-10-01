@@ -50,6 +50,8 @@ export interface CodePipelineProps {
   /**
    * The method that the pipeline will use to handle multiple executions.
    *
+   * `QUEUED` and `PARALLEL` require `pipelineType: PipelineType.V2`.
+   *
    * @default - ExecutionMode.SUPERSEDED
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts-how-it-works.html
@@ -523,6 +525,9 @@ export class CodePipeline extends PipelineBase {
       const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
       if (!isDefaultV2 && this.props.pipelineType === undefined) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
+      }
+      if (this.props.executionMode === cp.ExecutionMode.PARALLEL) {
+        Annotations.of(this).addWarningV2('@aws-cdk/pipelines:parallelExecutionMode', 'PARALLEL execution mode lets executions overlap: approvals, deploy order and self-mutation are no longer serialized. Only use it when your stages can safely run concurrently.');
       }
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,

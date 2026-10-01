@@ -18,7 +18,7 @@
         "validateOnSynth": true,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cb2dea76b65bd66a374af57914e8583b3c20712b5758474102ef97620d68ec5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65ef286060dcadc0274c32dbef334246366ddde0ef4d6a11c2095c707c2117fc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +48,6 @@
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
-            "userValue": "1",
             "recommendedValue": true,
             "explanation": "Switch to new stack synthesis method which enables CI/CD",
             "unconfiguredBehavesLike": {
@@ -308,7 +307,7 @@
             "explanation": "Enables Pipeline to set the default value for crossAccountKeys to false."
           },
           "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Enables Pipeline to set the default pipeline type to V2."
           },
@@ -449,7 +448,6 @@
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Remove the root account principal from Stage addActions trust policy",
             "unconfiguredBehavesLike": {
