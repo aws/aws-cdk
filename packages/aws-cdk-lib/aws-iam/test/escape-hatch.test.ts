@@ -11,7 +11,6 @@ function makeStackAndUser() {
   const stack = new Stack();
   Validations.of(stack).acknowledge(
     { id: 'CloudFormation-Validate::F3002', reason: "For these tests, we don't care about property names being valid" },
-    { id: 'CloudFormation-Validate::F3003', reason: "For these tests, we don't care about property names being valid" },
   );
   const user = new iam.User(stack, 'user', { userName: 'MyUserName' });
   return { stack, user };
@@ -62,6 +61,12 @@ describe('IAM escape hatches', () => {
   test('addOverride should allow overriding properties', () => {
     // GIVEN
     const { stack, user } = makeStackAndUser();
+
+    Validations.of(stack).acknowledge(
+      { id: 'CloudFormation-Validate::E3001', reason: "For these tests, we don't care about property names being valid" },
+      { id: 'CloudFormation-Validate::E3016', reason: "For these tests, we don't care about property names being valid" },
+    );
+
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.cfnOptions.updatePolicy = { useOnlineResharding: true };
 

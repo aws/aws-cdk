@@ -115,9 +115,10 @@ Flags come in three types:
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
-| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
+| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
+| [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 
 <!-- END table -->
 
@@ -159,6 +160,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
     "@aws-cdk/aws-eks:defaultToAL2023": true,
@@ -267,7 +269,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
-| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | config |  | `false` | `"strong"` |
+| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | config |  | `false` | `"strong"` |
 
 <!-- END diff -->
 
@@ -2471,14 +2473,12 @@ consolidate both displays.
 
 ### @aws-cdk/core:defaultCrossStackReferences
 
-*Controls whether cross-region stack references are strong, weak, or both*
+*Controls whether cross-stack references are strong, weak, or both*
 
 Flag type: Configuration option
 
-Controls the default type of cross-region stack references. Accepted values are
-`"strong"`, `"weak"`, and `"both"`. This setting only affects same-account,
-cross-region references. Cross-account references are always weak, and same-region
-references are always strong (Fn::ImportValue).
+Controls the default type of cross-stack references. Accepted values are
+`"strong"`, `"weak"`, and `"both"`.
 
 The flag is read from the **consumer** stack's context, not the producer's.
 
@@ -2551,6 +2551,35 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.262.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs:removeEmptyLoadBalancers
+
+*Render an empty `LoadBalancers` array on an ECS service that has no target groups*
+
+Flag type: Backwards incompatible bugfix
+
+CloudFormation distinguishes between an absent `LoadBalancers` property, which leaves the live
+service configuration untouched, and an empty array, which removes the existing load balancer
+registrations. Without this flag the CDK omits the property when a service has no target groups,
+so removing the last target group from a service never reaches the deployed service: it keeps
+serving traffic from the target groups it was registered in, and a later deployment can fail with
+`The target group with targetGroupArn ... does not have an associated load balancer`.
+
+When this flag is enabled, a service with no target groups renders `LoadBalancers: []` and
+CloudFormation removes the registrations.
+
+Enabling this adds `LoadBalancers: []` to every ECS service that has no target groups, including
+services that never had any. Amazon ECS starts a new deployment when a load balancer configuration
+is added, updated or removed, so expect a one-time deployment of those services.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.269.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
 
 
 <!-- END details -->

@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { RemovalPolicy, Stack } from '../../core';
+import { App, RemovalPolicy, Stack, Validations } from '../../core';
 import * as s3 from '../lib';
 import type { CfnBucketPolicy } from '../lib';
 
@@ -154,6 +154,19 @@ describe('bucket policy', () => {
     }).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
+  test('fails if bucket policy has no resources', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const myBucket = new s3.Bucket(stack, 'MyBucket');
+    myBucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:GetObject*'],
+      principals: [new AnyPrincipal()],
+      // Missing: resources
+    }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one resource/);
+  });
+
   describe('fromCfnBucketPolicy()', () => {
     const stack = new Stack();
 
@@ -180,6 +193,11 @@ describe('bucket policy', () => {
 
     test('should synthesize without errors and create duplicate cfn resource', () => {
       const testStack = new Stack();
+      Validations.of(testStack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
         policyDocument: {
           'Statement': [

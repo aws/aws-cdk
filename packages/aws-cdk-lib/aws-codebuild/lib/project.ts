@@ -10,6 +10,7 @@ import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import type { IFileSystemLocation } from './file-location';
 import type { IFleet } from './fleet';
+import type { HostKernel } from './host-kernel';
 import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
@@ -928,7 +929,7 @@ export class Project extends ProjectBase {
             service: 'ssm',
             resource: 'parameter',
             // If the parameter name starts with / the resource name is not separated with a double '/'
-            // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+            // arn:aws:ssm:region:111111111111:parameter/PARAM_NAME
             resourceName: envVariableValue.startsWith('/')
               ? envVariableValue.slice(1)
               : envVariableValue,
@@ -1435,6 +1436,7 @@ export class Project extends ProjectBase {
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       fleet: this.configureFleet(env),
+      hostKernel: env.hostKernel,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1674,6 +1676,20 @@ export interface BuildEnvironment {
   readonly fleet?: IFleet;
 
   /**
+   * The host operating system kernel used for the builds.
+   *
+   * The host kernel does not affect the build environment operating system,
+   * which is determined by the `buildImage`.
+   *
+   * Only supported by the `LINUX_CONTAINER`, `ARM_CONTAINER`, `LINUX_EC2` and `ARM_EC2`
+   * environment types. Not supported by Windows, Lambda or Mac build images.
+   *
+   * @default - the default host kernel chosen by CodeBuild for the build image
+   * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectEnvironment.html#CodeBuild-Type-ProjectEnvironment-hostKernel
+   */
+  readonly hostKernel?: HostKernel;
+
+  /**
    * Indicates how the project builds Docker images. Specify true to enable
    * running the Docker daemon inside a Docker container. This value must be
    * set to true only if this build project will be used to build Docker
@@ -1902,67 +1918,6 @@ export class LinuxBuildImage implements IBuildImage {
    * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_BASE = LinuxBuildImage.codeBuildImage('aws/codebuild/ubuntu-base:14.04');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:24.4.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/android-java-8:26.1.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_17_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:17.09.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOCKER_18_09_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/docker:18.09.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_10 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.10');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_GOLANG_1_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/golang:1.11');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-8');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_9 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-9');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_OPEN_JDK_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/java:openjdk-11');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_14_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.14.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_10_1_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:10.1.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_8_11_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:8.11.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_NODEJS_6_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/nodejs:6.3.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_5_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:5.6');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PHP_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/php:7.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_7_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.7.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_6_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.6.5');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_5_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.5.2');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_4_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.4.5');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_3_3_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:3.3.6');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_PYTHON_2_7_12 = LinuxBuildImage.codeBuildImage('aws/codebuild/python:2.7.12');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.3');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_5_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.5.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_3_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.3.1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_RUBY_2_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/ruby:2.2.5');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-1');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.0');
-  /** @deprecated Use {@link LinuxBuildImage.STANDARD_7_0} and specify runtime in buildspec runtime-versions section */
-  public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = LinuxBuildImage.codeBuildImage('aws/codebuild/dot-net:core-2.1');
-
   /**
    * @returns a x86-64 Linux build image from a Docker Hub image.
    */
@@ -2107,16 +2062,6 @@ interface WindowsBuildImageProps {
  */
 export class WindowsBuildImage implements IBuildImage {
   /**
-   * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
-   *
-   * @deprecated {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0} should be used instead.
-   */
-  public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
-    imageId: 'aws/codebuild/windows-base:1.0',
-    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
-  });
-
-  /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
@@ -2251,6 +2196,10 @@ export class WindowsBuildImage implements IBuildImage {
 
     if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
       errors.push('Windows images do not support Lambda compute types');
+    }
+
+    if (buildEnvironment.hostKernel) {
+      errors.push('Windows images do not support host kernel selection');
     }
 
     const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
@@ -2394,6 +2343,10 @@ export class MacBuildImage implements IBuildImage {
 
     if (!buildEnvironment.fleet) {
       errors.push('Mac images must be used with a fleet');
+    }
+
+    if (buildEnvironment.hostKernel) {
+      errors.push('Mac images do not support host kernel selection');
     }
 
     return errors;
