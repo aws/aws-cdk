@@ -13,7 +13,7 @@ import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -472,6 +472,9 @@ export class StateMachine extends StateMachineBase {
     if (props.logs) {
       this.validateLogOptions(props.logs);
     }
+    if (props.timeout !== undefined && props.timeout.toSeconds() <= 0) {
+      throw new ValidationError(lit`TimeoutMustBePositive`, 'Timeout must be positive', this);
+    }
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
@@ -795,7 +798,19 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyTimeoutIgnored',
+        'timeout is ignored when using FileDefinitionBody. Set TimeoutSeconds directly in the ASL definition file.');
+    }
+    if (sfnProps.comment !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyCommentIgnored',
+        'comment is ignored when using FileDefinitionBody. Set Comment directly in the ASL definition file.');
+    }
+    if (sfnProps.queryLanguage !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyQueryLanguageIgnored',
+        'queryLanguage is ignored when using FileDefinitionBody. Set QueryLanguage directly in the ASL definition file.');
+    }
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -814,7 +829,16 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout !== undefined) {
+      const definition = JSON.parse(this.body);
+      if (definition.TimeoutSeconds === undefined) {
+        definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+      }
+      return {
+        definitionString: JSON.stringify(definition),
+      };
+    }
     return {
       definitionString: this.body,
     };
