@@ -97,7 +97,10 @@ export interface RuntimeProps {
   /**
    * The platform version of the runtime.
    *
-   * @default PlatformVersion.V1
+   * When omitted, the property is not rendered and the AgentCore service applies
+   * its own default platform version.
+   *
+   * @default - the AgentCore service default platform version
    */
   readonly platformVersion?: PlatformVersion;
 
