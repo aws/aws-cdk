@@ -17,7 +17,7 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import type { LifecycleConfiguration, PlatformVersion, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
@@ -93,6 +93,13 @@ export interface RuntimeProps {
    * @default - ProtocolType.HTTP
    */
   readonly protocolConfiguration?: ProtocolType;
+
+  /**
+   * The platform version of the runtime.
+   *
+   * @default PlatformVersion.V1
+   */
+  readonly platformVersion?: PlatformVersion;
 
   /**
    * Environment variables for the agent runtime
@@ -384,6 +391,7 @@ export class Runtime extends RuntimeBase {
       agentRuntimeArtifact: Lazy.any({ produce: () => this.renderAgentRuntimeArtifact() }),
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       protocolConfiguration: Lazy.string({ produce: () => this.protocolConfiguration.value }),
+      platformVersion: props.platformVersion?.value,
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables(props.environmentVariables) }),
       tags: props.tags ?? {},
