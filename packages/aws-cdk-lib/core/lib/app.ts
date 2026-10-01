@@ -229,8 +229,9 @@ export class App extends Stage {
    * new MyApplication(app, 'Preprod', { stage: 'preprod' });
    * new MyApplication(app, 'Prod1', { stage: 'prod1' });
    *
-   * // Other prod stages only if draft mode is not enabled
-   * if (!App.of(this).isDraftModeSynth) {
+   * // Other prod stages only if draft mode is not enabled.
+   * // Use App.of(this).isDraftModeSynth if you are inside a construct and need to check the app's draft mode setting.
+   * if (!app.isDraftModeSynth) {
    *   new MyApplication(app, 'Prod2', { stage: 'prod2' });
    *   new MyApplication(app, 'Prod3', { stage: 'prod3' });
    *   new MyApplication(app, 'Prod4', { stage: 'prod4' });
