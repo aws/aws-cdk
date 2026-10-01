@@ -1,5 +1,5 @@
 import { FakeTask } from './private/fake-task';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -1530,5 +1530,27 @@ describe('State Machine', () => {
         Type: 'AWS_OWNED_KEY',
       }),
     });
+  });
+
+  test('warns when timeout is used with non-ChainDefinitionBody', () => {
+    const stack = new cdk.Stack();
+
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/MyStateMachine', Match.stringLikeRegexp('timeout.*only applied.*fromChainable'));
+  });
+
+  test('does not warn when timeout is used with ChainDefinitionBody', () => {
+    const stack = new cdk.Stack();
+
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/MyStateMachine', Match.anyValue());
   });
 });
