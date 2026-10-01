@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
@@ -392,6 +392,75 @@ describe('stage', () => {
             'LogGroupF5B46931',
             'Arn',
           ],
+        },
+      },
+    });
+  });
+
+  test.each([
+    ['aws', 'us-east-1', 'eu-west-1'],
+    ['aws-cn', 'cn-north-1', 'cn-northwest-1'],
+    ['aws-us-gov', 'us-gov-east-1', 'us-gov-west-1'],
+  ])('the log group destination ARN preserves the imported account and region in %s', (partition, stackRegion, importedRegion) => {
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '111111111111', region: stackRegion },
+    });
+    stack.node.setContext(cxapi.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, true);
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+    const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'ImportedLogGroup',
+      `arn:${partition}:logs:${importedRegion}:222222222222:log-group:/other/group:*`);
+
+    new apigateway.Stage(stack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            `:logs:${importedRegion}:222222222222:log-group:/other/group`,
+          ]],
+        },
+      },
+    });
+  });
+
+  test.each([true, false])('the destination uses the stage flag (%s) when the log group is in another stack', isEnabled => {
+    const app = new cdk.App();
+    const apiStack = new cdk.Stack(app, 'ApiStack');
+    const logStack = new cdk.Stack(app, 'LogStack');
+    apiStack.node.setContext(cxapi.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, isEnabled);
+    logStack.node.setContext(cxapi.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, !isEnabled);
+    const logGroup = new logs.LogGroup(logStack, 'LogGroup', { logGroupName: '/api/access' });
+    const api = new apigateway.RestApi(apiStack, 'test-api', { cloudWatchRole: false, deploy: false });
+    const deployment = new apigateway.Deployment(apiStack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    new apigateway.Stage(apiStack, 'my-stage', {
+      deployment,
+      accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    });
+
+    Template.fromStack(apiStack).hasResourceProperties('AWS::ApiGateway::Stage', {
+      AccessLogSetting: {
+        DestinationArn: isEnabled ? {
+          'Fn::Join': ['', [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':log-group:',
+            { 'Fn::ImportValue': Match.stringLikeRegexp('^LogStack:ExportsOutputRefLogGroup') },
+          ]],
+        } : {
+          'Fn::ImportValue': Match.stringLikeRegexp('^LogStack:ExportsOutputFnGetAttLogGroup.*Arn'),
         },
       },
     });

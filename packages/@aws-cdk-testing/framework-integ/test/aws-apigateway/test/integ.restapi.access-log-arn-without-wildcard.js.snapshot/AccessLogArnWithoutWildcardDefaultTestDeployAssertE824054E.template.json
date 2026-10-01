@@ -1,0 +1,211 @@
+{
+ "Resources": {
+  "AwsApiCallAPIGatewaygetStagecfe72197b5da84c467bfe62d3770a68b": {
+   "Type": "Custom::DeployAssert@SdkCallAPIGatewaygetStage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "APIGateway",
+    "api": "getStage",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"accessLogSettings\":{\"destinationArn\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":log-group:",
+       {
+        "Fn::ImportValue": "ApiGatewayAccessLogArnWithoutWildcard:ExportsOutputRefAccessLogs8B620ECA39F1F795"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "restApiId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "ApiGatewayAccessLogArnWithoutWildcard:ExportsOutputRefApiF70053CD5653BA4D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "stageName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "ApiGatewayAccessLogArnWithoutWildcard:ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1790877806032"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "apigateway:GetStage"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "apigateway:GET"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":apigateway:",
+             {
+              "Ref": "AWS::Region"
+             },
+             "::/restapis/",
+             {
+              "Fn::ImportValue": "ApiGatewayAccessLogArnWithoutWildcard:ExportsOutputRefApiF70053CD5653BA4D"
+             },
+             "/stages/",
+             {
+              "Fn::ImportValue": "ApiGatewayAccessLogArnWithoutWildcard:ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "20f58d921e577870d21cee7f1a14812ce8c4f2b26ac4d5a8038ed65b9f1f991d.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallAPIGatewaygetStagecfe72197b5da84c467bfe62d3770a68b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallAPIGatewaygetStagecfe72197b5da84c467bfe62d3770a68b",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -36,11 +36,14 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: IStageRef): AccessLogDestinationConfig {
-    if (FeatureFlags.of(this.logGroup).isEnabled(APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD)) {
+  public bind(stage: IStageRef): AccessLogDestinationConfig {
+    const isArnWithoutWildcard = FeatureFlags.of(stage).isEnabled(APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD);
+    if (isArnWithoutWildcard) {
       return {
         destinationArn: Stack.of(this.logGroup).formatArn({
           service: 'logs',
+          account: this.logGroup.env.account,
+          region: this.logGroup.env.region,
           resource: 'log-group',
           resourceName: this.logGroup.logGroupRef.logGroupName,
           arnFormat: ArnFormat.COLON_RESOURCE_NAME,
