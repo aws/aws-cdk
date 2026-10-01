@@ -1,10 +1,12 @@
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+import type { ISecretRef } from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
+import { warnOnPlaintextSecrets } from './private/secret-detection';
 
 /**
  * The type of the glue connection
@@ -252,6 +254,70 @@ export interface IConnection extends cdk.IResource {
 }
 
 /**
+ * VPC network placement for a Glue `Connection`.
+ *
+ * A Glue connection targets a single subnet. Choose the placement with one of
+ * the mutually-exclusive factories — an explicit subnet, or a VPC to select one
+ * from — so a subnet paired with a VPC, or a subnet selection without a VPC,
+ * cannot be expressed.
+ */
+export class ConnectionNetwork {
+  /**
+   * Pin the connection to a specific subnet.
+   *
+   * @param subnet the subnet the connection targets.
+   */
+  public static subnet(subnet: ec2.ISubnet): ConnectionNetwork {
+    return new ConnectionNetwork(subnet, undefined, undefined);
+  }
+
+  /**
+   * Select the connection's subnet from a VPC. Since a Glue connection targets
+   * a single subnet, the first subnet of the selection is used.
+   *
+   * @param vpc the VPC to select a subnet from.
+   * @param vpcSubnets which subnets to select from.
+   * @default vpcSubnets - private subnets
+   */
+  public static vpc(vpc: ec2.IVpc, vpcSubnets?: ec2.SubnetSelection): ConnectionNetwork {
+    return new ConnectionNetwork(undefined, vpc, vpcSubnets);
+  }
+
+  /** @internal */
+  public readonly _subnet?: ec2.ISubnet;
+  /** @internal */
+  public readonly _vpc?: ec2.IVpc;
+  /** @internal */
+  public readonly _vpcSubnets?: ec2.SubnetSelection;
+
+  private constructor(subnet?: ec2.ISubnet, vpc?: ec2.IVpc, vpcSubnets?: ec2.SubnetSelection) {
+    this._subnet = subnet;
+    this._vpc = vpc;
+    this._vpcSubnets = vpcSubnets;
+  }
+
+  /**
+   * Resolve the single subnet this network targets.
+   *
+   * @internal
+   */
+  public _resolveSubnet(scope: constructs.Construct): ec2.ISubnet | undefined {
+    if (this._subnet) {
+      return this._subnet;
+    }
+    // A Glue connection targets a single subnet, so use the first subnet of the selection.
+    const selected = this._vpc!.selectSubnets(this._vpcSubnets);
+    // `isPendingLookup` is true for imported VPCs whose subnets are not yet
+    // resolved (e.g. `fromLookup`), where an empty selection is expected and
+    // will materialize on a later synth. Only fail on a genuinely empty selection.
+    if (!selected.isPendingLookup && selected.subnets.length === 0) {
+      throw new cdk.ValidationError(lit`ConnectionNoSubnetsSelected`, '`vpcSubnets` selected no subnets from the provided `vpc`; adjust the selection or use `ConnectionNetwork.subnet(...)` to target a specific subnet', scope);
+    }
+    return selected.subnets[0];
+  }
+}
+
+/**
  * Base Connection Options
  */
 export interface ConnectionOptions {
@@ -275,6 +341,18 @@ export interface ConnectionOptions {
   readonly properties?: { [key: string]: string };
 
   /**
+   * A reference to a Secrets Manager secret holding the credentials for this connection.
+   *
+   * The secret is referenced through the connection's `SECRET_ID` property, so
+   * Glue reads the credentials at runtime and the secret value never appears in
+   * the synthesized template. Prefer this over placing credentials directly in
+   * `properties`. Accepts any `secretsmanager.ISecret`.
+   *
+   * @default - no secret; any credentials must be supplied via `properties`
+   */
+  readonly secret?: ISecretRef;
+
+  /**
    * A list of criteria that can be used in selecting this connection.
    * This is useful for filtering the results of https://awscli.amazonaws.com/v2/documentation/api/latest/reference/glue/get-connections.html
    * @default no match criteria
@@ -288,10 +366,15 @@ export interface ConnectionOptions {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * The VPC subnet to connect to resources within a VPC. See more at https://docs.aws.amazon.com/glue/latest/dg/start-connecting.html.
-   * @default no subnet
+   * The VPC network placement for this connection, so it can reach resources
+   * inside a VPC. See more at https://docs.aws.amazon.com/glue/latest/dg/start-connecting.html.
+   *
+   * Build it with `ConnectionNetwork.subnet(subnet)` to pin a specific subnet,
+   * or `ConnectionNetwork.vpc(vpc, vpcSubnets?)` to let the CDK select one.
+   *
+   * @default - no VPC network placement
    */
-  readonly subnet?: ec2.ISubnet;
+  readonly network?: ConnectionNetwork;
 }
 
 /**
@@ -364,16 +447,42 @@ export class Connection extends cdk.Resource implements IConnection {
 
     this.properties = props.properties || {};
 
-    const physicalConnectionRequirements = props.subnet || props.securityGroups ? {
-      availabilityZone: props.subnet ? props.subnet.availabilityZone : undefined,
-      subnetId: props.subnet ? props.subnet.subnetId : undefined,
+    const subnet = props.network?._resolveSubnet(this);
+
+    const physicalConnectionRequirements = subnet || props.securityGroups ? {
+      availabilityZone: subnet ? subnet.availabilityZone : undefined,
+      subnetId: subnet ? subnet.subnetId : undefined,
       securityGroupIdList: props.securityGroups ? props.securityGroups.map(sg => sg.securityGroupId) : undefined,
     } : undefined;
+
+    const secretId = props.secret?.secretRef.secretId;
 
     this.resource = new CfnConnection(this, 'Resource', {
       catalogId: cdk.Stack.of(this).account,
       connectionInput: {
-        connectionProperties: cdk.Lazy.any({ produce: () => Object.keys(this.properties).length > 0 ? this.properties : undefined }),
+        connectionProperties: cdk.Lazy.any({
+          produce: () => {
+            // Inspect the final property set at synthesis time so properties
+            // added via `addProperty` are covered as well — a `SECRET_ID` added
+            // after construction would otherwise be silently overwritten by the
+            // one injected from `secret`.
+            if (secretId !== undefined && this.properties.SECRET_ID !== undefined) {
+              throw new cdk.ValidationError(lit`ConnectionSecretConflict`, 'cannot set both `secret` and a `SECRET_ID` connection property', this);
+            }
+            // The `SECRET_ID` injected from `secret` is a reference, not a
+            // credential, so it is merged in after this scan.
+            warnOnPlaintextSecrets(
+              this,
+              this.properties,
+              '@aws-cdk/aws-glue-alpha:plaintextConnectionSecret',
+              'Pass a Secrets Manager secret via the connection\'s `secret` property instead.',
+            );
+            const properties = secretId !== undefined
+              ? { ...this.properties, SECRET_ID: secretId }
+              : this.properties;
+            return Object.keys(properties).length > 0 ? properties : undefined;
+          },
+        }),
         connectionType: props.type.name,
         description: props.description,
         matchCriteria: props.matchCriteria,
