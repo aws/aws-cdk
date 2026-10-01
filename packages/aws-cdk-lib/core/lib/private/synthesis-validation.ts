@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
@@ -116,8 +116,8 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // with warnings, we fail.
   const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
   const validationFails = reports.some(r => !r.success) || (constructLibStrictMode && reports.some(r => r.violations.some(v => v.severity === 'warning')));
-  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports, DEFAULT_STACK_FRAME_FINDER);
-  const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+
+  const fileLocationRenderer = private_cxapi.relativeFileLocationRenderer(process.cwd());
 
   let preamble = '';
   if (warningifiedAnyErrors) {
@@ -130,6 +130,10 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   }
 
   // Execution on the settings before starts here
+  const reportText = new private_cxapi.ValidationReportFormatter({ fileLocationRenderer }).formatReports(reportJson.pluginReports);
+  const reportPath = fileLocationRenderer.renderAbsoluteFilePath(reportFile);
+
+  // If there's nothing in the report, stop right now. Doing this here simplifies the preamble handling below.
   if (reportText.length === 0) {
     return;
   }
@@ -153,7 +157,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
     if (throwException && exceptionContainsReport) {
       // The exception contains all information.
-      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(fullMessage.join('\n\n')));
+      throw new UnscopedValidationError(lit`ValidationFailed`, private_cxapi.stripAnsi(fullMessage.join('\n\n')));
     } else if (throwException && !exceptionContainsReport) {
       // We are running in some unclear mode. We get the best fidelity results
       // from printing the report (in color) but also making sure to exit with an
