@@ -15,9 +15,8 @@ The first part of the GitHub Action validates whether the pull request adheres
 4. No breaking changes announced for stable modules.
 5. Title prefix and scope is formatted correctly.
 6. The PR is not opened from the main branch of the author's fork.
-7. Changes to the cli have been run through the test pipeline where cli integ tests are run (indicated by the label `pr-linter/cli-integ-tested`).
-8. No manual changes to `packages/aws-cdk-lib/region-info/build-tools/metadata.ts` file.
-9. The size of the PR (number of lines added or removed) does not exceed the 
+7. No manual changes to `packages/aws-cdk-lib/region-info/build-tools/metadata.ts` file.
+8. The size of the PR (number of lines added or removed) does not exceed the 
    pre-defined threshold of 1000.
 
 > These rules are currently hard coded, in the future, we should consider using [danger.js](https://danger.systems/js/).
