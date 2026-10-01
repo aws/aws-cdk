@@ -6,8 +6,8 @@ import type * as iam from '../../aws-iam';
 import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { FileSystem, Stack, Token } from '../../core';
-import { isInternalPath } from '../../core/lib/fs/utils';
 import { ValidationError } from '../../core/lib/errors';
+import { isInternalPath } from '../../core/lib/fs/utils';
 import { lit } from '../../core/lib/private/literal-string';
 import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
