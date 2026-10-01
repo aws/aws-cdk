@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type * as s3 from '../../../aws-s3';
-import type { Duration } from '../../../core';
+import type { Duration, RemovalPolicy } from '../../../core';
 import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
@@ -272,6 +272,30 @@ export interface CodePipelineProps {
    * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
+
+  /**
+   * The removal policy to apply to the S3 bucket that is automatically created
+   * to store the pipeline's artifact.
+   *
+   * Only used when the artifact bucket is created by the pipeline itself,
+   * i.e. when neither `artifactBucket` nor `codePipeline` is provided.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly artifactBucketRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to automatically delete all objects in the S3 bucket that is
+   * automatically created to store the pipeline's artifact when the bucket
+   * is removed.
+   *
+   * Only used when the artifact bucket is created by the pipeline itself,
+   * i.e. when neither `artifactBucket` nor `codePipeline` is provided.
+   * Requires `artifactBucketRemovalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly artifactBucketAutoDeleteObjects?: boolean;
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
@@ -505,9 +529,19 @@ export class CodePipeline extends PipelineBase {
       if (this.props.artifactBucket !== undefined) {
         throw new ValidationError(lit`CannotSetArtifactBucketExisting`, 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
+      if (this.props.artifactBucketRemovalPolicy !== undefined) {
+        throw new ValidationError(lit`CannotSetArtifactBucketRemovalPolicyExisting`, 'Cannot set \'artifactBucketRemovalPolicy\' if an existing CodePipeline is given using \'codePipeline\'', this);
+      }
+      if (this.props.artifactBucketAutoDeleteObjects !== undefined) {
+        throw new ValidationError(lit`CannotSetArtifactBucketAutoDeleteObjectsExisting`, 'Cannot set \'artifactBucketAutoDeleteObjects\' if an existing CodePipeline is given using \'codePipeline\'', this);
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
+      if (this.props.artifactBucket !== undefined
+        && (this.props.artifactBucketRemovalPolicy !== undefined || this.props.artifactBucketAutoDeleteObjects !== undefined)) {
+        throw new ValidationError(lit`CannotSetArtifactBucketRemovalPolicyWithBucket`, 'Cannot set \'artifactBucketRemovalPolicy\' or \'artifactBucketAutoDeleteObjects\' when \'artifactBucket\' is specified. Configure the removal policy on the provided bucket directly.', this);
+      }
       const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
       if (!isDefaultV2 && this.props.pipelineType === undefined) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
@@ -524,6 +558,8 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        artifactBucketRemovalPolicy: this.props.artifactBucketRemovalPolicy,
+        artifactBucketAutoDeleteObjects: this.props.artifactBucketAutoDeleteObjects,
         usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }

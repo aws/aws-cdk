@@ -272,6 +272,29 @@ export interface PipelineProps {
   readonly artifactBucket?: s3.IBucket;
 
   /**
+   * The removal policy to apply to the S3 bucket that is automatically created
+   * to store pipeline artifacts.
+   *
+   * Only used when the artifact bucket is created by the Pipeline itself,
+   * i.e. when `artifactBucket` is not provided.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly artifactBucketRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to automatically delete all objects in the S3 bucket that is
+   * automatically created to store pipeline artifacts when the bucket is removed.
+   *
+   * Only used when the artifact bucket is created by the Pipeline itself,
+   * i.e. when `artifactBucket` is not provided. Requires
+   * `artifactBucketRemovalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly artifactBucketAutoDeleteObjects?: boolean;
+
+  /**
    * The IAM role to be assumed by this Pipeline.
    *
    * @default a new IAM role will be created.
@@ -676,7 +699,8 @@ export class Pipeline extends PipelineBase {
         encryption: encryptionKey ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
         enforceSSL: true,
         blockPublicAccess: new s3.BlockPublicAccess(s3.BlockPublicAccess.BLOCK_ALL),
-        removalPolicy: RemovalPolicy.RETAIN,
+        removalPolicy: props.artifactBucketRemovalPolicy ?? RemovalPolicy.RETAIN,
+        autoDeleteObjects: props.artifactBucketAutoDeleteObjects,
       });
     }
     this.artifactBucket = propsBucket;

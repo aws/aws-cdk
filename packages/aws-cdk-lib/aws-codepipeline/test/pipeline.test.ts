@@ -537,6 +537,59 @@ describe('', () => {
         });
       });
 
+      test('artifact bucket is retained by default', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        });
+      });
+
+      test('artifact bucket removal policy and auto delete objects can be configured', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+          artifactBucketAutoDeleteObjects: true,
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+          ],
+        });
+
+        const template = Template.fromStack(stack);
+        template.hasResource('AWS::S3::Bucket', {
+          DeletionPolicy: 'Delete',
+          UpdateReplacePolicy: 'Delete',
+        });
+        template.hasResource('Custom::S3AutoDeleteObjects', {});
+      });
+
+      test('artifact bucket auto delete objects requires destroy removal policy', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            artifactBucketAutoDeleteObjects: true,
+          });
+        }).toThrow(/Cannot use 'autoDeleteObjects' property on a bucket without setting removal policy to 'DESTROY'/);
+      });
+
       test('crossAccountKeys as default value is set to false when feature flag is enabled', () => {
         const app = new cdk.App();
         app.node.setContext(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, true);
