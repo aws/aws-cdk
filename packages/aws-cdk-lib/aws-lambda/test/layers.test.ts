@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -120,6 +120,47 @@ describe('layers', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
       CompatibleArchitectures: ['arm64'],
+    });
+  });
+
+  test.each([
+    lambda.S3ObjectStorageMode.COPY,
+    lambda.S3ObjectStorageMode.REFERENCE,
+  ])('sets S3ObjectStorageMode using fromBucketV2: %s', (s3ObjectStorageMode) => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    new lambda.LayerVersion(stack, 'LayerVersion', {
+      code: lambda.Code.fromBucketV2(bucket, 'layer.zip', {
+        objectVersion: 'object-version',
+        s3ObjectStorageMode,
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
+      Content: {
+        S3Bucket: 'bucketname',
+        S3Key: 'layer.zip',
+        S3ObjectVersion: 'object-version',
+        S3ObjectStorageMode: s3ObjectStorageMode,
+      },
+    });
+  });
+
+  test('does not set S3ObjectStorageMode by default', () => {
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
+
+    new lambda.LayerVersion(stack, 'LayerVersion', {
+      code: lambda.Code.fromBucketV2(bucket, 'layer.zip', {
+        objectVersion: 'object-version',
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
+      Content: {
+        S3ObjectStorageMode: Match.absent(),
+      },
     });
   });
 
