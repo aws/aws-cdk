@@ -7,7 +7,7 @@ import { Token, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
- * Properties for a SQS Queue Target
+ * Properties for an SQS Queue Target
  */
 export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
   /**

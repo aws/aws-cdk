@@ -203,7 +203,7 @@ export interface IIpamPool {
   readonly ipamIpv4Cidrs?: string[];
 
   /**
-   * Function to associate a IPv6 address with IPAM pool
+   * Function to associate an IPv6 address with IPAM pool
    */
   provisionCidr(id: string, options: IpamPoolCidrProvisioningOptions): CfnIPAMPoolCidr;
 

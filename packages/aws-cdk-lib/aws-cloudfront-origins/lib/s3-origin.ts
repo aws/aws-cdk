@@ -44,7 +44,7 @@ export class S3Origin implements cloudfront.IOrigin {
 }
 
 /**
- * An Origin specific to a S3 bucket (not configured for website hosting).
+ * An Origin specific to an S3 bucket (not configured for website hosting).
  *
  * Contains additional logic around bucket permissions and origin access identities.
  */

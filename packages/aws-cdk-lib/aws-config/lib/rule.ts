@@ -942,7 +942,7 @@ export class ManagedRuleIdentifiers {
   public static readonly CLOUDWATCH_ALARM_SETTINGS_CHECK = 'CLOUDWATCH_ALARM_SETTINGS_CHECK';
   /**
    * Checks whether a log group in Amazon CloudWatch Logs is encrypted with
-   * a AWS Key Management Service (KMS) managed Customer Master Keys (CMK).
+   * an AWS Key Management Service (KMS) managed Customer Master Keys (CMK).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudwatch-log-group-encrypted.html
    */
   public static readonly CLOUDWATCH_LOG_GROUP_ENCRYPTED = 'CLOUDWATCH_LOG_GROUP_ENCRYPTED';
@@ -973,7 +973,7 @@ export class ManagedRuleIdentifiers {
    */
   public static readonly CODEBUILD_PROJECT_LOGGING_ENABLED = 'CODEBUILD_PROJECT_LOGGING_ENABLED';
   /**
-   * Checks if a AWS CodeBuild project configured with Amazon S3 Logs has encryption enabled for its logs.
+   * Checks if an AWS CodeBuild project configured with Amazon S3 Logs has encryption enabled for its logs.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/codebuild-project-s3-logs-encrypted.html
    */
   public static readonly CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED = 'CODEBUILD_PROJECT_S3_LOGS_ENCRYPTED';

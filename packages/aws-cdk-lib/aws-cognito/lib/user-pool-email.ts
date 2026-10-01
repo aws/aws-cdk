@@ -48,7 +48,7 @@ export interface UserPoolSESOptions {
   /**
    * Required if the UserPool region is different than the SES region.
    *
-   * If sending emails with a Amazon SES verified email address,
+   * If sending emails with an Amazon SES verified email address,
    * and the region that SES is configured is different than the
    * region in which the UserPool is deployed, you must specify that
    * region here.
