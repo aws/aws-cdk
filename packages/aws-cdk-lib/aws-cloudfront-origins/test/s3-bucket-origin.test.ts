@@ -945,10 +945,127 @@ describe('S3BucketOrigin', () => {
         defaultBehavior: { origin },
       });
       Annotations.fromStack(stack).hasWarning('/Default/MyDistribution/Origin1',
-        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
-        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
-        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.'+
+        'When the origin with AccessLevel.LIST is associated to the default behavior, ' +
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n' +
+        'See the "Setting up OAC with LIST permission" section of module\'s README for more info.' +
         ' [ack: @aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk]');
+    });
+  });
+
+  describe('when using a bucket from another stack', () => {
+    it('should create bucket policy in distribution stack to avoid cyclic dependency', () => {
+      const app = new App();
+      const bucketStack = new Stack(app, 'BucketStack');
+      const distributionStack = new Stack(app, 'DistributionStack');
+
+      const bucket = new s3.Bucket(bucketStack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket);
+
+      new cloudfront.Distribution(distributionStack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+
+      const bucketStackTemplate = Template.fromStack(bucketStack);
+      const distributionStackTemplate = Template.fromStack(distributionStack);
+
+      // Bucket stack should only have the bucket, no bucket policy
+      bucketStackTemplate.resourceCountIs('AWS::S3::Bucket', 1);
+      bucketStackTemplate.resourceCountIs('AWS::S3::BucketPolicy', 0);
+
+      // Distribution stack should have the bucket policy
+      distributionStackTemplate.resourceCountIs('AWS::CloudFront::Distribution', 1);
+      distributionStackTemplate.resourceCountIs('AWS::S3::BucketPolicy', 1);
+      distributionStackTemplate.resourceCountIs('AWS::CloudFront::OriginAccessControl', 1);
+
+      // Verify the bucket policy in distribution stack references the bucket and distribution correctly
+      distributionStackTemplate.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [{
+            Effect: 'Allow',
+            Principal: { Service: 'cloudfront.amazonaws.com' },
+            Action: ['s3:GetObject'],
+            Condition: {
+              StringEquals: {
+                'AWS:SourceArn': {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':cloudfront::',
+                    { Ref: 'AWS::AccountId' },
+                    ':distribution/',
+                    { Ref: 'MyDistribution6271DFB5' },
+                  ]],
+                },
+              },
+            },
+          }],
+        },
+      });
+    });
+
+    it('should create bucket policy in distribution stack with custom OAC', () => {
+      const app = new App();
+      const bucketStack = new Stack(app, 'BucketStack');
+      const distributionStack = new Stack(app, 'DistributionStack');
+
+      const bucket = new s3.Bucket(bucketStack, 'MyBucket');
+      const oac = new cloudfront.S3OriginAccessControl(distributionStack, 'MyOAC');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+        originAccessControl: oac,
+      });
+
+      new cloudfront.Distribution(distributionStack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+
+      const distributionStackTemplate = Template.fromStack(distributionStack);
+
+      // Distribution stack should have the bucket policy and custom OAC
+      distributionStackTemplate.resourceCountIs('AWS::S3::BucketPolicy', 1);
+      distributionStackTemplate.resourceCountIs('AWS::CloudFront::OriginAccessControl', 1);
+    });
+
+    it('should create bucket policy in distribution stack with multiple access levels', () => {
+      const app = new App();
+      const bucketStack = new Stack(app, 'BucketStack');
+      const distributionStack = new Stack(app, 'DistributionStack');
+
+      const bucket = new s3.Bucket(bucketStack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket, {
+        originAccessLevels: [cloudfront.AccessLevel.READ, cloudfront.AccessLevel.WRITE, cloudfront.AccessLevel.LIST],
+      });
+
+      new cloudfront.Distribution(distributionStack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+
+      const distributionStackTemplate = Template.fromStack(distributionStack);
+
+      // Verify the bucket policy has the correct actions
+      distributionStackTemplate.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: [{
+            Action: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+          }],
+        },
+      });
+    });
+
+    it('should not create cyclic dependency error', () => {
+      const app = new App();
+      const bucketStack = new Stack(app, 'BucketStack');
+      const distributionStack = new Stack(app, 'DistributionStack');
+
+      const bucket = new s3.Bucket(bucketStack, 'MyBucket');
+      const origin = origins.S3BucketOrigin.withOriginAccessControl(bucket);
+
+      new cloudfront.Distribution(distributionStack, 'MyDistribution', {
+        defaultBehavior: { origin },
+      });
+
+      // This should not throw - if there was a cyclic dependency, synth would fail
+      expect(() => app.synth()).not.toThrow();
     });
   });
 
