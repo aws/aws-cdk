@@ -1,0 +1,18 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "ManagedInstancesCapacityProviderDefaultSg/DefaultTest": {
+      "stacks": [
+        "integ-managedinstances-capacity-provider-default-sg"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "ManagedInstancesCapacityProviderDefaultSg/DefaultTest/DeployAssert",
+      "assertionStackName": "ManagedInstancesCapacityProviderDefaultSgDefaultTestDeployAssert9F6CE5B2"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}
