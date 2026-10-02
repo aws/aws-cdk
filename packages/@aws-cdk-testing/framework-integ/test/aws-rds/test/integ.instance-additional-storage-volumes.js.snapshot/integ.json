@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "InstanceAdditionalStorageVolumesTest/DefaultTest": {
+      "stacks": [
+        "integ-rds-instance-additional-storage-volumes"
+      ],
+      "assertionStack": "InstanceAdditionalStorageVolumesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceAdditionalStorageVolumesTestDefaultTestDeployAssert798EEEA9"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
