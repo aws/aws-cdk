@@ -55,30 +55,20 @@ const test = new integ.IntegTest(app, 'PipelineTemplateOnlyDeployArtifactTest', 
   testCases: [stack],
 });
 
-test.assertions.awsApiCall('CodePipeline', 'getPipeline', {
+// The full GetPipeline response exceeds the custom resource response limit, so assert single values.
+// Stages: Source, Build, UpdatePipeline, Assets (Asset, StripAssets), Beta (Prepare, Deploy)
+const getPipeline = () => test.assertions.awsApiCall('CodePipeline', 'getPipeline', {
   name: stack.pipeline.pipeline.pipelineName,
-}).expect(integ.ExpectedResult.objectLike({
-  pipeline: {
-    stages: integ.Match.arrayWith([
-      integ.Match.objectLike({
-        name: 'Assets',
-        actions: integ.Match.arrayWith([
-          integ.Match.objectLike({
-            name: 'StripAssets',
-            inputArtifacts: [{ name: 'Synth_Output' }],
-            outputArtifacts: [{ name: 'StripAssets_Output' }],
-          }),
-        ]),
-      }),
-      integ.Match.objectLike({
-        name: 'Beta',
-        actions: integ.Match.arrayWith([
-          integ.Match.objectLike({
-            name: 'Prepare',
-            inputArtifacts: [{ name: 'StripAssets_Output' }],
-          }),
-        ]),
-      }),
-    ]),
-  },
-}));
+});
+
+// StripAssets writes the template-only artifact...
+getPipeline().assertAtPath(
+  'pipeline.stages.3.actions.1.outputArtifacts.0.name',
+  integ.ExpectedResult.stringLikeRegexp('^StripAssets_Output$'),
+);
+
+// ...and the stack deployment reads its template from it
+getPipeline().assertAtPath(
+  'pipeline.stages.4.actions.0.inputArtifacts.0.name',
+  integ.ExpectedResult.stringLikeRegexp('^StripAssets_Output$'),
+);
