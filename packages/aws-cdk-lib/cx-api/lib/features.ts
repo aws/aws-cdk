@@ -159,6 +159,7 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2025';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1954,6 +1955,36 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2025]: {
+    type: FlagType.ApiDefault,
+    summary: 'Default the Distribution viewer security policy to TLSv1.2_2025',
+    detailsMd: `
+      When enabled, a \`Distribution\` configured with a custom \`certificate\` that does not
+      specify an explicit \`minimumProtocolVersion\` defaults to
+      \`SecurityPolicyProtocol.TLS_V1_2_2025\` instead of \`SecurityPolicyProtocol.TLS_V1_2_2021\`.
+
+      The security policy is selected in this order:
+
+      1. An explicit \`minimumProtocolVersion\`, which always wins.
+      2. \`TLSv1.2_2025\`, if this flag is enabled.
+      3. \`TLSv1.2_2021\`, if \`@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021\` is enabled.
+      4. \`TLSv1.2_2019\` otherwise.
+
+      Distributions that use the default \`*.cloudfront.net\` certificate are unaffected, because
+      CloudFront manages the security policy for those.
+
+      \`TLSv1.2_2025\` is chosen rather than \`TLSv1.3_2025\` because \`TLSv1.3_2025\` does not
+      support TLS 1.2 at all, so making it the default would drop any viewer that cannot
+      negotiate TLS 1.3. \`TLSv1.2_2025\` keeps TLS 1.2 as the floor while still offering TLS 1.3,
+      and narrows the cipher list relative to \`TLSv1.2_2021\`. Choose \`TLSv1.3_2025\` explicitly
+      via \`minimumProtocolVersion\` if you want to require TLS 1.3.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set `minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2021` explicitly on the distribution to keep the old default.',
   },
 };
 
