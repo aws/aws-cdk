@@ -138,7 +138,7 @@ describe('application signals cloudwatch agent integration', () => {
               Value: JSON.stringify(cwagentConfig),
             },
           ],
-          Essential: true,
+          Essential: false,
           Image: 'public.ecr.aws/cloudwatch-agent/cloudwatch-agent:latest',
           LogConfiguration: {
             LogDriver: 'awslogs',
