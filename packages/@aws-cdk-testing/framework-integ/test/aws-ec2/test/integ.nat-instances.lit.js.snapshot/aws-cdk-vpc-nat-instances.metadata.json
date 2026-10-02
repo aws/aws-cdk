@@ -1,4 +1,21 @@
 {
+  "/aws-cdk-vpc-nat-instances": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at NatInstanceStack._silenceLiteralAzWarning (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new NatInstanceStack (/Users/tmokmss/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances.lit.js:50:21)",
+        "    at <anonymous> (/Users/tmokmss/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances.lit.js:61:18)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-vpc-nat-instances/MyVpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -277,7 +294,6 @@
         "associatePublicIpAddress": "*",
         "securityGroup": "*",
         "keyPair": "*",
-        "keyName": "*",
         "creditSpecification": "*",
         "userData": "*"
       }
@@ -323,7 +339,6 @@
         "associatePublicIpAddress": "*",
         "securityGroup": "*",
         "keyPair": "*",
-        "keyName": "*",
         "creditSpecification": "*",
         "userData": "*"
       }

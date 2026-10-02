@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "54.0.0",
   "testCases": {
     "nat-instance-v2-with-public-ip-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "nat-instance-v2-with-public-ip-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "natinstancev2withpublicipintegtestDefaultTestDeployAssertB63E4D9C"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

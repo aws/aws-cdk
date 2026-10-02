@@ -1,4 +1,21 @@
 {
+  "/aws-cdk-vpc-nat-instances-v2-no-key-name": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at NatInstanceNoKeyNameStack._silenceLiteralAzWarning (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/tmokmss/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new NatInstanceNoKeyNameStack (/Users/tmokmss/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances-v2-no-key-name.js:55:9)",
+        "    at <anonymous> (/Users/tmokmss/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances-v2-no-key-name.js:63:15)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-vpc-nat-instances-v2-no-key-name/MyVpc": [
     {
       "type": "aws:cdk:analytics:construct",

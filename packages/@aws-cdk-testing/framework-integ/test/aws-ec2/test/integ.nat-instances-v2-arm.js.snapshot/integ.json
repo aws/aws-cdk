@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "testCases": {
     "nat-instance-v2-arm-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "nat-instance-v2-arm-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "natinstancev2armintegtestDefaultTestDeployAssertC109BD18"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }
