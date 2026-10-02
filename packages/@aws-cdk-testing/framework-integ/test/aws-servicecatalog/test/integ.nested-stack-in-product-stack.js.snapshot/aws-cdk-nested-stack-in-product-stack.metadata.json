@@ -1,45 +1,21 @@
 {
-  "/integ-servicecatalog-product-encrypted-asset/TestPortfolio": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "displayName": "*",
-        "providerName": "*",
-        "description": "*",
-        "messageLanguage": "en"
-      }
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/KmsKey": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "removalPolicy": "destroy"
-      }
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "bucketName": "*",
         "removalPolicy": "destroy",
-        "autoDeleteObjects": true,
-        "enforceSSL": true,
-        "encryption": "KMS",
-        "encryptionKey": "*",
-        "bucketKeyEnabled": true
+        "autoDeleteObjects": true
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
       "data": true
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -88,7 +64,7 @@
       "data": 2
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct": [
+  "/aws-cdk-nested-stack-in-product-stack/SampleProduct": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -96,75 +72,29 @@
         "owner": "*",
         "productVersions": [
           {
-            "validateTemplate": false,
-            "cloudFormationTemplate": "*"
-          },
-          {
-            "cloudFormationTemplate": "*"
-          },
-          {
-            "cloudFormationTemplate": "*"
-          },
-          {
-            "cloudFormationTemplate": "*"
-          },
-          {
-            "cloudFormationTemplate": "*"
-          },
-          {
             "productVersionName": "*",
-            "validateTemplate": false,
             "cloudFormationTemplate": "*"
-          },
-          {
-            "cloudFormationTemplate": "*",
-            "productVersionName": "*",
-            "description": "*"
           }
         ]
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/PortfolioId": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PortfolioId"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/BootstrapVersion": [
+  "/aws-cdk-nested-stack-in-product-stack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/CheckBootstrapVersion": [
+  "/aws-cdk-nested-stack-in-product-stack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestPortfolio/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestPortfolio4AC794EB"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/TestPortfolio/PortfolioProductAssociation1f17ee66e93a": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TestPortfolioPortfolioProductAssociation1f17ee66e93a16195E73"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/KmsKey/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "KmsKey46693ADD"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucket9434EFAE"
+      "data": "AssetBucket1D025086"
     },
     {
       "type": "aws:cdk:analytics:mixin",
@@ -173,7 +103,7 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/Policy": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -181,25 +111,25 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/AutoDeleteObjectsCustomResource": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/AutoDeleteObjectsCustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -271,22 +201,22 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/SampleProduct/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestProduct7606930B"
+      "data": "SampleProductD0FBA27C"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/Policy/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketPolicy62167ACB"
+      "data": "AssetBucketPolicy6A11ED41"
     },
     {
       "type": "aws:cdk:analytics:mixin",
@@ -295,19 +225,19 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/AutoDeleteObjectsCustomResource/Default": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/AutoDeleteObjectsCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
+      "data": "AssetBucketAutoDeleteObjectsCustomResource5FFEAE83"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {}
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/CustomResourceHandler": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -351,19 +281,19 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/CustomResource": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/CustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -425,43 +355,31 @@
       }
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Template2a950503ce99/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/TestProduct/Template1f2a9e1f2f95/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
+      "data": "AssetBucketProductAssetsDeploymentAwsCliLayerB57A37F8"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/CustomResource/Default": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/CustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "TestAssetBucketProductAssetsDeploymentCustomResource5F81E30F"
+      "data": "AssetBucketProductAssetsDeploymentCustomResource4B59DD1D"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+  "/aws-cdk-nested-stack-in-product-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
     }
   ],
-  "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Code/AssetBucket": [
+  "/aws-cdk-nested-stack-in-product-stack/AssetBucket/ProductAssetsDeployment/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
