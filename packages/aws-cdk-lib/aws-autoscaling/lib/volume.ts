@@ -2,6 +2,7 @@
 // existed first in the "autoscaling" module before it existed in the "ec2"
 // module so we couldn't standardize the structs in the right way.
 
+import type { IKey } from '../../aws-kms';
 import { UnscopedValidationError } from '../../core';
 import type { Size } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
@@ -105,6 +106,22 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    * @default false
    */
   readonly encrypted?: boolean;
+
+  /**
+   * The AWS Key Management Service (AWS KMS) CMK used for encryption.
+   *
+   * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the EC2 instances.
+   *
+   * This is only supported when the Auto Scaling group uses a launch template, which is the
+   * case when the `@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig`
+   * feature flag is enabled. CloudFormation launch configurations do not support specifying
+   * a KMS key for block devices.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+   *
+   * @default - If `encrypted` is true, the default aws/ebs KMS key is used.
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -124,7 +141,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
 /**
  * Properties of an EBS block device
  */
-export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
+export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptions {
   /**
    * The snapshot ID of the volume to use
    *
