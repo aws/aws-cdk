@@ -1,0 +1,219 @@
+{
+ "Resources": {
+  "MetadataKey159764F6": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "maintenance.s3tables.amazonaws.com",
+         "metadata.s3.amazonaws.com"
+        ]
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DefaultsBucketB310ECDE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "MetadataConfiguration": {
+     "JournalTableConfiguration": {
+      "EncryptionConfiguration": {
+       "SseAlgorithm": "AES256"
+      },
+      "RecordExpiration": {
+       "Expiration": "DISABLED"
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AnnotationRole9407A285": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "metadata.s3.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AnnotationRoleDefaultPolicyE96E482D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kms:DescribeKey",
+        "s3tables:CreateNamespace",
+        "s3tables:CreateTable",
+        "s3tables:CreateTableBucket",
+        "s3tables:GetTable",
+        "s3tables:GetTableData",
+        "s3tables:PutTableBucketPolicy",
+        "s3tables:PutTableData",
+        "s3tables:PutTableEncryption",
+        "s3tables:PutTablePolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AnnotationRoleDefaultPolicyE96E482D",
+    "Roles": [
+     {
+      "Ref": "AnnotationRole9407A285"
+     }
+    ]
+   }
+  },
+  "FullBucket05AD2891": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "MetadataConfiguration": {
+     "AnnotationTableConfiguration": {
+      "ConfigurationState": "ENABLED",
+      "EncryptionConfiguration": {
+       "KmsKeyArn": {
+        "Fn::GetAtt": [
+         "MetadataKey159764F6",
+         "Arn"
+        ]
+       },
+       "SseAlgorithm": "aws:kms"
+      },
+      "Role": {
+       "Fn::GetAtt": [
+        "AnnotationRole9407A285",
+        "Arn"
+       ]
+      }
+     },
+     "InventoryTableConfiguration": {
+      "ConfigurationState": "ENABLED",
+      "EncryptionConfiguration": {
+       "SseAlgorithm": "AES256"
+      }
+     },
+     "JournalTableConfiguration": {
+      "EncryptionConfiguration": {
+       "KmsKeyArn": {
+        "Fn::GetAtt": [
+         "MetadataKey159764F6",
+         "Arn"
+        ]
+       },
+       "SseAlgorithm": "aws:kms"
+      },
+      "RecordExpiration": {
+       "Days": 7,
+       "Expiration": "ENABLED"
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDefaultsBucketB310ECDE598AC1BC": {
+   "Value": {
+    "Ref": "DefaultsBucketB310ECDE"
+   },
+   "Export": {
+    "Name": "aws-cdk-s3-metadata-configuration:ExportsOutputRefDefaultsBucketB310ECDE598AC1BC"
+   }
+  },
+  "ExportsOutputRefFullBucket05AD28916E101951": {
+   "Value": {
+    "Ref": "FullBucket05AD2891"
+   },
+   "Export": {
+    "Name": "aws-cdk-s3-metadata-configuration:ExportsOutputRefFullBucket05AD28916E101951"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
