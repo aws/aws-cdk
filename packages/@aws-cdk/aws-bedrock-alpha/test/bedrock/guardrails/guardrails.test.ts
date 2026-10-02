@@ -2604,11 +2604,58 @@ describe('CDK-Created-Guardrail', () => {
             guardrailName: 'TestGuardrail',
             deniedTopics: [bedrock.Topic.custom({
               name: 'test-topic',
+              definition: 'a'.repeat(201),
+              examples: ['example 1'],
+            })],
+          });
+        }).toThrow(/definition for topic test-topic is 201 characters long but must be 200 characters or less/);
+      });
+
+      test('validates custom topic with a definition at the CLASSIC tier limit', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'a'.repeat(200),
+              examples: ['example 1'],
+            })],
+          });
+        }).not.toThrow();
+      });
+
+      test('validates custom topic with a definition at the STANDARD tier limit', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            topicsTierConfig: bedrock.TierConfig.STANDARD,
+            crossRegionConfig: {
+              guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+            },
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
+              definition: 'a'.repeat(1000),
+              examples: ['example 1'],
+            })],
+          });
+        }).not.toThrow();
+      });
+
+      test('throws error for custom topic with definition too long for the STANDARD tier', () => {
+        expect(() => {
+          new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            topicsTierConfig: bedrock.TierConfig.STANDARD,
+            crossRegionConfig: {
+              guardrailProfileArn: 'arn:aws:bedrock:us-east-1:123456789012:guardrail-profile/test-profile',
+            },
+            deniedTopics: [bedrock.Topic.custom({
+              name: 'test-topic',
               definition: 'a'.repeat(1001),
               examples: ['example 1'],
             })],
           });
-        }).toThrow(/definition must be 1000 characters or less/);
+        }).toThrow(/definition for topic test-topic is 1001 characters long but must be 1000 characters or less/);
       });
 
       test('throws error for custom topic with too many examples', () => {
