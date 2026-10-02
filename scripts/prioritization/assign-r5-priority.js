@@ -140,7 +140,7 @@ module.exports = async ({ github }) => {
         updateProjectDateField({
           github,
           projectId: PROJECT_CONFIG.projectId,
-          itemId: itemId,
+          itemId: addResult.addProjectV2ItemById.item.id,
           fieldId: PROJECT_CONFIG.addedOnFieldId,
           date: new Date().toISOString(),
         })
