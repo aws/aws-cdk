@@ -495,7 +495,7 @@ function parseAsNumber(x: unknown) {
 }
 
 /**
- * Parse a context value as a boolean, or return undefined
+ * Parse a context value as a boolean
  *
  * Handles both actual booleans and the strings 'true'/'false'
  * (CLI `--context` values arrive as strings).
