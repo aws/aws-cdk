@@ -1,0 +1,39 @@
+{
+  "/MathExpressionVisibleIntegrationTest/Dash": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MathExpressionVisibleIntegrationTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MathExpressionVisibleIntegrationTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MathExpressionVisibleIntegrationTest/Dash/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DashCCD7F836"
+    }
+  ]
+}
