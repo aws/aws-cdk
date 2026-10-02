@@ -20,6 +20,14 @@ export interface CodeStarSourceVariables {
   readonly commitMessage: string;
   /** The connection ARN this source uses. */
   readonly connectionArn: string;
+  /** The source branch name of the PR that triggered the pipeline execution. Only available for PR-triggered executions. */
+  readonly sourceBranchName: string;
+  /** The destination branch name (target) of the PR that triggered the pipeline execution. Only available for PR-triggered executions. */
+  readonly destinationBranchName: string;
+  /** The ID of the PR that triggered the pipeline execution. Only available for PR-triggered executions. */
+  readonly pullRequestId: string;
+  /** The title of the PR that triggered the pipeline execution. Only available for PR-triggered executions. */
+  readonly pullRequestTitle: string;
 }
 
 /**
@@ -124,6 +132,10 @@ export class CodeStarConnectionsSourceAction extends Action {
       commitId: this.variableExpression('CommitId'),
       commitMessage: this.variableExpression('CommitMessage'),
       connectionArn: this.variableExpression('ConnectionArn'),
+      sourceBranchName: this.variableExpression('SourceBranchName'),
+      destinationBranchName: this.variableExpression('DestinationBranchName'),
+      pullRequestId: this.variableExpression('PullRequestId'),
+      pullRequestTitle: this.variableExpression('PullRequestTitle'),
     };
   }
 
