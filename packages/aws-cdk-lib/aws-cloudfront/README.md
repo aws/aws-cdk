@@ -717,6 +717,63 @@ new cloudfront.Distribution(this, 'Dist', {
 });
 ```
 
+### Trust Store
+
+A Trust Store contains CA certificates that CloudFront uses to authenticate client certificates
+during mutual TLS (mTLS) handshakes. The CA certificates bundle must be stored in an S3 bucket
+in PEM format.
+
+```ts
+declare const certsBucket: s3.Bucket;
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+```
+
+
+### Mutual TLS (mTLS) Authentication
+
+You can configure CloudFront to require mutual TLS (mTLS) authentication between viewers and CloudFront.
+With mTLS, CloudFront authenticates viewers using client certificates. To enable mTLS, create a TrustStore
+containing CA certificates and configure the `viewerMtlsConfig` property.
+
+**Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
+**Note:** mTLS is not supported with HTTP/3. You cannot use `HttpVersion.HTTP3` or `HttpVersion.HTTP2_AND_3` with mTLS.
+
+```ts
+declare const bucket: s3.Bucket;
+declare const certsBucket: s3.Bucket;
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: certsBucket,
+    key: 'ca-bundle.pem',
+  },
+});
+
+new cloudfront.Distribution(this, 'Dist', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    // You have to use HTTPS for mTLS
+    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+  },
+  viewerMtlsConfig: {
+    mode: cloudfront.MtlsMode.REQUIRED, // or MtlsMode.OPTIONAL to allow requests without certificates
+    trustStore: trustStore,
+    // Optional: advertise CA names during TLS handshake
+    advertiseTrustStoreCaNames: true,
+    // Optional: accept expired certificates (use with caution)
+    ignoreCertificateExpiry: false,
+  },
+});
+```
+
+See [Configuring mutual TLS authentication](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html) in the CloudFront User Guide.
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute
