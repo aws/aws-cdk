@@ -167,6 +167,36 @@ test('OriginEndpointPolicy accepts initial policyDocument', () => {
   });
 });
 
+test('OriginEndpointPolicy depends on the origin endpoint', () => {
+  const channel = mediapackagev2.Channel.fromChannelAttributes(stack, 'Channel', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'MyChannel',
+  });
+  const origin = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+  });
+
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+    originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+          actions: ['mediapackagev2:GetObject'],
+          resources: ['*'],
+        }),
+      ],
+    }),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    DependsOn: ['EndpointEEF1FD8F'],
+  });
+});
+
 test('OriginEndpoint cdnAuth from constructor props is applied to policy', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'Group');
   const channel = new mediapackagev2.Channel(stack, 'Channel', {

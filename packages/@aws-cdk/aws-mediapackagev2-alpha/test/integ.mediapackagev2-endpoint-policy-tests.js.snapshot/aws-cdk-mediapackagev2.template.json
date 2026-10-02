@@ -75,7 +75,10 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DependsOn": [
+    "myEndpoint864D0BBD"
+   ]
   }
  },
  "Parameters": {

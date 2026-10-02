@@ -1,4 +1,4 @@
-import { Resource, Stack } from 'aws-cdk-lib';
+import { CfnResource, Resource, Stack } from 'aws-cdk-lib';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpointPolicy } from 'aws-cdk-lib/aws-mediapackagev2';
@@ -138,6 +138,12 @@ export class OriginEndpointPolicy extends Resource {
     // Ensure IAM policies are created before the endpoint policy
     if (cdnAuthRole) {
       cfnResource.node.addDependency(cdnAuthRole);
+    }
+
+    // The endpoint is referenced by name only, so CloudFormation cannot infer this ordering
+    const endpointCfn = props.originEndpoint.node.defaultChild as CfnResource | undefined;
+    if (endpointCfn && CfnResource.isCfnResource(endpointCfn)) {
+      cfnResource.addResourceDependency(endpointCfn);
     }
   }
 }
