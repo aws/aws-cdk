@@ -1,0 +1,49 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster-interence-integ/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-cluster-inference",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/LaunchTemplate",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)\n    at EksOptimizedImage.getImage (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1822:40)\n    at new LaunchTemplate (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/launch-template.js:403:53)\n    at new AutoScalingGroup (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.js:896:48)\n    at WrappedClass.addAutoScalingGroupCapacity (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1283:25)\n    at WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)\n    at new EksClusterInferenceStack (/Users/vishwak/Documents/Projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-inference.js:63:17)"
+        }
+      ]
+    }
+  ]
+}

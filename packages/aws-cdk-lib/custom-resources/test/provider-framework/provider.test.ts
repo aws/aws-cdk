@@ -900,6 +900,23 @@ describe('role', () => {
       frameworkCompleteAndTimeoutRole: new iam.Role(stack, 'MyRole2', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.como') }),
     });
 
+    // the framework stores the CloudFormation response URL here rather than in the
+    // waiter state machine state, scoped to this provider's own address
+    const RESPONSE_URL_PARAMETER_ARN = {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':ssm:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':parameter/cdk/custom-resource-provider/c83130df030f0098af5bdedd182c6d3a08a061f1d9/*',
+        ],
+      ],
+    };
+
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -983,6 +1000,14 @@ describe('role', () => {
               Ref: 'MyProviderwaiterstatemachineC1FBB9F9',
             },
           },
+          {
+            Action: [
+              'ssm:PutParameter',
+              'ssm:DeleteParameter',
+            ],
+            Effect: 'Allow',
+            Resource: RESPONSE_URL_PARAMETER_ARN,
+          },
         ],
         Version: '2012-10-17',
       },
@@ -1061,6 +1086,14 @@ describe('role', () => {
                 'Arn',
               ],
             },
+          },
+          {
+            Action: [
+              'ssm:GetParameter',
+              'ssm:DeleteParameter',
+            ],
+            Effect: 'Allow',
+            Resource: RESPONSE_URL_PARAMETER_ARN,
           },
         ],
         Version: '2012-10-17',

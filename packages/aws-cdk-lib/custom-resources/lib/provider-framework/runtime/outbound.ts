@@ -6,6 +6,9 @@ import { Lambda, waitUntilFunctionActiveV2 } from '@aws-sdk/client-lambda';
 import type { StartExecutionInput, StartExecutionOutput } from '@aws-sdk/client-sfn';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SFN } from '@aws-sdk/client-sfn';
+import type { DeleteParameterCommandInput, GetParameterCommandInput, PutParameterCommandInput } from '@aws-sdk/client-ssm';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { SSM } from '@aws-sdk/client-ssm';
 
 const FRAMEWORK_HANDLER_TIMEOUT = 900000; // 15 minutes
 
@@ -38,6 +41,7 @@ async function defaultHttpRequest(options: https.RequestOptions, requestBody: st
 
 let sfn: SFN;
 let lambda: Lambda;
+let ssm: SSM;
 
 async function defaultStartExecution(req: StartExecutionInput): Promise<StartExecutionOutput> {
   if (!sfn) {
@@ -81,6 +85,29 @@ async function defaultInvokeFunction(req: InvokeCommandInput): Promise<Invocatio
   }
 }
 
+function ssmClient(): SSM {
+  if (!ssm) {
+    ssm = new SSM(awsSdkConfig);
+  }
+  return ssm;
+}
+
+async function defaultPutParameter(req: PutParameterCommandInput): Promise<void> {
+  await ssmClient().putParameter(req);
+}
+
+async function defaultGetParameter(req: GetParameterCommandInput): Promise<string | undefined> {
+  const resp = await ssmClient().getParameter(req);
+  return resp.Parameter?.Value;
+}
+
+async function defaultDeleteParameter(req: DeleteParameterCommandInput): Promise<void> {
+  await ssmClient().deleteParameter(req);
+}
+
 export let startExecution = defaultStartExecution;
 export let invokeFunction = defaultInvokeFunction;
 export let httpRequest = defaultHttpRequest;
+export let putParameter = defaultPutParameter;
+export let getParameter = defaultGetParameter;
+export let deleteParameter = defaultDeleteParameter;

@@ -145,8 +145,8 @@
      "Name": "my_table",
      "Parameters": {
       "classification": "json",
-      "has_encrypted_data": true,
-      "partition_filtering.enabled": true
+      "partition_filtering.enabled": true,
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -684,6 +684,33 @@
        "Resource": {
         "Ref": "awscdkawsgluealphaPartitionIndexProviderwaiterstatemachineD73BC19E"
        }
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8328253ff40abfecddaf4208d7cd0cee6d5f6a366/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -703,7 +730,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider)",
     "Environment": {
@@ -722,7 +749,8 @@
       },
       "WAITER_STATE_MACHINE_ARN": {
        "Ref": "awscdkawsgluealphaPartitionIndexProviderwaiterstatemachineD73BC19E"
-      }
+      },
+      "RESPONSE_URL_PARAMETER_PREFIX": "/cdk/custom-resource-provider/c8328253ff40abfecddaf4208d7cd0cee6d5f6a366"
      }
     },
     "Handler": "framework.onEvent",
@@ -862,6 +890,33 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8328253ff40abfecddaf4208d7cd0cee6d5f6a366/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -881,7 +936,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider)",
     "Environment": {
@@ -1037,6 +1092,33 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "ssm:DeleteParameter",
+        "ssm:GetParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter/cdk/custom-resource-provider/c8328253ff40abfecddaf4208d7cd0cee6d5f6a366/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1056,7 +1138,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "11c04ce459ec0bc700bdff5e70ad4f0a313696dafa7c5beb06bec95adc6158e9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-glue/@aws-cdk--aws-glue-alpha.PartitionIndexProvider/Provider)",
     "Environment": {
