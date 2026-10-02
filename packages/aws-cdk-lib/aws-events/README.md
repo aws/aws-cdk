@@ -96,6 +96,33 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+### Customizing target input
+
+By default a target receives the whole matched event. `RuleTargetInput` changes
+that, and hides CloudFormation's three separate input properties behind one API:
+`fromEventPath()` forwards a fragment of the event (`InputPath`), while
+`fromObject()`, `fromText()` and `fromMultilineText()` build a value you define.
+Referencing `EventField` is what turns that value into an input transformer: the
+CDK assigns each referenced path a key in `InputPathsMap` and substitutes a
+placeholder into `InputTemplate`, so you never write either property yourself.
+
+```ts
+declare const rule: events.Rule;
+declare const fn: lambda.Function;
+
+rule.addTarget(new targets.LambdaFunction(fn, {
+  event: events.RuleTargetInput.fromObject({
+    instance: events.EventField.fromPath('$.detail.instance-id'),
+    account: events.EventField.account,
+  }),
+}));
+```
+
+The prop that accepts a `RuleTargetInput` is named per target (`event` here,
+`message` on `SnsTopic` and `SqsQueue`), and a few targets such as `EcsTask` shape
+their input differently again. See `RuleTargetInput` and `EventField` for the full
+set of factory methods and more examples.
+
 ### Role
 You can specify an IAM Role:
 
