@@ -4,7 +4,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import type { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, helperRemovalPolicy, renderCredentials, renderUnless } from './private/util';
 import type { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import type { CfnDBClusterProps } from './rds.generated';
 import { CfnDBCluster } from './rds.generated';
@@ -472,7 +472,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
         description: `Subnets for ${id} database`,
         vpc: props.vpc,
         vpcSubnets: props.vpcSubnets,
-        removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+        removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
       });
 
       this.securityGroups = props.securityGroups ?? [

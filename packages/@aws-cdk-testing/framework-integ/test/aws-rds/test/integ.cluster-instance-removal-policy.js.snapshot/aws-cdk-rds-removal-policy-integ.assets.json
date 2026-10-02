@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "df5ddd90ab657bb49b7e304681abba23c5edf4340a647b927b4dbc2105f60113": {
+      "displayName": "aws-cdk-rds-removal-policy-integ Template",
+      "source": {
+        "path": "aws-cdk-rds-removal-policy-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1e1324df": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df5ddd90ab657bb49b7e304681abba23c5edf4340a647b927b4dbc2105f60113.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
