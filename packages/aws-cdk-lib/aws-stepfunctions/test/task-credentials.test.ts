@@ -1,5 +1,6 @@
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core';
 import * as sfn from '../lib';
 
 describe('TaskRole', () => {
@@ -29,6 +30,19 @@ describe('TaskRole', () => {
 
     test('returns expected roleArn and resource', () => {
       expect(() => sfn.TaskRole.fromRoleArnJsonPath('RoleArn')).toThrow();
+    });
+  });
+
+  describe('fromRoleArnJsonata()', () => {
+    test('returns expected roleArn and resource', () => {
+      const role = sfn.TaskRole.fromRoleArnJsonata('{% $states.input.RoleArn %}');
+
+      expect(stack.resolve(role.roleArn)).toEqual('{% $states.input.RoleArn %}');
+      expect(role.resource).toEqual('*');
+    });
+
+    test('throws error for invalid expression', () => {
+      expect(() => sfn.TaskRole.fromRoleArnJsonata('InvalidExpression')).toThrow(UnscopedValidationError);
     });
   });
 });
