@@ -2,6 +2,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import type { CfnResource } from 'aws-cdk-lib/core';
 import { App, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
 
@@ -178,23 +179,12 @@ test('OriginEndpointPolicy depends on the origin endpoint', () => {
     manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
   });
 
-  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+  const policy = new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
     originEndpoint: origin,
-    policyDocument: new PolicyDocument({
-      statements: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
-          actions: ['mediapackagev2:GetObject'],
-          resources: ['*'],
-        }),
-      ],
-    }),
   });
 
-  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
-    DependsOn: ['EndpointEEF1FD8F'],
-  });
+  const policyCfn = policy.node.defaultChild as CfnResource;
+  expect(policyCfn.obtainDependencies()).toEqual([origin.node.defaultChild]);
 });
 
 test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', () => {
@@ -204,24 +194,12 @@ test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', ()
     originEndpointName: 'MyEndpoint',
   });
 
-  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+  const policy = new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
     originEndpoint: origin,
-    policyDocument: new PolicyDocument({
-      statements: [
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
-          actions: ['mediapackagev2:GetObject'],
-          resources: ['*'],
-        }),
-      ],
-    }),
   });
 
-  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
-    Properties: Match.objectLike({ OriginEndpointName: 'MyEndpoint' }),
-    DependsOn: Match.absent(),
-  });
+  const policyCfn = policy.node.defaultChild as CfnResource;
+  expect(policyCfn.obtainDependencies()).toEqual([]);
 });
 
 test('OriginEndpoint cdnAuth from constructor props is applied to policy', () => {

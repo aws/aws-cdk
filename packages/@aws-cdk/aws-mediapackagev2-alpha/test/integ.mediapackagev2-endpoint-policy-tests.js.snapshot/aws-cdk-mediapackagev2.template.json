@@ -116,23 +116,9 @@
         "Service": "cloudfront.amazonaws.com"
        },
        "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":mediapackagev2:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":channelGroup/awscdkmediapackagev2MyChannelGroup49BD4EC8/channel/awscdkmediapackagev2myChannel42A6BAA7/originEndpoint/awscdkmediapackagev2myNamedEndpoint1C2A358A"
-         ]
+        "Fn::GetAtt": [
+         "myNamedEndpointA6F9DBFE",
+         "Arn"
         ]
        }
       }

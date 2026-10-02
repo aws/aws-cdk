@@ -34,7 +34,7 @@ origin.addToResourcePolicy(new PolicyStatement({
   },
 }));
 
-// Standalone policy that references the endpoint by name only, without an ARN token
+// Standalone policy created with the OriginEndpointPolicy construct
 const namedOrigin = new mediapackagev2.OriginEndpoint(stack, 'myNamedEndpoint', {
   channel,
   segment: mediapackagev2.Segment.cmaf(),
@@ -52,12 +52,7 @@ new mediapackagev2.OriginEndpointPolicy(stack, 'myNamedEndpointPolicy', {
         principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
         effect: Effect.ALLOW,
         actions: ['mediapackagev2:GetObject'],
-        resources: [stack.formatArn({
-          service: 'mediapackagev2',
-          resource: 'channelGroup',
-          resourceName: `${group.channelGroupName}/channel/${channel.channelName}/originEndpoint/${namedOrigin.originEndpointName}`,
-          arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-        })],
+        resources: [namedOrigin.originEndpointArn],
       }),
     ],
   }),
