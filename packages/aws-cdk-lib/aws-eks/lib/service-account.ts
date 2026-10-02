@@ -8,7 +8,8 @@ import {
   ServicePrincipal,
 } from '../../aws-iam';
 import type { RemovalPolicy } from '../../core';
-import { CfnJson, Names, RemovalPolicies } from '../../core';
+import { CfnJson, Names, RemovalPolicies, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.
@@ -80,6 +81,22 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
+
+  /**
+   * An existing IAM role to associate with this service account via Pod Identity.
+   * Only valid when `identityType` is `IdentityType.POD_IDENTITY`.
+   *
+   * When specified, the provided role is used instead of auto-generating one.
+   * The caller is responsible for configuring the trust policy of the role correctly.
+   * For Pod Identity, the role must allow `pods.eks.amazonaws.com` to perform
+   * `sts:AssumeRole` and `sts:TagSession`.
+   *
+   * To use an L1 `iam.CfnRole`, import it as an `IRole` with
+   * `iam.Role.fromRoleArn(scope, id, cfnRole.attrArn)`.
+   *
+   * @default - a new IAM role is created automatically
+   */
+  readonly role?: IRole;
 
   /**
    * The removal policy applied to the service account resources.
@@ -157,7 +174,15 @@ export class ServiceAccount extends Construct implements IPrincipal {
       throw RangeError('All namespace names must be valid RFC 1123 DNS labels.');
     }
 
-    let principal: IPrincipal;
+    if (props.role !== undefined && props.identityType !== IdentityType.POD_IDENTITY) {
+      throw new ValidationError(
+        lit`ServiceAccountRoleOption`,
+        'The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.',
+        this,
+      );
+    }
+
+    let role: IRole;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
       * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
@@ -168,13 +193,13 @@ export class ServiceAccount extends Construct implements IPrincipal {
           [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
         },
       });
-      principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+      const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
+      role = new Role(this, 'Role', { assumedBy: principal });
     } else {
       /**
        * Identity type is POD_IDENTITY.
-       * Create a service principal with "Service": "pods.eks.amazonaws.com"
        * See https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
        */
 
@@ -182,25 +207,13 @@ export class ServiceAccount extends Construct implements IPrincipal {
       if (cluster instanceof FargateCluster) {
         throw Error('Pod Identity is not supported in Fargate. Use IRSA identity type instead.');
       }
-      principal = new ServicePrincipal('pods.eks.amazonaws.com');
-    }
 
-    const role = new Role(this, 'Role', { assumedBy: principal });
-
-    // pod identities requires 'sts:TagSession' in its principal actions
-    if (props.identityType === IdentityType.POD_IDENTITY) {
-      /**
-       * EKS Pod Identities requires both assumed role actions otherwise it would fail.
-       */
-      role.assumeRolePolicy!.addStatements(new PolicyStatement({
-        actions: ['sts:AssumeRole', 'sts:TagSession'],
-        principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
-      }));
+      role = this.resolvePodIdentityRole(props);
 
       // ensure the pod identity agent
       cluster.eksPodIdentityAgent;
 
-      // associate this service account with the pod role we just created for the cluster
+      // associate this service account with the pod role for the cluster
       new CfnPodIdentityAssociation(this, 'Association', {
         clusterName: cluster.clusterName,
         namespace: props.namespace ?? 'default',
@@ -254,6 +267,25 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     return this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Resolves the IAM role to use for Pod Identity.
+   * Returns the provided role if specified, otherwise auto-generates one.
+   */
+  private resolvePodIdentityRole(props: ServiceAccountProps): IRole {
+    if (props.role) {
+      return props.role;
+    }
+    const role = new Role(this, 'Role', {
+      assumedBy: new ServicePrincipal('pods.eks.amazonaws.com'),
+    });
+    // EKS Pod Identities requires both assumed role actions otherwise it would fail.
+    role.assumeRolePolicy!.addStatements(new PolicyStatement({
+      actions: ['sts:AssumeRole', 'sts:TagSession'],
+      principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
+    }));
+    return role;
   }
 
   /**
