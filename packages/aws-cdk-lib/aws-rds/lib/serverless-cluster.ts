@@ -4,7 +4,7 @@ import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import type { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, validateDatabaseName } from './private/util';
 import type { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import type { CfnDBClusterProps } from './rds.generated';
 import { CfnDBCluster } from './rds.generated';
@@ -101,6 +101,12 @@ interface ServerlessClusterNewProps {
 
   /**
    * Name of a database which is automatically created inside the cluster
+   *
+   * The name must begin with a letter and contain only alphanumeric characters
+   * (underscores are also allowed for PostgreSQL-family engines). This constraint
+   * is validated at synthesis time, so a definitively-invalid name fails fast with a
+   * descriptive error instead of failing later at deploy time with the RDS API error.
+   * The same validation applies when restoring from a snapshot.
    *
    * @default - Database is not created in cluster.
    */
@@ -445,6 +451,8 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     super(scope, id);
 
     this._enableDataApi = Box.fromValue<boolean | undefined>(undefined);
+
+    validateDatabaseName(this, props.defaultDatabaseName, props.engine.engineType);
 
     if (props.vpc === undefined) {
       if (props.vpcSubnets !== undefined) {
