@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "6679124b9e1593b715553ebf79f65f3bc91c304c09eecfa763e7b55d1fb82565": {
+      "displayName": "aws-cdk-bedrock-vector-knowledge-base Template",
+      "source": {
+        "path": "aws-cdk-bedrock-vector-knowledge-base.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-154c28b4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6679124b9e1593b715553ebf79f65f3bc91c304c09eecfa763e7b55d1fb82565.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
