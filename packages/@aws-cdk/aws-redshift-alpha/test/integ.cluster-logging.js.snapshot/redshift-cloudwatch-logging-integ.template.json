@@ -996,6 +996,9 @@
      }
     ]
    },
+   "DependsOn": [
+    "LoggingBucketPolicy21938756"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

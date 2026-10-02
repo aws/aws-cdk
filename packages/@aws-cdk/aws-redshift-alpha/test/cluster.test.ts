@@ -509,14 +509,30 @@ describe('logging', () => {
         masterUsername: 'admin',
       },
       vpc,
-      logging: ClusterLogging.cloudwatch(),
+      logging: ClusterLogging.cloudWatch(),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       LoggingProperties: {
         LogDestinationType: 'cloudwatch',
+        LogExports: ['connectionlog', 'userlog', 'useractivitylog'],
       },
+    });
+  });
+
+  test('no logging', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
+      LoggingProperties: Match.absent(),
     });
   });
 
@@ -527,7 +543,7 @@ describe('logging', () => {
         masterUsername: 'admin',
       },
       vpc,
-      logging: ClusterLogging.cloudwatch({
+      logging: ClusterLogging.cloudWatch({
         logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG],
       }),
     });
@@ -548,7 +564,7 @@ describe('logging', () => {
         masterUsername: 'admin',
       },
       vpc,
-      logging: ClusterLogging.cloudwatch({
+      logging: ClusterLogging.cloudWatch({
         logExports: [LogExport.USER_ACTIVITY_LOG],
       }),
     });
@@ -557,7 +573,7 @@ describe('logging', () => {
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
       'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.  ' +
+      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -569,14 +585,14 @@ describe('logging', () => {
         masterUsername: 'admin',
       },
       vpc,
-      logging: ClusterLogging.cloudwatch(),
+      logging: ClusterLogging.cloudWatch(),
     });
 
     // THEN
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
       'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.  ' +
+      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -588,7 +604,7 @@ describe('logging', () => {
         masterUsername: 'admin',
       },
       vpc,
-      logging: ClusterLogging.cloudwatch({
+      logging: ClusterLogging.cloudWatch({
         logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
       }),
     });
@@ -597,7 +613,27 @@ describe('logging', () => {
     Annotations.fromStack(stack).hasNoWarning(
       '/Default/Redshift',
       'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.  ' +
+      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('does not add user-activity-logging warning when enable_user_activity_logging is set', () => {
+    // WHEN
+    const cluster = new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudWatch(),
+    });
+    cluster.addToParameterGroup('enable_user_activity_logging', 'true');
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
+      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -619,7 +655,7 @@ describe('logging', () => {
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
       'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.  ' +
+      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -646,7 +682,11 @@ describe('logging', () => {
         LogDestinationType: 's3',
         BucketName: { Ref: 'Bucket83908E77' },
         S3KeyPrefix: 'logs/',
+        LogExports: Match.absent(),
       },
+    });
+    Template.fromStack(stack).hasResource('AWS::Redshift::Cluster', {
+      DependsOn: Match.arrayWith(['BucketPolicyE9A3008A']),
     });
 
     // THEN
@@ -693,7 +733,7 @@ describe('logging', () => {
     );
   });
 
-  test('throws when CloudWatch logExports contains duplicate values', () => {
+  test('fails when CloudWatch logExports is empty', () => {
     // WHEN/THEN
     expect(() => {
       new Cluster(stack, 'Redshift', {
@@ -701,11 +741,26 @@ describe('logging', () => {
           masterUsername: 'admin',
         },
         vpc,
-        logging: ClusterLogging.cloudwatch({
+        logging: ClusterLogging.cloudWatch({
+          logExports: [],
+        }),
+      });
+    }).toThrow('logExports must not be empty');
+  });
+
+  test('fails when CloudWatch logExports contains duplicate values', () => {
+    // WHEN/THEN
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        logging: ClusterLogging.cloudWatch({
           logExports: [LogExport.CONNECTION_LOG, LogExport.CONNECTION_LOG],
         }),
       });
-    }).toThrow('logExports must not contain duplicate values.');
+    }).toThrow('logExports must not contain duplicates, got ["connectionlog","connectionlog"]');
   });
 });
 

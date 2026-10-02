@@ -17,7 +17,7 @@ class TestStack extends Stack {
         masterUsername: 'admin',
       },
       nodeType: redshift.NodeType.RA3_LARGE,
-      logging: redshift.ClusterLogging.cloudwatch({
+      logging: redshift.ClusterLogging.cloudWatch({
         logExports: [redshift.LogExport.CONNECTION_LOG, redshift.LogExport.USER_LOG, redshift.LogExport.USER_ACTIVITY_LOG],
       }),
     });

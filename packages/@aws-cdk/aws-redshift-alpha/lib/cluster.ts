@@ -7,13 +7,13 @@ import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import type { IResource, SecretValue } from 'aws-cdk-lib/core';
-import { Annotations, ArnFormat, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { Annotations, ArnFormat, AspectPriority, Aspects, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Box, lit, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import type { IClusterParameterGroup } from './parameter-group';
@@ -158,7 +158,7 @@ export interface CloudWatchLoggingOptions {
   /**
    * The types of logs to export.
    *
-   * @default - All log types
+   * @default - [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG]
    */
   readonly logExports?: LogExport[];
 }
@@ -169,10 +169,8 @@ enum LogDestinationType {
 }
 
 interface ClusterLoggingConfig {
-  readonly logDestinationType: LogDestinationType;
-  readonly bucketName?: string;
-  readonly s3KeyPrefix?: string;
-  readonly logExports?: string[];
+  readonly loggingProperties: CfnCluster.LoggingPropertiesProperty;
+  readonly policyDependable?: IDependable;
 }
 
 /**
@@ -189,54 +187,78 @@ export abstract class ClusterLogging {
   /**
    * Send logs to CloudWatch.
    */
-  public static cloudwatch(options?: CloudWatchLoggingOptions): ClusterLogging {
+  public static cloudWatch(options?: CloudWatchLoggingOptions): ClusterLogging {
     return new CloudWatchClusterLogging(options ?? {});
   }
 
   /**
-   * The S3 bucket for logging.
+   * Render the logging properties for CloudFormation and apply any destination-specific side effects.
    * @internal
    */
-  public abstract readonly _bucket?: s3.IBucket;
-
-  /**
-   * Render the logging properties for CloudFormation.
-   * @internal
-   */
-  public abstract _renderLoggingProperty(scope: Construct): ClusterLoggingConfig;
+  public abstract _bind(scope: Construct): ClusterLoggingConfig;
 }
 
 class S3ClusterLogging extends ClusterLogging {
-  public readonly _bucket: s3.IBucket;
-
   constructor(private readonly options: S3LoggingOptions) {
     super();
-    this._bucket = options.bucket;
   }
 
-  public _renderLoggingProperty(_scope: Construct): ClusterLoggingConfig {
+  public _bind(scope: Construct): ClusterLoggingConfig {
+    const bucket = this.options.bucket;
+    const statement = new iam.PolicyStatement({
+      actions: [
+        's3:GetBucketAcl',
+        's3:PutObject',
+      ],
+      resources: [
+        bucket.arnForObjects('*'),
+        bucket.bucketArn,
+      ],
+      principals: [
+        new iam.ServicePrincipal('redshift.amazonaws.com'),
+      ],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': Stack.of(scope).account,
+        },
+      },
+    });
+    const result = bucket.addToResourcePolicy(statement);
+    if (!result.statementAdded) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded',
+        `Could not add bucket policy for Redshift logging. If you are using an imported bucket, ensure that your bucket policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+    }
+
     return {
-      logDestinationType: LogDestinationType.S3,
-      bucketName: this.options.bucket.bucketName,
-      s3KeyPrefix: this.options.keyPrefix,
+      loggingProperties: {
+        logDestinationType: LogDestinationType.S3,
+        bucketName: bucket.bucketName,
+        s3KeyPrefix: this.options.keyPrefix,
+      },
+      policyDependable: result.policyDependable,
     };
   }
 }
 
 class CloudWatchClusterLogging extends ClusterLogging {
-  public readonly _bucket?: s3.IBucket = undefined;
-
   constructor(private readonly options: CloudWatchLoggingOptions) {
     super();
   }
 
-  public _renderLoggingProperty(scope: Construct): ClusterLoggingConfig {
-    if (this.options.logExports && this.options.logExports.length !== new Set(this.options.logExports).size) {
-      throw new ValidationError(lit`DuplicateLogExports`, 'logExports must not contain duplicate values.', scope);
+  public _bind(scope: Construct): ClusterLoggingConfig {
+    const logExports = this.options.logExports
+      ?? [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG];
+    if (logExports.length === 0) {
+      throw new ValidationError(lit`EmptyLogExports`, 'logExports must not be empty', scope);
+    }
+    if (new Set(logExports).size !== logExports.length) {
+      throw new ValidationError(lit`DuplicateLogExports`, `logExports must not contain duplicates, got ${JSON.stringify(logExports)}`, scope);
     }
     return {
-      logDestinationType: LogDestinationType.CLOUDWATCH,
-      logExports: this.options.logExports,
+      loggingProperties: {
+        logDestinationType: LogDestinationType.CLOUDWATCH,
+        logExports,
+      },
     };
   }
 }
@@ -742,43 +764,25 @@ export class Cluster extends ClusterBase {
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
-    let loggingProperties;
-    if (props.logging) {
-      loggingProperties = props.logging._renderLoggingProperty(this);
-
-      if (loggingProperties.logExports === undefined || loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG)) {
-        Annotations.of(this).addWarningV2(
-          '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
-          'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-          'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ',
-        );
-      }
-
-      if (props.logging._bucket) {
-        const statement = new iam.PolicyStatement({
-          actions: [
-            's3:GetBucketAcl',
-            's3:PutObject',
-          ],
-          resources: [
-            props.logging._bucket.arnForObjects('*'),
-            props.logging._bucket.bucketArn,
-          ],
-          principals: [
-            new iam.ServicePrincipal('redshift.amazonaws.com'),
-          ],
-          conditions: {
-            StringEquals: {
-              'aws:SourceAccount': Stack.of(this).account,
-            },
-          },
-        });
-        const result = props.logging._bucket.addToResourcePolicy(statement);
-        if (!result.statementAdded) {
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded',
-            `Could not add bucket policy for Redshift logging. If you are using an imported bucket, ensure that your bucket policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
-        }
-      }
+    const logging = props.logging?._bind(this);
+    if (logging && (logging.loggingProperties.logExports === undefined
+      || logging.loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG))) {
+      Aspects.of(this).add({
+        visit: (node) => {
+          if (node !== this) {
+            return;
+          }
+          const pg = this.parameterGroup;
+          const isEnabled = pg instanceof ClusterParameterGroup && pg.parameters.enable_user_activity_logging === 'true';
+          if (!isEnabled) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
+              'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
+              'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.',
+            );
+          }
+        },
+      }, { priority: AspectPriority.READONLY });
     }
 
     const nodeType = props.nodeType || NodeType.RA3_LARGE;
@@ -818,7 +822,7 @@ export class Cluster extends ClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType,
       numberOfNodes: nodeCount,
-      loggingProperties,
+      loggingProperties: logging?.loggingProperties,
       iamRoles: Token.asList(this.roles.map(role => role.roleArn)),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
@@ -832,6 +836,10 @@ export class Cluster extends ClusterBase {
       resourceAction: props.resourceAction,
       availabilityZoneRelocation: props.availabilityZoneRelocation,
     });
+
+    if (logging?.policyDependable) {
+      this.cluster.node.addDependency(logging.policyDependable);
+    }
 
     this.cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
