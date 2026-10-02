@@ -461,3 +461,103 @@ test('dead letter queue is imported', () => {
     ],
   });
 });
+
+test('encrypted dead letter queue is configured correctly', () => {
+  const stack = new Stack();
+  const kmsKey = new kms.Key(stack, 'MyKey');
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    fifo: true,
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+    encryptionMasterKey: kmsKey,
+  });
+  const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue', {
+    encryptionMasterKey: kmsKey,
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    deadLetterQueue,
+  }));
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': ['MyDeadLetterQueueD997968A', 'Arn'],
+          },
+        },
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::QueuePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'kms:Decrypt',
+            'kms:GenerateDataKey',
+          ],
+          Condition: {
+            ArnEquals: {
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'MyRuleA44AB831',
+                  'Arn',
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Resource: {
+            'Fn::GetAtt': [
+              'MyKey6AB29FA6',
+              'Arn',
+            ],
+          },
+          Sid: 'AllowEncryptedEventRuleMyRule',
+        },
+        {
+          Action: 'sqs:SendMessage',
+          Condition: {
+            ArnEquals: {
+              'aws:SourceArn': {
+                'Fn::GetAtt': [
+                  'MyRuleA44AB831',
+                  'Arn',
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'events.amazonaws.com',
+          },
+          Resource: {
+            'Fn::GetAtt': [
+              'MyDeadLetterQueueD997968A',
+              'Arn',
+            ],
+          },
+          Sid: 'AllowEventRuleMyRule',
+        },
+      ],
+    },
+  });
+});
