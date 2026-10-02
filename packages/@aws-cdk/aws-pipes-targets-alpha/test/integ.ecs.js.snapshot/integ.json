@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "integtest-pipe-target-ecs/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-targets-ecs"
+      ],
+      "assertionStack": "integtest-pipe-target-ecs/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipetargetecsDefaultTestDeployAssert4443D371"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
