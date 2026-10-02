@@ -1772,6 +1772,43 @@ An explicitly registered `CloudFormationValidatePlugin` still runs the CDK
 default rules in addition to your custom rules; pass
 `includeDefaultRules: false` to opt out of the default rules entirely.
 
+### Getting feedback faster: draft mode synthesis
+
+Large applications may take dozens of seconds, or even multiple minutes, to synthesize.
+This is time you will have to wait before you can get feedback on your
+application validation rules after you just made a change. You can write your
+application to take advantage of *Draft Mode Synthesis* to get feedback faster
+during development iterations.
+
+In your code, inspect the `app.isDraftModeSynth` property, and if it is set
+to `true` only instantiate a representative subset of your application's Stacks
+or Stages. The fewer elements you add to your application, the faster synthesis
+will complete; and if the constructs you do add are representative of the larger
+application, you will catch the same validation errors.
+
+Write the shape of your application like this:
+
+```ts
+new MyApplication(app, 'Preprod', { stage: 'preprod' });
+new MyApplication(app, 'Prod1', { stage: 'prod1' });
+
+// Other prod stages only if draft mode is not enabled
+if (!app.isDraftModeSynth) {
+  new MyApplication(app, 'Prod2', { stage: 'prod2' });
+  new MyApplication(app, 'Prod3', { stage: 'prod3' });
+  new MyApplication(app, 'Prod4', { stage: 'prod4' });
+  // ...
+}
+```
+
+Then synthesize with:
+
+```sh
+$ cdk synth --draft
+```
+
+Do do a faster draft synth.
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
