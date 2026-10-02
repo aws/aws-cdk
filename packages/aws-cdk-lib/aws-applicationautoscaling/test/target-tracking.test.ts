@@ -1,5 +1,5 @@
 import { createScalableTarget } from './util';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import * as appscaling from '../lib';
@@ -175,22 +175,66 @@ describe('target tracking', () => {
     });
   });
 
-  test('throws error when using cross-account custom metric', () => {
+  test('warns when a custom metric is from another account', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
-    const target = createScalableTarget(stack);
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', account: '222222222222' }),
+      targetValue: 30,
+    });
 
     // THEN
-    expect(() => {
-      target.scaleToTrackMetric('Tracking', {
-        customMetric: new cloudwatch.Metric({
-          namespace: 'Test',
-          metricName: 'Metric',
-          account: '222222222222', // Different account
-        }),
-        targetValue: 30,
-      });
-    }).toThrow(/Cross-account metrics are not supported for Application Auto Scaling target tracking policies/);
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('crossAccountMetricIgnored'));
+  });
+
+  test('warns when a custom metric is from another region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', region: 'eu-west-1' }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('crossRegionMetricIgnored'));
+  });
+
+  test.each([
+    ['env-agnostic stack, concrete metric account', {}, '222222222222'],
+    ['concrete stack, token metric account', { account: '111111111111', region: 'us-east-1' }, cdk.Aws.ACCOUNT_ID],
+  ])('does not warn when accounts cannot be compared at synth: %s', (_, env, account) => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env });
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', account }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('crossAccountMetricIgnored'));
+  });
+
+  test.each([
+    ['env-agnostic stack, concrete metric region', {}, 'eu-west-1'],
+    ['concrete stack, token metric region', { account: '111111111111', region: 'us-east-1' }, cdk.Aws.REGION],
+  ])('does not warn when regions cannot be compared at synth: %s', (_, env, region) => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env });
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', region }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('crossRegionMetricIgnored'));
   });
 
   test('allows custom metric from same account', () => {
@@ -218,5 +262,6 @@ describe('target tracking', () => {
         TargetValue: 30,
       },
     });
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('crossAccountMetricIgnored'));
   });
 });

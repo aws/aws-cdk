@@ -98,6 +98,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * The metric must track utilization. Scaling out will happen if the metric is higher than
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
+   * The metric must be in the same account and region as the scaling policy.
+   *
    * Exactly one of customMetric or predefinedMetric must be specified.
    *
    * @default - No custom metric.
@@ -168,10 +170,14 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
     throw new ValidationError(lit`CannotStatistic`, `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
-  // Detect cross-account metric usage
-  const stackAccount = cdk.Stack.of(scope).account;
-  if (c.account !== undefined && c.account !== stackAccount) {
-    throw new ValidationError('Cross-account metrics are not supported for Application Auto Scaling target tracking policies. The metric must be in the same account as the scaling policy.', scope);
+  const stack = cdk.Stack.of(scope);
+  if (definitelyDifferent(c.account, stack.account)) {
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossAccountMetricIgnored',
+      `target tracking can only use metrics from its own account; metric account ${JSON.stringify(c.account)} is ignored and account ${JSON.stringify(stack.account)} is used`);
+  }
+  if (definitelyDifferent(c.region, stack.region)) {
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossRegionMetricIgnored',
+      `target tracking can only use metrics from its own region; metric region ${JSON.stringify(c.region)} is ignored and region ${JSON.stringify(stack.region)} is used`);
   }
 
   return {
@@ -181,6 +187,15 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
     statistic: c.statistic,
     unit: c.unitFilter,
   };
+}
+
+/**
+ * Whether a metric's account or region is known at synth time to differ from the expected one.
+ *
+ * Returns false when either side is an unresolved token, since such values can only be compared at deploy time.
+ */
+function definitelyDifferent(value: string | undefined, expected: string): boolean {
+  return value !== undefined && !cdk.Token.isUnresolved(value) && !cdk.Token.isUnresolved(expected) && value !== expected;
 }
 
 /**
