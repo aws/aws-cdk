@@ -21,7 +21,7 @@ import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
 import { ARecord, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack, ValidationError } from '../../../core';
+import { CfnOutput, Duration, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 
 /**
@@ -55,6 +55,9 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * Set this to 0 to create the service without any running tasks, for example to suspend the
+   * service or to deploy the surrounding infrastructure before the container image is ready.
    *
    * @default - The default is 1 for all new services and uses the existing service's desired count
    * when updating an existing service.
@@ -421,7 +424,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    this.desiredCount = props.desiredCount || 1;
+    this.desiredCount = props.desiredCount ?? 1;
     this.internalDesiredCount = props.desiredCount;
 
     if (props.taskImageOptions) {
@@ -570,8 +573,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       throw new ValidationError(lit`SpecifyVpcClusterAlternativelyLeave`, 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new ValidationError(lit`SpecifyDesiredCountGreater`, 'You must specify a desiredCount greater than 0', this);
+    if (props.desiredCount !== undefined && !Token.isUnresolved(props.desiredCount) && props.desiredCount < 0) {
+      throw new ValidationError(lit`DesiredCountNegative`, `desiredCount must be greater than or equal to 0, got ${JSON.stringify(props.desiredCount)}`, this);
     }
 
     if (props.loadBalancers) {
