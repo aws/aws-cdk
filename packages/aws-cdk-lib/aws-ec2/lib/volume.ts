@@ -309,6 +309,16 @@ export interface IVolume extends IResource, IVolumeRef {
   readonly availabilityZone: string;
 
   /**
+   * The Availability Zone ID that the EBS Volume is contained within (e.g., `use1-az1`).
+   *
+   * AZ IDs are consistent physical zone identifiers across all AWS accounts,
+   * unlike AZ names which are randomly mapped per account.
+   *
+   * @default - undefined if the volume was created with `availabilityZone` only
+   */
+  readonly availabilityZoneId?: string;
+
+  /**
    * The customer-managed encryption key that is used to encrypt the Volume.
    *
    * @attribute
@@ -387,8 +397,26 @@ export interface VolumeProps {
 
   /**
    * The Availability Zone in which to create the volume.
+   *
+   * Exactly one of `availabilityZone` or `availabilityZoneId` must be provided.
+   *
+   * @default - Must provide either availabilityZone or availabilityZoneId
    */
-  readonly availabilityZone: string;
+  readonly availabilityZone?: string;
+
+  /**
+   * The Availability Zone ID in which to create the volume (e.g., `use1-az1`).
+   *
+   * AZ IDs are consistent physical zone identifiers across all AWS accounts,
+   * unlike AZ names (e.g., `us-west-2a`) which are randomly mapped per account.
+   * Use this when you need resources in the same physical zone across multiple
+   * AWS accounts.
+   *
+   * Exactly one of `availabilityZone` or `availabilityZoneId` must be provided.
+   *
+   * @default - Must provide either availabilityZone or availabilityZoneId
+   */
+  readonly availabilityZoneId?: string;
 
   /**
    * The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
@@ -542,6 +570,7 @@ export interface VolumeAttributes {
 abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly volumeId: string;
   public abstract readonly availabilityZone: string;
+  public abstract readonly availabilityZoneId: string | undefined;
   public abstract readonly encryptionKey?: IKey;
 
   public get volumeRef(): VolumeReference {
@@ -677,6 +706,7 @@ export class Volume extends VolumeBase {
     class Import extends VolumeBase {
       public readonly volumeId = attrs.volumeId;
       public readonly availabilityZone = attrs.availabilityZone;
+      public readonly availabilityZoneId = undefined;
       public readonly encryptionKey = attrs.encryptionKey;
     }
     // Check that the provided volumeId looks like it could be valid.
@@ -687,8 +717,10 @@ export class Volume extends VolumeBase {
   }
 
   public readonly volumeId: string;
-  public readonly availabilityZone: string;
+  public readonly availabilityZoneId: string | undefined;
   public readonly encryptionKey?: IKey;
+
+  private readonly _availabilityZone: string | undefined;
 
   constructor(scope: Construct, id: string, props: VolumeProps) {
     super(scope, id, {
@@ -701,6 +733,7 @@ export class Volume extends VolumeBase {
 
     const resource = new CfnVolume(this, 'Resource', {
       availabilityZone: props.availabilityZone,
+      availabilityZoneId: props.availabilityZoneId,
       autoEnableIo: props.autoEnableIo,
       encrypted: props.encrypted,
       kmsKeyId: props.encryptionKey?.keyArn,
@@ -719,7 +752,8 @@ export class Volume extends VolumeBase {
     if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);
 
     this.volumeId = resource.ref;
-    this.availabilityZone = props.availabilityZone;
+    this._availabilityZone = props.availabilityZone;
+    this.availabilityZoneId = props.availabilityZoneId;
     this.encryptionKey = props.encryptionKey;
 
     if (this.encryptionKey) {
@@ -742,7 +776,40 @@ export class Volume extends VolumeBase {
     }
   }
 
+  /**
+   * The availability zone that the EBS Volume is contained within (ex: us-west-2a).
+   *
+   * @throws if the volume was created with `availabilityZoneId` only. Use `availabilityZoneId` instead.
+   */
+  public get availabilityZone(): string {
+    if (this._availabilityZone === undefined) {
+      throw new ValidationError(
+        lit`VolumeAvailabilityZoneNotAvailable`,
+        '`availabilityZone` is not available when the volume was created with `availabilityZoneId`. Use `availabilityZoneId` instead.',
+        this,
+      );
+    }
+    return this._availabilityZone;
+  }
+
   protected validateProps(props: VolumeProps) {
+    if (props.availabilityZone && props.availabilityZoneId) {
+      if (!Token.isUnresolved(props.availabilityZone) && !Token.isUnresolved(props.availabilityZoneId)) {
+        throw new ValidationError(
+          lit`VolumeAvailabilityZoneMutuallyExclusive`,
+          "Cannot specify both 'availabilityZone' and 'availabilityZoneId'. Use one or the other.",
+          this,
+        );
+      }
+    }
+    if (!props.availabilityZone && !props.availabilityZoneId) {
+      throw new ValidationError(
+        lit`VolumeAvailabilityZoneRequired`,
+        "Must provide either 'availabilityZone' or 'availabilityZoneId'.",
+        this,
+      );
+    }
+
     if (!(props.size || props.snapshotId)) {
       throw new ValidationError(lit`SizeOrSnapshotRequired`, 'Must provide at least one of `size` or `snapshotId`', this);
     }
