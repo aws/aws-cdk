@@ -41,6 +41,28 @@ interpreted. The recommended setting for Docker image assets is
 old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
 configure it on the asset itself.
 
+### Dockerfile-specific ignore files (under feature flag)
+
+By default CDK always reads the context-root `.dockerignore`. Docker itself
+prefers `<Dockerfile name>.dockerignore` next to the Dockerfile (for example
+`Dockerfile.Custom.dockerignore` when `file` is `Dockerfile.Custom`, or
+`Dockerfile.dockerignore` for the default name) and does not merge the two
+files.
+
+Enable `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile` to match that
+rule. Existing apps keep the historic behavior until the flag is set to `true`.
+If the sibling ignore file is missing, CDK still reads the context-root
+`.dockerignore`. This is separate from `@aws-cdk/aws-ecr-assets:dockerIgnoreSupport`, which only
+controls how patterns are interpreted (`IgnoreMode.DOCKER` vs glob).
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile": true
+  }
+}
+```
+
 Use `asset.imageUri` to reference the image. It includes both the ECR image URL
 and tag.
 
