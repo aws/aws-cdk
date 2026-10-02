@@ -24,7 +24,7 @@ describe('OriginRequestPolicy', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginRequestPolicy', {
       OriginRequestPolicyConfig: {
-        Name: 'StackOriginRequestPolicy6B17D9ED',
+        Name: 'StackOriginRequestPolicy6B17D9ED-testregion',
         CookiesConfig: {
           CookieBehavior: 'none',
         },
