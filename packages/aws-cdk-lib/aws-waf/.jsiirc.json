@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_waf"
+    },
+    "ruby": {
+      "module": "AWSCDK::WAF"
     }
   }
 }

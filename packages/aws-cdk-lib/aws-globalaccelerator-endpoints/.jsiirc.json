@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_globalaccelerator_endpoints"
+    },
+    "ruby": {
+      "module": "AWSCDK::GlobalAcceleratorEndpoints"
     }
   }
 }
