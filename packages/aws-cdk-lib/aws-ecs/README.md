@@ -370,6 +370,63 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 });
 ```
 
+### Action Logs
+
+[Action Logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/action-logs.html)
+provide visibility into service deployment and daemon lifecycle operations.
+They capture intermediate steps like infrastructure provisioning, resource
+registration, and failure details.
+
+To enable Action Logs with a CloudWatch Logs destination (auto-creates a log
+group at `/aws/vendedlogs/ecs/action-logs/{clusterName}` with 7-day retention):
+
+```ts
+declare const vpc: ec2.IVpc;
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  vpc,
+  actionLogs: {
+    destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+  },
+});
+```
+
+You can also provide an existing log group:
+
+```ts
+declare const vpc: ec2.IVpc;
+const logGroup = new logs.LogGroup(this, 'ActionLogs', {
+  retention: logs.RetentionDays.TWO_WEEKS,
+});
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  vpc,
+  actionLogs: {
+    destination: ecs.ActionLogsDestination.toCloudWatchLogs(logGroup),
+  },
+});
+```
+
+To deliver Action Logs to S3:
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const bucket: s3.IBucket;
+const cluster = new ecs.Cluster(this, 'Cluster', {
+  vpc,
+  actionLogs: {
+    destination: ecs.ActionLogsDestination.toS3(bucket),
+  },
+});
+```
+
+You can also enable Action Logs on an existing cluster:
+
+```ts
+declare const cluster: ecs.Cluster;
+cluster.enableActionLogs({
+  destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+});
+```
+
 ## Task definitions
 
 A task definition describes what a single copy of a **task** should look like.
