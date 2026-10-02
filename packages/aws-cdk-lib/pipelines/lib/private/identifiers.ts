@@ -2,13 +2,13 @@ import * as crypto from 'crypto';
 import type { StackDeployment } from '../blueprint/stack-deployment';
 import type { GraphNode } from '../helpers-internal/graph';
 
-export function hash<A>(obj: A) {
+export function hash<A>(obj: A): string {
   const d = crypto.createHash('sha256');
   d.update(JSON.stringify(obj));
   return d.digest('hex');
 }
 
-export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
+export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>): string {
   const names = node.ancestorPath(parent).map(n => n.displayName ?? n.id).map(sanitizeName);
 
   // Something slightly complicated here:
@@ -38,7 +38,7 @@ export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   return limitIdentifierLength(trimmedNames.join('.'), totalMax - 2);
 }
 
-export function stackVariableNamespace(stack: StackDeployment) {
+export function stackVariableNamespace(stack: StackDeployment): string {
   return limitIdentifierLength(stack.stackArtifactId, 100);
 }
 
