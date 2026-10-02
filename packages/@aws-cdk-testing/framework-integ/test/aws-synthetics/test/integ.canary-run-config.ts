@@ -1,3 +1,4 @@
+import * as path from 'path';
 import type { StackProps } from 'aws-cdk-lib/core';
 import { App, Duration, Size, Stack } from 'aws-cdk-lib/core';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -17,6 +18,19 @@ class TestStack extends Stack {
           exports.handler = async () => {
             console.log(\'hello world\');
           };`),
+      }),
+      provisionedResourceCleanup: true,
+      activeTracing: true,
+      memory: Size.mebibytes(2048),
+      timeout: Duration.minutes(4),
+    });
+
+    new synthetics.Canary(this, 'JavaCanary', {
+      canaryName: 'java-canary',
+      runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      test: synthetics.Test.custom({
+        handler: 'org.example.MyCanary::handleRequest',
+        code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
       }),
       provisionedResourceCleanup: true,
       activeTracing: true,

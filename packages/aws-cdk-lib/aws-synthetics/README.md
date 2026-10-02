@@ -114,7 +114,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 ### Active Tracing
 
-You can choose to enable active AWS X-Ray tracing on canaries that use the `syn-nodejs-2.0` or later runtime by setting `activeTracing` to `true`.
+You can choose to enable active AWS X-Ray tracing on canaries that use the `syn-nodejs-2.0` or later runtime (excluding Playwright runtimes) or Java runtimes by setting `activeTracing` to `true`.
 
 With tracing enabled, traces are sent for all calls made by the canary that use the browser, the AWS SDK, or HTTP or HTTPS modules.
 
@@ -318,6 +318,10 @@ new synthetics.Canary(this, 'Bucket Canary', {
 > ```
 >
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).
+>
+> For Java scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the handler must be specified in the format `fully.qualified.ClassName::method` (for example, `com.example.MyCanary::handleRequest`).
+>
+> See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Runtime_java.html).
 
 ### Running a canary on a VPC
 
