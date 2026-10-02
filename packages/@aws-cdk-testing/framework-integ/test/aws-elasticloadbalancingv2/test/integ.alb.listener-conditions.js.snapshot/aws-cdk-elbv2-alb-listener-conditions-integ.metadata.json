@@ -1,0 +1,492 @@
+{
+  "/aws-cdk-elbv2-alb-listener-conditions-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:125:18)",
+        "    at TestStack._silenceLiteralAzWarning (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new TestStack (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:59:21)",
+        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:179:15)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "restrictDefaultSecurityGroup": true,
+        "maxAzs": "*",
+        "ipAddresses": "*"
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LB8A12904C"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": false
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*",
+          false
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Exports/Output{\"Ref\":\"LBListener49E825B4\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLBListener49E825B45EB41560"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBSecurityGroup8A41EA2B"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListener49E825B4"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/HostHeaderConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerHostHeaderConditionRule2A12E128"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/HostHeaderRegexConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerHostHeaderRegexConditionRule691C331D"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/HttpHeaderConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerHttpHeaderConditionRule9EDDBBC2"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/HttpHeaderRegexConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerHttpHeaderRegexConditionRule8B015117"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/HttpRequestMethodConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerHttpRequestMethodConditionRule24B307AE"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/PathPatternConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerPathPatternConditionRule4764A565"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/PathPatternRegexConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerPathPatternRegexConditionRule779C78E9"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/QueryStringConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerQueryStringConditionRule592FF7F7"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/LB/Listener/SourceIpConditionRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LBListenerSourceIpConditionRule3A309FF3"
+    }
+  ]
+}
