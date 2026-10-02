@@ -553,6 +553,28 @@ describe('event bus', () => {
     });
   });
 
+  test('archive forwards the kmsKey to the underlying Archive construct', () => {
+    // GIVEN
+    const stack = new Stack();
+    const bus = new EventBus(stack, 'Bus');
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    bus.archive('MyArchive', {
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+      kmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
+      ArchiveName: 'MyArchive',
+      KmsKeyIdentifier: stack.resolve(key.keyArn),
+    });
+  });
+
   test('cross account event bus uses generated physical name', () => {
     // GIVEN
     const app = new App();
