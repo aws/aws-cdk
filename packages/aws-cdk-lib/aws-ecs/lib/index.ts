@@ -13,6 +13,7 @@ export * from './environment-file';
 export * from './credential-spec';
 export * from './firelens-log-router';
 export * from './placement';
+export * from './service-monitoring';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
