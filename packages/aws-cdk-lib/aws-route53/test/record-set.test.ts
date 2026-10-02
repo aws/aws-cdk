@@ -1027,6 +1027,184 @@ describe('record set', () => {
     });
   });
 
+  test('Cross account zone delegation record with intermediate role', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    const intermediateRole = iam.Role.fromRoleArn(stack, 'IntermediateRole', 'arn:aws:iam::111111111111:role/IntermediateRole');
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      intermediateRole: intermediateRole,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      IntermediateRoleArn: 'arn:aws:iam::111111111111:role/IntermediateRole',
+      ParentZoneId: {
+        Ref: 'ParentHostedZoneC2BD86E1',
+      },
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
+      TTL: 60,
+    });
+  });
+
+  test('Cross account zone delegation record without intermediate role', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      ParentZoneId: {
+        Ref: 'ParentHostedZoneC2BD86E1',
+      },
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
+      TTL: 60,
+    });
+
+    // Verify IntermediateRoleArn is not present
+    const resources = template.findResources('Custom::CrossAccountZoneDelegation');
+    const customResourceProps = Object.values(resources)[0].Properties;
+    expect(customResourceProps).not.toHaveProperty('IntermediateRoleArn');
+  });
+
+  test('IAM policy includes only intermediate role ARN when intermediate role provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    const intermediateRole = iam.Role.fromRoleArn(stack, 'IntermediateRole', 'arn:aws:iam::111111111111:role/IntermediateRole');
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      intermediateRole: intermediateRole,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Resource: 'arn:aws:iam::111111111111:role/IntermediateRole',
+          },
+        ],
+      },
+    });
+  });
+
+  test('IAM policy includes only delegation role ARN when intermediate role not provided', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {
     // GIVEN
     const stack = new Stack();
