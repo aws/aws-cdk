@@ -3485,6 +3485,8 @@ const codeEvaluator = new agentcore.Evaluator(this, 'CodeEvaluator', {
 
 For code-based evaluators, the construct automatically grants the `bedrock-agentcore.amazonaws.com` service principal permission to invoke the Lambda function, scoped to the specific evaluator resource with `aws:SourceAccount` and `aws:SourceArn` conditions for confused deputy prevention.
 
+When a code-based evaluator is referenced from an `OnlineEvaluationConfig` via `EvaluatorSelector.custom()`, the configuration's execution role is also granted `lambda:InvokeFunction` and `lambda:GetFunction` on the backing function, which the service requires. For an evaluator imported with `Evaluator.fromEvaluatorAttributes()`, pass the `lambdaFunction` attribute to get the same wiring; without it, grant the execution role access yourself, for example with `evalFunction.grantInvoke(evaluation.executionRole)`.
+
 #### Using Custom Evaluators with Online Evaluation
 
 Custom evaluators are used in `OnlineEvaluationConfig` via `EvaluatorSelector.custom()`, alongside built-in evaluators:
