@@ -84,13 +84,49 @@ describe('User Pool Domain', () => {
 
     expect(() => pool.addDomain('Domain1', {
       cognitoDomain: { domainPrefix: 'domain.prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    })).toThrow(/must match pattern/);
     expect(() => pool.addDomain('Domain2', {
       cognitoDomain: { domainPrefix: 'Domain-Prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    })).toThrow(/must match pattern/);
     expect(() => pool.addDomain('Domain3', {
       cognitoDomain: { domainPrefix: 'dómäin-prefix' },
-    })).toThrow(/lowercase alphabets, numbers and hyphens/);
+    })).toThrow(/must match pattern/);
+  });
+
+  test('fails when domainPrefix has leading or trailing hyphens', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addDomain('Domain1', {
+      cognitoDomain: { domainPrefix: '-domain-prefix' },
+    })).toThrow(/must match pattern/);
+    expect(() => pool.addDomain('Domain2', {
+      cognitoDomain: { domainPrefix: 'domain-prefix-' },
+    })).toThrow(/must match pattern/);
+  });
+
+  test('fails when domainPrefix is longer than 63 characters', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addDomain('Domain', {
+      cognitoDomain: { domainPrefix: 'a'.repeat(64) },
+    })).toThrow(/must match pattern/);
+  });
+
+  test('passes when domainPrefix has valid format', () => {
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    expect(() => pool.addDomain('Domain1', {
+      cognitoDomain: { domainPrefix: 'a' },
+    })).not.toThrow();
+    expect(() => pool.addDomain('Domain2', {
+      cognitoDomain: { domainPrefix: 'a-b-c' },
+    })).not.toThrow();
+    expect(() => pool.addDomain('Domain3', {
+      cognitoDomain: { domainPrefix: 'a'.repeat(63) },
+    })).not.toThrow();
   });
 
   test('does not fail when domainPrefix is a token', () => {
