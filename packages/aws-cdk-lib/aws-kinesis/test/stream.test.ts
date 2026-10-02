@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { App, Duration, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy } from '../../core';
+import { App, Duration, Size, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy } from '../../core';
 import { ShardLevelMetrics, Stream, StreamEncryption, StreamMode } from '../lib';
 
 describe('Kinesis data streams', () => {
@@ -65,6 +65,66 @@ describe('Kinesis data streams', () => {
           ],
         });
       }).toThrow('shardLevelMetrics cannot contain duplicate items.');
+    });
+  });
+
+  describe('max record size', () => {
+    test.each<[Size, number]>([
+      [Size.kibibytes(1024), 1024],
+      [Size.kibibytes(1536), 1536],
+      [Size.mebibytes(10), 10240],
+    ])('configure max record size %s', (maxRecordSize, expected) => {
+      const stack = new Stack();
+      new Stream(stack, 'MyStream', {
+        maxRecordSize,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        MaxRecordSizeInKiB: expected,
+      });
+    });
+
+    test('max record size is not rendered when not specified', () => {
+      const stack = new Stack();
+      new Stream(stack, 'MyStream');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        MaxRecordSizeInKiB: Match.absent(),
+      });
+    });
+
+    test.each([1023, 10241])('fails for max record size of %d KiB', (kibibytes) => {
+      expect(() => {
+        new Stream(new Stack(), 'MyStream', {
+          maxRecordSize: Size.kibibytes(kibibytes),
+        });
+      }).toThrow(`maxRecordSize must be between 1024 and 10240 KiB. Received Size.kibibytes(${kibibytes})`);
+    });
+
+    test('fails for max record size that is not a whole number of kibibytes', () => {
+      expect(() => {
+        new Stream(new Stack(), 'MyStream', {
+          maxRecordSize: Size.bytes(1500),
+        });
+      }).toThrow("'1500 bytes' cannot be converted into a whole number of kibibytes.");
+    });
+
+    test('accepts if maxRecordSize is a Token', () => {
+      const stack = new Stack();
+      const parameter = new CfnParameter(stack, 'my-max-record-size', {
+        type: 'Number',
+        default: 10240,
+        minValue: 1024,
+        maxValue: 10240,
+      });
+
+      new Stream(stack, 'MyStream', {
+        maxRecordSize: Size.kibibytes(parameter.valueAsNumber),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        MaxRecordSizeInKiB: { Ref: 'mymaxrecordsize' },
+      });
     });
   });
 

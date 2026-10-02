@@ -72,6 +72,7 @@
   "myStream547FAD7F": {
    "Type": "AWS::Kinesis::Stream",
    "Properties": {
+    "MaxRecordSizeInKiB": 1536,
     "RetentionPeriodHours": 24,
     "ShardCount": 1,
     "StreamEncryption": {
