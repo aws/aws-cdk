@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import type * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import type { EventPattern, IRuleTarget } from '../../../aws-events';
@@ -204,6 +204,7 @@ export class CodeCommitSourceAction extends Action {
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
+    const dependencies = new Array<IDependable>();
     const branchOrDefault = this.getBranchOrDefault(_scope);
 
     const createEvent = this.props.trigger === undefined ||
@@ -227,15 +228,15 @@ export class CodeCommitSourceAction extends Action {
 
     // the Action will write the contents of the Git repository to the Bucket,
     // so its Role needs write permissions to the Pipeline Bucket
-    options.bucket.grantReadWrite(options.role);
+    dependencies.push(options.bucket.grantReadWrite(options.role));
     // when this action is cross-account,
     // the Role needs the s3:PutObjectAcl permission for some not yet fully understood reason
     if (Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) === TokenComparison.DIFFERENT) {
-      options.bucket.grantPutAcl(options.role);
+      dependencies.push(options.bucket.grantPutAcl(options.role));
     }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+    const actionRolePolicy = options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.props.repository.repositoryArn],
       actions: [
         'codecommit:GetBranch',
@@ -246,8 +247,12 @@ export class CodeCommitSourceAction extends Action {
         ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
       ],
     }));
+    if (actionRolePolicy.policyDependable) {
+      dependencies.push(actionRolePolicy.policyDependable);
+    }
 
     return {
+      dependencies,
       configuration: {
         RepositoryName: this.props.repository.repositoryName,
         BranchName: branchOrDefault,
