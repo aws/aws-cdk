@@ -1,0 +1,34 @@
+{
+  "/cloudfront-origin-access-control-sigv4a/OriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signing": "*"
+      }
+    }
+  ],
+  "/cloudfront-origin-access-control-sigv4a/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cloudfront-origin-access-control-sigv4a/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cloudfront-origin-access-control-sigv4a/OriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OriginAccessControlDC2011A2"
+    }
+  ],
+  "/cloudfront-origin-access-control-sigv4a/Exports/Output{\"Fn::GetAtt\":[\"OriginAccessControlDC2011A2\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttOriginAccessControlDC2011A2Id1E1884FF"
+    }
+  ]
+}
