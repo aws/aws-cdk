@@ -614,7 +614,7 @@
       ]
      },
      "Image": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d32bd3e3679647575cb811795d107a6f15fb74ff74e1f7c536b8c612e34688c7"
      },
      "ReadonlyRootFilesystem": false,
      "ResourceRequirements": [
@@ -684,7 +684,31 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":job-definition/*"
+           ":job-definition/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "JobDefinition24FFE3ED"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
           ]
          ]
         }
