@@ -510,6 +510,17 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('placementGroup exposes the configured group and is undefined otherwise', () => {
+    // WHEN
+    const group = new ec2.PlacementGroup(stack, 'myPlacementGroup');
+    const withGroup = new ComputeEnvironment(stack, 'WithGroup', { ...defaultProps, vpc, placementGroup: group });
+    const withoutGroup = new ComputeEnvironment(stack, 'WithoutGroup', { ...defaultProps, vpc });
+
+    // THEN
+    expect(withGroup.placementGroup).toBe(group);
+    expect(withoutGroup.placementGroup).toBeUndefined();
+  });
+
   test('respects replaceComputeEnvironment', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {

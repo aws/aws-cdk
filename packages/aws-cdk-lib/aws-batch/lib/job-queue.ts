@@ -276,7 +276,11 @@ export class JobQueue extends Resource implements IJobQueue {
   private readonly _computeEnvironments: IArrayBox<OrderedComputeEnvironment>;
   public readonly priority: number;
   public readonly enabled?: boolean;
-  private readonly _schedulingPolicy?: ISchedulingPolicyRef;
+
+  /**
+   * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
+   */
+  public readonly schedulingPolicy?: ISchedulingPolicy;
 
   private readonly resource: CfnJobQueue;
 
@@ -298,13 +302,6 @@ export class JobQueue extends Resource implements IJobQueue {
     return Stack.of(this).splitArn(this.jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
   }
 
-  /**
-   * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
-   */
-  public get schedulingPolicy(): ISchedulingPolicy | undefined {
-    return this._schedulingPolicy ? toISchedulingPolicy(this._schedulingPolicy) : undefined;
-  }
-
   public get jobQueueRef(): JobQueueReference {
     return {
       jobQueueArn: this.jobQueueArn,
@@ -321,7 +318,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this._computeEnvironments = Box.fromArray(props?.computeEnvironments ?? []);
     this.priority = props?.priority ?? 1;
     this.enabled = props?.enabled;
-    this._schedulingPolicy = props?.schedulingPolicy;
+    this.schedulingPolicy = props?.schedulingPolicy ? toISchedulingPolicy(props.schedulingPolicy) : undefined;
 
     this.resource = new CfnJobQueue(this, 'Resource', {
       computeEnvironmentOrder: this._computeEnvironments.map((ce) => {
@@ -333,7 +330,7 @@ export class JobQueue extends Resource implements IJobQueue {
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-      schedulingPolicyArn: this._schedulingPolicy?.schedulingPolicyRef.schedulingPolicyArn,
+      schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyRef.schedulingPolicyArn,
       jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
 

@@ -165,6 +165,20 @@ test('JobQueue respects schedulingPolicy', () => {
   });
 });
 
+test('JobQueue.schedulingPolicy exposes the configured policy and is undefined otherwise', () => {
+  // GIVEN
+  const stack = new Stack();
+  const policy = new FairshareSchedulingPolicy(stack, 'FairsharePolicy');
+
+  // WHEN
+  const withPolicy = new JobQueue(stack, 'WithPolicy', { schedulingPolicy: policy });
+  const withoutPolicy = new JobQueue(stack, 'WithoutPolicy');
+
+  // THEN
+  expect(withPolicy.schedulingPolicy).toBe(policy);
+  expect(withoutPolicy.schedulingPolicy).toBeUndefined();
+});
+
 test('JobQueue respects addComputeEnvironment', () => {
   // GIVEN
   const stack = new Stack();
