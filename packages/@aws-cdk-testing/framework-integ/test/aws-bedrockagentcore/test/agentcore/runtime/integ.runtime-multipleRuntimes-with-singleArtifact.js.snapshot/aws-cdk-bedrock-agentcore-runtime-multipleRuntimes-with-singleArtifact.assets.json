@@ -1,0 +1,35 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "a05e513cc1b28b1abcea45f32236073aef96c45ccda9b394e68e8aed2343198c": {
+      "displayName": "aws-cdk-bedrock-agentcore-runtime-multipleRuntimes-with-singleArtifact Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-runtime-multipleRuntimes-with-singleArtifact.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4440e0c8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a05e513cc1b28b1abcea45f32236073aef96c45ccda9b394e68e8aed2343198c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925": {
+      "displayName": "Runtime_1/AgentRuntimeArtifact",
+      "source": {
+        "directory": "asset.b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
+        "platform": "linux/arm64"
+      },
+      "destinations": {
+        "current_account-current_region-922b1212": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}
