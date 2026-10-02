@@ -148,13 +148,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const distributionId = options.distributionId;
     const principal = 'cloudfront.amazonaws.com';
 
-    const sourceArn = cdk.Stack.of(scope).formatArn({
-      service: 'cloudfront',
-      resource: 'distribution',
-      resourceName: distributionId,
-      arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
-      region: '', // CloudFront Distribution is a global resource, so we omit the region.
-    });
+    const sourceArn = `arn:${cdk.Aws.PARTITION}:cloudfront::${cdk.Aws.ACCOUNT_ID}:distribution/${distributionId}`;
 
     new lambda.CfnPermission(scope, `InvokeFromApiFor${options.originId}`, {
       principal: principal,
