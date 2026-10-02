@@ -133,6 +133,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       enableExecuteCommand: props.enableExecuteCommand,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     });
   }
 }
