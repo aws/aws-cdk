@@ -11,7 +11,7 @@
     },
     "service": "IoT",
     "api": "getTopicRule",
-    "expected": "{\"$ObjectLike\":{\"rule\":{\"actions\":[{\"http\":{\"url\":\"https://example.com/batch\",\"enableBatching\":true,\"batchConfig\":{\"maxBatchOpenMs\":100,\"maxBatchSize\":5,\"maxBatchSizeBytes\":1024}}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"rule\":{\"actions\":[{\"http\":{\"url\":\"https://example.com/batch\",\"enableBatching\":true,\"batchConfig\":{\"maxBatchOpenMs\":100,\"maxBatchSize\":5,\"maxBatchSizeBytes\":1024,\"batchAcrossTopics\":true}}}]}}}",
     "parameters": {
      "ruleName": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779368640729"
+    "salt": "1779550622177"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,12 +76,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs24.x",
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

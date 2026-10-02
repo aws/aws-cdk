@@ -59,6 +59,25 @@ export interface HttpActionBatchConfig {
    * @default Size.kibibytes(5)
    */
   readonly maxBatchSizeBytes?: Size;
+
+  /**
+   * Whether messages from different MQTT topics can be batched into a single HTTP request.
+   *
+   * By default, only messages from the same topic are batched together. Enable this for
+   * routing use cases where messages from multiple device topics are destined for the
+   * same HTTP endpoint.
+   *
+   * Messages are always batched within the scope of the same account, rule name, target
+   * HTTP endpoint URL, and billing group regardless of this setting — cross-account
+   * batching is never supported.
+   *
+   * When enabled, the error action payload format changes: the `topic` field moves from
+   * the top level to inside each `payloadsWithMetadata` entry.
+   *
+   * @see https://docs.aws.amazon.com/iot/latest/developerguide/http_batching.html
+   * @default false
+   */
+  readonly batchAcrossTopics?: boolean;
 }
 
 /**
@@ -162,6 +181,7 @@ export class HttpsAction implements iot.IAction {
       maxBatchOpenMs: this.batchConfig.maxBatchOpenDuration?.toMilliseconds(),
       maxBatchSize: this.batchConfig.maxBatchSize,
       maxBatchSizeBytes: this.batchConfig.maxBatchSizeBytes?.toBytes(),
+      batchAcrossTopics: this.batchConfig.batchAcrossTopics,
     } : undefined;
 
     return {
