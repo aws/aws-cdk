@@ -1,5 +1,6 @@
 export * from './alarm';
 export * from './promql-alarm';
+export * from './log-alarm';
 export * from './alarm-action';
 export * from './alarm-base';
 export * from './alarm-mute-rule';
