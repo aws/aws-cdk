@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "CloudMapAAndSrvRecords/DefaultTest": {
+      "stacks": [
+        "aws-ecs-cloudmap-a-and-srv-records"
+      ],
+      "assertionStack": "CloudMapAAndSrvRecords/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudMapAAndSrvRecordsDefaultTestDeployAssertA44A69E1"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
