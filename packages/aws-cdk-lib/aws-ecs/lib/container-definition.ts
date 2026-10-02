@@ -633,6 +633,8 @@ export class ContainerDefinition extends Construct {
       this.environment = {};
     }
 
+    this.validateEnvironmentVariableCount();
+
     if (props.environmentFiles) {
       this.environmentFiles = [];
 
@@ -745,6 +747,7 @@ export class ContainerDefinition extends Construct {
    */
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
+    this.validateEnvironmentVariableCount();
   }
 
   /**
@@ -989,6 +992,13 @@ export class ContainerDefinition extends Construct {
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
       restartPolicy: renderRestartPolicy(this.props.enableRestartPolicy, this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod),
     };
+  }
+
+  private validateEnvironmentVariableCount() {
+    const count = Object.keys(this.environment).length;
+    if (count > 100) {
+      throw new ValidationError(lit`TooManyEnvironmentVariables`, `Container has ${count} environment variables, but the limit is 100 per container. Consider using AWS Secrets Manager or environment files for additional config.`, this);
+    }
   }
 }
 
