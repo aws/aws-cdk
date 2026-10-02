@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "108555c01cfc2f89d6e814b83ffc1c6370ea2ed53c95cb754a89b290f4b82e46": {
+      "displayName": "EcsExternalTestDefaultTestDeployAssert9F72078B Template",
+      "source": {
+        "path": "EcsExternalTestDefaultTestDeployAssert9F72078B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-32ac6aa5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "108555c01cfc2f89d6e814b83ffc1c6370ea2ed53c95cb754a89b290f4b82e46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
