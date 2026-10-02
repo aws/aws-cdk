@@ -89,9 +89,7 @@ declare const resourceProps: CfnResourceProps;
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
 declare class MyApplication extends Stack {
-  constructor(scope: IConstruct, id: string, props: any) {
-    super(scope, id);
-  }
+  constructor(scope: IConstruct, id: string, props: any);
 }
 
 class StackThatProvidesABucket extends Stack {
