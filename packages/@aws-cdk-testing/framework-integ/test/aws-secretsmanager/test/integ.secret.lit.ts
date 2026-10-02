@@ -11,7 +11,14 @@ class SecretsManagerStack extends cdk.Stack {
 
     /// !show
     // Default secret
-    const secret = new secretsmanager.Secret(this, 'Secret');
+    const secret = new secretsmanager.Secret(this, 'Secret', {
+      blockPublicPolicy: true,
+    });
+    secret.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      principals: [new iam.AnyPrincipal()],
+      resources: ['*'],
+    }));
     secret.grantRead(role);
 
     const user = new iam.User(this, 'User', {
