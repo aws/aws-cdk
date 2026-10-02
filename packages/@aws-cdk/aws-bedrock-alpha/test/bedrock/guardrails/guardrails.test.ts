@@ -1866,6 +1866,25 @@ describe('CDK-Created-Guardrail', () => {
     });
   });
 
+  test('Versioning - Stable Logical Id Regardless Of Construct Order', () => {
+    const versionLogicalIds = (fillers: number) => {
+      const testStack = new core.Stack(new App(), 'test-stack');
+      for (let i = 0; i < fillers; i++) {
+        new bedrock.Guardrail(testStack, `Filler${i}`, { guardrailName: `filler-${i}` });
+      }
+      const guardrail = new bedrock.Guardrail(testStack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+      });
+      guardrail.createVersion();
+
+      return Object.keys(Template.fromStack(testStack).findResources('AWS::Bedrock::GuardrailVersion'));
+    };
+
+    expect(versionLogicalIds(0)).toHaveLength(1);
+    expect(versionLogicalIds(1)).toEqual(versionLogicalIds(0));
+    expect(versionLogicalIds(2)).toEqual(versionLogicalIds(0));
+  });
+
   test('Content Filter with Tier Configuration - CLASSIC', () => {
     new bedrock.Guardrail(stack, 'TestGuardrail', {
       guardrailName: 'TestGuardrail',
