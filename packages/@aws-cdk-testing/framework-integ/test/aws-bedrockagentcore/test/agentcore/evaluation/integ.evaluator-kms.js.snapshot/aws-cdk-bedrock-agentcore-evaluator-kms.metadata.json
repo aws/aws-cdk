@@ -1,0 +1,97 @@
+{
+  "/aws-cdk-bedrock-agentcore-evaluator-kms": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/evaluation/integ.evaluator-kms.ts:14:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/EvaluatorKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/EncryptedEvaluator": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/EvaluatorKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvaluatorKey295FE473"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:692:30)",
+        "new Key (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/evaluation/integ.evaluator-kms.ts:17:13)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-evaluator-kms/EncryptedEvaluator/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedEvaluatorCB8ADE60"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Evaluator (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/evaluation/custom-evaluator.js:274:30)",
+        "new Evaluator (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/evaluation/integ.evaluator-kms.ts:21:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+ "Resources": {
+  "EvaluatorKey295FE473": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedEvaluatorCB8ADE60": {
+   "Type": "AWS::BedrockAgentCore::Evaluator",
+   "Properties": {
+    "Description": "Evaluator encrypted with a customer-managed KMS key",
+    "EvaluatorConfig": {
+     "LlmAsAJudge": {
+      "Instructions": "Evaluate whether the agent response is helpful, accurate, and well-structured. Context: {context}. Available tools: {available_tools}.",
+      "ModelConfig": {
+       "BedrockEvaluatorModelConfig": {
+        "ModelId": "us.anthropic.claude-sonnet-4-6"
+       }
+      },
+      "RatingScale": {
+       "Categorical": [
+        {
+         "Definition": "The response fully addresses the user query with accurate information.",
+         "Label": "Good"
+        },
+        {
+         "Definition": "The response fails to address the query or contains inaccurate information.",
+         "Label": "Bad"
+        }
+       ]
+      }
+     }
+    },
+    "EvaluatorName": "integ_test_encrypted_eval",
+    "KmsKeyArn": {
+     "Fn::GetAtt": [
+      "EvaluatorKey295FE473",
+      "Arn"
+     ]
+    },
+    "Level": "SESSION"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
