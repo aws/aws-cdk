@@ -312,4 +312,43 @@ describe('CloudFront Function', () => {
       });
     });
   });
+
+  describe('feature flag: CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0', () => {
+    test('defaults to JS_2_0 when flag is enabled', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      new Function(stack, 'CF2', {
+        code: FunctionCode.fromInline('code'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+        },
+      });
+    });
+
+    test('explicit runtime overrides flag', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      new Function(stack, 'CF2', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_1_0,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-1.0',
+        },
+      });
+    });
+  });
 });

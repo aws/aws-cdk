@@ -662,7 +662,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "my-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlb-healthchecksMyProvider360FF666"
    }
   },
   "myServicelb1FA8CBE12": {
@@ -679,6 +679,12 @@
      {
       "Fn::GetAtt": [
        "myServicelb1SecurityGroup342C51EA",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSglb18DF3D648",
        "GroupId"
       ]
      }
@@ -761,6 +767,12 @@
      {
       "Fn::GetAtt": [
        "myServicelb2SecurityGroupEB00B5B9",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSglb27A5C6D94",
        "GroupId"
       ]
      }
@@ -987,6 +999,66 @@
     "myServicelb2listener2AA6970EB",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
+  },
+  "NlbSglb18DF3D648": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/NlbSglb1",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSglb1toawsecsintegnlbhealthchecksMyAutoScalingGroupSG51B35F0232768655359527C198": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MyAutoScalingGroupSGEBE6954A",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSglb18DF3D648",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
+  },
+  "NlbSglb27A5C6D94": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/NlbSglb2",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSglb2toawsecsintegnlbhealthchecksMyAutoScalingGroupSG51B35F023276865535C0A9BC8D": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MyAutoScalingGroupSGEBE6954A",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSglb27A5C6D94",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
   }
  },
  "Parameters": {

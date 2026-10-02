@@ -98,7 +98,12 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
-    const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
+    const args = [
+      '--Werr', // fail for all non-suppressed warnings; we want to enforce strict jsii
+      '--Wno=JSII5018', // ignore language-compatibility/reserved-word, this happens to often in generated code
+      '--Wno=JSII6', // ignore metadata/missing-dev-dependency, we use a slightly different strategy in this repo
+      '--add-deprecation-warnings',
+    ];
     if (options?.compressAssembly) {
       args.push('--compress-assembly');
     }

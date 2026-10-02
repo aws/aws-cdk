@@ -21,7 +21,18 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
+       ]
+      ]
+     }
     ],
     "Path": "/",
     "Policies": [
@@ -158,13 +169,6 @@
    "Type": "AWS::DataBrew::Job",
    "Properties": {
     "Name": "job-1",
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "DataBrewRole7E60F80D",
-      "Arn"
-     ]
-    },
-    "Type": "RECIPE",
     "Outputs": [
      {
       "Location": {
@@ -174,7 +178,14 @@
       }
      }
     ],
-    "ProjectName": "project-1"
+    "ProjectName": "project-1",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "DataBrewRole7E60F80D",
+      "Arn"
+     ]
+    },
+    "Type": "RECIPE"
    },
    "DependsOn": [
     "DataBrewProject"
@@ -240,12 +251,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -256,6 +261,12 @@
        },
        ":states:::databrew:startJobRun\",\"Parameters\":{\"Name\":\"job-1\"}}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

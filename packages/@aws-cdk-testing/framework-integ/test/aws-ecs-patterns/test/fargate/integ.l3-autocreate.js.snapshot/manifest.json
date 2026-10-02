@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-ecs-integ-l3-autocreate.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8bec20fb13f1d5b7cc41ea0d0083f59f2ca7eab6f44e697a39a04ed1db8f6f16.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ed09249899b208b1f40819b586d0df00e41b9e20c153823f7ca244f37b305a60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -173,12 +173,6 @@
             }
           }
         ],
-        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -239,12 +233,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-ecs-integ-l3-autocreate/ALBFargateService/TaskDef/ExecutionRole/Resource": [
@@ -648,12 +636,29 @@
               "description": "*",
               "allowAllOutbound": false
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEgressRule": [
+                "*",
+                {},
+                "*",
+                true
+              ]
+            }
           }
         ],
         "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NLBFargateServiceLBSecurityGroup4E9972CC"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/SecurityGroup/to awsecsintegl3autocreateNLBFargateServiceSecurityGroup4E46ADC3:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceLBSecurityGrouptoawsecsintegl3autocreateNLBFargateServiceSecurityGroup4E46ADC380FFB3D8AD"
           }
         ],
         "/aws-ecs-integ-l3-autocreate/NLBFargateService/LB/PublicListener": [
@@ -721,12 +726,6 @@
             }
           }
         ],
-        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -787,12 +786,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-ecs-integ-l3-autocreate/NLBFargateService/TaskDef/ExecutionRole/Resource": [
@@ -859,12 +852,29 @@
             "data": {
               "vpc": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addIngressRule": [
+                "*",
+                {},
+                "*",
+                false
+              ]
+            }
           }
         ],
         "/aws-ecs-integ-l3-autocreate/NLBFargateService/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NLBFargateServiceSecurityGroup9D81388B"
+          }
+        ],
+        "/aws-ecs-integ-l3-autocreate/NLBFargateService/Service/SecurityGroup/from awsecsintegl3autocreateNLBFargateServiceLBSecurityGroup8F2082EC:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NLBFargateServiceSecurityGroupfromawsecsintegl3autocreateNLBFargateServiceLBSecurityGroup8F2082EC80A3DE63EF"
           }
         ],
         "/aws-ecs-integ-l3-autocreate/BootstrapVersion": [
@@ -1227,6 +1237,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1423,10 +1437,17 @@
           "@aws-cdk/aws-route53-patterns:useDistribution": {
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

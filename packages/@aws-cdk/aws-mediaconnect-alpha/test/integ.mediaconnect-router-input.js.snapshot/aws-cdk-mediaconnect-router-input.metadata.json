@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-mediaconnect-router-input/network": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input/routerInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input/network/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "network39EEAA36"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input/routerInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "routerInput99E26491"
+    }
+  ]
+}

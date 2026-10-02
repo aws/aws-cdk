@@ -8,16 +8,12 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'BedrockAgentCoreTargetIntegTest', {
-  env: {
-    region: process.env.CDK_DEFAULT_REGION || 'us-east-1',
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-  },
-});
+const stack = new cdk.Stack(app, 'BedrockAgentCoreTargetIntegTest');
 
 // Create Gateway
 const gateway = new agentcore.Gateway(stack, 'TestGateway', {
@@ -28,7 +24,7 @@ const gateway = new agentcore.Gateway(stack, 'TestGateway', {
 // ===== Test 1: GatewayTarget.forLambda() Static Method =====
 const lambdaFunction1 = new lambda.Function(stack, 'Lambda1', {
   functionName: 'integ-test-target-lambda1',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -50,6 +46,13 @@ const toolSchema1 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction1.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-static',
@@ -57,6 +60,9 @@ const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   lambdaFunction: lambdaFunction1,
   toolSchema: toolSchema1,
 });
+
+// Ensure Gateway role and its policies are created before the target
+lambdaTarget.node.addDependency(gateway.role);
 
 // ===== Test 2: GatewayTarget.forOpenApi() Static Method =====
 // NOTE: OpenAPI targets are NOT included in this integration test because they require
@@ -76,7 +82,7 @@ const smithyTarget = agentcore.GatewayTarget.forSmithy(stack, 'SmithyTarget', {
 // ===== Test 4: GatewayTarget Constructor with LambdaTargetConfiguration =====
 const lambdaFunction2 = new lambda.Function(stack, 'Lambda2', {
   functionName: 'integ-test-target-lambda2',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -98,6 +104,13 @@ const toolSchema2 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction2.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-constructor',
@@ -107,6 +120,9 @@ const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget'
     toolSchema2,
   ),
 });
+
+// Ensure Gateway role and its policies are created before the target
+constructorTarget.node.addDependency(gateway.role);
 
 // ===== Outputs =====
 new cdk.CfnOutput(stack, 'GatewayId', {
@@ -131,5 +147,6 @@ new cdk.CfnOutput(stack, 'ConstructorTargetId', {
 // The test validates that all target creation methods work correctly and can be deployed.
 new integ.IntegTest(app, 'TargetIntegTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
 

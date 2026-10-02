@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "54.0.0",
   "testCases": {
     "database-proxy-integ-test/DefaultTest": {
       "stacks": [
@@ -16,5 +16,7 @@
       "assertionStack": "database-proxy-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

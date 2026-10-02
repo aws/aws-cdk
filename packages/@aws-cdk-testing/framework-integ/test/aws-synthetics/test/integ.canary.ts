@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import { Canary, Cleanup, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
+import { Canary, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
@@ -41,7 +41,7 @@ const inlineAsset = new Canary(stack, 'InlineAsset', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
 });
 
 const directoryAsset = new Canary(stack, 'DirectoryAsset', {
@@ -53,7 +53,7 @@ const directoryAsset = new Canary(stack, 'DirectoryAsset', {
   environmentVariables: {
     URL: api.url,
   },
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
 });
 
 const folderAsset = new Canary(stack, 'FolderAsset', {
@@ -65,7 +65,7 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
   environmentVariables: {
     URL: api.url,
   },
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
 });
 
 const zipAsset = new Canary(stack, 'ZipAsset', {
@@ -79,7 +79,7 @@ const zipAsset = new Canary(stack, 'ZipAsset', {
     },
   ],
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
 });
 
 const kebabToPascal = (text:string) => text.replace(/(^\w|[-./]\w)/g, (v) => v.replace(/[-./]/, '').toUpperCase());
@@ -93,7 +93,7 @@ const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
       URL: api.url,
     },
     runtime,
-    cleanup: Cleanup.LAMBDA,
+    provisionedResourceCleanup: true,
   });
 
 const puppeteer52 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_5_2);

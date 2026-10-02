@@ -1,0 +1,29 @@
+{
+  "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queueName": "*",
+        "visibilityTimeout": "*"
+      }
+    }
+  ],
+  "/CdkPipelineInvestigationStack/Prod/ProdStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CdkPipelineInvestigationStack/Prod/ProdStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueueE6CA6235"
+    }
+  ]
+}

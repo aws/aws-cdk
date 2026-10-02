@@ -8,8 +8,10 @@ import * as s3 from '../../aws-s3';
 import { Asset } from '../../aws-s3-assets';
 import type { IStackSynthesizer, FileAssetSource, FileAssetLocation } from '../../core';
 import { AssetStaging, App, Aws, CfnResource, Stack, DefaultStackSynthesizer } from '../../core';
+import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
 import * as cxapi from '../../cx-api';
 import * as ec2 from '../lib';
+import type { InitBindOptions, InitElementConfig } from '../lib/private/cfn-init-internal';
 
 let app: App;
 let stack: Stack;
@@ -687,6 +689,36 @@ describe('assets n buckets', () => {
     const fingerprintTwo = calculateFingerprint(assetFilePath);
 
     expect(fingerprintTwo).not.toEqual(fingerprintOne);
+  });
+});
+
+test('no prototype pollution', () => {
+  assertNoPrototypePollution(() => {
+    class EvilClass extends ec2.InitElement {
+      constructor(public readonly elementType: string) {
+        super();
+      }
+
+      public _bind(_options: InitBindOptions): InitElementConfig {
+        return {
+          config: {},
+          authentication: {
+            __proto__: {
+              evil: true,
+            },
+          },
+        };
+      }
+    }
+    const init = ec2.CloudFormationInit.fromConfigSets({
+      configs: {
+        c1: new ec2.InitConfig([new EvilClass('FILE'), new EvilClass('SOURCE')]),
+      },
+      configSets: {
+        all: ['c1'],
+      },
+    });
+    init.attach(resource, linuxOptions());
   });
 });
 

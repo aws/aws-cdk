@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "CrossRegionWeakReferenceTest/DefaultTest": {
+      "stacks": [
+        "CrossRegionWeakRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CrossRegionWeakReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

@@ -1,5 +1,5 @@
 import { dropUndefined } from './object';
-import * as cdk from '../../../core';
+import type * as cdk from '../../../core';
 
 /**
  * A Token object that will drop the last element of an array if it is an empty object
@@ -8,10 +8,9 @@ import * as cdk from '../../../core';
  * that evaluate to "undefined" from showing up in the rendered JSON.
  */
 export class DropEmptyObjectAtTheEndOfAnArray implements cdk.IResolvable, cdk.IPostProcessor {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   constructor(private readonly value: any) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {

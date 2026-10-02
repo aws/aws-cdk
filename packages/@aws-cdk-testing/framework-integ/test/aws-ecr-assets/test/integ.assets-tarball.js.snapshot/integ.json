@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "52.0.0",
   "testCases": {
     "LoadFromTarball/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LoadFromTarball/DefaultTest/DeployAssert",
       "assertionStackName": "LoadFromTarballDefaultTestDeployAssert46673615"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

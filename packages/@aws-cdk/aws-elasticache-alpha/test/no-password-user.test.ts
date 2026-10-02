@@ -16,6 +16,14 @@ describe('NoPasswordUser', () => {
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       })).toThrow("Engine 'valkey' does not support no-password authentication. Supported engines: redis.");
     });
+
+    test('UserEngine.of("valkey") produces the same validation error as UserEngine.VALKEY', () => {
+      expect(() => new NoPasswordUser(stack, 'TestUser', {
+        userId: 'test-user',
+        engine: UserEngine.of('valkey'),
+        accessControl: AccessControl.fromAccessString('on ~* +@all'),
+      })).toThrow("Engine 'valkey' does not support no-password authentication. Supported engines: redis.");
+    });
   });
 
   describe('constructor', () => {
@@ -109,7 +117,7 @@ describe('NoPasswordUser', () => {
       });
 
       expect(user.userName).toBe('my-user-id');
-      expect(user.engine).toBe('redis');
+      expect(user.engine?.engineType).toBe('redis');
     });
   });
 
@@ -209,7 +217,7 @@ describe('NoPasswordUser', () => {
 
       expect(user.userArn).toBe(arn);
       expect(user.userId).toBe('my-user');
-      expect(user.engine).toBe('redis');
+      expect(user.engine?.engineType).toBe('redis');
       expect(user.userName).toBe('display-name');
     });
 

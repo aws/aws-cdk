@@ -1,0 +1,90 @@
+{
+ "Resources": {
+  "network39EEAA36": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "minimal-network"
+   }
+  },
+  "routerInput99E26491": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "Port": 5001
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 1000000,
+    "Name": "minimal-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_20",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

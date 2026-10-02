@@ -473,7 +473,7 @@ describe('defaultValue included', () => {
 
 function getInfoAnnotations(casm: CloudAssembly) {
   const result = new Array<{ path: string; message: string }>();
-  for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
+  for (const stack of casm.stacks) {
     for (const [path, md] of Object.entries(stack.metadata ?? {})) {
       for (const x of md) {
         if (x.type === ArtifactMetadataEntryType.INFO) {

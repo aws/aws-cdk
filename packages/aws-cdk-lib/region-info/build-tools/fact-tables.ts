@@ -122,17 +122,18 @@ enum Runtime {
   NODE_18 = 'nodejs18.x',
   NODE_20 = 'nodejs20.x',
   NODE_22 = 'nodejs22.x',
+  NODE_24 = 'nodejs24.x',
 }
 
 export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: Runtime.NODE_22,
-  [Partition.Cn]: Runtime.NODE_22,
-  [Partition.UsGov]: Runtime.NODE_22,
-  [Partition.UsIso]: Runtime.NODE_22,
-  [Partition.UsIsoB]: Runtime.NODE_22,
-  [Partition.UsIsoF]: Runtime.NODE_22,
-  [Partition.EuIsoE]: Runtime.NODE_22,
-  [Partition.Eusc]: Runtime.NODE_22,
+  [Partition.Default]: Runtime.NODE_24,
+  [Partition.Cn]: Runtime.NODE_24,
+  [Partition.UsGov]: Runtime.NODE_24,
+  [Partition.UsIso]: Runtime.NODE_24,
+  [Partition.UsIsoB]: Runtime.NODE_24,
+  [Partition.UsIsoF]: Runtime.NODE_24,
+  [Partition.EuIsoE]: Runtime.NODE_24,
+  [Partition.Eusc]: Runtime.NODE_24,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions

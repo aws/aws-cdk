@@ -1,13 +1,24 @@
 {
-  "version": "45.0.0",
+  "version": "50.0.0",
   "testCases": {
     "BedrockAgentExistingRole/DefaultTest": {
       "stacks": [
         "aws-cdk-bedrock-agent-existing-role-1"
       ],
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "us-east-2",
+        "ap-northeast-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ap-south-1",
+        "ap-northeast-2",
+        "ap-northeast-3"
+      ],
       "assertionStack": "BedrockAgentExistingRole/DefaultTest/DeployAssert",
       "assertionStackName": "BedrockAgentExistingRoleDefaultTestDeployAssertD5C55EAB"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1105.0"
 }

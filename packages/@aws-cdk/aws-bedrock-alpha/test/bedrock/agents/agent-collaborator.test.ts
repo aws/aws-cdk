@@ -27,6 +27,7 @@ describe('AgentCollaborator', () => {
       env: { account: stack.account, region: stack.region },
       stack: stack,
       applyRemovalPolicy: jest.fn(),
+      with: jest.fn(),
     };
   });
 

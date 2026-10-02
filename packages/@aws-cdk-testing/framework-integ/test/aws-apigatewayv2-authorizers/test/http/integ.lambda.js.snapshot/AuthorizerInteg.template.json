@@ -53,6 +53,23 @@
     "authfunctionServiceRoleFCB72198"
    ]
   },
+  "AuthRole900B840B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "MyHttpApi8AEAAC21": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -153,6 +170,12 @@
     "ApiId": {
      "Ref": "MyHttpApi8AEAAC21"
     },
+    "AuthorizerCredentialsArn": {
+     "Fn::GetAtt": [
+      "AuthRole900B840B",
+      "Arn"
+     ]
+    },
     "AuthorizerPayloadFormatVersion": "2.0",
     "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerType": "REQUEST",
@@ -184,46 +207,6 @@
      "$request.header.X-API-Key"
     ],
     "Name": "my-simple-authorizer"
-   }
-  },
-  "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "authfunction96361832",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "MyHttpApi8AEAAC21"
-       },
-       "/authorizers/",
-       {
-        "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
-       }
-      ]
-     ]
-    }
    }
   },
   "MyHttpApiWithDefaultAuthorizerE08800A1": {

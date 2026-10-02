@@ -32,7 +32,6 @@ const provider = new AsgCapacityProvider(stack, 'MyProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'my-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider);
 
@@ -77,6 +76,20 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => {
+  const nlbSg = new SecurityGroup(stack, `NlbSg${lb.node.id}`, { vpc, allowAllOutbound: false });
+  nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+  lb.connections.addSecurityGroup(nlbSg);
+});
+
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
+});
 
 app.synth();

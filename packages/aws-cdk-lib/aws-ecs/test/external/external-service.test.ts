@@ -184,7 +184,7 @@ describe('external service', () => {
   });
 
   test('with deployment alarms', () => {
-    const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+    const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
     new ecs.ExternalService(stack, 'ExternalService', {
       cluster,
@@ -470,6 +470,7 @@ describe('external service', () => {
     expect(service.node.metadata.map((m) => m.data)).toEqual([
       'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]',
       'Deployment circuit breaker requires the ECS deployment controller.',
+      'CircuitBreakerRequiresEcsController',
     ]);
   });
 

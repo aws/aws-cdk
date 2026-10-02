@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IImage } from './image';
 import { Image, ImageArchitecture, ImageType } from './image';
@@ -434,11 +435,11 @@ export class AmazonManagedImage {
     image: string,
   ) {
     if (cdk.Token.isUnresolved(opts.imageArchitecture)) {
-      throw new cdk.ValidationError(`architecture cannot be a token for ${image}`, scope);
+      throw new cdk.ValidationError(lit`ArchitectureCannotBeToken`, `architecture cannot be a token for ${image}`, scope);
     }
 
     if (cdk.Token.isUnresolved(opts.imageType)) {
-      throw new cdk.ValidationError(`type cannot be a token for ${image}`, scope);
+      throw new cdk.ValidationError(lit`TypeCannotBeToken`, `type cannot be a token for ${image}`, scope);
     }
   }
 
@@ -455,6 +456,7 @@ export class AmazonManagedImage {
 
     if (!imageName) {
       throw new cdk.ValidationError(
+        lit`UnsupportedArchitectureAndType`,
         `architecture ${opts.imageArchitecture} with type ${opts.imageType} is not a supported architecture and type for ${config.image}`,
         scope,
       );

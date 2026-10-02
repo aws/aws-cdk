@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
     "cdk-integ-secret-lambda-rotation-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-secret-lambda-rotation-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegsecretlambdarotationtestDefaultTestDeployAssert65AE5426"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import type { Construct } from 'constructs';
 import { renderData } from './render-data';
 import type * as iam from '../../aws-iam';
@@ -7,6 +7,8 @@ import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { isInternalPath } from '../../core/lib/fs/utils';
+import { lit } from '../../core/lib/private/literal-string';
 import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
 /**
@@ -132,7 +134,7 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
-          throw new ValidationError('To use a Source.bucket(), context must be provided', scope);
+          throw new ValidationError(lit`Source`, 'To use a Source.bucket(), context must be provided', scope);
         }
 
         bucket.grantRead(context.handlerRole);
@@ -153,7 +155,7 @@ export class Source {
     return {
       bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig {
         if (!context) {
-          throw new ValidationError('To use a Source.asset(), context must be provided', scope);
+          throw new ValidationError(lit`Source`, 'To use a Source.asset(), context must be provided', scope);
         }
 
         let id = 1;
@@ -165,7 +167,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new ValidationError('Asset path must be either a .zip file or a directory', scope);
+          throw new ValidationError(lit`AssetPathZipFileDirectory`, 'Asset path must be either a .zip file or a directory', scope);
         }
         asset.grantRead(context.handlerRole);
 
@@ -195,6 +197,17 @@ export class Source {
         const workdir = FileSystem.mkdtemp('s3-deployment');
         try {
           const outputPath = join(workdir, objectKey);
+          // `objectKey` is a destination S3 object key relative to the deployment root, not a
+          // local filesystem path. Guard against keys containing parent-directory segments
+          // (e.g. `../`) that would resolve outside the staging directory and write the
+          // rendered file to an unintended location.
+          if (!isInternalPath(resolve(workdir), resolve(outputPath))) {
+            throw new ValidationError(
+              lit`ObjectKeyOutsideDeploymentRoot`,
+              `object key ${JSON.stringify(objectKey)} points outside the deployment root, remove the '..' segments that go above it`,
+              scope,
+            );
+          }
           const rendered = renderData(data);
           fs.mkdirSync(dirname(outputPath), { recursive: true });
           fs.writeFileSync(outputPath, rendered.text);
@@ -267,7 +280,7 @@ export class Source {
    * Process objects such that it escapes token output suitable for JSON output.
    *
    * @param scope Parent construct scope
-   * @returns Object with with tokens escaped for JSON output.
+   * @returns Object with tokens escaped for JSON output.
    */
   private static escapeTokens(scope: Construct, obj: any): any {
     if (Token.isUnresolved(obj)) {

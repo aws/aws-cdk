@@ -24,7 +24,7 @@
    "Type": "AWS::Signer::SigningProfile",
    "Properties": {
     "PlatformId": "AWSLambda-SHA384-ECDSA",
-    "ProfileName": "test-signing-profile-name",
+    "ProfileName": "test_signing_profile_name",
     "SignatureValidityPeriod": {
      "Type": "MONTHS",
      "Value": 135

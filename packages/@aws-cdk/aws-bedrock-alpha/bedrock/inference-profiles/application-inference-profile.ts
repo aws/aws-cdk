@@ -2,6 +2,7 @@ import { Arn, ArnFormat, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { Grant } from 'aws-cdk-lib/aws-iam';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -23,7 +24,7 @@ export interface ApplicationInferenceProfileProps {
    * - Maximum length: 64 characters
    * - Pattern: `^([0-9a-zA-Z:.][ _-]?)+$`
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-inferenceprofilename
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-inferenceprofilename
    */
   readonly applicationInferenceProfileName: string;
 
@@ -34,7 +35,7 @@ export interface ApplicationInferenceProfileProps {
    * - Maximum length: 200 characters when provided
    * - Pattern: `^([0-9a-zA-Z:.][ _-]?)+$`
    * @default - No description is provided
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-description
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-description
    */
   readonly description?: string;
 
@@ -290,18 +291,19 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
   private validateProps(props: ApplicationInferenceProfileProps): void {
     // Validate applicationInferenceProfileName is provided and not empty
     if (!props.applicationInferenceProfileName || props.applicationInferenceProfileName.trim() === '') {
-      throw new ValidationError('applicationInferenceProfileName is required and cannot be empty', this);
+      throw new ValidationError(lit`ProfileNameRequired`, 'applicationInferenceProfileName is required and cannot be empty', this);
     }
 
     // Validate applicationInferenceProfileName length
     if (props.applicationInferenceProfileName.length > 64) {
-      throw new ValidationError('applicationInferenceProfileName cannot exceed 64 characters', this);
+      throw new ValidationError(lit`ProfileNameTooLong`, 'applicationInferenceProfileName cannot exceed 64 characters', this);
     }
 
     // Validate applicationInferenceProfileName pattern
     const namePattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
     if (!namePattern.test(props.applicationInferenceProfileName)) {
       throw new ValidationError(
+        lit`ProfileNameInvalidPattern`,
         'applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$',
         this,
       );
@@ -309,12 +311,12 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
 
     // Validate modelSource is provided
     if (!props.modelSource) {
-      throw new ValidationError('modelSource is required', this);
+      throw new ValidationError(lit`ModelSourceRequired`, 'modelSource is required', this);
     }
 
     // Validate description length if provided
     if (props.description !== undefined && props.description.length > 200) {
-      throw new ValidationError('description cannot exceed 200 characters', this);
+      throw new ValidationError(lit`DescriptionTooLong`, 'description cannot exceed 200 characters', this);
     }
 
     // Validate description pattern if provided
@@ -322,6 +324,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       const descriptionPattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
       if (!descriptionPattern.test(props.description)) {
         throw new ValidationError(
+          lit`DescriptionInvalidPattern`,
           'description must match pattern ^([0-9a-zA-Z:.][ _-]?)+$',
           this,
         );

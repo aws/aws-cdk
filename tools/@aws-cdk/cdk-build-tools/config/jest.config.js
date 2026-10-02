@@ -3,11 +3,23 @@ const setupFilesAfterEnv = [];
 if ('aws-cdk-lib' in thisPackagesPackageJson.devDependencies ?? {}) {
   // If we depend on aws-cdk-lib, use the provided autoclean hook
   setupFilesAfterEnv.push('aws-cdk-lib/testhelpers/jest-autoclean');
+  setupFilesAfterEnv.push('aws-cdk-lib/testhelpers/jest-global-app-testhook');
 } else if (thisPackagesPackageJson.name === 'aws-cdk-lib') {
   // If we *ARE* aws-cdk-lib, use the hook in a slightly different way
   setupFilesAfterEnv.push('./testhelpers/jest-autoclean.ts');
+  setupFilesAfterEnv.push('./testhelpers/jest-global-app-testhook.ts');
 }
 
+// Set context that will apply to all unit tests in this package.
+process.env.CDK_CONTEXT_JSON = JSON.stringify({
+  '@aws-cdk/core:strictCfnValidateErrors': true,
+});
+
+// In VSCode's debug terminal: disable coverage and subprocess spawning,
+// so we can more easily attach the debugger to the subprocesses.
+const isVsCodeDebugTerminal = process.env.NODE_OPTIONS?.includes('ms-vscode.js-debug') ?? false;
+
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   // The preset deals with preferring TS over JS
   moduleFileExtensions: [
@@ -33,14 +45,20 @@ module.exports = {
       statements: 80,
     },
   },
-  collectCoverage: true,
+  collectCoverage: !isVsCodeDebugTerminal,
+
+  // Not supported via config file :(
+  // runInBand: isVsCodeDebugTerminal ? true : undefined,
+
   coverageReporters: [
     'text-summary', // for console summary
     'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript
     'html' // for local deep dive
   ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
-  reporters: ['default', ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage' }]],
+  reporters: [
+    'default',
+    ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage', suiteNameTemplate: '{filepath}', classNameTemplate: '{classname}', titleTemplate: '{title}' }]],
 
   setupFilesAfterEnv,
 };

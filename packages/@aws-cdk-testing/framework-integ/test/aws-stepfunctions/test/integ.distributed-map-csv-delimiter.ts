@@ -24,7 +24,7 @@ class DistributedMapStack extends cdk.Stack {
         csvHeaders: sfn.CsvHeaders.useFirstRow(),
         csvDelimiter: sfn.CsvDelimiter.SEMICOLON,
       }),
-      resultWriter: new sfn.ResultWriter({
+      resultWriterV2: new sfn.ResultWriterV2({
         bucket: this.bucket,
         prefix: 'my-prefix',
       }),
@@ -32,7 +32,7 @@ class DistributedMapStack extends cdk.Stack {
     distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: distributedMap,
+      definitionBody: sfn.DefinitionBody.fromChainable(distributedMap),
     });
   }
 }

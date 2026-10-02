@@ -1,0 +1,370 @@
+{
+  "/PolicyIntegTestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:57:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/SharedGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: @aws-cdk/aws-bedrock-agentcore-alpha:noAuthGateway]",
+      "trace": [
+        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:304:45)",
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:61:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1705:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1838:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Module._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicyEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/RawCedarPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyEngineKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "enableKeyRotation": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedPolicyEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSpecificPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderIamPrincipalPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/ForbidPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/IgnoreFindingsPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/SharedGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    }
+  ],
+  "/PolicyIntegTestStack/SharedGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SharedGatewayA02A06B9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:316:31)",
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:61:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPolicyEngine05C42F5C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-engine.js:215:31)",
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:67:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/RawCedarPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RawCedarPolicy334AC182"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:71:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyEngineKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyEngineKeyF386A3BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:84:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedPolicyEngineBC14AF35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-engine.js:215:31)",
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:89:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSpecificPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderSpecificPolicyCDF7CA29"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:99:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderIamPrincipalPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderIamPrincipalPolicyF07300E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:109:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/ForbidPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ForbidPolicyC7EF841B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:119:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/IgnoreFindingsPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IgnoreFindingsPolicyBF4464E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:129:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngine3770C869"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-engine.js:215:31)",
+        "new PolicyEngine (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:140:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/AutoPolicy1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/AutoPolicy2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/SharedGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SharedGatewayServiceRole279B0EC3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createGatewayRole (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:472:26)",
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:289:44)",
+        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:61:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/AutoPolicy1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngineAutoPolicy1FA031607"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-engine.js:236:28)",
+        "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:143:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/AutoPolicy2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngineAutoPolicy23A360CE1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy.js:191:31)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-engine.js:236:28)",
+        "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:150:17)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

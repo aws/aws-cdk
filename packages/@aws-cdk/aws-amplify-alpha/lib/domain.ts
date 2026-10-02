@@ -3,6 +3,7 @@ import type * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import type { IResolvable } from 'aws-cdk-lib/core';
 import { Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -139,10 +140,10 @@ export class Domain extends Resource {
 
     const domainName = props.domainName || id;
     if (!Token.isUnresolved(domainName) && domainName.length > 255) {
-      throw new ValidationError(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
+      throw new ValidationError(lit`DomainNameTooLong`, `Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
     }
     if (!Token.isUnresolved(domainName) && !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
-      throw new ValidationError(`Domain name must be a valid hostname, got: ${domainName}.`, this);
+      throw new ValidationError(lit`InvalidDomainName`, `Domain name must be a valid hostname, got: ${domainName}.`, this);
     }
 
     const domain = new CfnDomain(this, 'Resource', {

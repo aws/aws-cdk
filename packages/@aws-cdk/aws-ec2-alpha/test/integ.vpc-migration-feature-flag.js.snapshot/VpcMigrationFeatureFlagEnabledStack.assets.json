@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "fb46a69b69b6736b2a92adf48b9c59be4880999787b43c68f7e63be07d2ae742": {
+    "4eab174b63f2355468d07851ac2d388d57c4c9a55bcb3370f7d5b36400f305ed": {
       "displayName": "VpcMigrationFeatureFlagEnabledStack Template",
       "source": {
         "path": "VpcMigrationFeatureFlagEnabledStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-dba8b42d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fb46a69b69b6736b2a92adf48b9c59be4880999787b43c68f7e63be07d2ae742.json",
+          "objectKey": "4eab174b63f2355468d07851ac2d388d57c4c9a55bcb3370f7d5b36400f305ed.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

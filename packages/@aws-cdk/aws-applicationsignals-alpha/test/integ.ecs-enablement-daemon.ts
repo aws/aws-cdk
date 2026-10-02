@@ -103,7 +103,7 @@ const javaStack = new JavaStack(app, 'ApplicationSignalsJavaApp-Daemon', {
   taskRole: infraStack.taskRole,
   taskExecutionRole: infraStack.taskExecutionRole,
 });
-javaStack.addDependency(cwaStack);
+javaStack.addStackDependency(cwaStack);
 
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSDaemonTest', {
   testCases: [infraStack, cwaStack, javaStack],

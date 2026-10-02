@@ -108,12 +108,12 @@ listener.addAction('action1', {
   action: elbv2.ListenerAction.fixedResponse(200, { messageBody: 'success' }),
 });
 
-group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
+group1.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
   threshold: 5,
   evaluationPeriods: 2,
 });
 
-group2.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
+group2.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   threshold: 5,
   evaluationPeriods: 2,
 });

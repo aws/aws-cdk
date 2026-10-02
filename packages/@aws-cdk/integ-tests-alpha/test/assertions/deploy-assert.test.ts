@@ -1,5 +1,6 @@
 import { App, CustomResource, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 import { ActualResult, ExpectedResult, InvocationType, LogType } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 import { IntegTest } from '../../lib/test-case';
@@ -435,5 +436,50 @@ describe('User provided assertions stack', () => {
       // THEN
       app.synth();
     }).not.toThrow(/only supported for stacks deployed to the same environment/);
+  });
+
+  test('providerLogLevel is passed through to the provider', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const integ = new IntegTest(app, 'integ', {
+      testCases: [stack],
+      providerLogLevel: ApplicationLogLevel.INFO,
+    });
+
+    // WHEN
+    integ.assertions.awsApiCall('MyService', 'MyApi');
+
+    // THEN
+    const assertStack = (integ.assertions as DeployAssert).scope;
+    const template = Template.fromStack(assertStack);
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'JSON',
+        ApplicationLogLevel: 'INFO',
+      },
+    });
+  });
+
+  test('providerLogLevel is passed through to waiter state machine providers', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const integ = new IntegTest(app, 'integ', {
+      testCases: [stack],
+      providerLogLevel: ApplicationLogLevel.INFO,
+    });
+
+    // WHEN
+    integ.assertions.awsApiCall('MyService', 'MyApi').waitForAssertions();
+
+    // THEN
+    const assertStack = (integ.assertions as DeployAssert).scope;
+    const template = Template.fromStack(assertStack);
+    // All Lambda functions (main + isComplete + onTimeout) should have the log level
+    const lambdas = template.findResources('AWS::Lambda::Function');
+    for (const [, resource] of Object.entries(lambdas)) {
+      expect((resource as any).Properties.LoggingConfig.ApplicationLogLevel).toEqual('INFO');
+    }
   });
 });

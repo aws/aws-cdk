@@ -1,13 +1,21 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "testCases": {
     "linux-lambda-codebuild/DefaultTest": {
       "stacks": [
         "codebuild-project-linux-lambda"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
       "stackUpdateWorkflow": true,
       "assertionStack": "linux-lambda-codebuild/DefaultTest/DeployAssert",
       "assertionStackName": "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

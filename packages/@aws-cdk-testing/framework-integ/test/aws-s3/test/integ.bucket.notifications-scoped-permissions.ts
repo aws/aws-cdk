@@ -37,34 +37,29 @@ new integ.IntegTest(app, 'ScopedPermissionsTest', {
   diffAssets: true,
 });
 
-// Add assertions to verify IAM policies are scoped to specific bucket ARNs
+// Add assertions to verify each bucket gets its own scoped IAM policy
 const template = Template.fromStack(stack);
 
-// Verify that IAM policies do not contain wildcard permissions
+// Verify that each per-bucket policy scopes to a single bucket ARN (not wildcard)
 template.hasResourceProperties('AWS::IAM::Policy', {
   PolicyDocument: {
     Statement: Match.arrayWith([
       Match.objectLike({
         Effect: 'Allow',
         Action: 's3:PutBucketNotification',
-        Resource: Match.not('*'), // Ensure no wildcard permissions
+        Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Bucket1'), 'Arn'] },
       }),
     ]),
   },
 });
 
-// Verify that the IAM policy contains specific bucket ARNs
 template.hasResourceProperties('AWS::IAM::Policy', {
   PolicyDocument: {
     Statement: Match.arrayWith([
       Match.objectLike({
         Effect: 'Allow',
         Action: 's3:PutBucketNotification',
-        Resource: Match.arrayWith([
-          Match.objectLike({
-            'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Bucket[12]'), 'Arn']),
-          }),
-        ]),
+        Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Bucket2'), 'Arn'] },
       }),
     ]),
   },

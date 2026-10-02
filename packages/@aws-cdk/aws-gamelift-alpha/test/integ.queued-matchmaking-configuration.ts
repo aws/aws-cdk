@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const ruleSet = new gamelift.MatchmakingRuleSet(this, 'QueuedMatchmakingConfiguration', {
-      matchmakingRuleSetName: 'my-test-ruleset',
+      matchmakingRuleSetName: 'my-test-ruleset-qmc',
       content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json')),
     });
 
@@ -21,7 +21,7 @@ class TestStack extends cdk.Stack {
     });
 
     const fleet = new gamelift.BuildFleet(this, 'BuildFleet', {
-      fleetName: 'test-fleet',
+      fleetName: 'test-fleet-qmc',
       content: build,
       ingressRules: [{
         source: gamelift.Peer.anyIpv4(),
@@ -40,12 +40,12 @@ class TestStack extends cdk.Stack {
     });
 
     const queue = new gamelift.GameSessionQueue(this, 'MyGameSessionQueue', {
-      gameSessionQueueName: 'test-gameSessionQueue',
+      gameSessionQueueName: 'test-gameSessionQueue-qmc',
       destinations: [fleet],
     });
 
     const matchmakingConfiguration = new gamelift.QueuedMatchmakingConfiguration(this, 'MyQueuedMatchmakingConfiguration', {
-      matchmakingConfigurationName: 'test-config-name',
+      matchmakingConfigurationName: 'test-config-qmc',
       gameSessionQueues: [queue],
       ruleSet: ruleSet,
       customEventData: 'event-data',
@@ -72,6 +72,7 @@ const app = new cdk.App();
 const stack = new TestStack(app, 'aws-gamelift-queued-matchmaking-configuration');
 new IntegTest(app, 'QueuedMatchmakingConfiguration', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-southeast-2'],
 });
 
 app.synth();

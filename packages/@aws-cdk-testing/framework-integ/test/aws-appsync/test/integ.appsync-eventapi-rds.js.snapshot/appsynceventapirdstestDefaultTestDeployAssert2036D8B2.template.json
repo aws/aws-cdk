@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"channel\\\":\\\"chat/add\\\",\\\"action\\\":\\\"pubSub\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"eventPayload\\\":[{\\\"message\\\":\\\"hello1\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1759420898811"
+    "salt": "1789112437022"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -123,12 +123,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "d25eb84a8d97801ae980f73bea1e6816544f12e16702dd1aa309208182edeb1b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -137,6 +137,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

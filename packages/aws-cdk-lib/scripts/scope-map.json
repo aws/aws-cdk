@@ -21,10 +21,24 @@
       }
     ]
   },
+  "aws-accountaccess": {
+    "scopes": [
+      {
+        "namespace": "AWS::AccountAccess"
+      }
+    ]
+  },
   "aws-acmpca": {
     "scopes": [
       {
         "namespace": "AWS::ACMPCA"
+      }
+    ]
+  },
+  "aws-agentregistry": {
+    "scopes": [
+      {
+        "namespace": "AWS::AgentRegistry"
       }
     ]
   },
@@ -206,6 +220,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -234,10 +255,24 @@
       }
     ]
   },
+  "aws-bcm": {
+    "scopes": [
+      {
+        "namespace": "AWS::BCM"
+      }
+    ]
+  },
   "aws-bcmdataexports": {
     "scopes": [
       {
         "namespace": "AWS::BCMDataExports"
+      }
+    ]
+  },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
       }
     ]
   },
@@ -255,6 +290,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -266,6 +308,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -311,6 +360,13 @@
       }
     ]
   },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
+      }
+    ]
+  },
   "aws-cleanrooms": {
     "scopes": [
       {
@@ -343,6 +399,13 @@
     "scopes": [
       {
         "namespace": "AWS::CloudFront"
+      }
+    ]
+  },
+  "aws-cloudhsm": {
+    "scopes": [
+      {
+        "namespace": "AWS::CloudHSM"
       }
     ]
   },
@@ -456,6 +519,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -509,6 +579,13 @@
     "scopes": [
       {
         "namespace": "AWS::DataBrew"
+      }
+    ]
+  },
+  "aws-dataexchange": {
+    "scopes": [
+      {
+        "namespace": "AWS::DataExchange"
       }
     ]
   },
@@ -575,6 +652,13 @@
       }
     ]
   },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
+      }
+    ]
+  },
   "aws-directoryservice": {
     "scopes": [
       {
@@ -607,6 +691,13 @@
     "scopes": [
       {
         "namespace": "AWS::DocDBElastic"
+      }
+    ]
+  },
+  "aws-drs": {
+    "scopes": [
+      {
+        "namespace": "AWS::DRS"
       }
     ]
   },
@@ -659,6 +750,24 @@
       }
     ]
   },
+  "aws-eks-v2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EKS"
+      }
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.eks_v2"
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EKSv2"
+      },
+      "python": {
+        "module": "aws_cdk.aws_eks_v2"
+      }
+    }
+  },
   "aws-elasticache": {
     "scopes": [
       {
@@ -691,6 +800,13 @@
     "scopes": [
       {
         "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
       }
     ]
   },
@@ -733,6 +849,13 @@
     "scopes": [
       {
         "namespace": "AWS::EventSchemas"
+      }
+    ]
+  },
+  "aws-eventsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EventsV2"
       }
     ]
   },
@@ -855,6 +978,13 @@
       }
     ]
   },
+  "aws-healthagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthAgent"
+      }
+    ]
+  },
   "aws-healthimaging": {
     "scopes": [
       {
@@ -901,6 +1031,13 @@
     "scopes": [
       {
         "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
       }
     ]
   },
@@ -957,6 +1094,13 @@
     "scopes": [
       {
         "namespace": "AWS::IoTFleetWise"
+      }
+    ]
+  },
+  "aws-iotsecuretunneling": {
+    "scopes": [
+      {
+        "namespace": "AWS::IoTSecureTunneling"
       }
     ]
   },
@@ -1229,6 +1373,13 @@
       }
     ]
   },
+  "aws-mgn": {
+    "scopes": [
+      {
+        "namespace": "AWS::MGN"
+      }
+    ]
+  },
   "aws-mpa": {
     "scopes": [
       {
@@ -1278,10 +1429,24 @@
       }
     ]
   },
+  "aws-networkflowmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkFlowMonitor"
+      }
+    ]
+  },
   "aws-networkmanager": {
     "scopes": [
       {
         "namespace": "AWS::NetworkManager"
+      }
+    ]
+  },
+  "aws-networkmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkMonitor"
       }
     ]
   },
@@ -1303,6 +1468,13 @@
     "scopes": [
       {
         "namespace": "AWS::NotificationsContacts"
+      }
+    ]
+  },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
       }
     ]
   },
@@ -1331,6 +1503,13 @@
     "scopes": [
       {
         "namespace": "AWS::Omics"
+      }
+    ]
+  },
+  "aws-opensearch": {
+    "scopes": [
+      {
+        "namespace": "AWS::OpenSearch"
       }
     ]
   },
@@ -1376,6 +1555,13 @@
       }
     ]
   },
+  "aws-outposts": {
+    "scopes": [
+      {
+        "namespace": "AWS::Outposts"
+      }
+    ]
+  },
   "aws-panorama": {
     "scopes": [
       {
@@ -1418,6 +1604,13 @@
       }
     ]
   },
+  "aws-pi": {
+    "scopes": [
+      {
+        "namespace": "AWS::PI"
+      }
+    ]
+  },
   "aws-pinpoint": {
     "scopes": [
       {
@@ -1436,6 +1629,13 @@
     "scopes": [
       {
         "namespace": "AWS::Pipes"
+      }
+    ]
+  },
+  "aws-pricingplanmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::PricingPlanManager"
       }
     ]
   },
@@ -1523,6 +1723,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
@@ -1555,6 +1762,13 @@
     "scopes": [
       {
         "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
       }
     ]
   },
@@ -1614,6 +1828,13 @@
       }
     ]
   },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
+      }
+    ]
+  },
   "aws-s3objectlambda": {
     "scopes": [
       {
@@ -1668,6 +1889,13 @@
       }
     ]
   },
+  "aws-scn": {
+    "scopes": [
+      {
+        "namespace": "AWS::SCN"
+      }
+    ]
+  },
   "aws-sdb": {
     "scopes": [
       {
@@ -1682,6 +1910,13 @@
       }
     ]
   },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
+      }
+    ]
+  },
   "aws-securityhub": {
     "scopes": [
       {
@@ -1693,6 +1928,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecurityLake"
+      }
+    ]
+  },
+  "aws-serverlessrepo": {
+    "scopes": [
+      {
+        "namespace": "AWS::ServerlessRepo"
       }
     ]
   },
@@ -1825,10 +2067,24 @@
       }
     ]
   },
+  "aws-storagegateway": {
+    "scopes": [
+      {
+        "namespace": "AWS::StorageGateway"
+      }
+    ]
+  },
   "aws-supportapp": {
     "scopes": [
       {
         "namespace": "AWS::SupportApp"
+      }
+    ]
+  },
+  "aws-supportauthz": {
+    "scopes": [
+      {
+        "namespace": "AWS::SupportAuthZ"
       }
     ]
   },
@@ -1846,6 +2102,13 @@
       }
     ]
   },
+  "aws-textract": {
+    "scopes": [
+      {
+        "namespace": "AWS::Textract"
+      }
+    ]
+  },
   "aws-timestream": {
     "scopes": [
       {
@@ -1853,10 +2116,31 @@
       }
     ]
   },
+  "aws-transcribe": {
+    "scopes": [
+      {
+        "namespace": "AWS::Transcribe"
+      }
+    ]
+  },
   "aws-transfer": {
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-translate": {
+    "scopes": [
+      {
+        "namespace": "AWS::Translate"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },
@@ -1904,6 +2188,20 @@
     "scopes": [
       {
         "namespace": "AWS::WAFv2"
+      }
+    ]
+  },
+  "aws-wellarchitected": {
+    "scopes": [
+      {
+        "namespace": "AWS::WellArchitected"
+      }
+    ]
+  },
+  "aws-wickr": {
+    "scopes": [
+      {
+        "namespace": "AWS::Wickr"
       }
     ]
   },

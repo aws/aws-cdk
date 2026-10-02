@@ -17,5 +17,6 @@ rule REDSHIFT_ENCRYPTION_ENABLED when %redshift_clusters !empty {
     %redshift_clusters {
         Properties.Encrypted exists
         Properties.Encrypted == true
+            <<##ERROR:Redshift cluster must have encryption enabled. Set 'Encrypted' to true.##>>
     }
 }

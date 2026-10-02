@@ -3,8 +3,8 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "TestApplication",
-    "Description": "My application description"
+    "Description": "My application description",
+    "Name": "TestApplication"
    }
   },
   "TestAttributeGroupB1CB284F": {
@@ -22,8 +22,8 @@
       "beta": "time2"
      }
     },
-    "Name": "myFirstAttributeGroup",
-    "Description": "test attribute group description"
+    "Description": "test attribute group description",
+    "Name": "myFirstAttributeGroup"
    }
   },
   "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A": {
@@ -40,113 +40,6 @@
       "TestAttributeGroupB1CB284F",
       "Id"
      ]
-    }
-   }
-  },
-  "TestAttributeGroupMyShareIdBAA9E628": {
-   "Type": "AWS::RAM::ResourceShare",
-   "Properties": {
-    "Name": "MyShare",
-    "AllowExternalPrincipals": false,
-    "PermissionArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
-       ]
-      ]
-     }
-    ],
-    "Principals": [
-     {
-      "Fn::GetAtt": [
-       "MyRoleF48FFE04",
-       "Arn"
-      ]
-     },
-     {
-      "Fn::GetAtt": [
-       "MySecondRoleB9F57405",
-       "Arn"
-      ]
-     }
-    ],
-    "ResourceArns": [
-     {
-      "Fn::GetAtt": [
-       "TestAttributeGroupB1CB284F",
-       "Arn"
-      ]
-     }
-    ]
-   }
-  },
-  "MyRoleF48FFE04": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "MySecondRoleB9F57405": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
     }
    }
   }

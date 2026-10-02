@@ -9,7 +9,7 @@
     "lib": [
       "es2022"
     ],
-    "module": "commonjs",
+    "module": "Node20",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -25,9 +25,18 @@
     "stripInternal": false,
     "target": "es2022",
     "composite": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "isolatedModules": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "types": [
+      "aws-lambda",
+      "jest",
+      "lodash",
+      "mime-types",
+      "node",
+      "punycode"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "**/*.ts"

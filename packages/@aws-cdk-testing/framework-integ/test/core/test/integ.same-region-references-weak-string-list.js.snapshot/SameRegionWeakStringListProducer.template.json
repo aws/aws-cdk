@@ -1,0 +1,68 @@
+{
+ "Resources": {
+  "Vpc": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16"
+   }
+  },
+  "SecondaryCidr": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "VpcId": {
+     "Ref": "Vpc"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "PublishOutputFnGetAttVpcCidrBlockAssociationsE3E339DA": {
+   "Value": {
+    "Fn::Join": [
+     "||",
+     {
+      "Fn::GetAtt": [
+       "Vpc",
+       "CidrBlockAssociations"
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

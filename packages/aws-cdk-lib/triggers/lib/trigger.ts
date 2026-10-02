@@ -44,7 +44,7 @@ export interface TriggerOptions {
    * Adds this trigger as a dependency on other constructs. This means that this
    * trigger will get executed *before* the given construct(s).
    *
-   * You can also use `trigger.executeBefore()` to add additional dependants.
+   * You can also use `trigger.executeBefore()` to add additional dependents.
    *
    * @default []
    */

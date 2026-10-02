@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "ca09f016fbecb3445be50e799088a06f7f477f4a9ebf7c8d1d39fdafdc7549ad": {
+      "displayName": "route53-accelerated-recovery Template",
+      "source": {
+        "path": "route53-accelerated-recovery.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c3e85fad": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ca09f016fbecb3445be50e799088a06f7f477f4a9ebf7c8d1d39fdafdc7549ad.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

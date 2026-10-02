@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "SameRegionWeakStringListTest/DefaultTest": {
+      "stacks": [
+        "SameRegionWeakStringListConsumer"
+      ],
+      "regions": [
+        "eu-central-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SameRegionWeakStringListTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SameRegionWeakStringListTestDefaultTestDeployAssertF89EBA7F"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

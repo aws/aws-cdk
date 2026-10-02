@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Arn, ArnFormat, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { md5hash, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -386,7 +386,7 @@ export class Prompt extends PromptBase implements IPrompt {
    */
   private validatePromptDefault(props: PromptProps) {
     if (props.defaultVariant && !props.variants?.includes(props.defaultVariant)) {
-      throw new ValidationError('The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
+      throw new ValidationError(lit`DefaultVariantMissing`, 'The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
     }
   }
 

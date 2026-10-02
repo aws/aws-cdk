@@ -1,0 +1,42 @@
+{
+  "resources": {
+    "Flow": {
+      "grants": {
+        "start": {
+          "actions": [
+            "mediaconnect:StartFlow"
+          ],
+          "docSummary": "Grant permissions to start this flow"
+        },
+        "stop": {
+          "actions": [
+            "mediaconnect:StopFlow"
+          ],
+          "docSummary": "Grant permissions to stop this flow"
+        }
+      }
+    },
+    "RouterInput": {
+      "grants": {
+        "start": {
+          "actions": [
+            "mediaconnect:StartRouterInput"
+          ],
+          "docSummary": "Grant permissions to start this router input"
+        },
+        "stop": {
+          "actions": [
+            "mediaconnect:StopRouterInput"
+          ],
+          "docSummary": "Grant permissions to stop this router input"
+        },
+        "restart": {
+          "actions": [
+            "mediaconnect:RestartRouterInput"
+          ],
+          "docSummary": "Grant permissions to restart this router input"
+        }
+      }
+    }
+  }
+}

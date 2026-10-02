@@ -1,4 +1,4 @@
 export { shell } from './os';
 export * from './deprecated-symbols';
-import * as bockfs from './bockfs';
+import bockfs from './bockfs';
 export { bockfs };

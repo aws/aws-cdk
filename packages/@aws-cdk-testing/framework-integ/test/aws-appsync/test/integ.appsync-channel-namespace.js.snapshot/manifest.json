@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "EventApiChannelNamespaceStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4c33d81de020f9376f780975684941755ae90119a27e0047f319a692d2de5d56.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/125e72065651b6f7b8b19d6b265b94f59dbb48e215b4a2c3c67575ef210de322.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,280 +33,7 @@
       "dependencies": [
         "EventApiChannelNamespaceStack.assets"
       ],
-      "metadata": {
-        "/EventApiChannelNamespaceStack/AuthorizerFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "code": "*",
-              "handler": "*"
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AuthorizerFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionServiceRole5B2A061B"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AuthorizerFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionB4DBAA43"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AuthorizerFunction/EventApi-appsync": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionEventApiappsyncE4B8E11D"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "apiName": "*",
-              "ownerContact": "*",
-              "authorizationConfig": {
-                "authProviders": [
-                  {
-                    "authorizationType": "AWS_LAMBDA",
-                    "lambdaAuthorizerConfig": {
-                      "handler": "*"
-                    }
-                  },
-                  {
-                    "authorizationType": "AWS_IAM"
-                  }
-                ]
-              },
-              "logConfig": {
-                "fieldLogLevel": "ERROR"
-              }
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole/ImportApiLogsRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/ApiLogsRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiApiLogsRoleED9A8150"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiE141E6C0"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/LogRetention/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiLogRetention68604E65"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/AnotherChannelNamespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "api": "*",
-              "channelNamespaceName": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/EventApi/AnotherChannelNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiAnotherChannelNamespace5BC7F3A5"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/ChannelNamespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "api": "*",
-              "authorizationConfig": {
-                "publishAuthModeTypes": [
-                  "AWS_LAMBDA"
-                ],
-                "subscribeAuthModeTypes": [
-                  "AWS_LAMBDA"
-                ]
-              },
-              "code": "*"
-            }
-          }
-        ],
-        "/EventApiChannelNamespaceStack/ChannelNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ChannelNamespace5873C25D"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AWS AppSync Events HTTP endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSAppSyncEventsHTTPendpoint"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/AWS AppSync Events Realtime endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSAppSyncEventsRealtimeendpoint"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/EventApiChannelNamespaceStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "EventApiChannelNamespaceStack.metadata.json",
       "displayName": "EventApiChannelNamespaceStack"
     },
     "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets": {
@@ -341,20 +68,7 @@
       "dependencies": [
         "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.assets"
       ],
-      "metadata": {
-        "/appsync-event-api-channel-namespace/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/appsync-event-api-channel-namespace/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "appsynceventapichannelnamespaceDefaultTestDeployAssert6BCB222F.metadata.json",
       "displayName": "appsync-event-api-channel-namespace/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -369,6 +83,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -387,6 +102,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -498,7 +214,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -652,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -683,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -837,10 +548,62 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

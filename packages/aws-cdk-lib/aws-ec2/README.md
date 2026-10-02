@@ -182,6 +182,77 @@ Which subnets are selected is evaluated as follows:
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
   * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
 
+### Using Regional NAT Gateways
+
+[Regional NAT Gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html) provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
+
+```ts
+// Basic usage
+// Creates a single Regional NAT Gateway for the VPC and automatically allocate Elastic IPs
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway(),
+});
+```
+
+You can specify an existing EIP from a `CfnEIP` resource or an allocation ID:
+
+```ts
+const eip = new ec2.CfnEIP(this, 'NatEip');
+
+new ec2.Vpc(this, 'Vpc1', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    eip,
+  }),
+});
+
+new ec2.Vpc(this, 'Vpc2', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    allocationId: eip.attrAllocationId,
+  }),
+});
+```
+
+For manual control over AZ coverage and EIP allocation, use `availabilityZoneAddresses`:
+
+```ts
+const eip1 = new ec2.CfnEIP(this, 'NatEip1');
+const eip2 = new ec2.CfnEIP(this, 'NatEip2');
+
+new ec2.Vpc(this, 'Vpc', {
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    availabilityZoneAddresses: [
+      { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
+      { allocationIds: [eip2.attrAllocationId], availabilityZone: 'us-east-1b' },
+    ],
+  }),
+});
+```
+
+Each Availability Zone may only appear once in `availabilityZoneAddresses`.
+
+In this manual mode the gateway only serves the listed Availability Zones and does not
+expand to other zones automatically, so every Availability Zone that contains a private
+subnet must be listed. When the zone names are known at synthesis time, a private subnet
+in an unlisted zone is rejected with an error. Entries that use `availabilityZoneId` or
+unresolved tokens cannot be checked at synthesis time.
+
+The `natGateways` property is ignored when using a Regional NAT Gateway, since a single
+gateway already covers every Availability Zone. Values below 1, as well as unresolved
+tokens, are rejected because they would silently disable the gateway you explicitly
+configured; omit `natGatewayProvider` instead if you do not want a NAT gateway.
+
+You can also configure the maximum drain duration:
+
+```ts
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    maxDrainDuration: Duration.minutes(10),
+  }),
+});
+```
+
 ### Using NAT instances
 
 By default, the `Vpc` construct will create NAT *gateways* for you, which
@@ -415,7 +486,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // group of the same type.
       name: 'Ingress',
 
-      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // 'cidrMask' specifies the IP addresses in the range of individual
       // subnets in the group. Each of the subnets in this group will contain
       // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
       // usable IP addresses.
@@ -619,7 +690,7 @@ instance around:
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack's region and
+The CDK CLI will search for the specified VPC in the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
@@ -796,6 +867,17 @@ const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
 appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
 
+#### Rule Configuration Interfaces
+
+The `IPeer` interface provides type-safe methods for generating security group rule configurations.
+The `toIngressRuleConfig()` and `toEgressRuleConfig()` methods return strongly-typed interfaces
+instead of `any`, enabling better IDE autocompletion and compile-time type checking:
+
+- `IngressRuleConfig`: Configuration for ingress rules with properties like `cidrIp`, `cidrIpv6`,
+  `sourcePrefixListId`, `sourceSecurityGroupId`, and `sourceSecurityGroupOwnerId`
+- `EgressRuleConfig`: Configuration for egress rules with properties like `cidrIp`, `cidrIpv6`,
+  `destinationPrefixListId`, and `destinationSecurityGroupId`
+
 ### Port Ranges
 
 The connections that are allowed are specified by port ranges. A number of classes provide
@@ -883,7 +965,7 @@ const sg = ec2.SecurityGroup.fromLookupById(this, 'SecurityGroupLookup', 'sg-123
 ```
 
 The result of `SecurityGroup.fromLookupByName` and `SecurityGroup.fromLookupById` operations will be
-written to a file called `cdk.context.json`. 
+written to a file called `cdk.context.json`.
 You must commit this file to source control so that the lookup values are available in non-privileged
 environments such as CI build steps, and to ensure your template builds are repeatable.
 
@@ -972,7 +1054,7 @@ examples of images you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
-> 
+>
 > To customize the cache key, use the `additionalCacheKey` parameter.
 > This allows you to have multiple lookups with the same parameters
 > cache their values separately. This can be useful if you want to
@@ -1134,15 +1216,24 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 As IPv4 addresses are running out, many AWS services are adding support for IPv6 or Dualstack (IPv4 and IPv6 support) for their VPC Endpoints.
 
-IPv6 and Dualstack address types can be configured by using:
+IPv6 and Dualstack address types can be configured for both interface and gateway endpoints using `ipAddressType` and `dnsRecordIpType`:
 
 ```ts fixture=with-vpc
+// Interface endpoint with IPv6
 vpc.addInterfaceEndpoint('ExampleEndpoint', {
   service: ec2.InterfaceVpcEndpointAwsService.ECR,
   ipAddressType: ec2.VpcEndpointIpAddressType.IPV6,
   dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.IPV6,
 });
+
+// Gateway endpoint with dualstack
+vpc.addGatewayEndpoint('S3DualstackEndpoint', {
+  service: ec2.GatewayVpcEndpointAwsService.S3,
+  ipAddressType: ec2.VpcEndpointIpAddressType.DUALSTACK,
+  dnsRecordIpType: ec2.VpcEndpointDnsRecordIpType.DUALSTACK,
+});
 ```
+
 The possible values for `ipAddressType` are:
 * `IPV4` This option is supported only if all selected subnets have IPv4 address ranges and the endpoint service accepts IPv4 requests.
 * `IPV6` This option is supported only if all selected subnets are IPv6 only subnets and the endpoint service accepts IPv6 requests.
@@ -2616,6 +2707,39 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+To specify the EBS Provisioned Rate for Volume Initialization for a snapshot-backed EBS volume in a launch template, use the `volumeInitializationRate` property. The snapshot can be specified explicitly with `BlockDeviceVolume.ebsFromSnapshot(...)` or inherited from the AMI block device mapping when overriding an existing AMI device such as the root volume.
+
+```ts
+const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  blockDevices: [
+    {
+      deviceName: 'deviceName',
+      volume: ec2.BlockDeviceVolume.ebsFromSnapshot('snap-1234567890abcdef0', {
+        volumeSize: 150,
+        volumeInitializationRate: Size.mebibytes(200),
+      }),
+    },
+  ],
+});
+```
+
+### CPU Options
+
+Specify `cpuOptions` to configure the CPU options for the instances launched with the template.
+This is useful, for example, to enable [nested virtualization](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html)
+or to customize the number of CPU cores and threads per core:
+
+```ts
+new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  cpuOptions: {
+    coreCount: 4,
+    threadsPerCore: 1,
+    nestedVirtualization: true,
+  },
+});
+```
+
 ### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
@@ -2638,7 +2762,7 @@ Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](https://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
 declare const vpc: ec2.Vpc;

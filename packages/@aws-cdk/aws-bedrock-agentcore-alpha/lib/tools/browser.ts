@@ -27,6 +27,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Location } from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -69,6 +70,7 @@ const BROWSER_TAG_MAX_LENGTH = 256;
  * Browser signing. Specifies whether browser signing is enabled.
  * When enabled, the browser will cryptographically sign HTTP requests to identify
  * itself as an AI agent to bot control vendors.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum BrowserSigning {
   /**
@@ -87,6 +89,7 @@ export enum BrowserSigning {
 
 /**
  * Interface for Browser resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnectable, IBrowserCustomRef {
   /**
@@ -207,6 +210,7 @@ export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnecta
 /**
  * Abstract base class for a Browser.
  * Contains methods and attributes valid for Browsers either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class BrowserCustomBase extends Resource implements IBrowserCustom {
   public abstract readonly browserArn: string;
@@ -236,7 +240,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError(lit`VpcNotConfigured`, 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }
@@ -504,6 +508,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
 
 /**
  * Recording configuration for browser
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface RecordingConfig {
   /**
@@ -524,6 +529,7 @@ export interface RecordingConfig {
  *****************************************************************************/
 /**
  * Properties for creating a Browser resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface BrowserCustomProps {
   /**
@@ -588,6 +594,7 @@ export interface BrowserCustomProps {
  *****************************************************************************/
 /**
  * Attributes for specifying an imported Browser Custom.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface BrowserCustomAttributes {
   /**
@@ -634,6 +641,10 @@ export interface BrowserCustomAttributes {
  * @resource AWS::BedrockAgentCore::BrowserCustom
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class BrowserCustom extends BrowserCustomBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.BrowserCustom';

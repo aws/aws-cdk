@@ -12,6 +12,8 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as sources from '../lib';
 
+const dummyClusterArn = 'arn:aws:kafka:us-east-1:123456789012:cluster/my-cluster/12345678-1234-1234-1234-123456789012-1';
+
 describe('KafkaEventSource', () => {
   describe('msk', () => {
     test('default @aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy enabled', () => {
@@ -23,7 +25,7 @@ describe('KafkaEventSource', () => {
       });
       const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN
@@ -80,7 +82,7 @@ describe('KafkaEventSource', () => {
       });
       const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN
@@ -137,7 +139,7 @@ describe('KafkaEventSource', () => {
       });
       const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
@@ -237,7 +239,7 @@ describe('KafkaEventSource', () => {
       });
       const stack = new cdk.Stack(app);
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
@@ -308,7 +310,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN
@@ -347,7 +349,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const myKey = Key.fromKeyArn(
         stack,
@@ -393,7 +395,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const myKey = new Key(stack, 'fc-test-key-name', {
@@ -451,7 +453,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -481,7 +483,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -517,7 +519,7 @@ describe('KafkaEventSource', () => {
     test('maximum provisioned poller is out of limit', () => {
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -538,7 +540,7 @@ describe('KafkaEventSource', () => {
     test('minimum provisioned poller is out of limit', () => {
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -559,7 +561,7 @@ describe('KafkaEventSource', () => {
     test('Minimum provisioned poller greater than maximum provisioned poller', () => {
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -577,11 +579,32 @@ describe('KafkaEventSource', () => {
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
 
+    test('provisioned pollers with unresolved tokens should not throw', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = dummyClusterArn;
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: cdk.Lazy.number({ produce: () => 1 }),
+            maximumPollers: cdk.Lazy.number({ produce: () => 3 }),
+          },
+        }))).not.toThrow();
+    });
+
     test('MetricsConfig validation - empty metrics array', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN & THEN
@@ -599,7 +622,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN & THEN - should not throw
@@ -616,7 +639,7 @@ describe('KafkaEventSource', () => {
     test('Setting startingPositionTimestamp for kafka event source ', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       fn.addEventSource(new sources.ManagedKafkaEventSource({
@@ -636,7 +659,7 @@ describe('KafkaEventSource', () => {
     test('Setting error handling properties', () => {
       const stack = new cdk.Stack();
       const testLambdaFunction = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       new sources.S3OnFailureDestination(bucket);
@@ -1307,7 +1330,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const consumerGroupId = 'my-consumer-group-id';
 
@@ -1334,7 +1357,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1354,7 +1377,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1386,7 +1409,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
@@ -1405,7 +1428,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
@@ -1424,7 +1447,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
@@ -1437,6 +1460,25 @@ describe('KafkaEventSource', () => {
             maximumPollers: 1,
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
+
+    test('provisioned pollers with unresolved tokens should not throw', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = dummyClusterArn;
+      const kafkaTopic = 'some-topic';
+
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: cdk.Lazy.number({ produce: () => 1 }),
+            maximumPollers: cdk.Lazy.number({ produce: () => 3 }),
+          },
+        }))).not.toThrow();
     });
 
     test('MetricsConfig validation - empty metrics array', () => {
@@ -1505,7 +1547,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1533,7 +1575,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1560,7 +1602,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
@@ -1621,7 +1663,7 @@ describe('KafkaEventSource', () => {
         name: 'msk-test-schema-registry',
         description: 'Schema registry for SMK integration tests',
       });
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1680,7 +1722,7 @@ describe('KafkaEventSource', () => {
                 'kafka:ListScramSecrets',
               ],
               Effect: 'Allow',
-              Resource: 'some-arn',
+              Resource: dummyClusterArn,
             },
           ],
           Version: '2012-10-17',
@@ -1715,7 +1757,7 @@ describe('KafkaEventSource', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const glueRegistry = 'arn:aws:glue:us-west-2:123456789012:registry/example';
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -1770,7 +1812,7 @@ describe('KafkaEventSource', () => {
                 'kafka:ListScramSecrets',
               ],
               Effect: 'Allow',
-              Resource: 'some-arn',
+              Resource: dummyClusterArn,
             },
           ],
           Version: '2012-10-17',
@@ -1803,7 +1845,7 @@ describe('KafkaEventSource', () => {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const mskEventMapping = new sources.ManagedKafkaEventSource(
@@ -2206,7 +2248,7 @@ describe('KafkaEventSource', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN
@@ -2302,7 +2344,7 @@ describe('KafkaDlq integration', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const kafkaDlq = new sources.KafkaDlq('failure-topic');
 
@@ -2335,7 +2377,7 @@ describe('KafkaDlq integration', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const kafkaDlq = new sources.KafkaDlq('kafka://failure-topic');
 
@@ -2361,7 +2403,7 @@ describe('KafkaDlq integration', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const kafkaDlq = new sources.KafkaDlq('my.complex_failure-topic');
 
@@ -2517,7 +2559,7 @@ describe('backwards compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -2584,7 +2626,7 @@ describe('backwards compatibility', () => {
       const stack = new cdk.Stack();
       const fn1 = new TestFunction(stack, 'Fn1');
       const fn2 = new TestFunction(stack, 'Fn2');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
@@ -2639,7 +2681,7 @@ describe('backwards compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const topic = new Topic(stack, 'Topic');
       const snsDlq = new sources.SnsDlq(topic);
@@ -2705,7 +2747,7 @@ describe('backwards compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const queue = new Queue(stack, 'Queue');
       const sqsDlq = new sources.SqsDlq(queue);
@@ -2771,7 +2813,7 @@ describe('backwards compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
 
       const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
       const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
@@ -2867,7 +2909,7 @@ describe('backwards compatibility', () => {
       // GIVEN
       const stack = new cdk.Stack();
       new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // Test that all existing destination types are still accepted by the API
@@ -3404,7 +3446,7 @@ describe('template synthesis with various configurations', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN
@@ -3436,7 +3478,7 @@ describe('template synthesis with various configurations', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN & THEN
@@ -3474,7 +3516,7 @@ describe('template synthesis with various configurations', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
@@ -3533,7 +3575,7 @@ describe('template synthesis with various configurations', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const clusterArn = 'some-arn';
+      const clusterArn = dummyClusterArn;
       const kafkaTopic = 'some-topic';
 
       // WHEN - Create event source without MetricsConfig

@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-ts-encryption/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-ts-encryption"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-ts-encryption/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagetsencryptionDefaultTestDeployAssert69677641"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

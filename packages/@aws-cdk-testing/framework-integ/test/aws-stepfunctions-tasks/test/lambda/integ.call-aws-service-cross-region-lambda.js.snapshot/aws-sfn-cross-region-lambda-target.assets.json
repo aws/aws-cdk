@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "ee4f0d40c519383dabd1419562bc948f0c3f256a1b5bafd133aa3b3e74a42e2b": {
+      "displayName": "aws-sfn-cross-region-lambda-target Template",
+      "source": {
+        "path": "aws-sfn-cross-region-lambda-target.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-51dc7c4d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "ee4f0d40c519383dabd1419562bc948f0c3f256a1b5bafd133aa3b3e74a42e2b.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

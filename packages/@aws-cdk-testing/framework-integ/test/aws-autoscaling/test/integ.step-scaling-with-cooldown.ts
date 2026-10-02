@@ -30,8 +30,7 @@ autoScalingGroup.scaleOnMetric('MetricScale', {
   scalingSteps: [
     { upper: 10, change: -5 },
     { lower: 50, change: 5 },
-  ],
-  cooldown: cdk.Duration.minutes(5), // should ignore this property and deploy successfully
+  ], // should ignore this property and deploy successfully
 });
 
 new IntegTest(app, 'step-scaling-with-cooldown', {

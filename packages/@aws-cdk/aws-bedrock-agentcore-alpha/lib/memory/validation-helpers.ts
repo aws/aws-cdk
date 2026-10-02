@@ -13,6 +13,7 @@
 
 import { Token } from 'aws-cdk-lib';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
 interface IntervalValidation {
   fieldName: string;
@@ -29,6 +30,7 @@ interface StringLengthValidation extends IntervalValidation {
  * @param params - Validation parameters including value, fieldName, minLength, and maxLength
  * @param scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateStringFieldLength(params: StringLengthValidation, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -41,7 +43,7 @@ export function validateStringFieldLength(params: StringLengthValidation, _scope
   const currentLength = params.value.length;
 
   // Evaluate only if it is not an unresolved Token
-  if (!Token.isUnresolved(params.fieldName)) {
+  if (!Token.isUnresolved(params.value)) {
     if (params.value.length > params.maxLength) {
       errors.push(
         `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,
@@ -66,6 +68,7 @@ export function validateStringFieldLength(params: StringLengthValidation, _scope
  * @param customMessage - Optional custom error message
  * @param scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateFieldPattern(
   value: string,
@@ -104,13 +107,17 @@ export function validateFieldPattern(
 
 export type ValidationFn<T> = (param: T, scope?: IConstruct) => string[];
 
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope?: IConstruct): T {
   const errors = validationFn(param, scope);
   if (errors.length > 0) {
     if (scope) {
-      throw new ValidationError(errors.join('\n'), scope);
+      throw new ValidationError(lit`ValidationFailed`, errors.join('\n'), scope);
     } else {
-      throw new UnscopedValidationError(errors.join('\n'));
+      throw new UnscopedValidationError(lit`ValidationFailed`, errors.join('\n'));
     }
   }
   return param;

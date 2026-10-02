@@ -1102,6 +1102,10 @@ describe('configuration', () => {
 
   test('configuration profile with ssm document', () => {
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3051',
+      reason: 'Invalid SSM document',
+    });
     const document = new CfnDocument(stack, 'MyDocument', {
       content: {
         mainSteps: [

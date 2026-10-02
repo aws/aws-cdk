@@ -30,6 +30,36 @@ module.exports.banana = function () {
 `);
 });
 
+test('lazy require wrapped in __importStar (esModuleInterop)', () => {
+  expect(tx(
+  'const x = __importStar(require("x"));',
+  'module.exports.banana = function() {',
+  '  return x.hello();',
+  '}'
+)).toMatchInlineSnapshot(`
+"var x = () => { var tmp = __importStar(require("x")); x = () => tmp; return tmp; };
+module.exports.banana = function () {
+    return x().hello();
+};
+"
+`);
+});
+
+test('lazy require wrapped in __importDefault (esModuleInterop)', () => {
+  expect(tx(
+  'const x = __importDefault(require("x"));',
+  'module.exports.banana = function() {',
+  '  return x.hello();',
+  '}'
+)).toMatchInlineSnapshot(`
+"var x = () => { var tmp = __importDefault(require("x")); x = () => tmp; return tmp; };
+module.exports.banana = function () {
+    return x().hello();
+};
+"
+`);
+});
+
 test.each([
   ['object key', 'const x = { ident: 5 };'],
   ['object access', 'const x = obj.ident;'],

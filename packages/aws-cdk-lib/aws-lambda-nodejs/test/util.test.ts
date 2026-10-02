@@ -1,8 +1,8 @@
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -13,23 +13,27 @@ describe('callsites', () => {
 });
 
 describe('findUp helpers', () => {
-  // insert contents in fake filesystem
-  bockfs({
-    '/home/project/file0': 'ARBITRARY',
-    '/home/project/file1': 'ARBITRARY',
-    '/home/project/file2': 'ARBITRARY',
-    '/home/project/subdir/.keep': 'ARBITRARY',
-    '/home/project/subdir/file3': 'ARBITRARY',
+  let bockPath: ReturnType<typeof bockfs.workingDirectory>;
+  beforeEach(() => {
+    // insert contents in fake filesystem
+    bockfs({
+      '/home/project/file0': 'ARBITRARY',
+      '/home/project/file1': 'ARBITRARY',
+      '/home/project/file2': 'ARBITRARY',
+      '/home/project/subdir/.keep': 'ARBITRARY',
+      '/home/project/subdir/file3': 'ARBITRARY',
+    });
+    bockPath = bockfs.workingDirectory('/home/project');
   });
-  const bockPath = bockfs.workingDirectory('/home/project');
 
-  afterAll(() => {
+  afterEach(() => {
+    bockPath[Symbol.dispose]();
     bockfs.restore();
   });
 
   describe('findUp', () => {
     test('Starting at process.cwd()', () => {
-      expect(findUp('file0')).toBe(bockPath`file0`);
+      expect(findUp('file0')).toBe(bockPath.translate`file0`);
     });
 
     test('Non existing file', () => {
@@ -37,7 +41,7 @@ describe('findUp helpers', () => {
     });
 
     test('Starting at a specific path', () => {
-      expect(findUp('file1', bockPath`/home/project/subdir`)).toBe(bockPath`/home/project/file1`);
+      expect(findUp('file1', bockPath.translate`/home/project/subdir`)).toBe(bockPath.translate`/home/project/file1`);
     });
 
     test('Non existing file starting at a non existing relative path', () => {
@@ -45,7 +49,7 @@ describe('findUp helpers', () => {
     });
 
     test('Starting at a relative path', () => {
-      expect(findUp('file1', 'subdir')).toBe(bockPath`file1`);
+      expect(findUp('file1', 'subdir')).toBe(bockPath.translate`file1`);
     });
   });
 
@@ -53,8 +57,8 @@ describe('findUp helpers', () => {
     test('Starting at process.cwd()', () => {
       const files = findUpMultiple(['file0', 'file1']);
       expect(files).toHaveLength(2);
-      expect(files[0]).toBe(bockPath`file0`);
-      expect(files[1]).toBe(bockPath`file1`);
+      expect(files[0]).toBe(bockPath.translate`file0`);
+      expect(files[1]).toBe(bockPath.translate`file1`);
     });
 
     test('Non existing files', () => {
@@ -64,14 +68,14 @@ describe('findUp helpers', () => {
     test('Existing and non existing files', () => {
       const files = findUpMultiple(['non-existing-file.unknown', 'file0']);
       expect(files).toHaveLength(1);
-      expect(files[0]).toMatch(bockPath`file0`);
+      expect(files[0]).toMatch(bockPath.translate`file0`);
     });
 
     test('Starting at a specific path', () => {
-      const files = findUpMultiple(['file1', 'file2'], bockPath`/home/project/subdir`);
+      const files = findUpMultiple(['file1', 'file2'], bockPath.translate`/home/project/subdir`);
       expect(files).toHaveLength(2);
-      expect(files[0]).toBe(bockPath`file1`);
-      expect(files[1]).toBe(bockPath`file2`);
+      expect(files[0]).toBe(bockPath.translate`file1`);
+      expect(files[1]).toBe(bockPath.translate`file2`);
     });
 
     test('Non existing files starting at a non existing relative path', () => {
@@ -81,14 +85,14 @@ describe('findUp helpers', () => {
     test('Starting at a relative path', () => {
       const files = findUpMultiple(['file1', 'file2'], 'subdir');
       expect(files).toHaveLength(2);
-      expect(files[0]).toBe(bockPath`file1`);
-      expect(files[1]).toBe(bockPath`file2`);
+      expect(files[0]).toBe(bockPath.translate`file1`);
+      expect(files[1]).toBe(bockPath.translate`file2`);
     });
 
     test('Files on multiple levels', () => {
-      const files = findUpMultiple(['file0', 'file3'], bockPath`/home/project/subdir`);
+      const files = findUpMultiple(['file0', 'file3'], bockPath.translate`/home/project/subdir`);
       expect(files).toHaveLength(1);
-      expect(files[0]).toBe(bockPath`subdir/file3`);
+      expect(files[0]).toBe(bockPath.translate`subdir/file3`);
     });
   });
 });
@@ -260,5 +264,48 @@ describe('getTsconfigCompilerOptions', () => {
       '--stripInternal false',
       '--target ES2022',
     ].join(' '));
+  });
+});
+
+describe('getTsconfigCompilerOptionsArray', () => {
+  test('should produce semantically equivalent output to getTsconfigCompilerOptions', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
+    const stringResult = getTsconfigCompilerOptions(tsconfig);
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    // The array joined with spaces should equal the string result
+    expect(arrayResult.join(' ')).toEqual(stringResult);
+  });
+
+  test('should produce semantically equivalent output with extended config', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig-extended.json');
+    const stringResult = getTsconfigCompilerOptions(tsconfig);
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    expect(arrayResult.join(' ')).toEqual(stringResult);
+  });
+
+  test('should return array elements for each flag and value', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    // Boolean true flags are single elements
+    expect(arrayResult).toContain('--alwaysStrict');
+    expect(arrayResult).toContain('--declaration');
+
+    // Boolean false flags have the flag and 'false' as separate elements
+    const declMapIdx = arrayResult.indexOf('--declarationMap');
+    expect(declMapIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[declMapIdx + 1]).toBe('false');
+
+    // String values are separate elements
+    const targetIdx = arrayResult.indexOf('--target');
+    expect(targetIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[targetIdx + 1]).toBe('ES2022');
+
+    // Array values are joined with commas as a single element
+    const libIdx = arrayResult.indexOf('--lib');
+    expect(libIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[libIdx + 1]).toBe('es2022,dom');
   });
 });

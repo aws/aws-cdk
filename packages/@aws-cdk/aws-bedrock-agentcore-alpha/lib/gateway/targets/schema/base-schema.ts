@@ -5,6 +5,7 @@ import type { Construct } from 'constructs';
  * Base abstract class for all schema types used in Bedrock AgentCore Gateway Targets.
  * This provides a common interface for both API schemas and tool schemas.
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class TargetSchema {
   /**

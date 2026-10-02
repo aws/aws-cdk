@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "52.0.0",
   "testCases": {
     "ClusterServerlessTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ClusterServerlessTest/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterServerlessTestDefaultTestDeployAssert8C9220E6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

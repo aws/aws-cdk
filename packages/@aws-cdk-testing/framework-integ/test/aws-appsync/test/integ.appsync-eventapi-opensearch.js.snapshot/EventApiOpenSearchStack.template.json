@@ -118,7 +118,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f458310aa98fdb14b90310bc11c5c7ce84b7230d49c68f335e1c81eafb5b3f6f.zip"
+     "S3Key": "640d0d150334cfc10637afd025081fb73ea50779a4b593b1cbdae032797071a8.zip"
     },
     "Environment": {
      "Variables": {
@@ -235,7 +235,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (EventApiOpenSearchStack/provider)",
     "Environment": {
@@ -259,7 +259,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -494,7 +494,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4bd7add6ba4e30f916295c54d92f3a9ab263dbad02f9f256b589191b2c5e3e8e.zip"
+     "S3Key": "f02930a2a536676e9bf3aa876299ac1880466d9122a81e4236f2f4bda6a86c8a.zip"
     },
     "Environment": {
      "Variables": {

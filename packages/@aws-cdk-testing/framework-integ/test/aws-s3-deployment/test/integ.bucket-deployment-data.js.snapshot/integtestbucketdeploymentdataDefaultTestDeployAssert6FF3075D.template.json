@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1763112638469"
+    "salt": "1779973461152"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -95,12 +95,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -140,7 +140,7 @@
      "Key": "\"deploy/here/my-json/config-with-null.json\""
     },
     "flattenResponse": "false",
-    "salt": "1763112638470"
+    "salt": "1779973461154"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -173,7 +173,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1763112638470"
+    "salt": "1779973461154"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

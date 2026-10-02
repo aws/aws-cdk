@@ -139,6 +139,26 @@ describe('cluster resource provider', () => {
         name: 'MyResourceId-fakerequestid',
       });
     });
+
+    test('onCreate: deletionProtection is converted from string to boolean', async () => {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+        ...mocks.MOCK_PROPS,
+        deletionProtection: 'true',
+      } as any));
+      await handler.onEvent();
+
+      expect((mocks.actualRequest.createClusterRequest as any).deletionProtection).toStrictEqual(true);
+    });
+
+    test('onCreate: deletionProtection "false" string is converted to boolean false', async () => {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+        ...mocks.MOCK_PROPS,
+        deletionProtection: 'false',
+      } as any));
+      await handler.onEvent();
+
+      expect((mocks.actualRequest.createClusterRequest as any).deletionProtection).toStrictEqual(false);
+    });
   });
 
   describe('delete', () => {
@@ -557,7 +577,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
 
         test('both version and authModeUpdate defined and modify both of them', async () => {
@@ -574,7 +594,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
 
         test('update both version and logging with logging undefined', async () => {
@@ -598,7 +618,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
 
         test('both version and logging defined and modify both of them', async () => {
@@ -629,7 +649,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
       });
       describe('assessConfig change', () => {
@@ -761,7 +781,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
         test('from undefined to both access and authenticationMode enabled', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -781,7 +801,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -805,7 +825,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
         test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -829,7 +849,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
       });
 
@@ -913,7 +933,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -951,7 +971,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons can be allowed');
+          expect(error.message).toEqual('Only one type of update - replaceName, updateVpc, updateAccess, replaceRole, updateVersion, updateEncryption, updateLogging, updateAuthMode, updateBootstrapClusterCreatorAdminPermissions, updateBootstrapSelfManagedAddons, updateDeletionProtection, updateControlPlaneScalingConfig can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -1134,6 +1154,134 @@ describe('cluster resource provider', () => {
               securityGroupIds: ['sg1', 'sg2', 'sg3'],
             },
           });
+        });
+      });
+      describe('deletionProtection change', () => {
+        test('from undefined to true triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect((mocks.actualRequest.updateClusterConfigRequest as any).deletionProtection).toEqual(true);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('from true to false triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: false,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect((mocks.actualRequest.updateClusterConfigRequest as any).deletionProtection).toEqual(false);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('no change does not trigger update', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+      });
+      describe('controlPlaneScalingConfig change', () => {
+        test('from undefined to a provisioned tier triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any, {
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('from one provisioned tier to another triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-4xl' },
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            controlPlaneScalingConfig: { tier: 'tier-4xl' },
+          });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('removing the configuration falls back to the standard tier', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+          }, {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            controlPlaneScalingConfig: { tier: 'standard' },
+          });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('no change does not trigger update', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('setting the standard tier explicitly does not trigger update', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'standard' },
+          } as any, {
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('is passed through on create', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+            ...mocks.MOCK_PROPS,
+            controlPlaneScalingConfig: { tier: 'tier-xl' },
+          } as any));
+          await handler.onEvent();
+          expect((mocks.actualRequest.createClusterRequest as any).controlPlaneScalingConfig).toEqual({ tier: 'tier-xl' });
         });
       });
     });

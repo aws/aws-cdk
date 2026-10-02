@@ -1,0 +1,52 @@
+{
+  "/cdk-stepfunctions-map-inline-stack/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/StateMachineARN": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineARN"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-stack/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ]
+}

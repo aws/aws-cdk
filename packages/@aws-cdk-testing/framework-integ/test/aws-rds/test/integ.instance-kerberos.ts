@@ -1,4 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -7,7 +9,7 @@ import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'instance-kerberos');
+const stack = new IntegTestBaseStack(app, 'instance-kerberos');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const iamRole = new iam.Role(stack, 'Role', {
@@ -31,7 +33,7 @@ const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {
 
 new rds.DatabaseInstance(stack, 'Database', {
   engine: rds.DatabaseInstanceEngine.mysql({
-    version: rds.MysqlEngineVersion.VER_8_0_35,
+    version: INTEG_TEST_LATEST_MYSQL,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   vpc,
@@ -43,4 +45,3 @@ new integ.IntegTest(app, 'integ-instance-kerberos', {
   testCases: [stack],
 });
 
-app.synth();

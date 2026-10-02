@@ -1,0 +1,70 @@
+{
+  "/Destinations/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/LambdaInvoked12df417a1b74909abb3ea643735a310/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/LambdaInvoked12df417a1b74909abb3ea643735a310/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoked12df417a1b74909abb3ea643735a310InvokeF590C289"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/LambdaInvoked12df417a1b74909abb3ea643735a310/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoked12df417a1b74909abb3ea643735a310"
+    }
+  ],
+  "/Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "/ImportedTableStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:124:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ImportedTableStack/ImportBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/ImportNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/CreatedTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:166:5)"
+      ]
+    }
+  ],
+  "/ImportedTableStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:166:5)"
+      ]
+    }
+  ],
+  "/ImportedTableStack/ImportBucket/ImportBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportBucket84ED9370"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableBucket (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:369:29)",
+        "new TableBucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ImportedTableStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:97:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:124:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ImportedTableStack/ImportNamespace/ImportNamespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportNamespace1D04D30B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Namespace (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/namespace.js:152:30)",
+        "new Namespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ImportedTableStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:101:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:124:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ImportedTableStack/CreatedTable/CreatedTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CreatedTableC1AB30DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.js:353:30)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ImportedTableStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:107:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table.js:124:27)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

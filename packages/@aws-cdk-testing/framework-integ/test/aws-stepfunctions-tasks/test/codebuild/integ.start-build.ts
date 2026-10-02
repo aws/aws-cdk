@@ -51,7 +51,7 @@ class StartBuildStack extends cdk.Stack {
     }).next(startBuild);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition,
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
     });
 
     new cdk.CfnOutput(this, 'ProjectName', {

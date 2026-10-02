@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "shell-bundling-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-shell-bundling"
+      ],
+      "assertionStack": "shell-bundling-test/DefaultTest/DeployAssert",
+      "assertionStackName": "shellbundlingtestDefaultTestDeployAssert79273E21"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

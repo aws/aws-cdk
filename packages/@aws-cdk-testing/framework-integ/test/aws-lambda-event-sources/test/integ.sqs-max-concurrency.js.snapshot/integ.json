@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "testCases": {
     "sqs-max-concurrency-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "sqs-max-concurrency-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "sqsmaxconcurrencyintegtestDefaultTestDeployAssert1176DADD"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

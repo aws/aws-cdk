@@ -1,5 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as integTests from '@aws-cdk/integ-tests-alpha';
 import type * as constructs from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -8,7 +10,7 @@ interface RollingInstanceUpdateTestStackProps extends cdk.StackProps {
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour;
 }
 
-class RollingInstanceUpdateTestStack extends cdk.Stack {
+class RollingInstanceUpdateTestStack extends IntegTestBaseStack {
   constructor(scope: constructs.Construct, id: string, props: RollingInstanceUpdateTestStackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'Vpc', {
@@ -18,14 +20,13 @@ class RollingInstanceUpdateTestStack extends cdk.Stack {
 
     new rds.DatabaseCluster(this, 'DatabaseCluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({
-        version: rds.AuroraMysqlEngineVersion.VER_3_07_1,
+        version: INTEG_TEST_LATEST_AURORA_MYSQL,
       }),
       instances: 3,
       instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
         vpc,
       },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
       instanceUpdateBehaviour: props.instanceUpdateBehaviour,
     });
   }
@@ -44,4 +45,3 @@ new integTests.IntegTest(app, 'InstanceUpdateBehaviorTests', {
   ],
 });
 
-app.synth();

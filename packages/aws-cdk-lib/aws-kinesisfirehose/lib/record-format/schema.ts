@@ -25,7 +25,7 @@ export interface SchemaConfigurationFromCfnTableProps {
    *
    * if set to `LATEST`, Firehose uses the most recent table version. This means that any updates to the table are automatically picked up.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-versionid
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-versionid
    * @default `LATEST`
    */
   readonly versionId?: string;
@@ -41,7 +41,7 @@ export interface SchemaConfigurationFromCfnTableProps {
 /**
  * Represents a schema configuration for Firehose S3 data record format conversion.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-dataformatconversionconfiguration.html#cfn-kinesisfirehose-deliverystream-dataformatconversionconfiguration-schemaconfiguration
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-dataformatconversionconfiguration.html#cfn-kinesisfirehose-deliverystream-dataformatconversionconfiguration-schemaconfiguration
  */
 export class SchemaConfiguration {
   /**

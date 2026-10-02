@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-input-without-connection/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-input-without-connection"
+      ],
+      "assertionStack": "cdk-integ-emx-router-input-without-connection/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouterinputwithoutconnectionDefaultTestDeployAssert2D835C5A"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

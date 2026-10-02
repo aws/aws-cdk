@@ -1,7 +1,7 @@
 import { Fn, Lazy, Names, ValidationError } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
@@ -93,7 +93,7 @@ export class ServerlessCluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     if (props.vpcConfigs.length < 1 || props.vpcConfigs.length > 5) {
-      throw new ValidationError(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
+      throw new ValidationError(lit`InvalidVpcConfigCount`, `\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
     }
 
     const vpcConfigs = props.vpcConfigs.map((vpcConfig, index) => this._renderVpcConfig(vpcConfig, index));
@@ -140,14 +140,14 @@ export class ServerlessCluster extends ClusterBase {
     const subnetSelection = vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets);
 
     if (subnetSelection.subnets.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
+      throw new ValidationError(lit`ServerlessClusterInsufficientSubnets`, `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
     }
 
     let securityGroups: ec2.ISecurityGroup[] = [];
 
     if (vpcConfig.securityGroups) {
       if (vpcConfig.securityGroups.length < 1 || vpcConfig.securityGroups.length > 5) {
-        throw new ValidationError(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
+        throw new ValidationError(lit`InvalidSecurityGroupCount`, `\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
       }
       securityGroups = vpcConfig.securityGroups;
     } else {

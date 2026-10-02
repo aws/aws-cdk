@@ -378,6 +378,140 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Opus 4.6 model, the most intelligent model and the world's best model
+   * for coding, enterprise agents, and professional work.
+   * Supports both 200K and 1M context tokens (with the latter in preview).
+   * Excels in agentic workflows, complex coding projects, and enterprise applications
+   * requiring sophisticated reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Financial analysis, cybersecurity, computer use workflows, long-horizon development, multi-tool orchestration
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-6-v1',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4.7 model, Anthropic's most capable generally available model,
+   * advancing performance across coding, enterprise workflows, and long-running agentic tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_7 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-7',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4.8 model, Anthropic's most intelligent Opus model and
+   * best generally available model for coding and agents, with deeper reasoning for
+   * enterprise workflows.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_8 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-8',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 5.5 model, Anthropic's most capable Opus model.
+   * Better at coding, knowledge work, and long-running tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global`, `us`, `eu`, `au` and `jp` cross-region inference profiles.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-opus-5-5',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 5.5 model.
+   * Improved coding and knowledge work over Claude Sonnet 5, at a lower cost per task.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global` cross-region inference profile.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-5-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Fable 5.1 model, Anthropic's frontier model for ambitious coding,
+   * long-horizon agents, and enterprise knowledge work.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global` and `us` cross-region inference profiles.
+   *
+   * Using this model requires opting in to the `aws_review` data
+   * retention mode; see the Amazon Bedrock model card for details.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5_1 = new BedrockFoundationModel(
+    'anthropic.claude-fable-5-1',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 4.6 model.
+   * Improved performance for coding, agentic workflows, and browser-based automation.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Coding, agentic workflows, browser-based automation, enterprise applications
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-4-6',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4.5 model, the flagship model released November 2025.
+   * Excels at real-world programming tasks, scoring highest on SWE-bench Verified benchmarks.
+   * Demonstrates superior performance in long-horizon, goal-directed agentic work with fewer dead-ends.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Software engineering, code migration, agentic workflows, financial modeling, deep research
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-5-20251101-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
    * Anthropic's Claude Opus 4.1 model, most advanced for coding and agentic applications.
    * Excels at independently planning and executing complex development tasks end-to-end.
    * Drop-in replacement for Opus 4 with superior performance and precision.
@@ -891,6 +1025,109 @@ export class BedrockFoundationModel implements IBedrockInvokable {
       supportsCrossRegion: true,
     },
   );
+
+  /****************************************************************************
+   *                            OPENAI
+   ***************************************************************************/
+
+  /**
+   * OpenAI's GPT-5.6 Sol model, the most capable OpenAI model on Bedrock.
+   * Frontier reasoning and agentic performance across coding, cybersecurity,
+   * and scientific research.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex reasoning, coding, scientific research
+   */
+  public static readonly OPENAI_GPT_5_6_SOL = new BedrockFoundationModel('openai.gpt-5.6-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Terra model, balanced performance for production workloads.
+   * Competitive with GPT-5.5 at half the cost.
+   *
+   * Features:
+   * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Everyday production workloads at scale
+   */
+  public static readonly OPENAI_GPT_5_6_TERRA = new BedrockFoundationModel('openai.gpt-5.6-terra', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Luna model, fast and affordable inference.
+   * OpenAI's lowest cost model, built for high-volume tasks.
+   *
+   * Features:
+   * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Classification, summarization, routing, real-time applications
+   */
+  public static readonly OPENAI_GPT_5_6_LUNA = new BedrockFoundationModel('openai.gpt-5.6-luna', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's gpt-oss-120b model, 120-billion parameter open-weight model.
+   * General-purpose model for text generation, coding, and reasoning tasks.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Text generation, coding, reasoning
+   */
+  public static readonly OPENAI_GPT_OSS_120B_V1 = new BedrockFoundationModel('openai.gpt-oss-120b-1:0', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's gpt-oss-20b model, 20-billion parameter open-weight model.
+   * Efficient model for text generation and coding at lower compute cost.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Efficient text generation, coding
+   */
+  public static readonly OPENAI_GPT_OSS_20B_V1 = new BedrockFoundationModel('openai.gpt-oss-20b-1:0', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's GPT OSS Safeguard 120B model, open-weight safety model.
+   * Built for content moderation and guardrail enforcement in AI applications.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Content moderation, guardrail enforcement
+   */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new BedrockFoundationModel('openai.gpt-oss-safeguard-120b', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
+
+  /**
+   * OpenAI's GPT OSS Safeguard 20B model, compact open-weight safety model.
+   * Built for lightweight content moderation and guardrail tasks.
+   *
+   * Features:
+   * - In-Region invocation
+   * - Not supported by Bedrock Agents
+   * - Best for: Lightweight content moderation, guardrail tasks
+   */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new BedrockFoundationModel('openai.gpt-oss-safeguard-20b', {
+    supportsAgents: false,
+    supportsCrossRegion: false,
+  });
 
   /**
    * Creates a BedrockFoundationModel from a FoundationModelIdentifier.

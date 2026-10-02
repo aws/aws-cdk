@@ -3,6 +3,7 @@ import type { IRouteTable, IVpcEndpoint } from 'aws-cdk-lib/aws-ec2';
 import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Annotations, Duration, FeatureFlags, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct, IDependable } from 'constructs';
@@ -464,7 +465,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.vpc && !props.allocationId) {
-        throw new ValidationError('Either provide vpc or allocationId', this);
+        throw new ValidationError(lit`VpcOrAllocationIdRequired`, 'Either provide vpc or allocationId', this);
       }
     }
 
@@ -536,16 +537,16 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
     const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
 
     if (!isCrossAccount && props.peerRoleArn) {
-      throw new ValidationError('peerRoleArn is not needed for same account peering', this);
+      throw new ValidationError(lit`PeerRoleArnNotNeededForSameAccount`, 'peerRoleArn is not needed for same account peering', this);
     }
 
     if (isCrossAccount && !props.peerRoleArn) {
-      throw new ValidationError('Cross account VPC peering requires peerRoleArn', this);
+      throw new ValidationError(lit`CrossAccountPeeringRequiresPeerRoleArn`, 'Cross account VPC peering requires peerRoleArn', this);
     }
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
-      throw new ValidationError('CIDR block should not overlap with each other for establishing a peering connection', this);
+      throw new ValidationError(lit`VpcCidrBlocksOverlap`, 'CIDR block should not overlap with each other for establishing a peering connection', this);
     }
     if (props.vpcPeeringConnectionName) {
       Tags.of(this).add(NAME_TAG, props.vpcPeeringConnectionName);
@@ -770,11 +771,11 @@ export class Route extends Resource implements IRouteV2 {
     }
 
     if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
-      throw new ValidationError('Egress only internet gateway does not support IPv4 routing', this);
+      throw new ValidationError(lit`EgressOnlyInternetGatewayDoesNotSupportIpv4`, 'Egress only internet gateway does not support IPv4 routing', this);
     }
 
     if ((props.target.gateway && props.target.endpoint) || (!props.target.gateway && !props.target.endpoint)) {
-      throw new ValidationError('Exactly one of `gateway` or `endpoint` must be specified.', this);
+      throw new ValidationError(lit`ExactlyOneTargetRequired`, 'Exactly one of `gateway` or `endpoint` must be specified.', this);
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it

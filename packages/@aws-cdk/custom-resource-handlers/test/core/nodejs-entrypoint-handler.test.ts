@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as fs from 'fs';
 import type { OutgoingHttpHeaders } from 'http';
 import type * as https from 'https';

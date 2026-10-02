@@ -1,3 +1,9 @@
+/**
+ * This test requires a valid ACM certificate in us-east-1.
+ * CloudFront rejects certificates in PENDING_VALIDATION state,
+ * so DNS validation against a real domain you control is needed.
+ * Replace the acmCertRef and names below with your own values.
+ */
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 

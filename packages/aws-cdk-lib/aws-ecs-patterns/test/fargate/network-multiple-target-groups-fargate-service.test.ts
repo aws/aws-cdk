@@ -43,6 +43,7 @@ describe('NetworkMultipleTargetGroupsFargateService', () => {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
       minHealthyPercent: 100,
+      circuitBreaker: {}, // Set to silence an unrelated warning
     });
 
     // THEN - no warning about minHealthyPercent

@@ -4,13 +4,13 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "CompatibleRuntimes": [
-     "nodejs18.x"
+     "nodejs24.x"
     ],
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34.zip"
+     "S3Key": "8190cbaf621223fb86e7062ea533415579c095416939dfc49a60f72b1b96c397.zip"
     },
     "Description": "A layer to test the L2 construct",
     "LicenseInfo": "Apache-2.0"
@@ -77,7 +77,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyLayeredLambdaServiceRole1A7DC118"

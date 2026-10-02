@@ -1,14 +1,18 @@
-import { SecretValue, Stack } from 'aws-cdk-lib';
+import { SecretValue, Stack, Validations } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccessControl, IamUser, NoPasswordUser, PasswordUser, UserEngine, UserGroup } from '../lib';
 
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3032',
+    reason: 'Required array is empty',
+  });
+});
+
 describe('UserGroup', () => {
   describe('validation errors', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test.each([
       {
         testDescription: 'when Redis user group contains non-Redis user throws validation error',
@@ -161,11 +165,6 @@ describe('UserGroup', () => {
   });
 
   describe('constructor', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('creates Valkey user group with minimal required properties', () => {
       new UserGroup(stack, 'TestUserGroup');
 
@@ -173,6 +172,19 @@ describe('UserGroup', () => {
       template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
         Engine: 'valkey',
         UserGroupId: 'testusergroup',
+      });
+    });
+
+    test('creates Redis user group with empty UserIds array when the input users property is empty', () => {
+      new UserGroup(stack, 'TestUserGroup', {
+        users: [],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
+        Engine: 'valkey',
+        UserGroupId: 'testusergroup',
+        UserIds: [],
       });
     });
 
@@ -262,11 +274,6 @@ describe('UserGroup', () => {
   });
 
   describe('properties', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('exposes correct properties', () => {
       const user = new IamUser(stack, 'TestUser', {
         userId: 'test-user',
@@ -281,7 +288,7 @@ describe('UserGroup', () => {
       });
 
       expect(userGroup.userGroupName).toBe('my-group');
-      expect(userGroup.engine).toBe('valkey');
+      expect(userGroup.engine?.engineType).toBe('valkey');
       expect(userGroup.users).toHaveLength(1);
       expect(userGroup.users![0].userId).toBe('test-user');
       expect(userGroup.userGroupArn).toBeDefined();
@@ -314,11 +321,6 @@ describe('UserGroup', () => {
   });
 
   describe('addUser', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('adds user to group successfully', () => {
       const userGroup = new UserGroup(stack, 'TestUserGroup', {
         engine: UserEngine.VALKEY,
@@ -363,7 +365,6 @@ describe('UserGroup', () => {
 
   describe('isUserGroup', () => {
     test('returns true for UserGroup instances', () => {
-      const stack = new Stack();
       const userGroup = new UserGroup(stack, 'TestUserGroup');
 
       expect(UserGroup.isUserGroup(userGroup)).toBe(true);
@@ -378,7 +379,6 @@ describe('UserGroup', () => {
     });
 
     test('returns false for imported user groups (not actual UserGroup instances)', () => {
-      const stack = new Stack();
       const importedUserGroup = UserGroup.fromUserGroupName(stack, 'ImportedUserGroup', 'test-group');
 
       expect(UserGroup.isUserGroup(importedUserGroup)).toBe(false);
@@ -386,11 +386,6 @@ describe('UserGroup', () => {
   });
 
   describe('import methods', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('fromUserGroupAttributes works with valid userGroupArn', () => {
       const userGroup = UserGroup.fromUserGroupAttributes(stack, 'ImportedUserGroup', {
         userGroupArn: 'arn:aws:elasticache:us-east-1:123456789012:usergroup:my-group',
@@ -474,7 +469,7 @@ describe('UserGroup', () => {
 
       expect(userGroup.userGroupArn).toBe(arn);
       expect(userGroup.userGroupName).toBe('my-group');
-      expect(userGroup.engine).toBe('valkey');
+      expect(userGroup.engine?.engineType).toBe('valkey');
       expect(userGroup.users).toHaveLength(1);
       expect(userGroup.users![0].userId).toBe(user.userId);
     });
@@ -506,6 +501,44 @@ describe('UserGroup', () => {
       });
 
       expect(() => importedUserGroup.addUser(user)).toThrow('Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
+    });
+  });
+
+  describe('UserEngine class', () => {
+    test('of() returns an instance with the expected engineType', () => {
+      const engine = UserEngine.of('redis');
+      expect(engine.engineType).toBe('redis');
+    });
+
+    test('of() supports arbitrary engines', () => {
+      const engine = UserEngine.of('futureengine');
+      expect(engine.engineType).toBe('futureengine');
+    });
+
+    test('named static members expose the correct engineType', () => {
+      expect(UserEngine.VALKEY.engineType).toBe('valkey');
+      expect(UserEngine.REDIS.engineType).toBe('redis');
+    });
+
+    test('toString() returns the engineType', () => {
+      expect(UserEngine.VALKEY.toString()).toBe('valkey');
+      expect(UserEngine.REDIS.toString()).toBe('redis');
+    });
+
+    test('of() does not return the same instance as a named static member', () => {
+      expect(UserEngine.of('redis')).not.toBe(UserEngine.REDIS);
+      expect(UserEngine.of('valkey')).not.toBe(UserEngine.VALKEY);
+    });
+
+    test('fromUserGroupAttributes preserves engine when constructed via UserEngine.of()', () => {
+      const customEngine = UserEngine.of('redis');
+      const imported = UserGroup.fromUserGroupAttributes(stack, 'Imported', {
+        userGroupName: 'my-group',
+        engine: customEngine,
+      });
+
+      expect(imported.engine).toBe(customEngine);
+      expect(imported.engine?.engineType).toBe('redis');
     });
   });
 });

@@ -1,0 +1,104 @@
+{
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdagetEventSourceMappingdc5cf574cc9016dcb9eb5e7ca31f8051"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdagetEventSourceMapping32bec147bccdeb0e842bab63a4408552"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config-integ/DefaultTest/DeployAssert/AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallLambdagetEventSourceMappingc403a4fc85287fac7affd4bcd3b84b19"
+    }
+  ]
+}

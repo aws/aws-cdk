@@ -3867,10 +3867,10 @@
      ]
     },
     "Release": "awscdkeksclusterclusterchartdashboard864cec4a",
-    "Chart": "kubernetes-dashboard",
-    "Version": "6.0.8",
+    "Chart": "headlamp",
+    "Version": "0.39.0",
     "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
+    "Repository": "https://kubernetes-sigs.github.io/headlamp/",
     "CreateNamespace": true
    },
    "DependsOn": [
@@ -3905,6 +3905,7 @@
     "CreateNamespace": true
    },
    "DependsOn": [
+    "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -4145,7 +4146,7 @@
      ]
     },
     "RejectUnauthorized": false,
-    "CodeHash": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a"
+    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4400,7 +4401,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/74f0c23bdc75a98d28fe19433302a52c4bea843e3db955cba46671106f67d08f.json"
+       "/0c0eaeda9090de362abf6a8b9f0a53a35cc332443c156a99a69b9c9aa6e05539.json"
       ]
      ]
     }
@@ -4446,7 +4447,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/841e346827b3ba40d7f399611acabdb98a1b960a0112ea2dc4e010e172d29700.json"
+       "/623535395b366b64d3c01223f30459e94b5454ecc0f205c6112b4d7d8909444d.json"
       ]
      ]
     }
@@ -4564,7 +4565,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a.zip"
+     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4575,7 +4576,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -4621,7 +4622,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

@@ -24,7 +24,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       vpc,
     });
     this.functionName = fn.functionName;

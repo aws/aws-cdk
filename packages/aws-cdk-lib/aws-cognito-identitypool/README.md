@@ -3,7 +3,7 @@
 [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html) enable you to grant your users access to other AWS services.
 
 Identity Pools are one of the two main components of [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html), which provides authentication, authorization, and
-user management for your web and mobile apps. Your users can sign in through a a trusted identity provider, like a user 
+user management for your web and mobile apps. Your users can sign in through a trusted identity provider, like a user 
 pool or a SAML 2.0 service, as well as with third party providers such as Facebook, Amazon, Google or Apple. 
 
 The other main component in Amazon Cognito is [user pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html). User Pools are user directories that provide sign-up and
@@ -187,7 +187,7 @@ Pools, OpenIdConnect, or SAML. Only one provider per external service can be att
 
 [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html) is an open standard for  
 authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with  
-OpenID Connect providers that are configured through [AWS Identity and Access Management](http://aws.amazon.com/iam/). 
+OpenID Connect providers that are configured through [AWS Identity and Access Management](https://aws.amazon.com/iam/). 
 
 An identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) can be used to provide a simple  
 onboarding flow for users. The SAML-supporting identity provider specifies the IAM roles that can be assumed by users  
