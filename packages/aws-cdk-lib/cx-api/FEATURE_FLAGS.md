@@ -119,6 +119,7 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall](#aws-cdkaws-ec2natinstancev2retryiptablesinstall) | When enabled, the default NatInstanceProviderV2 user data retries the iptables-services install. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -151,6 +152,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
@@ -2580,6 +2582,30 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall
+
+*When enabled, the default NatInstanceProviderV2 user data retries the iptables-services install.*
+
+Flag type: Backwards incompatible bugfix
+
+Other boot-time processes can run `dnf clean all` while the NAT instance installs
+`iptables-services`, which fails the install and leaves the instance without NAT rules.
+When this flag is enabled, the default user data retries the install for up to about 5 minutes,
+and fails the user data script if every attempt fails.
+
+Enabling this changes the UserData of existing NAT instances that do not pass their own
+`userData`. CloudFormation restarts those instances once, and because the provider does not
+attach Elastic IPs they come back with new public IPs.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set this flag to `false` to keep the current user data, or pass your own `userData` to the provider.
 
 
 <!-- END details -->

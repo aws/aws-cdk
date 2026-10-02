@@ -159,6 +159,7 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL = '@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1954,6 +1955,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default NatInstanceProviderV2 user data retries the iptables-services install.',
+    detailsMd: `
+      Other boot-time processes can run \`dnf clean all\` while the NAT instance installs
+      \`iptables-services\`, which fails the install and leaves the instance without NAT rules.
+      When this flag is enabled, the default user data retries the install for up to about 5 minutes,
+      and fails the user data script if every attempt fails.
+
+      Enabling this changes the UserData of existing NAT instances that do not pass their own
+      \`userData\`. CloudFormation restarts those instances once, and because the provider does not
+      attach Elastic IPs they come back with new public IPs.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep the current user data, or pass your own `userData` to the provider.',
   },
 };
 
