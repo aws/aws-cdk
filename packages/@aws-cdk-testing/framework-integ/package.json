@@ -55,7 +55,8 @@
     "aws-cdk-lib": "0.0.0",
     "cdk8s": "2.70.83",
     "cdk8s-plus-27": "2.9.5",
-    "constructs": "^10.5.0"
+    "constructs": "^10.5.0",
+    "@aws-cdk/aws-dsql-alpha": "0.0.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
