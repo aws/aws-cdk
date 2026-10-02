@@ -381,6 +381,20 @@ describe('Agent', () => {
         });
       }).not.toThrow();
     });
+
+    test('does not fail validation if idleSessionTTL is a late-bound value', () => {
+      const ttl = new core.CfnParameter(stack, 'IdleSessionTtl', { type: 'Number' });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        idleSessionTTL: core.Duration.seconds(ttl.valueAsNumber),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        IdleSessionTTLInSeconds: { Ref: 'IdleSessionTtl' },
+      });
+    });
   });
 
   describe('action groups', () => {

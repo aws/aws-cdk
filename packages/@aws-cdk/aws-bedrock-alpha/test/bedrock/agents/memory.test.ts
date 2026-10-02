@@ -71,6 +71,29 @@ describe('Memory', () => {
       }).toThrow(/maxRecentSessions must be greater than 0/);
     });
 
+    test('does not fail validation if memoryDuration and maxRecentSessions are late-bound values', () => {
+      const storageDays = new core.CfnParameter(stack, 'StorageDays', { type: 'Number' });
+      const maxSessions = new core.CfnParameter(stack, 'MaxSessions', { type: 'Number' });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        memory: Memory.sessionSummary({
+          memoryDuration: core.Duration.days(storageDays.valueAsNumber),
+          maxRecentSessions: maxSessions.valueAsNumber,
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        MemoryConfiguration: {
+          StorageDays: { Ref: 'StorageDays' },
+          SessionSummaryConfiguration: {
+            MaxRecentSessions: { Ref: 'MaxSessions' },
+          },
+        },
+      });
+    });
+
     test('uses default values when not provided', () => {
       new bedrock.Agent(stack, 'TestAgent', {
         instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
