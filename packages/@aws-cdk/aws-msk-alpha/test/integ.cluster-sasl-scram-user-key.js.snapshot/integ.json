@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ScramSecretUserKeyIntegTest/DefaultTest": {
+      "stacks": [
+        "ScramSecretUserKeyTestStack"
+      ],
+      "assertionStack": "ScramSecretUserKeyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ScramSecretUserKeyIntegTestDefaultTestDeployAssertCCD91B24"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
