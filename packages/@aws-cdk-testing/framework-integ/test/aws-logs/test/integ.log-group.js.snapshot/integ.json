@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "48.0.0",
   "testCases": {
     "LogGroupInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LogGroupInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LogGroupIntegDefaultTestDeployAssertA9999A13"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
