@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4a7bdcbf430bc84f13fd89844c3603c4e3bd8d41bf3fb4e2a1d9998e4aae6071": {
+      "displayName": "MultiAccountEncryptionReplicaStack Template",
+      "source": {
+        "path": "MultiAccountEncryptionReplicaStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "222222222222-ca-central-1-cd4c3313": {
+          "bucketName": "cdk-hnb659fds-assets-222222222222-ca-central-1",
+          "objectKey": "4a7bdcbf430bc84f13fd89844c3603c4e3bd8d41bf3fb4e2a1d9998e4aae6071.json",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-ca-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
