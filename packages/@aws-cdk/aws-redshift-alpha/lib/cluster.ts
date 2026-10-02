@@ -75,6 +75,16 @@ export enum NodeType {
    * ra3.16xlarge
    */
   RA3_16XLARGE = 'ra3.16xlarge',
+
+  /**
+   * rg.xlarge
+   */
+  RG_XLARGE = 'rg.xlarge',
+
+  /**
+   * rg.4xlarge
+   */
+  RG_4XLARGE = 'rg.4xlarge',
 }
 
 /**
