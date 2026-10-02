@@ -1,4 +1,4 @@
-import { App, Stack, Validations } from 'aws-cdk-lib';
+import { App, CfnParameter, Stack, Validations } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
 
@@ -318,6 +318,24 @@ And includes various details about the version.`;
 
       Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::PromptVersion', {
         Description: multilineDescription,
+      });
+    });
+
+    test('does not fail validation if description is a late-bound value', () => {
+      const prefix = new CfnParameter(stack, 'DescriptionPrefix');
+      // The encoded token is ~20 characters, so the unresolved string exceeds the 200 character limit
+      const padding = 'a'.repeat(190);
+      const prompt = new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+      });
+
+      new bedrock.PromptVersion(stack, 'TestPromptVersion', {
+        prompt,
+        description: `${prefix.valueAsString}${padding}`,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::PromptVersion', {
+        Description: { 'Fn::Join': ['', [{ Ref: 'DescriptionPrefix' }, padding]] },
       });
     });
   });
