@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4ed388ee3916487d26b9efecb4ef961650daed0c42972c73e182312cf237c656": {
+      "displayName": "ForEachIntegStack Template",
+      "source": {
+        "path": "ForEachIntegStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-10c45879": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4ed388ee3916487d26b9efecb4ef961650daed0c42972c73e182312cf237c656.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

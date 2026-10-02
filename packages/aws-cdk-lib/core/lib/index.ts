@@ -15,6 +15,7 @@ export * from './stack-synthesizers';
 export * from './reference';
 export * from './cfn-condition';
 export * from './cfn-fn';
+// cfn-foreach-fragment is internal; not exported from the public API
 export * from './cfn-hook';
 export * from './cfn-codedeploy-blue-green-hook';
 export * from './cfn-include';
@@ -67,6 +68,9 @@ export * from './cfn-capabilities';
 export * from './cloudformation.generated';
 
 export * from './feature-flags';
+export * from './foreach-resource';
+export * from './foreach-output';
+export * from './foreach-condition';
 export * from './permissions-boundary';
 
 export * from './validation';
