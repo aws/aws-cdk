@@ -1089,6 +1089,74 @@ describe('integration tests required on features', () => {
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
+
+    describe('mergeability', () => {
+      const MERGEABLE_PR: Subset<GitHubPr> = {
+        title: 'chore(s3): something',
+        draft: false,
+        mergeable: true,
+        mergeable_state: 'behind',
+        number: 1234,
+        labels: [{ name: 'p2' }],
+      };
+      const CONFLICTED_PR: Subset<GitHubPr> = {
+        ...MERGEABLE_PR,
+        mergeable: false,
+        mergeable_state: 'dirty',
+        labels: [{ name: 'p2' }, { name: 'pr/needs-community-review' }],
+      };
+      // What GitHub returns while its background mergeability job is still running.
+      const UNCOMPUTED = { mergeable: null, mergeable_state: 'unknown' };
+
+      test('does not need a review when the PR has merge conflicts', async () => {
+        // WHEN
+        const prLinter = configureMock(CONFLICTED_PR, files);
+        const actions = await prLinter.validatePullRequestTarget();
+
+        // THEN
+        expect(actions.removeLabels).toEqual(['pr/needs-community-review', 'pr/needs-maintainer-review']);
+        expect(actions.addLabels).toBeUndefined();
+      });
+
+      test('needs a review when the PR is mergeable', async () => {
+        // WHEN
+        const prLinter = configureMock(MERGEABLE_PR, files);
+        const actions = await prLinter.validatePullRequestTarget();
+
+        // THEN
+        expect(actions.addLabels).toEqual(['pr/needs-community-review']);
+        expect(actions.removeLabels).toEqual(['pr/needs-maintainer-review']);
+      });
+
+      test('does not need a review when mergeability settles to conflicted on the second read', async () => {
+        // GIVEN only the linter's first read comes back with mergeability uncomputed
+        const prLinter = configureMock(CONFLICTED_PR, files);
+        prLinter.octomock.pulls.get.mockImplementationOnce(() => ({
+          data: { ...CONFLICTED_PR, ...UNCOMPUTED, base: { ref: 'main' }, head: { sha: SHA } },
+        }));
+
+        // WHEN
+        const actions = await prLinter.validatePullRequestTarget();
+
+        // THEN
+        expect(actions.removeLabels).toEqual(['pr/needs-community-review', 'pr/needs-maintainer-review']);
+        expect(actions.addLabels).toBeUndefined();
+      });
+
+      test('needs a review when mergeability never settles, same as when it is not computed at all', async () => {
+        // GIVEN
+        const prLinter = configureMock({ ...MERGEABLE_PR, ...UNCOMPUTED }, files);
+
+        // WHEN
+        const actions = await prLinter.validatePullRequestTarget();
+
+        // THEN mergeability we never learn is treated as not conflicted, so the PR is still queued.
+        // A conflicted PR in this residue keeps being mislabelled; the re-read shrinks that population
+        // rather than eliminating it.
+        expect(actions.addLabels).toEqual(['pr/needs-community-review']);
+        expect(actions.removeLabels).toEqual(['pr/needs-maintainer-review']);
+      });
+    });
   });
 
   describe('with existing Exemption Request comment', () => {
@@ -1373,7 +1441,7 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
   const octomock = createOctomock();
 
   octomock.pulls.get.mockImplementation((_props: { _owner: string; _repo: string; _pull_number: number; _user: { _login: string} }) => ({
-    data: { ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head } },
+    data: { mergeable: true, ...pr, base: { ref: 'main', ...pr?.base }, head: { sha: 'ABC', ...pr?.head } },
   }));
   octomock.pulls.listFiles.mockImplementation((_props: { _owner: string; _repo: string; _pull_number: number }) => ({
     data: prFiles ?? [],
@@ -1422,6 +1490,7 @@ function configureMock(pr: Subset<GitHubPr>, prFiles?: GitHubFileName[], existin
     repo: 'aws-cdk',
     number: 1000,
     linterLogin: 'aws-cdk-automation',
+    mergeabilityRecheckDelayMs: 0,
 
     // hax hax
     client: octomock as any,
