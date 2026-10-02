@@ -26,10 +26,15 @@ taskDefinition.addContainer('web', {
   ],
 });
 
+// The ARN is built from tokens (region/account), so it is unresolved at synth time and its
+// revision cannot be inferred from the string. `taskDefinitionArnIncludesRevision: false` records
+// that this family-only ARN has no revision, so the generated `ecs:RunTask` permission is scoped
+// with a `:*` revision wildcard.
 const importedTaskDef = FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDefImport', {
   taskDefinitionArn: `arn:aws:ecs:${Aws.REGION}:${Aws.ACCOUNT_ID}:task-definition/${taskDefFamily}`,
   taskRole: taskRole,
   networkMode: NetworkMode.AWS_VPC,
+  taskDefinitionArnIncludesRevision: false,
 });
 
 const eventRule = new Rule(stack, 'Rule', {

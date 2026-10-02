@@ -119,6 +119,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       networkMode: attrs.networkMode,
       taskRole: attrs.taskRole,
       executionRole: attrs.executionRole,
+      taskDefinitionArnIncludesRevision: attrs.taskDefinitionArnIncludesRevision,
     });
   }
 
