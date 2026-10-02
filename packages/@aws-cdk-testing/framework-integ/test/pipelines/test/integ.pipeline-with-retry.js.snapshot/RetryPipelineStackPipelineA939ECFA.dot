@@ -1,0 +1,63 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg RetryPipelineStackPipelineA939ECFA.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c85476fa25f965d7893e772930021b6d61fdf2bcaa" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN StageWithRetry" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END StageWithRetry" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN StageWithRetry";
+"BEGIN StageWithRetry.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END StageWithRetry.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"StageWithRetry.Stack.Deploy";
+"StageWithRetry.Stack.Prepare" -> "StageWithRetry.Stack.Deploy";
+"StageWithRetry.Stack.Prepare";
+"Build.Synth" -> "StageWithRetry.Stack.Prepare";
+"BEGIN StageWithRetry.Stack" -> "StageWithRetry.Stack.Prepare";
+"StageWithRetry.Stack.Deploy" -> "END StageWithRetry.Stack";
+"BEGIN StageWithRetry" -> "BEGIN StageWithRetry.Stack";
+"END StageWithRetry.Stack" -> "END StageWithRetry";
+"BEGIN WaveWithRetry" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END WaveWithRetry" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN WaveWithRetry";
+"END StageWithRetry" -> "BEGIN WaveWithRetry";
+"BEGIN WaveWithRetry.WaveApp1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END WaveWithRetry.WaveApp1" [shape="cds", style="filled", fillcolor="#b7deff"];
+"BEGIN WaveWithRetry.WaveApp1.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END WaveWithRetry.WaveApp1.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"WaveWithRetry.WaveApp1.Stack.Deploy";
+"WaveWithRetry.WaveApp1.Stack.Prepare" -> "WaveWithRetry.WaveApp1.Stack.Deploy";
+"WaveWithRetry.WaveApp1.Stack.Prepare";
+"Build.Synth" -> "WaveWithRetry.WaveApp1.Stack.Prepare";
+"BEGIN WaveWithRetry.WaveApp1.Stack" -> "WaveWithRetry.WaveApp1.Stack.Prepare";
+"WaveWithRetry.WaveApp1.Stack.Deploy" -> "END WaveWithRetry.WaveApp1.Stack";
+"BEGIN WaveWithRetry.WaveApp1" -> "BEGIN WaveWithRetry.WaveApp1.Stack";
+"END WaveWithRetry.WaveApp1.Stack" -> "END WaveWithRetry.WaveApp1";
+"BEGIN WaveWithRetry.WaveApp2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END WaveWithRetry.WaveApp2" [shape="cds", style="filled", fillcolor="#b7deff"];
+"BEGIN WaveWithRetry.WaveApp2.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END WaveWithRetry.WaveApp2.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"WaveWithRetry.WaveApp2.Stack.Deploy";
+"WaveWithRetry.WaveApp2.Stack.Prepare" -> "WaveWithRetry.WaveApp2.Stack.Deploy";
+"WaveWithRetry.WaveApp2.Stack.Prepare";
+"Build.Synth" -> "WaveWithRetry.WaveApp2.Stack.Prepare";
+"BEGIN WaveWithRetry.WaveApp2.Stack" -> "WaveWithRetry.WaveApp2.Stack.Prepare";
+"WaveWithRetry.WaveApp2.Stack.Deploy" -> "END WaveWithRetry.WaveApp2.Stack";
+"BEGIN WaveWithRetry.WaveApp2" -> "BEGIN WaveWithRetry.WaveApp2.Stack";
+"END WaveWithRetry.WaveApp2.Stack" -> "END WaveWithRetry.WaveApp2";
+"BEGIN WaveWithRetry" -> "BEGIN WaveWithRetry.WaveApp1";
+"BEGIN WaveWithRetry" -> "BEGIN WaveWithRetry.WaveApp2";
+"END WaveWithRetry.WaveApp1" -> "END WaveWithRetry";
+"END WaveWithRetry.WaveApp2" -> "END WaveWithRetry";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c85476fa25f965d7893e772930021b6d61fdf2bcaa";
+"BEGIN Source" -> "Source.c85476fa25f965d7893e772930021b6d61fdf2bcaa";
+"Source.c85476fa25f965d7893e772930021b6d61fdf2bcaa" -> "END Source";
+}
