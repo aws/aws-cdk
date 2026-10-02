@@ -380,6 +380,18 @@ export class FoundationModelIdentifier {
   /** Base model "openai.gpt-daybreak-blue-5.6-sol". */
   public static readonly OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL = new FoundationModelIdentifier('openai.gpt-daybreak-blue-5.6-sol');
 
+  /** Base model "openai.gpt-6-astra". */
+  public static readonly OPENAI_GPT_6_ASTRA = new FoundationModelIdentifier('openai.gpt-6-astra');
+
+  /** Base model "openai.gpt-6-sol". */
+  public static readonly OPENAI_GPT_6_SOL = new FoundationModelIdentifier('openai.gpt-6-sol');
+
+  /** Base model "openai.gpt-6-luna". */
+  public static readonly OPENAI_GPT_6_LUNA = new FoundationModelIdentifier('openai.gpt-6-luna');
+
+  /** Base model "openai.gpt-6.1-sol". */
+  public static readonly OPENAI_GPT_6_1_SOL = new FoundationModelIdentifier('openai.gpt-6.1-sol');
+
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
 
