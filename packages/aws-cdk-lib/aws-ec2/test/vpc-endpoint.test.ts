@@ -1188,6 +1188,30 @@ describe('vpc endpoint', () => {
       });
     });
 
+    test('test sso vpc interface endpoints in us-west-2', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SSO Endpoint', {
+        service: InterfaceVpcEndpointAwsService.SSO,
+      });
+
+      vpc.addInterfaceEndpoint('SSO OAuth Endpoint', {
+        service: InterfaceVpcEndpointAwsService.SSO_OAUTH,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso-oauth',
+      });
+    });
+
     test('global vpc interface endpoints', () => {
       // GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });

@@ -792,6 +792,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SSM_INCIDENTS = new InterfaceVpcEndpointAwsService('ssm-incidents');
   public static readonly SSM_QUICK_SETUP = new InterfaceVpcEndpointAwsService('ssm-quicksetup');
   public static readonly SSO = new InterfaceVpcEndpointAwsService('sso');
+  public static readonly SSO_OAUTH = new InterfaceVpcEndpointAwsService('sso-oauth');
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
   public static readonly STEP_FUNCTIONS_SYNC = new InterfaceVpcEndpointAwsService('sync-states');
   public static readonly STORAGE_GATEWAY = new InterfaceVpcEndpointAwsService('storagegateway');
