@@ -4,6 +4,7 @@ import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { lit } from './private/literal-string';
 import type { IResolvable } from './resolvable';
+import { isResolvableObject } from './token';
 
 const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 
@@ -68,6 +69,10 @@ interface ITagFormatter {
  */
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
+    if (isResolvableObject(cfnPropertyTags)) {
+      return { tags: [], dynamicTags: cfnPropertyTags };
+    }
+
     if (!Array.isArray(cfnPropertyTags)) {
       throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
@@ -106,6 +111,10 @@ class StandardFormatter implements ITagFormatter {
  */
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
+    if (isResolvableObject(cfnPropertyTags)) {
+      return { tags: [], dynamicTags: cfnPropertyTags };
+    }
+
     if (!Array.isArray(cfnPropertyTags)) {
       throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
     }
@@ -393,6 +402,10 @@ export class TagManager {
     }
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+
+    if (isResolvableObject(this.dynamicTags) && this.tags.size === 0) {
+      return this.dynamicTags;
+    }
 
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
       const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
