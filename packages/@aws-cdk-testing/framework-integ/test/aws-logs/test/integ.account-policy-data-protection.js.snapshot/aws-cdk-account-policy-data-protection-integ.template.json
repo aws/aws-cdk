@@ -1,0 +1,61 @@
+{
+ "Resources": {
+  "AccountPolicy1D7BC599": {
+   "Type": "AWS::Logs::AccountPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"Name\":\"account-policy-data-protection-integ\",\"Description\":\"cdk generated data protection policy\",\"Version\":\"2021-06-01\",\"Statement\":[{\"Sid\":\"audit-statement-cdk\",\"DataIdentifier\":[\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":dataprotection::aws:data-identifier/EmailAddress\"],\"Operation\":{\"Audit\":{\"FindingsDestination\":{}}}},{\"Sid\":\"redact-statement-cdk\",\"DataIdentifier\":[\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":dataprotection::aws:data-identifier/EmailAddress\"],\"Operation\":{\"Deidentify\":{\"MaskConfig\":{}}}}],\"Configuration\":{\"CustomDataIdentifier\":[]}}"
+      ]
+     ]
+    },
+    "PolicyName": "AccountPolicyDataProtectionIntegTest",
+    "PolicyType": "DATA_PROTECTION_POLICY"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

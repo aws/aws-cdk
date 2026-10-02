@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "95f034fdfcc36512e1a9a3f11e61343da961e3a92748be4c82f9b8566de90d1b": {
+      "displayName": "aws-cdk-account-policy-metric-extraction-integ Template",
+      "source": {
+        "path": "aws-cdk-account-policy-metric-extraction-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3113ab2e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "95f034fdfcc36512e1a9a3f11e61343da961e3a92748be4c82f9b8566de90d1b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
