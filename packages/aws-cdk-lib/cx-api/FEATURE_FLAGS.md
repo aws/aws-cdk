@@ -119,6 +119,7 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled](#aws-cdkaws-bedrockagentcoreonlineevaluationdefaultexecutionstatusenabled) | Emit the documented default ExecutionStatus of ENABLED when OnlineEvaluationConfig omits executionStatus | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -138,6 +139,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
+    "@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
@@ -2580,6 +2582,34 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled
+
+*Emit the documented default ExecutionStatus of ENABLED when OnlineEvaluationConfig omits executionStatus*
+
+Flag type: Backwards incompatible bugfix
+
+The `executionStatus` property of `OnlineEvaluationConfig` documents a default of
+`ExecutionStatus.ENABLED`, but without this flag the construct emits no `ExecutionStatus`
+at all when the property is omitted. The service then applies its own default and creates
+the configuration disabled, so an evaluation set up with default properties silently never
+processes a trace.
+
+When this flag is enabled, omitting `executionStatus` emits `ExecutionStatus: ENABLED`,
+matching the documented default.
+
+Enabling this flips existing configurations that omitted the property from disabled to
+enabled on the next deployment, and evaluations that begin running incur evaluator model
+cost.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `executionStatus: ExecutionStatus.DISABLED` explicitly to keep a configuration disabled, or leave this flag unset to keep omitting the property.
 
 
 <!-- END details -->

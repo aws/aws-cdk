@@ -23,6 +23,7 @@ import {
   EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
 } from './perms';
 import {
+  ExecutionStatus,
   type OnlineEvaluationBaseProps,
   type OnlineEvaluationConfigAttributes,
 } from './types';
@@ -38,9 +39,10 @@ import {
 } from './validation-helpers';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as iam from '../../../aws-iam';
-import { Arn, ArnFormat, Aws, Stack } from '../../../core';
+import { Arn, ArnFormat, Aws, FeatureFlags, Stack } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import * as cxapi from '../../../cx-api';
 
 /**
  * Properties for creating an OnlineEvaluationConfig.
@@ -264,7 +266,10 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
-      executionStatus: props.executionStatus?.value,
+      executionStatus: props.executionStatus?.value ??
+        (FeatureFlags.of(this).isEnabled(cxapi.BEDROCKAGENTCORE_ONLINE_EVALUATION_DEFAULT_EXECUTION_STATUS_ENABLED)
+          ? ExecutionStatus.ENABLED.value
+          : undefined),
       tags: props.tags && Object.keys(props.tags).length > 0
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
