@@ -197,6 +197,33 @@ test('OriginEndpointPolicy depends on the origin endpoint', () => {
   });
 });
 
+test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', () => {
+  const origin = mediapackagev2.OriginEndpoint.fromOriginEndpointAttributes(stack, 'Endpoint', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'MyChannel',
+    originEndpointName: 'MyEndpoint',
+  });
+
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+    originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+          actions: ['mediapackagev2:GetObject'],
+          resources: ['*'],
+        }),
+      ],
+    }),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    Properties: Match.objectLike({ OriginEndpointName: 'MyEndpoint' }),
+    DependsOn: Match.absent(),
+  });
+});
+
 test('OriginEndpoint cdnAuth from constructor props is applied to policy', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'Group');
   const channel = new mediapackagev2.Channel(stack, 'Channel', {
