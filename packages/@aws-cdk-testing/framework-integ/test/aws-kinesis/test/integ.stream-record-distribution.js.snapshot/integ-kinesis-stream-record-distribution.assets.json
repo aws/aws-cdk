@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "cbe457607ed70bdc392fe646837832805126af7fa4d4b08adbff38a5093baecd": {
+      "displayName": "integ-kinesis-stream-record-distribution Template",
+      "source": {
+        "path": "integ-kinesis-stream-record-distribution.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f0fc0e57": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cbe457607ed70bdc392fe646837832805126af7fa4d4b08adbff38a5093baecd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
