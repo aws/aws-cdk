@@ -60,11 +60,11 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "To capture user activity logs, you must also enable the \"enable_user_activity_logging\" database parameter. Use cluster.addToParameterGroup('enable_user_activity_logging', 'true') to enable it. [ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]",
+      "data": "To capture user activity logs, the \"enable_user_activity_logging\" database parameter must be \"true\". For a parameter group created by CDK, use cluster.addToParameterGroup('enable_user_activity_logging', 'true'); for an imported parameter group, set the parameter on the group itself. [ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]",
       "trace": [
         "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "Object.visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/aws-cdk-pr-review-6c2980/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:485:57)",
+        "Object.visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/aws-cdk-pr-review-6c2980/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:486:57)",
         "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:196:38)",
         "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
         "recurse (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",

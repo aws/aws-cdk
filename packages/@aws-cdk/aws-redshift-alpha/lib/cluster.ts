@@ -765,8 +765,9 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     const logging = props.logging?._bind(this);
-    if (logging && (logging.loggingProperties.logExports === undefined
-      || logging.loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG))) {
+    const { logDestinationType, logExports } = logging?.loggingProperties ?? {};
+    // S3 turns on all three logs together; CloudWatch exports only the listed types.
+    if (logDestinationType === LogDestinationType.S3 || logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
       Aspects.of(this).add({
         visit: (node) => {
           if (node !== this) {
@@ -777,8 +778,9 @@ export class Cluster extends ClusterBase {
           if (!isEnabled) {
             Annotations.of(this).addWarningV2(
               '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
-              'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-              'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it.',
+              'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+              'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+              'for an imported parameter group, set the parameter on the group itself.',
             );
           }
         },

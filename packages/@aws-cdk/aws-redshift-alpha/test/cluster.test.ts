@@ -572,8 +572,9 @@ describe('logging', () => {
     // THEN
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
-      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -591,8 +592,9 @@ describe('logging', () => {
     // THEN
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
-      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -612,8 +614,9 @@ describe('logging', () => {
     // THEN
     Annotations.fromStack(stack).hasNoWarning(
       '/Default/Redshift',
-      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -632,8 +635,30 @@ describe('logging', () => {
     // THEN
     Annotations.fromStack(stack).hasNoWarning(
       '/Default/Redshift',
-      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
+      '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
+    );
+  });
+
+  test('adds warning when an imported parameter group is used', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      parameterGroup: ClusterParameterGroup.fromClusterParameterGroupName(stack, 'ParameterGroup', 'imported-parameter-group'),
+      logging: ClusterLogging.cloudWatch(),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/Redshift',
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
@@ -654,8 +679,9 @@ describe('logging', () => {
     // THEN
     Annotations.fromStack(stack).hasWarning(
       '/Default/Redshift',
-      'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
-      'Use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\') to enable it. ' +
+      'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+      'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+      'for an imported parameter group, set the parameter on the group itself. ' +
       '[ack: @aws-cdk/aws-redshift-alpha:enableUserActivityLogging]',
     );
   });
