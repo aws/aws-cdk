@@ -1,0 +1,169 @@
+{
+  "metadata": {
+    "project_name": "aws-cdk",
+    "description": "A Typescript project with npm/Node.js",
+    "generated_by": "Braxis",
+    "generated_at": "2026-10-03T13:40:15.195899",
+    "schema_version": "1.0"
+  },
+  "project": {
+    "languages": [
+      "javascript",
+      "typescript",
+      "python",
+      "ruby",
+      "csharp",
+      "go"
+    ],
+    "primary_language": "typescript",
+    "build_system": "npm/Node.js",
+    "architecture": "monorepo",
+    "is_monorepo": true,
+    "monorepo_type": "yarn",
+    "subsystems": [
+      {
+        "name": "packages",
+        "language": "typescript",
+        "path": "packages"
+      }
+    ]
+  },
+  "ai_readiness": {
+    "overall_score": 100,
+    "tier": "Agent-Optimized",
+    "dimensions": {
+      "architecture": {
+        "score": 20,
+        "reason": "Code organization and modularity"
+      },
+      "testing": {
+        "score": 15,
+        "reason": "24172 test files found"
+      },
+      "dependencies": {
+        "score": 12,
+        "reason": "Dependency management and version pinning"
+      },
+      "conventions": {
+        "score": 10,
+        "reason": "Consistency in naming and patterns"
+      },
+      "entry_points": {
+        "score": 10,
+        "reason": "982 critical files identified"
+      },
+      "security": {
+        "score": 15,
+        "reason": "Input validation and error handling"
+      },
+      "build": {
+        "score": 10,
+        "reason": "Build system clarity and configuration"
+      },
+      "documentation": {
+        "score": 8,
+        "reason": "README and code documentation"
+      }
+    }
+  },
+  "development": {
+    "setup_command": "npm install",
+    "test_command": "npm test",
+    "lint_command": "npm run lint",
+    "format_command": "npm run format",
+    "dev_server_command": null,
+    "prerequisites": {
+      "language_version": "N/A",
+      "package_manager": "npm",
+      "key_tools": [
+        "Jest"
+      ]
+    }
+  },
+  "architecture": {
+    "pattern": "single-package project",
+    "main_entry": "main.ts, index.js, index.js",
+    "key_modules": [
+      {
+        "name": "main",
+        "path": "tools/@aws-cdk/integration-test-deployment/lib/main.ts",
+        "purpose": "Source module"
+      },
+      {
+        "name": "index",
+        "path": "tools/@aws-cdk/eslint-config/index.js",
+        "purpose": "Source module"
+      },
+      {
+        "name": "index",
+        "path": "packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js.snapshot/asset.e7df8478a4c7cbd89c798a15a62ce8b78ae0f67f76119dbf9b6b1bb20effb78d/index.js",
+        "purpose": "Source module"
+      },
+      {
+        "name": "index",
+        "path": "packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.table-v2-replica.js.snapshot/asset.bb53f01495ae32257e19d365048b3328df6f5a714f8d3c0ed1ef3170dd17855b.bundle/index.js",
+        "purpose": "Source module"
+      },
+      {
+        "name": "index",
+        "path": "packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js.snapshot/asset.4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c/index.js",
+        "purpose": "Source module"
+      }
+    ],
+    "layers": [
+      "CLI interface (if applicable)",
+      "Business logic",
+      "Utilities and helpers"
+    ]
+  },
+  "mcp_servers": [],
+  "core_principles": [
+    "Modularity - Code organized by functionality",
+    "Testability - Comprehensive test coverage",
+    "Clarity - Code easy for AI agents to understand",
+    "Consistency - Uniform patterns throughout"
+  ],
+  "contribution_criteria": {
+    "what_we_want": [
+      "Bug fixes with test coverage",
+      "Code quality improvements",
+      "Test coverage increases",
+      "Documentation improvements",
+      "Performance optimizations"
+    ],
+    "what_we_dont_want": [
+      "New dependencies without justification",
+      "Code that reduces test coverage",
+      "Inconsistent naming or style",
+      "Dead code or commented code"
+    ]
+  },
+  "contribution_boundaries": {
+    "project_scale": "large",
+    "suggestion": "This large project should define clear contribution boundaries. Consider LlamaIndex model: 'no new X' policy."
+  },
+  "commands": {
+    "setup": {
+      "command": "npm install",
+      "description": "Install dependencies and set up development environment"
+    },
+    "test": {
+      "command": "npm test",
+      "description": "Run all tests"
+    },
+    "lint": {
+      "command": "npm run lint",
+      "description": "Check code style and quality"
+    },
+    "format": {
+      "command": "npm run format",
+      "description": "Format code to project standards"
+    }
+  },
+  "testing": {
+    "framework": "Jest",
+    "total_tests": 24172,
+    "pass_rate": 100,
+    "run_command": "npm test"
+  }
+}
