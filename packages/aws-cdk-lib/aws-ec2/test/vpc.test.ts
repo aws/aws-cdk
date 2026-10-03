@@ -3703,6 +3703,24 @@ describe('Subnet', () => {
       ipv4IpamAllocation: { ipamPool: pool, netmaskLength },
     })).toThrow(/'ipv4IpamAllocation.netmaskLength' must be between 16 and 28/);
   });
+
+  test.each([16, 28])('accepts ipv4IpamAllocation.netmaskLength /%d at the subnet range bounds', (netmaskLength) => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = CfnIPAMPool.fromIpamPoolId(stack, 'Pool', ipamPoolId);
+
+    // WHEN
+    new Subnet(stack, 'Subnet', {
+      vpcId: 'vpc-1234',
+      availabilityZone: 'dummy1a',
+      ipv4IpamAllocation: { ipamPool: pool, netmaskLength },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Subnet', {
+      Ipv4NetmaskLength: netmaskLength,
+    });
+  });
 });
 
 function getTestStack(): Stack {

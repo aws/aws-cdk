@@ -2093,7 +2093,9 @@ export interface SubnetIpamAllocation {
   /**
    * The IPAM pool from which the CIDR block is allocated at deploy time
    *
-   * The allocated CIDR block must lie within the CIDR of the VPC the subnet belongs to.
+   * The pool must be a resource planning pool for the VPC the subnet belongs to (its
+   * `sourceResource` is the VPC), and the allocated CIDR block must lie within the CIDR of
+   * that VPC. Pools in a private scope require the IPAM Advanced Tier.
    * To reference a pool that is not defined in this app, use `CfnIPAMPool.fromIpamPoolId()`.
    */
   readonly ipamPool: IIPAMPoolRef;

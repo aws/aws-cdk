@@ -10,15 +10,18 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
  *
  * ### MANUAL CLEAN UP REQUIRED ###
  *
- * As in integ.vpc-ipam.ts, the IPAM and the pool are retained after the test run and must be
- * deleted manually.
+ * The IPAM and the pool are retained after the test run. An account can have only one IPAM
+ * per Region, so delete it before running this test again in the same Region:
+ *   aws ec2 delete-ipam --ipam-id <ipam-id> --cascade
  */
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-ipam-subnet');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
+// Pools in the private scope require the IPAM Advanced Tier
 const ipam = new CfnIPAM(stack, 'IPAM', {
+  tier: 'advanced',
   operatingRegions: [
     { regionName: stack.region },
   ],
@@ -35,13 +38,20 @@ const vpc = new Vpc(stack, 'Vpc', {
   subnetConfiguration: [],
 });
 
-// A pool that plans the VPC's address space for subnets: it provisions the VPC CIDR
+// A resource planning pool for the VPC: subnets can only be allocated from a pool whose
+// source resource is the VPC, and it provisions the VPC CIDR
 const pool = new CfnIPAMPool(stack, 'Pool', {
-  description: 'Subnet pool for the VPC',
+  description: 'Resource planning pool for the VPC',
   addressFamily: 'ipv4',
   autoImport: false,
   locale: stack.region,
   ipamScopeId: ipam.attrPrivateDefaultScopeId,
+  sourceResource: {
+    resourceId: vpc.vpcId,
+    resourceOwner: stack.account,
+    resourceRegion: stack.region,
+    resourceType: 'vpc',
+  },
   provisionedCidrs: [{
     cidr: '10.0.0.0/16',
   }],
