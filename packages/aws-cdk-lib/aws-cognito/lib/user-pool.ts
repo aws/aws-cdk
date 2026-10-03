@@ -541,6 +541,26 @@ export enum PasskeyUserVerification {
 }
 
 /**
+ * Sets whether passkeys can be used as multi-factor authentication (MFA).
+ *
+ * To activate this setting, your user pool must be in the Essentials tier or higher
+ * (`FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`).
+ *
+ * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_WebAuthnConfigurationType.html
+ */
+export enum PasskeyFactorMode {
+  /**
+   * Passkeys are a single authentication factor.
+   */
+  SINGLE_FACTOR = 'SINGLE_FACTOR',
+
+  /**
+   * Passkey authentication with user verification satisfies MFA requirements.
+   */
+  MULTI_FACTOR_WITH_USER_VERIFICATION = 'MULTI_FACTOR_WITH_USER_VERIFICATION',
+}
+
+/**
  * Email settings for the user pool.
  */
 export interface EmailSettings {
@@ -849,6 +869,21 @@ export interface UserPoolProps {
    * @default - Cognito default setting is PasskeyUserVerification.PREFERRED
    */
   readonly passkeyUserVerification?: PasskeyUserVerification;
+
+  /**
+   * Sets whether passkeys can be used as multi-factor authentication (MFA).
+   *
+   * When set to `MULTI_FACTOR_WITH_USER_VERIFICATION`, passkey authentication with user
+   * verification satisfies MFA requirements. When set to `SINGLE_FACTOR` or not set, passkeys
+   * are a single authentication factor.
+   *
+   * To activate this setting, your user pool must be in the Essentials tier or higher
+   * (`FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`).
+   *
+   * @default - passkeys are a single authentication factor
+   * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_WebAuthnConfigurationType.html
+   */
+  readonly passkeyFactorMode?: PasskeyFactorMode;
 
   /**
    * Email settings for a user pool.
@@ -1283,6 +1318,7 @@ export class UserPool extends UserPoolBase {
       policies: undefinedIfNoKeys({ passwordPolicy, signInPolicy }),
       webAuthnRelyingPartyId: props.passkeyRelyingPartyId,
       webAuthnUserVerification: props.passkeyUserVerification,
+      webAuthnFactorConfiguration: props.passkeyFactorMode,
       emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
