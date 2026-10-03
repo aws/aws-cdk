@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "SourceTableV21A662B48": {
+  "SourceTable70380C26": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
     "AttributeDefinitions": [
@@ -46,7 +46,7 @@
                 {
                  "Fn::Split": [
                   ":",
-                  "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                  "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable3Acct"
                  ]
                 }
                ]
@@ -68,7 +68,7 @@
                {
                 "Fn::Split": [
                  ":",
-                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable3Acct"
                 ]
                }
               ]
@@ -93,7 +93,18 @@
                {
                 "Fn::Split": [
                  ":",
-                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable3Acct"
+                ]
+               }
+              ]
+             },
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:us-west-2:333333333333:table/MultiAccountGlobalTable3Acct"
                 ]
                }
               ]
@@ -107,6 +118,52 @@
           },
           "Resource": "*",
           "Sid": "AllowReplicationServiceReadWrite"
+         },
+         {
+          "Action": "dynamodb:AssociateTableReplica",
+          "Effect": "Allow",
+          "Principal": {
+           "AWS": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:aws:iam::",
+              {
+               "Fn::Select": [
+                4,
+                {
+                 "Fn::Split": [
+                  ":",
+                  "arn:aws:dynamodb:us-west-2:333333333333:table/MultiAccountGlobalTable3Acct"
+                 ]
+                }
+               ]
+              },
+              ":root"
+             ]
+            ]
+           }
+          },
+          "Resource": "*",
+          "Sid": {
+           "Fn::Join": [
+            "",
+            [
+             "AllowMultiAccountReplicaAssociation",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:us-west-2:333333333333:table/MultiAccountGlobalTable3Acct"
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          }
          }
         ],
         "Version": "2012-10-17"
@@ -114,7 +171,7 @@
       }
      }
     ],
-    "TableName": "MultiAccountGlobalTable"
+    "TableName": "MultiAccountGlobalTable3Acct"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

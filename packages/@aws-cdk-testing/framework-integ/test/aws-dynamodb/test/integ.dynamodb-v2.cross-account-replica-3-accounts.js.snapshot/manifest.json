@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "MultiAccountSourceStackV2.assets": {
+    "MultiAccount3SourceStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "MultiAccountSourceStackV2.assets.json",
+        "file": "MultiAccount3SourceStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "MultiAccountSourceStackV2": {
+    "MultiAccount3SourceStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/eu-west-1",
       "properties": {
-        "templateFile": "MultiAccountSourceStackV2.template.json",
+        "templateFile": "MultiAccount3SourceStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-eu-west-1/c500a1f0a40cf4e99c5ce5e815d1600f30f4ee612b99428d8b40e5fff641df56.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-eu-west-1/ecc9f7f5ee6c1af8b285a23f96d26da7ffbc22c2e5dd22b344b52ab4d64a7370.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "MultiAccountSourceStackV2.assets"
+          "MultiAccount3SourceStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-eu-west-1",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "MultiAccountSourceStackV2.assets"
+        "MultiAccount3SourceStack.assets"
       ],
-      "additionalMetadataFile": "MultiAccountSourceStackV2.metadata.json",
-      "displayName": "MultiAccountSourceStackV2"
+      "additionalMetadataFile": "MultiAccount3SourceStack.metadata.json",
+      "displayName": "MultiAccount3SourceStack"
     },
-    "MultiAccountReplicaStackV2.assets": {
+    "MultiAccount3ReplicaStack1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "MultiAccountReplicaStackV2.assets.json",
+        "file": "MultiAccount3ReplicaStack1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "MultiAccountReplicaStackV2": {
+    "MultiAccount3ReplicaStack1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://222222222222/ca-central-1",
       "properties": {
-        "templateFile": "MultiAccountReplicaStackV2.template.json",
+        "templateFile": "MultiAccount3ReplicaStack1.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-deploy-role-222222222222-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-222222222222-ca-central-1/5dfa6e09a3f5cf4319ab561bcc01ff3ac6f849db80c3c09bdff396d0f238e66f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-222222222222-ca-central-1/21c062fc965f0bddc88da1fd7050916d7291bd8b9450252bb8f41e0dffb2fd42.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "MultiAccountReplicaStackV2.assets"
+          "MultiAccount3ReplicaStack1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-lookup-role-222222222222-ca-central-1",
@@ -66,24 +66,59 @@
         }
       },
       "dependencies": [
-        "MultiAccountReplicaStackV2.assets"
+        "MultiAccount3ReplicaStack1.assets"
       ],
-      "additionalMetadataFile": "MultiAccountReplicaStackV2.metadata.json",
-      "displayName": "MultiAccountReplicaStackV2"
+      "additionalMetadataFile": "MultiAccount3ReplicaStack1.metadata.json",
+      "displayName": "MultiAccount3ReplicaStack1"
     },
-    "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.assets": {
+    "MultiAccount3ReplicaStack2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.assets.json",
+        "file": "MultiAccount3ReplicaStack2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A": {
+    "MultiAccount3ReplicaStack2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://333333333333/us-west-2",
+      "properties": {
+        "templateFile": "MultiAccount3ReplicaStack2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::333333333333:role/cdk-hnb659fds-deploy-role-333333333333-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::333333333333:role/cdk-hnb659fds-cfn-exec-role-333333333333-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-333333333333-us-west-2/44eb1b3cd5a50f2840a5bfdff566af532444e22758c248ef873a525dd385b423.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiAccount3ReplicaStack2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::333333333333:role/cdk-hnb659fds-lookup-role-333333333333-us-west-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAccount3ReplicaStack2.assets"
+      ],
+      "additionalMetadataFile": "MultiAccount3ReplicaStack2.metadata.json",
+      "displayName": "MultiAccount3ReplicaStack2"
+    },
+    "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.template.json",
+        "templateFile": "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -92,7 +127,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.assets"
+          "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -101,10 +136,10 @@
         }
       },
       "dependencies": [
-        "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.assets"
+        "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.assets"
       ],
-      "additionalMetadataFile": "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A.metadata.json",
-      "displayName": "MultiAccountReplicaIntegTestV2/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "MultiAccount3ReplicaIntegTestDefaultTestDeployAssertED899930.metadata.json",
+      "displayName": "MultiAccount3ReplicaIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

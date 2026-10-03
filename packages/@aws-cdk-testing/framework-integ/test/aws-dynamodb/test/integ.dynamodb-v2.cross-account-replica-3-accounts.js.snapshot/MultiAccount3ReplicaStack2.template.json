@@ -1,82 +1,16 @@
 {
  "Resources": {
-  "SourceTableV21A662B48": {
+  "ReplicaTable252C369C6": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
-    "AttributeDefinitions": [
-     {
-      "AttributeName": "pk",
-      "AttributeType": "S"
-     },
-     {
-      "AttributeName": "sk",
-      "AttributeType": "S"
-     }
-    ],
-    "BillingMode": "PAY_PER_REQUEST",
-    "KeySchema": [
-     {
-      "AttributeName": "pk",
-      "KeyType": "HASH"
-     },
-     {
-      "AttributeName": "sk",
-      "KeyType": "RANGE"
-     }
-    ],
+    "GlobalTableSourceArn": "arn:aws:dynamodb:eu-west-1:12345678:table/MultiAccountGlobalTable3Acct",
     "Replicas": [
      {
       "GlobalTableSettingsReplicationMode": "ENABLED",
-      "Region": "eu-west-1",
+      "Region": "us-west-2",
       "ResourcePolicy": {
        "PolicyDocument": {
         "Statement": [
-         {
-          "Action": "dynamodb:AssociateTableReplica",
-          "Effect": "Allow",
-          "Principal": {
-           "AWS": {
-            "Fn::Join": [
-             "",
-             [
-              "arn:aws:iam::",
-              {
-               "Fn::Select": [
-                4,
-                {
-                 "Fn::Split": [
-                  ":",
-                  "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
-                 ]
-                }
-               ]
-              },
-              ":root"
-             ]
-            ]
-           }
-          },
-          "Resource": "*",
-          "Sid": {
-           "Fn::Join": [
-            "",
-            [
-             "AllowMultiAccountReplicaAssociation",
-             {
-              "Fn::Select": [
-               4,
-               {
-                "Fn::Split": [
-                 ":",
-                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
-                ]
-               }
-              ]
-             }
-            ]
-           ]
-          }
-         },
          {
           "Action": [
            "dynamodb:ReadDataForReplication",
@@ -86,14 +20,14 @@
           "Condition": {
            "StringEquals": {
             "aws:SourceAccount": [
-             "12345678",
+             "333333333333",
              {
               "Fn::Select": [
                4,
                {
                 "Fn::Split": [
                  ":",
-                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                 "arn:aws:dynamodb:eu-west-1:12345678:table/MultiAccountGlobalTable3Acct"
                 ]
                }
               ]
@@ -106,7 +40,7 @@
            "Service": "replication.dynamodb.amazonaws.com"
           },
           "Resource": "*",
-          "Sid": "AllowReplicationServiceReadWrite"
+          "Sid": "AllowReplicationService"
          }
         ],
         "Version": "2012-10-17"
@@ -114,7 +48,7 @@
       }
      }
     ],
-    "TableName": "MultiAccountGlobalTable"
+    "TableName": "MultiAccountGlobalTable3Acct"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
