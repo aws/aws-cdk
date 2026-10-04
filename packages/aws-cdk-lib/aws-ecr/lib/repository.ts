@@ -1190,14 +1190,16 @@ export class ImageTagMutabilityExclusionFilter {
     private readonly filterType: string,
     private readonly filterValue: string,
   ) {
-    if (!filterValue) {
-      throw new UnscopedValidationError(lit`FilterPatternCannotBeEmpty`, 'Pattern cannot be empty');
-    }
-    if (filterValue.length > 128) {
-      throw new UnscopedValidationError(lit`FilterPatternExceedsMaxLength`, `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
-    }
-    if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
-      throw new UnscopedValidationError(lit`FilterPatternContainsInvalidCharacters`, `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+    if (!Token.isUnresolved(filterValue)) {
+      if (!filterValue) {
+        throw new UnscopedValidationError(lit`FilterPatternCannotBeEmpty`, 'Pattern cannot be empty');
+      }
+      if (filterValue.length > 128) {
+        throw new UnscopedValidationError(lit`FilterPatternExceedsMaxLength`, `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+      }
+      if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
+        throw new UnscopedValidationError(lit`FilterPatternContainsInvalidCharacters`, `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+      }
     }
   }
 

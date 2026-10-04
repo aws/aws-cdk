@@ -1411,6 +1411,27 @@ describe('repository', () => {
           ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern);
         }).toThrow(`Pattern '${pattern}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
       });
+
+      test('tokenized exclusion filter pattern is included in the repository', () => {
+        const stack = new cdk.Stack();
+        const pattern = new cdk.CfnParameter(stack, 'Pattern').valueAsString;
+
+        new ecr.Repository(stack, 'Repo', {
+          imageTagMutability: ecr.TagMutability.IMMUTABLE_WITH_EXCLUSION,
+          imageTagMutabilityExclusionFilters: [
+            ecr.ImageTagMutabilityExclusionFilter.wildcard(pattern),
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+          ImageTagMutabilityExclusionFilters: [
+            {
+              ImageTagMutabilityExclusionFilterType: 'WILDCARD',
+              ImageTagMutabilityExclusionFilterValue: { Ref: 'Pattern' },
+            },
+          ],
+        });
+      });
     });
 
     describe('Repository with tag mutability exclusion filters', () => {

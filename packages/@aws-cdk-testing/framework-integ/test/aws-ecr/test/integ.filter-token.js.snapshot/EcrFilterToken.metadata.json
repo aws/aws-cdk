@@ -1,0 +1,35 @@
+{
+  "/EcrFilterToken/Pattern": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Pattern"
+    }
+  ],
+  "/EcrFilterToken/Repo": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "imageTagMutability": "IMMUTABLE_WITH_EXCLUSION",
+        "imageTagMutabilityExclusionFilters": "*"
+      }
+    }
+  ],
+  "/EcrFilterToken/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EcrFilterToken/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/EcrFilterToken/Repo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Repo02AC86CF"
+    }
+  ]
+}

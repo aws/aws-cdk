@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "3620f385f19236c38842f66821675ca1c12297edc8287ab5eff146ea6f139e33": {
+      "displayName": "EcrFilterToken Template",
+      "source": {
+        "path": "EcrFilterToken.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-99f09087": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3620f385f19236c38842f66821675ca1c12297edc8287ab5eff146ea6f139e33.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ecr-filter-token/DefaultTest": {
+      "stacks": [
+        "EcrFilterToken"
+      ],
+      "assertionStack": "ecr-filter-token/DefaultTest/DeployAssert",
+      "assertionStackName": "ecrfiltertokenDefaultTestDeployAssert4DA807EF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
