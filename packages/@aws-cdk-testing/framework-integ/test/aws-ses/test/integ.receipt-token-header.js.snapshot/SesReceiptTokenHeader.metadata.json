@@ -1,0 +1,55 @@
+{
+  "/SesReceiptTokenHeader/HeaderName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HeaderName"
+    }
+  ],
+  "/SesReceiptTokenHeader/RuleSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SesReceiptTokenHeader/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/SesReceiptTokenHeader/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/SesReceiptTokenHeader/RuleSet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetE30C6C48"
+    }
+  ],
+  "/SesReceiptTokenHeader/RuleSet/Rule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "after": "*",
+        "ruleSet": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/SesReceiptTokenHeader/RuleSet/Rule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetRule0B1D6BCA"
+    }
+  ]
+}

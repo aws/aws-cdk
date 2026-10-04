@@ -1,5 +1,5 @@
 import type * as ses from '../../aws-ses';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -28,7 +28,7 @@ export class AddHeader implements ses.IReceiptRuleAction {
   private readonly value: string;
 
   constructor(props: AddHeaderProps) {
-    if (!/^[a-zA-Z0-9-]{1,50}$/.test(props.name)) {
+    if (!Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-]{1,50}$/.test(props.name)) {
       throw new UnscopedValidationError(lit`MustBeHeaderBetweenCharacters`, 'Header `name` must be between 1 and 50 characters, inclusive, and consist of alphanumeric (a-z, A-Z, 0-9) characters and dashes only.');
     }
 
