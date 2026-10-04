@@ -1,0 +1,114 @@
+{
+  "/aws-stepfunctions-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingOFF": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithLoggingALL687B0F0F"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingOFF/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingOFF/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithLoggingOFFF82B7349"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithLoggingALLRole0984788E"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingOFF/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithLoggingOFFRole726E8117"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithLoggingALL/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithLoggingALLRoleDefaultPolicy12972CD9"
+    }
+  ]
+}
