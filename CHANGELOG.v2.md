@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.272.0](https://github.com/aws/aws-cdk/compare/v2.271.0...v2.272.0) (2026-09-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can
+   contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+   aws-servicediscovery: AWS::ServiceDiscovery::Instance: primary identifier is now ServiceId and InstanceId, so InstanceReference now requires serviceId.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38864](https://github.com/aws/aws-cdk/issues/38864)) ([3bd350b](https://github.com/aws/aws-cdk/commit/3bd350bd1da34749a38aeff3df72147cf340dc71))
+* **ec2:** regional NAT Gateway ([#36538](https://github.com/aws/aws-cdk/issues/36538)) ([3901dde](https://github.com/aws/aws-cdk/commit/3901dde0afe283d1bc814b2a80bef333f7a97e87)), closes [#36198](https://github.com/aws/aws-cdk/issues/36198)
+* **glue:** support Glue version 6.0 ([#38632](https://github.com/aws/aws-cdk/issues/38632)) ([372e021](https://github.com/aws/aws-cdk/commit/372e0219047fcc2e3a8b6f36ec37f0ce01cfc0e3)), closes [#38631](https://github.com/aws/aws-cdk/issues/38631)
+* **synthetics:** add environmentEncryption KMS key prop to Canary ([#38750](https://github.com/aws/aws-cdk/issues/38750)) ([ec884bc](https://github.com/aws/aws-cdk/commit/ec884bc2580c5fe9aa5fbbedf77f34fada52da3d)), closes [#38797](https://github.com/aws/aws-cdk/issues/38797)
+
+
+### Bug Fixes
+
+* **bedrockagentcore:** browser grantUse is missing ConnectBrowserAutomationStream ([#38657](https://github.com/aws/aws-cdk/issues/38657)) ([aff4a2f](https://github.com/aws/aws-cdk/commit/aff4a2f3c7258f7a206663baf3b3857bbcccd1b8)), closes [#38656](https://github.com/aws/aws-cdk/issues/38656) 
+* **core:** synth crashes with EISDIR on cloud-placeholder directories in cdk.out ([#38672](https://github.com/aws/aws-cdk/issues/38672)) ([269052d](https://github.com/aws/aws-cdk/commit/269052d635d40455b59dd4ad2117ac1bca4ceb87)), closes [#38653](https://github.com/aws/aws-cdk/issues/38653) [#38299](https://github.com/aws/aws-cdk/issues/38299)
+* **lambda-nodejs:** local bundling fails under AllSigned PowerShell execution policy ([#38447](https://github.com/aws/aws-cdk/issues/38447)) ([edd162d](https://github.com/aws/aws-cdk/commit/edd162d84af71a0dd7876229115a231599e37df9)), closes [#38439](https://github.com/aws/aws-cdk/issues/38439) [#37412](https://github.com/aws/aws-cdk/issues/37412)
+
+## [2.271.0](https://github.com/aws/aws-cdk/compare/v2.270.0...v2.271.0) (2026-09-25)
+
+
+### Features
+
+* **codebuild:** add hostKernel to build environment ([#38513](https://github.com/aws/aws-cdk/issues/38513)) ([deec895](https://github.com/aws/aws-cdk/commit/deec89561f9352fd134b4754c5146e2080856737)), closes [#38338](https://github.com/aws/aws-cdk/issues/38338) [#38338](https://github.com/aws/aws-cdk/issues/38338) [#38275](https://github.com/aws/aws-cdk/issues/38275) [#38338](https://github.com/aws/aws-cdk/issues/38338)
+* **kinesisanalytics-flink:** add support for Flink 2.2 ([#37914](https://github.com/aws/aws-cdk/issues/37914)) ([a719f53](https://github.com/aws/aws-cdk/commit/a719f53b02ec0bfc85831b9ff5e1f2b832b060db)), closes [#37915](https://github.com/aws/aws-cdk/issues/37915) [#37915](https://github.com/aws/aws-cdk/issues/37915)
+* **lambda:** add s3 object storage mode ([#38745](https://github.com/aws/aws-cdk/issues/38745)) ([7c429d9](https://github.com/aws/aws-cdk/commit/7c429d924991a9b186cdc4961719ed881a37fa5d)), closes [#38260](https://github.com/aws/aws-cdk/issues/38260) [/github.com/aws/aws-cdk/pull/38278#discussion_r3841272090](https://github.com/aws//github.com/aws/aws-cdk/pull/38278/issues/discussion_r3841272090)
+* **s3tables:** make tableBucketName optional on TableBucket ([#37749](https://github.com/aws/aws-cdk/issues/37749)) ([90e1bea](https://github.com/aws/aws-cdk/commit/90e1bea40fd838756bab116b02e99d2bd07c2db4)), closes [#37747](https://github.com/aws/aws-cdk/issues/37747)
+* render property traces with 'cdk --debug' ([#38844](https://github.com/aws/aws-cdk/issues/38844)) ([da68298](https://github.com/aws/aws-cdk/commit/da6829898a14eac5004be469e6528ceab08e61e1))
+
+
+### Bug Fixes
+
+* **core:** upgrade CloudFormation validation to latest version ([#38884](https://github.com/aws/aws-cdk/issues/38884)) ([0c5e732](https://github.com/aws/aws-cdk/commit/0c5e732d8e660b88490fb7bb0f50ab3cceeeb280))
+* **ecs:** support digest references in TagParameterContainerImage via imageDigest option ([#37868](https://github.com/aws/aws-cdk/issues/37868)) ([f482f4f](https://github.com/aws/aws-cdk/commit/f482f4f3402224b53e6bc4346cf369adae95b542)), closes [#37718](https://github.com/aws/aws-cdk/issues/37718)
+* **ssm** secret.fromSsmParameter introduces W2001 warning ([#38833](https://github.com/aws/aws-cdk/issues/38833)) ([9526219](https://github.com/aws/aws-cdk/commit/9526219d99fb1c4215ed9547b8c2d14f40a84af1)), closes [#38396](https://github.com/aws/aws-cdk/issues/38396)
+* telemetry numbers don't allow making a good model for synth time yet ([#38889](https://github.com/aws/aws-cdk/issues/38889)) ([600ffc8](https://github.com/aws/aws-cdk/commit/600ffc86ea378d9f707ff5b9f791678d0c564c84))
+* validating CloudAssembly throws `Invalid URL` error ([#38867](https://github.com/aws/aws-cdk/issues/38867)) ([6eb07dd](https://github.com/aws/aws-cdk/commit/6eb07ddd485295bac3b2d6f7b0183f348f1d2a5d))
+* **cloudwatch:** iqm alarms are not rendered correctly ([#38834](https://github.com/aws/aws-cdk/issues/38834)) ([7f714ce](https://github.com/aws/aws-cdk/commit/7f714ceea65edec9b0d835362779ef3544cfe4a3)), closes [#28812](https://github.com/aws/aws-cdk/issues/28812)
+* **core:** `resolveReferences` should only update references that require updates on its second pass in nested stacks ([#38813](https://github.com/aws/aws-cdk/issues/38813)) ([6cf5313](https://github.com/aws/aws-cdk/commit/6cf531379351235e97abdc5ee978dab42ae22037))
+* **core:** acknowledgeWarning before emit on same construct is ignored ([#38821](https://github.com/aws/aws-cdk/issues/38821)) ([e840b92](https://github.com/aws/aws-cdk/commit/e840b9252d940d00b2c9bcc53c415d4c1d9703de)), closes [#38820](https://github.com/aws/aws-cdk/issues/38820)
+* **core:** validations.acknowledge() does not respect scopes ([#38789](https://github.com/aws/aws-cdk/issues/38789)) ([2f32847](https://github.com/aws/aws-cdk/commit/2f328478a2078566fd84a080e07846963327e47a)), closes [#38495](https://github.com/aws/aws-cdk/issues/38495)
+* **ec2:** synth-time AMI lookup leads to W9010 ([#38840](https://github.com/aws/aws-cdk/issues/38840)) ([0870fcf](https://github.com/aws/aws-cdk/commit/0870fcf1432156a300aa43db7522de146bba7c39)), closes [#38390](https://github.com/aws/aws-cdk/issues/38390)
+
 ## [2.270.0](https://github.com/aws/aws-cdk/compare/v2.269.0...v2.270.0) (2026-09-17)
 
 
