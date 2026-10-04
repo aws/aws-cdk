@@ -1,0 +1,403 @@
+{
+  "/DocdbEngineVersionToken": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/lindsaycheng/Documents/personal/projects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/lindsaycheng/Documents/personal/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/lindsaycheng/Documents/personal/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/lindsaycheng/Documents/personal/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/private/tmp/cdk-docdb-engine/packages/@aws-cdk-testing/framework-integ/test/aws-docdb/test/integ.cluster-engine-version-token.js:32:11)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/EngineVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineVersion"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engineVersion": "*",
+        "masterUser": {
+          "username": "*"
+        },
+        "instanceType": "*",
+        "vpc": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DocdbEngineVersionToken/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Subnets": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSubnets56F17B9A"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secretName": "*",
+        "encryptionKey": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "username": "*",
+        "encryptionKey": "*",
+        "excludeCharacters": "*",
+        "secretName": "*"
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Instance1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseInstance1844F58FD"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    }
+  ],
+  "/DocdbEngineVersionToken/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecurityGroup5C91FDCB"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecret3B817195"
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Secret/Attachment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secret": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/DocdbEngineVersionToken/Database/Secret/Attachment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecretAttachmentE5D1B020"
+    }
+  ]
+}

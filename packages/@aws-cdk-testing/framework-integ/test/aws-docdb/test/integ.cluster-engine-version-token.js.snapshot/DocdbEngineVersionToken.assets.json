@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "e226521a5d50973b037bbb48fb8eb48a03553edbdd311881aa226811ad379eb7": {
+      "displayName": "DocdbEngineVersionToken Template",
+      "source": {
+        "path": "DocdbEngineVersionToken.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-591dabd8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e226521a5d50973b037bbb48fb8eb48a03553edbdd311881aa226811ad379eb7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

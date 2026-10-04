@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "docdb-engine-version-token/DefaultTest": {
+      "stacks": [
+        "DocdbEngineVersionToken"
+      ],
+      "assertionStack": "docdb-engine-version-token/DefaultTest/DeployAssert",
+      "assertionStackName": "docdbengineversiontokenDefaultTestDeployAssertCEEFDA10"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

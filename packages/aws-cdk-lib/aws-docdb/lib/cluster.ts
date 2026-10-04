@@ -670,20 +670,21 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const validEngineVersionRegex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
-    if (props.engineVersion !== undefined && !validEngineVersionRegex.test(props.engineVersion)) {
+    if (props.engineVersion !== undefined && !Token.isUnresolved(props.engineVersion) && !validEngineVersionRegex.test(props.engineVersion)) {
       throw new ValidationError(lit`InvalidEngineVersionFormat`, `Invalid engine version: '${props.engineVersion}'. Engine version must be in the format x.y.z`, this);
     }
 
     if (
       props.storageType === StorageType.IOPT1
       && props.engineVersion !== undefined
+      && !Token.isUnresolved(props.engineVersion)
       && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
     ) {
       throw new ValidationError(lit`IoOptimizedStorageRequiresMinimumEngineVersion`, `I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
     }
 
     // Validate engine version for serverless clusters: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
-    if (isServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
+    if (isServerless && props.engineVersion !== undefined && !Token.isUnresolved(props.engineVersion) && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
       throw new ValidationError(lit`ServerlessRequiresMinimumEngineVersion`, `DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
     }
 

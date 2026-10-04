@@ -1330,6 +1330,26 @@ describe('DatabaseCluster', () => {
     }).toThrow(`Invalid engine version: '${engineVersion}'. Engine version must be in the format x.y.z`);
   });
 
+  test('tokenized engine version is included in the cluster', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const engineVersion = new cdk.CfnParameter(stack, 'EngineVersion').valueAsString;
+
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+      EngineVersion: { Ref: 'EngineVersion' },
+    });
+  });
+
   describe('storage type', () => {
     test('specify storage type', () => {
       // GIVEN
