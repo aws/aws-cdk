@@ -4,7 +4,7 @@ import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as ses from '../../aws-ses';
 import * as sns from '../../aws-sns';
-import { Stack } from '../../core';
+import { CfnParameter, Stack } from '../../core';
 import * as actions from '../lib';
 
 let stack: Stack;
@@ -44,6 +44,29 @@ test('add header action with invalid header name', () => {
     name: 'He@der',
     value: 'value',
   }))).toThrow(/`name`/);
+});
+
+test('add header action accepts a tokenized header name', () => {
+  const headerName = new CfnParameter(stack, 'HeaderName').valueAsString;
+
+  rule.addAction(new actions.AddHeader({
+    name: headerName,
+    value: 'value',
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
+    Rule: {
+      Actions: [
+        {
+          AddHeaderAction: {
+            HeaderName: { Ref: 'HeaderName' },
+            HeaderValue: 'value',
+          },
+        },
+      ],
+      Enabled: true,
+    },
+  });
 });
 
 test('add header action with invalid header value', () => {

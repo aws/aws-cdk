@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ses-receipt-token-header/DefaultTest": {
+      "stacks": [
+        "SesReceiptTokenHeader"
+      ],
+      "assertionStack": "ses-receipt-token-header/DefaultTest/DeployAssert",
+      "assertionStackName": "sesreceipttokenheaderDefaultTestDeployAssert59603C65"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

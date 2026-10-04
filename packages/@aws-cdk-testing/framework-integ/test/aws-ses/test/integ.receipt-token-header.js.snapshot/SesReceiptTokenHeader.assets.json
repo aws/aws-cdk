@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "3af258be5f80b415547773c03d5ed56bda250644ab49d71890a4224ab3afa846": {
+      "displayName": "SesReceiptTokenHeader Template",
+      "source": {
+        "path": "SesReceiptTokenHeader.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d0d41bc2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3af258be5f80b415547773c03d5ed56bda250644ab49d71890a4224ab3afa846.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
