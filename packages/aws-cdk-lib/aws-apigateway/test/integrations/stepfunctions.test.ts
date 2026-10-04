@@ -1,6 +1,7 @@
 import { Match, Template } from '../../../assertions';
 import * as sfn from '../../../aws-stepfunctions';
 import { StateMachine, StateMachineType } from '../../../aws-stepfunctions';
+import * as ssm from '../../../aws-ssm';
 import * as cdk from '../../../core';
 import * as apigw from '../../lib';
 
@@ -316,6 +317,44 @@ describe('StepFunctionsIntegration', () => {
       });
     });
 
+    test('generated state machine name is included in the deployment logical id', () => {
+      const deploy = (account: string) => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'Stack', {
+          env: { account, region: 'us-east-1' },
+        });
+        const stateMachine = new StateMachine(stack, 'Machine', {
+          stateMachineName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+          stateMachineType: sfn.StateMachineType.EXPRESS,
+          definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+        });
+        const api = new apigw.RestApi(stack, 'Api');
+        api.root.addMethod('POST', apigw.StepFunctionsIntegration.startExecution(stateMachine));
+
+        const other = new cdk.Stack(app, 'Other', {
+          env: { account: '999999999999', region: 'eu-west-1' },
+        });
+        new ssm.StringParameter(other, 'StateMachineArn', { stringValue: stateMachine.stateMachineArn });
+
+        const template = Template.fromStack(stack);
+        const deploymentIds = Object.keys(template.findResources('AWS::ApiGateway::Deployment'));
+        const machines = template.findResources('AWS::StepFunctions::StateMachine');
+        const machine = Object.values(machines)[0] as { Properties: { StateMachineName?: string } };
+        return {
+          deploymentId: deploymentIds[0],
+          stateMachineName: machine.Properties.StateMachineName,
+        };
+      };
+
+      const first = deploy('111111111111');
+      const second = deploy('222222222222');
+      const repeat = deploy('111111111111');
+
+      expect(first.stateMachineName).not.toEqual(second.stateMachineName);
+      expect(first.deploymentId).not.toEqual(second.deploymentId);
+      expect(repeat.deploymentId).toEqual(first.deploymentId);
+    });
+
     test('fingerprint is not computed when stateMachineName is not specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -337,7 +376,7 @@ describe('StepFunctionsIntegration', () => {
       const bindResult = integ.bind(method);
 
       // THEN
-      expect(bindResult?.deploymentToken).toBeUndefined();
+      expect(stack.resolve(bindResult?.deploymentToken)).toBeUndefined();
     });
 
     test('bind works for integration with imported State Machine', () => {

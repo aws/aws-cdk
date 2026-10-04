@@ -1,0 +1,28 @@
+{
+  "/SfnGeneratedNameOtherStack/StateMachineArn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/SfnGeneratedNameOtherStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/SfnGeneratedNameOtherStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/SfnGeneratedNameOtherStack/StateMachineArn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineArn4F4F22B2"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import type { RequestContext } from '.';
 import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Token } from '../../../core';
+import { Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
@@ -164,10 +164,19 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
     }
 
-    let deploymentToken;
+    let deploymentToken: string | undefined;
 
     if (stateMachineName !== undefined && !Token.isUnresolved(stateMachineName)) {
       deploymentToken = JSON.stringify({ stateMachineName });
+    } else if (stateMachineName !== undefined && this.stateMachine instanceof sfn.StateMachine) {
+      deploymentToken = Lazy.string({
+        produce: () => {
+          const resolved = method.stack.resolve(stateMachineName);
+          return typeof resolved === 'string' && resolved !== ''
+            ? JSON.stringify({ stateMachineName: resolved })
+            : undefined;
+        },
+      });
     }
 
     if (this.useDefaultMethodResponses) {
