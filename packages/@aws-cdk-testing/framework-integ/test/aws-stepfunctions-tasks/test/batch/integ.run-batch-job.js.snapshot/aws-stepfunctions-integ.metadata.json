@@ -13,12 +13,6 @@
       "data": {
         "vpc": "*"
       }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*"
-      }
     }
   ],
   "/aws-stepfunctions-integ/JobQueue": [

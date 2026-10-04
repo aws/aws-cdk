@@ -3,8 +3,9 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved, ArnFormat } from '../../../core';
+import { Stack, FeatureFlags, Token, ValidationError, withResolved, ArnFormat } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import { STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY } from '../../../cx-api';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -308,37 +309,15 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
   }
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
-    let jobDefinitionArn = '*';
-    if (!isJsonPathOrJsonataExpression(this.props.jobDefinitionArn)) {
-      try {
-        const parsedArn = Stack.of(this).splitArn(this.props.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME);
-        const jobDefName = parsedArn.resourceName?.split(':')[0] ?? '*';
-        jobDefinitionArn = Stack.of(this).formatArn({
-          service: 'batch',
-          resource: 'job-definition',
-          resourceName: `${jobDefName}:*`,
-          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-        });
-      } catch {
-        jobDefinitionArn = Stack.of(this).formatArn({
-          service: 'batch',
-          resource: 'job-definition',
-          resourceName: '*',
-        });
-      }
-    }
-
     return [
       // Resource level access control for job-definition requires revision which batch does not support yet
       // Using the alternative permissions as mentioned here:
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
-        resources: (isJsonPathOrJsonataExpression(this.props.jobQueueArn) || jobDefinitionArn === '*')
+        // Only a dynamic queue needs `*`
+        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn)
           ? ['*']
-          : [
-            jobDefinitionArn,
-            this.props.jobQueueArn,
-          ],
+          : [...this.jobDefinitionResources(), this.props.jobQueueArn],
         actions: ['batch:SubmitJob'],
       }),
       new iam.PolicyStatement({
@@ -351,6 +330,43 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
       }),
     ];
+  }
+
+  /**
+   * The job definition resources the `batch:SubmitJob` permission is scoped to.
+   */
+  private jobDefinitionResources(): string[] {
+    const jobDefinition = (resourceName: string) => Stack.of(this).formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+
+    const name = this.jobDefinitionName();
+    if (!FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY) || name === undefined) {
+      return [jobDefinition('*')];
+    }
+    // With and without revision: SubmitJob accepts both, and both stay scoped to one definition.
+    return [jobDefinition(name), jobDefinition(`${name}:*`)];
+  }
+
+  /**
+   * The name of the job definition, or `undefined` when it cannot be determined at
+   * synthesis time (JsonPath/JSONata expression, unresolved token, or unparseable ARN).
+   */
+  private jobDefinitionName(): string | undefined {
+    const jobDefinitionArn = this.props.jobDefinitionArn;
+    if (isJsonPathOrJsonataExpression(jobDefinitionArn) || Token.isUnresolved(jobDefinitionArn)) {
+      return undefined;
+    }
+    // SubmitJob accepts a plain job definition name next to an ARN
+    if (!jobDefinitionArn.startsWith('arn:')) {
+      return jobDefinitionArn || undefined;
+    }
+    // arn:<partition>:batch:<region>:<account-id>:job-definition/<name>[:<revision>]
+    const name = jobDefinitionArn.split(':').slice(5).join(':').split('/')[1]?.split(':')[0];
+    return name || undefined;
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {

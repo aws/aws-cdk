@@ -1,12 +1,13 @@
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from 'aws-cdk-lib/aws-batch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY } from 'aws-cdk-lib/cx-api';
 
-// Trigger integration test update for PR linter
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
@@ -17,6 +18,8 @@ import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  */
 
 class RunBatchStack extends cdk.Stack {
+  public readonly stateMachine: sfn.StateMachine;
+
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
@@ -33,7 +36,11 @@ class RunBatchStack extends cdk.Stack {
       ],
     });
 
-    const batchJobDefinition = new batch.EcsJobDefinition(this, 'JobDefinition', {
+    // A plain job definition name (accepted by SubmitJob) lets the scoped
+    // policy from STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY be exercised at runtime.
+    const jobDefinitionName = 'submit-job-definition';
+    new batch.EcsJobDefinition(this, 'JobDefinition', {
+      jobDefinitionName,
       container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
         image: ecs.ContainerImage.fromAsset(
           path.resolve(__dirname, 'batchjob-image'),
@@ -44,7 +51,7 @@ class RunBatchStack extends cdk.Stack {
     });
 
     const submitJob = new BatchSubmitJob(this, 'Submit Job', {
-      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+      jobDefinitionArn: jobDefinitionName,
       jobQueueArn: batchQueue.jobQueueArn,
       jobName: 'MyJob',
       containerOverrides: {
@@ -66,7 +73,7 @@ class RunBatchStack extends cdk.Stack {
       result: sfn.Result.fromObject({ bar: 'SomeValue' }),
     }).next(submitJob);
 
-    const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
+    this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definitionBody: sfn.DefinitionBody.fromChainable(definition),
     });
 
@@ -74,11 +81,34 @@ class RunBatchStack extends cdk.Stack {
       value: batchQueue.jobQueueArn,
     });
     new cdk.CfnOutput(this, 'StateMachineArn', {
-      value: stateMachine.stateMachineArn,
+      value: this.stateMachine.stateMachineArn,
     });
   }
 }
 
-const app = new cdk.App();
-new RunBatchStack(app, 'aws-stepfunctions-integ');
-app.synth();
+const app = new cdk.App({
+  context: {
+    [STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY]: true,
+  },
+});
+const stack = new RunBatchStack(app, 'aws-stepfunctions-integ');
+
+const integTest = new integ.IntegTest(app, 'aws-stepfunctions-integ-submit-job', {
+  testCases: [stack],
+});
+
+const startExecutionCall = integTest.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: stack.stateMachine.stateMachineArn,
+});
+
+integTest.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn: startExecutionCall.getAttString('executionArn'),
+  includedData: 'METADATA_ONLY',
+})
+  .expect(integ.ExpectedResult.objectLike({
+    status: 'SUCCEEDED',
+  }))
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(10),
+    interval: cdk.Duration.seconds(30),
+  });
