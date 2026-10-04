@@ -317,7 +317,7 @@ export class HostedZone extends Resource implements IHostedZone {
       hostedZoneId: this.hostedZoneId,
     });
     // The KSK must exist and be in an 'ACTIVE' status before DNSSEC can be enabled.
-    dnssec.addDependency(this.keySigningKey.node.defaultChild as CfnKeySigningKey);
+    dnssec.addResourceDependency(this.keySigningKey.node.defaultChild as CfnKeySigningKey);
     return this.keySigningKey;
   }
 }

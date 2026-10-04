@@ -10,10 +10,9 @@ import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { UnscopedValidationError } from '../errors';
-import { Stack } from '../stack';
+import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
-import { Stage } from '../stage';
 import { validateTemplates } from './synthesis-validation';
 
 /**
@@ -51,7 +50,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
 
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
-  const builder = Stage.isStage(root)
+  const builder = STAGE_TYPE.isMarked(root)
     ? _convertCloudAssemblyBuilder(root._assemblyBuilder)
     : new private_cxapi.CloudAssemblyBuilder(options.outdir);
 
@@ -98,7 +97,7 @@ function getCustomSynthesis(construct: IConstruct): ICustomSynthesis | undefined
  */
 function synthNestedAssemblies(root: IConstruct, options: StageSynthesisOptions) {
   for (const child of root.node.children) {
-    if (Stage.isStage(child)) {
+    if (STAGE_TYPE.isMarked(child)) {
       child.synth(options);
     } else {
       synthNestedAssemblies(child, options);
@@ -150,7 +149,7 @@ function invokeAspects(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
+      if (!STAGE_TYPE.isMarked(child)) {
         recurse(child, allAspectsHere);
       }
     }
@@ -226,7 +225,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
 
     for (const child of construct.node.children) {
-      if (!Stage.isStage(child)) {
+      if (!STAGE_TYPE.isMarked(child)) {
         const childDidSomething = recurse(child, allAspectsHere);
         ret = childDidSomething !== 'nothing' ? childDidSomething : ret;
 
@@ -293,7 +292,7 @@ function getAspectApplications(node: IConstruct): AspectApplication[] {
  */
 function injectMetadataResources(root: IConstruct) {
   visit(root, 'post', construct => {
-    if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
+    if (!STACK_TYPE.isMarked(construct) || !construct._versionReportingEnabled) { return; }
 
     // Because of https://github.com/aws/aws-cdk/blob/main/packages/assert-internal/lib/synth-utils.ts#L74
     // synthesize() may be called more than once on a stack in unit tests, and the below would break
@@ -334,7 +333,7 @@ function synthesizeTree(root: IConstruct, builder: private_cxapi.CloudAssemblyBu
       validateOnSynth,
     };
 
-    if (Stack.isStack(construct)) {
+    if (STACK_TYPE.isMarked(construct)) {
       construct.synthesizer.synthesize(session);
     } else if (construct instanceof TreeMetadata) {
       construct._synthesizeTree(session);
@@ -377,7 +376,7 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   }
 
   for (const child of root.node.children) {
-    if (Stage.isStage(child)) { continue; }
+    if (STAGE_TYPE.isMarked(child)) { continue; }
     visit(child, order, cb);
   }
 

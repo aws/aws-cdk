@@ -33,9 +33,6 @@ import { profileFn } from './private/perf';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { minimatch } = require('minimatch');
 
-const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
-const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
-
 export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
 
 const SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = '@aws-cdk/core:suppressTemplateIndentation';
@@ -229,7 +226,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof (x) === 'object' && STACK_SYMBOL in x;
+    return STACK_TYPE.isMarked(x);
   }
 
   /**
@@ -240,36 +237,7 @@ export class Stack extends Construct implements ITaggable {
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
-    // we want this to be as cheap as possible. cache this result by mutating
-    // the object. anecdotally, at the time of this writing, @aws-cdk/core unit
-    // tests hit this cache 1,112 times, @aws-cdk/aws-cloudformation unit tests
-    // hit this 2,435 times).
-    const cache = (construct as any)[MY_STACK_CACHE] as Stack | undefined;
-    if (cache) {
-      return cache;
-    } else {
-      const value = _lookup(construct);
-      Object.defineProperty(construct, MY_STACK_CACHE, {
-        enumerable: false,
-        writable: false,
-        configurable: false,
-        value,
-      });
-      return value;
-    }
-
-    function _lookup(c: IConstruct): Stack {
-      if (Stack.isStack(c)) {
-        return c;
-      }
-
-      const _scope = c.node.scope;
-      if (Stage.isStage(c) || !_scope) {
-        throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
-      }
-
-      return _lookup(_scope);
-    }
+    return stackOf(construct);
   }
 
   /**
@@ -478,6 +446,11 @@ export class Stack extends Construct implements ITaggable {
   private _terminationProtection: boolean;
 
   /**
+   * Silencing a specific diagnostic, should only do this once.
+   */
+  private azLiteralWarningSilenced = false;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually an `App` or a `Stage`, but could be any construct.
@@ -509,7 +482,7 @@ export class Stack extends Construct implements ITaggable {
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
-    Object.defineProperty(this, STACK_SYMBOL, { value: true });
+    STACK_TYPE.mark(this);
 
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
       this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
@@ -754,9 +727,38 @@ export class Stack extends Construct implements ITaggable {
    *
    * This can be used to define dependencies between any two stacks within an
    * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method has been renamed to `addStackDependency` to more clearly
+   * set it apart from `construct.node.addDependency`. See the documentation
+   * of that function for more details.
+   *
+   * @deprecated Use `addStackDependency` instead.
    */
   public addDependency(target: Stack, reason?: string) {
-    addDependency(this, target, reason ?? `{${this.node.path}}.addDependency({${target.node.path}})`);
+    this.addStackDependency(target, reason);
+  }
+
+  /**
+   * Add a dependency between this stack and another stack.
+   *
+   * This can be used to define dependencies between any two stacks within an
+   * app, and also supports nested stacks.
+   *
+   * Stack dependencies may not cross Stage boundaries.
+   *
+   * This method only adds dependencies between stacks. If you are looking
+   * for a generic construct-to-construct dependency mechanism, use
+   * `construct.node.addDependency` instead.
+   */
+  public addStackDependency(target: Stack, reason?: string) {
+    dispatchDependencyOperation({
+      kind: 'add',
+      source: this,
+      target,
+      reason: reason ?? `<${this.node.path}>.addStackDependency(<${target.node.path}>)`,
+    });
   }
 
   /**
@@ -925,15 +927,14 @@ export class Stack extends Construct implements ITaggable {
    * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
+    this._silenceLiteralAzWarning();
+
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
     const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
     if (agnostic) {
-      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || [
-        Fn.select(0, Fn.getAzs()),
-        Fn.select(1, Fn.getAzs()),
-      ];
+      return this.node.tryGetContext(cxapi.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || firstTwoAgnosticAzs();
     }
 
     const value = ContextProvider.getValue(this, {
@@ -1019,52 +1020,30 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Called implicitly by the `addDependency` helper function in order to
-   * realize a dependency between two top-level stacks at the assembly level.
+   * Called by `dispatchDependencyOperation` to realize a dependency between two top-level stacks.
    *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
-   * and take into account nested stack relationships.
+   * All validation for appropriate scope has already been done, cycle detection has not been done yet.
    *
    * @internal
    */
-  public _addAssemblyDependency(target: Stack, reason: StackDependencyReason = {}) {
-    // defensive: we should never get here for nested stacks
-    if (this.nested || target.nested) {
-      throw new ValidationError(lit`CannotAddAssemblyLevelDependencies`, 'Cannot add assembly-level dependencies for nested stacks', this);
-    }
-    // Fill in reason details if not provided
-    if (!reason.source) {
-      reason.source = this;
-    }
-    if (!reason.target) {
-      reason.target = target;
-    }
-    if (!reason.description) {
-      reason.description = 'no description provided';
+  public _addStackDependency(target: Stack, reason: StackDependencyReason) {
+    if (!reason.reason) {
+      throw new ValidationError(lit`MissingDependencyReason`, 'A stack dependency reason must be provided', this);
     }
 
     const cycle = target.stackDependencyReasons(this);
     if (cycle !== undefined) {
       const cycleDescription = cycle.map((cycleReason) => {
-        return cycleReason.description;
+        return cycleReason.reason;
       }).join(', ');
 
-      throw new ValidationError(lit`DependencyCycle`, `'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
+      throw new ValidationError(lit`DependencyCycle`, `'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.reason}) would create a cyclic reference.`, this);
     }
 
-    let dep = this._stackDependencies[Names.uniqueId(target)];
-    if (!dep) {
-      dep = this._stackDependencies[Names.uniqueId(target)] = { stack: target, reasons: [] };
-    }
-    // Check for a duplicate reason already existing
-    let existingReasons: Set<StackDependencyReason> = new Set();
-    dep.reasons.forEach((existingReason) => {
-      if (existingReason.source == reason.source && existingReason.target == reason.target) {
-        existingReasons.add(existingReason);
-      }
-    });
-    if (existingReasons.size > 0) {
-      // Dependency already exists and for the provided reason
+    const dep = this._stackDependencies[Names.uniqueId(target)] ?? (this._stackDependencies[Names.uniqueId(target)] = { stack: target, reasons: [] });
+
+    // No need to add the same target for the same reason.
+    if (dep.reasons.find(sameReason(reason))) {
       return;
     }
     dep.reasons.push(reason);
@@ -1076,79 +1055,27 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Called implicitly by the `obtainDependencies` helper function in order to
-   * collect resource dependencies across two top-level stacks at the assembly level.
+   * Called by `dispatchDependencyOperation` to remove a dependency between two top-level stacks.
    *
-   * Use `stack.obtainDependencies` to see the dependencies between any two stacks.
-   *
-   * @internal
-   */
-  public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason): Element[] {
-    if (!reasonFilter.source) {
-      throw new ValidationError(lit`ReasonFilterSourceRequired`, 'reasonFilter.source must be defined!', this);
-    }
-    // Assume reasonFilter has only source defined
-    let dependencies: Set<Element> = new Set();
-    Object.values(this._stackDependencies).forEach((dep) => {
-      dep.reasons.forEach((reason) => {
-        if (reasonFilter.source == reason.source) {
-          if (!reason.target) {
-            throw new ValidationError(lit`InvalidDependencyTarget`, `Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`, this);
-          }
-          dependencies.add(reason.target);
-        }
-      });
-    });
-    return Array.from(dependencies);
-  }
-
-  /**
-   * Called implicitly by the `removeDependency` helper function in order to
-   * remove a dependency between two top-level stacks at the assembly level.
-   *
-   * Use `stack.addDependency` to define the dependency between any two stacks,
-   * and take into account nested stack relationships.
+   * All validation for appropriateness has already been done.
    *
    * @internal
    */
-  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason = {}) {
-    // defensive: we should never get here for nested stacks
-    if (this.nested || target.nested) {
-      throw new ValidationError(lit`CannotRemoveAssemblyLevelDependencies`, 'There cannot be assembly-level dependencies for nested stacks', this);
-    }
-    // No need to check for a dependency cycle when removing one
-
-    // Fill in reason details if not provided
-    if (!reasonFilter.source) {
-      reasonFilter.source = this;
-    }
-    if (!reasonFilter.target) {
-      reasonFilter.target = target;
-    }
-
+  public _removeStackDependency(target: Stack, reason: Omit<StackDependencyReason, 'reason'>) {
     let dep = this._stackDependencies[Names.uniqueId(target)];
     if (!dep) {
-      // Dependency doesn't exist - return now
       return;
     }
 
-    // Find and remove the specified reason from the dependency
-    let matchedReasons: Set<StackDependencyReason> = new Set();
-    dep.reasons.forEach((reason) => {
-      if (reasonFilter.source == reason.source && reasonFilter.target == reason.target) {
-        matchedReasons.add(reason);
-      }
-    });
-    if (matchedReasons.size > 1) {
+    const matchedReasons = dep.reasons.filter(sameReason(reason));
+    if (matchedReasons.length === 0) {
+      return;
+    }
+    if (matchedReasons.length > 1) {
       throw new ValidationError(lit`TooManyDependencyReasons`, `There cannot be more than one reason for dependency removal, found: ${matchedReasons}`, this);
     }
-    if (matchedReasons.size == 0) {
-      // Reason is already not there - return now
-      return;
-    }
-    let matchedReason = Array.from(matchedReasons)[0];
 
-    let index = dep.reasons.indexOf(matchedReason, 0);
+    let index = dep.reasons.indexOf(matchedReasons[0]);
     dep.reasons.splice(index, 1);
     // If that was the last reason, remove the dependency
     if (dep.reasons.length == 0) {
@@ -1157,8 +1084,25 @@ export class Stack extends Construct implements ITaggable {
 
     if (process.env.CDK_DEBUG_DEPS) {
       // eslint-disable-next-line no-console
-      console.log(`[CDK_DEBUG_DEPS] stack "${this.node.path}" no longer depends on "${target.node.path}" because: ${reasonFilter}`);
+      console.log(`[CDK_DEBUG_DEPS] stack "${this.node.path}" no longer depends on "${target.node.path}"`);
     }
+  }
+
+  /**
+   * Return the stacks dependencies caused by the given construct.
+   *
+   * Returns the target resources that the dependency has been added for.
+   *
+   * I'm not sure this method is useful in any way, but we are keeping it in
+   * to maintain exact behavior as guaranteed by unit tests.
+   *
+   * @internal
+   */
+  public _stackDependenciesCausedBy(source: IConstruct): IConstruct[] {
+    return Array.from(new Set(Object.values(this._stackDependencies)
+      .flatMap((dep) => dep.reasons)
+      .filter((reason) => reason.source === source)
+      .map((reason) => reason.target)));
   }
 
   /**
@@ -1632,6 +1576,30 @@ export class Stack extends Construct implements ITaggable {
     return makeStackName(ids, prefix);
   }
 
+  /**
+   * Silence CloudFormation validate warning W3010 ("literal AZs limit portability")
+   *
+   * This is true! But the Validation Plugin is looking at the template and cannot tell
+   * the difference between a literal AZ in the template because a user typed it in the
+   * CDK code, vs a user using CDK's facilities to reflect on AZs and using those.
+   *
+   * So once a user calls `stack.availabilityZones`, we will take that as a signal
+   * they are "doing the right thing" and silencing this warning for them.
+   *
+   * @internal
+   */
+  public _silenceLiteralAzWarning() {
+    if (this.azLiteralWarningSilenced) {
+      return;
+    }
+    this.azLiteralWarningSilenced = true;
+
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::W3010',
+      reason: 'Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe',
+    });
+  }
+
   private resolveExportedValue(exportedValue: any): ResolvedExport {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
@@ -1813,7 +1781,7 @@ function cfnElements(node: IConstruct, into: CfnElement[] = []): CfnElement[] {
 
   for (const child of Node.of(node).children) {
     // Don't recurse into a substack
-    if (Stack.isStack(child)) { continue; }
+    if (STACK_TYPE.isMarked(child)) { continue; }
 
     cfnElements(child, into);
   }
@@ -1880,9 +1848,22 @@ function generateExportName(stackExports: Construct, id: string) {
 }
 
 interface StackDependencyReason {
-  source?: Element;
-  target?: Element;
-  description?: string;
+  /**
+   * The original source construct that led to this stack dependency
+   */
+  source: IConstruct;
+
+  /**
+   * The original target construct that led to this stack dependency
+   */
+  target: IConstruct;
+
+  /**
+   * The human-readable reason a user gave for adding this dependency.
+   *
+   * Only used in error messages when a cycle is detected.
+   */
+  reason: string;
 }
 
 interface StackDependency {
@@ -1928,12 +1909,31 @@ function count(xs: string[]): Record<string, number> {
   return ret;
 }
 
+const firstTwoAgnosticAzs = (() => {
+  let cache: string[] | undefined;
+
+  return () => {
+    if (!cache) {
+      cache = [
+        Fn.select(0, Fn.getAzs()),
+        Fn.select(1, Fn.getAzs()),
+      ];
+    }
+    return cache;
+  };
+})();
+
+/**
+ * Reason comparison function, in curried form
+ */
+function sameReason(a: Omit<StackDependencyReason, 'reason'>): (b: Omit<StackDependencyReason, 'reason'>) => boolean {
+  return (b) => a.source === b.source && a.target === b.target;
+}
+
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { ReferenceStrength } from './cross-stack-reference-strength';
-import type { Element } from './deps';
-import { addDependency } from './deps';
 import { Names } from './names';
 import { Reference } from './reference';
 import type { IResolvable } from './resolvable';
@@ -1956,6 +1956,9 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
+import { STACK_TYPE, stackOf } from './private/core-construct-finders';
+import { dispatchDependencyOperation } from './private/deps';
+import { Validations } from './validation';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
@@ -1968,3 +1971,4 @@ function makeCustomCoupledReference(value: any, strength: ReferenceStrength): Cu
   }
   return new CustomCoupledReference(resolvable, strength);
 }
+

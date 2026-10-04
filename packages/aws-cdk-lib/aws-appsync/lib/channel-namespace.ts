@@ -279,10 +279,10 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     });
 
     if (props.publishHandlerConfig?.dataSource) {
-      this.channelNamespace.addDependency(props.publishHandlerConfig.dataSource.resource);
+      this.channelNamespace.addResourceDependency(props.publishHandlerConfig.dataSource.resource);
     }
     if (props.subscribeHandlerConfig?.dataSource) {
-      this.channelNamespace.addDependency(props.subscribeHandlerConfig.dataSource.resource);
+      this.channelNamespace.addResourceDependency(props.subscribeHandlerConfig.dataSource.resource);
     }
     this.channelNamespaceArn = this.channelNamespace.attrChannelNamespaceArn;
     this.api = props.api;

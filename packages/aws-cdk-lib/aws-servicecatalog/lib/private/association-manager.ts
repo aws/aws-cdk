@@ -52,7 +52,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new ValidationError(lit`MultipleTagUpdateConstraintsNotAllowed`, `Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
@@ -72,7 +72,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new ValidationError(lit`TopicAlreadySubscribedToAssociation`, `Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
@@ -95,7 +95,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new ValidationError(lit`ProvisioningRuleAlreadyConfigured`, `Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
@@ -135,7 +135,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new ValidationError(lit`MultipleStackSetConstraintsNotAllowed`, `Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
@@ -175,7 +175,7 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
       throw new ValidationError(lit`MultipleLaunchRolesNotAllowed`, `Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }

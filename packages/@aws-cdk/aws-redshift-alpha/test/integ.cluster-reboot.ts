@@ -69,7 +69,7 @@ const updateStack = new RedshiftRebootStack(stack, 'aws-cdk-redshift-cluster-upd
   parameterGroupParams: { enable_user_activity_logging: 'false', use_fips_ssl: 'true' },
 });
 
-updateStack.addDependency(createStack);
+updateStack.addStackDependency(createStack);
 const stacks = [createStack, updateStack];
 stacks.forEach(s => {
   cdk.Aspects.of(s).add({

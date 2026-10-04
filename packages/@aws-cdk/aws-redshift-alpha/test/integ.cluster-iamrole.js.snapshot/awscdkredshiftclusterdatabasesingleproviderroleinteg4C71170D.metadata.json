@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -145,16 +145,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)"
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)"
       ]
     }
   ],
@@ -166,16 +166,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)"
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)"
       ]
     }
   ],
@@ -187,10 +187,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -331,10 +330,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -347,10 +345,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -388,11 +385,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:353:28)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:37:25)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Cluster (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:386:28)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:25)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -509,15 +504,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:27:25)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Function (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "WrappedClass.ensureLambda (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:60:25)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -530,13 +523,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "DatabaseQuery.getOrCreateInvokerRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:98:15)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:44:24)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Role (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "DatabaseQuery.getOrCreateInvokerRole (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:131:15)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:77:24)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -595,16 +587,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -616,16 +605,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -637,16 +623,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -658,14 +641,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -678,14 +660,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addNatGateway (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -698,14 +679,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addNatGateway (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -718,16 +698,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -739,16 +716,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -760,16 +734,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
-        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -781,14 +752,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "WrappedClass.addDefaultInternetRoute (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -801,14 +771,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addNatGateway (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -821,14 +790,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addNatGateway (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -841,16 +809,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -862,16 +827,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -883,16 +845,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -904,15 +863,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addRoute (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -925,16 +883,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -946,16 +901,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -967,16 +919,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
-        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "new Subnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PrivateSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
-        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+        "WrappedClass.createSubnetResources (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
       ]
     }
   ],
@@ -988,15 +937,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
-        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:36:21)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "WrappedClass.addRoute (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
+        "NatGatewayProvider.configureNat (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
+        "WrappedClass.createNatGateways (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:69:21)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1009,13 +957,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new ClusterSubnetGroup (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/subnet-group.js:90:33)",
-        "new ClusterSubnetGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:292:54)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:37:25)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new ClusterSubnetGroup (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/subnet-group.js:123:33)",
+        "new Cluster (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:325:54)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:25)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1028,14 +973,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:298:61)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:37:25)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new SecurityGroup (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
+        "new Cluster (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:331:61)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:25)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1048,16 +989,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
-        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Secret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseSecret (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/database-secret.js:66:13)",
-        "new DatabaseSecret (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:305:26)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:37:25)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)"
+        "new Secret (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:542:30)",
+        "new DatabaseSecret (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/database-secret.js:99:13)",
+        "new Cluster (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:338:26)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:25)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)"
       ]
     }
   ],
@@ -1097,16 +1033,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:27:25)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)"
+        "new Role (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "WrappedClass.ensureLambda (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:60:25)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)"
       ]
     }
   ],
@@ -1170,16 +1103,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
-        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
       ]
     }
   ],
@@ -1229,14 +1160,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecretTargetAttachment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:691:32)",
-        "new SecretTargetAttachment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.attach (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:309:16)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:394:38)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:37:25)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new SecretTargetAttachment (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:732:32)",
+        "WrappedClass.attach (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:350:16)",
+        "new Cluster (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/cluster.js:427:38)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:70:25)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1311,13 +1239,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:53:25)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new CustomResource (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:86:25)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1330,16 +1256,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:210:36)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:41:19)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)"
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grantRead (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:251:36)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:74:19)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)"
       ]
     }
   ],
@@ -1413,13 +1337,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:53:25)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new CustomResource (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:86:25)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1494,13 +1416,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:53:25)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new CustomResource (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:86:25)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1513,14 +1433,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:37:17)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:70:17)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1533,15 +1451,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Function (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1586,14 +1502,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:37:17)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:70:17)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1606,15 +1520,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Function (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1659,14 +1571,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:37:17)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:70:17)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1679,15 +1589,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)",
-        "new SingleProviderRoleStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:49:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:71:37)",
+        "new Function (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)",
+        "new SingleProviderRoleStack (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:82:13)",
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:104:37)",
         "...node internals..."
       ]
     }
@@ -1738,16 +1646,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)"
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)"
       ]
     }
   ],
@@ -1765,16 +1670,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)"
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)"
       ]
     }
   ],
@@ -1792,16 +1694,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:206:33)",
-        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:184:29)",
-        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:216:18)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
-        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseQuery (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:42:26)",
-        "new Table (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:106:25)"
+        "new Policy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "WrappedClass.addToRolePolicy (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new DatabaseQuery (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/private/database-query.js:75:26)",
+        "new Table (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/lib/table.js:139:25)"
       ]
     }
   ]

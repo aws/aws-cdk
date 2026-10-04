@@ -28,12 +28,16 @@ export class Platform {
   /**
    * Specification of signature format and signing algorithms with
    * SHA1 hash and RSA encryption for Amazon FreeRTOS.
+   *
+   * @deprecated This signature platform has been discontinued.
    */
   public static readonly AMAZON_FREE_RTOS_TI_CC3220SF = Platform.of('AmazonFreeRTOS-TI-CC3220SF');
 
   /**
    * Specification of signature format and signing algorithms with
    * SHA256 hash and ECDSA encryption for Amazon FreeRTOS.
+   *
+   * @deprecated This signature platform has been discontinued.
    */
   public static readonly AMAZON_FREE_RTOS_DEFAULT = Platform.of('AmazonFreeRTOS-Default');
 

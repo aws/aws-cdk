@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegStackD1751E51.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1638a8c192ab8cf1ff8a20b3120907f04b68ed74ef9c90b7debc4dad0108d4d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f7e016c5c1bc9e79e5c0c65184d06bd2961533e04ba95881aa484c5ebe1afa2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -35,41 +35,6 @@
       ],
       "additionalMetadataFile": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegStackD1751E51.metadata.json",
       "displayName": "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameIntegStack"
-    },
-    "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.assets"
-      ],
-      "additionalMetadataFile": "awscdkredshiftclusterdatabaseRedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert9E5BD3B5.metadata.json",
-      "displayName": "aws-cdk-redshift-cluster-database/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert"
     },
     "aws-cdk-redshift-cluster-database.assets": {
       "type": "cdk:asset-manifest",
@@ -105,6 +70,41 @@
       ],
       "additionalMetadataFile": "aws-cdk-redshift-cluster-database.metadata.json",
       "displayName": "aws-cdk-redshift-cluster-database"
+    },
+    "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.assets"
+      ],
+      "additionalMetadataFile": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.metadata.json",
+      "displayName": "RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -607,10 +607,12 @@
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
           "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
           },
@@ -622,15 +624,21 @@
             }
           },
           "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
           "@aws-cdk/core:annotationsInValidationReport": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
-            "recommendedValue": "strong",
+            "recommendedValue": "weak",
             "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
@@ -640,5 +648,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1108.0"
+  "minimumCliVersion": "2.1126.0"
 }

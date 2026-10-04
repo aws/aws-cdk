@@ -146,6 +146,29 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * Whether to create resource policies for log/trace delivery.
+   *
+   * When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy`
+   * are not created. This is useful when deploying many runtimes per account/Region,
+   * as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10,
+   * X-Ray: lower).
+   *
+   * Setting `false` means you are responsible for ensuring delivery permissions exist.
+   * There are two safe ways to use this:
+   * - Same-account delivery to a `/aws/vendedlogs/` log group, where the log-delivery
+   *   service-linked role grants write access implicitly.
+   * - Attaching the delivery resource policy yourself.
+   *
+   * Otherwise delivery silently fails: synthesis and deploy succeed, but nothing is delivered.
+   * Per the [vended-logs delivery docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-CloudWatchLogs.html),
+   * a resource policy is required for CloudWatch Logs delivery outside the `/aws/vendedlogs/` same-account case.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html
+   * @default true
+   */
+  readonly manageDeliveryResourcePolicy?: boolean;
 }
 
 /**
@@ -387,12 +410,16 @@ export class Runtime extends RuntimeBase {
     this.lastUpdatedAt = this.runtimeResource.attrLastUpdatedAt;
 
     // Configure observability (tracing and logging)
+    const observabilityOptions = {
+      manageDeliveryResourcePolicy: props.manageDeliveryResourcePolicy,
+    };
+
     if (props.tracingEnabled) {
-      configureTracingDelivery(this, this.agentRuntimeArn);
+      configureTracingDelivery(this, this.agentRuntimeArn, observabilityOptions);
     }
 
     if (props.loggingConfigs && props.loggingConfigs.length > 0) {
-      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs);
+      configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs, observabilityOptions);
     }
   }
 
@@ -776,11 +803,11 @@ export class Runtime extends RuntimeBase {
     }
 
     // Only validate if the URI is a concrete string (not a token)
-    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!pattern.test(uri)) {
       throw new ValidationError(
         lit`InvalidContainerUri`,
-        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
+        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest or 123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/my-agent:latest)`,
         this,
       );
     }

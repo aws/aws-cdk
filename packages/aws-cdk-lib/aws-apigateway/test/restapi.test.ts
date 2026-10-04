@@ -5,7 +5,7 @@ import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { CfnElement } from '../../core';
-import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack, Validations } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
@@ -13,7 +13,15 @@ import * as apigw from '../lib';
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
+  acknowledgeCloudFormationValidateWarnings(stack);
 });
+
+function acknowledgeCloudFormationValidateWarnings(s: Stack) {
+  Validations.of(s).acknowledge({
+    id: 'CloudFormation-Validate::W3660',
+    reason: 'We mix resources and Flutter definitions on purpose',
+  });
+}
 
 describe('restapi', () => {
   test('minimal setup', () => {
@@ -145,6 +153,7 @@ describe('restapi', () => {
     // GIVEN
     const app = new App();
     stack = new Stack(app, 'my-stack');
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.RestApi(stack, 'API');
 
     // WHEN
@@ -346,6 +355,7 @@ describe('restapi', () => {
       },
     });
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.RestApi(stack, 'myapi');
     api.root.addMethod('GET');
 
@@ -911,6 +921,7 @@ describe('restapi', () => {
     });
 
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minCompressionSize: Size.bytes(1024),
     });
@@ -934,6 +945,7 @@ describe('restapi', () => {
     });
 
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.RestApi(stack, 'RestApi', {
       minimumCompressionSize: 1024,
     });
@@ -958,6 +970,7 @@ describe('restapi', () => {
 
     // WHEN
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
 
     // THEN
     expect(() => new apigw.RestApi(stack, 'RestApi', {
@@ -1132,6 +1145,7 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
     });
@@ -1154,6 +1168,7 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       minCompressionSize: Size.bytes(1024),
@@ -1178,6 +1193,7 @@ describe('SpecRestApi', () => {
     });
 
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
     const api = new apigw.SpecRestApi(stack, 'SpecRestApi', {
       apiDefinition: apigw.ApiDefinition.fromInline({ foo: 'bar' }),
       binaryMediaTypes: ['image/png', 'application/octet-stream'],
@@ -2030,6 +2046,7 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
@@ -2056,6 +2073,7 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     stack = new Stack(app);
+    acknowledgeCloudFormationValidateWarnings(stack);
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {

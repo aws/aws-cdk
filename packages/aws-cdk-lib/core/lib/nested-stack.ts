@@ -11,6 +11,7 @@ import type { IBox } from './helpers-internal/box';
 import { Box } from './helpers-internal/box';
 import { Lazy } from './lazy';
 import { Names } from './names';
+import { NESTED_STACK_TYPE, STACK_TYPE } from './private/core-construct-finders';
 import { RemovalPolicy } from './removal-policy';
 import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
@@ -18,8 +19,6 @@ import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
-
-const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
 /**
  * Initialization props for the `NestedStack` construct.
@@ -114,7 +113,7 @@ export class NestedStack extends Stack {
    * Checks if `x` is an object of type `NestedStack`.
    */
   public static isNestedStack(x: any): x is NestedStack {
-    return x != null && typeof(x) === 'object' && NESTED_STACK_SYMBOL in x;
+    return NESTED_STACK_TYPE.isMarked(x);
   }
 
   public readonly templateFile: string;
@@ -142,7 +141,7 @@ export class NestedStack extends Stack {
 
     const parentScope = new Construct(scope, id + '.NestedStack');
 
-    Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
+    NESTED_STACK_TYPE.mark(this);
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.nested.template.json`;
@@ -293,7 +292,7 @@ function findParentStack(scope: Construct): Stack {
     throw new UnscopedValidationError(lit`NestedStacksCannotDefined`, 'Nested stacks cannot be defined as a root construct');
   }
 
-  const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
+  const parentStack = Node.of(scope).scopes.reverse().find(p => STACK_TYPE.isMarked(p));
   if (!parentStack) {
     throw new UnscopedValidationError(lit`MustBeNestedStacksDefined`, 'Nested stacks must be defined within scope of another non-nested stack');
   }

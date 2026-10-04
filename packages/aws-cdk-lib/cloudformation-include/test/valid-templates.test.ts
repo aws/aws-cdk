@@ -134,6 +134,11 @@ describe('CDK Include', () => {
   });
 
   test('accepts booleans for properties with type string', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'Yes this will be schematically illegal, that\'s not the point',
+    });
+
     includeTestTemplate(stack, 'boolean-for-string.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
