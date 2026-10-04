@@ -111,6 +111,19 @@ describe('ECS Mixins', () => {
       });
     });
 
+    test('accepts scaleInAfter at the 3600 second upper bound', () => {
+      const capacityProvider = new ecs.CfnCapacityProvider(stack, 'CapacityProvider', {
+        managedInstancesProvider,
+      });
+      const mixin = new CapacityProviderInfrastructureOptimization({ scaleInAfter: Duration.hours(1) });
+
+      mixin.applyTo(capacityProvider);
+
+      expect(capacityProvider.managedInstancesProvider).toMatchObject({
+        infrastructureOptimization: { scaleInAfter: 3600 },
+      });
+    });
+
     test('disables infrastructure optimization', () => {
       const capacityProvider = new ecs.CfnCapacityProvider(stack, 'CapacityProvider', {
         managedInstancesProvider,

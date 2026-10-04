@@ -97,9 +97,8 @@ export class CapacityProviderInfrastructureOptimization extends Mixin {
 
     construct.managedInstancesProvider = {
       ...managedInstancesProvider,
-      // InfrastructureOptimizationProperty currently has only `scaleInAfter`, so it is safe to
-      // overwrite it wholesale rather than merge. Revisit if AWS adds more fields to this group.
       infrastructureOptimization: {
+        ...managedInstancesProvider.infrastructureOptimization,
         scaleInAfter: this.scaleInAfterSeconds,
       },
     };
