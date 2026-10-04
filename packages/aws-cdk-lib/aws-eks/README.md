@@ -1710,7 +1710,6 @@ The caller is responsible for configuring the trust policy of the role correctly
 `pods.eks.amazonaws.com` to perform `sts:AssumeRole` and `sts:TagSession`.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 declare const cluster: eks.Cluster;
 
 // Create and manage the IAM role separately
@@ -1737,7 +1736,6 @@ The provided role's ARN is used directly in the `PodIdentityAssociation`.
 If you only have an L1 `iam.CfnRole`, import it as an `IRole` with `iam.Role.fromRoleArn()`:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 declare const cluster: eks.Cluster;
 declare const cfnRole: iam.CfnRole;
 
