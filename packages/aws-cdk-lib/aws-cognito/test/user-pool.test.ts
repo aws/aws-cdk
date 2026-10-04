@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -1803,7 +1803,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1831,7 +1831,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1844,7 +1844,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1873,7 +1873,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1886,7 +1886,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1911,7 +1911,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1924,7 +1924,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1949,7 +1949,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -1962,7 +1962,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -1987,7 +1987,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -2000,7 +2000,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-1',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2025,7 +2025,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -2038,7 +2038,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2068,7 +2068,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+              ':ses:us-east-1:111111111111:identity/mycustomemail@example.com',
             ],
           ],
         },
@@ -2081,7 +2081,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2112,7 +2112,7 @@ describe('User Pool', () => {
               {
                 Ref: 'AWS::Partition',
               },
-              ':ses:us-east-1:11111111111:identity/example.com',
+              ':ses:us-east-1:111111111111:identity/example.com',
             ],
           ],
         },
@@ -2125,7 +2125,7 @@ describe('User Pool', () => {
     const stack = new Stack(undefined, undefined, {
       env: {
         region: 'us-east-2',
-        account: '11111111111',
+        account: '111111111111',
       },
     });
 
@@ -2457,19 +2457,29 @@ test('advanced security defaults when no option provided', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {});
 });
 
+// Note: We no longer validate feature plan requirements at CDK synthesis time.
+// CloudFormation validates these requirements at deployment time, which allows existing user pools
+// that are grandfathered on LITE plan with threat protection to continue working.
+
 test.each([
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.AUDIT],
   [FeaturePlan.ESSENTIALS, AdvancedSecurityMode.ENFORCED],
   [FeaturePlan.LITE, AdvancedSecurityMode.AUDIT],
   [FeaturePlan.LITE, AdvancedSecurityMode.ENFORCED],
-])('throws when feature plan is %s and advanced security mode is %s', (featurePlan, advancedSecurityMode) => {
+])('generates CloudFormation template when feature plan is %s and advanced security mode is %s', (featurePlan, advancedSecurityMode) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', { featurePlan, advancedSecurityMode });
-  }).toThrow('you cannot enable Advanced Security when feature plan is not Plus.');
+  new UserPool(stack, 'Pool', { featurePlan, advancedSecurityMode });
+
+  // THEN - CloudFormation template should be generated successfully
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: {
+      AdvancedSecurityMode: advancedSecurityMode === AdvancedSecurityMode.AUDIT ? 'AUDIT' : 'ENFORCED',
+    },
+    UserPoolTier: featurePlan,
+  });
 });
 
 test.each([
@@ -2477,14 +2487,20 @@ test.each([
   [FeaturePlan.ESSENTIALS, StandardThreatProtectionMode.FULL_FUNCTION],
   [FeaturePlan.LITE, StandardThreatProtectionMode.AUDIT_ONLY],
   [FeaturePlan.LITE, StandardThreatProtectionMode.FULL_FUNCTION],
-])('throws when feature plan is %s and standard threat protection mode is %s', (featurePlan, standardThreatProtectionMode) => {
+])('generates CloudFormation template when feature plan is %s and standard threat protection mode is %s', (featurePlan, standardThreatProtectionMode) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', { featurePlan, standardThreatProtectionMode });
-  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
+  new UserPool(stack, 'Pool', { featurePlan, standardThreatProtectionMode });
+
+  // THEN - CloudFormation template should be generated successfully
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: {
+      AdvancedSecurityMode: standardThreatProtectionMode === StandardThreatProtectionMode.AUDIT_ONLY ? 'AUDIT' : 'ENFORCED',
+    },
+    UserPoolTier: featurePlan,
+  });
 });
 
 test.each([
@@ -2492,14 +2508,23 @@ test.each([
   [FeaturePlan.ESSENTIALS, CustomThreatProtectionMode.FULL_FUNCTION],
   [FeaturePlan.LITE, CustomThreatProtectionMode.AUDIT_ONLY],
   [FeaturePlan.LITE, CustomThreatProtectionMode.FULL_FUNCTION],
-])('throws when feature plan is %s and custom threat protection mode is %s', (featurePlan, customThreatProtectionMode) => {
+])('generates CloudFormation template when feature plan is %s and custom threat protection mode is %s', (featurePlan, customThreatProtectionMode) => {
   // GIVEN
   const stack = new Stack();
 
   // WHEN
-  expect(() => {
-    new UserPool(stack, 'Pool', { featurePlan, customThreatProtectionMode });
-  }).toThrow('you cannot enable Threat Protection when feature plan is not Plus.');
+  new UserPool(stack, 'Pool', { featurePlan, customThreatProtectionMode });
+
+  // THEN - CloudFormation template should be generated successfully
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    UserPoolAddOns: {
+      AdvancedSecurityAdditionalFlows: {
+        CustomAuthMode: customThreatProtectionMode === CustomThreatProtectionMode.AUDIT_ONLY ? 'AUDIT' : 'ENFORCED',
+      },
+      AdvancedSecurityMode: 'OFF',
+    },
+    UserPoolTier: featurePlan,
+  });
 });
 
 test('throws when deprecated property AdvancedSecurityMode and StandardThreatProtectionMode are specified at the same time.', () => {

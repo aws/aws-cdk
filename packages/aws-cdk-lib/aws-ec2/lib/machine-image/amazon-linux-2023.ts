@@ -1,4 +1,5 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
+import type { AmazonLinuxImageSsmParameterCommonOptions } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase } from './common';
 
 /**
  * Amazon Linux 2023 kernel versions

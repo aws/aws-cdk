@@ -1,8 +1,8 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IMatchmakingRuleSet } from '.';
+import type { Construct } from 'constructs';
+import type { IMatchmakingRuleSet } from '.';
 
 /**
  * A set of custom properties for a game session, formatted as key-value pairs.

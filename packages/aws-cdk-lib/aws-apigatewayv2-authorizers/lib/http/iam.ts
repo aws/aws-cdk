@@ -1,8 +1,10 @@
-import {
-  HttpAuthorizerType,
+import type {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
+} from '../../../aws-apigatewayv2';
+import {
+  HttpAuthorizerType,
 } from '../../../aws-apigatewayv2';
 
 /**

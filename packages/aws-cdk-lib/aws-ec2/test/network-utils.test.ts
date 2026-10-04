@@ -169,4 +169,20 @@ describe('network utils', () => {
       expect(18).toEqual(builder5.maskForRemainingSubnets(3));
     });
   });
+  describe('CIDR overlap validation', () => {
+    test('validateCidrPairOverlap detects overlapping CIDR blocks', () => {
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.0.0/24', '10.0.0.128/25')).toBe(true);
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.0.0/16', '10.0.1.0/24')).toBe(true);
+      expect(NetworkUtils.validateCidrPairOverlap('192.168.1.0/24', '192.168.2.0/24')).toBe(false);
+    });
+    test('validateCidrBlocksOverlap detects overlaps in arrays', () => {
+      const [hasOverlap, cidr1, cidr2] = NetworkUtils.validateCidrBlocksOverlap(
+        ['10.0.0.0/24', '10.0.1.0/24'],
+        ['10.0.0.128/25', '10.0.2.0/24'],
+      );
+      expect(hasOverlap).toBe(true);
+      expect(cidr1).toBe('10.0.0.0/24');
+      expect(cidr2).toBe('10.0.0.128/25');
+    });
+  });
 });

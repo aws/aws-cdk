@@ -1,6 +1,6 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 
 /**
  * Amazon Data Firehose target properties.

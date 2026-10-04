@@ -1,5 +1,5 @@
 import { App } from 'aws-cdk-lib/core';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 
 /**
  * Hold an App-wide global variable

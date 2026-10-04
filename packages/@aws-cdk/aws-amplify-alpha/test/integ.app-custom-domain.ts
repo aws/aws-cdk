@@ -1,10 +1,11 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as amplify from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 interface TestStackProps extends StackProps {
   hostedZoneId: string;

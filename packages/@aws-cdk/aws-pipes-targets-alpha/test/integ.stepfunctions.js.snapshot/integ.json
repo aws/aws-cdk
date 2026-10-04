@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integtest-pipe-target-sfn/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipe-target-sfn/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipetargetsfnDefaultTestDeployAssert006F7F8F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

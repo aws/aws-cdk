@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sqs from '../../aws-sqs';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
-import { EventBus } from '../lib';
+import { EventBus, IncludeDetail, Level } from '../lib';
 
 describe('event bus', () => {
   test('default event bus', () => {
@@ -17,6 +17,28 @@ describe('event bus', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
+    });
+  });
+
+  test('default event bus with logConfig', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new EventBus(stack, 'Bus', {
+      logConfig: {
+        includeDetail: IncludeDetail.FULL,
+        level: Level.TRACE,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      Name: 'Bus',
+      LogConfig: {
+        IncludeDetail: 'FULL',
+        Level: 'TRACE',
+      },
     });
   });
 
@@ -536,13 +558,13 @@ describe('event bus', () => {
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
       env: {
-        account: '11111111111',
+        account: '111111111111',
         region: 'us-east-1',
       },
     });
     const stack2 = new Stack(app, 'Stack2', {
       env: {
-        account: '22222222222',
+        account: '222222222222',
         region: 'us-east-1',
       },
     });
@@ -556,7 +578,7 @@ describe('event bus', () => {
 
     // THEN
     Template.fromStack(stack1).hasResourceProperties('AWS::Events::EventBus', {
-      Name: 'stack1stack1busca19bdf8ab2e51b62a5a',
+      Name: 'stack1stack1busca19bdf823d8f39f1c0f',
     });
   });
 
@@ -569,7 +591,7 @@ describe('event bus', () => {
     // WHEN
     bus.addToResourcePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      principals: [new iam.AccountPrincipal('111111111111111')],
+      principals: [new iam.AccountPrincipal('111111111111')],
       actions: ['events:PutEvents'],
       sid: '123',
       resources: [bus.eventBusArn],
@@ -593,7 +615,7 @@ describe('event bus', () => {
                 {
                   Ref: 'AWS::Partition',
                 },
-                ':iam::111111111111111:root',
+                ':iam::111111111111:root',
               ],
             ],
           },
@@ -678,7 +700,7 @@ describe('event bus', () => {
     const key = new kms.Key(stack, 'Key');
 
     // WHEN
-    const eventBus = new EventBus(stack, 'Bus', {
+    new EventBus(stack, 'Bus', {
       kmsKey: key,
     });
 

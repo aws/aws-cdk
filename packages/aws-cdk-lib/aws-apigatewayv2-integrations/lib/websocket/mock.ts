@@ -1,8 +1,10 @@
+import type {
+  WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationBindOptions,
+} from '../../../aws-apigatewayv2';
 import {
   WebSocketRouteIntegration,
   WebSocketIntegrationType,
-  WebSocketRouteIntegrationConfig,
-  WebSocketRouteIntegrationBindOptions,
 } from '../../../aws-apigatewayv2';
 
 /**

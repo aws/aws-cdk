@@ -1,10 +1,15 @@
-import { REPOSITORY, REPOSITORY_OWNER } from './config';
 import { backOff } from 'exponential-backoff';
+import { REPOSITORY, REPOSITORY_OWNER } from './config';
 
 const issueQuery = `
   createdAt
   author {
     login
+  }
+  labels(first: 32) {
+    nodes {
+      name
+    }
   }
   timelineItems(last: 16) {
     nodes{
@@ -77,6 +82,11 @@ const prQuery = `
   createdAt
   author {
     login
+  }
+  labels(first: 32) {
+    nodes {
+      name
+    }
   }
   timelineItems(last: 16) {
     nodes {
@@ -206,7 +216,7 @@ export class Github {
       query {
         repository(owner: "${REPOSITORY_OWNER}", name: "${REPOSITORY}") {
           projectV2(number: ${project}) {
-            items(first: 100 ${cursor ? `, after: "${cursor}"` : ''}) {
+            items(first: 50 ${cursor ? `, after: "${cursor}"` : ''}) {
               pageInfo {
                   hasNextPage
                   endCursor
@@ -242,6 +252,14 @@ export class Github {
             id
             fields(first: 100) {
               nodes {
+                ... on ProjectV2SingleSelectField {
+                  id
+                  name
+                  options {
+                    name
+                    id
+                  }
+                }
                 ... on ProjectV2Field {
                     id
                     name

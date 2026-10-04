@@ -1,11 +1,12 @@
 /// !cdk-integ *
 import * as path from 'path';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class SdkV3TestStack extends Stack {

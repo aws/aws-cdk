@@ -1,4 +1,4 @@
-/* eslint-disable-next-line import/no-unresolved */
+
 import type * as AWSLambda from 'aws-lambda';
 
 const password = 'password';
@@ -168,6 +168,71 @@ describe('update', () => {
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: expect.stringMatching(new RegExp(`ALTER USER ${username} PASSWORD '${password}'`)),
+    }));
+  });
+});
+
+describe('special-character handling', () => {
+  test('quotes the user name and doubles embedded double quotes in CREATE USER', async () => {
+    const specialUsername = 'ab"c';
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'pw' }) }));
+
+    await manageUser({ ...resourceProperties, username: specialUsername }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'CREATE USER "ab""c" PASSWORD \'pw\'',
+    }));
+  });
+
+  test('escapes single quotes in the password literal of CREATE USER', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: "pa'ss" }) }));
+
+    await manageUser({ ...resourceProperties, username: 'u' }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'CREATE USER u PASSWORD \'pa\'\'ss\'',
+    }));
+  });
+
+  test('quotes the user name in DROP USER', async () => {
+    const specialUsername = 'u; x';
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+
+    await manageUser({ ...resourceProperties, username: specialUsername }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'DROP USER "u; x"',
+    }));
+  });
+
+  test('escapes single quotes in the password literal of ALTER USER', async () => {
+    const newPassword = "p'q";
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: { ...resourceProperties, username: 'u' },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    // First lookup resolves the old password, second resolves the new password.
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'old' }) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: newPassword }) }));
+
+    await manageUser({ ...resourceProperties, username: 'u' }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'ALTER USER u PASSWORD \'p\'\'q\'',
     }));
   });
 });

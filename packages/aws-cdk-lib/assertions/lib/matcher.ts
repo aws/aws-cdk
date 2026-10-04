@@ -1,4 +1,4 @@
-import { Capture } from './capture';
+import type { Capture } from './capture';
 
 /**
  * Represents a matcher that can perform special data matching

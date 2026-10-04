@@ -2,12 +2,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import type { CfnResource } from 'aws-cdk-lib';
 
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -47,6 +46,14 @@ const listener = lb.addListener('PublicListener', { port: 80, open: true });
 listener.addTargets('ECS', {
   port: 80,
   targets: [service],
+});
+
+// Suppress security guardian rule for ALB default behavior (open: true)
+lb.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
 });
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });

@@ -1,4 +1,5 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 import { LogGroup, QueryDefinition, QueryString } from 'aws-cdk-lib/aws-logs';
@@ -16,9 +17,9 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
       queryDefinitionName: 'QueryDefinition',
       queryString: new QueryString({
         fields: ['@timestamp', '@message'],
-        parse: '@message "[*] *" as loggingType, loggingMessage',
-        filter: 'loggingType = "ERROR"',
-        stats: 'count(loggingMessage) as loggingErrors',
+        parseStatements: ['@message "[*] *" as loggingType, loggingMessage'],
+        filterStatements: [''],
+        statsStatements: ['count(loggingMessage) as loggingErrors'],
         sort: '@timestamp desc',
         limit: 20,
         display: 'loggingMessage',

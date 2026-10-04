@@ -1,5 +1,5 @@
-import { CustomResource } from 'aws-cdk-lib/core';
-import { IApiCall } from './api-call-base';
+import type { CustomResource } from 'aws-cdk-lib/core';
+import type { IApiCall } from './api-call-base';
 
 /**
  * Represents the "actual" results to compare

@@ -1,0 +1,348 @@
+{
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:21:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/secret1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "generateSecretString": {
+          "secretStringTemplate": "*",
+          "generateStringKey": "*",
+          "excludePunctuation": true
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/secret2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "generateSecretString": {
+          "secretStringTemplate": "*",
+          "generateStringKey": "*",
+          "excludePunctuation": true
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/EndpointArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:56:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ChannelGroup (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/group.js:280:34)",
+        "new ChannelGroup (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:22:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Channel (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.js:416:29)",
+        "new Channel (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:25:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/secret1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "secret1737E0624"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:32:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/secret2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "secret2659C8405"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:39:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.js:1981:28)",
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:46:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyA1BBD448"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OriginEndpointPolicy (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/origin-endpoint-policy.js:126:33)",
+        "new OriginEndpointPolicy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.js:1717:27)",
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.js:2033:22)",
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:46:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyCdnAuthRole803DA187"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OriginEndpointPolicy (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/origin-endpoint-policy.js:102:73)",
+        "new OriginEndpointPolicy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.js:1717:27)",
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.js:2033:22)",
+        "new OriginEndpoint (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/test/integ.mediapackagev2-endpoint-cdn-auth.js:46:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:210:36)",
+        "/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/origin-endpoint-policy.js:116: (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/origin-endpoint-policy.js:116:2)",
+        "Array.forEach (:)"
+      ]
+    }
+  ]
+}

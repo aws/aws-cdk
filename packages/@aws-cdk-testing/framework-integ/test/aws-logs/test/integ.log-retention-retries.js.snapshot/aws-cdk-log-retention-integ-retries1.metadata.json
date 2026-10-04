@@ -1,0 +1,1043 @@
+{
+  "/aws-cdk-log-retention-integ-retries1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention0486EBFA5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:180:26)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention1EE2E6696"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention21F957075"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention3148A75BA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention494231F51"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention591D77AE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention6DF401EB9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention72657EF61"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention880A4B8CA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention9/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention90199550D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention10/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention10F7ED9810"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention11/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention1122CC85FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention12/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention12FBA31490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention13/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention136977A520"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention14/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention14731EBD69"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention15/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention153278A425"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention16/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention161FF830E5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention17/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention176155FBE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention18/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention1831457E29"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention19/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention193D6F7E14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention20/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention2029711E62"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention21/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention21F0A3EBF1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention22/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention2233E364BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention23/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention2397FB44A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetention24/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetention24A64A1B58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:111:30)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:166:36)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:6)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:20:50)"
+      ]
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-log-retention-integ-retries1/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new LogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:171:14)",
+        "WrappedClass.ensureSingletonLogRetentionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:145:20)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-retention.js:103:35)",
+        "new LogRetention (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogRetentionRetriesStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-logs/test/integ.log-retention-retries.js:10:13)"
+      ]
+    }
+  ]
+}

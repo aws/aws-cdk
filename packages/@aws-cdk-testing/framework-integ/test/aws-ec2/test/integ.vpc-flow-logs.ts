@@ -1,8 +1,10 @@
 import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
@@ -31,9 +33,7 @@ class FeatureFlagStack extends Stack {
     new Instance(this, 'FlowLogsInstance', {
       vpc,
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
-      machineImage: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-      }),
+      machineImage: MachineImage.latestAmazonLinux2(),
     });
   }
 }
@@ -70,6 +70,10 @@ class TestStack extends Stack {
 
     vpc.addFlowLog('FlowLogsS3', {
       destination: FlowLogDestination.toS3(),
+    });
+
+    vpc.addFlowLog('FlowLogsCloudwatch', {
+      destination: FlowLogDestination.toCloudWatchLogs(),
     });
 
     const bucket = new s3.Bucket(this, 'Bucket', {

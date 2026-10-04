@@ -1,8 +1,9 @@
 import * as ec2 from '../../aws-ec2';
-import * as ecr from '../../aws-ecr';
+import type * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
+import type * as secretsmanager from '../../aws-secretsmanager';
 import { Fn, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Represents credentials used to access a Docker registry.
@@ -60,7 +61,7 @@ export abstract class DockerCredential {
    * to support the `docker-credential-cdk-assets` tool for `docker login`.
    * @internal
    */
-  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource
+  public abstract _renderCdkAssetsConfig(): DockerCredentialCredentialSource;
 }
 
 /** Options for defining credentials for a Docker Credential */
@@ -153,7 +154,7 @@ class EcrDockerCredential extends DockerCredential {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new UnscopedValidationError('must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
+      throw new UnscopedValidationError(lit`SupplyLeastCreate`, 'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }

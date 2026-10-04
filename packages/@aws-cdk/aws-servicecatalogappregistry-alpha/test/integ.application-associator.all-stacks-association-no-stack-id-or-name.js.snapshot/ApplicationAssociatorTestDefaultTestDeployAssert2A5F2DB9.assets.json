@@ -1,15 +1,29 @@
 {
-  "version": "30.0.0",
+  "version": "53.0.0",
   "files": {
-    "19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc": {
+    "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a": {
+      "source": {
+        "path": "asset.b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-0a7ef8ef": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "1fd8990ce05f07f10991977d84c6ef9c15b9b03f9047dee7a578a42344b5cae1": {
+      "displayName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9 Template",
       "source": {
         "path": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-c7904090": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "19dd33f3c17e59cafd22b9459b0a8d9bedbd42252737fedb06b2bcdbcf7809cc.json",
+          "objectKey": "1fd8990ce05f07f10991977d84c6ef9c15b9b03f9047dee7a578a42344b5cae1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

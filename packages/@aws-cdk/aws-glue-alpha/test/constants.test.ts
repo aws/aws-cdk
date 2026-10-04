@@ -54,6 +54,10 @@ describe('Glue Version', () => {
   test('V3_0 should set Glue Version correctly', () => expect(glue.GlueVersion.V3_0).toEqual('3.0'));
 
   test('V4_0 should set Glue Version correctly', () => expect(glue.GlueVersion.V4_0).toEqual('4.0'));
+
+  test('V5_0 should set Glue Version correctly', () => expect(glue.GlueVersion.V5_0).toEqual('5.0'));
+
+  test('V5_1 should set Glue Version correctly', () => expect(glue.GlueVersion.V5_1).toEqual('5.1'));
 });
 
 describe('Job Language', () => {

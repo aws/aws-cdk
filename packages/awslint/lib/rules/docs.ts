@@ -1,5 +1,5 @@
 import { Stability } from '@jsii/spec';
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { Linter } from '../linter';
 
@@ -82,6 +82,10 @@ docsLinter.add({
     // technically we should ban the use of @experimental in the codebase. Since jsii marks all symbols
     // of experimental modules as experimental we can't.
     if (isModuleExperimental(e.ctx.assembly)) {
+      return;
+    }
+    if ((e.ctx.kind === 'type' && CoreTypes.isCfnType(e.ctx.documentable))
+    || (e.ctx.kind === 'interface-property' && CoreTypes.isCfnType(e.ctx.containingType))) {
       return;
     }
     const sym = e.ctx.documentable;

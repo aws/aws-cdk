@@ -1,9 +1,9 @@
-import * as appscaling from '../../aws-applicationautoscaling';
+import type * as appscaling from '../../aws-applicationautoscaling';
 
 /**
  * Interface for scalable attributes
  */
-export interface IScalableTableAttribute {
+export interface IScalableTableAttribute extends appscaling.IScalableTargetRef {
   /**
    * Add scheduled scaling for this scaling attribute
    */

@@ -1,6 +1,6 @@
+import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
 import { CustomLayer, Map, PoliticalView, Style } from '../lib';
 
 let stack: Stack;

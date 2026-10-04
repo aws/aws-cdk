@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import {
+import type { Construct } from 'constructs';
+import type {
   CfnDistribution,
   IOrigin,
-  OriginBase,
   OriginBindConfig,
   OriginBindOptions,
   OriginProps,
+} from '../lib';
+import {
+  OriginBase,
   OriginProtocolPolicy,
 } from '../lib';
 
@@ -26,7 +28,7 @@ export class TestOriginGroup implements IOrigin {
     private readonly primaryDomainName: string,
     private readonly secondaryDomainName: string,
   ) {}
-  /* eslint-disable @cdklabs/no-core-construct */
+
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const primaryOrigin = new TestOrigin(this.primaryDomainName);
     const secondaryOrigin = new TestOrigin(this.secondaryDomainName);

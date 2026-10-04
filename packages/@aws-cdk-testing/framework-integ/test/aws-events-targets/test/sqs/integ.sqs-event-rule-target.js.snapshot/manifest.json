@@ -75,6 +75,24 @@
             "data": "MyDeadLetterQueuePolicyCC35D52C"
           }
         ],
+        "/aws-cdk-sqs-event-target/StandardQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueueD43B45BD"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/StandardQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueuePolicy21A6CBEE"
+          }
+        ],
+        "/aws-cdk-sqs-event-target/StandardQueueRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueueRule82F7813E"
+          }
+        ],
         "/aws-cdk-sqs-event-target/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -85,6 +103,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "StandardQueueD43B45BD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueueD43B45BD"
+          }
+        ],
+        "StandardQueuePolicy21A6CBEE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueuePolicy21A6CBEE"
+          }
+        ],
+        "StandardQueueRule82F7813E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StandardQueueRule82F7813E"
           }
         ]
       },

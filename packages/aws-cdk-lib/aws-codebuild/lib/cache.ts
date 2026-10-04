@@ -1,6 +1,6 @@
-import { CfnProject } from './codebuild.generated';
-import { IProject } from './project';
-import { IBucket } from '../../aws-s3';
+import type { CfnProject } from './codebuild.generated';
+import type { IProject } from './project';
+import type { IBucket } from '../../aws-s3';
 import { Aws, Fn } from '../../core';
 
 export interface BucketCacheOptions {

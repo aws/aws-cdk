@@ -1,7 +1,8 @@
-import { Messages } from './private/message';
+import type { Messages } from './private/message';
 import { findMessage, hasMessage, hasNoMessage } from './private/messages';
-import { Stack, Stage } from '../../core';
-import { SynthesisMessage } from '../../cx-api';
+import type { Stack } from '../../core';
+import { Stage } from '../../core';
+import type { SynthesisMessage } from '../../cx-api';
 import { AssertionError } from './private/error';
 
 /**
@@ -60,7 +61,7 @@ export class Annotations {
   }
 
   /**
-   * Assert that an warning with the given message exists in the synthesized CDK `Stack`.
+   * Assert that a warning with the given message exists in the synthesized CDK `Stack`.
    *
    * @param constructPath the construct path to the warning, provide `'*'` to match all warnings in the template.
    * @param message the warning message as should be expected. This should be a string or Matcher object.
@@ -73,7 +74,7 @@ export class Annotations {
   }
 
   /**
-   * Assert that an warning with the given message does not exist in the synthesized CDK `Stack`.
+   * Assert that a warning with the given message does not exist in the synthesized CDK `Stack`.
    *
    * @param constructPath the construct path to the warning, provide `'*'` to match all warnings in the template.
    * @param message the warning message as should be expected. This should be a string or Matcher object.

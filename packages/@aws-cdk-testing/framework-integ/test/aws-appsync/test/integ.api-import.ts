@@ -24,7 +24,9 @@ const baseStack = new cdk.Stack(app, 'baseStack');
 
 const baseApi = new appsync.GraphqlApi(baseStack, 'baseApi', {
   name: 'baseApi',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  },
 });
 
 const stack = new cdk.Stack(app, 'stack');

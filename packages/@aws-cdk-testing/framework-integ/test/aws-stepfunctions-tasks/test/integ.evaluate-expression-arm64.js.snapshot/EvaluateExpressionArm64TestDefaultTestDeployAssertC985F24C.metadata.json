@@ -1,0 +1,14 @@
+{
+  "/EvaluateExpressionArm64Test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EvaluateExpressionArm64Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

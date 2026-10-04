@@ -1,6 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnDistribution } from './cloudfront.generated';
-import { Duration, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { CfnDistribution } from './cloudfront.generated';
+import type { Duration } from '../../core';
+import { Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The selection criteria for the origin group.
@@ -17,6 +19,27 @@ export enum OriginSelectionCriteria {
    * This option is only valid for AWS Elemental MediaPackage v2 Origins.
    */
   MEDIA_QUALITY_BASED='media-quality-based',
+}
+
+/**
+ * The IP address type for the origin.
+ * Determines whether CloudFront uses IPv4, IPv6, or both when connecting to the origin.
+ */
+export enum OriginIpAddressType {
+  /**
+   * Use only IPv4 addresses
+   */
+  IPV4 = 'ipv4',
+
+  /**
+   * Use only IPv6 addresses
+   */
+  IPV6 = 'ipv6',
+
+  /**
+   * Use both IPv4 and IPv6 addresses
+   */
+  DUALSTACK = 'dualstack',
 }
 
 /**
@@ -128,6 +151,18 @@ export interface OriginOptions {
    * @default - no origin access control
    */
   readonly originAccessControlId?: string;
+
+  /**
+   * The time that a request from CloudFront to the origin can stay open and wait for a response.
+   *
+   * If the complete response isn't received from the origin by this time, CloudFront ends the connection.
+   *
+   * Valid values are 1-3600 seconds, inclusive.
+   *
+   * @default undefined -  AWS CloudFront default is not enforcing a maximum value
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesOrigin.html#response-completion-timeout
+   */
+  readonly responseCompletionTimeout?: Duration;
 }
 
 /**
@@ -176,10 +211,12 @@ export abstract class OriginBase implements IOrigin {
   private readonly originShieldEnabled: boolean;
   private readonly originId?: string;
   private readonly originAccessControlId?: string;
+  private readonly responseCompletionTimeout?: Duration;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());
     validateIntInRangeOrUndefined('connectionAttempts', 1, 3, props.connectionAttempts, false);
+    validateIntInRangeOrUndefined('responseCompletionTimeout', 1, 3600, props.responseCompletionTimeout?.toSeconds());
     validateCustomHeaders(props.customHeaders);
 
     this.domainName = domainName;
@@ -191,6 +228,30 @@ export abstract class OriginBase implements IOrigin {
     this.originId = props.originId;
     this.originShieldEnabled = props.originShieldEnabled ?? true;
     this.originAccessControlId = props.originAccessControlId;
+    this.responseCompletionTimeout = props.responseCompletionTimeout;
+  }
+
+  /**
+   * Validates that responseCompletionTimeout is greater than or equal to readTimeout
+   * when both are specified. This method should be called by subclasses that support readTimeout.
+   */
+  protected validateResponseCompletionTimeoutWithReadTimeout(
+    responseCompletionTimeout?: Duration,
+    readTimeout?: Duration,
+  ): void {
+    withResolved(responseCompletionTimeout, readTimeout, () => {
+      if (responseCompletionTimeout && readTimeout) {
+        const responseCompletionSec = responseCompletionTimeout.toSeconds();
+        const readTimeoutSec = readTimeout.toSeconds();
+
+        if (responseCompletionSec < readTimeoutSec) {
+          throw new UnscopedValidationError(
+            lit`ResponseCompletionTimeoutMustBeGreaterThanReadTimeout`,
+            `responseCompletionTimeout must be equal to or greater than readTimeout (${readTimeoutSec}s), got: ${responseCompletionSec}s.`,
+          );
+        }
+      }
+    });
   }
 
   /**
@@ -202,7 +263,7 @@ export abstract class OriginBase implements IOrigin {
     const vpcOriginConfig = this.renderVpcOriginConfig();
 
     if (!s3OriginConfig && !customOriginConfig && !vpcOriginConfig) {
-      throw new ValidationError('Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
+      throw new ValidationError(lit`SubclassMustOverrideAndProvideOriginConfig`, 'Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
     }
 
     return {
@@ -218,6 +279,7 @@ export abstract class OriginBase implements IOrigin {
         vpcOriginConfig,
         originShield: this.renderOriginShield(this.originShieldEnabled, this.originShieldRegion),
         originAccessControlId: this.originAccessControlId,
+        responseCompletionTimeout: this.responseCompletionTimeout?.toSeconds(),
       },
     };
   }
@@ -275,7 +337,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
   if (value === undefined) { return; }
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
-    throw new UnscopedValidationError(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
+    throw new UnscopedValidationError(lit`ValueMustBeBetweenInclusiveRange`, `${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
 
@@ -303,9 +365,9 @@ function validateCustomHeaders(customHeaders?: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new UnscopedValidationError(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
+    throw new UnscopedValidationError(lit`ProhibitedCustomOriginHeaders`, `The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new UnscopedValidationError(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
+    throw new UnscopedValidationError(lit`ProhibitedCustomOriginHeaderPrefixes`, `The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }

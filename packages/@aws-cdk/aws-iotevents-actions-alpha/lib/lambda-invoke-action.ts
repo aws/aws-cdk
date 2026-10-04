@@ -1,6 +1,6 @@
-import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 
 /**
  * The action to write the data to an AWS Lambda function.

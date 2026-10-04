@@ -1,0 +1,84 @@
+{
+  "/aws-cdk-mediapackagev2-cloudfront/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/EgressDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressDomain"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/DistributionDomainName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionDomainName"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/EndpointArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointArn"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-cloudfront/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ]
+}

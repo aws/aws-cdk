@@ -1,6 +1,7 @@
-import { Metric, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, TypeDeclaration } from '@cdklabs/typewriter';
-import * as camelcase from 'camelcase';
+import type { Metric, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { TypeDeclaration } from '@cdklabs/typewriter';
+import { ClassType } from '@cdklabs/typewriter';
+import camelcase from 'camelcase';
 
 /**
  * Convert a CloudFormation name to a nice TypeScript name
@@ -31,7 +32,6 @@ export function propertyNameFromCloudFormation(name: string): string {
 
   let ret = camelcase(name);
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 
   for (const suffix of Object.keys(suffixes)) {
@@ -47,12 +47,39 @@ export function structNameFromTypeDefinition(def: TypeDefinition) {
   return `${def.name}Property`;
 }
 
+export function camelcasedResourceName(res: Resource, suffix?: string) {
+  return `${camelcase(res.name)}${suffix ?? ''}`;
+}
+
 export function classNameFromResource(res: Resource, suffix?: string) {
   return `Cfn${res.name}${suffix ?? ''}`;
 }
 
 export function propStructNameFromResource(res: Resource, suffix?: string) {
   return `${classNameFromResource(res, suffix)}Props`;
+}
+
+export function interfaceNameFromResource(res: Resource, suffix?: string) {
+  return `I${classNameFromResource(res, suffix)}`;
+}
+
+/**
+ * resource to alias for interface imports
+ * `AWS::S3::Bucket` -> `s3Refs`
+ */
+export function interfaceModuleImportName(res: Resource) {
+  return camelcase(`${modulePartsFromResource(res).moduleBaseName}Refs`);
+}
+
+export function namespaceFromResource(res: Resource) {
+  return res.cloudFormationType.split('::').slice(0, 2).join('::');
+}
+
+/**
+ * Get the AWS namespace prefix from a resource in PascalCase for use as a type alias prefix.
+ */
+export function typeAliasPrefixFromResource(res: Resource) {
+  return camelcase(res.cloudFormationType.split('::')[1], { pascalCase: true });
 }
 
 export function cfnProducerNameFromType(struct: TypeDeclaration) {
@@ -65,6 +92,10 @@ export function cfnParserNameFromType(struct: TypeDeclaration) {
 
 export function cfnPropsValidatorNameFromType(struct: TypeDeclaration) {
   return `${qualifiedName(struct)}Validator`;
+}
+
+export function flattenFunctionNameFromType(struct: TypeDeclaration) {
+  return `flatten${qualifiedName(struct)}`;
 }
 
 export function metricsClassNameFromService(namespace: string) {
@@ -85,6 +116,122 @@ export function staticRequiredTransform() {
 
 export function attributePropertyName(attrName: string) {
   return propertyNameFromCloudFormation(`attr${attrName.replace(/[^a-zA-Z0-9]/g, '')}`);
+}
+
+/**
+ * Make sure the resource name is included in the property
+ */
+export function referencePropertyName(propName: string, resourceName: string) {
+  // Some primaryIdentifier components are structurally deep, like AWS::QuickSight::RefreshSchedule's
+  // 'schedule/scheduleId', or AWS::S3::StorageLens's `configuration/id`. Only return the last part.
+  propName = propName.split('/').pop() ?? propName;
+
+  if (['arn', 'id', 'name', 'url'].includes(propName.toLowerCase())) {
+    return `${camelcase(resourceName)}${propName.charAt(0).toUpperCase()}${propName.slice(1).toLowerCase()}`;
+  }
+
+  return camelcase(propName);
+}
+
+export function referenceInterfaceName(resourceName: string, suffix?: string) {
+  return `I${resourceName}${suffix ?? ''}Ref`;
+}
+
+export function referenceInterfaceAttributeName(resourceName: string) {
+  return `${camelcase(resourceName)}Ref`;
+}
+
+/**
+ * namespace to module name parts (`AWS::S3` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromNamespace(namespace: string) {
+  const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
+  const moduleName = `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase();
+  return {
+    moduleName,
+    moduleFamily,
+    moduleBaseName,
+  };
+}
+
+/**
+ * resource to module name parts (`AWS::S3::Bucket` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromResource(res: Resource) {
+  return modulePartsFromNamespace(namespaceFromResource(res));
+}
+
+/**
+ * Submodule identifier from name (`aws-s3` -> `aws_s3`)
+ */
+export function submoduleSymbolFromName(name: string) {
+  return name.replace(/-/g, '_');
+}
+
+/**
+ * Submodule identifier from name (`AWS::S3::Bucket` -> `aws_s3`)
+ */
+export function submoduleSymbolFromResource(res: Resource) {
+  return modulePartsFromResource(res).moduleName.replace(/-/g, '_');
+}
+
+function kebabToCamelCase(str: string): string {
+  return str.replace(/-([a-zA-Z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
+ * Get the namespace name from the event name
+ */
+export function eventNamespaceName(eventName: string) {
+  if ((eventName.match(/@/g) || []).length !== 1) {
+    throw new Error('Input must contain exactly one "@" symbol');
+  }
+
+  // Extract the portion after '@' and convert it as a valid class/interface name. Some schema names (e.g. "aws.account@RegionOpt-InStatusChange")
+  // contain characters such as hyphens
+  const extracted = kebabToCamelCase(eventName.split('@')[1]);
+
+  if (!extracted) {
+    throw new Error('No event name found after "@" symbol');
+  }
+
+  // Check if the extracted string contains only alphanumeric characters
+  if (!/^[a-zA-Z0-9]+$/.test(extracted)) {
+    throw new Error(`Event name '${extracted}' contains invalid characters`);
+  }
+
+  return extracted;
+}
+
+/**
+ * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
+ */
+export function eventPatternMethodName(eventName: string) {
+  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB', 'IVS'];
+
+  const prefix = prefixes.find(p => eventName.startsWith(p));
+
+  if (prefix) {
+    return `${prefix.toLowerCase()}${eventName.slice(prefix.length)}Pattern`;
+  }
+  if (eventName[1].toUpperCase() === eventName[1]) {
+    throw new Error(`Unrecognized uppercase prefix in event name '${eventName}'. Add the service prefix to the prefixes array.`);
+  }
+  return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
+}
+
+/**
+ * Get the fully qualified event pattern return type name
+ */
+export function eventPatternTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.EventPattern`;
+}
+
+/**
+ * Get the fully qualified event pattern props type name
+ */
+export function eventPatternPropsTypeName(eventsClassName: string, eventName: string) {
+  return `${eventsClassName}.${eventName}.PatternProps`;
 }
 
 /**
@@ -109,4 +256,73 @@ function makeIdentifier(s: string) {
   // If it doesn't start with an alpha char, prefix with _
   s = s.replace(/^([^a-zA-Z_])/, '_$1');
   return s;
+}
+
+/**
+ * Sanitize a type name to be a valid TypeScript identifier
+ * Converts kebab-case and other invalid characters to PascalCase
+ *
+ * Also has a list of identifiers we need to avoid because they might cause
+ * problems in some languages. The "Object" one is fixed separately in jsii
+ * but we want to push this out now.
+ */
+export function sanitizeTypeName(name: string): string {
+  const id = makeIdentifier(camelcase(name, { pascalCase: true }));
+
+  return RESERVED_TYPE_NAMES_LIST.has(id) ? `${id}Type` : id;
+}
+
+export function santitizeFieldName(name: string): string {
+  return RESERVED_FIELD_NAMES_LIST.has(name) ? `${name}Property` : name;
+}
+
+/**
+ * Derive a TypeScript property name from a CloudWatch dimension name.
+ *
+ * Replaces non-alphanumeric characters (e.g. `:`, `/`) with `-` before passing
+ * to `propertyNameFromCloudFormation` so camelCasing produces a clean identifier.
+ */
+export function dimensionPropertyName(dimName: string): string {
+  return propertyNameFromCloudFormation(dimName.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
+const RESERVED_TYPE_NAMES_LIST = new Set(['Object', 'Tag', 'Math']);
+
+const RESERVED_FIELD_NAMES_LIST = new Set(['build']);
+
+/**
+ * Convert a known dimension value to an enum member name: MyEnum -> MY_ENUM
+ */
+export function dimensionEnumMemberName(value: string): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+}
+
+/**
+ * Convert a metric name to a camelCase method name like `invocations`.
+ *
+ * The method is already on a metrics class, so no `metric` prefix is added.
+ * Names that start with a digit are prefixed with `_` (e.g. `_4xxError`).
+ */
+export function metricMethodName(name: string): string {
+  const pascal = metricSanitizeName(name);
+  // Normalize HTTP status code patterns after PascalCasing (e.g. 4Xx -> 4xx, 5Xx -> 5xx)
+  const normalized = pascal.replace(/([2-5])xx/gi, '$1xx');
+  const stripped = normalized.replace(/^_/, '');
+  const camel = stripped.charAt(0).toLowerCase() + stripped.slice(1);
+  // Prefix with _ when the name starts with a digit (invalid JS identifier)
+  return /^\d/.test(camel) ? `_${camel}` : camel;
+}
+
+/**
+ * Sanitize a metric-related name to PascalCase
+ */
+export function metricSanitizeName(name: string): string {
+  return sanitizeTypeName(name.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
+/**
+ * Derive a dimension set class name from its name: "Function" → "FunctionMetrics"
+ */
+export function dimSetClassName(name: string): string {
+  return `${metricSanitizeName(name)}Metrics`;
 }

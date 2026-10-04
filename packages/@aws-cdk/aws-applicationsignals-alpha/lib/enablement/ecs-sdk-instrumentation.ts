@@ -1,6 +1,6 @@
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as constants from './constants';
-import * as inst from './instrumentation-versions';
+import type * as inst from './instrumentation-versions';
 
 /**
  * Interface for environment extensions.

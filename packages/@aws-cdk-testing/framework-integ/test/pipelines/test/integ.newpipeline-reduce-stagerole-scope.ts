@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, Stage } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -53,8 +54,11 @@ class PipelineStack extends Stack {
       dockerEnabledForSynth: true,
       codeBuildDefaults: {
         buildEnvironment: {
-          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2023_5,
           computeType: codebuild.ComputeType.SMALL,
+          dockerServer: {
+            computeType: codebuild.DockerServerComputeType.SMALL,
+          },
         },
         cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER),
       },

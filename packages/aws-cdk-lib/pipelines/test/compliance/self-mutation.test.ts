@@ -1,7 +1,5 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { Match, Template } from '../../../assertions';
 import * as cb from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
 import { Stack, Stage } from '../../../core';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';
@@ -135,7 +133,7 @@ test('self-update project role uses tagged bootstrap-role permissions', () => {
         {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Resource: 'arn:*:iam::123pipeline:role/*',
+          Resource: 'arn:*:iam::123456789012:role/*',
           Condition: {
             'ForAnyValue:StringEquals': {
               'iam:ResourceTag/aws-cdk:bootstrap-role': ['image-publishing', 'file-publishing', 'deploy'],

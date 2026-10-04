@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "testCases": {
     "BatchMultiNodeJobDefinitionTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert",
       "assertionStackName": "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }

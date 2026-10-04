@@ -1,10 +1,10 @@
 {
   "targets": {
-    "dotnet": {
-      "namespace": "Amazon.CDK.AWS.PinpointEmail"
-    },
     "java": {
       "package": "software.amazon.awscdk.services.pinpointemail"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.PinpointEmail"
     },
     "python": {
       "module": "aws_cdk.aws_pinpointemail"

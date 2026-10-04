@@ -1,4 +1,5 @@
-import { JsonSchema, JsonSchemaType, JsonSchemaVersion } from '../lib';
+import type { JsonSchema } from '../lib';
+import { JsonSchemaType, JsonSchemaVersion } from '../lib';
 import { JsonSchemaMapper, parseAwsApiCall, parseMethodOptionsPath } from '../lib/util';
 
 describe('util', () => {

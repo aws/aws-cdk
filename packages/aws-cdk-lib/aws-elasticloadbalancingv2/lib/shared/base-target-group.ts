@@ -1,9 +1,17 @@
-import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
-import * as ec2 from '../../../aws-ec2';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
+import type { Protocol } from './enums';
+import { TargetType } from './enums';
+import type { Attributes } from './util';
+import { renderAttributes } from './util';
+import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -87,6 +95,51 @@ export interface BaseTargetGroupProps {
    * @default undefined - ELB defaults to IPv4
    */
   readonly ipAddressType?: TargetGroupIpAddressType;
+
+  /**
+   * Configuring target group health.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+   * @default - use default configuration
+   */
+  readonly targetGroupHealth?: TargetGroupHealth;
+}
+
+/**
+ * Properties for configuring a target group health
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
+ */
+export interface TargetGroupHealth {
+  /**
+   * The minimum number of targets that must be healthy for DNS failover.
+   * If below this value, mark the zone as unhealthy in DNS.
+   * Use 0 for "off".
+   * @default 1
+   */
+  readonly dnsMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy for DNS failover.
+   * If below this value, mark the zone as unhealthy in DNS.
+   * Use 0 for "off".
+   * @default 0
+   */
+  readonly dnsMinimumHealthyTargetPercentage?: number;
+
+  /**
+   * The minimum number of targets that must be healthy for unhealthy state routing.
+   * If below this value, send traffic to all targets including unhealthy ones.
+   * @default 1
+   */
+  readonly routingMinimumHealthyTargetCount?: number;
+
+  /**
+   * The minimum percentage of targets that must be healthy for unhealthy state routing.
+   * If below this value, send traffic to all targets including unhealthy ones.
+   * Use 0 for "off".
+   * @default 0
+   */
+  readonly routingMinimumHealthyTargetPercentage?: number;
 }
 
 /**
@@ -185,11 +238,28 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
+@noBoxStackTraces
 export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
   public readonly targetGroupArn: string;
+
+  /**
+   * A reference to this target group
+   */
+  public get targetGroupRef(): aws_elasticloadbalancingv2.TargetGroupReference {
+    return {
+      targetGroupArn: this.targetGroupArn,
+    };
+  }
+
+  /**
+   * The environment this resource belongs to
+   */
+  public get env(): cdk.ResourceEnvironment {
+    return cdk.Stack.of(this).env;
+  }
 
   /**
    * The full name of the target group
@@ -224,7 +294,12 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * Health check for the members of this target group
    */
-  public healthCheck: HealthCheck;
+  public get healthCheck(): HealthCheck {
+    return this._healthCheck.get() as HealthCheck;
+  }
+  public set healthCheck(value: HealthCheck) {
+    this._healthCheck.set(value);
+  }
 
   /**
    * Default port configured for members of this target group
@@ -239,17 +314,25 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * The types of the directly registered members of this target group
    */
-  protected targetType?: TargetType;
+  protected get targetType(): TargetType | undefined {
+    return this._targetType.get() as TargetType | undefined;
+  }
+  protected set targetType(value: TargetType | undefined) {
+    this._targetType.set(value);
+  }
 
   /**
    * Attributes of this target group
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: IBox<Attributes> = Box.fromValue({});
+
+  private readonly _healthCheck: IBox<HealthCheck>;
+  private readonly _targetType: IBox<TargetType | undefined>;
 
   /**
    * The JSON objects returned by the directly registered members of this target group
    */
-  private readonly targetsJson = new Array<CfnTargetGroup.TargetDescriptionProperty>();
+  private readonly _targetsJson: IArrayBox<CfnTargetGroup.TargetDescriptionProperty>;
 
   /**
    * The target group VPC
@@ -274,36 +357,72 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
-    this.healthCheck = baseProps.healthCheck || {};
+    if (baseProps.targetGroupHealth?.dnsMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        'target_group_health.dns_failover.minimum_healthy_targets.count',
+        baseProps.targetGroupHealth.dnsMinimumHealthyTargetCount == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.dnsMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.dnsMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        'target_group_health.dns_failover.minimum_healthy_targets.percentage',
+        baseProps.targetGroupHealth.dnsMinimumHealthyTargetPercentage == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.dnsMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.routingMinimumHealthyTargetCount !== undefined) {
+      this.setAttribute(
+        'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count',
+        baseProps.targetGroupHealth.routingMinimumHealthyTargetCount.toString(),
+      );
+    }
+
+    if (baseProps.targetGroupHealth?.routingMinimumHealthyTargetPercentage !== undefined) {
+      this.setAttribute(
+        'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage',
+        baseProps.targetGroupHealth.routingMinimumHealthyTargetPercentage == 0
+          ? 'off'
+          : baseProps.targetGroupHealth.routingMinimumHealthyTargetPercentage.toString(),
+      );
+    }
+
+    this._targetsJson = Box.fromArray();
+
+    this._healthCheck = Box.fromValue<HealthCheck>(baseProps.healthCheck || {});
     this.vpc = baseProps.vpc;
-    this.targetType = baseProps.targetType;
+    this._targetType = Box.fromValue<TargetType | undefined>(baseProps.targetType);
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
-      targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
+      targetGroupAttributes: this.attributes.derive(renderAttributes).derive(v => v.length === 0 ? undefined : v),
+      targetType: cdk.Token.asString(this._targetType),
+      targets: this._targetsJson,
+      vpcId: cdk.Token.asString(
+        Box.combine({ targetType: this._targetType }, ({ targetType }) =>
+          this.vpc && targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined,
+        ),
+      ),
 
       // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck?.enabled }),
-      healthCheckIntervalSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.interval?.toSeconds(),
-      }),
-      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck?.path }),
-      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck?.port }),
-      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck?.protocol }),
-      healthCheckTimeoutSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.timeout?.toSeconds(),
-      }),
-      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
-          grpcCode: this.healthCheck.healthyGrpcCodes,
-          httpCode: this.healthCheck.healthyHttpCodes,
+      healthCheckEnabled: this._healthCheck.derive(hc => hc?.enabled),
+      healthCheckIntervalSeconds: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.interval?.toSeconds())),
+      healthCheckPath: cdk.Token.asString(this._healthCheck.derive(hc => hc?.path)),
+      healthCheckPort: cdk.Token.asString(this._healthCheck.derive(hc => hc?.port)),
+      healthCheckProtocol: cdk.Token.asString(this._healthCheck.derive(hc => hc?.protocol)),
+      healthCheckTimeoutSeconds: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.timeout?.toSeconds())),
+      healthyThresholdCount: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.healthyThresholdCount)),
+      unhealthyThresholdCount: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.unhealthyThresholdCount)),
+      matcher: this._healthCheck.derive(hc =>
+        hc?.healthyHttpCodes !== undefined || hc?.healthyGrpcCodes !== undefined ? {
+          grpcCode: hc.healthyGrpcCodes,
+          httpCode: hc.healthyHttpCodes,
         } : undefined,
-      }),
+      ),
       ipAddressType: baseProps.ipAddressType,
 
       ...additionalProps,
@@ -340,7 +459,33 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
    */
   public setAttribute(key: string, value: string | undefined) {
-    this.attributes[key] = value;
+    if (value !== undefined) {
+      switch (key) {
+        case 'target_group_health.dns_failover.minimum_healthy_targets.count':
+          if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
+            throw new ValidationError(lit`MustBeIntegerGreaterThan`, `${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
+          if (!Number.isInteger(+value) || +value < 1) {
+            throw new ValidationError(lit`MustBePositiveInteger`, `${key} must be an integer greater than 0. Received: ${value}`, this);
+          }
+          break;
+        case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
+        case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage':
+          if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
+            throw new ValidationError(lit`MustBeIntegerOff`, `${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    this.attributes.update(attrs => {
+      attrs[key] = value;
+      return attrs;
+    });
   }
 
   /**
@@ -348,23 +493,23 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new ValidationError(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
+      throw new ValidationError(lit`AlreadyType`, `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
 
-    if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new ValidationError('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
+    if (this.targetType === TargetType.LAMBDA && this._targetsJson.length >= 1) {
+      throw new ValidationError(lit`TargetGroupContainOneTarget`, 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {
-      this.targetsJson.push(props.targetJson);
+      this._targetsJson.push(props.targetJson);
     }
   }
 
   protected validateTargetGroup(): string[] {
     const ret = new Array<string>();
 
-    if (this.targetType === undefined && this.targetsJson.length === 0) {
+    if (this.targetType === undefined && this._targetsJson.length === 0) {
       cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup', "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
@@ -439,7 +584,7 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
 /**
  * A target group
  */
-export interface ITargetGroup extends IConstruct {
+export interface ITargetGroup extends IConstruct, aws_elasticloadbalancingv2.ITargetGroupRef {
   /**
    * The name of the target group
    */

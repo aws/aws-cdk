@@ -1,0 +1,14 @@
+{
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

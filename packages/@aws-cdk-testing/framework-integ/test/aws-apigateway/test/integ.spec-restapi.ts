@@ -14,6 +14,7 @@ class Test extends cdk.Stack {
       apiDefinition: apigateway.ApiDefinition.fromAsset(path.join(__dirname, 'sample-definition.yaml')),
       disableExecuteApiEndpoint: true,
       minCompressionSize: Size.bytes(1024),
+      binaryMediaTypes: ['image/png', 'application/pdf'],
       retainDeployments: true,
       cloudWatchRole: true,
       deployOptions: {

@@ -4,7 +4,7 @@ import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
 
 /* Allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('TableBucketPolicy', () => {
   const TABLE_BUCKET_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TableBucketPolicy';

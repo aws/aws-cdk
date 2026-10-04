@@ -1,12 +1,12 @@
-import { Construct } from 'constructs';
-import { CfnGatewayRoute } from './appmesh.generated';
-import { HeaderMatch } from './header-match';
-import { HttpRouteMethod } from './http-route-method';
+import type { Construct } from 'constructs';
+import type { CfnGatewayRoute } from './appmesh.generated';
+import type { HeaderMatch } from './header-match';
+import type { HttpRouteMethod } from './http-route-method';
 import { HttpGatewayRoutePathMatch } from './http-route-path-match';
 import { validateGrpcMatchArrayLength, validateGrpcGatewayRouteMatch } from './private/utils';
-import { QueryParameterMatch } from './query-parameter-match';
+import type { QueryParameterMatch } from './query-parameter-match';
 import { Protocol } from './shared-interfaces';
-import { IVirtualService } from './virtual-service';
+import type { IVirtualService } from './virtual-service';
 
 /**
  * Configuration for gateway route host name match.

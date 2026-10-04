@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import * as bedrock from '../../../aws-bedrock';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct } from 'constructs';
+import type * as bedrock from '../../../aws-bedrock';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
-import * as s3 from '../../../aws-s3';
+import type * as kms from '../../../aws-kms';
+import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -198,7 +199,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    *
    * @default - use auto generated role
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 
   /**
    * The S3 bucket configuration where the training data is stored.
@@ -240,7 +241,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private _role: iam.IRole;
+  private _role: iam.IRoleRef;
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -261,7 +262,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (!this.props.validationData && !this.props.hyperParameters?.['Evaluation percentage']) {
-      throw new ValidationError('validationData or Evaluation percentage hyperparameter must be provided.', this);
+      throw new ValidationError(lit`ValidationDataEvaluationPercentageHyperparameter`, 'validationData or Evaluation percentage hyperparameter must be provided.', this);
     }
 
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
@@ -271,7 +272,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       const poliyStatement = new iam.PolicyStatement({
         actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
         resources: ['*'],
-        principals: [new iam.ArnPrincipal(this._role.roleArn)],
+        principals: [new iam.ArnPrincipal(this._role.roleRef.roleArn)],
         conditions: {
           StringEquals: {
             'kms:ViaService': [
@@ -283,7 +284,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       const result = this.props.customModelKmsKey.addToResourcePolicy(poliyStatement, true);
 
       if (result.statementAdded === false) {
-        throw new ValidationError('Imported KMS key is not used as the `customModelKmsKey`.', this);
+        throw new ValidationError(lit`ImportedUsed`, 'Imported KMS key is not used as the `customModelKmsKey`.', this);
       }
     }
   }
@@ -292,7 +293,10 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
    * The IAM role for the bedrock create model customization job
    */
   public get role(): iam.IRole {
-    return this._role;
+    if ('grant' in this._role) {
+      return this._role as iam.IRole;
+    }
+    throw new ValidationError(lit`RoleInstanceRole`, `Role is not an instance of IRole: ${this._role.constructor.name}`, this);
   }
 
   /**
@@ -300,7 +304,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-iam-role.html
    */
-  private renderBedrockCreateModelCustomizationJobRole(): iam.IRole {
+  private renderBedrockCreateModelCustomizationJobRole(): iam.IRoleRef {
     if (this.props.role) {
       return this.props.role;
     }
@@ -483,7 +487,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [this._role.roleArn],
+        resources: [this._role.roleRef.roleArn],
       }),
     ];
     return policyStatements;
@@ -491,19 +495,19 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private validateStringLength(name: string, min: number, max: number, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && (value.length < min || value.length > max)) {
-      throw new ValidationError(`${name} must be between ${min} and ${max} characters long, got: ${value.length}.`, this);
+      throw new ValidationError(lit`StringLengthOutOfRange`, `${name} must be between ${min} and ${max} characters long, got: ${value.length}.`, this);
     }
   }
 
   private validatePattern(name: string, pattern: RegExp, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && !pattern.test(value)) {
-      throw new ValidationError(`${name} must match the pattern ${pattern.toString()}, got: ${value}.`, this);
+      throw new ValidationError(lit`PatternMismatch`, `${name} must match the pattern ${pattern.toString()}, got: ${value}.`, this);
     }
   }
 
   private validateArrayLength(name: string, min: number, max: number, value?: any[]): void {
     if (value !== undefined && (value.length < min || value.length > max)) {
-      throw new ValidationError(`${name} must be between ${min} and ${max} items long, got: ${value.length}.`, this);
+      throw new ValidationError(lit`ArrayLengthOutOfRange`, `${name} must be between ${min} and ${max} items long, got: ${value.length}.`, this);
     }
   }
 
@@ -528,7 +532,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         OutputDataConfig: {
           S3Uri: this.props.outputData.bucket.s3UrlForObject(this.props.outputData.path),
         },
-        RoleArn: this._role.roleArn,
+        RoleArn: this._role.roleRef.roleArn,
         TrainingDataConfig: {
           S3Uri: this.props.trainingData.bucket.s3UrlForObject(this.props.trainingData.path),
         },

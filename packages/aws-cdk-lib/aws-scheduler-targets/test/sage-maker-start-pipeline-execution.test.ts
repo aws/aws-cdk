@@ -1,10 +1,12 @@
 import { Template } from '../../assertions';
-import { AccountRootPrincipal, Grant, IGrantable, Role } from '../../aws-iam';
-import { IPipeline } from '../../aws-sagemaker';
+import type { IGrantable } from '../../aws-iam';
+import { AccountRootPrincipal, Grant, Role } from '../../aws-iam';
+import type { IPipeline, PipelineReference } from '../../aws-sagemaker';
 import { ScheduleExpression, Schedule, ScheduleGroup } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
 import { App, Duration, Resource, Stack } from '../../core';
-import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
+import type { SageMakerPipelineParameter } from '../lib';
+import { SageMakerStartPipelineExecution } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
@@ -35,8 +37,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline1',
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd15d6b89C69AEC', 'Arn'] },
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetc814cf67954656', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
             PipelineParameterList: [{
@@ -54,11 +56,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetc814cf67954656' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -112,7 +114,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline1',
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           RoleArn: { 'Fn::GetAtt': ['ProvidedTargetRole8CFDD54A', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -131,7 +133,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
         ],
       },
@@ -192,11 +194,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetc814cf67954656' }],
     }, 1);
   });
 
@@ -275,11 +277,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetc814cf67954656' }],
     }, 1);
   });
 
@@ -304,8 +306,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline2',
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget6a2eb1D8028120', 'Arn'] },
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline2',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd635c7E0461A75', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
             PipelineParameterList: [{
@@ -323,11 +325,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline2',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline2',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget6a2eb1D8028120' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd635c7E0461A75' }],
     });
   });
 
@@ -347,7 +349,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline1',
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -366,7 +368,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
         ],
       },
@@ -397,7 +399,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline2',
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline2',
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -416,7 +418,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline2',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline2',
           },
         ],
       },
@@ -443,7 +445,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
           {
             Action: 'sqs:SendMessage',
@@ -454,7 +456,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetc814cf67954656' }],
     });
   });
 
@@ -477,7 +479,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: 'MyPipeline1',
+            Resource: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
           },
           {
             Action: 'sqs:SendMessage',
@@ -486,7 +488,7 @@ describe('schedule target', () => {
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetc814cf67954656' }],
     });
   });
 
@@ -505,8 +507,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: 'MyPipeline1',
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd15d6b89C69AEC', 'Arn'] },
+          Arn: 'arn:aws:sagemaker:us-east-1:123456789012:pipeline/MyPipeline1',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetc814cf67954656', 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
@@ -588,8 +590,12 @@ class FakePipeline extends Resource implements IPipeline {
   public readonly pipelineName;
   constructor(scope: Stack, id: string, props: FakePipelineProps) {
     super(scope, id);
-    this.pipelineArn = props.pipelineName;
+    this.pipelineArn = `arn:aws:sagemaker:us-east-1:123456789012:pipeline/${props.pipelineName}`;
     this.pipelineName = props.pipelineName;
+  }
+
+  public get pipelineRef(): PipelineReference {
+    return { pipelineName: this.pipelineName };
   }
 
   public grantStartPipelineExecution(grantee: IGrantable): Grant {

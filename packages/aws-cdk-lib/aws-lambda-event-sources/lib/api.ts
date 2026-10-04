@@ -1,11 +1,12 @@
 import * as apigw from '../../aws-apigateway';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Names, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export class ApiEventSource implements lambda.IEventSource {
   constructor(private readonly method: string, private readonly path: string, private readonly options?: apigw.MethodOptions) {
     if (!path.startsWith('/')) {
-      throw new UnscopedValidationError(`Path must start with "/": ${path}`);
+      throw new UnscopedValidationError(lit`PathStart`, `Path must start with "/": ${path}`);
     }
   }
 

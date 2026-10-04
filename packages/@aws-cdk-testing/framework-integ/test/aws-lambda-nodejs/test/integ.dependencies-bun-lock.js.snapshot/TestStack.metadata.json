@@ -1,0 +1,160 @@
+{
+  "/TestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.dependencies-bun-lock.js:13:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TestStack/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        },
+        "depsLockFilePath": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        },
+        "depsLockFilePath": "*"
+      }
+    }
+  ],
+  "/TestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/TestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/TestStack/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/TestStack/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.dependencies-bun-lock.js:14:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TestStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction76856677C48862D5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:116:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TestStack/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.dependencies-bun-lock.js:14:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/TestStack/Function/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

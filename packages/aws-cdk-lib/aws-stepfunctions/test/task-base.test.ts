@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { FakeTask } from './private/fake-task';
 import { renderGraph } from './private/render-util';
-import { Metric } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as sfn from '../lib';

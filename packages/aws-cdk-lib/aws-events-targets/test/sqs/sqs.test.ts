@@ -2,8 +2,7 @@ import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import * as ssm from '../../../aws-ssm';
-import { App, CustomResource, Duration, Stack } from '../../../core';
+import { App, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
 
@@ -259,12 +258,37 @@ test('Encrypted queues result in a permissive policy statement when the feature 
   });
 });
 
-test('fail if messageGroupId is specified on non-fifo queues', () => {
+test('messageGroupId is supported for standard (non-FIFO) queues', () => {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
 
-  expect(() => new targets.SqsQueue(queue, { messageGroupId: 'MyMessageGroupId' }))
-    .toThrow(/messageGroupId cannot be specified/);
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    messageGroupId: 'MyMessageGroupId',
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        SqsParameters: {
+          MessageGroupId: 'MyMessageGroupId',
+        },
+      },
+    ],
+  });
 });
 
 test('fifo queues are synthesized correctly', () => {

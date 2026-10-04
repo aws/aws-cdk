@@ -50,7 +50,7 @@ const callJob = new EksCall(stack, 'Call a EKS Endpoint', {
 const chain = sfn.Chain.start(callJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   role: executionRole,
   timeout: cdk.Duration.seconds(30),
 });

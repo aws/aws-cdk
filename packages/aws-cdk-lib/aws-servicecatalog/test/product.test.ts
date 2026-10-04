@@ -7,7 +7,7 @@ import * as servicecatalog from '../lib';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from '../lib';
 import { ProductStackHistory } from '../lib/product-stack-history';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 describe('Product', () => {
   let app: cdk.App;
   let stack: cdk.Stack;

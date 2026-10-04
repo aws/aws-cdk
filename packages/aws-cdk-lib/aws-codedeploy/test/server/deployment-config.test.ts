@@ -2,7 +2,7 @@ import { Template } from '../../../assertions';
 import * as cdk from '../../../core';
 import * as codedeploy from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('CodeDeploy DeploymentConfig', () => {
   test('can be created by specifying only minHealthyHostCount', () => {

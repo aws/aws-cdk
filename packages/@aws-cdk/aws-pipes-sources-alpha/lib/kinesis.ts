@@ -1,8 +1,9 @@
-import { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IStream } from 'aws-cdk-lib/aws-kinesis';
+import type { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IStream } from 'aws-cdk-lib/aws-kinesis';
 import { KinesisStartingPosition } from './enums';
-import { StreamSource, StreamSourceParameters } from './streamSource';
+import type { StreamSourceParameters } from './streamSource';
+import { StreamSource } from './streamSource';
 
 /**
  * Parameters for the Kinesis source.

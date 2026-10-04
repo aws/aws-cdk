@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { ISecret } from './secret';
+import type { Construct } from 'constructs';
+import type { ISecret } from './secret';
 import { CfnResourcePolicy } from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import { Resource } from '../../core';

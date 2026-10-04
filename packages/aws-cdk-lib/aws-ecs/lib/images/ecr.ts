@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import * as ecr from '../../../aws-ecr';
-import { ContainerDefinition } from '../container-definition';
-import { ContainerImage, ContainerImageConfig } from '../container-image';
+import type { Construct } from 'constructs';
+import type * as ecr from '../../../aws-ecr';
+import type { ContainerDefinition } from '../container-definition';
+import type { ContainerImageConfig } from '../container-image';
+import { ContainerImage } from '../container-image';
 
 /**
  * An image from an Amazon ECR repository.

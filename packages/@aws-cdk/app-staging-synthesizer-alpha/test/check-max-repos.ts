@@ -20,7 +20,7 @@ function checkMaxRepos(): number {
     templateSize = fs.statSync(path.join(cloudAssembly, `StagingStack-${APP_ID_MAX}-ACCOUNT-REGION.template.json`)).size;
 
     // the integ test includes 1 other ECR repository
-    // eslint-disable-next-line no-console
+
     console.log(`repos: ${copies + 1}, size: ${templateSize} bytes`);
 
     copies += 1;

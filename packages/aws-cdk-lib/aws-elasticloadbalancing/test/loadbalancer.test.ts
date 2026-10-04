@@ -2,7 +2,8 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { AmazonLinuxGeneration, Connections, Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, Peer, SubnetType, Vpc } from '../../aws-ec2';
 import { Duration, Stack } from '../../core';
-import { ILoadBalancerTarget, InstanceTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
+import type { ILoadBalancerTarget } from '../lib';
+import { InstanceTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
 describe('tests', () => {
   test('test specifying nonstandard port works', () => {

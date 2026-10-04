@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 const paramName = 'integ-list-param';
 const paramValue = ['value1', 'value2'];

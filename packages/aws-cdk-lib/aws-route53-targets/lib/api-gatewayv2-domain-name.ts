@@ -1,4 +1,4 @@
-import * as route53 from '../../aws-route53';
+import type * as route53 from '../../aws-route53';
 
 /**
  * Defines an API Gateway V2 domain name as the alias target.

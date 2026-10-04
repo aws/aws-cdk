@@ -110,6 +110,7 @@ test('managed policies are provided', () => {
   expect(OriginRequestPolicy.ELEMENTAL_MEDIA_TAILOR.originRequestPolicyId).toEqual('775133bc-15f2-49f9-abea-afb2e0bf67d2');
   expect(OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022.originRequestPolicyId).toEqual('33f36d7e-f396-46d9-90e0-52428a34d9dc');
   expect(OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER.originRequestPolicyId).toEqual('b689b0a8-53d0-40ab-baf2-68738e2966ac');
+  expect(OriginRequestPolicy.HOST_HEADER_ONLY.originRequestPolicyId).toEqual('bf0718e1-ba1e-49d1-88b1-f726733018ae');
 });
 
 // OriginRequestCookieBehavior and OriginRequestQueryStringBehavior have identical behavior

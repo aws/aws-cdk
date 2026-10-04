@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockGuardrail/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-guardrail-1"
+      ],
+      "assertionStack": "BedrockGuardrail/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockGuardrailDefaultTestDeployAssert40827DC2"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}

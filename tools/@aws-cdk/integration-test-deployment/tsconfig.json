@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "Node20",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
+    "strict": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "outDir": ".",
+    "esModuleInterop": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts"
+  ]
+}

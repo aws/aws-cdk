@@ -1,8 +1,8 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as glue from '../lib';
 
 /**
  * To verify the ability to run jobs created in this test
@@ -43,8 +43,7 @@ new glue.ScalaSparkStreamingJob(stack, 'OverrideScalaSparkStreamingJob', {
   role: iam_role,
   description: 'Optional Override ScalaSpark Streaming Job',
   glueVersion: glue.GlueVersion.V3_0,
-  numberOfWorkers: 20,
-  workerType: glue.WorkerType.G_1X,
+  workerConfiguration: { workerType: glue.WorkerType.G_1X, numberOfWorkers: 20 },
   timeout: cdk.Duration.minutes(15),
   jobName: 'Optional Override ScalaSpark Streaming Job',
   defaultArguments: {

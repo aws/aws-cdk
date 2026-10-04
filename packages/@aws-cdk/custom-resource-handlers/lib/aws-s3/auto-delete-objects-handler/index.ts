@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 

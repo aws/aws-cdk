@@ -177,7 +177,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -332,26 +332,6 @@ describe('lambda api', () => {
     });
   });
 
-  test('LambdaRestApi allows passing GENERATE_IF_NEEDED as the physical name', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
-      handler: new lambda.Function(stack, 'handler', {
-        handler: 'index.handler',
-        code: lambda.Code.fromInline('boom'),
-        runtime: lambda.Runtime.NODEJS_LATEST,
-      }),
-      restApiName: cdk.PhysicalName.GENERATE_IF_NEEDED,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::RestApi', {
-      Name: Match.absent(),
-    });
-  });
-
   test('provided integrationOptions are applied', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -359,7 +339,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -386,7 +366,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -416,7 +396,7 @@ describe('lambda api', () => {
     const handler = new lambda.Function(stack, 'handler', {
       handler: 'index.handler',
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const versionAlias = lambda.Version.fromVersionAttributes(stack, 'VersionInfo', {
@@ -446,7 +426,7 @@ describe('LambdaRestApi inherits from RestApi prop injector test ', () => {
       this.constructUniqueId = apigw.RestApi.PROPERTY_INJECTION_ID;
     }
 
-    inject(originalProps: apigw.RestApiProps, context: cdk.InjectionContext): apigw.RestApiProps {
+    inject(originalProps: apigw.RestApiProps, _context: cdk.InjectionContext): apigw.RestApiProps {
       return {
         endpointTypes: [apigw.EndpointType.REGIONAL],
         deploy: false,

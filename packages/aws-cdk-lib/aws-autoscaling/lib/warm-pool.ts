@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
+import type { Construct } from 'constructs';
 import { CfnWarmPool } from './autoscaling.generated';
 import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Options for a warm pool
@@ -50,7 +51,7 @@ export interface WarmPoolProps extends WarmPoolOptions {
   /**
    * The Auto Scaling group to add the warm pool to.
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 /**
@@ -69,15 +70,15 @@ export class WarmPool extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
-      throw new ValidationError('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
+      throw new ValidationError(lit`MaxGroupPreparedCapacityParameter`, '\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
     }
 
     if (props.minSize && props.minSize < 0) {
-      throw new ValidationError('\'minSize\' parameter should be greater than or equal to 0', this);
+      throw new ValidationError(lit`ShouldBeMinsizeParameterShould`, '\'minSize\' parameter should be greater than or equal to 0', this);
     }
 
     new CfnWarmPool(this, 'Resource', {
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       instanceReusePolicy: props.reuseOnScaleIn !== undefined ? {
         reuseOnScaleIn: props.reuseOnScaleIn,
       } : undefined,

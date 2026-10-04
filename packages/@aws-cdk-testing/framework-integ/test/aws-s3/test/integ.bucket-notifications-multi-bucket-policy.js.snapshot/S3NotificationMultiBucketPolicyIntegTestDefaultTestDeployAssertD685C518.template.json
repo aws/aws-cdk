@@ -1,0 +1,307 @@
+{
+ "Resources": {
+  "AwsApiCallIAMlistRolePolicies3d4995313d2bff94ea73329b9b46e0a3": {
+   "Type": "Custom::DeployAssert@SdkCallIAMlistRolePolicies",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "listRolePolicies",
+    "expected": "{\"$StringLike\":\"Bucket3NotificationsHandlerPolicy.*\"}",
+    "actualPath": "PolicyNames.2",
+    "parameters": {
+     "RoleName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "HandlerRoleName"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "PolicyNames.0",
+     "PolicyNames.1",
+     "PolicyNames.2"
+    ],
+    "salt": "1777306203547"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "iam:ListRolePolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "iam:ListRolePolicies",
+          "iam:GetRolePolicy"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetRolePolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetRolePolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:GetRolePolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallIAMgetRolePolicyb05fec285bb1a451e2adbc39bb2f51e6": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetRolePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getRolePolicy",
+    "expected": "{\"$ObjectLike\":{\"PolicyName\":\"Bucket1NotificationsHandlerPolicy2894F2A2\",\"PolicyDocument\":{\"$StringLike\":\".*PutBucketNotification.*bucket1.*\"}}}",
+    "parameters": {
+     "RoleName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "HandlerRoleName"
+        },
+        "\""
+       ]
+      ]
+     },
+     "PolicyName": "\"Bucket1NotificationsHandlerPolicy2894F2A2\""
+    },
+    "flattenResponse": "false",
+    "salt": "1777306203549"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIAMgetRolePolicyf0ddf9ba76c4caec14fdaceaaf9b6e5e": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetRolePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getRolePolicy",
+    "expected": "{\"$ObjectLike\":{\"PolicyName\":\"Bucket2NotificationsHandlerPolicy2BDDB4E2\",\"PolicyDocument\":{\"$StringLike\":\".*PutBucketNotification.*bucket2.*\"}}}",
+    "parameters": {
+     "RoleName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "HandlerRoleName"
+        },
+        "\""
+       ]
+      ]
+     },
+     "PolicyName": "\"Bucket2NotificationsHandlerPolicy2BDDB4E2\""
+    },
+    "flattenResponse": "false",
+    "salt": "1777306203549"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIAMgetRolePolicy87383c24caa2bf92f8f03ce35eb80431": {
+   "Type": "Custom::DeployAssert@SdkCallIAMgetRolePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "getRolePolicy",
+    "expected": "{\"$ObjectLike\":{\"PolicyName\":\"Bucket3NotificationsHandlerPolicyA409718A\",\"PolicyDocument\":{\"$StringLike\":\".*PutBucketNotification.*bucket3.*\"}}}",
+    "parameters": {
+     "RoleName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "HandlerRoleName"
+        },
+        "\""
+       ]
+      ]
+     },
+     "PolicyName": "\"Bucket3NotificationsHandlerPolicyA409718A\""
+    },
+    "flattenResponse": "false",
+    "salt": "1777306203550"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallIAMlistRolePolicies3d4995313d2bff94ea73329b9b46e0a3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMlistRolePolicies3d4995313d2bff94ea73329b9b46e0a3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetRolePolicyb05fec285bb1a451e2adbc39bb2f51e6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetRolePolicyb05fec285bb1a451e2adbc39bb2f51e6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetRolePolicyf0ddf9ba76c4caec14fdaceaaf9b6e5e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetRolePolicyf0ddf9ba76c4caec14fdaceaaf9b6e5e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMgetRolePolicy87383c24caa2bf92f8f03ce35eb80431": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMgetRolePolicy87383c24caa2bf92f8f03ce35eb80431",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

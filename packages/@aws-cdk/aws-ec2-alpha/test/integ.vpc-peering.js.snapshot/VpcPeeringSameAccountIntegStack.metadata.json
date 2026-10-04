@@ -1,0 +1,137 @@
+{
+  "/VpcPeeringSameAccountIntegStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-peering.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/acceptorVpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/acceptorVpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "acceptorVpc5B7D1670"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:352:29)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-peering.js:41:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "requestorVpcSameAccountF27E91F7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:352:29)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-peering.js:45:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/sameAccountPeering": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/Exports/Output{\"Fn::GetAtt\":[\"requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttrequestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CDIdCEF66BF2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VpcPeeringSameAccountIntegStack/requestorVpcSameAccount/sameAccountPeering/VPCPeeringConnection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "requestorVpcSameAccountsameAccountPeeringVPCPeeringConnection4E07C8CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VPCPeeringConnection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:476:29)",
+        "new VPCPeeringConnection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createPeeringConnection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:384:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-peering.js:48:33)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

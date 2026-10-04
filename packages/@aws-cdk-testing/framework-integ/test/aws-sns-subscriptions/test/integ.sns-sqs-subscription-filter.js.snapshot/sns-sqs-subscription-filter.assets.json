@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "0d7151cff5207688c73aa124a1200d988589169223935d3ce3414cb0b0a8fe4b": {
+      "displayName": "sns-sqs-subscription-filter Template",
+      "source": {
+        "path": "sns-sqs-subscription-filter.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0d7151cff5207688c73aa124a1200d988589169223935d3ce3414cb0b0a8fe4b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

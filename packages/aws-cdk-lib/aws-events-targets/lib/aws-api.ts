@@ -1,7 +1,7 @@
 import { addLambdaPermission } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Annotations, Duration } from '../../core';
 import { AwsApiSingletonFunction } from '../../custom-resource-handlers/dist/aws-events-targets/aws-api-provider.generated';
 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';
@@ -81,7 +81,7 @@ export class AwsApi implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this AwsApi as a
    * result from an EventBridge event.
    */
-  public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, id?: string): events.RuleTargetConfig {
     const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       timeout: Duration.seconds(60),
       memorySize: 256,

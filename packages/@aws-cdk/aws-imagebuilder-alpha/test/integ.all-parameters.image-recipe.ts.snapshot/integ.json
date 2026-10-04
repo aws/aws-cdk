@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ImageRecipeTest-AllParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-image-recipe-all-parameters"
+      ],
+      "assertionStack": "ImageRecipeTest-AllParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "ImageRecipeTestAllParametersDefaultTestDeployAssertBDC3642B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -1,0 +1,648 @@
+{
+  "/aws-cdk-bedrock-prompt-override-1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:12:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:187:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:187:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptOverrideFunctionD82AB437"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:14:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LambdaInvocationPolicy-c8b9aaceca433c55": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptOverrideFunctionLambdaInvocationPolicyc8b9aaceca433c559F5E0C1B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "WrappedClass.addActionGroup (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:462:51)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:355: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:355:2)",
+        "Array.forEach (:)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:354:33)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:116:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomParserActionFunction3DAF0C7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:35:36)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LambdaInvocationPolicy-c8cded76e8ed1a75": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomParserActionFunctionLambdaInvocationPolicyc8cded76e8ed1a7503EDC886"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "WrappedClass.addActionGroup (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:462:51)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:355: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:355:2)",
+        "Array.forEach (:)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:354:33)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:150:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParserFunctionE8A187F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:57:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithPromptOverride13B28AED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:401:31)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:116:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCustomParser73E443B8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:401:31)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:150:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptOverrideFunctionServiceRoleB1ACDEAD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:14:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/PromptOverrideFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptOverrideFunctionLogGroupB1001805"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:14:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomParserActionFunctionServiceRoleEE676A1C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:35:36)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/CustomParserActionFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomParserActionFunctionLogGroupD54EA446"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:35:36)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParserFunctionServiceRole59DD83FB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:57:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/ParserFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParserFunctionLogGroup947036DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:57:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithPromptOverrideRoleA0EB6013"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:326:29)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:116:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCustomParserRole29295FCD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:326:29)",
+        "new Agent (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/test/bedrock/agents/integ.prompt-override.js:150:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithPromptOverride/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithPromptOverrideRoleDefaultPolicy348076D7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addActionGroup (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:461:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-prompt-override-1/AgentWithCustomParser/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCustomParserRoleDefaultPolicy00D4B90E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addActionGroup (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/agent.js:461:51)"
+      ]
+    }
+  ]
+}

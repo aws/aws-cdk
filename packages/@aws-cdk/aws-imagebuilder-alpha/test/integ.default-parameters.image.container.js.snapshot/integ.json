@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ImageTest-Container-DefaultParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-image-container-default-parameters"
+      ],
+      "assertionStack": "ImageTest-Container-DefaultParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "ImageTestContainerDefaultParametersDefaultTestDeployAssertFEF09910"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

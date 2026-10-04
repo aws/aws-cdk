@@ -1,4 +1,5 @@
-import { IResolvable, ITokenMapper, StringConcat, Tokenization } from '../../core';
+import type { IResolvable, ITokenMapper } from '../../core';
+import { StringConcat, Tokenization } from '../../core';
 
 export interface Content {
   readonly text: string;
@@ -33,6 +34,14 @@ class TokenToMarkerMapper implements ITokenMapper {
  */
 export function renderData(data: string): Content {
   const tokenMapper = new TokenToMarkerMapper();
+
+  // Handle empty string case explicitly to avoid StringConcat.join(undefined, undefined)
+  if (data === '') {
+    return {
+      text: '',
+      markers: {},
+    };
+  }
 
   return {
     // Break down the string into its token fragments and replace each token with a marker.

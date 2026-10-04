@@ -1,0 +1,600 @@
+{
+  "/ReplicationInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:70:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:74:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:74:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:74:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974bWaitForRole545BDCE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974bWaitFor6D56B85E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:89:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69eWaitForRole65C1CB10"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:95:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69eWaitFor536052C6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:95:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:99:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904WaitForRoleB1A24F5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:103:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904WaitForFABABF2C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:103:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:112:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0edWaitForRoleFE911718"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:116:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0edWaitForF2909251"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:116:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:120:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905WaitForRoleEC61FF14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:124:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905WaitFor30416570"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:124:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974bWaitForIsCompleteProviderInvokeB3300652"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974b/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObject75573d90b014e8d9ac02510555b9974bWaitForTimeoutProviderInvoke1DB6B339"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:80:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69eWaitForIsCompleteProviderInvoke37229F74"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:95:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69e/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3putObjectc37eeaa244b355dd997924b65635b69eWaitForTimeoutProviderInvoke99162D95"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:95:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904WaitForIsCompleteProviderInvokeCE171834"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:103:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject072d8f513b356d62fe1279c51ab47904WaitForTimeoutProviderInvoke25E44F56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:103:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0edWaitForIsCompleteProviderInvokeF705CAED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:116:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0ed/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject219d4d3c5382fd95564d0436b23cc0edWaitForTimeoutProviderInvoke77BBFC53"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:116:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905WaitForIsCompleteProviderInvoke30EDA22A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:124:6)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ReplicationInteg/DefaultTest/DeployAssert/AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject8808a740aaee65bc3db0d839e0b7c905WaitForTimeoutProviderInvokeEE77ACA4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-replication.js:124:6)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

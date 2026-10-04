@@ -1,4 +1,5 @@
-import { Integration, IntegrationOptions, IntegrationType } from '../integration';
+import type { IntegrationOptions } from '../integration';
+import { Integration, IntegrationType } from '../integration';
 
 /**
  * This type of integration lets API Gateway return a response without sending

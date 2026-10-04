@@ -338,7 +338,7 @@ describe('external task definition', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         LifecyclePolicy: {
-          // eslint-disable-next-line max-len
+
           LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
           RegistryId: '123456789101',
         },

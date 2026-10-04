@@ -1,4 +1,4 @@
-import { EngineVersion } from './engine-version';
+import type { EngineVersion } from './engine-version';
 
 /**
  * A common interface for database engines.

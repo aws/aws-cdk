@@ -12,7 +12,7 @@ export interface Lifecycles {
 
 export type LifecyclesSkip = {
   [key in keyof Lifecycles]: boolean;
-}
+};
 
 export interface Versions {
   stableVersion: string;

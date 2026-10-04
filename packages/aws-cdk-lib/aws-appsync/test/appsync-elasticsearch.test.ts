@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as es from '../../aws-elasticsearch';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
@@ -106,6 +106,23 @@ describeDeprecated('Appsync Elasticsearch integration', () => {
         Type: 'AMAZON_ELASTICSEARCH',
         Name: 'custom',
         Description: 'custom description',
+      });
+    });
+
+    test.each([
+      [appsync.DataSourceMetricsConfig.ENABLED, 'ENABLED'],
+      [appsync.DataSourceMetricsConfig.DISABLED, 'DISABLED'],
+      [undefined, Match.absent()],
+    ])('appsync configures metrics config correctly to set %s', (metricsConfig, expected) => {
+      // WHEN
+      api.addElasticsearchDataSource('ds', domain, {
+        metricsConfig: metricsConfig,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+        Type: 'AMAZON_ELASTICSEARCH',
+        MetricsConfig: expected,
       });
     });
 

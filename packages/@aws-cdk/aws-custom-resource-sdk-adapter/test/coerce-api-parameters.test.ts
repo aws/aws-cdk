@@ -1,5 +1,5 @@
 import { Coercer, coerceApiParameters } from '../lib/coerce-api-parameters';
-import { TypeCoercionStateMachine } from '../lib/parameter-types';
+import type { TypeCoercionStateMachine } from '../lib/parameter-types';
 
 const encode = (v: any) => new TextEncoder().encode(v);
 

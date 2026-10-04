@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "MyParameter",
     "Type": "String",
-    "Value": "🌧️"
+    "Value": "\ud83c\udf27\ufe0f"
    }
   },
   "StateMachineRoleB840431D": {
@@ -57,7 +57,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"🌈\",\"Type\":\"String\",\"Overwrite\":true}}}}"
+       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"\ud83c\udf08\",\"Type\":\"String\",\"Overwrite\":true}}}}"
       ]
      ]
     },
@@ -206,15 +206,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -239,7 +231,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -267,6 +259,7 @@
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
     },
+    "WaitForDistributionInvalidation": true,
     "Prune": true,
     "OutputObjectKeys": true
    },
@@ -401,11 +394,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
     },
     "Environment": {
      "Variables": {
@@ -424,8 +420,9 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
-    "Timeout": 900
+    "Runtime": "python3.13",
+    "Timeout": 900,
+    "MemorySize": 1024
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
@@ -1156,139 +1153,6 @@
       "Ref": "SchedulerRoleForTarget5411029AC19639"
      }
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },

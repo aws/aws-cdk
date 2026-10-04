@@ -2,10 +2,10 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../../cx-api';
+import type { CfnLaunchConfiguration } from '../../lib';
 import {
   AutoScalingGroup,
   AutoScalingGroupRequireImdsv2Aspect,
-  CfnLaunchConfiguration,
 } from '../../lib';
 
 describe('AutoScalingGroupRequireImdsv2Aspect', () => {
@@ -28,8 +28,8 @@ describe('AutoScalingGroupRequireImdsv2Aspect', () => {
     });
     const launchConfig = asg.node.tryFindChild('LaunchConfig') as CfnLaunchConfiguration;
     launchConfig.metadataOptions = cdk.Token.asAny({
-      httpEndpoint: 'https://bla.com',
-    } as CfnLaunchConfiguration.MetadataOptionsProperty);
+      httpEndpoint: 'enabled',
+    } satisfies CfnLaunchConfiguration.MetadataOptionsProperty);
     const aspect = new AutoScalingGroupRequireImdsv2Aspect();
 
     // WHEN
@@ -119,9 +119,9 @@ describe('AutoScalingGroupRequireImdsv2Aspect with AUTOSCALING_GENERATE_LAUNCH_T
     const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as ec2.CfnLaunchTemplate;
     cfnLaunchTemplate.launchTemplateData = {
       metadataOptions: cdk.Token.asAny({
-        httpEndpoint: 'https://bla.com',
-      } as ec2.CfnLaunchTemplate.MetadataOptionsProperty),
-    } as ec2.CfnLaunchTemplate.LaunchTemplateDataProperty;
+        httpEndpoint: 'enabled',
+      } satisfies ec2.CfnLaunchTemplate.MetadataOptionsProperty),
+    } satisfies ec2.CfnLaunchTemplate.LaunchTemplateDataProperty;
 
     const aspect = new AutoScalingGroupRequireImdsv2Aspect();
 

@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "da3c118d26dd3eda5d1d1d48573f5ddc9cd78aaf82aa396500c7d867973ed888": {
+      "displayName": "NodeJsFunction/Code",
+      "source": {
+        "path": "asset.da3c118d26dd3eda5d1d1d48573f5ddc9cd78aaf82aa396500c7d867973ed888",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-8a19dd8f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "da3c118d26dd3eda5d1d1d48573f5ddc9cd78aaf82aa396500c7d867973ed888.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "069252a656e7ee737313c9e161bcee916e1b69815d94103232bc772b27b2bbe9": {
+      "displayName": "cdk-integ-lambda-nodejs-20-exclude-smithy Template",
+      "source": {
+        "path": "cdk-integ-lambda-nodejs-20-exclude-smithy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-76d07a77": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "069252a656e7ee737313c9e161bcee916e1b69815d94103232bc772b27b2bbe9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

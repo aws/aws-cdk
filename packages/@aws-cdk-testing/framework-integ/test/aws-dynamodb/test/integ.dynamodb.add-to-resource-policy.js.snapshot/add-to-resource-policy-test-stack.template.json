@@ -1,0 +1,213 @@
+{
+ "Resources": {
+  "WildcardTableE075CD4D": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "ResourcePolicy": {
+     "PolicyDocument": {
+      "Statement": [
+       {
+        "Action": [
+         "dynamodb:GetItem",
+         "dynamodb:PutItem",
+         "dynamodb:Query"
+        ],
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
+           ]
+          ]
+         }
+        },
+        "Resource": "*"
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ScopedTableC019D4A1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "ResourcePolicy": {
+     "PolicyDocument": {
+      "Statement": [
+       {
+        "Action": [
+         "dynamodb:GetItem",
+         "dynamodb:Query"
+        ],
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
+           ]
+          ]
+         }
+        },
+        "Resource": {
+         "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-scoped-table"
+        }
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    },
+    "TableName": "my-explicit-scoped-table"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "GrantTable13160A8B": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    },
+    "ResourcePolicy": {
+     "PolicyDocument": {
+      "Statement": [
+       {
+        "Action": [
+         "dynamodb:BatchWriteItem",
+         "dynamodb:DeleteItem",
+         "dynamodb:DescribeTable",
+         "dynamodb:PutItem",
+         "dynamodb:UpdateItem"
+        ],
+        "Effect": "Allow",
+        "Principal": {
+         "AWS": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":root"
+           ]
+          ]
+         }
+        },
+        "Resource": "*"
+       }
+      ],
+      "Version": "2012-10-17"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

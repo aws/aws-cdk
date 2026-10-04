@@ -1,7 +1,7 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import { Construct } from 'constructs';
 // Internal Libs
-import { IPrompt } from './prompt';
+import type { IPrompt } from './prompt';
 import * as validation from '../agents/validation-helpers';
 
 /******************************************************************************

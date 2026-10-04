@@ -3,8 +3,6 @@ import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 
-/* eslint-disable dot-notation */
-
 describe('credential spec', () => {
   describe('ecs.DomainJoinedCredentialSpec', () => {
     test('returns the correct prefixId and location', () => {

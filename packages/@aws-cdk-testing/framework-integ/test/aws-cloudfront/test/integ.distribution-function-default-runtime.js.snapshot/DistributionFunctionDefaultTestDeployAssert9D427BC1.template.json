@@ -1,0 +1,141 @@
+{
+ "Resources": {
+  "AwsApiCallCloudFrontdescribeFunction4c828d6326cded89fad5c2560e2232dd": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontdescribeFunction",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "describeFunction",
+    "expected": "{\"$ObjectLike\":{\"FunctionSummary\":{\"$ObjectLike\":{\"FunctionConfig\":{\"$ObjectLike\":{\"Runtime\":\"cloudfront-js-2.0\"}}}}}}",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Ref": "AWS::Region"
+        },
+        "integ-distributi-runtimeFunction397BE22E\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1762264840161"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudfront:DescribeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudFrontdescribeFunction4c828d6326cded89fad5c2560e2232dd": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontdescribeFunction4c828d6326cded89fad5c2560e2232dd",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

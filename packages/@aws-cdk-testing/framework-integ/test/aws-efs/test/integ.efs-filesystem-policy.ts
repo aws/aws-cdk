@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { AccountRootPrincipal, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AccessPoint, FileSystem } from 'aws-cdk-lib/aws-efs';
 

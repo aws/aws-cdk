@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { CfnModel, CfnModelProps } from './apigateway.generated';
-import * as jsonSchema from './json-schema';
-import { IRestApi, RestApi } from './restapi';
+import type { Construct } from 'constructs';
+import type { CfnModelProps } from './apigateway.generated';
+import { CfnModel } from './apigateway.generated';
+import type * as jsonSchema from './json-schema';
+import type { IRestApi } from './restapi';
+import { RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -102,7 +105,7 @@ export interface ModelProps extends ModelOptions {
    * The rest API that this model is part of.
    *
    * The reason we need the RestApi object itself and not just the ID is because the model
-   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * is being tracked by the top-level RestApi object for the purpose of calculating its
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */
@@ -163,7 +166,12 @@ export class Model extends Resource implements IModel {
    *
    * @attribute
    */
-  public readonly modelId: string;
+  @memoizedGetter
+  public get modelId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  private readonly resource: CfnModel;
 
   constructor(scope: Construct, id: string, props: ModelProps) {
     super(scope, id, {
@@ -180,13 +188,11 @@ export class Model extends Resource implements IModel {
       schema: util.JsonSchemaMapper.toCfnJsonSchema(props.schema),
     };
 
-    const resource = new CfnModel(this, 'Resource', modelProps);
-
-    this.modelId = this.getResourceNameAttribute(resource.ref);
+    this.resource = new CfnModel(this, 'Resource', modelProps);
 
     const deployment = (props.restApi instanceof RestApi) ? props.restApi.latestDeployment : undefined;
     if (deployment) {
-      deployment.node.addDependency(resource);
+      deployment.node.addDependency(this.resource);
       deployment.addToLogicalId({ model: modelProps });
     }
   }

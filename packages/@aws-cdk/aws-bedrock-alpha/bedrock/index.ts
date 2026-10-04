@@ -14,6 +14,12 @@ export * from './agents/orchestration-executor';
 export * from './agents/function-schema';
 
 // ===================================
+// Guardrails
+// ===================================
+export * from './guardrails/guardrail-filters';
+export * from './guardrails/guardrails';
+
+// ===================================
 // Prompts
 // ===================================
 export * from './prompts/prompt';
@@ -26,6 +32,14 @@ export * from './prompts/agent-prompt-variant';
 export * from './prompts/prompt-inference-configuration';
 export * from './prompts/prompt-template-configuration';
 export * from './prompts/prompt-genai-resource';
+
+// ===================================
+// Inference Profiles
+// ===================================
+export * from './inference-profiles/inference-profile';
+export * from './inference-profiles/application-inference-profile';
+export * from './inference-profiles/cross-region-inference-profile';
+export * from './inference-profiles/prompt-router';
 
 // ===================================
 // Models

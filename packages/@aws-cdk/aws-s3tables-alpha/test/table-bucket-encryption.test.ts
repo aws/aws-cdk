@@ -1,10 +1,10 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
-import * as perms from '../lib/permissions';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import { singletonOrArr as stringIfSingle } from './test-utils';
+import * as perms from '../lib/permissions';
 
 const TABLE_BUCKET_CFN_RESOURCE = 'AWS::S3Tables::TableBucket';
 const TABLE_BUCKET_POLICY_CFN_RESOURCE = 'AWS::S3Tables::TableBucketPolicy';
@@ -22,7 +22,7 @@ const RESOURCES_WITH_TABLE_ARN = getResourcesWithTablesArn(TABLE_UUID);
 const RESOURCES_WITH_WILDCARD = getResourcesWithTablesArn('*');
 
 /* Allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('TableBucket with encryption', () => {
   let stack: core.Stack;

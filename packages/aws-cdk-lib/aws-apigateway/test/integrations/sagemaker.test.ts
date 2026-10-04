@@ -1,6 +1,6 @@
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
-import * as sagemaker from '../../../aws-sagemaker';
+import type * as sagemaker from '../../../aws-sagemaker';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
 
@@ -42,7 +42,7 @@ describe('SageMaker Integration', () => {
 });
 
 class FakeEndpoint extends cdk.Resource implements sagemaker.IEndpoint {
-  public readonly endpointArn = 'endpointArn';
+  public readonly endpointArn = 'arn:aws:sagemaker:us-east-1:123456789012:endpoint/my-endpoint';
 
   public readonly endpointName = 'endpointName';
 
@@ -52,5 +52,9 @@ class FakeEndpoint extends cdk.Resource implements sagemaker.IEndpoint {
       actions: ['sagemaker:InvokeEndpoint'],
       resourceArns: [this.endpointArn],
     });
+  }
+
+  public get endpointRef(): sagemaker.EndpointReference {
+    return { endpointArn: this.endpointArn };
   }
 }

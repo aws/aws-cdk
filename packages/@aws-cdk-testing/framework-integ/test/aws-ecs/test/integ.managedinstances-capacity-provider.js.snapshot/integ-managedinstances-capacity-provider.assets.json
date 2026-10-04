@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "baa412d13d43ed2549c317b559b25eff3241d533d6440e49a30bd1f269509c8a": {
+      "displayName": "integ-managedinstances-capacity-provider Template",
+      "source": {
+        "path": "integ-managedinstances-capacity-provider.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f930bb4a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "baa412d13d43ed2549c317b559b25eff3241d533d6440e49a30bd1f269509c8a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

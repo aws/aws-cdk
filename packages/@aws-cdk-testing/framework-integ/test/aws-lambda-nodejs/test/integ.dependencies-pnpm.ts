@@ -14,7 +14,7 @@ const stack = new cdk.Stack(app, 'TestStack');
 
 const handler = new lambda.NodejsFunction(stack, 'Function', {
   entry: path.join(__dirname, 'integ-handlers/pnpm/dependencies-pnpm.ts'),
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   bundling: {
     minify: true,
     // Will be installed, not bundled

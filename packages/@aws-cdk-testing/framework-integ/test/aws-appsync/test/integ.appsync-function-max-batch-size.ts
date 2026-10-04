@@ -14,7 +14,9 @@ const stack = new cdk.Stack(app, 'aws-cdk-appsync-function-max-batch-size');
 
 const api = new appsync.GraphqlApi(stack, 'LambdaAPI', {
   name: 'LambdaAPI',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+  },
 });
 
 const func = new lambda.Function(stack, 'func', {

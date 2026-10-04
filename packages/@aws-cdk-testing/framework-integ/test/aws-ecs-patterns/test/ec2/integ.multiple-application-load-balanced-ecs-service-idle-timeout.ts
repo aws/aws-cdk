@@ -3,6 +3,7 @@ import { InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationProtocol, SslPolicy } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import type { CfnResource } from 'aws-cdk-lib';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
@@ -13,8 +14,6 @@ const app = new App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
     '@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions': false,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -26,7 +25,7 @@ const cluster = new Cluster(stack, 'Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new InstanceType('t2.micro') });
 
 // Two load balancers with different idle timeouts.
-new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
+const service = new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
@@ -85,6 +84,16 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
       listener: 'listener2',
     },
   ],
+});
+
+// Suppress security guardian rule for ALB default behavior (open: true)
+service.loadBalancers.forEach(lb => {
+  lb.connections.securityGroups.forEach(sg => {
+    const cfnSg = sg.node.defaultChild as CfnResource;
+    cfnSg.addMetadata('guard', {
+      SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+    });
+  });
 });
 
 new integ.IntegTest(app, 'multiAlbEcsEc2Test', {

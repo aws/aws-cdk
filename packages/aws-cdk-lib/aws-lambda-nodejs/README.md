@@ -100,7 +100,7 @@ This can be set via `lambda.Runtime`:
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 new nodejs.NodejsFunction(this, 'my-function', {
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_LATEST,
 });
 ```
 
@@ -108,8 +108,8 @@ With the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` disabled, the runt
 
 ## Lock file
 
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` or
-`package-lock.json`). When bundling in a Docker container, the path containing this lock file is
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`,
+`bun.lock` or `package-lock.json`). When bundling in a Docker container, the path containing this lock file is
 used as the source (`/asset-input`) for the volume mounted in the container.
 
 By default, the construct will try to automatically determine your project lock file.
@@ -120,7 +120,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs18.x)
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs24.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
@@ -201,7 +201,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
 installed. The same version will be used for installation. The lock file (`yarn.lock`,
-`pnpm-lock.yaml`, `bun.lockb` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm-lock.yaml`, `bun.lockb`, `bun.lock` or `package-lock.json`) will be used along with the right installer (`yarn`,
 `pnpm`, `bun` or `npm`).
 
 When working with `nodeModules` using native dependencies, you might want to force bundling in a

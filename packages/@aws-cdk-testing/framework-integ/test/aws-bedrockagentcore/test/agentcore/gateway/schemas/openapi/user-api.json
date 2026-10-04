@@ -1,0 +1,93 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sample API",
+    "version": "1.0.0",
+    "description": "A sample API for demonstrating gateway capabilities"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "List users",
+        "operationId": "listUsers",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get user by ID",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

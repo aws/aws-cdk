@@ -1,10 +1,8 @@
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
-
-/* eslint-disable @cdklabs/no-core-construct */
 
 class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string) {

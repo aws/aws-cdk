@@ -6,7 +6,7 @@ import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 import * as validations from '../lib/private/validation';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('action', () => {
   describe('artifact bounds validation', () => {

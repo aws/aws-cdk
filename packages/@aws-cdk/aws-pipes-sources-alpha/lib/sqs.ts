@@ -1,7 +1,7 @@
-import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
-import { Duration } from 'aws-cdk-lib';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { Duration } from 'aws-cdk-lib';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
 
 /**
  * Parameters for the SQS source.
@@ -10,7 +10,7 @@ export interface SqsSourceParameters {
   /**
    * The maximum number of records to include in each batch.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-batchsize
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-batchsize
    * @default 10
    */
   readonly batchSize?: number;
@@ -18,7 +18,7 @@ export interface SqsSourceParameters {
   /**
    * The maximum length of a time to wait for events.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-maximumbatchingwindowinseconds
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcesqsqueueparameters.html#cfn-pipes-pipe-pipesourcesqsqueueparameters-maximumbatchingwindowinseconds
    * @default 1
    */
   readonly maximumBatchingWindow?: Duration;

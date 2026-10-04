@@ -1,0 +1,32 @@
+{
+  "lib/private/database-query-provider/index.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/private/database-query-provider/privileges.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/private/database-query-provider/redshift-data.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/private/database-query-provider/table.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/private/database-query-provider/user.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/private/database-query-provider/util.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

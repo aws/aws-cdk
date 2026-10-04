@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "f612434cc6ae64f23db8b121ce1c7aef32981487de44a9e920052c9e289beb5c": {
+    "777450f0f7933dd9fbdb45de7eed41c9ebff12d899f2b6ebe4b0a145541b5336": {
       "displayName": "ApplicationSignalsPythonApp-Sidecar Template",
       "source": {
         "path": "ApplicationSignalsPythonApp-Sidecar.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-676e765f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f612434cc6ae64f23db8b121ce1c7aef32981487de44a9e920052c9e289beb5c.json",
+          "objectKey": "777450f0f7933dd9fbdb45de7eed41c9ebff12d899f2b6ebe4b0a145541b5336.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -3,14 +3,15 @@
     "alwaysStrict": true,
     "declaration": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "experimentalDecorators": true,
     "inlineSourceMap": true,
     "inlineSources": true,
     "lib": [
-      "es2019",
+      "es2022",
       "dom"
     ],
-    "module": "CommonJS",
+    "module": "Node20",
     "noEmitOnError": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -23,7 +24,12 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2019"
+    "target": "ES2022",
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "bin/**/*.ts",

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as Logs from '@aws-sdk/client-cloudwatch-logs';
 

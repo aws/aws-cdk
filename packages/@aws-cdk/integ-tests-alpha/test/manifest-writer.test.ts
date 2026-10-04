@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import type { IntegManifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 import { IntegManifestWriter } from '../lib/manifest-writer';
 
 describe(IntegManifestWriter, () => {

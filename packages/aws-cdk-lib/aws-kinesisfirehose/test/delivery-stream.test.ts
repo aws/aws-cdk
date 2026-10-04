@@ -1,5 +1,4 @@
 import { Construct, Node } from 'constructs';
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -8,6 +7,7 @@ import * as targets from '../../aws-events-targets';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
+import * as cdk from '../../core';
 import * as firehose from '../lib';
 
 describe('delivery stream', () => {

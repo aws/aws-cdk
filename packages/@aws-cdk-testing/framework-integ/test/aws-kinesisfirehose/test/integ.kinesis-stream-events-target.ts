@@ -4,7 +4,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -40,7 +40,7 @@ const stream = new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or 
 
 new events.Rule(stack, 'EveryMinute', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-}).addTarget(new targets.KinesisFirehoseStreamV2(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
+}).addTarget(new targets.FirehoseDeliveryStream(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
 
 const integTest = new IntegTest(app, 'integ-tests', {
   testCases: [stack],

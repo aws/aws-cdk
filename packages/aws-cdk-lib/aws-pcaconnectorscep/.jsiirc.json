@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.pcaconnectorscep"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.PCAConnectorSCEP"
+      "namespace": "Amazon.CDK.AWS.PCAConnectorSCEP"
     },
     "python": {
       "module": "aws_cdk.aws_pcaconnectorscep"

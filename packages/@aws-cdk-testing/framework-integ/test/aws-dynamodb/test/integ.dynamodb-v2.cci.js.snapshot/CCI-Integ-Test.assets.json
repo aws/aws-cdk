@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7f9710fa9aec7f69afe9933a284d4f49af3532b86617d16428e4a76db826605f": {
+      "displayName": "CCI-Integ-Test Template",
+      "source": {
+        "path": "CCI-Integ-Test.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-eu-west-1-fc8ce685": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
+          "objectKey": "7f9710fa9aec7f69afe9933a284d4f49af3532b86617d16428e4a76db826605f.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

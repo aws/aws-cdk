@@ -1,0 +1,72 @@
+{
+  "lib/alias.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 6
+    }
+  },
+  "lib/build-fleet.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 7
+    }
+  },
+  "lib/build.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/content.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 3
+    }
+  },
+  "lib/fleet-base.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 3
+    }
+  },
+  "lib/game-server-group.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 8
+    }
+  },
+  "lib/game-session-queue.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 8
+    }
+  },
+  "lib/ingress-rule.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/matchmaking-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/matchmaking-ruleset-body.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/matchmaking-ruleset.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/queued-matchmaking-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 8
+    }
+  },
+  "lib/script.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/standalone-matchmaking-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 6
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "lib/function.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/util.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

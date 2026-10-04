@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "codebuild-project-docker-server-integ/DefaultTest": {
+      "stacks": [
+        "codebuild-project-docker-server"
+      ],
+      "assertionStack": "codebuild-project-docker-server-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuildprojectdockerserverintegDefaultTestDeployAssert26905AE4"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

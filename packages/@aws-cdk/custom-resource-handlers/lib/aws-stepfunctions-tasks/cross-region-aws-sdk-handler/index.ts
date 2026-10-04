@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-console */
 
 type Event = {
   /**

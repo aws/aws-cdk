@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "SchemaBucketC512BB1A": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "schema-table-bucket",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SchemaNamespaceFDE8AD2E": {
+   "Type": "AWS::S3Tables::Namespace",
+   "Properties": {
+    "Namespace": "schema_table_namespace",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "SchemaBucketC512BB1A",
+      "TableBucketARN"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SchemaTableA786F6CA": {
+   "Type": "AWS::S3Tables::Table",
+   "Properties": {
+    "Compaction": {
+     "Status": "enabled",
+     "TargetFileSizeMB": 128
+    },
+    "IcebergMetadata": {
+     "IcebergSchema": {
+      "SchemaFieldList": [
+       {
+        "Name": "id",
+        "Required": true,
+        "Type": "int"
+       },
+       {
+        "Name": "name",
+        "Type": "string"
+       },
+       {
+        "Name": "timestamp",
+        "Type": "timestamp"
+       }
+      ]
+     }
+    },
+    "Namespace": "schema_table_namespace",
+    "OpenTableFormat": "ICEBERG",
+    "SnapshotManagement": {
+     "MaxSnapshotAgeHours": 48,
+     "MinSnapshotsToKeep": 5,
+     "Status": "enabled"
+    },
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "SchemaBucketC512BB1A",
+      "TableBucketARN"
+     ]
+    },
+    "TableName": "schema_test_table"
+   },
+   "DependsOn": [
+    "SchemaNamespaceFDE8AD2E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SchemaBucketC512BB1A",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "SchemaTableStack:ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

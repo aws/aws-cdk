@@ -1,61 +1,61 @@
 {
-  "version": "45.0.0",
+  "version": "54.0.0",
   "files": {
-    "7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a": {
+    "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
       "source": {
-        "path": "asset.7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a",
+        "path": "asset.4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-eu-west-1": {
+        "current_account-eu-west-1-3ac3fa01": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "7e256f5e4a92713cc232cd23819cb666756ee6023ce380130abac3b6a3fcea6a.zip",
+          "objectKey": "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c.zip",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6": {
+    "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code",
       "source": {
-        "path": "asset.39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6",
+        "path": "asset.775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-eu-west-1": {
+        "current_account-eu-west-1-5de8eae4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip",
+          "objectKey": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "2d2187472236ea907da93f0398d9237e06c266540258f4ed7ac24cd4ef9dcabb": {
+    "ee502cd7f1d39b63029f0e798643ed8150ec9d8a67b47dd47c769c27e8021d64": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider Nested Stack Template",
       "source": {
         "path": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderB281C954.nested.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1": {
+        "current_account-eu-west-1-f29cb461": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "2d2187472236ea907da93f0398d9237e06c266540258f4ed7ac24cd4ef9dcabb.json",
+          "objectKey": "ee502cd7f1d39b63029f0e798643ed8150ec9d8a67b47dd47c769c27e8021d64.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "d48678009c549debabea1aeb3d2d5d101caeac010bfa89a60fe598ff6848e579": {
+    "a56b2610ab22a059ac78c5c0bf0c7eeb7fad317d46224d0f2814e88d2201d2bd": {
       "displayName": "cdk-dynamodb-global-20191121 Template",
       "source": {
         "path": "cdk-dynamodb-global-20191121.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1": {
+        "current_account-eu-west-1-4659f9a3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "d48678009c549debabea1aeb3d2d5d101caeac010bfa89a60fe598ff6848e579.json",
+          "objectKey": "a56b2610ab22a059ac78c5c0bf0c7eeb7fad317d46224d0f2814e88d2201d2bd.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }

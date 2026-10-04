@@ -1,0 +1,153 @@
+{
+  "/aws-cdk-agentcore-tools-auto-generated-name": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/tools/integ.tools-auto-generated-name.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Browser5046F7C9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrowserCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.js:708:31)",
+        "new BrowserCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/tools/integ.tools-auto-generated-name.js:9:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeInterpreterA1155DAC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CodeInterpreterCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/code-interpreter.js:631:31)",
+        "new CodeInterpreterCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/tools/integ.tools-auto-generated-name.js:11:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/Browser/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserServiceRoleE2CB4014"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._createBrowserRole (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.js:759:26)",
+        "new BrowserCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.js:678:63)",
+        "new BrowserCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/tools/integ.tools-auto-generated-name.js:9:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-tools-auto-generated-name/CodeInterpreter/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CodeInterpreterServiceRole79E429DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._createCodeInterpreterRole (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/code-interpreter.js:708:26)",
+        "new CodeInterpreterCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/code-interpreter.js:606:62)",
+        "new CodeInterpreterCustom (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/tools/integ.tools-auto-generated-name.js:11:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

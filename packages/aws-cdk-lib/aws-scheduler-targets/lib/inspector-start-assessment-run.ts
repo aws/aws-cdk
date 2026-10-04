@@ -1,17 +1,19 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole, PolicyStatement } from '../../aws-iam';
-import { IAssessmentTemplate } from '../../aws-inspector';
-import { IScheduleTarget } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { IScheduleTarget } from '../../aws-scheduler';
+import type { IAssessmentTemplateRef } from '../../interfaces/generated/aws-inspector-interfaces.generated';
 
 /**
  * Use an Amazon Inspector as a target for AWS EventBridge Scheduler.
  */
 export class InspectorStartAssessmentRun extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    template: IAssessmentTemplate,
+    template: IAssessmentTemplateRef,
     props: ScheduleTargetBaseProps = {},
   ) {
-    super(props, template.assessmentTemplateArn);
+    super(props, template.assessmentTemplateRef.assessmentTemplateArn);
   }
 
   protected addTargetActionToRole(role: IRole): void {

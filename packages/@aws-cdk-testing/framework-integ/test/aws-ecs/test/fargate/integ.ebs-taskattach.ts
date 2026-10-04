@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends cdk.Stack {
   constructor(scope: Construct, id: string) {

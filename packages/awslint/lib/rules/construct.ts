@@ -1,13 +1,13 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
-import { Linter, MethodSignatureParameterExpectation } from '../linter';
+import type { MethodSignatureParameterExpectation } from '../linter';
+import { Linter } from '../linter';
 
 export const constructLinter = new Linter<ConstructReflection>(assembly => assembly.allClasses
   .filter(t => CoreTypes.isConstructClass(t))
   .map(construct => new ConstructReflection(construct)));
 
 export class ConstructReflection {
-
   public static findAllConstructs(assembly: reflect.Assembly) {
     return assembly.allClasses
       .filter(c => CoreTypes.isConstructClass(c))

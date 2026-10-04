@@ -1,10 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { InterfaceType } from '@cdklabs/typewriter';
+import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
-import { ComponentType, ComponentProps } from './config';
-import { ModuleImportOptions, ModuleImporter } from './module-importer';
-import { ImportableModule } from './modules';
+import type { HandlerFrameworkClassProps } from './classes';
+import { HandlerFrameworkClass } from './classes';
+import type { ComponentProps } from './config';
+import { ComponentType } from './config';
+import type { ModuleImportOptions } from './module-importer';
+import { ModuleImporter } from './module-importer';
+import type { ImportableModule } from './modules';
 import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {
@@ -38,8 +42,12 @@ export class HandlerFrameworkModule extends Module {
 
   /**
    * Build a framework component inside of this module.
+   *
+   * @param sourceHash Optional deterministic hash of the bundled handler code.
+   * When provided, the hash is embedded in the generated class so the asset
+   * does not get rehashed at synth time.
    */
-  public build(component: ComponentProps, codeDirectory: string) {
+  public build(component: ComponentProps, codeDirectory: string, sourceHash?: string) {
     if (component.type === ComponentType.NO_OP) {
       return;
     }
@@ -54,6 +62,8 @@ export class HandlerFrameworkModule extends Module {
       handler,
       codeDirectory,
       runtime: component.runtime,
+      constructorVisibility: component.constructorVisibility,
+      sourceHash,
     };
 
     switch (component.type) {

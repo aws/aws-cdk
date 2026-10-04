@@ -1,0 +1,292 @@
+{
+  "/integ-https-redirect": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-https-redirect/AWSCloudFrontPartitionHostedZoneIdMap": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCloudFrontPartitionHostedZoneIdMap"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "CloudFrontTarget.getHostedZoneId (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:27:13)",
+        "CloudFrontTarget.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:63:44)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:396:83)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
+        "Array.forEach (:)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)"
+      ]
+    }
+  ],
+  "/integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-https-redirect/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-https-redirect/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "websiteRedirect": {
+          "hostName": "*",
+          "protocol": "https"
+        },
+        "removalPolicy": "destroy",
+        "blockPublicAccess": "*"
+      }
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectDistribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultRootObject": "*",
+        "defaultBehavior": {
+          "origin": "*",
+          "viewerProtocolPolicy": "redirect-to-https"
+        },
+        "domainNames": "*",
+        "certificate": "*",
+        "comment": "*",
+        "priceClass": "PriceClass_All"
+      }
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectAliasRecord700dc5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "target": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectAliasRecordSix700dc5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "target": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "recordName": "*",
+        "zone": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/integ-https-redirect/ExportsReader/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CrossRegionSsmReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:65:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:62:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:53:21)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+      ]
+    }
+  ],
+  "/integ-https-redirect/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CrossRegionSsmReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:65:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:62:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:53:21)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+      ]
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "redirectRedirectBucketAA44E2FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:43:32)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectDistribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "redirectRedirectDistribution5423F951"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:53:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectAliasRecord700dc5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "redirectRedirectAliasRecord700dc535A8D685"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
+        "Array.forEach (:)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-https-redirect/redirect/RedirectAliasRecordSix700dc5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "redirectRedirectAliasRecordSix700dc5B6BB8C6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AaaaRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:626:13)",
+        "new AaaaRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91:1)",
+        "Array.forEach (:)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-https-redirect/ExportsReader/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsReader8B249524"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:51:31)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)"
+      ]
+    }
+  ]
+}

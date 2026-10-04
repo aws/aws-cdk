@@ -11,6 +11,7 @@ class EksClusterStack extends cdk.Stack {
     const cluster = new eks.Cluster(this, 'EKSCluster', {
       vpc,
       version: eks.KubernetesVersion.V1_21,
+      kubectlLayer: undefined as any,
     });
 
     /// !show

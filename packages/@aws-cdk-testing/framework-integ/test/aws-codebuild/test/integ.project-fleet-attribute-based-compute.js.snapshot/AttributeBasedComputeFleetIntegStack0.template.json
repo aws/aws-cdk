@@ -150,6 +150,14 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "MyFleet1E628396",
+        "Arn"
+       ]
+      }
+     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,

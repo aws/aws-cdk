@@ -1,7 +1,8 @@
-import { IAspect, Stack, Stage, Annotations, Names } from 'aws-cdk-lib/core';
-import { IConstruct } from 'constructs';
-import { IApplication } from '../application';
-import { ApplicationAssociator } from '../application-associator';
+import type { IAspect } from 'aws-cdk-lib/core';
+import { Stack, Stage, Annotations, Names } from 'aws-cdk-lib/core';
+import type { IConstruct } from 'constructs';
+import type { IApplication } from '../application';
+import type { ApplicationAssociator } from '../application-associator';
 import { hashValues, SharePermission } from '../common';
 import { isRegionUnresolved, isAccountUnresolved } from '../private/utils';
 

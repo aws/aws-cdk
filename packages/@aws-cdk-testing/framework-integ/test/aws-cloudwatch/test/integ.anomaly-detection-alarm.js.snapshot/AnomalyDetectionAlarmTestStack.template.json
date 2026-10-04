@@ -85,6 +85,34 @@
     ],
     "ThresholdMetricId": "expr_1"
    }
+  },
+  "CustomPeriodAnomalyAlarmD85345B9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m0, 2)",
+      "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
+      "ReturnData": true
+     },
+     {
+      "Id": "m0",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2"
+       },
+       "Period": 86400,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
   }
  },
  "Outputs": {
@@ -110,6 +138,14 @@
    },
    "Export": {
     "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
+   }
+  },
+  "ExportsOutputRefCustomPeriodAnomalyAlarmD85345B903D51401": {
+   "Value": {
+    "Ref": "CustomPeriodAnomalyAlarmD85345B9"
+   },
+   "Export": {
+    "Name": "AnomalyDetectionAlarmTestStack:ExportsOutputRefCustomPeriodAnomalyAlarmD85345B903D51401"
    }
   }
  },

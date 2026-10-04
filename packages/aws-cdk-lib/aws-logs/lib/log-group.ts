@@ -1,21 +1,29 @@
-import { Construct } from 'constructs';
-import { DataProtectionPolicy } from './data-protection-policy';
-import { FieldIndexPolicy } from './field-index-policy';
+import type { Construct } from 'constructs';
+import type { DataProtectionPolicy } from './data-protection-policy';
+import type { FieldIndexPolicy } from './field-index-policy';
 import { LogStream } from './log-stream';
+import { LogGroupGrants } from './logs-grants.generated';
+import type { ILogGroupRef, LogGroupReference } from './logs.generated';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
-import { FilterPattern, IFilterPattern } from './pattern';
+import type { IFilterPattern } from './pattern';
+import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
-import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
-import { IProcessor, Transformer } from './transformer';
+import type { ILogSubscriptionDestination } from './subscription-filter';
+import { SubscriptionFilter } from './subscription-filter';
+import type { IProcessor } from './transformer';
+import { Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { RemovalPolicy } from '../../core';
+import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
-export interface ILogGroup extends iam.IResourceWithPolicy {
+export interface ILogGroup extends iam.IResourceWithPolicy, ILogGroupRef {
   /**
    * The ARN of this log group, with ':*' appended
    *
@@ -138,6 +146,11 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
+  /**
+   * Collection of grant methods for a LogGroup
+   */
+  public readonly grants = LogGroupGrants.fromLogGroup(this);
+
   private policy?: ResourcePolicy;
 
   /**
@@ -151,6 +164,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       logGroup: this,
       ...props,
     });
+  }
+
+  public get logGroupRef(): LogGroupReference {
+    return {
+      logGroupArn: this.logGroupArn,
+      logGroupName: this.logGroupName,
+    };
   }
 
   /**
@@ -220,26 +240,32 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   /**
    * Give permissions to create and write to streams in this log group
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantWrite(grantee: iam.IGrantable) {
-    return this.grant(grantee, 'logs:CreateLogStream', 'logs:PutLogEvents');
+    return this.grants.write(grantee);
   }
 
   /**
    * Give permissions to read and filter events from this log group
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
-    return this.grant(grantee,
-      'logs:FilterLogEvents',
-      'logs:GetLogEvents',
-      'logs:GetLogGroupFields',
-      'logs:DescribeLogGroups',
-      'logs:DescribeLogStreams',
-    );
+    return this.grants.read(grantee);
   }
 
   /**
    * Give the indicated permissions on this log group and all streams
+   *
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipalOrResource({
@@ -503,6 +529,12 @@ export enum LogGroupClass {
    * Class for reduced logs services
    */
   INFREQUENT_ACCESS = 'INFREQUENT_ACCESS',
+
+  /**
+   * Class for delivering logs to a destination such as Amazon S3 or Amazon Data
+   * Firehose (for example, Lambda vended logs).
+   */
+  DELIVERY = 'DELIVERY',
 }
 
 /**
@@ -514,7 +546,7 @@ export interface LogGroupProps {
    *
    * @default Server-side encryption managed by the CloudWatch Logs service
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * Name of the log group.
@@ -529,6 +561,14 @@ export interface LogGroupProps {
    * @default - no data protection policy
    */
   readonly dataProtectionPolicy?: DataProtectionPolicy;
+
+  /**
+   * Indicates whether deletion protection is enabled for this log group. When enabled,
+   * deletion protection blocks all deletion operations until it is explicitly disabled.
+   *
+   * @default false
+   */
+  readonly deletionProtectionEnabled?: boolean;
 
   /**
    * Field Index Policies for this log group.
@@ -547,11 +587,17 @@ export interface LogGroupProps {
   readonly retention?: RetentionDays;
 
   /**
-   * The class of the log group. Possible values are: STANDARD and INFREQUENT_ACCESS.
+   * The class of the log group. Possible values are: STANDARD, INFREQUENT_ACCESS and DELIVERY.
    *
    * INFREQUENT_ACCESS class provides customers a cost-effective way to consolidate
    * logs which supports querying using Logs Insights. The logGroupClass property cannot
    * be changed once the log group is created.
+   *
+   * DELIVERY class is used to deliver logs to a destination such as Amazon S3 or Amazon
+   * Data Firehose (for example, Lambda vended logs). A Delivery log group forwards events
+   * to a destination instead of storing them, so it does not support `retention`,
+   * `dataProtectionPolicy`, or `fieldIndexPolicies`; setting any of these together with
+   * `LogGroupClass.DELIVERY` results in a synthesis-time error.
    *
    * @default LogGroupClass.STANDARD
    */
@@ -630,15 +676,28 @@ export class LogGroup extends LogGroupBase {
     return new Import(scope, id);
   }
 
+  private readonly resource: CfnLogGroup;
+
   /**
    * The ARN of this log group
    */
-  public readonly logGroupArn: string;
+  @memoizedGetter
+  public get logGroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * The name of this log group
    */
-  public readonly logGroupName: string;
+  @memoizedGetter
+  public get logGroupName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
@@ -647,15 +706,32 @@ export class LogGroup extends LogGroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // The Delivery log class forwards events to a destination instead of storing them.
+    // CloudWatch Logs does not allow a user-set retention on it (the service manages it
+    // internally) and rejects data protection policies and field index policies. Fail
+    // fast when any of these is set explicitly, including RetentionDays.INFINITE.
+    if (props.logGroupClass === LogGroupClass.DELIVERY) {
+      if (props.retention !== undefined) {
+        throw new ValidationError(lit`DeliveryLogClassRetention`, 'retention is not supported for a log group with logGroupClass DELIVERY; remove retention or use a different LogGroupClass', this);
+      }
+      if (props.dataProtectionPolicy !== undefined) {
+        throw new ValidationError(lit`DeliveryLogClassDataProtection`, 'dataProtectionPolicy is not supported for a log group with logGroupClass DELIVERY; remove dataProtectionPolicy or use a different LogGroupClass', this);
+      }
+      if (props.fieldIndexPolicies !== undefined) {
+        throw new ValidationError(lit`DeliveryLogClassFieldIndex`, 'fieldIndexPolicies is not supported for a log group with logGroupClass DELIVERY; remove fieldIndexPolicies or use a different LogGroupClass', this);
+      }
+    }
+
     let retentionInDays = props.retention;
-    if (retentionInDays === undefined) { retentionInDays = RetentionDays.TWO_YEARS; }
+    // Apply the default retention only for non-Delivery classes; Delivery does not store logs.
+    if (retentionInDays === undefined && props.logGroupClass !== LogGroupClass.DELIVERY) { retentionInDays = RetentionDays.TWO_YEARS; }
+    // RetentionDays.INFINITE (and the legacy Infinity value) mean "never expire", which maps
+    // to omitting RetentionInDays on the resource.
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
-      throw new ValidationError(`retentionInDays must be positive, got ${retentionInDays}`, this);
+      throw new ValidationError(lit`RetentionDaysPositive`, `retentionInDays must be positive, got ${retentionInDays}`, this);
     }
-
-    let logGroupClass = props.logGroupClass;
 
     const dataProtectionPolicy = props.dataProtectionPolicy?._bind(this);
     const fieldIndexPolicies: any[] = [];
@@ -665,9 +741,9 @@ export class LogGroup extends LogGroupBase {
       });
     }
 
-    const resource = new CfnLogGroup(this, 'Resource', {
-      kmsKeyId: props.encryptionKey?.keyArn,
-      logGroupClass,
+    this.resource = new CfnLogGroup(this, 'Resource', {
+      kmsKeyId: props.encryptionKey?.keyRef.keyArn,
+      logGroupClass: props.logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
       dataProtectionPolicy: dataProtectionPolicy ? {
@@ -677,18 +753,11 @@ export class LogGroup extends LogGroupBase {
         Statement: dataProtectionPolicy?.statement,
         Configuration: dataProtectionPolicy?.configuration,
       } : undefined,
+      deletionProtectionEnabled: props.deletionProtectionEnabled,
       ...(props.fieldIndexPolicies && { fieldIndexPolicies: fieldIndexPolicies }),
     });
 
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.logGroupArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'logs',
-      resource: 'log-group',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.logGroupName = this.getResourceNameAttribute(resource.ref);
+    this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 }
 
@@ -803,6 +872,14 @@ export interface MetricFilterOptions {
    * @default - Cloudformation generated name.
    */
   readonly filterName?: string;
+
+  /**
+   * Whether the metric filter is applied on the tranformed logs. This parameter is valid only for log groups that have an active log transformer.
+   * If this value is true, the metric filter is applied on the transformed version of the log events instead of the original ingested log events.
+   *
+   * @default - false
+   */
+  readonly applyOnTransformedLogs?: boolean;
 }
 
 /**

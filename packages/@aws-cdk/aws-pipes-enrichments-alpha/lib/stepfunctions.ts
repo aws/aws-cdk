@@ -1,6 +1,7 @@
-import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IStateMachine, StateMachine, StateMachineType } from 'aws-cdk-lib/aws-stepfunctions';
+import type { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import { StateMachine, StateMachineType } from 'aws-cdk-lib/aws-stepfunctions';
 
 /**
  * Properties for a StepFunctionsEnrichment

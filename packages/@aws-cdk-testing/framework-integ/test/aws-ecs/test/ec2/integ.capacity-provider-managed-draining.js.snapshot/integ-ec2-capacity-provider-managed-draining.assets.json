@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "b34fad7b41eb8f6d5e2b8d503f70a432f882d1605f67f76d700740feed2deeae": {
+    "e0cec7cd379d73ec064796084b79d948cf840a72d221db42cae9701adc8309ca": {
+      "displayName": "integ-ec2-capacity-provider-managed-draining Template",
       "source": {
         "path": "integ-ec2-capacity-provider-managed-draining.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-bf7d3789": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b34fad7b41eb8f6d5e2b8d503f70a432f882d1605f67f76d700740feed2deeae.json",
+          "objectKey": "e0cec7cd379d73ec064796084b79d948cf840a72d221db42cae9701adc8309ca.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

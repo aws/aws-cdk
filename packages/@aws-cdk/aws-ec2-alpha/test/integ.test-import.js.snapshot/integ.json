@@ -1,12 +1,14 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integtest-model/DefaultTest": {
       "stacks": [
         "vpcv2-import-integ-test"
       ],
+      "stackUpdateWorkflow": false,
       "assertionStack": "integtest-model/DefaultTest/DeployAssert",
       "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

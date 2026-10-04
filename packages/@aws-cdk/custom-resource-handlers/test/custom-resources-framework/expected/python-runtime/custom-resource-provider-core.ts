@@ -22,11 +22,11 @@ export class TestProvider extends CustomResourceProviderBase {
     return existing ?? new TestProvider(stack, id, props);
   }
 
-  public constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
+  private constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
     super(scope, id, {
       ...props,
-      "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "python3.11"
+      codeDirectory: path.join(__dirname, 'my-handler'),
+      runtimeName: "python3.11"
     });
     this.node.addMetadata('aws:cdk:is-custom-resource-handler-customResourceProvider', true);
   }

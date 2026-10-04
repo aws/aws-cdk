@@ -6,8 +6,6 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -18,7 +16,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType('t2.micro'),
+  instanceType: new ec2.InstanceType('t3.micro'),
 });
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {

@@ -1,7 +1,7 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 const app = new cdk.App();

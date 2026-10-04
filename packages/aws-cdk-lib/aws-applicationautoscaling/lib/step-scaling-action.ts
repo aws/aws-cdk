@@ -1,8 +1,12 @@
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import { IScalableTarget } from './scalable-target';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
  * Properties for a scaling policy
@@ -11,7 +15,7 @@ export interface StepScalingActionProps {
   /**
    * The scalable target
    */
-  readonly scalingTarget: IScalableTarget;
+  readonly scalingTarget: IScalableTargetRef;
 
   /**
    * A name for the scaling policy
@@ -68,16 +72,19 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
+@noBoxStackTraces
 export class StepScalingAction extends Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
-  private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
+  private readonly adjustments: IArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
 
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
+
+    this.adjustments = Box.fromArray([], { omitEmpty: false });
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
     // properties, or the ScalingTargetId property, but not both.
@@ -85,13 +92,13 @@ export class StepScalingAction extends Construct {
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'StepScaling',
-      scalingTargetId: props.scalingTarget.scalableTargetId,
+      scalingTargetId: props.scalingTarget.scalableTargetRef.resourceId,
       stepScalingPolicyConfiguration: {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
-        stepAdjustments: cdk.Lazy.any({ produce: () => this.adjustments }),
+        stepAdjustments: this.adjustments,
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty,
     });
 
@@ -103,7 +110,7 @@ export class StepScalingAction extends Construct {
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new ValidationError('At least one of lowerBound or upperBound is required', this);
+      throw new ValidationError(lit`LeastOneLowerBoundUpper`, 'At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,

@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.neptunegraph"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.NeptuneGraph"
+      "namespace": "Amazon.CDK.AWS.NeptuneGraph"
     },
     "python": {
       "module": "aws_cdk.aws_neptunegraph"

@@ -7,6 +7,16 @@ import * as cdk from '../../../core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
 
+test('fromObjectV2 returns instanceof LogGroupTargetInput', () => {
+  const input = LogGroupTargetInput.fromObjectV2();
+  expect(input).toBeInstanceOf(LogGroupTargetInput);
+});
+
+test('fromObjectV2 returns instanceof RuleTargetInput', () => {
+  const input = LogGroupTargetInput.fromObjectV2();
+  expect(input).toBeInstanceOf(events.RuleTargetInput);
+});
+
 test('use log group as an event rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -96,7 +106,7 @@ testDeprecated('cannot use both logEvent and event', () => {
       event: events.RuleTargetInput.fromObject({
         message: events.EventField.fromPath('$'),
       }),
-      logEvent: LogGroupTargetInput.fromObject(),
+      logEvent: LogGroupTargetInput.fromObject({}),
     }));
   }).toThrow(/Only one of "event" or "logEvent" can be specified/);
 });
@@ -135,7 +145,7 @@ test('logEvent with defaults', () => {
 
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    logEvent: LogGroupTargetInput.fromObject(),
+    logEvent: LogGroupTargetInput.fromObject({}),
   }));
 
   // THEN

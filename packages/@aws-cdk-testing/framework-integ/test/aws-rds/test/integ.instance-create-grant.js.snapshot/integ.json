@@ -1,13 +1,13 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
-    "rds-integ-instance-create-grant/DefaultTest": {
+    "instance-create-grant-integ-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-rds-integ-instance-create-grant"
+        "aws-cdk-rds-instance-create-grant"
       ],
-      "assertionStack": "rds-integ-instance-create-grant/DefaultTest/DeployAssert",
-      "assertionStackName": "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52"
+      "assertionStack": "instance-create-grant-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancecreategrantintegtestDefaultTestDeployAssert884F02C0"
     }
   },
-  "minimumCliVersion": "2.1019.2"
+  "minimumCliVersion": "2.1119.0"
 }

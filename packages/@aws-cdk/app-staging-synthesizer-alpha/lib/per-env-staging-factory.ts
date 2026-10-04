@@ -1,6 +1,6 @@
-import { Stack } from 'aws-cdk-lib/core';
+import type { Stack } from 'aws-cdk-lib/core';
 import { AppScopedGlobal } from './private/app-global';
-import { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
+import type { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
 
 /**
  * Per-environment cache

@@ -1,5 +1,6 @@
 import { Aws } from '../../core';
-import { AccessPolicy, AccessPolicyArn, AccessPolicyNameOptions, AccessScopeType } from '../lib';
+import type { AccessPolicyNameOptions } from '../lib';
+import { AccessPolicy, AccessPolicyArn, AccessScopeType } from '../lib';
 
 describe('AccessPolicy', () => {
   describe('fromAccessPolicyName', () => {
@@ -67,7 +68,7 @@ describe('AccessPolicyArn', () => {
       ['AMAZON_EKS_ADMIN_VIEW_POLICY', 'AmazonEKSAdminViewPolicy'],
       ['AMAZON_EKS_EDIT_POLICY', 'AmazonEKSEditPolicy'],
       ['AMAZON_EKS_VIEW_POLICY', 'AmazonEKSViewPolicy'],
-    ];
+    ] as const;
 
     test.each(policyTestCases)('static property %s', (propertyName, policyName) => {
       expect(AccessPolicyArn[propertyName].policyArn).toEqual(`arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`);

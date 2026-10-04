@@ -63,7 +63,7 @@
   "pooldomain430FA744": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "nija-test-pool",
+    "Domain": "nija-test-pool-amzn",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
     }
@@ -74,8 +74,7 @@
    "Properties": {
     "AttributeMapping": {
      "given_name": "name",
-     "email": "email",
-     "userId": "user_id"
+     "email": "email"
     },
     "ProviderDetails": {
      "client_id": "amzn-client-id",

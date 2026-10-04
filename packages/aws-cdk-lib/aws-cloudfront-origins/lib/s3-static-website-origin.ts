@@ -1,6 +1,7 @@
-import { HttpOrigin, HttpOriginProps } from './http-origin';
+import type { HttpOriginProps } from './http-origin';
+import { HttpOrigin } from './http-origin';
 import * as cloudfront from '../../aws-cloudfront';
-import { IBucket } from '../../aws-s3';
+import type { IBucket } from '../../aws-s3';
 
 /**
  * Properties for configuring a origin using a S3 bucket configured as a website endpoint

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const bundled = require('npm-bundled');
@@ -207,7 +207,7 @@ export class PackageJson {
    * @param predicate the predicate to select dependencies to be extracted
    * @returns the list of dependencies matching a pattern.
    */
-  public getDependencies(predicate: (s: string) => boolean): Array<{ name: string, version: string }> {
+  public getDependencies(predicate: (s: string) => boolean): Array<{ name: string; version: string }> {
     return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
   }
 
@@ -310,7 +310,12 @@ export class PackageJson {
   public addToFileSync(fileName: string, line: string) {
     const lines = this.readFileLinesSync(fileName);
     if (lines.indexOf(line) === -1) {
-      lines.push(line);
+      // Insert before the trailing empty string to preserve the final newline
+      if (lines.length > 0 && lines[lines.length - 1] === '') {
+        lines.splice(lines.length - 1, 0, line);
+      } else {
+        lines.push(line);
+      }
       this.writeFileLinesSync(fileName, lines);
     }
   }

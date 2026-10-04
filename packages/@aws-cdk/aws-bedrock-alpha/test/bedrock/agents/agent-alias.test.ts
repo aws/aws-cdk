@@ -3,8 +3,8 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type { IAgent } from '../../../bedrock/agents/agent';
 import { AgentAlias } from '../../../bedrock/agents/agent-alias';
-import { IAgent } from '../../../bedrock/agents/agent';
 
 describe('AgentAlias', () => {
   let stack: Stack;
@@ -30,6 +30,7 @@ describe('AgentAlias', () => {
       stack: stack,
       env: { account: stack.account, region: stack.region },
       applyRemovalPolicy: jest.fn(),
+      with: jest.fn(),
     };
   });
 
@@ -194,7 +195,7 @@ describe('AgentAlias', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
       code: lambda.Code.fromInline('exports.handler = function() { }'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN

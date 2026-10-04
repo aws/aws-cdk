@@ -1,10 +1,11 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DeliveryStream, DestinationBindOptions, DestinationConfig, IDestination } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { DeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { TestSource, TestTarget } from './test-classes';
 import { CloudwatchLogsLogDestination, FirehoseLogDestination, IncludeExecutionData, LogLevel, Pipe, S3LogDestination, S3OutputFormat } from '../lib';
 

@@ -1,0 +1,22 @@
+{
+  "lib/cloudwatch-logs.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/event-bridge.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/kinesis.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/stepfunctions.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

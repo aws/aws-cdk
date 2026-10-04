@@ -40,13 +40,13 @@
      },
      "S3Key": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
     },
+    "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
       "HandlerServiceRoleFCDC14AE",
       "Arn"
      ]
     },
-    "Handler": "index.main",
     "Runtime": "python3.9"
    },
    "DependsOn": [
@@ -93,13 +93,13 @@
      },
      "S3Key": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
     },
+    "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
       "CallbackHandlerServiceRole3689695E",
       "Arn"
      ]
     },
-    "Handler": "index.main",
     "Runtime": "python3.9"
    },
    "DependsOn": [
@@ -188,33 +188,40 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Invoke Handler with task token\",\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"Invoke Handler\",\"States\":{\"Invoke Handler\":{\"Next\":\"Invoke Handler with task token\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
        {
         "Fn::GetAtt": [
          "Handler886CB40B",
          "Arn"
         ]
        },
-       "\"},\"Invoke Handler with task token\":{\"Next\":\"Job Complete?\",\"InputPath\":\"$.guid\",\"Parameters\":{\"FunctionName\":\"",
-       {
-        "Ref": "CallbackHandler4434C38D"
-       },
-       "\",\"Payload\":{\"token.$\":\"$$.Task.Token\"}},\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\",\"Payload.$\":\"$\"}},\"Invoke Handler with task token\":{\"Next\":\"Job Complete?\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"InputPath\":\"$.guid\",\"ResultPath\":\"$.status\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::lambda:invoke.waitForTaskToken\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+       ":states:::lambda:invoke.waitForTaskToken\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "CallbackHandler4434C38D",
+         "Arn"
+        ]
+       },
+       "\",\"Payload\":{\"token.$\":\"$$.Task.Token\"}}},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

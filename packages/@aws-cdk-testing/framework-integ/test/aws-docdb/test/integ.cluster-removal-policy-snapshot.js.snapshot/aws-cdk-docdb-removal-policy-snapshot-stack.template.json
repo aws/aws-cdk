@@ -395,7 +395,7 @@
    "Type": "AWS::DocDB::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "docdb3.6",
+    "Family": "docdb8.0",
     "Parameters": {
      "audit_logs": "disabled",
      "tls": "enabled",
@@ -505,7 +505,7 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
-    "EngineVersion": "3.6.0",
+    "EngineVersion": "8.0.0",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",

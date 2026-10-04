@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as events from '../../aws-events';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Stack } from '../../core';
 
 /**

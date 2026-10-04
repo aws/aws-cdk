@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
@@ -9,7 +9,7 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as codepipeline from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('', () => {
   describe('Pipeline', () => {

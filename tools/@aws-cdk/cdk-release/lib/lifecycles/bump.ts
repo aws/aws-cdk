@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { writeFile } from '../private/files';
 import { notify } from '../private/print';
-import { LifecyclesSkip, ReleaseType, Versions } from '../types';
+import type { LifecyclesSkip, ReleaseType, Versions } from '../types';
 
 export interface BumpOptions {
   releaseAs: ReleaseType;
@@ -21,7 +21,7 @@ export async function bump(args: BumpOptions, currentVersion: Versions): Promise
   }
 
   const releaseType = getReleaseType(args.prerelease, args.releaseAs, currentVersion.stableVersion);
-  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, args.prerelease);
+  const newStableVersion = semver.inc(currentVersion.stableVersion, releaseType, false, args.prerelease);
   if (!newStableVersion) {
     throw new Error('Could not increment version: ' + currentVersion.stableVersion);
   }

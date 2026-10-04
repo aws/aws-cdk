@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 

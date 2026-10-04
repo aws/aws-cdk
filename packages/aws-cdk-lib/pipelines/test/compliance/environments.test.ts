@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { Match, Template } from '../../../assertions';
 import { Stack } from '../../../core';
 import { OneStackApp, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';

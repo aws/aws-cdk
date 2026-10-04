@@ -1,8 +1,8 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import * as actions from '../../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+import * as actions from '../../lib';
 
 const app = new App({
   postCliContext: {

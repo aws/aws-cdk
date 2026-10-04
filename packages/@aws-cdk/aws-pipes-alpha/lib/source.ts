@@ -1,8 +1,10 @@
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
-import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
-import { IPipe } from './pipe';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { ITopic } from 'aws-cdk-lib/aws-sns';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import type { IPipe } from './pipe';
 
 /**
  * Source properties.
@@ -133,6 +135,7 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
 
   /**
    * Grants the pipe role permission to publish to the dead-letter target.
+   * [disable-awslint:no-grants]
    */
   public grantPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
     if (deadLetterTarget instanceof Queue) {

@@ -1,0 +1,102 @@
+{
+  "/VendedLogsMultiplesTest/EventBus": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupA": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/VendedLogsMultiplesTest/CDKSourceERROR_LOGSVendedLogsMultiplesTest": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKSourceERRORLOGSVendedLogsMultiplesTest"
+    }
+  ],
+  "/VendedLogsMultiplesTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/VendedLogsMultiplesTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupA/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupADF10FC60"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupA/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupBD2E5EF85"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupB/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsMultiplesTest/CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB"
+    }
+  ],
+  "/VendedLogsMultiplesTest/CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Delivery1DAA8855"
+    }
+  ],
+  "/VendedLogsMultiplesTest/CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CF/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B"
+    }
+  ],
+  "/VendedLogsMultiplesTest/CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CF/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDelivery7BD7F2BF"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupA/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupAPolicyResourcePolicy871A75CE"
+    }
+  ],
+  "/VendedLogsMultiplesTest/DeliveryLogGroupB/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupBPolicyResourcePolicyB050EB19"
+    }
+  ]
+}

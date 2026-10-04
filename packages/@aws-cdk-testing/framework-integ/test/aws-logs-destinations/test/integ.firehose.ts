@@ -3,7 +3,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as dests from 'aws-cdk-lib/aws-logs-destinations';
 
 class FirehoseEnv extends Stack {

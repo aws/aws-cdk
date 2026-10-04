@@ -1,5 +1,5 @@
-import { IAction } from './action';
-import { Expression } from './expression';
+import type { IAction } from './action';
+import type { Expression } from './expression';
 
 /**
  * Specifies the actions to be performed when the condition evaluates to `true`.

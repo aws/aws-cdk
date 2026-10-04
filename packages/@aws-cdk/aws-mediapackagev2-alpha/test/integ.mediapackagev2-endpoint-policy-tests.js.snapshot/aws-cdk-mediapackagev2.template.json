@@ -1,0 +1,115 @@
+{
+ "Resources": {
+  "MyChannelGroup365BB055": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2MyChannelGroup49BD4EC8"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myChannel4B408FFD": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2MyChannelGroup49BD4EC8",
+    "ChannelName": "awscdkmediapackagev2myChannel42A6BAA7",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "MyChannelGroup365BB055"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myEndpoint864D0BBD": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2MyChannelGroup49BD4EC8",
+    "ChannelName": "awscdkmediapackagev2myChannel42A6BAA7",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2myEndpoint08394431",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "myChannel4B408FFD",
+    "MyChannelGroup365BB055"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "myEndpointPolicy9AB9FD80": {
+   "Type": "AWS::MediaPackageV2::OriginEndpointPolicy",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2MyChannelGroup49BD4EC8",
+    "ChannelName": "awscdkmediapackagev2myChannel42A6BAA7",
+    "OriginEndpointName": "awscdkmediapackagev2myEndpoint08394431",
+    "Policy": {
+     "Statement": [
+      {
+       "Action": [
+        "mediapackagev2:GetHeadObject",
+        "mediapackagev2:GetObject"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceArn": "arn:aws:cloudfront::123456789012:distribution/AAAAAAAAA"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "myEndpoint864D0BBD",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowRequestsFromCloudFront"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

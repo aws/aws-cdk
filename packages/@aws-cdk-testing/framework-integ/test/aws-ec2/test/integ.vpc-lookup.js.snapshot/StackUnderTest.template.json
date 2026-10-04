@@ -1,10 +1,7 @@
 {
  "Outputs": {
-  "OutputFromVpcAttributes": {
-   "Value": "Region fromVpcAttributes: eu-west-1"
-  },
   "OutputFromLookup": {
-   "Value": "Region fromLookup: eu-west-1"
+   "Value": "Region fromLookup: us-east-1"
   }
  },
  "Parameters": {

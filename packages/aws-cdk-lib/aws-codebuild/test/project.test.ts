@@ -7,7 +7,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('can use filename as buildspec', () => {
   // GIVEN
@@ -524,7 +524,7 @@ test('if a role is shared between projects in a VPC, the VPC Policy is only atta
 test('can use an imported Role for a Project within a VPC', () => {
   const stack = new cdk.Stack();
 
-  const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role');
+  const importedRole = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/service-role/codebuild-bruiser-service-role');
   const vpc = new ec2.Vpc(stack, 'Vpc');
 
   new codebuild.Project(stack, 'Project', {
@@ -544,7 +544,7 @@ test('can use an imported Role with mutable = false for a Project within a VPC',
   const stack = new cdk.Stack();
 
   const importedRole = iam.Role.fromRoleArn(stack, 'Role',
-    'arn:aws:iam::1234567890:role/service-role/codebuild-bruiser-service-role', {
+    'arn:aws:iam::123456789012:role/service-role/codebuild-bruiser-service-role', {
       mutable: false,
     });
   const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -866,6 +866,95 @@ describe('Environment', () => {
     });
   });
 
+  test('logs config - s3 with encrypted true sets EncryptionDisabled to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: false,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted false sets EncryptionDisabled to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: false,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: true,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted unset does not set EncryptionDisabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: Match.absent(),
+        },
+      }),
+    });
+  });
+
   test('logs config - cloudWatch and s3', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -941,8 +1030,10 @@ describe('Environment', () => {
     ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
     ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
     ['Amazon Linux 5.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_5, 'aws/codebuild/amazonlinux2-x86_64-standard:5.0'],
+    ['Windows Server Core 2019 1.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE, 'aws/codebuild/windows-base:2019-1.0'],
     ['Windows Server Core 2019 2.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0, 'aws/codebuild/windows-base:2019-2.0'],
     ['Windows Server Core 2019 3.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0, 'aws/codebuild/windows-base:2019-3.0'],
+    ['Windows Server Core 2022 3.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0, 'aws/codebuild/windows-base:2022-1.0'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -969,6 +1060,8 @@ describe('Environment', () => {
 
   test.each([
     ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['Base 15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['Base 26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1037,10 +1130,14 @@ describe('Environment', () => {
     });
   });
 
-  test('can set fleet', () => {
+  test.each([
+    ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
+  ])('can set macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const fleet = new codebuild.Fleet(stack, 'Fleet', {
       fleetName: 'MyFleet',
       baseCapacity: 1,
@@ -1056,7 +1153,7 @@ describe('Environment', () => {
       }),
       environment: {
         fleet,
-        buildImage: codebuild.MacBuildImage.BASE_14,
+        buildImage,
         computeType: codebuild.ComputeType.MEDIUM,
       },
     });
@@ -1065,7 +1162,7 @@ describe('Environment', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
-        Image: 'aws/codebuild/macos-arm-base:14',
+        Image: expectedImage,
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
@@ -1105,10 +1202,14 @@ describe('Environment', () => {
     });
   });
 
-  test('can set imported fleet', () => {
+  test.each([
+    ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
+  ])('can set imported macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
 
     // WHEN
@@ -1119,7 +1220,7 @@ describe('Environment', () => {
       }),
       environment: {
         fleet,
-        buildImage: codebuild.MacBuildImage.BASE_14,
+        buildImage,
         computeType: codebuild.ComputeType.MEDIUM,
       },
     });
@@ -1128,7 +1229,7 @@ describe('Environment', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
-        Image: 'aws/codebuild/macos-arm-base:14',
+        Image: expectedImage,
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
@@ -1199,46 +1300,148 @@ describe('Environment', () => {
     }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
   });
 
-  test('throws when Windows 2022 build image is used without a fleet', () => {
+  test('can enable docker server by setting docker server compute type', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        dockerServer: {
+          computeType: codebuild.DockerServerComputeType.SMALL,
+          securityGroups: [securityGroup],
+        },
+      },
+    });
 
     // THEN
-    expect(() => {
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.s3({
-          bucket,
-          path: 'path',
-        }),
-        environment: {
-          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0,
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        DockerServer: {
+          ComputeType: 'BUILD_GENERAL1_SMALL',
+          SecurityGroupIds: [{
+            'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+          }],
         },
-      });
-    }).toThrow('Windows Server 2022 images must be used with a fleet');
+      }),
+    });
   });
 
-  test('throws when 2022 WindowsImageType is used without a fleet', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+  describe('host kernel', () => {
+    test.each([
+      [codebuild.HostKernel.LINUX_KERNEL_4, 'LINUX_KERNEL_4'],
+      [codebuild.HostKernel.LINUX_KERNEL_6, 'LINUX_KERNEL_6'],
+      [codebuild.HostKernel.LINUX_KERNEL_LATEST, 'LINUX_KERNEL_LATEST'],
+    ])('can set the host kernel to %s', (hostKernel, expected) => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // THEN
-    expect(() => {
+      // WHEN
       new codebuild.Project(stack, 'Project', {
         source: codebuild.Source.s3({
-          bucket,
+          bucket: new s3.Bucket(stack, 'Bucket'),
           path: 'path',
         }),
         environment: {
-          buildImage: codebuild.WindowsBuildImage.fromDockerRegistry(
-            'aws/codebuild/future-windows-version:2099-9.0',
-            {},
-            codebuild.WindowsImageType.SERVER_2022,
-          ),
+          buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+          hostKernel,
         },
       });
-    }).toThrow('Windows Server 2022 images must be used with a fleet');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          Type: 'LINUX_CONTAINER',
+          HostKernel: expected,
+        }),
+      });
+    });
+
+    test('can set the host kernel on an ARM build image', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          Type: 'ARM_CONTAINER',
+          HostKernel: 'LINUX_KERNEL_6',
+        }),
+      });
+    });
+
+    test('is absent from the template when not specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          HostKernel: Match.absent(),
+        }),
+      });
+    });
+
+    test('fails when set on a Windows build image', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Windows images do not support host kernel selection/);
+    });
+
+    test('fails when set on a Mac build image', () => {
+      const stack = new cdk.Stack();
+      const fleet = new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType: codebuild.EnvironmentType.MAC_ARM,
+      });
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.MacBuildImage.BASE_14,
+            fleet,
+            hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Mac images do not support host kernel selection/);
+    });
   });
 });
 

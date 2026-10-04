@@ -92,11 +92,15 @@ describe('notification', () => {
         Statement: [{
           Action: 's3:PutBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }, {
           Action: 's3:GetBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }],
       },
     });
@@ -196,11 +200,15 @@ describe('notification', () => {
         Statement: [{
           Action: 's3:PutBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }, {
           Action: 's3:GetBucketNotification',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::foo-bar']],
+          },
         }],
       },
     });
@@ -309,8 +317,7 @@ describe('notification', () => {
           ],
         },
       },
-      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
-        'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
+      DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     });
   });
 
@@ -328,7 +335,7 @@ describe('notification', () => {
 
     Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
       Type: 'Custom::S3BucketNotifications',
-      DependsOn: Match.absent(),
+      DependsOn: ['MyBucketNotificationsHandlerPolicy983F24BD'],
     });
   });
 
@@ -348,7 +355,10 @@ describe('notification', () => {
 
     Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
       Type: 'Custom::S3BucketNotifications',
-      DependsOn: ['MyBucketPolicyE7FBAC7B'],
+      DependsOn: Match.arrayWith([
+        'MyBucketNotificationsHandlerPolicy983F24BD',
+        'MyBucketPolicyE7FBAC7B',
+      ]),
     });
   });
 
@@ -372,7 +382,10 @@ describe('notification', () => {
 
     Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
       Type: 'Custom::S3BucketNotifications',
-      DependsOn: ['MyBucketPolicyE7FBAC7B'],
+      DependsOn: Match.arrayWith([
+        'MyBucketNotificationsHandlerPolicy983F24BD',
+        'MyBucketPolicyE7FBAC7B',
+      ]),
     });
   });
 
@@ -445,12 +458,16 @@ describe('notification', () => {
           {
             Action: 's3:PutBucketNotification',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+            },
           },
           {
             Action: 's3:GetBucketNotification',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: {
+              'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -476,7 +493,7 @@ describe('notification', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
     });
   });
 
@@ -543,5 +560,81 @@ describe('notification', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       SkipDestinationValidation: false,
     });
+  });
+
+  test('multiple buckets in same stack result in separate per-bucket policies', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const bucket1 = new s3.Bucket(stack, 'Bucket1');
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const bucket3 = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+      bucketName: 'imported-bucket',
+    });
+
+    bucket1.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN1',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    bucket2.addEventNotification(s3.EventType.OBJECT_REMOVED, {
+      bind: () => ({
+        arn: 'ARN2',
+        type: s3.BucketNotificationDestinationType.QUEUE,
+      }),
+    });
+
+    bucket3.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN3',
+        type: s3.BucketNotificationDestinationType.LAMBDA,
+      }),
+    });
+
+    // THEN - Each bucket should have its own dedicated IAM policy.
+    // This prevents CloudFormation race conditions when removing notifications.
+    // See https://github.com/aws/aws-cdk/issues/37667
+    const template = Template.fromStack(stack);
+
+    const allPolicies = template.findResources('AWS::IAM::Policy');
+    const handlerPolicies = Object.keys(allPolicies).filter(k => k.includes('HandlerPolicy'));
+    expect(handlerPolicies).toHaveLength(3);
+  });
+
+  test('custom resource depends on handler IAM policy to prevent race condition on removal', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37667
+    const stack = new cdk.Stack();
+
+    const bucket1 = new s3.Bucket(stack, 'Bucket1');
+    const bucket2 = new s3.Bucket(stack, 'Bucket2');
+    const dest = {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    };
+
+    bucket1.addEventNotification(s3.EventType.OBJECT_CREATED, dest);
+    bucket2.addEventNotification(s3.EventType.OBJECT_CREATED, dest);
+
+    const template = Template.fromStack(stack);
+
+    // Each custom resource depends on its own dedicated HandlerPolicy
+    template.hasResource('Custom::S3BucketNotifications', {
+      DependsOn: Match.arrayWith(['Bucket1NotificationsHandlerPolicy2894F2A2']),
+      Properties: { BucketName: { Ref: 'Bucket12520700A' } },
+    });
+    template.hasResource('Custom::S3BucketNotifications', {
+      DependsOn: Match.arrayWith(['Bucket2NotificationsHandlerPolicy2BDDB4E2']),
+      Properties: { BucketName: { Ref: 'Bucket25524B414' } },
+    });
+
+    // Verify separate policies exist (not a shared DefaultPolicy)
+    const policies = template.findResources('AWS::IAM::Policy');
+    const handlerPolicies = Object.keys(policies).filter(k => k.includes('HandlerPolicy'));
+    expect(handlerPolicies).toHaveLength(2);
   });
 });

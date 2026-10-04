@@ -1,6 +1,8 @@
-import { IBackupVault } from './vault';
 import * as events from '../../aws-events';
-import { Duration, TimeZone, Token, UnscopedValidationError } from '../../core';
+import type { TimeZone } from '../../core';
+import { Duration, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Properties for a BackupPlanRule
@@ -64,7 +66,7 @@ export interface BackupPlanRuleProps {
    * @default - use the vault defined at the plan level. If not defined a new
    * common vault for the plan will be created
    */
-  readonly backupVault?: IBackupVault;
+  readonly backupVault?: IBackupVaultRef;
 
   /**
    * Enables continuous backup and point-in-time restores (PITR).
@@ -91,6 +93,14 @@ export interface BackupPlanRuleProps {
    * @default - no recovery point tags.
    */
   readonly recoveryPointTags?: { [key: string]: string };
+
+  /**
+   * To help search your backups, you can enable Backup indexes by assigning index actions.
+   * Currently, you can only have up to a single index action per BackupRule.
+   *
+   * @default - no index actions.
+   */
+  readonly indexActions?: BackupPlanIndexActionProps[];
 }
 
 /**
@@ -100,7 +110,7 @@ export interface BackupPlanCopyActionProps {
   /**
    * Destination Vault for recovery points to be copied into
    */
-  readonly destinationBackupVault: IBackupVault;
+  readonly destinationBackupVault: IBackupVaultRef;
 
   /**
    * Specifies the duration after creation that a copied recovery point is deleted from the destination vault.
@@ -119,13 +129,61 @@ export interface BackupPlanCopyActionProps {
 }
 
 /**
+ * Properties for a BackupPlanIndexAction
+ */
+export interface BackupPlanIndexActionProps {
+  /**
+   * Specifies the resource types to include in the index action.
+   *
+   * A backup index is only created when this is set, so at least one resource
+   * type must be provided.
+   */
+  readonly resourceTypes: IndexActionResourceType[];
+}
+
+/**
+ * The resource type to index.
+ *
+ * This is implemented as an enum-like class so that resource types the AWS Backup
+ * service adds in the future can be used before they are added to the CDK, e.g.
+ * `new IndexActionResourceType('EFS')`.
+ *
+ * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/API_IndexAction.html
+ */
+export class IndexActionResourceType {
+  /**
+   * Amazon Simple Storage Service (Amazon S3)
+   */
+  public static readonly S3 = new IndexActionResourceType('S3');
+
+  /**
+   * Amazon Elastic Block Store (Amazon EBS)
+   */
+  public static readonly EBS = new IndexActionResourceType('EBS');
+
+  /**
+   * A custom resource type not yet supported as a static member of this class.
+   *
+   * @param value the resource type string value, e.g. `S3` or `EBS`
+   */
+  public constructor(public readonly value: string) {}
+
+  /**
+   * Returns the string representation of this resource type.
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+/**
  * A backup plan rule
  */
 export class BackupPlanRule {
   /**
    * Daily with 35 days retention
    */
-  public static daily(backupVault?: IBackupVault) {
+  public static daily(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Daily',
@@ -140,7 +198,7 @@ export class BackupPlanRule {
   /**
    * Weekly with 3 months retention
    */
-  public static weekly(backupVault?: IBackupVault) {
+  public static weekly(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Weekly',
@@ -156,7 +214,7 @@ export class BackupPlanRule {
   /**
    * Monthly 1 year retention, move to cold storage after 1 month
    */
-  public static monthly1Year(backupVault?: IBackupVault) {
+  public static monthly1Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly1Year',
@@ -173,7 +231,7 @@ export class BackupPlanRule {
   /**
    * Monthly 5 year retention, move to cold storage after 3 months
    */
-  public static monthly5Year(backupVault?: IBackupVault) {
+  public static monthly5Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly5Year',
@@ -190,7 +248,7 @@ export class BackupPlanRule {
   /**
    * Monthly 7 year retention, move to cold storage after 3 months
    */
-  public static monthly7Year(backupVault?: IBackupVault) {
+  public static monthly7Year(backupVault?: IBackupVaultRef) {
     return new BackupPlanRule({
       backupVault,
       ruleName: 'Monthly7Year',
@@ -211,32 +269,33 @@ export class BackupPlanRule {
 
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {
-    if (props.deleteAfter && props.moveToColdStorageAfter &&
+    if (props.deleteAfter && !props.deleteAfter.isUnresolved() &&
+      props.moveToColdStorageAfter && !props.moveToColdStorageAfter.isUnresolved() &&
       props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
-      throw new UnscopedValidationError('`deleteAfter` must be greater than `moveToColdStorageAfter`');
+      throw new UnscopedValidationError(lit`DeleteAfterMustBeGreater`, '`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
-      throw new UnscopedValidationError('`scheduleExpression` must be of type `cron`');
+      throw new UnscopedValidationError(lit`ScheduleExpressionMustBeCron`, '`scheduleExpression` must be of type `cron`');
     }
 
     const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
-      throw new UnscopedValidationError('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+      throw new UnscopedValidationError(lit`MoveToColdStorageNotAllowedWithContinuousBackup`, '`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
     }
 
-    if (props.enableContinuousBackup && props.deleteAfter &&
-      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
-      throw new UnscopedValidationError(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    if (props.enableContinuousBackup && props.deleteAfter && !props.deleteAfter.isUnresolved() &&
+      (props.deleteAfter.toDays() < 1 || props.deleteAfter.toDays() > 35)) {
+      throw new UnscopedValidationError(lit`DeleteAfterRangeInvalidForContinuousBackup`, `'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
     if (props.copyActions && props.copyActions.length > 0) {
       props.copyActions.forEach(copyAction => {
-        if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
-          copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
+        if (copyAction.deleteAfter && !copyAction.deleteAfter.isUnresolved() &&
+          copyAction.moveToColdStorageAfter && !copyAction.moveToColdStorageAfter.isUnresolved() &&
           copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
-          throw new UnscopedValidationError([
+          throw new UnscopedValidationError(lit`CopyActionDeleteAfterTooEarly`, [
             '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
             `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
           ].join('\n'));

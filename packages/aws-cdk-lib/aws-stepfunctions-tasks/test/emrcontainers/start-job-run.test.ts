@@ -1,4 +1,3 @@
-import { describe } from 'node:test';
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
@@ -6,7 +5,8 @@ import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { App, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, ApplicationConfiguration, Classification, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
+import type { ApplicationConfiguration, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
+import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, Classification } from '../../lib/emrcontainers/start-job-run';
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
   let stack: Stack;
@@ -1125,7 +1125,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });
@@ -1217,7 +1217,7 @@ describe('Custom resource is created that has correct EKS namespace, environment
         },
       ],
       MemorySize: 256,
-      Runtime: 'python3.11',
+      Runtime: 'python3.13',
       Timeout: 30,
     });
   });

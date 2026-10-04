@@ -18,7 +18,7 @@ import * as core from 'aws-cdk-lib/core';
 import * as er from '../lib';
 
 /* We allow quotes in the object keys used for CloudFormation template assertions */
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const EXAMPLE_RESOURCE_NAME = {
   'Fn::Select': [1, {
@@ -121,13 +121,28 @@ describe('Example Resource', () => {
     });
 
     test('onEvent adds an Event Rule', () => {
-      exampleResource.onEvent('MyEvent');
+      exampleResource.onEvent('MyEvent', {
+        description: 'Custom rule description',
+        ruleName: 'MyCustomEventRuleName',
+        eventPattern: {
+          account: ['123456789012'],
+          region: ['us-east-1'],
+          detail: {
+            test: 'value',
+          },
+        },
+      });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Description: 'Custom rule description',
+        Name: 'MyCustomEventRuleName',
         EventPattern: {
           detail: {
             'example-resource-name': [EXAMPLE_RESOURCE_NAME],
+            'test': 'value',
           },
+          account: ['123456789012'],
+          region: ['us-east-1'],
         },
       });
     });

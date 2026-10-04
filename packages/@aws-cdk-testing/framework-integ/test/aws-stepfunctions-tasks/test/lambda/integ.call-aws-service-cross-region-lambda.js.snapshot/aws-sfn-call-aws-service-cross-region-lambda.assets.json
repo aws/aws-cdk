@@ -1,0 +1,36 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "176531cec16e1504f81d374ed3fd8ecbdfc6f593b70622c7a79ccc5a837213e5": {
+      "displayName": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Code",
+      "source": {
+        "path": "asset.176531cec16e1504f81d374ed3fd8ecbdfc6f593b70622c7a79ccc5a837213e5",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-west-2-225b2bda": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "176531cec16e1504f81d374ed3fd8ecbdfc6f593b70622c7a79ccc5a837213e5.zip",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    },
+    "8a3305d4357d3887be5673713da7290cab552f08e2eef080a41c59377d5d70f6": {
+      "displayName": "aws-sfn-call-aws-service-cross-region-lambda Template",
+      "source": {
+        "path": "aws-sfn-call-aws-service-cross-region-lambda.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2-73e4174e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "8a3305d4357d3887be5673713da7290cab552f08e2eef080a41c59377d5d70f6.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,16 +1,19 @@
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import * as semver from 'semver';
 import {
   ApplicationConfigPropertyToJson,
   BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
   InstancesConfigPropertyToJson,
   KerberosAttributesPropertyToJson,
+  ManagedScalingPolicyPropertyToJson,
 } from './private/cluster-utils';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { ValidationError } from '../../../core';
+import { Aws, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -91,6 +94,26 @@ interface EmrCreateClusterOptions {
   readonly ebsRootVolumeSize?: cdk.Size;
 
   /**
+   * The IOPS of the EBS root device volume of the Linux AMI that is used for each EC2 instance.
+   *
+   * Requires EMR release label 6.15.0 or above.
+   * Must be in range [3000, 16000].
+   * @see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
+   * @default - EMR selected default
+   */
+  readonly ebsRootVolumeIops?: number;
+
+  /**
+   * The throughput, in MiB/s, of the EBS root device volume of the Linux AMI that is used for each EC2 instance.
+   *
+   * Requires EMR release label 6.15.0 or above.
+   * Must be in range [125, 1000].
+   * @see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
+   * @default - EMR selected default
+   */
+  readonly ebsRootVolumeThroughput?: number;
+
+  /**
    * Attributes for Kerberos configuration when Kerberos authentication is enabled using a security configuration.
    *
    * @default - None
@@ -103,6 +126,13 @@ interface EmrCreateClusterOptions {
    * @default - None
    */
   readonly logUri?: string;
+
+  /**
+   * The specified managed scaling policy for an Amazon EMR cluster.
+   *
+   * @default - None
+   */
+  readonly managedScalingPolicy?: EmrCreateCluster.ManagedScalingPolicyProperty;
 
   /**
    * The Amazon EMR release label, which determines the version of open-source application packages installed on the cluster.
@@ -248,34 +278,20 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
       // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
     } else if (this._autoScalingRole !== undefined) {
-      throw new ValidationError('Auto Scaling roles can not be specified with instance fleets.', this);
+      throw new ValidationError(lit`AutoScalingRolesCannotBeSpecifiedWithInstanceFleets`, 'Auto Scaling roles can not be specified with instance fleets.', this);
     }
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
-
-    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
-      this.validateReleaseLabel(this.props.releaseLabel);
-    }
-
-    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
-      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
-        throw new ValidationError(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
-      }
-      if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
-        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
-        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new ValidationError(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
-        }
-      }
-    }
 
     if (this.props.autoTerminationPolicyIdleTimeout !== undefined && !cdk.Token.isUnresolved(this.props.autoTerminationPolicyIdleTimeout)) {
       const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
 
       if (idletimeOutSeconds < 60 || idletimeOutSeconds > 604800) {
-        throw new ValidationError(`\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`, this);
+        throw new ValidationError(lit`AutoTerminationPolicyIdleTimeoutOutOfRange`, `\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`, this);
       }
     }
+
+    this.validatePropsRelatedToReleaseLabel();
   }
 
   /**
@@ -285,7 +301,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get serviceRole(): iam.IRole {
     if (this._serviceRole === undefined) {
-      throw new ValidationError('role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._serviceRole;
   }
@@ -297,7 +313,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get clusterRole(): iam.IRole {
     if (this._clusterRole === undefined) {
-      throw new ValidationError('role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._clusterRole;
   }
@@ -309,7 +325,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get autoScalingRole(): iam.IRole {
     if (this._autoScalingRole === undefined) {
-      throw new ValidationError('role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._autoScalingRole;
   }
@@ -333,8 +349,11 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         Configurations: cdk.listMapper(ConfigurationPropertyToJson)(this.props.configurations),
         CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
         EbsRootVolumeSize: this.props.ebsRootVolumeSize?.toGibibytes(),
+        EbsRootVolumeIops: cdk.numberToCloudFormation(this.props.ebsRootVolumeIops),
+        EbsRootVolumeThroughput: cdk.numberToCloudFormation(this.props.ebsRootVolumeThroughput),
         KerberosAttributes: this.props.kerberosAttributes ? KerberosAttributesPropertyToJson(this.props.kerberosAttributes) : undefined,
         LogUri: cdk.stringToCloudFormation(this.props.logUri),
+        ManagedScalingPolicy: this.props.managedScalingPolicy ? ManagedScalingPolicyPropertyToJson(this.props.managedScalingPolicy) : undefined,
         ReleaseLabel: cdk.stringToCloudFormation(this.props.releaseLabel),
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
@@ -377,6 +396,26 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         resources: [serviceRole.roleArn, clusterRole.roleArn],
       }),
     );
+
+    // https://docs.aws.amazon.com/emr/latest/ManagementGuide/using-service-linked-roles-cleanup.html#create-service-linked-role
+    policyStatements.push(
+      new iam.PolicyStatement({
+        sid: 'ElasticMapReduceServiceLinkedRole',
+        actions: ['iam:CreateServiceLinkedRole'],
+        resources: [
+          `arn:${Aws.PARTITION}:iam::${Stack.of(this).account}:role/aws-service-role/elasticmapreduce.amazonaws.com*/AWSServiceRoleForEMRCleanup*`,
+        ],
+        conditions: {
+          StringEquals: {
+            'iam:AWSServiceName': [
+              'elasticmapreduce.amazonaws.com',
+              'elasticmapreduce.amazonaws.com.cn',
+            ],
+          },
+        },
+      }),
+    );
+
     if (autoScalingRole !== undefined) {
       policyStatements.push(
         new iam.PolicyStatement({
@@ -484,12 +523,55 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     const prefix = releaseLabel.slice(0, 4);
     const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
-      throw new ValidationError(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`, this);
+      throw new ValidationError(lit`ReleaseLabelMustBeInCorrectFormat`, `The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`, this);
     }
     return releaseLabel;
 
     function isNotANumber(value: string): boolean {
       return value === '' || isNaN(Number(value));
+    }
+  }
+
+  private validatePropsRelatedToReleaseLabel() {
+    if (this.props.releaseLabel !== undefined && !cdk.Token.isUnresolved(this.props.releaseLabel)) {
+      this.validateReleaseLabel(this.props.releaseLabel);
+    }
+
+    if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
+      if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
+        throw new ValidationError(lit`StepConcurrencyLevelOutOfRange`, `Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
+      }
+      if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
+        const [major, minor] = this.props.releaseLabel.slice(4).split('.');
+        if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
+          throw new ValidationError(lit`StepConcurrencyNotSupportedInOlderVersions`, `Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
+        }
+      }
+    }
+
+    // EMR EBS limitations https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
+    if (this.props.ebsRootVolumeSize !== undefined &&
+      (this.props.ebsRootVolumeSize.toGibibytes() < 15 || this.props.ebsRootVolumeSize.toGibibytes() > 100)) {
+      throw new ValidationError(lit`EbsRootVolumeSizeOutOfRange`,
+        `ebsRootVolumeSize must be between 15 and 100 GiB, but got ${this.props.ebsRootVolumeSize.toGibibytes()} GiB.`, this);
+    }
+
+    if (this.props.releaseLabel &&
+      (this.props.ebsRootVolumeThroughput !== undefined || this.props.ebsRootVolumeIops !== undefined)) {
+      const minVersion = '6.15.0';
+      if (semver.lt(this.props.releaseLabel.slice(4), minVersion)) {
+        throw new ValidationError(lit`EbsRootVolumeThroughputAndIopsNotSupportedInOlderVersions`, `ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version ${minVersion} and above but got ${this.props.releaseLabel}.`, this);
+      }
+    }
+
+    if (this.props.ebsRootVolumeThroughput !== undefined && (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
+      throw new ValidationError(lit`EbsRootVolumeThroughputOutOfRange`,
+        `ebsRootVolumeThroughput must be between 125 and 1000 MiB/s, but got ${this.props.ebsRootVolumeThroughput} MiB/s.`, this);
+    }
+
+    if (this.props.ebsRootVolumeIops !== undefined && (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
+      throw new ValidationError(lit`EbsRootVolumeIopsOutOfRange`,
+        `ebsRootVolumeIops must be between 3000 and 16000, but got ${this.props.ebsRootVolumeIops}.`, this);
     }
   }
 }
@@ -684,6 +766,15 @@ export namespace EmrCreateCluster {
     readonly instanceType: string;
 
     /**
+     * The priority at which Amazon EMR launches the EC2 instance with this instance type.
+     * Priority starts at 0, which is the highest priority. Amazon EMR considers the highest priority first.
+     *
+     * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceTypeConfig.html
+     * @default - No priority is assigned
+     */
+    readonly priority?: number;
+
+    /**
      * The number of units that a provisioned instance of this type provides toward fulfilling the target capacities defined
      * in the InstanceFleetConfig.
      *
@@ -705,6 +796,11 @@ export namespace EmrCreateCluster {
      * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
      */
     LOWEST_PRICE = 'lowest-price',
+    /**
+     * Prioritized, which launches instances based on the priority that you assign to each instance type configuration.
+     * When using this strategy, you must configure the priority for at least one instance type in the fleet.
+     */
+    PRIORITIZED = 'prioritized',
   }
 
   /**
@@ -1706,5 +1802,75 @@ export namespace EmrCreateCluster {
      * The name of the Kerberos realm to which all nodes in a cluster belong. For example, EC2.INTERNAL.
      */
     readonly realm: string;
+  }
+
+  /**
+   * The managed scaling policy for an Amazon EMR cluster.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ManagedScalingPolicy.html
+   */
+  export interface ManagedScalingPolicyProperty {
+    /**
+     * The Amazon EC2 unit limits for a managed scaling policy.
+     *
+     * @default - None
+     */
+    readonly computeLimits?: ManagedScalingComputeLimitsProperty;
+  }
+
+  /**
+   * The EC2 unit limits for a managed scaling policy.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ComputeLimits.html
+   */
+  export interface ManagedScalingComputeLimitsProperty {
+    /**
+     * The unit type used for specifying a managed scaling policy.
+     */
+    readonly unitType: ComputeLimitsUnitType;
+
+    /**
+     * The lower boundary of Amazon EC2 units.
+     */
+    readonly minimumCapacityUnits: number;
+
+    /**
+     * The upper boundary of Amazon EC2 units.
+     */
+    readonly maximumCapacityUnits: number;
+
+    /**
+     * The upper boundary of On-Demand Amazon EC2 units.
+     *
+     * @default - None
+     */
+    readonly maximumOnDemandCapacityUnits?: number;
+
+    /**
+     * The upper boundary of Amazon EC2 units for core node type in a cluster.
+     *
+     * @default - None
+     */
+    readonly maximumCoreCapacityUnits?: number;
+  }
+
+  /**
+   * The unit type for managed scaling policy compute limits.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ComputeLimits.html
+   */
+  export enum ComputeLimitsUnitType {
+    /**
+     * InstanceFleetUnits
+     */
+    INSTANCE_FLEET_UNITS = 'InstanceFleetUnits',
+    /**
+     * Instances
+     */
+    INSTANCES = 'Instances',
+    /**
+     * VCPU
+     */
+    VCPU = 'VCPU',
   }
 }

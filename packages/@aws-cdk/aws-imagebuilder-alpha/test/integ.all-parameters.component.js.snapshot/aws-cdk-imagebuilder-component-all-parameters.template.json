@@ -1,0 +1,95 @@
+{
+ "Resources": {
+  "ComponentEncryptionKeyAF9A6C9C": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PendingWindowInDays": 7
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "InlineComponent537607D7": {
+   "Type": "AWS::ImageBuilder::Component",
+   "Properties": {
+    "ChangeDescription": "This is a change description",
+    "Data": "name: test-component\nschemaVersion: \"1.0\"\nconstants:\n  - constant:\n      type: string\n      value: constant value\nparameters:\n  - parameter:\n      type: string\n      description: This is a parameter\n      default: default value\nphases:\n  - name: build\n    steps:\n      - name: hello-world-build\n        action: ExecuteBash\n        onFailure: Continue\n        timeoutSeconds: 720\n        inputs:\n          commands:\n            - echo \"Hello build! {{ parameter }} {{ constant }}\"\n  - name: validate\n    steps:\n      - name: hello-world-validate\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello validate!\"\n  - name: test\n    steps:\n      - name: hello-world-test\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello test!\"\n",
+    "Description": "This is a test component",
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "ComponentEncryptionKeyAF9A6C9C",
+      "Arn"
+     ]
+    },
+    "Name": "aws-cdk-imagebuilder-component-all-parameters-inline",
+    "Platform": "Linux",
+    "SupportedOsVersions": [
+     "Amazon Linux",
+     "Custom OS"
+    ],
+    "Version": "1.0.0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

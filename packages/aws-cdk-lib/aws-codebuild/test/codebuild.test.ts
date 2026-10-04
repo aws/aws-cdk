@@ -8,7 +8,7 @@ import * as codebuild from '../lib';
 import { CodePipelineSource } from '../lib/codepipeline-source';
 import { NoSource } from '../lib/no-source';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('default properties', () => {
   test('with CodePipeline source', () => {
@@ -1690,7 +1690,7 @@ test('fromCodebuildImage', () => {
 });
 
 describe('Windows2019 image', () => {
-  describe('WIN_SERVER_CORE_2016_BASE', () => {
+  describe('WIN_SERVER_CORE_2019_BASE', () => {
     test('has type WINDOWS_SERVER_2019_CONTAINER and default ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
       new codebuild.PipelineProject(stack, 'Project', {

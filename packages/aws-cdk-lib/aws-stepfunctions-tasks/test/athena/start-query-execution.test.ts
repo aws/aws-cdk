@@ -393,7 +393,7 @@ describe('Start Query Execution', () => {
 
     expect(() => {
       // WHEN
-      const task = new AthenaStartQueryExecution(stack, 'Query', {
+      new AthenaStartQueryExecution(stack, 'Query', {
         queryString: 'CREATE DATABASE ?',
         clientRequestToken: 'unique-client-request-token',
         queryExecutionContext: {
@@ -419,7 +419,7 @@ describe('Start Query Execution', () => {
 
     expect(() => {
       // WHEN
-      const task = new AthenaStartQueryExecution(stack, 'Query', {
+      new AthenaStartQueryExecution(stack, 'Query', {
         queryString: 'CREATE DATABASE ?',
         clientRequestToken: 'unique-client-request-token',
         queryExecutionContext: {
@@ -445,7 +445,7 @@ describe('Start Query Execution', () => {
 
     expect(() => {
       // WHEN
-      const task = new AthenaStartQueryExecution(stack, 'Query', {
+      new AthenaStartQueryExecution(stack, 'Query', {
         queryString: 'CREATE DATABASE ?',
         clientRequestToken: 'unique-client-request-token',
         queryExecutionContext: {

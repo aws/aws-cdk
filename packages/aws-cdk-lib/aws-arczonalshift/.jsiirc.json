@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.arczonalshift"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.ARCZonalShift"
+      "namespace": "Amazon.CDK.AWS.ARCZonalShift"
     },
     "python": {
       "module": "aws_cdk.aws_arczonalshift"

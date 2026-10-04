@@ -1,7 +1,7 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { Token } from 'aws-cdk-lib';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ILogGroup } from 'aws-cdk-lib/aws-logs';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { ILogGroup } from 'aws-cdk-lib/aws-logs';
 
 /**
  * CloudWatch Logs target properties.

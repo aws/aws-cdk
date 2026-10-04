@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "130f332ecdd8088282adfd41a4353e2fb2951c24281cd5f91470230f6b82841f.zip"
+     "S3Key": "af0caf0d4351d5e7b284d2f55b2e979a4db62a64dc1779ebb9a8ba44fe67cab1.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9"
+    "Runtime": "python3.10"
    },
    "DependsOn": [
     "myhandlerServiceRole77891068"
@@ -91,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f425d7725431bdf99c0da5f07fb530e0dd3d8fcaef1a105adfc15e05c0670d2c.zip"
+     "S3Key": "b69ebb31438ad0d9667343ec219b1b3e13c05889a4b31f17de9fd8b45c3fe1e7.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -100,7 +100,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9"
+    "Runtime": "python3.10"
    },
    "DependsOn": [
     "myhandlerexcludesServiceRoleBB475DCC"
@@ -144,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e1453d72dc45873ddf9323c37715423413cdfd3506485238f1f9ce965a3b2d2e.zip"
+     "S3Key": "f9bcf0e56346c843319817703383a63d32543ad00afbd655c96f4090db530253.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -153,7 +153,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.9"
+    "Runtime": "python3.10"
    },
    "DependsOn": [
     "myhandlerpypiServiceRoleF3CDF4F9"

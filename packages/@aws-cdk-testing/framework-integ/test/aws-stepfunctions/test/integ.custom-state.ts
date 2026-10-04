@@ -65,7 +65,7 @@ const customWithInlineCatch = new sfn.CustomState(stack, 'my custom task with in
 const chain = sfn.Chain.start(custom).next(customWithInlineRetry).next(customWithInlineCatch).next(finalStatus);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

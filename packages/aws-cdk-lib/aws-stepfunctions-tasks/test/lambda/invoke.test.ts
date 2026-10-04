@@ -4,7 +4,7 @@ import * as sfn from '../../../aws-stepfunctions';
 import { Stack } from '../../../core';
 import { LambdaInvocationType, LambdaInvoke } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('LambdaInvoke', () => {
   let stack: Stack;

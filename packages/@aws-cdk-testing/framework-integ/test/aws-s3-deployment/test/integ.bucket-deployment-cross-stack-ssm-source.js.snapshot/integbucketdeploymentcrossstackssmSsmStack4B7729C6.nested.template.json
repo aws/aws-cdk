@@ -1,0 +1,20 @@
+{
+ "Resources": {
+  "TestParam211A9454": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Description": "Test parameter for reproduction",
+    "Name": "/repro/subnets",
+    "Type": "StringList",
+    "Value": "subnet-12345,subnet-67890"
+   }
+  }
+ },
+ "Outputs": {
+  "integbucketdeploymentcrossstackssmSsmStackTestParamF628A831Ref": {
+   "Value": {
+    "Ref": "TestParam211A9454"
+   }
+  }
+ }
+}

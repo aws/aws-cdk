@@ -1,0 +1,797 @@
+{
+  "/log-group-events": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/log-group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/log-group-events/log-group2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/log-group-events/log-group-imported": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/log-group-events/Timer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/log-group-events/CustomRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventPattern": {
+          "source": "*",
+          "detailType": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          {
+            "source": "*",
+            "detailType": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/log-group-events/dlq": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/log-group-events/Timer3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/log-group-events/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/log-group-events/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/log-group-events/log-group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "loggroupB02AAEB1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:50:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/log-group2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "loggroup2F19C5C9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:53:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/log-group-imported/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "loggroupimportedD91682B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:56:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/Timer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TimerBF6F831F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)"
+      ]
+    }
+  ],
+  "/log-group-events/CustomRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomRuleB1CBBADE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:65:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/dlq/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "dlq09C78ACC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:316:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:76:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/Timer3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Timer30894E3BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:79:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/log-group-events/Exports/Output{\"Ref\":\"loggroup2F19C5C9B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefloggroup2F19C5C9B4F4C6918"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:333:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:261:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:112:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsTimerC63340B0C92153CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:64:7)"
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimerC63340B0/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsTimerC63340B0CustomResourcePolicy67B796AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:64:7)"
+      ]
+    }
+  ],
+  "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/log-group-events/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6C647CDBC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:71:12)"
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:71:12)"
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsTimer37DF74C174B3D705D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:82:8)"
+      ]
+    }
+  ],
+  "/log-group-events/EventsLogGroupPolicyloggroupeventsTimer37DF74C17/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventsLogGroupPolicyloggroupeventsTimer37DF74C17CustomResourcePolicyAE930E1E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group-resource-policy.js:57:9)",
+        "CloudWatchLogGroup.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/log-group.js:168:13)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-events-targets/test/logs/integ.log-group.js:82:8)"
+      ]
+    }
+  ]
+}

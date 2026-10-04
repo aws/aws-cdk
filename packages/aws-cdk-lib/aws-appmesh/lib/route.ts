@@ -1,17 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IRouteRef, RouteReference } from './appmesh.generated';
 import { CfnRoute } from './appmesh.generated';
-import { IMesh } from './mesh';
+import type { IMesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
-import { RouteSpec } from './route-spec';
-import { IVirtualRouter, VirtualRouter } from './virtual-router';
+import type { RouteSpec } from './route-spec';
+import type { IVirtualRouter } from './virtual-router';
+import { VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface for which all Route based classes MUST implement
  */
-export interface IRoute extends cdk.IResource {
+export interface IRoute extends cdk.IResource, IRouteRef {
   /**
    * The name of the route
    *
@@ -82,6 +85,10 @@ export class Route extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(routeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
+
+      public get routeRef(): RouteReference {
+        return { routeArn: this.routeArn };
+      }
     }(scope, id);
   }
 
@@ -97,23 +104,39 @@ export class Route extends cdk.Resource implements IRoute {
         resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
         resourceName: this.routeName,
       });
+      public get routeRef(): RouteReference {
+        return { routeArn: this.routeArn };
+      }
     }(scope, id);
   }
 
   /**
    * The name of the Route
    */
-  public readonly routeName: string;
+  @memoizedGetter
+  public get routeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrRouteName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the route
    */
-  public readonly routeArn: string;
+  @memoizedGetter
+  public get routeArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualRouter/${this.virtualRouter.virtualRouterName}/route`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The VirtualRouter the Route belongs to
    */
   public readonly virtualRouter: IVirtualRouter;
+
+  private readonly resource: CfnRoute;
+  private readonly mesh: IMesh;
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
@@ -123,10 +146,11 @@ export class Route extends cdk.Resource implements IRoute {
     addConstructMetadata(this, props);
 
     this.virtualRouter = props.virtualRouter;
+    this.mesh = props.mesh;
 
     const spec = props.routeSpec.bind(this);
 
-    const route = new CfnRoute(this, 'Resource', {
+    this.resource = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.virtualRouter.mesh.env.account),
@@ -139,13 +163,10 @@ export class Route extends cdk.Resource implements IRoute {
         priority: spec.priority,
       },
     });
+  }
 
-    this.routeName = this.getResourceNameAttribute(route.attrRouteName);
-    this.routeArn = this.getResourceArnAttribute(route.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualRouter/${props.virtualRouter.virtualRouterName}/route`,
-      resourceName: this.physicalName,
-    });
+  public get routeRef(): RouteReference {
+    return { routeArn: this.routeArn };
   }
 }
 

@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "6b339308f2ebff558c35f65eb79bec42c733784ddfe96c4422d75ec32425ad31": {
+      "displayName": "SnapshotFn/Code",
+      "source": {
+        "path": "asset.6b339308f2ebff558c35f65eb79bec42c733784ddfe96c4422d75ec32425ad31",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9b48f25f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6b339308f2ebff558c35f65eb79bec42c733784ddfe96c4422d75ec32425ad31.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "0e4605dbe689dd0bf1dd5649dd1f2d3139af485accace0e5b4a2b601ac4edc78": {
+      "displayName": "integ-aws-ecs-ebs-volume-initialization-rate Template",
+      "source": {
+        "path": "integ-aws-ecs-ebs-volume-initialization-rate.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6ce51af7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0e4605dbe689dd0bf1dd5649dd1f2d3139af485accace0e5b4a2b601ac4edc78.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

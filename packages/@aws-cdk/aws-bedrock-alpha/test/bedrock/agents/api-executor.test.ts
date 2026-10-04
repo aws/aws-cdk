@@ -1,8 +1,8 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../lib';
 
 describe('AgentActionGroupExecutor', () => {
@@ -26,7 +26,7 @@ describe('AgentActionGroupExecutor', () => {
 
   test('creates action group with lambda executor', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
     });
@@ -76,7 +76,7 @@ describe('AgentActionGroupExecutor', () => {
 
   test('grants necessary permissions to agent role', () => {
     const fn = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
     });

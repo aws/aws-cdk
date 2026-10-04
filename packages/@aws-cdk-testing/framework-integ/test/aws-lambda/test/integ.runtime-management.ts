@@ -13,7 +13,7 @@ const stack = new Stack(app, 'aws-cdk-lambda-runtime-management');
 new Function(stack, 'Lambda', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   runtimeManagementMode: RuntimeManagementMode.AUTO,
 });
 

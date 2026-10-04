@@ -2,6 +2,15 @@
  "Resources": {
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerPreferred"
+      }
+     ]
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -73,21 +82,19 @@
     }
    }
   },
-  "AnAmazingWebsiteProbably2LoggingBucket222F7CE9": {
+  "LoggingBucket2CD4C98D8": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketEncryption": {
-     "ServerSideEncryptionConfiguration": [
+    "OwnershipControls": {
+     "Rules": [
       {
-       "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
-       }
+       "ObjectOwnership": "BucketOwnerPreferred"
       }
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AnAmazingWebsiteProbably2CFDistribution7C1CCD12": {
    "Type": "AWS::CloudFront::Distribution",
@@ -119,7 +126,7 @@
      "Logging": {
       "Bucket": {
        "Fn::GetAtt": [
-        "AnAmazingWebsiteProbably2LoggingBucket222F7CE9",
+        "LoggingBucket2CD4C98D8",
         "RegionalDomainName"
        ]
       },

@@ -1,0 +1,191 @@
+{
+  "/IoTHttpsActionTestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRuleWithBatch": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/IoTHttpsActionTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRule40A4EA44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:115:29)",
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:13:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRule/TopicRuleActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRuleWithBatch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleWithBatchB26E5020"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:115:29)",
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new TopicRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:24:36)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRuleWithBatch/TopicRuleActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/IoTHttpsActionTestStack/Exports/Output{\"Ref\":\"TopicRuleWithBatchB26E5020\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTopicRuleWithBatchB26E5020737A011E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRule/TopicRuleActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleTopicRuleActionRole246C4F77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "singletonActionRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/private/role.js:19:18)",
+        "HttpsAction._bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/https-action.js:68:66)",
+        "WrappedClass.addAction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:163:46)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:16:19)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IoTHttpsActionTestStack/TopicRuleWithBatch/TopicRuleActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleWithBatchTopicRuleActionRole2FADFCA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "singletonActionRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/private/role.js:19:18)",
+        "HttpsAction._bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/lib/https-action.js:68:66)",
+        "WrappedClass.addAction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:163:46)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:27:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/https/integ.https-action.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

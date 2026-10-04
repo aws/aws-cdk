@@ -33,7 +33,7 @@ const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAut
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '..', 'integ.user-pool.handler'), { exclude: ['*.ts'] }),
 });

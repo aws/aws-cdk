@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IKeyGroupRef, IPublicKeyRef, KeyGroupReference } from './cloudfront.generated';
 import { CfnKeyGroup } from './cloudfront.generated';
-import { IPublicKey } from './public-key';
-import { IResource, Names, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Names, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Key Group
  */
-export interface IKeyGroup extends IResource {
+export interface IKeyGroup extends IResource, IKeyGroupRef {
   /**
    * The ID of the key group.
    * @attribute
@@ -35,7 +36,7 @@ export interface KeyGroupProps {
   /**
    * A list of public keys to add to the key group.
    */
-  readonly items: IPublicKey[];
+  readonly items: IPublicKeyRef[];
 }
 
 /**
@@ -52,9 +53,14 @@ export class KeyGroup extends Resource implements IKeyGroup {
   public static fromKeyGroupId(scope: Construct, id: string, keyGroupId: string): IKeyGroup {
     return new class extends Resource implements IKeyGroup {
       public readonly keyGroupId = keyGroupId;
+      public readonly keyGroupRef = {
+        keyGroupId: keyGroupId,
+      };
     }(scope, id);
   }
   public readonly keyGroupId: string;
+
+  public readonly keyGroupRef: KeyGroupReference;
 
   constructor(scope: Construct, id: string, props: KeyGroupProps) {
     super(scope, id);
@@ -65,10 +71,11 @@ export class KeyGroup extends Resource implements IKeyGroup {
       keyGroupConfig: {
         name: props.keyGroupName ?? this.generateName(),
         comment: props.comment,
-        items: props.items.map(key => key.publicKeyId),
+        items: props.items.map(key => key.publicKeyRef.publicKeyId),
       },
     });
 
+    this.keyGroupRef = resource.keyGroupRef;
     this.keyGroupId = resource.ref;
   }
 

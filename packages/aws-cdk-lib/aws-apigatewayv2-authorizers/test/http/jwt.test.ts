@@ -1,8 +1,8 @@
 import { HttpJwtAuthorizer } from './../../lib/http/jwt';
 import { DummyRouteIntegration } from './integration';
-import { Stack } from '../../..';
 import { Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
+import { Stack } from '../../../core';
 
 describe('HttpJwtAuthorizer', () => {
   test('default', () => {
@@ -79,12 +79,11 @@ describe('HttpJwtAuthorizer', () => {
 
   test('should throw error when acessing authorizer before it been bound to route', () => {
     // GIVEN
-    const stack = new Stack();
     const t = () => {
       const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
         jwtAudience: ['3131231'],
       });
-      const authorizerId = authorizer.authorizerId;
+      void(authorizer.authorizerId);
     };
 
     // THEN

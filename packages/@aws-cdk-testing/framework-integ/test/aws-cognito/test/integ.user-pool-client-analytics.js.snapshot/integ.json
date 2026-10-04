@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-user-pool-client-test/DefaultTest": {
       "stacks": [
@@ -7,10 +7,21 @@
         "IntegUserPoolClientAnalytics2"
       ],
       "regions": [
-        "us-east-1"
+        "us-east-1",
+        "us-west-2",
+        "eu-west-1",
+        "eu-west-2",
+        "eu-central-1",
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ap-south-1",
+        "ca-central-1"
       ],
       "assertionStack": "integ-user-pool-client-test/DefaultTest/DeployAssert",
       "assertionStackName": "integuserpoolclienttestDefaultTestDeployAssertB83B7A3F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

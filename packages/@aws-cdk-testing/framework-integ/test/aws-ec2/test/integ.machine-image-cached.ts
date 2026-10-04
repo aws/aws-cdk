@@ -1,11 +1,11 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
 import {
   Stack,
-  StackProps,
   App,
   aws_ec2 as ec2,
 } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 // we associate this stack with an explicit environment since this is required by the

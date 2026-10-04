@@ -1,0 +1,295 @@
+{
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-with-imported-role.js:51:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/TestRuntime": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
+      "trace": [
+        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addInfo (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:139:14)",
+        "WrappedClass.validateContainerUri (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:609:47)",
+        "WrappedClass.renderAgentRuntimeArtifact (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:399:26)",
+        "Object.produce (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:279:79)",
+        "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
+        "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "findTokens (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:187:5)",
+        "findAllReferences (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:202:55)",
+        "resolveReferences (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:47:19)",
+        "prepareApp (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole/PolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "policyName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/TestRuntime/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntime65042BB5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:293:36)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-with-imported-role.js:35:25)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-with-imported-role.js:51:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-with-imported-role/ImportedRole/PolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportedRolePolicyawscdkbedrockagentcoreruntimewithimportedroleImportedRole261507D78EB91FCC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/private/imported-role.js:144:38)",
+        "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addExecutionRolePermissions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:329:23)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:264:18)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-with-imported-role.js:35:25)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-with-imported-role.js:51:15)"
+      ]
+    }
+  ]
+}

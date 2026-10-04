@@ -1,6 +1,6 @@
-import { CloudAssemblyBuilder } from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Stack } from '../stack';
+import type { CloudAssemblyBuilder } from '../../../cx-api';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { Stack } from '../stack';
 
 /**
  * Encodes information how a certain Stack should be deployed
@@ -19,6 +19,13 @@ export interface IStackSynthesizer {
    * @default - no role
    */
   readonly lookupRole?: string;
+
+  /**
+   * The role that is passed to CloudFormation to execute the change set
+   *
+   * @default - no role
+   */
+  readonly cloudFormationExecutionRole?: string;
 
   /**
    * Bind to the stack this environment is going to be used on

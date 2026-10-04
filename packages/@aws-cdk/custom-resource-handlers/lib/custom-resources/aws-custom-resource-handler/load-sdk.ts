@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable no-console */
+
 import { execSync } from 'child_process';
 
 interface AwsSdk {

@@ -1,4 +1,4 @@
-import { UtilizationScalingProps } from './scalable-attribute-api';
+import type { UtilizationScalingProps } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
 
 /**
@@ -20,7 +20,6 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
    */
   public scaleOnUtilization(props: UtilizationScalingProps) {
     if (props.targetUtilizationPercent < 10 || props.targetUtilizationPercent > 90) {
-      // eslint-disable-next-line max-len
       throw new RangeError(`targetUtilizationPercent for DynamoDB scaling must be between 10 and 90 percent, got: ${props.targetUtilizationPercent}`);
     }
     this.scalingPolicyCreated = true;

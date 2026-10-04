@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "SameRegionBothReferenceTest/DefaultTest": {
+      "stacks": [
+        "SameRegionBothRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SameRegionBothReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SameRegionBothReferenceTestDefaultTestDeployAssertEF80EB0E"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

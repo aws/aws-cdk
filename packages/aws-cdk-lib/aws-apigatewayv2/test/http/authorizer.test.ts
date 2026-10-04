@@ -1,4 +1,5 @@
 import { Template } from '../../../assertions';
+import { Role, ServicePrincipal } from '../../../aws-iam';
 import { Stack } from '../../../core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType,
@@ -82,6 +83,38 @@ describe('HttpAuthorizer', () => {
         AuthorizerPayloadFormatVersion: '2.0',
         AuthorizerUri: 'arn:cool-lambda-arn',
       });
+    });
+  });
+
+  describe('role', () => {
+    test('should throw error if role is provided for JWT authorizer', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new HttpApi(stack, 'HttpApi');
+
+      // THEN
+      expect(() => new HttpAuthorizer(stack, 'HttpAuthorizer', {
+        httpApi: api,
+        identitySource: ['$request.header.Authorization'],
+        type: HttpAuthorizerType.JWT,
+        jwtAudience: ['3131231'],
+        jwtIssuer: 'https://test.us.auth0.com',
+        role: new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') }),
+      })).toThrow(/role is supported only for Lambda authorizers/);
+    });
+
+    test('should throw error if role is provided for IAM authorizer', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new HttpApi(stack, 'HttpApi');
+
+      // THEN
+      expect(() => new HttpAuthorizer(stack, 'HttpAuthorizer', {
+        httpApi: api,
+        identitySource: ['$request.header.Authorization'],
+        type: HttpAuthorizerType.IAM,
+        role: new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') }),
+      })).toThrow(/role is supported only for Lambda authorizers/);
     });
   });
 });

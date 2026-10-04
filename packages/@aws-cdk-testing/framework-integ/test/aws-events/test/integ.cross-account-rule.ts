@@ -1,7 +1,8 @@
 /// !cdk-integ *
 import { App, Arn, CfnResource, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
-import { Rule, IRuleTarget } from 'aws-cdk-lib/aws-events';
+import type { IRuleTarget } from 'aws-cdk-lib/aws-events';
+import { Rule } from 'aws-cdk-lib/aws-events';
 
 /**
  * Basic idea for this test is to create an EventBridge that "connects"

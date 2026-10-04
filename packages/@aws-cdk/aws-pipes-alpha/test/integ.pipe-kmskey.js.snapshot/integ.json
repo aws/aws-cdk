@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "testCases": {
     "PipesKmsKeyTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "PipesKmsKeyTest/DefaultTest/DeployAssert",
       "assertionStackName": "PipesKmsKeyTestDefaultTestDeployAssert1065A2A1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

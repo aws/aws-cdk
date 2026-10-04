@@ -1,12 +1,16 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
 import * as iotevents from '../lib';
 
 let stack: cdk.Stack;
 let input: iotevents.IInput;
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E3710',
+    reason: 'Service is shutdown',
+  });
   input = iotevents.Input.fromInputName(stack, 'MyInput', 'test-input');
 });
 

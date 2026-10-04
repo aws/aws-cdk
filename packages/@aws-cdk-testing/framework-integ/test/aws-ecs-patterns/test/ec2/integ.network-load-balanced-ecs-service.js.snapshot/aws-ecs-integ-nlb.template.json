@@ -434,6 +434,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "FirstAutoScalingGroupInstanceRoleC3260EBE": {
@@ -583,7 +590,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -658,7 +665,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "first-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlbFirstCapacityProvider5A960B68"
    }
   },
   "SecondAutoScalingGroupInstanceRoleB7DE61A1": {
@@ -808,7 +815,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -883,7 +890,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "second-capacity-provider"
+    "Name": "cp-aws-ecs-integ-nlbSecondCapacityProvider6EB16547"
    }
   },
   "myServiceLB168895E1": {
@@ -897,6 +904,20 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "myServiceLBSecurityGroupFE0ED608",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "NlbSecurityGroup08F7DC4B",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
@@ -913,6 +934,24 @@
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
+  },
+  "myServiceLBSecurityGroupFE0ED608": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegnlbmyServiceLBFEC86FD5",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
   },
   "myServiceLBPublicListenerC78AE8A0": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -1107,6 +1146,36 @@
     "myServiceLBPublicListenerC78AE8A0",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
+  },
+  "NlbSecurityGroup08F7DC4B": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-nlb/NlbSecurityGroup",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "NlbSecurityGrouptoawsecsintegnlbSecurityGroupCF7458683276865535FAD7C1B4": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "NLB health checks to targets",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "FromPort": 32768,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NlbSecurityGroup08F7DC4B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
+   }
   }
  },
  "Parameters": {
