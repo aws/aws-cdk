@@ -41,7 +41,7 @@ class EksClusterStack extends Stack {
       preserveOnDelete: true,
       namespace: 'kube-system',
       podIdentityAssociations: [{
-        addonRole: testRole,
+        role: testRole,
         serviceAccount: 'ebs-csi-controller-sa',
       }],
       // Prioritize Pod Identity.

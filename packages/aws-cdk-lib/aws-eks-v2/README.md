@@ -1478,7 +1478,7 @@ new eks.Addon(this, 'Addon', {
   },
   namespace: 'kube-system',
   podIdentityAssociations: [{
-    addonRole: role,
+    role,
     serviceAccount: 'coredns',
   }],
   resolveConflicts: eks.ResolveConflictsType.NONE,

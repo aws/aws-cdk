@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
@@ -132,7 +132,7 @@ describe('Addon', () => {
       addonName: 'test-addon',
       cluster,
       podIdentityAssociations: [{
-        addonRole: testRole,
+        role: testRole,
         serviceAccount: 'test-serviceAccount',
       }],
     });
@@ -198,6 +198,49 @@ describe('Addon', () => {
         'Fn::GetAtt': ['TestRole6C9272DF', 'Arn'],
       },
     });
+  });
+
+  test('warns when both podIdentityAssociations and serviceAccountRole are specified', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddon', {
+      addonName: 'test-addon',
+      cluster,
+      podIdentityAssociations: [{
+        role: testRole,
+        serviceAccount: 'test-serviceAccount',
+      }],
+      serviceAccountRole: testRole,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Stack/TestAddon',
+      Match.stringLikeRegexp('Both podIdentityAssociations and serviceAccountRole are specified'));
+  });
+
+  test('no warning when only podIdentityAssociations is specified', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddon', {
+      addonName: 'test-addon',
+      cluster,
+      podIdentityAssociations: [{
+        role: testRole,
+        serviceAccount: 'test-serviceAccount',
+      }],
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TestAddon',
+      Match.stringLikeRegexp('Both podIdentityAssociations and serviceAccountRole are specified'));
   });
 
   test('creates an Addon from attributes', () => {
