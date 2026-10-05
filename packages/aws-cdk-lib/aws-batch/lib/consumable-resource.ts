@@ -26,11 +26,6 @@ export interface IConsumableResource extends IResource, IConsumableResourceRef {
    * @attribute
    */
   readonly consumableResourceName: string;
-
-  /**
-   * Grants for this consumable resource
-   */
-  readonly grants: ConsumableResourceGrants;
 }
 
 /**
@@ -92,6 +87,9 @@ abstract class ConsumableResourceBase extends Resource implements IConsumableRes
   public abstract readonly consumableResourceArn: string;
   public abstract readonly consumableResourceName: string;
 
+  /**
+   * Collection of grant methods for a ConsumableResource
+   */
   public readonly grants = ConsumableResourceGrants.fromConsumableResource(this);
 
   public get consumableResourceRef(): ConsumableResourceReference {

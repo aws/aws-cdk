@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { App, CfnOutput, CfnParameter, Fn, Stack, Token } from '../../core';
-import { ConsumableResource, ConsumableResourceType } from '../lib';
+import { ConsumableResource, ConsumableResourceGrants, ConsumableResourceType } from '../lib';
 
 describe('ConsumableResource', () => {
   let stack: Stack;
@@ -251,7 +251,7 @@ describe('ConsumableResource', () => {
     });
   });
 
-  test('grants are available on an imported resource', () => {
+  test('an imported resource can be granted through ConsumableResourceGrants', () => {
     // GIVEN
     const imported = ConsumableResource.fromConsumableResourceArn(
       stack,
@@ -261,7 +261,8 @@ describe('ConsumableResource', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    imported.grants.read(user);
+    // `grants` lives on the base class, so an imported resource goes through the Grants class.
+    ConsumableResourceGrants.fromConsumableResource(imported).read(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
