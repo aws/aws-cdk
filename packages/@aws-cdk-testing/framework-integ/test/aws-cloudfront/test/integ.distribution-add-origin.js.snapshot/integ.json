@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "integ-distribution-add-origin/distribution-add-origin-test/DefaultTest": {
+      "stacks": [
+        "integ-distribution-add-origin"
+      ],
+      "assertionStack": "integ-distribution-add-origin/distribution-add-origin-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integdistributionaddorigindistributionaddorigintestDefaultTestDeployAssertFD621D42"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}
