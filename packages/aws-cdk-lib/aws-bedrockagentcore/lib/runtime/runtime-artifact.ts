@@ -145,7 +145,8 @@ export abstract class AgentRuntimeArtifact {
    * **Note:** No IAM permissions are automatically granted. You must ensure the runtime has
    * ECR pull permissions for the repository.
    *
-   * @param containerUri The ECR container image URI (format: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag})
+   * @param containerUri The ECR container image URI (format: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag},
+   * or {account}.dkr.ecr.{region}.amazonaws.com.cn/{repository}:{tag} in the aws-cn partition)
    */
   public static fromImageUri(containerUri: string): AgentRuntimeArtifact {
     return new ImageUriArtifact(containerUri);
@@ -318,11 +319,11 @@ class ImageUriArtifact extends AgentRuntimeArtifact {
     super();
 
     // Validate ECR container URI format per CloudFormation requirements
-    const ecrPattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    const ecrPattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!Token.isUnresolved(containerUri) && !ecrPattern.test(containerUri)) {
       throw new UnscopedValidationError(
         lit`InvalidEcrContainerUri`,
-        `Invalid ECR container URI format: ${containerUri}. Must be an ECR URI: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}`,
+        `Invalid ECR container URI format: ${containerUri}. Must be an ECR URI: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag} (or .amazonaws.com.cn in the aws-cn partition)`,
       );
     }
   }
