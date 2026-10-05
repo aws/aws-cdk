@@ -4,7 +4,6 @@
 # handle the schema evolution where an existing table needs to be updated.
 #
 # We will automate any additive changes such as:
-# - add new columns
-# - changing nullability
-# - update or adding column doc/metadata 
+# - adding new columns
+# - updating or adding column doc/metadata 
 # - widen types
