@@ -92,4 +92,14 @@ export * from './evaluation/data-source';
 export * from './evaluation/online-evaluation-base';
 export * from './evaluation/online-evaluation';
 
+// ===================================
+// Policy
+// ===================================
+// perms contains internal action-list constants used by the grant methods and should not be exported
+export * from './policy/policy-types';
+export * from './policy/policy-engine-base';
+export * from './policy/policy-engine';
+export * from './policy/policy-base';
+export * from './policy/policy';
+export * from './policy/policy-statement';
 // validation-helpers contains internal utilities and should not be exported

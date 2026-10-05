@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { AdditionalSchemaSource, Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import { CompositeEngine, TemplateFile, version } from '@aws/cloudformation-validate';
+import type { AdditionalSchemaSource, CompositeEngineConfig, Engine, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 import { profileSpan, recordPerformanceEntry } from '../private/perf';
 
-const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const VALIDATE_METRIC = 'CloudFormationValidate.validate';
 const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 interface MutableViolation {
@@ -52,6 +52,18 @@ export interface CloudFormationValidatePluginProps {
    * @default - no guard rules
    */
   readonly guardRules?: ValidationRuleSource[];
+
+  /**
+   * Whether to evaluate the default Rego rules that ship with the CDK.
+   *
+   * Registering a `CloudFormationValidatePlugin` explicitly replaces the
+   * auto-registered default instance, so without this flag adding custom
+   * rules would silently drop the CDK default rules. Individual default
+   * rules can be suppressed by ID via `Validations.of(scope).acknowledge()`.
+   *
+   * @default true
+   */
+  readonly includeDefaultRules?: boolean;
 
   /**
    * Path to a directory containing additional CloudFormation resource provider
@@ -109,7 +121,18 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    * @internal
    */
   public static _configureSingleton(props: CloudFormationValidatePluginProps) {
+    CloudFormationValidatePlugin._disposeSingleton();
     CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin(props);
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory and forget the instance
+   *
+   * @internal
+   */
+  public static _disposeSingleton() {
+    CloudFormationValidatePlugin._instance?._dispose();
+    CloudFormationValidatePlugin._instance = undefined;
   }
 
   private static _instance: CloudFormationValidatePlugin | undefined;
@@ -117,11 +140,16 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
   private readonly engine: Engine;
+  private disposed = false;
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
-    const config: EngineConfig = {};
-    if (props.regoRules) {
-      config.customRules = props.regoRules;
+    const config: CompositeEngineConfig = {};
+    const regoRules = [
+      ...(props.includeDefaultRules ?? true) ? defaultRegoRules() : [],
+      ...props.regoRules ?? [],
+    ];
+    if (regoRules.length > 0) {
+      config.regoRules = regoRules;
     }
     if (props.guardRules) {
       config.guardRules = props.guardRules;
@@ -131,7 +159,20 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
         additionalSchemas: loadSchemasFromDirectory(props._additionalSchemasDirectory),
       };
     }
-    this.engine = new RegoEngine(config);
+    this.engine = new CompositeEngine(config);
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory
+   *
+   * @internal
+   */
+  public _dispose(): void {
+    if (this.disposed) {
+      return;
+    }
+    this.disposed = true;
+    this.engine.free();
   }
 
   public get version(): string | undefined {
@@ -151,9 +192,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
     for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
       const report = (() => {
-        using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
+        using _span = profileSpan(VALIDATE_METRIC, { telemetry: true });
 
-        return this.engine.validateDetailed(templateFile, {
+        return this.engine.validateTemplate(templateFile, {
+          detailLevel: 'STANDARD',
           pseudoParameterOverrides: {
             accountId,
             region,
@@ -248,6 +290,24 @@ function mapSeverity(severity: Severity): string {
   }
 }
 
+/**
+ * CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ *
+ * These are ports of L2 construct validations to template-level rules, so the
+ * same checks also apply to templates produced via L1 constructs, escape
+ * hatches, or `CfnInclude`. See `rules/` next to this file.
+ */
+function defaultRegoRules(): ValidationRuleSource[] {
+  const rulesDir = path.join(__dirname, 'rules');
+  return fs.readdirSync(rulesDir)
+    .filter((f) => f.endsWith('.rego'))
+    .sort()
+    .map((f) => ({
+      name: f,
+      content: fs.readFileSync(path.join(rulesDir, f), 'utf-8'),
+    }));
+}
+
 // Rules that the engine will report but we want to ignore because CDK creates
 // the violation and customers don't control it.
 const IGNORE_RULES = new Set([
@@ -275,14 +335,6 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
   // span accounts.
   'W9013',
-
-  // WHAT: value type tracking (parameter default should be a string)
-  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-  'E2001',
 
   // WHAT: built-in function not recognized
   // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.

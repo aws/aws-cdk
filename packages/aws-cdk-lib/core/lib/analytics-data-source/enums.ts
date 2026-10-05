@@ -1790,7 +1790,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "3.0",
     "4.0",
     "5.0",
-    "5.1"
+    "5.1",
+    "6.0"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -1849,6 +1850,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HTTP",
     "HTTPS",
     "TCP"
+  ],
+  "HostKernel": [
+    "LINUX_KERNEL_4",
+    "LINUX_KERNEL_6",
+    "LINUX_KERNEL_LATEST"
   ],
   "HttpAuthorizerType": [
     "AWS_IAM",
@@ -2568,8 +2574,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JobType": [
     "glueetl",
     "gluestreaming",
-    "pythonshell",
-    "glueray"
+    "pythonshell"
   ],
   "JsonMutatorType": [
     0,
@@ -2692,6 +2697,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TRACE",
     "OFF"
   ],
+  "LibrarySet": [
+    "analytics",
+    "none"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2775,7 +2784,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "LogGroupClass": [
     "STANDARD",
-    "INFREQUENT_ACCESS"
+    "INFREQUENT_ACCESS",
+    "DELIVERY"
   ],
   "LogLevel": [
     "OFF",
@@ -3842,6 +3852,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "S3LogsDeliveryPermissionsVersion": [
     "V1",
     "V2"
+  ],
+  "S3ObjectStorageMode": [
+    "COPY",
+    "REFERENCE"
   ],
   "S3OutputFormat": [
     "plain",
