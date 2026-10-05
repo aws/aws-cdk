@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "22dad4142a3b75dd68300e6153e1d5c3e6a30c96a0919244577dac9099efe401": {
+      "source": {
+        "path": "asset.22dad4142a3b75dd68300e6153e1d5c3e6a30c96a0919244577dac9099efe401.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-2c2471dc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "22dad4142a3b75dd68300e6153e1d5c3e6a30c96a0919244577dac9099efe401.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9962dae9ac2364e2a4d8a5596ed96e9b7c4f889ca976f64c6ae325281ede8797": {
+      "displayName": "SubnetIpamDefaultTestDeployAssert4E5C46C4 Template",
+      "source": {
+        "path": "SubnetIpamDefaultTestDeployAssert4E5C46C4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6c3d783d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9962dae9ac2364e2a4d8a5596ed96e9b7c4f889ca976f64c6ae325281ede8797.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

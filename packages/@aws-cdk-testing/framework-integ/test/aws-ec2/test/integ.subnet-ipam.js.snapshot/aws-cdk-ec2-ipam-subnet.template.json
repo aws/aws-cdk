@@ -1,0 +1,1032 @@
+{
+ "Resources": {
+  "IPAM": {
+   "Type": "AWS::EC2::IPAM",
+   "Properties": {
+    "OperatingRegions": [
+     {
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "stack",
+      "Value": {
+       "Ref": "AWS::StackId"
+      }
+     }
+    ],
+    "Tier": "advanced"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-subnet/Vpc"
+     }
+    ]
+   }
+  },
+  "IsVpcDiscoveredServiceRoleE1EC320B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "IsVpcDiscoveredServiceRoleDefaultPolicy03497E7C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ec2:GetIpamResourceCidrs",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2::",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":ipam-scope/",
+          {
+           "Fn::GetAtt": [
+            "IPAM",
+            "PrivateDefaultScopeId"
+           ]
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IsVpcDiscoveredServiceRoleDefaultPolicy03497E7C",
+    "Roles": [
+     {
+      "Ref": "IsVpcDiscoveredServiceRoleE1EC320B"
+     }
+    ]
+   }
+  },
+  "IsVpcDiscovered5CA36520": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\nconst { EC2Client, GetIpamResourceCidrsCommand } = require('@aws-sdk/client-ec2');\nexports.handler = async (event) => {\n  if (event.RequestType === 'Delete') return { IsComplete: true };\n  const res = await new EC2Client().send(new GetIpamResourceCidrsCommand({\n    IpamScopeId: event.ResourceProperties.IpamScopeId,\n    ResourceId: event.ResourceProperties.VpcId,\n  }));\n  return { IsComplete: res.IpamResourceCidrs.length > 0 };\n};\n  "
+    },
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "IsVpcDiscoveredServiceRoleE1EC320B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "IsVpcDiscoveredServiceRoleDefaultPolicy03497E7C",
+    "IsVpcDiscoveredServiceRoleE1EC320B"
+   ]
+  },
+  "IsVpcDiscoveredLogGroupAB49411B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IsVpcDiscovered5CA36520"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "OnVpcDiscoveredEventServiceRole3BBB60CB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "OnVpcDiscoveredEvent9A60868D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => ({});"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "OnVpcDiscoveredEventServiceRole3BBB60CB",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "OnVpcDiscoveredEventServiceRole3BBB60CB"
+   ]
+  },
+  "OnVpcDiscoveredEventLogGroupF167DCB1": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "OnVpcDiscoveredEvent9A60868D"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VpcDiscoveredProviderframeworkonEventServiceRole967128FA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkonEventServiceRoleDefaultPolicy7BBC789F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsVpcDiscovered5CA36520",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnVpcDiscoveredEvent9A60868D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "VpcDiscoveredProviderwaiterstatemachineE272154C"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "VpcDiscoveredProviderframeworkonEventServiceRoleDefaultPolicy7BBC789F",
+    "Roles": [
+     {
+      "Ref": "VpcDiscoveredProviderframeworkonEventServiceRole967128FA"
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkonEvent0165AB69": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-ec2-ipam-subnet/VpcDiscoveredProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnVpcDiscoveredEvent9A60868D",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsVpcDiscovered5CA36520",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "VpcDiscoveredProviderwaiterstatemachineE272154C"
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "VpcDiscoveredProviderframeworkonEventServiceRole967128FA",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "VpcDiscoveredProviderframeworkonEventServiceRoleDefaultPolicy7BBC789F",
+    "VpcDiscoveredProviderframeworkonEventServiceRole967128FA"
+   ]
+  },
+  "VpcDiscoveredProviderframeworkonEventLogGroupA92C55C2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "VpcDiscoveredProviderframeworkonEvent0165AB69"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VpcDiscoveredProviderframeworkisCompleteServiceRoleB84BA0F4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkisCompleteServiceRoleDefaultPolicy07E15490": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsVpcDiscovered5CA36520",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnVpcDiscoveredEvent9A60868D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "VpcDiscoveredProviderframeworkisCompleteServiceRoleDefaultPolicy07E15490",
+    "Roles": [
+     {
+      "Ref": "VpcDiscoveredProviderframeworkisCompleteServiceRoleB84BA0F4"
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkisComplete38AA1D1B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-ec2-ipam-subnet/VpcDiscoveredProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnVpcDiscoveredEvent9A60868D",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsVpcDiscovered5CA36520",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "VpcDiscoveredProviderframeworkisCompleteServiceRoleB84BA0F4",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "VpcDiscoveredProviderframeworkisCompleteServiceRoleDefaultPolicy07E15490",
+    "VpcDiscoveredProviderframeworkisCompleteServiceRoleB84BA0F4"
+   ]
+  },
+  "VpcDiscoveredProviderframeworkisCompleteLogGroup396B99AF": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "VpcDiscoveredProviderframeworkisComplete38AA1D1B"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VpcDiscoveredProviderframeworkonTimeoutServiceRole80AD4678": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkonTimeoutServiceRoleDefaultPolicy4A5526EA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsVpcDiscovered5CA36520",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnVpcDiscoveredEvent9A60868D",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsVpcDiscovered5CA36520",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnVpcDiscoveredEvent9A60868D",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "VpcDiscoveredProviderframeworkonTimeoutServiceRoleDefaultPolicy4A5526EA",
+    "Roles": [
+     {
+      "Ref": "VpcDiscoveredProviderframeworkonTimeoutServiceRole80AD4678"
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderframeworkonTimeout731A70AC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-ec2-ipam-subnet/VpcDiscoveredProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnVpcDiscoveredEvent9A60868D",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsVpcDiscovered5CA36520",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "VpcDiscoveredProviderframeworkonTimeoutServiceRole80AD4678",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "VpcDiscoveredProviderframeworkonTimeoutServiceRoleDefaultPolicy4A5526EA",
+    "VpcDiscoveredProviderframeworkonTimeoutServiceRole80AD4678"
+   ]
+  },
+  "VpcDiscoveredProviderframeworkonTimeoutLogGroup17348326": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "VpcDiscoveredProviderframeworkonTimeout731A70AC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "VpcDiscoveredProviderwaiterstatemachineRoleFFD348EC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "VpcDiscoveredProviderwaiterstatemachineRoleDefaultPolicyCCB83FBA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "VpcDiscoveredProviderframeworkisComplete38AA1D1B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "VpcDiscoveredProviderframeworkonTimeout731A70AC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VpcDiscoveredProviderframeworkisComplete38AA1D1B",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "VpcDiscoveredProviderframeworkonTimeout731A70AC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "VpcDiscoveredProviderwaiterstatemachineRoleDefaultPolicyCCB83FBA",
+    "Roles": [
+     {
+      "Ref": "VpcDiscoveredProviderwaiterstatemachineRoleFFD348EC"
+     }
+    ]
+   }
+  },
+  "VpcDiscoveredProviderwaiterstatemachineE272154C": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":90,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "VpcDiscoveredProviderframeworkisComplete38AA1D1B",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "VpcDiscoveredProviderframeworkonTimeout731A70AC",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "VpcDiscoveredProviderwaiterstatemachineRoleFFD348EC",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "VpcDiscoveredProviderwaiterstatemachineRoleDefaultPolicyCCB83FBA",
+    "VpcDiscoveredProviderwaiterstatemachineRoleFFD348EC"
+   ]
+  },
+  "VpcDiscovered": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "VpcDiscoveredProviderframeworkonEvent0165AB69",
+      "Arn"
+     ]
+    },
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IPAM",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Pool": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "AutoImport": false,
+    "Description": "Resource planning pool for the VPC",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "IPAM",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.0.0.0/16"
+     }
+    ],
+    "SourceResource": {
+     "ResourceId": {
+      "Ref": "Vpc8378EB38"
+     },
+     "ResourceOwner": {
+      "Ref": "AWS::AccountId"
+     },
+     "ResourceRegion": {
+      "Ref": "AWS::Region"
+     },
+     "ResourceType": "vpc"
+    }
+   },
+   "DependsOn": [
+    "VpcDiscovered"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "IpamSubnet78671F8A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "Ipv4IpamPoolId": {
+     "Ref": "Pool"
+    },
+    "Ipv4NetmaskLength": 24,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-subnet/IpamSubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "IpamSubnetRouteTable5E50066C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-ipam-subnet/IpamSubnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "IpamSubnetRouteTableAssociation2D22CB8D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "IpamSubnetRouteTable5E50066C"
+    },
+    "SubnetId": {
+     "Ref": "IpamSubnet78671F8A"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefIpamSubnet78671F8AC46E996A": {
+   "Value": {
+    "Ref": "IpamSubnet78671F8A"
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-ipam-subnet:ExportsOutputRefIpamSubnet78671F8AC46E996A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
