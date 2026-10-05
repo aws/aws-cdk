@@ -1,0 +1,50 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.9.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "BedrockAgentCoreRuntimePlatformVersionTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "PlatformVersion: Additional properties are not allowed ('PlatformVersion' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-bedrock-agentcore-runtime-platform-version/TestRuntime/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnRuntime",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-bedrock-agentcore-runtime-platform-version.template.json",
+                "logicalId": "TestRuntime65042BB5",
+                "propertyPaths": [
+                  "Properties.PlatformVersion"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
