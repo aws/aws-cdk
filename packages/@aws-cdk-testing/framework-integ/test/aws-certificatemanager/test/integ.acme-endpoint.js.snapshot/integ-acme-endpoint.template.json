@@ -1,0 +1,242 @@
+{
+ "Resources": {
+  "AcmeEndpoint78A75014": {
+   "Type": "AWS::CertificateManager::AcmeEndpoint",
+   "Properties": {
+    "AuthorizationBehavior": "PRE_APPROVED",
+    "CertificateAuthority": {
+     "PublicCertificateAuthority": {
+      "AllowedKeyAlgorithms": [
+       "EC_prime256v1",
+       "EC_secp384r1"
+      ]
+     }
+    },
+    "CertificateTags": [
+     {
+      "Key": "purpose",
+      "Value": "integ"
+     }
+    ],
+    "Contact": "REQUIRED"
+   }
+  },
+  "AcmeEndpointDomainValidationB4B5D601": {
+   "Type": "AWS::CertificateManager::AcmeDomainValidation",
+   "Properties": {
+    "AcmeEndpointArn": {
+     "Fn::GetAtt": [
+      "AcmeEndpoint78A75014",
+      "AcmeEndpointArn"
+     ]
+    },
+    "DomainName": "example.com",
+    "PrevalidationOptions": {
+     "DnsPrevalidation": {
+      "DomainScope": {
+       "ExactDomain": "ENABLED",
+       "Subdomains": "ENABLED",
+       "Wildcards": "DISABLED"
+      },
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    }
+   }
+  },
+  "AcmeEndpointExternalAccountBindingRole0260ADC0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sts:AssumeRole",
+        "sts:SetSourceIdentity",
+        "sts:TagSession"
+       ],
+       "Condition": {
+        "StringLikeIfExists": {
+         "sts:SourceIdentity": "acm-acme-*"
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "acm-acme.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AcmeEndpointExternalAccountBindingRoleDefaultPolicy7F64D84C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "acm:RequestCertificate",
+       "Condition": {
+        "StringEquals": {
+         "acm:CertificateKeyPairOrigin": "ACME",
+         "aws:PrincipalTag/acme-endpoint-arn": {
+          "Fn::GetAtt": [
+           "AcmeEndpoint78A75014",
+           "AcmeEndpointArn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "acm:AddTagsToCertificate",
+        "acm:RevokeCertificate"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "acm:CertificateKeyPairOrigin": "ACME",
+         "aws:PrincipalTag/acme-endpoint-arn": {
+          "Fn::GetAtt": [
+           "AcmeEndpoint78A75014",
+           "AcmeEndpointArn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":acm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":certificate/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AcmeEndpointExternalAccountBindingRoleDefaultPolicy7F64D84C",
+    "Roles": [
+     {
+      "Ref": "AcmeEndpointExternalAccountBindingRole0260ADC0"
+     }
+    ]
+   }
+  },
+  "AcmeEndpointExternalAccountBinding05A661BF": {
+   "Type": "AWS::CertificateManager::AcmeExternalAccountBinding",
+   "Properties": {
+    "AcmeEndpointArn": {
+     "Fn::GetAtt": [
+      "AcmeEndpoint78A75014",
+      "AcmeEndpointArn"
+     ]
+    },
+    "Expiration": {
+     "Type": "DAYS",
+     "Value": 1
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AcmeEndpointExternalAccountBindingRole0260ADC0",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AcmeEndpointExternalAccountBindingRoleDefaultPolicy7F64D84C",
+    "AcmeEndpointExternalAccountBindingRole0260ADC0"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttAcmeEndpoint78A75014AcmeEndpointArn599AA168": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AcmeEndpoint78A75014",
+     "AcmeEndpointArn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpoint78A75014AcmeEndpointArn599AA168"
+   }
+  },
+  "ExportsOutputFnGetAttAcmeEndpointDomainValidationB4B5D601Arn40FBD77A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AcmeEndpointDomainValidationB4B5D601",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpointDomainValidationB4B5D601Arn40FBD77A"
+   }
+  },
+  "ExportsOutputFnGetAttAcmeEndpointExternalAccountBinding05A661BFAcmeExternalAccountBindingArnDCC110F1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AcmeEndpointExternalAccountBinding05A661BF",
+     "AcmeExternalAccountBindingArn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpointExternalAccountBinding05A661BFAcmeExternalAccountBindingArnDCC110F1"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
