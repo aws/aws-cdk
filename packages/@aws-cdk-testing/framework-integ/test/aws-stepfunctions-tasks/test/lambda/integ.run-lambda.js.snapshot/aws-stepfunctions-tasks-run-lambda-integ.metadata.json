@@ -2,46 +2,27 @@
   "/aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "runtime": "*",
-        "handler": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "runtime": "*",
-        "handler": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "definitionBody": "*",
-        "timeout": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToRolePolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToRolePolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/BootstrapVersion": [
@@ -59,17 +40,7 @@
   "/aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/submitJobLambda/Resource": [
@@ -81,17 +52,7 @@
   "/aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/checkJobStateLambda/Resource": [
@@ -103,44 +64,23 @@
   "/aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Resource": [
@@ -174,35 +114,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-tasks-run-lambda-integ/StateMachine/Role/DefaultPolicy/Resource": [

@@ -1,0 +1,144 @@
+{
+  "/aws-stepfunctions-integ-worker/Glue Job Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Glue Job": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlueJob"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Glue Job Script/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Glue Job Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlueJobRole1CD031E0"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Glue Job Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine81935E76"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Exports/Output{\"Ref\":\"StateMachine81935E76\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachine81935E76F863EA4B"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/Glue Job Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlueJobRoleDefaultPolicy3D94D6F1"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRole543B9670"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-integ-worker/State Machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDA5F7DA8"
+    }
+  ]
+}

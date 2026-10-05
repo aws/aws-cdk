@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallStepFunctionsstartExecution": {
+  "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsstartExecution",
    "Properties": {
     "ServiceToken": {
@@ -13,11 +13,23 @@
     "api": "startExecution",
     "parameters": {
      "stateMachineArn": {
-      "Fn::ImportValue": "aws-stepfunctions-tasks-eventbridge-put-events-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-stepfunctions-tasks-eventbridge-put-events-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
-    "salt": "1676026055044"
+    "outputPaths": [
+     "executionArn"
+    ],
+    "salt": "1791163608898"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -75,12 +87,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "99b33ba82072be7517201de5db0a9a207ed7d6172fd74aa9ce1f3ddfe1235e10.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -89,10 +101,14 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
-  "AwsApiCallStepFunctionsdescribeExecution": {
+  "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeExecution",
    "Properties": {
     "ServiceToken": {
@@ -106,24 +122,33 @@
     "expected": "{\"$ObjectLike\":{\"status\":\"SUCCEEDED\"}}",
     "parameters": {
      "executionArn": {
-      "Fn::GetAtt": [
-       "AwsApiCallStepFunctionsstartExecution",
-       "apiCallResponse.executionArn"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
+          "apiCallResponse.executionArn"
+         ]
+        },
+        "\""
+       ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676026055045"
+    "salt": "1791163608898"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution": {
+  "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsdescribeExecution",
+     "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868",
      "assertion"
     ]
    }

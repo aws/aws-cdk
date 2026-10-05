@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
-    "539a3603ecfb02708558a62c5e49adc9924557f0a43fb57b629aadb7f8185b4c": {
+    "151d80a7acd0995cf16218a47cfdc20f54b5eb132c236f3e72e0e114b67eb51d": {
       "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-76cd301e": {
+        "current_account-current_region-d1743d47": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "539a3603ecfb02708558a62c5e49adc9924557f0a43fb57b629aadb7f8185b4c.json",
+          "objectKey": "151d80a7acd0995cf16218a47cfdc20f54b5eb132c236f3e72e0e114b67eb51d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
