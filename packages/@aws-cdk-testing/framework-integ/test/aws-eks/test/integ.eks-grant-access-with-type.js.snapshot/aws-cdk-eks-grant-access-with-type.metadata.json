@@ -6,12 +6,12 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)",
+        "    at Validations.acknowledge (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
         "    at EksGrantAccessWithType._silenceLiteralAzWarning (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
         "    at get availabilityZones (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/Users/krantboy/workplace/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
         "    at new EksGrantAccessWithType (/Users/krantboy/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:58:21)",
-        "    at <anonymous> (/Users/krantboy/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:143:15)",
+        "    at <anonymous> (/Users/krantboy/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-grant-access-with-type.js:138:15)",
         "    ...node internals..."
       ]
     }
@@ -250,7 +250,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -1142,6 +1145,14 @@
       "data": "OnEventHandler42BEBAE0"
     }
   ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -1162,6 +1173,14 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "IsCompleteHandler7073F4DA"
+    }
+  ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
@@ -1294,6 +1313,14 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Handler886CB40B"
+    }
+  ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
@@ -1445,6 +1472,12 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerLogGroup54D03A56"
+    }
+  ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1455,6 +1488,12 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandlerLogGroupC85FFE26"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
@@ -1499,16 +1538,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     },
@@ -1523,16 +1554,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     },
@@ -1551,67 +1574,11 @@
       "data": "ProviderframeworkonEvent83C1D0A7"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
+        "logGroupName": "*"
       }
     }
   ],
@@ -1657,16 +1624,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     },
@@ -1681,16 +1640,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     }
@@ -1701,67 +1652,11 @@
       "data": "ProviderframeworkisComplete26D7B0CB"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
+        "logGroupName": "*"
       }
     }
   ],
@@ -1807,16 +1702,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     },
@@ -1831,16 +1718,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     }
@@ -1851,67 +1730,11 @@
       "data": "ProviderframeworkonTimeout0B47CA38"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
+        "logGroupName": "*"
       }
     }
   ],
@@ -1970,6 +1793,12 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerLogGroup50A7B41D"
+    }
+  ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -2021,16 +1850,8 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
+        "addToPrincipalPolicy": [
+          {}
         ]
       }
     }
@@ -2041,35 +1862,11 @@
       "data": "ProviderframeworkonEvent83C1D0A7"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "statements": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
+        "logGroupName": "*"
       }
     }
   ],
@@ -2129,6 +1926,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket": [
@@ -2137,16 +1950,10 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756"
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-1/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B"
+      "data": "ProviderframeworkonEventLogGroup683073A3"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
@@ -2191,6 +1998,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket": [
@@ -2199,16 +2022,10 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-0/Resource": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB"
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/inlinePolicyAddedToExecutionRole-1/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6"
+      "data": "ProviderframeworkisCompleteLogGroupEB065F2D"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
@@ -2253,6 +2070,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket": [
@@ -2261,16 +2094,10 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-0/Resource": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24"
-    }
-  ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/inlinePolicyAddedToExecutionRole-1/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60"
+      "data": "ProviderframeworkonTimeoutLogGroupE53BF187"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
@@ -2351,6 +2178,14 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
@@ -2359,10 +2194,10 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+  "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756"
+      "data": "ProviderframeworkonEventLogGroup683073A3"
     }
   ],
   "/aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [

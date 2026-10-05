@@ -124,12 +124,7 @@ class EksGrantAccessWithType extends Stack {
   }
 }
 
-const app = new App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-  },
-});
+const app = new App();
 
 const stack = new EksGrantAccessWithType(app, 'aws-cdk-eks-grant-access-with-type');
 
