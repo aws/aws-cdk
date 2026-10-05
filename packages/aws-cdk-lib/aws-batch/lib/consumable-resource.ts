@@ -1,4 +1,5 @@
 import type { Construct } from 'constructs';
+import { ConsumableResourceGrants } from './batch-grants.generated';
 import { CfnConsumableResource } from './batch.generated';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
@@ -25,6 +26,11 @@ export interface IConsumableResource extends IResource, IConsumableResourceRef {
    * @attribute
    */
   readonly consumableResourceName: string;
+
+  /**
+   * Grants for this consumable resource
+   */
+  readonly grants: ConsumableResourceGrants;
 }
 
 /**
@@ -49,19 +55,50 @@ export interface ConsumableResourceProps {
   /**
    * The name of the consumable resource
    *
+   * The name must be unique within the account and Region. Changing it replaces
+   * the resource.
+   *
    * @default - CloudFormation-generated name
    */
   readonly consumableResourceName?: string;
 
   /**
    * The type of consumable resource
+   *
+   * Changing this property replaces the resource. Because the name must be unique
+   * within the account and Region, changing the type of a resource that has a
+   * `consumableResourceName` fails the deployment unless the name is changed as well.
+   *
+   * @default ConsumableResourceType.REPLENISHABLE
    */
-  readonly resourceType: ConsumableResourceType;
+  readonly resourceType?: ConsumableResourceType;
 
   /**
    * The total quantity of the consumable resource
+   *
+   * Must be a non-negative integer.
    */
   readonly totalQuantity: number;
+
+  /**
+   * Tags to apply to the consumable resource
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
+}
+
+abstract class ConsumableResourceBase extends Resource implements IConsumableResource {
+  public abstract readonly consumableResourceArn: string;
+  public abstract readonly consumableResourceName: string;
+
+  public readonly grants = ConsumableResourceGrants.fromConsumableResource(this);
+
+  public get consumableResourceRef(): ConsumableResourceReference {
+    return {
+      consumableResourceArn: this.consumableResourceArn,
+    };
+  }
 }
 
 /**
@@ -73,7 +110,7 @@ export interface ConsumableResourceProps {
  * @resource AWS::Batch::ConsumableResource
  */
 @propertyInjectable
-export class ConsumableResource extends Resource implements IConsumableResource {
+export class ConsumableResource extends ConsumableResourceBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ConsumableResource';
 
@@ -81,19 +118,10 @@ export class ConsumableResource extends Resource implements IConsumableResource 
    * Import an existing consumable resource from its ARN
    */
   public static fromConsumableResourceArn(scope: Construct, id: string, consumableResourceArn: string): IConsumableResource {
-    if (Token.isUnresolved(consumableResourceArn)) {
-      throw new ValidationError(lit`ConsumableResourceArnCannotBeUnresolvedToken`, 'consumableResourceArn cannot be an unresolved token', scope);
-    }
-
     const stack = Stack.of(scope);
-    class Import extends Resource implements IConsumableResource {
+    class Import extends ConsumableResourceBase {
       public readonly consumableResourceArn = consumableResourceArn;
       public readonly consumableResourceName = stack.splitArn(consumableResourceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public get consumableResourceRef(): ConsumableResourceReference {
-        return {
-          consumableResourceArn: this.consumableResourceArn,
-        };
-      }
     }
     return new Import(scope, id);
   }
@@ -118,12 +146,6 @@ export class ConsumableResource extends Resource implements IConsumableResource 
     );
   }
 
-  public get consumableResourceRef(): ConsumableResourceReference {
-    return {
-      consumableResourceArn: this.consumableResourceArn,
-    };
-  }
-
   constructor(scope: Construct, id: string, props: ConsumableResourceProps) {
     super(scope, id, {
       physicalName: props.consumableResourceName,
@@ -131,14 +153,15 @@ export class ConsumableResource extends Resource implements IConsumableResource 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    if (!Token.isUnresolved(props.totalQuantity) && props.totalQuantity < 0) {
-      throw new ValidationError(lit`TotalQuantityMustBeNonNegative`, `totalQuantity must be non-negative, got ${props.totalQuantity}`, this);
+    if (!Token.isUnresolved(props.totalQuantity) && (!Number.isInteger(props.totalQuantity) || props.totalQuantity < 0)) {
+      throw new ValidationError(lit`TotalQuantityMustBeNonNegativeInteger`, `totalQuantity must be a non-negative integer, got ${props.totalQuantity}`, this);
     }
 
     this.resource = new CfnConsumableResource(this, 'Resource', {
       consumableResourceName: this.physicalName,
-      resourceType: props.resourceType,
+      resourceType: props.resourceType ?? ConsumableResourceType.REPLENISHABLE,
       totalQuantity: props.totalQuantity,
+      tags: props.tags,
     });
   }
 }

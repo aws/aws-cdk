@@ -8,14 +8,14 @@ const app = new App();
 const stack = new Stack(app, 'BatchConsumableResourceIntegTest');
 
 // Create a REPLENISHABLE consumable resource
-new batch.ConsumableResource(stack, 'ReplenishableResource', {
+const replenishable = new batch.ConsumableResource(stack, 'ReplenishableResource', {
   consumableResourceName: 'test-replenishable-license',
   resourceType: batch.ConsumableResourceType.REPLENISHABLE,
   totalQuantity: 100,
 });
 
 // Create a NON_REPLENISHABLE consumable resource
-new batch.ConsumableResource(stack, 'NonReplenishableResource', {
+const nonReplenishable = new batch.ConsumableResource(stack, 'NonReplenishableResource', {
   consumableResourceName: 'test-non-replenishable-license',
   resourceType: batch.ConsumableResourceType.NON_REPLENISHABLE,
   totalQuantity: 50,
@@ -25,11 +25,13 @@ const test = new IntegTest(app, 'BatchConsumableResourceTest', {
   testCases: [stack],
 });
 
-// Verify replenishable resource was created
+// Verify replenishable resource was created.
+// The filter uses consumableResourceName so the deployed test exercises the getter, which
+// splits the name out of the ARN-shaped Ref.
 test.assertions.awsApiCall('Batch', 'listConsumableResources', {
   filters: [{
     name: 'CONSUMABLE_RESOURCE_NAME',
-    values: ['test-replenishable-license'],
+    values: [replenishable.consumableResourceName],
   }],
 }).expect(ExpectedResult.objectLike({
   consumableResources: [{
@@ -43,7 +45,7 @@ test.assertions.awsApiCall('Batch', 'listConsumableResources', {
 test.assertions.awsApiCall('Batch', 'listConsumableResources', {
   filters: [{
     name: 'CONSUMABLE_RESOURCE_NAME',
-    values: ['test-non-replenishable-license'],
+    values: [nonReplenishable.consumableResourceName],
   }],
 }).expect(ExpectedResult.objectLike({
   consumableResources: [{

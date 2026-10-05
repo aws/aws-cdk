@@ -848,6 +848,39 @@ const apiRateLimitResource = new batch.ConsumableResource(this, 'ApiRateLimitRes
 });
 ```
 
+`resourceType` defaults to `REPLENISHABLE`, matching the AWS Batch API, and `totalQuantity` must be
+a non-negative integer. Both `consumableResourceName` and `resourceType` replace the resource when
+changed, so changing the type of a resource that has an explicit name also requires a new name.
+
+Tags can be passed directly to the resource:
+
+```ts
+const taggedResource = new batch.ConsumableResource(this, 'TaggedResource', {
+  totalQuantity: 100,
+  tags: {
+    Team: 'batch',
+  },
+});
+```
+
+#### Granting Access to Consumable Resources
+
+Use the `grants` property to give an identity permission to inspect or update a consumable resource:
+
+```ts
+const licenseResource = new batch.ConsumableResource(this, 'LicenseResource', {
+  totalQuantity: 100,
+});
+
+const user = new iam.User(this, 'MyUser');
+
+// Describe the resource and list the jobs that use it
+licenseResource.grants.read(user);
+
+// Change the total quantity, e.g. to replenish a NON_REPLENISHABLE pool
+licenseResource.grants.update(user);
+```
+
 #### Importing Existing Consumable Resources
 
 You can import existing consumable resources by their ARN:

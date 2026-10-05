@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
 import { App, CfnOutput, CfnParameter, Fn, Stack, Token } from '../../core';
 import { ConsumableResource, ConsumableResourceType } from '../lib';
 
@@ -60,7 +61,18 @@ describe('ConsumableResource', () => {
         resourceType: ConsumableResourceType.REPLENISHABLE,
         totalQuantity: -5,
       });
-    }).toThrow(/totalQuantity must be non-negative/);
+    }).toThrow(/totalQuantity must be a non-negative integer/);
+  });
+
+  test('throws error when totalQuantity is not an integer', () => {
+    // WHEN / THEN
+    // TotalQuantity is a CloudFormation integer, so a fractional value fails at deploy time.
+    expect(() => {
+      new ConsumableResource(stack, 'MyResource', {
+        resourceType: ConsumableResourceType.REPLENISHABLE,
+        totalQuantity: 1.5,
+      });
+    }).toThrow(/totalQuantity must be a non-negative integer/);
   });
 
   test('does not throw when totalQuantity is an unresolved token', () => {
@@ -145,12 +157,124 @@ describe('ConsumableResource', () => {
     });
   });
 
-  test('fromConsumableResourceArn throws when given an unresolved token', () => {
-    // WHEN / THEN
-    expect(() => {
-      ConsumableResource.fromConsumableResourceArn(stack, 'ImportedResource', Fn.importValue('SomeArn'));
-    }).toThrow(/consumableResourceArn cannot be an unresolved token/);
+  test('fromConsumableResourceArn accepts a tokenized ARN', () => {
+    // WHEN
+    // Tokenized ARNs must be importable, the same way JobQueue.fromJobQueueArn allows them.
+    const imported = ConsumableResource.fromConsumableResourceArn(stack, 'ImportedResource', Fn.importValue('SomeArn'));
+
+    // THEN
+    expect(stack.resolve(imported.consumableResourceName)).toEqual({
+      'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeArn' }] }] }] }],
+    });
   });
+
+  test('resourceType defaults to REPLENISHABLE', () => {
+    // WHEN
+    // The Batch API defaults the type to REPLENISHABLE, so the construct does the same.
+    new ConsumableResource(stack, 'MyResource', {
+      totalQuantity: 100,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ConsumableResource', {
+      ResourceType: 'REPLENISHABLE',
+    });
+  });
+
+  test('applies tags', () => {
+    // WHEN
+    new ConsumableResource(stack, 'MyResource', {
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 100,
+      tags: {
+        Team: 'batch',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ConsumableResource', {
+      Tags: {
+        Team: 'batch',
+      },
+    });
+  });
+
+  test('grants.read grants read permissions scoped to the resource', () => {
+    // GIVEN
+    const resource = new ConsumableResource(stack, 'MyResource', {
+      resourceType: ConsumableResourceType.REPLENISHABLE,
+      totalQuantity: 100,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    resource.grants.read(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['batch:DescribeConsumableResource', 'batch:ListJobsByConsumableResource'],
+            Effect: 'Allow',
+            Resource: stack.resolve(resource.consumableResourceArn),
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants.update grants UpdateConsumableResource scoped to the resource', () => {
+    // GIVEN
+    const resource = new ConsumableResource(stack, 'MyResource', {
+      resourceType: ConsumableResourceType.NON_REPLENISHABLE,
+      totalQuantity: 100,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    resource.grants.update(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'batch:UpdateConsumableResource',
+            Effect: 'Allow',
+            Resource: stack.resolve(resource.consumableResourceArn),
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants are available on an imported resource', () => {
+    // GIVEN
+    const imported = ConsumableResource.fromConsumableResourceArn(
+      stack,
+      'ImportedResource',
+      'arn:aws:batch:us-east-1:123456789012:consumable-resource/my-resource',
+    );
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    imported.grants.read(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Resource: 'arn:aws:batch:us-east-1:123456789012:consumable-resource/my-resource',
+          },
+        ],
+      },
+    });
+  });
+
   test('consumableResourceName resolves to the name rather than the ARN-shaped ref', () => {
     // WHEN
     const resource = new ConsumableResource(stack, 'MyResource', {

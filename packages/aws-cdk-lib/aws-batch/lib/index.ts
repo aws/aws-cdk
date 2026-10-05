@@ -14,3 +14,4 @@ export * from './unmanaged-compute-environment';
 
 // AWS::Batch CloudFormation Resources:
 export * from './batch.generated';
+export * from './batch-grants.generated';
