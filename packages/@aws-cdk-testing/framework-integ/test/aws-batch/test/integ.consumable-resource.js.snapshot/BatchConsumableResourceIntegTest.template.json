@@ -17,6 +17,24 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefReplenishableResourceA1CB5048B849E5AD": {
+   "Value": {
+    "Ref": "ReplenishableResourceA1CB5048"
+   },
+   "Export": {
+    "Name": "BatchConsumableResourceIntegTest:ExportsOutputRefReplenishableResourceA1CB5048B849E5AD"
+   }
+  },
+  "ExportsOutputRefNonReplenishableResourceA53BF4E2EFAB513D": {
+   "Value": {
+    "Ref": "NonReplenishableResourceA53BF4E2"
+   },
+   "Export": {
+    "Name": "BatchConsumableResourceIntegTest:ExportsOutputRefNonReplenishableResourceA53BF4E2EFAB513D"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

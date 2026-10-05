@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallBatchlistConsumableResourcesffe006a453ac284ab39bdc080b61cdf9": {
+  "AwsApiCallBatchlistConsumableResources8eef4fb2f42de471ea7bc4accd386728": {
    "Type": "Custom::DeployAssert@SdkCallBatchlistConsumableResources",
    "Properties": {
     "ServiceToken": {
@@ -13,10 +13,41 @@
     "api": "listConsumableResources",
     "expected": "{\"$ObjectLike\":{\"consumableResources\":[{\"consumableResourceName\":\"test-replenishable-license\",\"resourceType\":\"REPLENISHABLE\",\"totalQuantity\":100}]}}",
     "parameters": {
-     "filters": "[{\"name\":\"CONSUMABLE_RESOURCE_NAME\",\"values\":[\"test-replenishable-license\"]}]"
+     "filters": {
+      "Fn::Join": [
+       "",
+       [
+        "[{\"name\":\"CONSUMABLE_RESOURCE_NAME\",\"values\":[\"",
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "/",
+            {
+             "Fn::Select": [
+              5,
+              {
+               "Fn::Split": [
+                ":",
+                {
+                 "Fn::ImportValue": "BatchConsumableResourceIntegTest:ExportsOutputRefReplenishableResourceA1CB5048B849E5AD"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "\"]}]"
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1770900327849"
+    "salt": "1791179732293"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -74,12 +105,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
+     "S3Key": "f6908d65aad9689b7f3773d17be62afe6e973baa92c16c8521798e925c3a6f3e.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -88,10 +119,14 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
-  "AwsApiCallBatchlistConsumableResources2f08d048f0d859a26b100a91eeffd25e": {
+  "AwsApiCallBatchlistConsumableResourcesa53321b168eb572bbc7eae95bbd8f4d2": {
    "Type": "Custom::DeployAssert@SdkCallBatchlistConsumableResources",
    "Properties": {
     "ServiceToken": {
@@ -104,28 +139,59 @@
     "api": "listConsumableResources",
     "expected": "{\"$ObjectLike\":{\"consumableResources\":[{\"consumableResourceName\":\"test-non-replenishable-license\",\"resourceType\":\"NON_REPLENISHABLE\",\"totalQuantity\":50}]}}",
     "parameters": {
-     "filters": "[{\"name\":\"CONSUMABLE_RESOURCE_NAME\",\"values\":[\"test-non-replenishable-license\"]}]"
+     "filters": {
+      "Fn::Join": [
+       "",
+       [
+        "[{\"name\":\"CONSUMABLE_RESOURCE_NAME\",\"values\":[\"",
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "/",
+            {
+             "Fn::Select": [
+              5,
+              {
+               "Fn::Split": [
+                ":",
+                {
+                 "Fn::ImportValue": "BatchConsumableResourceIntegTest:ExportsOutputRefNonReplenishableResourceA53BF4E2EFAB513D"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "\"]}]"
+       ]
+      ]
+     }
     },
     "flattenResponse": "false",
-    "salt": "1770900327851"
+    "salt": "1791179732294"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallBatchlistConsumableResourcesffe006a453ac284ab39bdc080b61cdf9": {
+  "AssertionResultsAwsApiCallBatchlistConsumableResources8eef4fb2f42de471ea7bc4accd386728": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallBatchlistConsumableResourcesffe006a453ac284ab39bdc080b61cdf9",
+     "AwsApiCallBatchlistConsumableResources8eef4fb2f42de471ea7bc4accd386728",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallBatchlistConsumableResources2f08d048f0d859a26b100a91eeffd25e": {
+  "AssertionResultsAwsApiCallBatchlistConsumableResourcesa53321b168eb572bbc7eae95bbd8f4d2": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallBatchlistConsumableResources2f08d048f0d859a26b100a91eeffd25e",
+     "AwsApiCallBatchlistConsumableResourcesa53321b168eb572bbc7eae95bbd8f4d2",
      "assertion"
     ]
    }

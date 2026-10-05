@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "9321951df9fffe5ce79b7c6848a65f6e7eeecb661b1dd1c2b74d64963b98edaa": {
+    "1ce7554068b7bd7f762b57fa0515ac4cbfa4345811b76ace6d6fdba1e6af19f8": {
       "displayName": "BatchConsumableResourceIntegTest Template",
       "source": {
         "path": "BatchConsumableResourceIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-870e952f": {
+        "current_account-current_region-f7562a91": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9321951df9fffe5ce79b7c6848a65f6e7eeecb661b1dd1c2b74d64963b98edaa.json",
+          "objectKey": "1ce7554068b7bd7f762b57fa0515ac4cbfa4345811b76ace6d6fdba1e6af19f8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
