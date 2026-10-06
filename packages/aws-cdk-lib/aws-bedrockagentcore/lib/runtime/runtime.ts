@@ -17,7 +17,7 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import type { LifecycleConfiguration, PlatformVersion, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
@@ -93,6 +93,16 @@ export interface RuntimeProps {
    * @default - ProtocolType.HTTP
    */
   readonly protocolConfiguration?: ProtocolType;
+
+  /**
+   * The platform version of the runtime.
+   *
+   * When omitted, the property is not rendered and the AgentCore service applies
+   * its own default platform version.
+   *
+   * @default - the AgentCore service default platform version
+   */
+  readonly platformVersion?: PlatformVersion;
 
   /**
    * Environment variables for the agent runtime
@@ -384,6 +394,7 @@ export class Runtime extends RuntimeBase {
       agentRuntimeArtifact: Lazy.any({ produce: () => this.renderAgentRuntimeArtifact() }),
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration._render(this._connections) }),
       protocolConfiguration: Lazy.string({ produce: () => this.protocolConfiguration.value }),
+      platformVersion: props.platformVersion?.value,
       description: props.description,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables(props.environmentVariables) }),
       tags: props.tags ?? {},
@@ -803,11 +814,11 @@ export class Runtime extends RuntimeBase {
     }
 
     // Only validate if the URI is a concrete string (not a token)
-    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
+    const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com(?:\.cn)?\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!pattern.test(uri)) {
       throw new ValidationError(
         lit`InvalidContainerUri`,
-        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
+        `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest or 123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/my-agent:latest)`,
         this,
       );
     }

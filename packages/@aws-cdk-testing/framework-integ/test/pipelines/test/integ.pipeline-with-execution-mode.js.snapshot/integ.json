@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "PipelineStackIntegWithExecutionMode/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "assertionStack": "PipelineStackIntegWithExecutionMode/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackIntegWithExecutionModeDefaultTestDeployAssertFF58F5A8"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
