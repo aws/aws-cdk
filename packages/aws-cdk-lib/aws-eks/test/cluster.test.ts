@@ -2887,7 +2887,7 @@ describe('cluster', () => {
       });
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
         clusterName,
-        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlRoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         kubectlLambdaRole: kubectlLambdaRole,
       });
 
@@ -2904,7 +2904,7 @@ describe('cluster', () => {
       });
       Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
         ClusterName: clusterName,
-        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        RoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         Release: 'importedcharttestchartf3acd6e5',
         Chart: chart,
         Namespace: 'default',
@@ -3962,6 +3962,12 @@ describe('cluster', () => {
     test('user provided removal policy applies to kubectl lambda', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
+
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3004',
+        reason: 'Something with circular deps',
+      });
+
       const userVpc = new ec2.Vpc(stack, 'UserVpc');
       const userRole = new iam.Role(stack, 'UserRole', {
         assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
@@ -4349,6 +4355,56 @@ describe('deletionProtection', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         deletionProtection: Match.absent(),
+      },
+    });
+  });
+});
+
+describe('controlPlaneScalingTier', () => {
+  test.each([
+    [eks.ControlPlaneScalingTier.STANDARD, 'standard'],
+    [eks.ControlPlaneScalingTier.TIER_XL, 'tier-xl'],
+    [eks.ControlPlaneScalingTier.TIER_2XL, 'tier-2xl'],
+    [eks.ControlPlaneScalingTier.TIER_4XL, 'tier-4xl'],
+    [eks.ControlPlaneScalingTier.TIER_8XL, 'tier-8xl'],
+  ])(
+    'controlPlaneScalingTier(%s) should configure controlPlaneScalingConfig',
+    (tier, expected) => {
+      // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        controlPlaneScalingTier: tier,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          controlPlaneScalingConfig: {
+            tier: expected,
+          },
+        },
+      });
+    },
+  );
+
+  test('controlPlaneScalingConfig is not set when controlPlaneScalingTier is not provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        controlPlaneScalingConfig: Match.absent(),
       },
     });
   });

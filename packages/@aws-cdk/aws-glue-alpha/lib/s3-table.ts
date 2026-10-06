@@ -1,4 +1,4 @@
-import { UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { Annotations, ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -12,73 +12,153 @@ import type { PartitionIndex, TableBaseProps } from './table-base';
 import { TableBase } from './table-base';
 
 /**
- * Encryption options for a Table.
+ * Server-side encryption for the S3 bucket that a managed `S3Table` creates.
  *
- * @see https://docs.aws.amazon.com/athena/latest/ug/encryption.html
+ * Applies only when the table manages its own bucket (via
+ * `S3TableStorage.managedBucket`). An existing bucket keeps whatever encryption
+ * it was created with.
  */
-export enum TableEncryption {
+export class S3TableEncryption {
   /**
-   * Server side encryption (SSE) with an Amazon S3-managed key.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+   * Server-side encryption (SSE-S3) with an Amazon S3-managed key.
    */
-  S3_MANAGED = 'SSE-S3',
+  public static s3Managed(): S3TableEncryption {
+    return new S3TableEncryption(s3.BucketEncryption.S3_MANAGED);
+  }
 
   /**
-   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   * Server-side encryption (SSE-KMS) with an AWS KMS key managed by the account owner.
    *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   * @param key the KMS key used to encrypt the data. A key is created if one is not provided.
    */
-  KMS = 'SSE-KMS',
+  public static kms(key?: kms.IKey): S3TableEncryption {
+    return new S3TableEncryption(s3.BucketEncryption.KMS, key);
+  }
 
   /**
-   * Server-side encryption (SSE) with an AWS KMS key managed by the KMS service.
+   * Server-side encryption (SSE-KMS) with an AWS KMS key managed by the KMS service.
    */
-  KMS_MANAGED = 'SSE-KMS-MANAGED',
+  public static kmsManaged(): S3TableEncryption {
+    return new S3TableEncryption(s3.BucketEncryption.KMS_MANAGED);
+  }
+
+  /** @internal */
+  public readonly _bucketEncryption: s3.BucketEncryption;
 
   /**
-   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
+   * @internal
+   * Typed `kms.IKey` (not `IKeyRef`) because it is forwarded to `s3.Bucket`, whose `encryptionKey` prop requires `IKey`.
    */
-  CLIENT_SIDE_KMS = 'CSE-KMS',
+  public readonly _kmsKey?: kms.IKey;
+
+  private constructor(bucketEncryption: s3.BucketEncryption, kmsKey?: kms.IKey) {
+    this._bucketEncryption = bucketEncryption;
+    this._kmsKey = kmsKey;
+  }
+}
+
+/**
+ * Where an `S3Table` stores its data.
+ *
+ * The two paths are mutually exclusive: a managed bucket may specify its
+ * server-side encryption, while an existing bucket keeps its own encryption — so
+ * an encryption choice can never be paired with a bring-your-own bucket.
+ */
+export class S3TableStorage {
+  /**
+   * Store the table's data in a bucket created and managed by the table.
+   *
+   * @param encryption the server-side encryption for the created bucket.
+   * @default - S3-managed (SSE-S3) encryption
+   */
+  public static managedBucket(encryption?: S3TableEncryption): S3TableStorage {
+    return new S3TableStorage(undefined, encryption);
+  }
+
+  /**
+   * Store the table's data in an existing bucket. CDK does not manage the
+   * bucket's encryption.
+   *
+   * The bucket can be one you don't own, imported with
+   * `Bucket.fromBucketArn()` or `Bucket.fromBucketAttributes()`. If that bucket
+   * is KMS-encrypted, import it with `Bucket.fromBucketAttributes()` and supply
+   * the `encryptionKey` attribute. Otherwise, CDK has no reference to the key,
+   * which means that `S3Table.grantRead()`/`grantWrite()` will correctly grant
+   * S3 access but silently skip the KMS permissions on the key. As a consequence,
+   * at runtime, reads and writes will fail with access denied on the key.
+   *
+   * @param bucket the bucket that holds the table's data.
+   */
+  public static fromBucket(bucket: s3.IBucket): S3TableStorage {
+    return new S3TableStorage(bucket, undefined);
+  }
+
+  /** @internal */
+  public readonly _bucket?: s3.IBucket;
+
+  /** @internal */
+  public readonly _encryption?: S3TableEncryption;
+
+  private constructor(bucket?: s3.IBucket, encryption?: S3TableEncryption) {
+    this._bucket = bucket;
+    this._encryption = encryption;
+  }
+}
+
+/**
+ * Client-side encryption for an `S3Table`'s data.
+ *
+ * Independent of the bucket's server-side encryption and of who owns the bucket:
+ * the data is encrypted by the client before it is written to S3. When set, the
+ * `grant*` methods also grant the relevant KMS permissions on the key.
+ */
+export class TableClientSideEncryption {
+  /**
+   * Client-side encryption (CSE-KMS) with an AWS KMS key managed by the account owner.
+   *
+   * @param key the KMS key used to encrypt the data. A key is created if one is not provided.
+   */
+  public static kms(key?: kms.IKeyRef): TableClientSideEncryption {
+    return new TableClientSideEncryption(key);
+  }
+
+  /** @internal */
+  public readonly _kmsKey?: kms.IKeyRef;
+
+  private constructor(kmsKey?: kms.IKeyRef) {
+    this._kmsKey = kmsKey;
+  }
 }
 
 export interface S3TableProps extends TableBaseProps {
   /**
-   * S3 bucket in which to store data.
+   * Where the table's data is stored: a bucket created and managed by the table,
+   * or an existing bucket you provide.
    *
-   * @default one is created for you
+   * @default - a managed bucket with S3-managed (SSE-S3) encryption
    */
-  readonly bucket?: s3.IBucket;
+  readonly storage?: S3TableStorage;
 
   /**
    * S3 prefix under which table objects are stored.
+   *
+   * When the table shares a bucket with other tables or consumers, set this so
+   * that the `grant*` methods scope S3 access to this table's data. Without a
+   * prefix, those grants cover the entire bucket.
    *
    * @default - No prefix. The data will be stored under the root of the bucket.
    */
   readonly s3Prefix?: string;
 
   /**
-   * The kind of encryption to secure the data with.
+   * Client-side encryption (CSE-KMS) for the table's data.
    *
-   * You can only provide this option if you are not explicitly passing in a bucket.
+   * Independent of the bucket's server-side encryption, and valid whether the
+   * bucket is managed or provided.
    *
-   * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
-   * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
-   *
-   * @default BucketEncryption.S3_MANAGED
+   * @default - no client-side encryption
    */
-  readonly encryption?: TableEncryption;
-
-  /**
-   * External KMS key to use for bucket encryption.
-   *
-   * The `encryption` property must be `SSE-KMS` or `CSE-KMS`.
-   *
-   * @default key is managed by KMS.
-   */
-  readonly encryptionKey?: kms.IKey;
+  readonly clientSideEncryption?: TableClientSideEncryption;
 }
 
 /**
@@ -103,14 +183,12 @@ export class S3Table extends TableBase {
   public readonly s3Prefix: string;
 
   /**
-   * The type of encryption enabled for the table.
+   * The KMS key used for client-side encryption of the table's data, if
+   * `clientSideEncryption` was configured. Otherwise, `undefined`.
+   *
+   * For server-side (bucket) encryption, read `bucket.encryptionKey` instead.
    */
-  public readonly encryption: TableEncryption;
-
-  /**
-   * The KMS key used to secure the data if `encryption` is set to `CSE-KMS` or `SSE-KMS`. Otherwise, `undefined`.
-   */
-  public readonly encryptionKey?: kms.IKey;
+  public readonly clientSideEncryptionKey?: kms.IKeyRef;
 
   /**
    * This table's partition indexes.
@@ -119,18 +197,29 @@ export class S3Table extends TableBase {
 
   protected readonly tableResource: CfnTable;
 
+  /**
+   * Whether the data bucket was supplied by the user (as opposed to created by
+   * this construct). A user-supplied bucket may hold data for other tables, so
+   * granting access to the whole bucket can over-grant.
+   */
+  private readonly userProvidedBucket: boolean;
+
   constructor(scope: Construct, id: string, props: S3TableProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.s3Prefix = props.s3Prefix ?? '';
-    const { bucket, encryption, encryptionKey } = createBucket(this, props);
-    this.bucket = bucket;
-    this.encryption = encryption;
-    this.encryptionKey = encryptionKey;
+    const storage = props.storage ?? S3TableStorage.managedBucket();
+    this.userProvidedBucket = storage._bucket !== undefined;
+    this.bucket = storage._bucket ?? this.createManagedBucket(storage._encryption);
+    if (props.clientSideEncryption) {
+      // CSE-KMS: use the provided key or create one automatically. The bucket's
+      // own server-side encryption is independent and comes from `storage`.
+      this.clientSideEncryptionKey = props.clientSideEncryption._kmsKey ?? new kms.Key(this, 'Key');
+    }
 
     this.resource = new CfnTable(this, 'Table', {
-      catalogId: props.database.catalogId,
+      catalogId: props.database.catalog.catalogId,
 
       databaseName: props.database.databaseName,
 
@@ -142,9 +231,11 @@ export class S3Table extends TableBase {
 
         parameters: {
           'classification': props.dataFormat.classificationString?.value,
-          'has_encrypted_data': true,
           'partition_filtering.enabled': props.enablePartitionFiltering,
           ...this.parameters,
+          // Managed keys are emitted last so free-form `parameters` cannot
+          // silently override them. Conflicts are rejected in `TableBase`.
+          'has_encrypted_data': this.hasEncryptedData,
         },
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
@@ -209,7 +300,7 @@ export class S3Table extends TableBase {
   @MethodMetadata()
   public grantRead(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, readPermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantDecrypt(grantee); }
+    if (this.clientSideEncryptionKey) { kms.KeyGrants.fromKey(this.clientSideEncryptionKey).decrypt(grantee); }
     this.bucket.grantRead(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
@@ -223,7 +314,7 @@ export class S3Table extends TableBase {
   @MethodMetadata()
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, writePermissions);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncrypt(grantee); }
+    if (this.clientSideEncryptionKey) { kms.KeyGrants.fromKey(this.clientSideEncryptionKey).encrypt(grantee); }
     this.bucket.grantWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
@@ -237,13 +328,33 @@ export class S3Table extends TableBase {
   @MethodMetadata()
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
     const ret = this.grant(grantee, [...readPermissions, ...writePermissions]);
-    if (this.encryptionKey && this.encryption === TableEncryption.CLIENT_SIDE_KMS) { this.encryptionKey.grantEncryptDecrypt(grantee); }
+    if (this.clientSideEncryptionKey) { kms.KeyGrants.fromKey(this.clientSideEncryptionKey).encryptDecrypt(grantee); }
     this.bucket.grantReadWrite(grantee, this.generateS3PrefixForGrant());
     return ret;
   }
 
   protected generateS3PrefixForGrant() {
+    // When the user supplied their own bucket and did not scope the table to a
+    // prefix, the grant covers every object in the bucket - which may include
+    // data owned by other tables or consumers sharing that bucket. Warn so the
+    // over-grant is a deliberate choice rather than a silent surprise.
+    if (this.userProvidedBucket && this.s3Prefix === '') {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-glue-alpha:grantScopedToWholeBucket',
+        'granting access to the entire data bucket because `s3Prefix` is empty and a shared bucket was provided; ' +
+          'set `s3Prefix` to scope grants to this table\'s data and avoid granting access to other tables sharing the bucket.',
+      );
+    }
     return this.s3Prefix + '*';
+  }
+
+  private createManagedBucket(encryption?: S3TableEncryption): s3.Bucket {
+    const enc = encryption ?? S3TableEncryption.s3Managed();
+    return new s3.Bucket(this, 'Bucket', {
+      encryption: enc._bucketEncryption,
+      encryptionKey: enc._kmsKey,
+      enforceSSL: true,
+    });
   }
 }
 
@@ -265,54 +376,7 @@ const writePermissions = [
   'glue:UpdatePartition',
 ];
 
-// map TableEncryption to bucket's SSE configuration (s3.BucketEncryption)
-const encryptionMappings = {
-  [TableEncryption.S3_MANAGED]: s3.BucketEncryption.S3_MANAGED,
-  [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
-  [TableEncryption.KMS]: s3.BucketEncryption.KMS,
-  [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.S3_MANAGED,
-};
-
-// create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
-function createBucket(table: S3Table, props: S3TableProps) {
-  let bucket = props.bucket;
-
-  if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
-    throw new UnscopedValidationError(lit`EncryptionWithProvidedBucket`, 'you can not specify encryption settings if you also provide a bucket');
-  }
-
-  const encryption = props.encryption || TableEncryption.S3_MANAGED;
-
-  let encryptionKey: kms.IKey | undefined;
-  if (encryption === TableEncryption.CLIENT_SIDE_KMS && props.encryptionKey === undefined) {
-    // CSE-KMS should behave the same as SSE-KMS - use the provided key or create one automatically
-    // Since Bucket only knows about SSE, we repeat the logic for CSE-KMS at the Table level.
-    encryptionKey = new kms.Key(table, 'Key');
-  } else {
-    encryptionKey = props.encryptionKey;
-  }
-
-  // create the bucket if none was provided
-  if (!bucket) {
-    if (encryption === TableEncryption.CLIENT_SIDE_KMS) {
-      bucket = new s3.Bucket(table, 'Bucket');
-    } else {
-      bucket = new s3.Bucket(table, 'Bucket', {
-        encryption: encryptionMappings[encryption],
-        encryptionKey,
-      });
-      encryptionKey = bucket.encryptionKey;
-    }
-  }
-
-  return {
-    bucket,
-    encryption,
-    encryptionKey,
-  };
-}
-
-function renderColumns(columns?: Array<Column | Column>) {
+function renderColumns(columns?: Column[]) {
   if (columns === undefined) {
     return undefined;
   }

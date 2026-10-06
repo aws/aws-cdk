@@ -1,12 +1,19 @@
+import { CloudFormationStackArtifact } from '@aws-cdk/cloud-assembly-api';
 import { Construct } from 'constructs';
 import * as core from '../lib';
 import { Names } from '../lib';
+import { stackOf } from '../lib/private/core-construct-finders';
 import { dispatchDependencyOperation } from '../lib/private/deps';
+
+let app: core.App;
+
+beforeEach(() => {
+  app = new core.App();
+});
 
 describe('deps', () => {
   describe('dependency methods', () => {
     test('can explicitly add a dependency between resources', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
@@ -27,7 +34,6 @@ describe('deps', () => {
     });
 
     test('can explicitly remove a dependency between resources', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       const resource2 = new core.CfnResource(stack, 'Resource2', { type: 'Test::Resource::Fake2' });
@@ -45,7 +51,6 @@ describe('deps', () => {
     });
 
     test('can explicitly add, obtain, and remove dependencies across stacks', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       // Use a really long construct id to identify issues between Names.uniqueId and Names.uniqueResourceName
       const reallyLongConstructId = 'A'.repeat(247);
@@ -72,7 +77,6 @@ describe('deps', () => {
     });
 
     test('do nothing if source is target', () => {
-      const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource1 = new core.CfnResource(stack, 'Resource1', { type: 'Test::Resource::Fake1' });
       resource1.addResourceDependency(resource1);
@@ -85,7 +89,6 @@ describe('deps', () => {
     });
 
     test('handle source being common stack', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
@@ -100,7 +103,6 @@ describe('deps', () => {
     });
 
     test('throws error if target is common stack', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       const resource1 = new core.CfnResource(stack1, 'Resource1', { type: 'Test::Resource::Fake1' });
 
@@ -113,7 +115,6 @@ describe('deps', () => {
     });
 
     test('can explicitly add, obtain, and remove dependencies across nested stacks', () => {
-      const app = new core.App();
       const stack1 = new core.Stack(app, 'TestStack1');
       const construct1 = new Construct(stack1, 'CommonConstruct');
       // Use a really long construct id to identify issues between Names.uniqueId and Names.uniqueResourceName
@@ -151,11 +152,11 @@ describe('deps', () => {
       function runTest(nResources: number) {
         const start = Date.now();
 
-        const app = new core.App();
+        const innerApp = new core.App();
 
         let lastStack: core.Stack | undefined;
         for (let i = 0; i < nStacks; i++) {
-          const stack = new core.Stack(app, `TestStack${i}`);
+          const stack = new core.Stack(innerApp, `TestStack${i}`);
           for (let j = 0; j < nResources; j++) {
             new core.CfnResource(stack, `Resource${j}`, { type: 'Test::Resource::Fake' });
           }
@@ -163,10 +164,118 @@ describe('deps', () => {
           lastStack = stack;
         }
 
-        app.synth();
+        innerApp.synth();
 
         return Date.now() - start;
       }
     });
   });
+
+  describe('dependencies involving NestedStacks', () => {
+    let fixture: ReturnType<typeof setUp>;
+    function setUp() {
+      const rootStack = new core.Stack(app, 'Root');
+      const compoundConstruct = new Construct(rootStack, 'Compound');
+      const nestedStack = new core.NestedStack(compoundConstruct, 'Nested');
+      const nestedStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', { type: 'Test::Resource::Fake' });
+
+      const nestedChild = new core.CfnResource(nestedStack, 'NestedChild', { type: 'Test::Resource::Fake' });
+      const topChild = new core.CfnResource(rootStack, 'TopChild', { type: 'Test::Resource::Fake' });
+
+      return { rootStack, nestedStack, compoundConstruct, nestedStackSibling, nestedChild, topChild };
+    }
+    beforeEach(() => {
+      fixture = setUp();
+    });
+
+    test('Top -> Compound/Nested/Child: leads to Top -> Compound/Nested', () => {
+      const { topChild, nestedChild } = fixture;
+
+      topChild.node.addDependency(nestedChild);
+
+      expect(resourceSection(topChild).DependsOn).toEqual(['CompoundNestedNestedStackNestedNestedStackResourceBB6D325A']);
+    });
+
+    test('Compound/Nested/Child -> Top: leads to Compound/Nested -> Top', () => {
+      const { topChild, nestedChild, nestedStack } = fixture;
+
+      nestedChild.node.addDependency(topChild);
+
+      expect(resourceSection(nestedStack.nestedStackResource!).DependsOn).toEqual(['TopChild']);
+    });
+
+    test('Top -> Compound[/Nested/Child]: leads to only Top -> Compound/Nested', () => {
+      const { topChild, compoundConstruct } = fixture;
+
+      topChild.node.addDependency(compoundConstruct);
+
+      expect(resourceSection(topChild).DependsOn).toEqual(['CompoundNestedNestedStackNestedNestedStackResourceBB6D325A', 'CompoundNestedSibling55188EFC']);
+    });
+  });
+
+  describe('dependencies involving support Stacks', () => {
+    let fixture: ReturnType<typeof setUp>;
+    function setUp() {
+      const topStack = new core.Stack(app, 'Root');
+      const compoundConstruct = new Construct(topStack, 'Compound');
+      const supportStack = new core.Stack(compoundConstruct, 'Support');
+      const supportStackSibling = new core.CfnResource(compoundConstruct, 'NestedSibling', { type: 'Test::Resource::Fake' });
+
+      const supportChild = new core.CfnResource(supportStack, 'SupportChild', { type: 'Test::Resource::Fake' });
+      const topChild = new core.CfnResource(topStack, 'TopChild', { type: 'Test::Resource::Fake' });
+
+      return { topStack, supportStack, compoundConstruct, supportStackSibling, supportChild, topChild };
+    }
+    beforeEach(() => {
+      fixture = setUp();
+    });
+
+    test('Top -> Compound/Support/Child: leads to TopStack -[stack]-> SupportStack', () => {
+      const { topChild, supportChild, topStack, supportStack } = fixture;
+
+      topChild.node.addDependency(supportChild);
+
+      expect(resourceSection(topChild).DependsOn).toEqual(undefined);
+      expect(stackDependencies(topStack)).toEqual([stackArtifact(supportStack)]);
+    });
+
+    test('Compound/Support/Child -> Top: leads to SupportStack -[stack]-> TopStack', () => {
+      const { topChild, supportChild, topStack, supportStack } = fixture;
+
+      supportChild.node.addDependency(topChild);
+
+      expect(resourceSection(topChild).DependsOn).toEqual(undefined);
+      expect(stackDependencies(supportStack)).toEqual([stackArtifact(topStack)]);
+    });
+
+    test('Top -> Compound[/Support/Child]: leads to Top -> Compound/Sibling (and no stack dependencies)', () => {
+      const { topChild, compoundConstruct, topStack } = fixture;
+
+      topChild.node.addDependency(compoundConstruct);
+
+      expect(resourceSection(topChild).DependsOn).toEqual(['CompoundNestedSibling55188EFC']);
+      expect(stackDependencies(topStack)).toEqual([]);
+    });
+  });
 });
+
+function stackArtifact(stack: core.Stack) {
+  const asm = app.synth();
+  return asm.getStackByName(stack.stackName);
+}
+
+/**
+ * Return stack artifact dependencies (ignore other types of dependencies like asset manifests)
+ */
+function stackDependencies(stack: core.Stack) {
+  return stackArtifact(stack).dependencies
+    .filter(CloudFormationStackArtifact.isCloudFormationStackArtifact);
+}
+
+function resourceSection(resource: core.CfnResource) {
+  const stack = stackOf(resource);
+  const asm = app.synth();
+  const logicalId = stack.resolve(resource.logicalId);
+
+  return asm.getStackByName(stack.stackName).template.Resources?.[logicalId];
+}
