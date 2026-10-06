@@ -1,0 +1,1520 @@
+{
+  "/FlinkAppTest": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:9:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_15": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "threshold": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_18": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "threshold": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_19": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "threshold": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_20": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "threshold": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-2_2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "threshold": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/www/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/www/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/www/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/www/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK11548C6DD0B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:564:30)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/LogStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/LoggingOption": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK115LoggingOption201B75CF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:612:13)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_15/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmFLINK1151BBA9866"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:22 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118BEACE639"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:564:30)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/LogStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/LoggingOption": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118LoggingOption6EEBD514"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:612:13)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_18/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmFLINK118680AE078"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:22 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119DAC5CF3C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:564:30)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/LogStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/LoggingOption": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119LoggingOption224F0C40"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:612:13)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_19/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmFLINK1194841405B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:22 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120E80F19CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:564:30)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/LogStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/LoggingOption": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120LoggingOption6B00A786"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:612:13)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-1_20/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmFLINK120DB2152C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:22 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK2239D89E32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:564:30)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/LogStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/LoggingOption": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK22LoggingOption38AFF9BC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:612:13)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/Alarm-FLINK-2_2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlarmFLINK225D312CB2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:22 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK115RoleD758509C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:537:39)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK115LogGroupBACCAB69"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:589:48)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_15/LogStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK115LogStreamD7900E5F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-stream.js:148:29)",
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:590:31)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118Role1B878112"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:537:39)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118LogGroupEF87F95A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:589:48)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/LogStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118LogStreamAFAF3379"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-stream.js:148:29)",
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:590:31)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119Role6594F124"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:537:39)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119LogGroup472EA32B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:589:48)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/LogStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119LogStream5FD726B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-stream.js:148:29)",
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:590:31)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120RoleDC5875D6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:537:39)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120LogGroupFFF89194"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:589:48)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/LogStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120LogStream155EEEF9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-stream.js:148:29)",
+        "new LogStream (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:590:31)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK22Role9C85CD0E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:537:39)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK22LogGroup9E4416D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:589:48)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+
+  "/FlinkAppTest/App-FLINK-1_15/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK115RoleDefaultPolicy402697BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/www/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:542:23)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_18/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK118RoleDefaultPolicy1D8097BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/www/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:542:23)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_19/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK119RoleDefaultPolicy6EB1C39D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/www/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:542:23)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-1_20/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK120RoleDefaultPolicy2540C6BA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/www/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:542:23)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)"
+      ]
+    }
+  ],
+  "/FlinkAppTest/App-FLINK-2_2/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppFLINK22RoleDefaultPolicy74E77B17"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/www/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/www/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Application (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/lib/application.js:542:23)",
+        "new Application (/www/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18: (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:18:2)",
+        "Array.forEach (:)",
+        "<anonymous> (/www/aws-cdk/packages/@aws-cdk/aws-kinesisanalytics-flink-alpha/test/integ.application.lit.js:17:15)"
+      ]
+    }
+  ]
+}
