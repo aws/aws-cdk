@@ -293,20 +293,31 @@ for the `AWS::KMS::Key` CloudFormation type:
 
 ```ts nofixture
 import { CfnResource } from 'aws-cdk-lib';
-import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
-import { Construct, IConstruct } from 'constructs';
+import { AddToResourcePolicyResult, IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { ResourceEnvironment } from 'aws-cdk-lib/interfaces';
+import { Construct } from 'constructs';
 
 
 declare const scope: Construct;
+
+class MyResourceWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private readonly resource: CfnResource;
+
+  constructor(resource: CfnResource) {
+    this.resource = resource;
+    this.env = resource.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    // custom implementation to add the statement to the resource policy
+    return { statementAdded: true, policyDependable: this.resource };
+  }
+}
+
 class MyFactory implements IResourcePolicyFactory {
-  forResource(resource: CfnResource): IResourceWithPolicyV2 {
-    return {
-      env: resource.env,
-      addToResourcePolicy(statement: PolicyStatement) {
-        // custom implementation to add the statement to the resource policy
-        return { statementAdded: true, policyDependable: resource };
-      }
-    }
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return new MyResourceWithPolicy(resource);
   }
 }
 

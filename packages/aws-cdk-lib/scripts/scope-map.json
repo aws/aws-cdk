@@ -750,6 +750,24 @@
       }
     ]
   },
+  "aws-eks-v2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EKS"
+      }
+    ],
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.eks_v2"
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EKSv2"
+      },
+      "python": {
+        "module": "aws_cdk.aws_eks_v2"
+      }
+    }
+  },
   "aws-elasticache": {
     "scopes": [
       {
@@ -831,6 +849,13 @@
     "scopes": [
       {
         "namespace": "AWS::EventSchemas"
+      }
+    ]
+  },
+  "aws-eventsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EventsV2"
       }
     ]
   },
@@ -950,6 +975,13 @@
     "scopes": [
       {
         "namespace": "AWS::GuardDuty"
+      }
+    ]
+  },
+  "aws-healthagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthAgent"
       }
     ]
   },
@@ -1411,6 +1443,13 @@
       }
     ]
   },
+  "aws-networkmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkMonitor"
+      }
+    ]
+  },
   "aws-nimblestudio": {
     "scopes": [
       {
@@ -1565,6 +1604,13 @@
       }
     ]
   },
+  "aws-pi": {
+    "scopes": [
+      {
+        "namespace": "AWS::PI"
+      }
+    ]
+  },
   "aws-pinpoint": {
     "scopes": [
       {
@@ -1583,6 +1629,13 @@
     "scopes": [
       {
         "namespace": "AWS::Pipes"
+      }
+    ]
+  },
+  "aws-pricingplanmanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::PricingPlanManager"
       }
     ]
   },
@@ -2025,6 +2078,13 @@
     "scopes": [
       {
         "namespace": "AWS::SupportApp"
+      }
+    ]
+  },
+  "aws-supportauthz": {
+    "scopes": [
+      {
+        "namespace": "AWS::SupportAuthZ"
       }
     ]
   },
