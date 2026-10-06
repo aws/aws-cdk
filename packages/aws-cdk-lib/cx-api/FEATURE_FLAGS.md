@@ -119,6 +119,8 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedgroupstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported groups that depend on the stack the group is in. | V2NEXT | fix |
+| [@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported users that depend on the stack the user is in. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -171,7 +173,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
@@ -2580,6 +2584,56 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName
+
+*Enable this feature to create default policy names for imported groups that depend on the stack the group is in.*
+
+Flag type: Backwards incompatible bugfix
+
+An imported group creates its default policy with a hardcoded construct id, so the policy name only depends on the
+path inside the stack. Importing the same group into two stacks under the same construct id therefore attaches two
+inline policies with the same name to the same physical group, and because an inline policy is identified by
+(principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
+
+When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
+the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
+`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName`.
+
+Enabling this on an app that already granted permissions to an imported group renames that policy, so CloudFormation
+replaces it: the new inline policy is created and the old one is deleted.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName
+
+*Enable this feature to create default policy names for imported users that depend on the stack the user is in.*
+
+Flag type: Backwards incompatible bugfix
+
+An imported user creates its default policy with a hardcoded construct id, so the policy name only depends on the
+path inside the stack. Importing the same user into two stacks under the same construct id therefore attaches two
+inline policies with the same name to the same physical user, and because an inline policy is identified by
+(principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
+
+When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
+the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
+`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName`.
+
+Enabling this on an app that already granted permissions to an imported user renames that policy, so CloudFormation
+replaces it: the new inline policy is created and the old one is deleted.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

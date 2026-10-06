@@ -1,6 +1,7 @@
-import { Annotations, Template } from '../../assertions';
+import { Annotations, Capture, Template } from '../../assertions';
 import { App, CfnResource, Stack } from '../../core';
-import { Group, ManagedPolicy, User } from '../lib';
+import { IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
+import { Group, ManagedPolicy, PolicyStatement, User } from '../lib';
 
 describe('IAM groups', () => {
   test('default group', () => {
@@ -143,4 +144,102 @@ test('throw warning if attached managed policies exceed 10 when calling `addMana
   }
 
   Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 12 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
+});
+
+describe('feature flag: @aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName', () => {
+  const groupArn = 'arn:aws:iam::123456789012:group/MyGroup';
+
+  function importGroupAndGrant(app: App, stackId: string, groupId = 'ImportedGroup'): Stack {
+    const stack = new Stack(app, stackId);
+    const group = Group.fromGroupArn(stack, groupId, groupArn);
+    group.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+    return stack;
+  }
+
+  test('the same group imported in different stacks has different default policy names', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack1 = importGroupAndGrant(app, 'GroupStack1');
+    const stack2 = importGroupAndGrant(app, 'GroupStack2');
+
+    const stack1PolicyNameCapture = new Capture();
+    Template.fromStack(stack1).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: stack1PolicyNameCapture,
+      Groups: ['MyGroup'],
+    });
+
+    const stack2PolicyNameCapture = new Capture();
+    Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: stack2PolicyNameCapture,
+      Groups: ['MyGroup'],
+    });
+
+    expect(stack1PolicyNameCapture.asString()).not.toBe(stack2PolicyNameCapture.asString());
+    expect(stack1PolicyNameCapture.asString()).toMatch(/DefaultPolicyGroupStack1ImportedGroup.*/);
+    expect(stack2PolicyNameCapture.asString()).toMatch(/DefaultPolicyGroupStack2ImportedGroup.*/);
+  });
+
+  test('the same group imported in different stacks has the same default policy name without the flag', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: false } });
+    const stack1 = importGroupAndGrant(app, 'GroupStack1');
+    const stack2 = importGroupAndGrant(app, 'GroupStack2');
+
+    const stack1PolicyNameCapture = new Capture();
+    Template.fromStack(stack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack1PolicyNameCapture });
+
+    const stack2PolicyNameCapture = new Capture();
+    Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack2PolicyNameCapture });
+
+    expect(stack1PolicyNameCapture.asString()).toBe(stack2PolicyNameCapture.asString());
+    expect(stack1PolicyNameCapture.asString()).toMatch(/ImportedGroupDefaultPolicy.{8}/);
+  });
+
+  test('a group imported by name also gets a stack-safe default policy name', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = new Stack(app, 'GroupStack');
+    const group = Group.fromGroupName(stack, 'ImportedGroup', 'MyGroup');
+    group.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+
+    const policyNameCapture = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { PolicyName: policyNameCapture });
+
+    expect(policyNameCapture.asString()).toMatch(/DefaultPolicyGroupStackImportedGroup.*/);
+  });
+
+  test('policy name is truncated to a maximum length of 128 characters when the generated name exceeds this limit', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = importGroupAndGrant(app, 'GroupStack', `ImportedGroup${'x'.repeat(150)}`);
+
+    const policyNameCapture = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { PolicyName: policyNameCapture });
+
+    const policyName = policyNameCapture.asString();
+    expect(policyName).toMatch(/^DefaultPolicy/);
+    expect(policyName.length).toBeLessThanOrEqual(128);
+    expect(policyName.length).toBeGreaterThan(120);
+  });
+
+  test('the statements are still added to the renamed default policy', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = importGroupAndGrant(app, 'GroupStack');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Resource: '*' }],
+        Version: '2012-10-17',
+      },
+      Groups: ['MyGroup'],
+    });
+  });
+
+  test('an owned group keeps its default policy name', () => {
+    const app = new App({ context: { [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = new Stack(app, 'GroupStack');
+    const group = new Group(stack, 'MyGroup');
+    group.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+
+    const policyNameCapture = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { PolicyName: policyNameCapture });
+
+    expect(policyNameCapture.asString()).toMatch(/MyGroupDefaultPolicy.{8}/);
+  });
 });

@@ -1,0 +1,101 @@
+{
+ "Resources": {
+  "UserPolicyintegiamimportedprincipal2User4C90841A34396931": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:*:*:secondQueue"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Policyintegiamimportedprincipal2User4C90841A",
+    "Users": [
+     {
+      "Fn::ImportValue": "integ-iam-imported-principal-stack:ExportsOutputRefTestUser6A619381D76C3DED"
+     }
+    ]
+   }
+  },
+  "GroupDefaultPolicyintegiamimportedprincipal2Group4A5C2A884385A57E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "Groups": [
+     {
+      "Fn::ImportValue": "integ-iam-imported-principal-stack:ExportsOutputRefTestGroupAF88660E90A943DC"
+     }
+    ],
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:*:*:secondQueue"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DefaultPolicyintegiamimportedprincipal2Group4A5C2A88"
+   }
+  },
+  "UserxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPolicyintegiamimportedprincipal2Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx35FA719C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:*:*:secondQueue"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Policyintegiamimportedprincipal2Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx84AD2E7D",
+    "Users": [
+     {
+      "Fn::ImportValue": "integ-iam-imported-principal-stack:ExportsOutputRefTestUser6A619381D76C3DED"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

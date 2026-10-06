@@ -1,5 +1,6 @@
-import { Template } from '../../assertions';
+import { Capture, Template } from '../../assertions';
 import { App, CfnResource, SecretValue, Stack, Token } from '../../core';
+import { IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
@@ -353,5 +354,79 @@ test('cross-env user ARNs include path', () => {
         ],
       ],
     },
+  });
+});
+
+describe('feature flag: @aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName', () => {
+  const userArn = 'arn:aws:iam::123456789012:user/MyUser';
+
+  function importUserAndGrant(app: App, stackId: string, userId = 'ImportedUser'): Stack {
+    const stack = new Stack(app, stackId);
+    const user = User.fromUserArn(stack, userId, userArn);
+    user.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+    return stack;
+  }
+
+  test('the same user imported in different stacks has different default policy names', () => {
+    const app = new App({ context: { [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack1 = importUserAndGrant(app, 'UserStack1');
+    const stack2 = importUserAndGrant(app, 'UserStack2');
+
+    const stack1PolicyNameCapture = new Capture();
+    Template.fromStack(stack1).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: stack1PolicyNameCapture,
+      Users: ['MyUser'],
+    });
+
+    const stack2PolicyNameCapture = new Capture();
+    Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: stack2PolicyNameCapture,
+      Users: ['MyUser'],
+    });
+
+    expect(stack1PolicyNameCapture.asString()).not.toBe(stack2PolicyNameCapture.asString());
+    expect(stack1PolicyNameCapture.asString()).toMatch(/PolicyUserStack1ImportedUser.*/);
+    expect(stack2PolicyNameCapture.asString()).toMatch(/PolicyUserStack2ImportedUser.*/);
+  });
+
+  test('the same user imported in different stacks has the same default policy name without the flag', () => {
+    const app = new App({ context: { [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: false } });
+    const stack1 = importUserAndGrant(app, 'UserStack1');
+    const stack2 = importUserAndGrant(app, 'UserStack2');
+
+    const stack1PolicyNameCapture = new Capture();
+    Template.fromStack(stack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack1PolicyNameCapture });
+
+    const stack2PolicyNameCapture = new Capture();
+    Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stack2PolicyNameCapture });
+
+    expect(stack1PolicyNameCapture.asString()).toBe(stack2PolicyNameCapture.asString());
+    expect(stack1PolicyNameCapture.asString()).toMatch(/ImportedUserPolicy.{8}/);
+  });
+
+  test('policy name is truncated to a maximum length of 128 characters when the generated name exceeds this limit', () => {
+    const app = new App({ context: { [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = importUserAndGrant(app, 'UserStack', `ImportedUser${'x'.repeat(150)}`);
+
+    const policyNameCapture = new Capture();
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { PolicyName: policyNameCapture });
+
+    const policyName = policyNameCapture.asString();
+    expect(policyName).toMatch(/^Policy/);
+    expect(policyName.length).toBeLessThanOrEqual(128);
+    expect(policyName.length).toBeGreaterThan(120);
+  });
+
+  test('the statements are still added to the renamed default policy', () => {
+    const app = new App({ context: { [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+    const stack = importUserAndGrant(app, 'UserStack');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Resource: '*' }],
+        Version: '2012-10-17',
+      },
+      Users: ['MyUser'],
+    });
   });
 });

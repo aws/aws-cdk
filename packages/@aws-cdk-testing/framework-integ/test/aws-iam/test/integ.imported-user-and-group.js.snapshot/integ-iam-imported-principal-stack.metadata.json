@@ -1,0 +1,50 @@
+{
+  "/integ-iam-imported-principal-stack/TestUser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/TestGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/TestUser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestUser6A619381"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/TestGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGroupAF88660E"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/Exports/Output{\"Ref\":\"TestUser6A619381\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTestUser6A619381D76C3DED"
+    }
+  ],
+  "/integ-iam-imported-principal-stack/Exports/Output{\"Ref\":\"TestGroupAF88660E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTestGroupAF88660E90A943DC"
+    }
+  ]
+}
