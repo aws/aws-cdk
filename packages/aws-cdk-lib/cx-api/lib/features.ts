@@ -159,6 +159,7 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const BEDROCKAGENTCORE_ONLINE_EVALUATION_DEFAULT_EXECUTION_STATUS_ENABLED = '@aws-cdk/aws-bedrockagentcore:onlineEvaluationDefaultExecutionStatusEnabled';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1954,6 +1955,29 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BEDROCKAGENTCORE_ONLINE_EVALUATION_DEFAULT_EXECUTION_STATUS_ENABLED]: {
+    type: FlagType.BugFix,
+    summary: 'Emit the documented default ExecutionStatus of ENABLED when OnlineEvaluationConfig omits executionStatus',
+    detailsMd: `
+      The \`executionStatus\` property of \`OnlineEvaluationConfig\` documents a default of
+      \`ExecutionStatus.ENABLED\`, but without this flag the construct emits no \`ExecutionStatus\`
+      at all when the property is omitted. The service then applies its own default and creates
+      the configuration disabled, so an evaluation set up with default properties silently never
+      processes a trace.
+
+      When this flag is enabled, omitting \`executionStatus\` emits \`ExecutionStatus: ENABLED\`,
+      matching the documented default.
+
+      Enabling this flips existing configurations that omitted the property from disabled to
+      enabled on the next deployment, and evaluations that begin running incur evaluator model
+      cost.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Pass `executionStatus: ExecutionStatus.DISABLED` explicitly to keep a configuration disabled, or leave this flag unset to keep omitting the property.',
   },
 };
 
