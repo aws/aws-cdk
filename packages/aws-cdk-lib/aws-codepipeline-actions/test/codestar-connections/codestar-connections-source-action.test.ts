@@ -145,6 +145,69 @@ describe('CodeStar Connections source Action', () => {
     });
   });
 
+  test('codeBuildCloneOutput=true stamps both the connection ARN and the full repository id onto the output metadata', () => {
+    const stack = new Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+      actionName: 'BitBucket',
+      owner: 'aws',
+      repo: 'aws-cdk',
+      output: sourceOutput,
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+      codeBuildCloneOutput: true,
+    });
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [sourceAction] },
+        {
+          stageName: 'Build',
+          actions: [new cpactions.CodeBuildAction({
+            actionName: 'CodeBuild',
+            project: new codebuild.PipelineProject(stack, 'MyProject'),
+            input: sourceOutput,
+          })],
+        },
+      ],
+    });
+    Template.fromStack(stack);
+
+    expect(sourceOutput.getMetadata(cpactions.CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY))
+      .toEqual('arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh');
+    expect(sourceOutput.getMetadata(cpactions.CodeStarConnectionsSourceAction._FULL_REPOSITORY_ID_PROPERTY))
+      .toEqual('aws/aws-cdk');
+  });
+
+  test('codeBuildCloneOutput absent does not stamp the connection ARN or the full repository id onto the output metadata', () => {
+    const stack = new Stack();
+    const sourceOutput = new codepipeline.Artifact();
+    const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+      actionName: 'BitBucket',
+      owner: 'aws',
+      repo: 'aws-cdk',
+      output: sourceOutput,
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+    });
+
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        { stageName: 'Source', actions: [sourceAction] },
+        {
+          stageName: 'Build',
+          actions: [new cpactions.CodeBuildAction({
+            actionName: 'CodeBuild',
+            project: new codebuild.PipelineProject(stack, 'MyProject'),
+            input: sourceOutput,
+          })],
+        },
+      ],
+    });
+    Template.fromStack(stack);
+
+    expect(sourceOutput.getMetadata(cpactions.CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY)).toBeUndefined();
+    expect(sourceOutput.getMetadata(cpactions.CodeStarConnectionsSourceAction._FULL_REPOSITORY_ID_PROPERTY)).toBeUndefined();
+  });
+
   test('exposes variables', () => {
     const stack = new Stack();
     createBitBucketAndCodeBuildPipeline(stack);

@@ -104,4 +104,23 @@ describe('Rule', () => {
       ],
     });
   });
+
+  test('passes the free-form configuration through to the rendered rule verbatim', () => {
+    // A CodeBuild rule sets provider-specific keys (e.g. ServiceRoleArnOverride) via the
+    // free-form `configuration` map; the rule renders it unchanged.
+    const rule = new Rule({
+      name: 'BuildRule',
+      provider: 'CodeBuild',
+      version: '1',
+      configuration: {
+        ProjectName: 'myProject',
+        ServiceRoleArnOverride: 'arn:aws:iam::123456789012:role/MyCodeBuildRole',
+      },
+    });
+
+    expect((rule as any)._render().configuration).toEqual({
+      ProjectName: 'myProject',
+      ServiceRoleArnOverride: 'arn:aws:iam::123456789012:role/MyCodeBuildRole',
+    });
+  });
 });
