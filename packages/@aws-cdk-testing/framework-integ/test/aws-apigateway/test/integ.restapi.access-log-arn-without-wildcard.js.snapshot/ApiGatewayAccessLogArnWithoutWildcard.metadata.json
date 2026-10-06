@@ -1,0 +1,169 @@
+{
+  "/ApiGatewayAccessLogArnWithoutWildcard/AccessLogs": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cloudWatchRole": true,
+        "deployOptions": {
+          "accessLogDestination": "*",
+          "accessLogFormat": "*"
+        }
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/AccessLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccessLogs8B620ECA"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiF70053CD"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/CloudWatchRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "applyRemovalPolicy": [
+          "retain"
+        ]
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Account": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiAccountA18C9B29"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*",
+        "accessLogDestination": "*",
+        "accessLogFormat": "*"
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiEndpoint4F160690"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Exports/Output{\"Ref\":\"AccessLogs8B620ECA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAccessLogs8B620ECA39F1F795"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Exports/Output{\"Ref\":\"ApiF70053CD\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefApiF70053CD5653BA4D"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Exports/Output{\"Ref\":\"ApiDeploymentStageprod3EB9684E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefApiDeploymentStageprod3EB9684E9290AA51"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/CloudWatchRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiCloudWatchRole73EC6FC4"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiDeploymentB17BE62Df672ad8455f9678e4a3db5854bdb8d73"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiDeploymentStageprod3EB9684E"
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/ApiGatewayAccessLogArnWithoutWildcard/Api/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiGET9257B917"
+    }
+  ]
+}

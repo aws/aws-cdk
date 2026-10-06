@@ -119,6 +119,7 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -133,6 +134,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
@@ -2580,6 +2582,32 @@ is added, updated or removed, so expect a one-time deployment of those services.
 | 2.269.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard
+
+*Render the API Gateway access log destination ARN without the trailing `:*`*
+
+Flag type: Backwards incompatible bugfix
+
+API Gateway stores the access log destination ARN without the trailing `:*` that
+`LogGroup.logGroupArn` carries. When the CDK renders the log group `Arn` attribute,
+CloudFormation drift detection reports the stage as `MODIFIED` on every run, even
+though the access logging configuration has not changed.
+
+When this flag is enabled, `LogGroupLogDestination` rebuilds the ARN from the log
+group name, so the synthesized template matches the value stored by the service and
+drift detection reports the stage as `IN_SYNC`.
+
+When disabled, the destination ARN keeps using the log group `Arn` attribute.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
 
 
 <!-- END details -->
