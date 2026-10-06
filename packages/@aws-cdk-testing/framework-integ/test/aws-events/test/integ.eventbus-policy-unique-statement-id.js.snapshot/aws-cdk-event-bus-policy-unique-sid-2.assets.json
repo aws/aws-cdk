@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "852a97be19821c0fcc7eafb4427936da5b4f0e00dbe4d6f307b01063efff63cf": {
+      "displayName": "aws-cdk-event-bus-policy-unique-sid-2 Template",
+      "source": {
+        "path": "aws-cdk-event-bus-policy-unique-sid-2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e0e0d4fb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "852a97be19821c0fcc7eafb4427936da5b4f0e00dbe4d6f307b01063efff63cf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
