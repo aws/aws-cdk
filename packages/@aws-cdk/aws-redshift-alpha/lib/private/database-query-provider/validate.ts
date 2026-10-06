@@ -1,4 +1,8 @@
-/** Unquoted identifiers fold to lower case, and `public` is a pseudo-role rather than a user. */
+/**
+ * Redshift folds only ASCII letters in identifiers to lower case, and `public` is a pseudo-role rather than a user.
+ *
+ * @see https://docs.aws.amazon.com/redshift/latest/dg/r_names.html
+ */
 export function isPublicGrantee(username: string): boolean {
   return username.replace(/[A-Z]/g, letter => letter.toLowerCase()) === 'public';
 }

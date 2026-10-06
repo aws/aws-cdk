@@ -100,7 +100,7 @@ function validateUsername(username: string, scope: IConstruct): void {
   if (isPublicGrantee(username)) {
     throw new cdk.ValidationError(
       lit`PublicUserNameNotAllowed`,
-      `user name cannot be PUBLIC: it names a pseudo-role rather than a user. Found ${JSON.stringify(username)}`,
+      `user name cannot be PUBLIC: it names a pseudo-role rather than a user; found ${JSON.stringify(username)}`,
       scope,
     );
   }

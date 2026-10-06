@@ -103,6 +103,7 @@ async function updatePrivileges(
     ));
     return tableAdded || actionsAdded;
   });
+  // Validate before the revoke below so a rejected PUBLIC narrowing runs no statements.
   if (tablesToGrant.length > 0) {
     validateUsername(username);
   }
