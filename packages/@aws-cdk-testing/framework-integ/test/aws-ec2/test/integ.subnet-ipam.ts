@@ -12,12 +12,10 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * * The subnet is created without a CidrBlock property; IPAM allocates its CIDR at deploy time
  * * The assertion checks that the allocated CIDR is the first /24 of the pool's provisioned range
  *
- * ### MANUAL CLEAN UP REQUIRED ###
- *
- * The IPAM and the pool are retained after the test run. An account can have only one IPAM
- * per Region, so delete it before running this test again in the same Region:
+ * An account can have only one IPAM per Region, so run this test in a Region without an IPAM.
+ * If the pool deletion times out because IPAM is slow to release the subnet's allocation,
+ * delete the IPAM with:
  *   aws ec2 delete-ipam --ipam-id <ipam-id> --cascade
- * Each run also leaves five retained Lambda log groups (/aws/lambda/aws-cdk-ec2-ipam-subnet-*).
  */
 
 const app = new cdk.App();
@@ -35,7 +33,6 @@ const ipam = new CfnIPAM(stack, 'IPAM', {
     value: stack.stackId,
   }],
 });
-ipam.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
 // A VPC with a concrete CIDR and no subnets of its own
 const vpc = new Vpc(stack, 'Vpc', {
@@ -109,7 +106,6 @@ const pool = new CfnIPAMPool(stack, 'Pool', {
     cidr: '10.0.0.0/16',
   }],
 });
-pool.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 pool.node.addDependency(vpcDiscovered);
 
 const subnet = new Subnet(stack, 'IpamSubnet', {
@@ -123,7 +119,6 @@ const subnet = new Subnet(stack, 'IpamSubnet', {
 
 const integ = new IntegTest(app, 'SubnetIpam', {
   testCases: [stack],
-  allowDestroy: ['EC2::IPAM'],
 });
 
 // The first allocation from a fresh pool is the lowest /24 of the provisioned range

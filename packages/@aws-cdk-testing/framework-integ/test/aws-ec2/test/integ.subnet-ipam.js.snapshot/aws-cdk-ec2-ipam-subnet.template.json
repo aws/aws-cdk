@@ -19,9 +19,7 @@
      }
     ],
     "Tier": "advanced"
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   }
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -929,9 +927,7 @@
    },
    "DependsOn": [
     "VpcDiscovered"
-   ],
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   ]
   },
   "IpamSubnet78671F8A": {
    "Type": "AWS::EC2::Subnet",

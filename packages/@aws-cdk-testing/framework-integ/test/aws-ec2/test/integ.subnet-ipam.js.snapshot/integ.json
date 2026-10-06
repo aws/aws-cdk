@@ -5,9 +5,6 @@
       "stacks": [
         "aws-cdk-ec2-ipam-subnet"
       ],
-      "allowDestroy": [
-        "EC2::IPAM"
-      ],
       "assertionStack": "SubnetIpam/DefaultTest/DeployAssert",
       "assertionStackName": "SubnetIpamDefaultTestDeployAssert4E5C46C4"
     }

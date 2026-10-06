@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/workplace/ozelali/worktrees/aws-cdk/pr-38810-deploy/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
         "    at get availabilityZones (/workplace/ozelali/worktrees/aws-cdk/pr-38810-deploy/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/workplace/ozelali/worktrees/aws-cdk/pr-38810-deploy/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/workplace/ozelali/worktrees/aws-cdk/pr-38810-deploy/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.subnet-ipam.js:72:13)",
+        "    at <anonymous> (/workplace/ozelali/worktrees/aws-cdk/pr-38810-deploy/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.subnet-ipam.js:71:13)",
         "    ...node internals..."
       ]
     }
