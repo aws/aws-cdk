@@ -379,6 +379,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AC-3",
     "EC-3"
   ],
+  "AudioCodecType": [
+    "AAC",
+    "AC3",
+    "EAC3",
+    "EAC3_ATMOS",
+    "MP2",
+    "WAV",
+    "PASSTHROUGH"
+  ],
   "AuditCheck": [
     "AUTHENTICATED_COGNITO_ROLE_OVERLY_PERMISSIVE_CHECK",
     "CA_CERTIFICATE_EXPIRING_CHECK",
@@ -1781,7 +1790,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "3.0",
     "4.0",
     "5.0",
-    "5.1"
+    "5.1",
+    "6.0"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -1840,6 +1850,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "HTTP",
     "HTTPS",
     "TCP"
+  ],
+  "HostKernel": [
+    "LINUX_KERNEL_4",
+    "LINUX_KERNEL_6",
+    "LINUX_KERNEL_LATEST"
   ],
   "HttpAuthorizerType": [
     "AWS_IAM",
@@ -2559,8 +2574,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "JobType": [
     "glueetl",
     "gluestreaming",
-    "pythonshell",
-    "glueray"
+    "pythonshell"
   ],
   "JsonMutatorType": [
     0,
@@ -2683,6 +2697,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TRACE",
     "OFF"
   ],
+  "LibrarySet": [
+    "analytics",
+    "none"
+  ],
   "LicenseModel": [
     "license-included",
     "bring-your-own-license",
@@ -2719,6 +2737,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "LifecycleTransition": [
     "autoscaling:EC2_INSTANCE_LAUNCHING",
     "autoscaling:EC2_INSTANCE_TERMINATING"
+  ],
+  "LinkedChannelType": [
+    "PRIMARY_CHANNEL",
+    "FOLLOWING_CHANNEL"
   ],
   "LoadBalancerGeneration": [
     0,
@@ -2762,7 +2784,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "LogGroupClass": [
     "STANDARD",
-    "INFREQUENT_ACCESS"
+    "INFREQUENT_ACCESS",
+    "DELIVERY"
   ],
   "LogLevel": [
     "OFF",
@@ -3218,6 +3241,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "OutputFormat": [
     "cjs",
     "esm"
+  ],
+  "OutputLockingMode": [
+    "PIPELINE_LOCKING",
+    "EPOCH_LOCKING"
   ],
   "OutputType": [
     "JSON",
@@ -3826,6 +3853,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "V1",
     "V2"
   ],
+  "S3ObjectStorageMode": [
+    "COPY",
+    "REFERENCE"
+  ],
   "S3OutputFormat": [
     "plain",
     "json",
@@ -3913,6 +3944,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TLSv1.2_2021",
     "TLSv1.2_2025",
     "TLSv1.3_2025"
+  ],
+  "SegmentLengthUnits": [
+    "MILLISECONDS",
+    "SECONDS"
   ],
   "SegmentTemplateFormat": [
     "NUMBER_WITH_TIMELINE"
@@ -4663,6 +4698,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "H264",
     "H265",
     "AV1"
+  ],
+  "VideoCodecType": [
+    "H264",
+    "H265",
+    "AV1",
+    "FRAME_CAPTURE"
   ],
   "VideoDynamicRange": [
     "dv",
