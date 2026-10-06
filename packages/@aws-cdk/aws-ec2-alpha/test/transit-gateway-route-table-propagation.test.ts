@@ -1,15 +1,17 @@
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { Stack } from 'aws-cdk-lib/core';
 import * as vpc from '../lib';
+import { testStack } from './test-stack';
 import * as subnet from '../lib/subnet-v2';
 import { TransitGateway } from '../lib/transit-gateway';
 import type { ITransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayRouteTablePropagation } from '../lib/transit-gateway-route-table-propagation';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
 
+let stack: Stack;
+
 describe('TransitGatewayRouteTablePropagation', () => {
-  let stack: Stack;
   let myVpc: vpc.VpcV2;
   let transitGateway: TransitGateway;
   let routeTable: ITransitGatewayRouteTable;
@@ -17,7 +19,7 @@ describe('TransitGatewayRouteTablePropagation', () => {
   let mySubnet: vpc.SubnetV2;
 
   beforeEach(() => {
-    stack = new Stack();
+    stack = testStack();
     myVpc = new vpc.VpcV2(stack, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.ipv4('10.1.0.0/16', { cidrBlockName: 'TempSecondaryBlock' })],

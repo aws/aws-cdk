@@ -10,17 +10,7 @@ import type { SparkJobProps } from './spark-job';
 import { SparkJob } from './spark-job';
 
 /**
- * Flex Jobs class
- *
- * Flex jobs supports Python and Scala language.
- * The flexible execution class is appropriate for non-urgent jobs such as
- * pre-production jobs, testing, and one-time data loads.
- * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and G.1X or
- * G.2X worker types but will default to the latest version of Glue (currently Glue 3.0.)
- *
- * Similar to ETL, we’ll enable these features: —enable-metrics, —enable-spark-ui,
- * —enable-continuous-cloudwatch-log
- *
+ * Properties for a `ScalaSparkFlexEtlJob`.
  */
 export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
   /**
@@ -64,16 +54,17 @@ export interface ScalaSparkFlexEtlJobProps extends SparkJobProps {
 }
 
 /**
- * Spark ETL Jobs class
+ * Scala Spark Flex ETL Jobs class
  *
- * ETL jobs support pySpark and Scala languages, for which there are separate
- * but similar constructors. ETL jobs default to the G2 worker type, but you
- * can override this default with other supported worker type values
- * (G1, G2, G4 and G8). ETL jobs defaults to Glue version 4.0, which you can
- * override to 3.0. The following ETL features are enabled by default:
- * —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
- * You can find more details about version, worker type and other features
- * in Glue's public documentation.
+ * Flex jobs support Python and Scala languages.
+ * The flexible execution class is appropriate for non-urgent jobs such as
+ * pre-production jobs, testing, and one-time data loads.
+ * Flexible job runs are supported for jobs using AWS Glue version 3.0 or later and `G_1X` or
+ * `G_2X` worker types but will default to the latest version of Glue (currently Glue 5.0).
+ *
+ * Similar to ETL, we’ll enable these features: --enable-metrics,
+ * --enable-continuous-cloudwatch-log. The Spark UI (--enable-spark-ui) is off by
+ * default; enable it by setting the `sparkUI` prop.
  */
 @propertyInjectable
 export class ScalaSparkFlexEtlJob extends SparkJob {
@@ -90,10 +81,10 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
     addConstructMetadata(this, props);
 
     // Combine command line arguments into a single line item
-    const defaultArguments = {
-      ...this.executableArguments(props),
-      ...this.nonExecutableCommonArguments(props),
-    };
+    // Register the construct-managed arguments, then merge in the user's escape-hatch arguments.
+    this.executableArguments(props);
+    this.nonExecutableCommonArguments(props);
+    const defaultArguments = this.mergeDefaultArguments(props.defaultArguments);
 
     this.resource = new CfnJob(this, 'Resource', {
       name: props.jobName,
@@ -104,8 +95,8 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
         scriptLocation: this.codeS3ObjectUrl(props.script),
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V5_0,
-      workerType: props.workerType ? props.workerType : WorkerType.G_1X,
-      numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
+      workerType: props.workerConfiguration?.workerType ?? WorkerType.G_1X,
+      numberOfWorkers: props.workerConfiguration?.numberOfWorkers ?? 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
@@ -130,15 +121,11 @@ export class ScalaSparkFlexEtlJob extends SparkJob {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
-   *
-   * @returns An array of arguments for Glue to use on execution
+   * Register the executable arguments with best practices enabled by default.
    */
-  private executableArguments(props: ScalaSparkFlexEtlJobProps) {
-    const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.SCALA;
-    args['--class'] = props.className;
-    this.setupExtraCodeArguments(args, props);
-    return args;
+  private executableArguments(props: ScalaSparkFlexEtlJobProps): void {
+    this.setManagedArgument('--job-language', JobLanguage.SCALA);
+    this.setManagedArgument('--class', props.className);
+    this.setupExtraCodeArguments(props);
   }
 }

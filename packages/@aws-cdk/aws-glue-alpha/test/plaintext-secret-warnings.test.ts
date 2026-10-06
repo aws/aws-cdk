@@ -96,7 +96,7 @@ describe('Job defaultArguments plaintext secret warnings', () => {
       role: newRole(stack),
       script: glue.Code.fromAsset(__filename),
       defaultArguments: {
-        '--extra-files': 's3://bucket/file',
+        '--enable-glue-datacatalog': '',
       },
     });
 

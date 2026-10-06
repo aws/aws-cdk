@@ -133,7 +133,8 @@ export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnecta
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
   /**
-   * Grants `Invoke`, `Start`, and `Update` actions on the Browser
+   * Grants the actions needed to start a browser session, connect to its
+   * automation stream and stop it again
    */
   grantUse(grantee: iam.IGrantable): iam.Grant;
 
@@ -298,13 +299,18 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   }
 
   /**
-   * Grant invoke permissions on this browser to an IAM principal.
+   * Grant permissions to use this browser to an IAM principal.
+   *
+   * This includes `ConnectBrowserAutomationStream`, which is required to connect
+   * to the automation stream of a session over the Chrome DevTools Protocol.
+   * Without it, `StartBrowserSession` succeeds but the subsequent connection to
+   * the returned stream endpoint is rejected.
    *
    * [disable-awslint:no-grants]
    *
-   * @param grantee - The IAM principal to grant invoke permissions to
+   * @param grantee - The IAM principal to grant use permissions to
    * @default - Default grant configuration:
-   * - actions: ['bedrock-agentcore:StartBrowserSession', 'bedrock-agentcore:UpdateBrowserStream', 'bedrock-agentcore:StopBrowserSession']
+   * - actions: ['bedrock-agentcore:StartBrowserSession', 'bedrock-agentcore:UpdateBrowserStream', 'bedrock-agentcore:ConnectBrowserAutomationStream', 'bedrock-agentcore:StopBrowserSession']
    * - resourceArns: [this.browserArn]
    * @returns An IAM Grant object representing the granted permissions
    */
@@ -819,13 +825,28 @@ export class BrowserCustom extends BrowserCustomBase {
       if (!Token.isUnresolved(this.recordingConfig.s3Location.bucketName)) {
         Stack.of(this).resolve(this.recordingConfig.s3Location.bucketName);
       }
+      const s3Location = this.recordingConfig.s3Location;
       const bucket = s3.Bucket.fromBucketName(
         this,
         `${this.browserCustomName}RecordingBucket`,
-        this.recordingConfig.s3Location.bucketName,
+        s3Location.bucketName,
       );
+      // Normalize a concrete prefix to end with '/' so the grant is scoped to the
+      // recording "folder" (bucket/prefix/*). A tokenized prefix cannot be inspected
+      // at synth, so it is used verbatim (bucket/prefix*).
+      const objectKey = s3Location.objectKey;
+      const prefix = !Token.isUnresolved(objectKey) && !objectKey.endsWith('/')
+        ? `${objectKey}/`
+        : objectKey;
+      // Grant only the write actions the recorder needs, scoped to the recording
+      // prefix objects (bucket/prefix/*), not the whole bucket. See:
+      // https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-resource-session-management.html
+      const grant = iam.Grant.addToPrincipal({
+        grantee: this.executionRole,
+        actions: perms.BROWSER_RECORDING_S3_PERMS,
+        resourceArns: [bucket.arnForObjects(`${prefix}*`)],
+      });
       // Ensure the policy is applied before the browser resource is created
-      const grant = bucket.grantReadWrite(this.executionRole);
       grant.applyBefore(this.__resource);
     }
   }

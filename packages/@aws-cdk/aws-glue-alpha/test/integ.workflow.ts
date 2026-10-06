@@ -21,30 +21,25 @@ const OutboundJob = new glue.PySparkEtlJob(stack, 'OutboundJob', {
   script: script,
   role,
   glueVersion: glue.GlueVersion.V4_0,
-  workerType: glue.WorkerType.G_2X,
-  numberOfWorkers: 2,
+  workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
 });
 
 const InboundJob = new glue.PySparkEtlJob(stack, 'InboundJob', {
   script: script,
   role,
   glueVersion: glue.GlueVersion.V4_0,
-  workerType: glue.WorkerType.G_2X,
-  numberOfWorkers: 2,
+  workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
 });
 
 workflow.addOnDemandTrigger('OnDemandTrigger', {
-  actions: [{ job: InboundJob }],
+  actions: [glue.Action.job(InboundJob)],
 });
 
 workflow.addConditionalTrigger('ConditionalTrigger', {
-  actions: [{ job: OutboundJob }],
+  actions: [glue.Action.job(OutboundJob)],
   predicate: {
     conditions: [
-      {
-        job: InboundJob,
-        state: glue.JobState.SUCCEEDED,
-      },
+      glue.Condition.job(InboundJob, glue.JobState.SUCCEEDED),
     ],
   },
 });
