@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.eventsv2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.EventsV2"
+    },
+    "python": {
+      "module": "aws_cdk.aws_eventsv2"
+    }
+  }
+}
