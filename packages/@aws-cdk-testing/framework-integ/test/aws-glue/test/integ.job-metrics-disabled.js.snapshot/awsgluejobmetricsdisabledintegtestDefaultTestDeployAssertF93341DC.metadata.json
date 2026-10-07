@@ -1,0 +1,52 @@
+{
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/aws-glue-job-metrics-disabled-integ-test/DefaultTest/DeployAssert/AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d"
+    }
+  ]
+}
