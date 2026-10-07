@@ -132,12 +132,14 @@ describe('knowledge base mixins', () => {
     });
   });
 
-  test('can be applied retrospectively to a VectorKnowledgeBase L2', () => {
+  test('can be applied retrospectively to a KnowledgeBase L2', () => {
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com') });
-    const kb = new bedrock.VectorKnowledgeBase(stack, 'L2', {
-      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-      vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+    const kb = new bedrock.KnowledgeBase(stack, 'L2', {
+      type: bedrock.KnowledgeBaseType.vector({
+        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+        vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+      }),
       role,
     });
 
@@ -233,11 +235,13 @@ describe('knowledge base mixin service role', () => {
       .toThrow(/role Default\/KbRole is used with withoutPolicyUpdates\(\)/);
   });
 
-  test('uses the role of a VectorKnowledgeBase when applied retrospectively, including an imported role', () => {
+  test('uses the role of a KnowledgeBase when applied retrospectively, including an imported role', () => {
     const stack = new cdk.Stack();
-    const kb = new bedrock.VectorKnowledgeBase(stack, 'L2', {
-      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-      vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+    const kb = new bedrock.KnowledgeBase(stack, 'L2', {
+      type: bedrock.KnowledgeBaseType.vector({
+        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+        vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+      }),
       role: iam.Role.fromRoleArn(stack, 'Imported', ROLE_ARN),
     });
 

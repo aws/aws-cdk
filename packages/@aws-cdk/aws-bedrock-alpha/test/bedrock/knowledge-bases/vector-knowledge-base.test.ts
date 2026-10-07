@@ -21,11 +21,20 @@ function defaultVectorStore(scope: cdk.Stack, id: string = 'Collection'): bedroc
   });
 }
 
-function newKnowledgeBase(stack: cdk.Stack, props: Partial<bedrock.VectorKnowledgeBaseProps> = {}): bedrock.VectorKnowledgeBase {
-  return new bedrock.VectorKnowledgeBase(stack, 'KB', {
-    embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-    vectorStore: defaultVectorStore(stack),
-    ...props,
+type VectorKnowledgeBaseTestProps = Partial<Omit<bedrock.KnowledgeBaseProps, 'type'> & bedrock.VectorKnowledgeBaseTypeProps>;
+
+function newKnowledgeBase(stack: cdk.Stack, props: VectorKnowledgeBaseTestProps = {}, id: string = 'KB'): bedrock.KnowledgeBase {
+  const { knowledgeBaseName, description, role, tags, ...vectorProps } = props;
+  return new bedrock.KnowledgeBase(stack, id, {
+    knowledgeBaseName,
+    description,
+    role,
+    tags,
+    type: bedrock.KnowledgeBaseType.vector({
+      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+      vectorStore: defaultVectorStore(stack),
+      ...vectorProps,
+    }),
   });
 }
 
@@ -39,7 +48,7 @@ const TITAN_V2_MODEL_ARN = {
   ]],
 };
 
-describe('VectorKnowledgeBase', () => {
+describe('KnowledgeBase of type vector', () => {
   describe('defaults', () => {
     test('creates a vector knowledge base with a generated name and no description', () => {
       const stack = new cdk.Stack();
@@ -80,10 +89,7 @@ describe('VectorKnowledgeBase', () => {
 
       const longIdStack = new cdk.Stack(undefined, 'MyStack');
       const longConstructId = 'VectorKnowledgeBase'.repeat(6);
-      new bedrock.VectorKnowledgeBase(longIdStack, longConstructId, {
-        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-        vectorStore: defaultVectorStore(longIdStack),
-      });
+      newKnowledgeBase(longIdStack, {}, longConstructId);
       const [longName] = Object.values(Template.fromStack(longIdStack).findResources('AWS::Bedrock::KnowledgeBase'))
         .map(r => r.Properties.Name as string);
       expect(longName.length).toBeLessThanOrEqual(100);
@@ -247,7 +253,7 @@ describe('VectorKnowledgeBase', () => {
   });
 
   describe('validation', () => {
-    test.each<[string, RegExp | undefined, (stack: cdk.Stack) => Partial<bedrock.VectorKnowledgeBaseProps>]>([
+    test.each<[string, RegExp | undefined, (stack: cdk.Stack) => VectorKnowledgeBaseTestProps]>([
       ['embeddingsModel that does not support knowledge bases', /embeddingsModel "anthropic.claude-3-5-sonnet-20240620-v1:0" cannot be used with knowledge bases/,
         () => ({ embeddingsModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0 })],
       ['vectorType not supported by the embeddingsModel', /vectorType "BINARY" is not supported by embeddingsModel "amazon.titan-embed-text-v1"; supported vector types are "FLOAT32"/,
@@ -279,12 +285,66 @@ describe('VectorKnowledgeBase', () => {
 
   describe('type guard', () => {
     test.each<[string, boolean, (stack: cdk.Stack) => unknown]>([
-      ['a VectorKnowledgeBase', true, (stack) => newKnowledgeBase(stack)],
-      ['an imported knowledge base', false, (stack) => bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(stack, 'Imported', 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123')],
+      ['a KnowledgeBase', true, (stack) => newKnowledgeBase(stack)],
+      ['an imported knowledge base', false, (stack) => bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'Imported', 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123')],
       ['null', false, () => null],
       ['a plain object', false, () => ({})],
-    ])('isVectorKnowledgeBase(%s) is %p', (_label, expected, value) => {
-      expect(bedrock.VectorKnowledgeBase.isVectorKnowledgeBase(value(new cdk.Stack()))).toBe(expected);
+    ])('isKnowledgeBase(%s) is %p', (_label, expected, value) => {
+      expect(bedrock.KnowledgeBase.isKnowledgeBase(value(new cdk.Stack()))).toBe(expected);
+    });
+  });
+
+  describe('type reuse', () => {
+    test('the same KnowledgeBaseType configures and grants each knowledge base it is used with', () => {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-multimodal-bucket');
+      const type = bedrock.KnowledgeBaseType.vector({
+        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+        vectorStore: defaultVectorStore(stack),
+        supplementalDataStorageBucket: bucket,
+      });
+
+      new bedrock.KnowledgeBase(stack, 'First', { type });
+      new bedrock.KnowledgeBase(stack, 'Second', { type });
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::Bedrock::KnowledgeBase', 2);
+      for (const [roleId, policyId] of [
+        ['FirstRole74D9C700', 'FirstRoleDefaultPolicy8AFA8D81'],
+        ['SecondRole287640BF', 'SecondRoleDefaultPolicyC0C21FC2'],
+      ]) {
+        template.hasResource('AWS::Bedrock::KnowledgeBase', {
+          Properties: {
+            RoleArn: { 'Fn::GetAtt': [roleId, 'Arn'] },
+            KnowledgeBaseConfiguration: {
+              Type: 'VECTOR',
+              VectorKnowledgeBaseConfiguration: {
+                EmbeddingModelArn: TITAN_V2_MODEL_ARN,
+                SupplementalDataStorageConfiguration: {
+                  SupplementalDataStorageLocations: [{
+                    SupplementalDataStorageLocationType: 'S3',
+                    S3Location: { URI: 's3://my-multimodal-bucket/' },
+                  }],
+                },
+              },
+            },
+            StorageConfiguration: {
+              Type: 'OPENSEARCH_SERVERLESS',
+              OpensearchServerlessConfiguration: { CollectionArn: COLLECTION_ARN },
+            },
+          },
+          DependsOn: Match.arrayWith([policyId]),
+        });
+        template.hasResourceProperties('AWS::IAM::Policy', {
+          Roles: [{ Ref: roleId }],
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({ Action: 'aoss:APIAccessAll', Resource: COLLECTION_ARN }),
+              Match.objectLike({ Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'] }),
+            ]),
+          },
+        });
+      }
     });
   });
 

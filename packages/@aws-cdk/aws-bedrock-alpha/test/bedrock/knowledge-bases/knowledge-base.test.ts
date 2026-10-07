@@ -6,10 +6,10 @@ import * as bedrock from '../../../bedrock';
 const KB_ARN = 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123';
 
 describe('imported knowledge base', () => {
-  describe('fromVectorKnowledgeBaseId', () => {
+  describe('fromKnowledgeBaseId', () => {
     test('formats the ARN in the stack environment and exposes the id', () => {
       const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-east-1' } });
-      const kb = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseId(stack, 'KB', 'KB123');
+      const kb = bedrock.KnowledgeBase.fromKnowledgeBaseId(stack, 'KB', 'KB123');
 
       expect(kb.knowledgeBaseId).toBe('KB123');
       expect(stack.resolve(kb.knowledgeBaseArn)).toEqual({
@@ -18,22 +18,21 @@ describe('imported knowledge base', () => {
     });
   });
 
-  describe('fromVectorKnowledgeBaseArn', () => {
-    test('exposes the ARN, id, type and environment from the ARN', () => {
+  describe('fromKnowledgeBaseArn', () => {
+    test('exposes the ARN, id and environment from the ARN', () => {
       const stack = new cdk.Stack();
-      const kb = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(stack, 'KB', KB_ARN);
+      const kb = bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'KB', KB_ARN);
 
       expect(kb.knowledgeBaseArn).toBe(KB_ARN);
       expect(kb.knowledgeBaseId).toBe('KB123');
       expect(kb.knowledgeBaseRef).toEqual({ knowledgeBaseId: 'KB123', knowledgeBaseArn: KB_ARN });
-      expect(kb.type).toBe(bedrock.KnowledgeBaseType.VECTOR);
       expect(kb.env.account).toBe('123456789012');
       expect(kb.env.region).toBe('us-east-1');
     });
 
     test('without a role: role is undefined, grantPrincipal is an UnknownPrincipal and addToRolePolicy emits a warning', () => {
       const stack = new cdk.Stack();
-      const kb = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(stack, 'KB', KB_ARN);
+      const kb = bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'KB', KB_ARN);
 
       expect(kb.role).toBeUndefined();
       expect(kb.grantPrincipal).toBeInstanceOf(iam.UnknownPrincipal);
@@ -45,11 +44,11 @@ describe('imported knowledge base', () => {
     });
   });
 
-  describe('fromVectorKnowledgeBaseAttributes', () => {
+  describe('fromKnowledgeBaseAttributes', () => {
     test('uses the provided role as role and grantPrincipal and addToRolePolicy adds to it', () => {
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com') });
-      const kb = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseAttributes(stack, 'KB', { knowledgeBaseArn: KB_ARN, role });
+      const kb = bedrock.KnowledgeBase.fromKnowledgeBaseAttributes(stack, 'KB', { knowledgeBaseArn: KB_ARN, role });
 
       expect(kb.role).toBe(role);
       expect(kb.grantPrincipal).toBe(role.grantPrincipal);
@@ -74,7 +73,7 @@ describe('imported knowledge base', () => {
   describe('grants', () => {
     test('grants.retrieve grants bedrock:Retrieve on the imported ARN', () => {
       const stack = new cdk.Stack();
-      const kb = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(stack, 'KB', KB_ARN);
+      const kb = bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'KB', KB_ARN);
       const role = new iam.Role(stack, 'Reader', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
 
       kb.grants.retrieve(role);

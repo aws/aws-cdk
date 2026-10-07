@@ -4,8 +4,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnPropsMixin, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
-import { KnowledgeBaseType } from '../knowledge-bases/knowledge-base';
 import { GrantableRoles } from '../knowledge-bases/private/grantable-roles';
+import { VECTOR_KNOWLEDGE_BASE_TYPE } from '../knowledge-bases/private/knowledge-base-helpers';
 import type { OpenSearchServerlessVectorStoreProps } from '../knowledge-bases/vector-store';
 import type { BedrockFoundationModel } from '../models';
 import { VectorType } from '../models';
@@ -19,9 +19,9 @@ function addVectorTypeValidation(construct: CfnKnowledgeBase, feature: string): 
       if (isResolvableObject(configuration) || Token.isUnresolved(configuration.type)) {
         return [];
       }
-      return configuration.type === KnowledgeBaseType.VECTOR
+      return configuration.type === VECTOR_KNOWLEDGE_BASE_TYPE
         ? []
-        : [`${feature} can only be configured on a knowledge base of type ${KnowledgeBaseType.VECTOR}, got ${JSON.stringify(configuration.type)}`];
+        : [`${feature} can only be configured on a knowledge base of type ${VECTOR_KNOWLEDGE_BASE_TYPE}, got ${JSON.stringify(configuration.type)}`];
     },
   });
 }

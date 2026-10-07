@@ -417,7 +417,7 @@
   "MixinKnowledgeBase": {
    "Type": "AWS::Bedrock::KnowledgeBase",
    "Properties": {
-    "Description": "Integration test knowledge base created with the L1 and the storage mixins",
+    "Description": "Integration test knowledge base created with the L1 and the knowledge base mixins",
     "KnowledgeBaseConfiguration": {
      "Type": "VECTOR",
      "VectorKnowledgeBaseConfiguration": {
@@ -439,7 +439,8 @@
       },
       "EmbeddingModelConfiguration": {
        "BedrockEmbeddingModelConfiguration": {
-        "Dimensions": 1024
+        "Dimensions": 1024,
+        "EmbeddingDataType": "FLOAT32"
        }
       },
       "SupplementalDataStorageConfiguration": {

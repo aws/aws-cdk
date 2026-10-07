@@ -91,6 +91,18 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseEmbeddingsModel"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
         "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseOpenSearchServerlessStorage"
       }
     },
@@ -200,6 +212,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "KnowledgeBaseB1C941BD"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseEmbeddingsModel"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:mixin",

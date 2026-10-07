@@ -19,16 +19,18 @@ function newCfnKnowledgeBase(scope: Construct, id: string): aws_bedrock.CfnKnowl
 }
 
 describe('KnowledgeBaseReflection', () => {
-  test('resolves the L1 of a VectorKnowledgeBase L2', () => {
+  test('resolves the L1 of a KnowledgeBase L2', () => {
     const stack = new cdk.Stack();
-    const kb = new bedrock.VectorKnowledgeBase(stack, 'KB', {
-      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-      vectorStore: bedrock.VectorStore.openSearchServerless({
-        collection: opensearchserverless.CfnCollection.fromCollectionArn(stack, 'Collection', 'arn:aws:aoss:us-east-1:123456789012:collection/abc123'),
-        vectorIndexName: 'my-index',
-        vectorField: 'vector',
-        textField: 'text',
-        metadataField: 'metadata',
+    const kb = new bedrock.KnowledgeBase(stack, 'KB', {
+      type: bedrock.KnowledgeBaseType.vector({
+        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+        vectorStore: bedrock.VectorStore.openSearchServerless({
+          collection: opensearchserverless.CfnCollection.fromCollectionArn(stack, 'Collection', 'arn:aws:aoss:us-east-1:123456789012:collection/abc123'),
+          vectorIndexName: 'my-index',
+          vectorField: 'vector',
+          textField: 'text',
+          metadataField: 'metadata',
+        }),
       }),
     });
 
@@ -59,7 +61,7 @@ describe('KnowledgeBaseReflection', () => {
 
   test('fails to resolve the L1 of an imported knowledge base', () => {
     const stack = new cdk.Stack();
-    const imported = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(stack, 'Imported', 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123');
+    const imported = bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'Imported', 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123');
 
     expect(() => bedrock.KnowledgeBaseReflection.of(imported).knowledgeBase).toThrow(/Unable to find underlying resource for Default\/Imported/);
   });

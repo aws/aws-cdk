@@ -2,7 +2,12 @@ import { ArnFormat, Stack, Token, ValidationError } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
-import type { CommonKnowledgeBaseProps } from '../knowledge-base';
+import type { KnowledgeBaseProps } from '../knowledge-base';
+
+/**
+ * The `KnowledgeBaseConfiguration.Type` value of a vector knowledge base.
+ */
+export const VECTOR_KNOWLEDGE_BASE_TYPE = 'VECTOR';
 
 /**
  * Build the ARN of a knowledge base in the scope's account and region.
@@ -41,10 +46,10 @@ export function createKnowledgeBaseServiceRole(scope: Construct): iam.Role {
 }
 
 /**
- * Validate the properties shared by all knowledge base types against the
- * constraints of `AWS::Bedrock::KnowledgeBase`.
+ * Validate the knowledge base name and description against the constraints
+ * of `AWS::Bedrock::KnowledgeBase`.
  */
-export function validateCommonKnowledgeBaseProps(scope: Construct, props: CommonKnowledgeBaseProps): void {
+export function validateKnowledgeBaseProps(scope: Construct, props: KnowledgeBaseProps): void {
   if (props.knowledgeBaseName !== undefined && !Token.isUnresolved(props.knowledgeBaseName)
     && !/^([0-9a-zA-Z][_-]?){1,100}$/.test(props.knowledgeBaseName)) {
     throw new ValidationError(

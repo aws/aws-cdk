@@ -1573,21 +1573,25 @@ vector store, and retrieves the most relevant chunks for a query.
 
 ### Create a Vector Knowledge Base
 
-A `VectorKnowledgeBase` needs an embeddings model and a vector store. The vector
-store must already exist: create the OpenSearch Serverless collection and its
-vector index, then reference them.
+Create a `KnowledgeBase` and choose its type with a `KnowledgeBaseType` factory
+method. A vector knowledge base, created with `KnowledgeBaseType.vector()`, needs
+an embeddings model and a vector store. The vector store must already exist:
+create the OpenSearch Serverless collection and its vector index, then reference
+them.
 
 ```ts fixture=default
 declare const collection: opensearchserverless.ICollectionRef;
 
-const knowledgeBase = new bedrock.VectorKnowledgeBase(this, 'KnowledgeBase', {
-  embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-  vectorStore: bedrock.VectorStore.openSearchServerless({
-    collection,
-    vectorIndexName: 'bedrock-knowledge-base-default-index',
-    vectorField: 'bedrock-knowledge-base-default-vector',
-    textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
-    metadataField: 'AMAZON_BEDROCK_METADATA',
+const knowledgeBase = new bedrock.KnowledgeBase(this, 'KnowledgeBase', {
+  type: bedrock.KnowledgeBaseType.vector({
+    embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+    vectorStore: bedrock.VectorStore.openSearchServerless({
+      collection,
+      vectorIndexName: 'bedrock-knowledge-base-default-index',
+      vectorField: 'bedrock-knowledge-base-default-vector',
+      textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+      metadataField: 'AMAZON_BEDROCK_METADATA',
+    }),
   }),
 });
 ```
@@ -1626,21 +1630,23 @@ declare const collection: opensearchserverless.ICollectionRef;
 declare const role: iam.Role;
 declare const multimodalBucket: s3.IBucket;
 
-new bedrock.VectorKnowledgeBase(this, 'KnowledgeBase', {
+new bedrock.KnowledgeBase(this, 'KnowledgeBase', {
   knowledgeBaseName: 'product-documentation',
   description: 'Product manuals and release notes',
-  embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
-  // Store binary vectors: less precise, but cheaper to store and search
-  vectorType: bedrock.VectorType.BINARY,
-  vectorStore: bedrock.VectorStore.openSearchServerless({
-    collection,
-    vectorIndexName: 'bedrock-knowledge-base-default-index',
-    vectorField: 'bedrock-knowledge-base-default-vector',
-    textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
-    metadataField: 'AMAZON_BEDROCK_METADATA',
+  type: bedrock.KnowledgeBaseType.vector({
+    embeddingsModel: bedrock.BedrockFoundationModel.COHERE_EMBED_MULTILINGUAL_V3,
+    // Store binary vectors: less precise, but cheaper to store and search
+    vectorType: bedrock.VectorType.BINARY,
+    vectorStore: bedrock.VectorStore.openSearchServerless({
+      collection,
+      vectorIndexName: 'bedrock-knowledge-base-default-index',
+      vectorField: 'bedrock-knowledge-base-default-vector',
+      textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+      metadataField: 'AMAZON_BEDROCK_METADATA',
+    }),
+    // Where images, audio and video extracted from multimodal documents are stored
+    supplementalDataStorageBucket: multimodalBucket,
   }),
-  // Where images, audio and video extracted from multimodal documents are stored
-  supplementalDataStorageBucket: multimodalBucket,
   // Bring your own service role; the model and vector store permissions are added to it
   role,
   tags: {
@@ -1649,16 +1655,24 @@ new bedrock.VectorKnowledgeBase(this, 'KnowledgeBase', {
 });
 ```
 
+`KnowledgeBase` properties:
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| `type` | Yes | The type of the knowledge base and its type-specific configuration; created with a `KnowledgeBaseType` factory method |
+| `knowledgeBaseName` | No | 1-100 letters, digits, hyphens and underscores; no consecutive hyphens or underscores. Defaults to a generated name |
+| `description` | No | 1-200 characters |
+| `role` | No | Service role assumed by Amazon Bedrock. Defaults to a new role |
+| `tags` | No | Tags applied to the knowledge base |
+
+`KnowledgeBaseType.vector()` properties:
+
 | Property | Required | Description |
 |----------|----------|-------------|
 | `embeddingsModel` | Yes | A `BedrockFoundationModel` with `supportsKnowledgeBase` set to true. Changing it replaces the knowledge base |
 | `vectorStore` | Yes | Where embeddings are stored; created with a `VectorStore` factory method. Changing it replaces the knowledge base |
 | `vectorType` | No | `VectorType.FLOATING_POINT` or `VectorType.BINARY`; the embeddings model must support it. Defaults to floating-point |
 | `supplementalDataStorageBucket` | No | S3 bucket in which multimedia content extracted from multimodal documents is stored; Amazon Bedrock manages the layout within the bucket, and the service role is granted access to it. Required for multimodal ingestion |
-| `knowledgeBaseName` | No | 1-100 letters, digits, hyphens and underscores; no consecutive hyphens or underscores. Defaults to a generated name |
-| `description` | No | 1-200 characters |
-| `role` | No | Service role assumed by Amazon Bedrock. Defaults to a new role |
-| `tags` | No | Tags applied to the knowledge base |
 
 ### Knowledge Base Permissions
 
@@ -1721,13 +1735,13 @@ to it.
 ```ts fixture=default
 declare const role: iam.Role;
 
-const byArn = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseArn(this, 'ImportedByArn',
+const byArn = bedrock.KnowledgeBase.fromKnowledgeBaseArn(this, 'ImportedByArn',
   'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB12345678');
 
 // Assumed to be in the same account and region as this stack
-const byId = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseId(this, 'ImportedById', 'KB12345678');
+const byId = bedrock.KnowledgeBase.fromKnowledgeBaseId(this, 'ImportedById', 'KB12345678');
 
-const withRole = bedrock.VectorKnowledgeBase.fromVectorKnowledgeBaseAttributes(this, 'ImportedWithRole', {
+const withRole = bedrock.KnowledgeBase.fromKnowledgeBaseAttributes(this, 'ImportedWithRole', {
   knowledgeBaseArn: 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB12345678',
   role,
 });
@@ -1741,7 +1755,37 @@ in the `aws-cdk-lib` documentation.
 
 The mixins grant permissions to the knowledge base's role. On a `CfnKnowledgeBase`,
 `roleArn` must reference an `iam.Role` or `iam.CfnRole` defined in your app; for an
-imported role or one used with `withoutPolicyUpdates()`, use `VectorKnowledgeBase`.
+imported role or one used with `withoutPolicyUpdates()`, use `KnowledgeBase`.
+
+### KnowledgeBaseEmbeddingsModel
+
+Configures the embeddings model of a vector knowledge base. This is the mixin
+that the `embeddingsModel` and `vectorType` properties of
+`KnowledgeBaseType.vector()` apply for you; use it directly when you build a
+knowledge base from the L1 construct.
+
+```ts fixture=default
+declare const role: iam.Role;
+
+new aws_bedrock_cfn.CfnKnowledgeBase(this, 'KnowledgeBase', {
+  name: 'product-documentation',
+  roleArn: role.roleArn,
+  knowledgeBaseConfiguration: { type: 'VECTOR' },
+}).with(new bedrock.mixins.KnowledgeBaseEmbeddingsModel({
+  embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+}));
+```
+
+Applying the mixin:
+
+- sets `EmbeddingModelArn` and `EmbeddingDataType` (defaults to `FLOAT32`) on the
+  knowledge base's `VectorKnowledgeBaseConfiguration`, and `Dimensions` for models
+  with a configurable dimension. It merges with the existing configuration, and
+  fails at synthesis if the knowledge base is not of type `VECTOR`.
+- throws if the model does not support knowledge bases or the vector type.
+- grants the role referenced by the knowledge base's `roleArn`
+  `bedrock:InvokeModel*` and `bedrock:GetFoundationModel` on the model, and makes
+  the knowledge base depend on that policy.
 
 ### KnowledgeBaseOpenSearchServerlessStorage
 
@@ -1788,7 +1832,7 @@ It does not create the index or the collection's data access policy.
 Configures the Amazon S3 bucket in which a vector knowledge base stores the
 images, audio and video segments it extracts from multimodal documents. This is
 the mixin that the `supplementalDataStorageBucket` property of
-`VectorKnowledgeBase` applies for you; use it directly when you build a
+`KnowledgeBaseType.vector()` applies for you; use it directly when you build a
 knowledge base from the L1 construct.
 
 ```ts fixture=default

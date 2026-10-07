@@ -1,6 +1,6 @@
 /*
- * Integration test for the Bedrock VectorKnowledgeBase construct and the
- * knowledge base mixins
+ * Integration test for the Bedrock KnowledgeBase construct with a vector type
+ * and the knowledge base mixins
  */
 
 /// !cdk-integ aws-cdk-bedrock-vector-knowledge-base
@@ -63,13 +63,15 @@ const vectorStore = bedrock.VectorStore.openSearchServerless({
   metadataField,
 });
 
-const knowledgeBase = new bedrock.VectorKnowledgeBase(stack, 'KnowledgeBase', {
+const knowledgeBase = new bedrock.KnowledgeBase(stack, 'KnowledgeBase', {
   knowledgeBaseName: 'cdk-integ-vector-kb',
   description: 'Integration test knowledge base created with the L2 construct',
-  embeddingsModel,
-  vectorType: bedrock.VectorType.FLOATING_POINT,
-  vectorStore,
-  supplementalDataStorageBucket: supplementalBucket,
+  type: bedrock.KnowledgeBaseType.vector({
+    embeddingsModel,
+    vectorType: bedrock.VectorType.FLOATING_POINT,
+    vectorStore,
+    supplementalDataStorageBucket: supplementalBucket,
+  }),
 });
 
 const mixinRole = new iam.Role(stack, 'MixinKnowledgeBaseRole', {
@@ -90,20 +92,15 @@ const mixinRole = new iam.Role(stack, 'MixinKnowledgeBaseRole', {
 
 const mixinKnowledgeBase = new bedrockCfn.CfnKnowledgeBase(stack, 'MixinKnowledgeBase', {
   name: 'cdk-integ-vector-kb-mixin',
-  description: 'Integration test knowledge base created with the L1 and the storage mixins',
+  description: 'Integration test knowledge base created with the L1 and the knowledge base mixins',
   roleArn: mixinRole.roleArn,
-  knowledgeBaseConfiguration: {
-    type: 'VECTOR',
-    vectorKnowledgeBaseConfiguration: {
-      embeddingModelArn: embeddingsModel.modelArn,
-      embeddingModelConfiguration: {
-        bedrockEmbeddingModelConfiguration: { dimensions: embeddingsModel.vectorDimensions },
-      },
-    },
-  },
+  knowledgeBaseConfiguration: { type: 'VECTOR' },
 });
-embeddingsModel.grantInvoke(mixinRole).applyBefore(mixinKnowledgeBase);
 mixinKnowledgeBase
+  .with(new bedrock.mixins.KnowledgeBaseEmbeddingsModel({
+    embeddingsModel,
+    vectorType: bedrock.VectorType.FLOATING_POINT,
+  }))
   .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage({
     collection,
     vectorIndexName: indexName,
