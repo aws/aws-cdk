@@ -7,6 +7,7 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { CommonKnowledgeBaseProps, IKnowledgeBase, KnowledgeBaseAttributes } from './knowledge-base';
 import { KnowledgeBaseBase, KnowledgeBaseType } from './knowledge-base';
+import { GrantableRoles } from './private/grantable-roles';
 import {
   createKnowledgeBaseServiceRole,
   knowledgeBaseArnFromId,
@@ -158,10 +159,12 @@ export class VectorKnowledgeBase extends KnowledgeBaseBase implements IVectorKno
       tags: props.tags,
     });
 
-    resource.with(new KnowledgeBaseEmbeddingsModel({ embeddingsModel: props.embeddingsModel, vectorType: props.vectorType, role }));
-    props.vectorStore._bind(resource, role);
+    GrantableRoles.bind(resource, role);
+
+    resource.with(new KnowledgeBaseEmbeddingsModel({ embeddingsModel: props.embeddingsModel, vectorType: props.vectorType }));
+    resource.with(props.vectorStore._mixin);
     if (props.supplementalDataStorageBucket !== undefined) {
-      resource.with(new KnowledgeBaseSupplementalDataStorage({ bucket: props.supplementalDataStorageBucket, role }));
+      resource.with(new KnowledgeBaseSupplementalDataStorage({ bucket: props.supplementalDataStorageBucket }));
     }
 
     this.knowledgeBaseArn = resource.attrKnowledgeBaseArn;

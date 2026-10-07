@@ -1,6 +1,5 @@
-import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import type * as iam from 'aws-cdk-lib/aws-iam';
 import type * as opensearchserverless from 'aws-cdk-lib/aws-opensearchserverless';
+import type { IMixin } from 'constructs';
 import { KnowledgeBaseOpenSearchServerlessStorage } from '../mixins/knowledge-base';
 
 /**
@@ -45,31 +44,22 @@ export interface OpenSearchServerlessVectorStoreProps {
  *
  * Use one of the static factory methods to reference an existing store.
  */
-export abstract class VectorStore {
+export class VectorStore {
   /**
    * An existing vector index in an Amazon OpenSearch Serverless collection.
    */
   public static openSearchServerless(props: OpenSearchServerlessVectorStoreProps): VectorStore {
-    return new OpenSearchServerlessVectorStore(props);
+    return new VectorStore(new KnowledgeBaseOpenSearchServerlessStorage(props));
   }
 
-  protected constructor() {}
-
   /**
-   * Configures the knowledge base to use this vector store and grants the
-   * service role the permissions it needs to access the store.
+   * The mixin that configures a knowledge base to use this vector store.
    *
    * @internal
    */
-  public abstract _bind(knowledgeBase: bedrock.CfnKnowledgeBase, role: iam.IRoleRef & iam.IGrantable): void;
-}
+  public readonly _mixin: IMixin;
 
-class OpenSearchServerlessVectorStore extends VectorStore {
-  constructor(private readonly props: OpenSearchServerlessVectorStoreProps) {
-    super();
-  }
-
-  public _bind(knowledgeBase: bedrock.CfnKnowledgeBase, role: iam.IRoleRef & iam.IGrantable): void {
-    knowledgeBase.with(new KnowledgeBaseOpenSearchServerlessStorage({ ...this.props, role }));
+  private constructor(mixin: IMixin) {
+    this._mixin = mixin;
   }
 }

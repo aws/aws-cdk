@@ -110,11 +110,9 @@ mixinKnowledgeBase
     vectorField,
     textField,
     metadataField,
-    role: mixinRole,
   }))
   .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({
     bucket: supplementalBucket,
-    role: mixinRole,
   }));
 
 // The CloudFormation execution role creates the index through the data plane; the

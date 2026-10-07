@@ -1739,6 +1739,10 @@ Mixins add a feature to an L1 or L2 construct with `.with()`. See the
 [mixins overview](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins)
 in the `aws-cdk-lib` documentation.
 
+The mixins grant permissions to the knowledge base's role. On a `CfnKnowledgeBase`,
+`roleArn` must reference an `iam.Role` or `iam.CfnRole` defined in your app; for an
+imported role or one used with `withoutPolicyUpdates()`, use `VectorKnowledgeBase`.
+
 ### KnowledgeBaseOpenSearchServerlessStorage
 
 Configures an `AWS::Bedrock::KnowledgeBase` to use an existing Amazon OpenSearch
@@ -1765,7 +1769,6 @@ new aws_bedrock_cfn.CfnKnowledgeBase(this, 'KnowledgeBase', {
   vectorField: 'bedrock-knowledge-base-default-vector',
   textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
   metadataField: 'AMAZON_BEDROCK_METADATA',
-  role,
 }));
 ```
 
@@ -1775,8 +1778,8 @@ Applying the mixin:
   collection, index name and field mapping. The mixin does not merge with an
   existing storage configuration: it throws if the knowledge base already has
   one, and fails at synthesis if the knowledge base is not of type `VECTOR`.
-- grants `aoss:APIAccessAll` on the collection to the service role and makes the
-  knowledge base depend on that policy.
+- grants `aoss:APIAccessAll` on the collection to the role referenced by the
+  knowledge base's `roleArn` and makes the knowledge base depend on that policy.
 
 It does not create the index or the collection's data access policy.
 
@@ -1791,11 +1794,9 @@ knowledge base from the L1 construct.
 ```ts fixture=default
 declare const knowledgeBase: aws_bedrock_cfn.CfnKnowledgeBase;
 declare const bucket: s3.IBucket;
-declare const role: iam.Role;
 
 knowledgeBase.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({
   bucket,
-  role,
 }));
 ```
 
@@ -1805,9 +1806,9 @@ Applying the mixin:
   `VectorKnowledgeBaseConfiguration`, merging with the existing configuration
   and replacing any supplemental data storage location already configured. It
   fails at synthesis if the knowledge base is not of type `VECTOR`.
-- grants the service role `s3:ListBucket` on the bucket and `s3:GetObject`,
-  `s3:PutObject` and `s3:DeleteObject` on its objects, and makes the knowledge
-  base depend on that policy.
+- grants the role referenced by the knowledge base's `roleArn` `s3:ListBucket`
+  on the bucket and `s3:GetObject`, `s3:PutObject` and `s3:DeleteObject` on its
+  objects, and makes the knowledge base depend on that policy.
 
 Multimodal ingestion also requires a data source configured with a multimodal
 parser; see [Choosing your multimodal processing approach](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multimodal-choose-approach.html).

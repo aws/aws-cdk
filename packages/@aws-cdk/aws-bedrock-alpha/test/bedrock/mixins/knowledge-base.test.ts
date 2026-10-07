@@ -19,10 +19,11 @@ class TestConstruct extends Construct {
 }
 
 /**
- * The knowledge base service role, imported by ARN
+ * The knowledge base service role, defined in the stack so that the mixins can find it from the role ARN
  */
-function importedRole(scope: Construct): iam.IRole {
-  return (scope.node.tryFindChild('KbRole') as iam.IRole | undefined) ?? iam.Role.fromRoleArn(scope, 'KbRole', ROLE_ARN);
+function serviceRole(scope: Construct): iam.Role {
+  return (scope.node.tryFindChild('KbRole') as iam.Role | undefined)
+    ?? new iam.Role(scope, 'KbRole', { assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com') });
 }
 
 function storageProps(
@@ -36,7 +37,6 @@ function storageProps(
     vectorField: 'vector',
     textField: 'text',
     metadataField: 'metadata',
-    role: importedRole(scope),
     ...overrides,
   };
 }
@@ -49,7 +49,7 @@ function supplementalProps(
   scope: Construct,
   overrides: Partial<bedrock.mixins.KnowledgeBaseSupplementalDataStorageProps> = {},
 ): bedrock.mixins.KnowledgeBaseSupplementalDataStorageProps {
-  return { bucket: overrides.bucket ?? bucket(scope), role: importedRole(scope), ...overrides };
+  return { bucket: overrides.bucket ?? bucket(scope), ...overrides };
 }
 
 function newCfnKnowledgeBase(
@@ -58,7 +58,7 @@ function newCfnKnowledgeBase(
 ): aws_bedrock.CfnKnowledgeBase {
   return new aws_bedrock.CfnKnowledgeBase(stack, 'KB', {
     name: 'my-kb',
-    roleArn: ROLE_ARN,
+    roleArn: serviceRole(stack).roleArn,
     knowledgeBaseConfiguration: {
       type: 'VECTOR',
       vectorKnowledgeBaseConfiguration: { embeddingModelArn: EMBEDDING_MODEL_ARN },
@@ -144,7 +144,7 @@ describe('knowledge base mixins', () => {
     expect(() => kb.with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack, {}, 'Other'))))
       .toThrow(/the knowledge base already has a storage configuration; only one vector store can be configured/);
 
-    kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({ bucket: bucket(stack), role }));
+    kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({ bucket: bucket(stack) }));
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::Bedrock::KnowledgeBase', {
@@ -168,8 +168,8 @@ describe('knowledge base mixins', () => {
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'ServiceRole', { assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com') });
     newCfnKnowledgeBase(stack, { roleArn: role.roleArn })
-      .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack, { role })))
-      .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack, { role })));
+      .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack)))
+      .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack)));
 
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::IAM::Policy', 1);
@@ -192,6 +192,68 @@ describe('knowledge base mixins', () => {
   });
 });
 
+describe('knowledge base mixin service role', () => {
+  test('grants to a bare CfnRole through an imported role that is reused across mixins', () => {
+    const stack = new cdk.Stack();
+    const cfnRole = new iam.CfnRole(stack, 'CfnServiceRole', {
+      assumeRolePolicyDocument: {
+        Statement: [{ Effect: 'Allow', Principal: { Service: 'bedrock.amazonaws.com' }, Action: 'sts:AssumeRole' }],
+      },
+    });
+    newCfnKnowledgeBase(stack, { roleArn: cfnRole.attrArn })
+      .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack)))
+      .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack)));
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Policy', 1);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [{ Ref: 'CfnServiceRole' }],
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({ Action: 'aoss:APIAccessAll' }),
+          Match.objectLike({ Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'] }),
+        ],
+      },
+    });
+  });
+
+  test('fails when the role ARN does not reference a role defined in the app', () => {
+    const stack = new cdk.Stack();
+    const kb = newCfnKnowledgeBase(stack, { roleArn: iam.Role.fromRoleArn(stack, 'Imported', ROLE_ARN).roleArn });
+
+    expect(() => kb.with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack))))
+      .toThrow(/roleArn must reference an iam.Role or iam.CfnRole defined in this app/);
+  });
+
+  test('fails when the role is used with withoutPolicyUpdates()', () => {
+    const stack = new cdk.Stack();
+    const kb = newCfnKnowledgeBase(stack, { roleArn: serviceRole(stack).withoutPolicyUpdates().roleArn });
+
+    expect(() => kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack))))
+      .toThrow(/role Default\/KbRole is used with withoutPolicyUpdates\(\)/);
+  });
+
+  test('uses the role of a VectorKnowledgeBase when applied retrospectively, including an imported role', () => {
+    const stack = new cdk.Stack();
+    const kb = new bedrock.VectorKnowledgeBase(stack, 'L2', {
+      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+      vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+      role: iam.Role.fromRoleArn(stack, 'Imported', ROLE_ARN),
+    });
+
+    kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({ bucket: bucket(stack) }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Roles: ['kb-role'],
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'] }),
+        ]),
+      },
+    });
+  });
+});
+
 describe('KnowledgeBaseOpenSearchServerlessStorage', () => {
   test('sets the storage configuration on the L1, grants aoss:APIAccessAll to the role and the knowledge base depends on that policy', () => {
     const stack = new cdk.Stack();
@@ -201,10 +263,10 @@ describe('KnowledgeBaseOpenSearchServerlessStorage', () => {
     template.hasResourceProperties('AWS::Bedrock::KnowledgeBase', {
       StorageConfiguration: EXPECTED_STORAGE_CONFIGURATION,
     });
-    template.resourceCountIs('AWS::IAM::Role', 0);
+    template.resourceCountIs('AWS::IAM::Role', 1);
     template.resourceCountIs('AWS::IAM::Policy', 1);
     template.hasResourceProperties('AWS::IAM::Policy', {
-      Roles: ['kb-role'],
+      Roles: [stack.resolve(serviceRole(stack).roleName)],
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -273,10 +335,10 @@ describe('KnowledgeBaseSupplementalDataStorage', () => {
         },
       },
     });
-    template.resourceCountIs('AWS::IAM::Role', 0);
+    template.resourceCountIs('AWS::IAM::Role', 1);
     template.resourceCountIs('AWS::IAM::Policy', 1);
     template.hasResourceProperties('AWS::IAM::Policy', {
-      Roles: ['kb-role'],
+      Roles: [stack.resolve(serviceRole(stack).roleName)],
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -287,7 +349,8 @@ describe('KnowledgeBaseSupplementalDataStorage', () => {
       },
     });
     const [policyLogicalId] = Object.keys(template.findResources('AWS::IAM::Policy'));
-    template.hasResource('AWS::Bedrock::KnowledgeBase', { DependsOn: [policyLogicalId] });
+    const [roleLogicalId] = Object.keys(template.findResources('AWS::IAM::Role'));
+    template.hasResource('AWS::Bedrock::KnowledgeBase', { DependsOn: [policyLogicalId, roleLogicalId] });
   });
 
   test.each<[string, (stack: cdk.Stack) => void, unknown]>([
