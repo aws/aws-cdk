@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -43,17 +43,22 @@ describe.each([
   });
 });
 
-test('passes blockPublicPolicy to the L1 resource policy', () => {
+test.each([true, false, undefined])('passes blockPublicPolicy=%s to the L1 resource policy', (blockPublicPolicy) => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app);
   const secret = new secretsmanager.Secret(stack, 'Secret');
 
-  new secretsmanager.ResourcePolicy(stack, 'Policy', {
+  const policy = new secretsmanager.ResourcePolicy(stack, 'Policy', {
     secret,
-    blockPublicPolicy: true,
+    blockPublicPolicy,
   });
+  policy.document.addStatements(new iam.PolicyStatement({
+    actions: ['secretsmanager:GetSecretValue'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'],
+  }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
-    BlockPublicPolicy: true,
+    BlockPublicPolicy: blockPublicPolicy ?? Match.absent(),
   });
 });

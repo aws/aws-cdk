@@ -23,9 +23,9 @@ test('default secret', () => {
   });
 });
 
-test('secret with blockPublicPolicy passes it to the resource policy', () => {
+test.each([true, false, undefined])('secret with blockPublicPolicy=%s passes it to the resource policy', (blockPublicPolicy) => {
   const secret = new secretsmanager.Secret(stack, 'Secret', {
-    blockPublicPolicy: true,
+    blockPublicPolicy,
   });
 
   secret.addToResourcePolicy(new iam.PolicyStatement({
@@ -35,7 +35,7 @@ test('secret with blockPublicPolicy passes it to the resource policy', () => {
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
-    BlockPublicPolicy: true,
+    BlockPublicPolicy: blockPublicPolicy ?? Match.absent(),
   });
 });
 
