@@ -363,6 +363,35 @@ describe('fs fingerprint', () => {
       // THEN — hash changes because we follow through to the real file
       expect(hash1).not.toEqual(hash2);
     });
+
+    test('links inside the tree hash the same wherever the tree sits on disk', () => {
+      // GIVEN — two copies of one tree, in temp directories with different names. Each holds
+      // an ordinary relative link, plus one written as an absolute path that only reaches back
+      // inside the tree through `alias`, a symlink living outside it.
+      function buildTree(prefix: string) {
+        const dir = tempdir(prefix);
+        const base = fs.realpathSync(dir.dir);
+        const root = path.join(base, 'root');
+        fs.mkdirSync(root);
+        fs.writeFileSync(path.join(root, 'file.txt'), 'content');
+        fs.symlinkSync('file.txt', path.join(root, 'relative-link'));
+        fs.symlinkSync(root, path.join(base, 'alias'));
+        fs.symlinkSync(path.join(base, 'alias', 'file.txt'), path.join(root, 'absolute-link'));
+        return dir;
+      }
+
+      using treeA = buildTree('fingerprint-here');
+      using treeB = buildTree('fingerprint-there');
+
+      // WHEN
+      const rootOf = (dir: string) => path.join(fs.realpathSync(dir), 'root');
+      const hashA = FileSystem.fingerprint(rootOf(treeA.dir), { follow: SymlinkFollowMode.EXTERNAL });
+      const hashB = FileSystem.fingerprint(rootOf(treeB.dir), { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN — identical trees, so identical hashes. Hashing an absolute link target verbatim
+      // would put the temp directory name into the hash and make these differ.
+      expect(hashA).toEqual(hashB);
+    });
   });
 
   describe('eol', () => {
