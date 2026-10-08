@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
 import type { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
-import type { HealthCheck } from '../../../aws-ecs';
+import type { HealthCheck, PidMode } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -13,6 +13,17 @@ import type { FargateServiceBaseProps } from '../base/fargate-service-base';
  * The properties for the ApplicationLoadBalancedFargateService service.
  */
 export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationLoadBalancedServiceBaseProps, FargateServiceBaseProps {
+  /**
+   * The process namespace to use for containers in the generated task definition.
+   *
+   * Only `PidMode.TASK` is supported, on Linux Fargate platform version 1.4.0 or later.
+   * Specify `runtimePlatform.operatingSystemFamily` when using this property.
+   * When providing `taskDefinition`, configure its PID mode directly instead.
+   *
+   * @default - Containers use separate process namespaces
+   */
+  readonly pidMode?: PidMode;
+
   /**
    * Determines whether the service will be assigned a public IP address.
    *
@@ -105,6 +116,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
+        pidMode: props.pidMode,
       });
 
       // Create log driver if logging is enabled

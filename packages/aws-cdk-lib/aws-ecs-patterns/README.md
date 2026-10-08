@@ -68,6 +68,26 @@ You can customize the health check configuration of the container via the [`heal
 
 Fargate services will use the `LATEST` platform version by default, but you can override by providing a value for the `platformVersion` property in the constructor.
 
+To share a process namespace between containers in an
+`ApplicationLoadBalancedFargateService`, set `pidMode` to `ecs.PidMode.TASK`.
+This supports process-monitoring sidecars and requires Linux Fargate platform
+version 1.4.0 or later, with an explicit operating system family:
+
+```ts
+declare const cluster: ecs.Cluster;
+new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'ProcessMonitoringService', {
+  cluster,
+  pidMode: ecs.PidMode.TASK,
+  runtimePlatform: { operatingSystemFamily: ecs.OperatingSystemFamily.LINUX },
+  platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+  taskImageOptions: { image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample') },
+});
+```
+
+If you supply your own `taskDefinition`, configure `pidMode` on that task
+definition instead. Omitting `pidMode` preserves separate container process
+namespaces.
+
 Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.
 
 **Security Considerations**: When using custom security groups on your load balancer, the `openListener` property controls whether the load balancer listener allows traffic from anywhere on the internet (0.0.0.0/0). By default, `openListener` is `true`, but it will automatically default to `false` when custom security groups are detected, preventing unintended internet exposure. You can always explicitly set `openListener: true` to override this behavior if needed.

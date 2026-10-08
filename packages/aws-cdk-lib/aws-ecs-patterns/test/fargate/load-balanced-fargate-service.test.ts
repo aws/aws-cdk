@@ -15,6 +15,51 @@ import * as ecsPatterns from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedFargateService', () => {
+  test.each([ecs.PidMode.TASK, undefined])('configures PID mode %s on the generated task definition', (pidMode) => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: { image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample') },
+      runtimePlatform: { operatingSystemFamily: ecs.OperatingSystemFamily.LINUX },
+      pidMode,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      PidMode: pidMode ?? Match.absent(),
+    });
+  });
+
+  test.each([
+    [ecs.PidMode.HOST, ecs.OperatingSystemFamily.LINUX, "'pidMode' can only be set to 'task'"],
+    [ecs.PidMode.TASK, ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_CORE, "'pidMode' is not supported for Windows containers"],
+    [ecs.PidMode.TASK, undefined, "Specifying 'pidMode' requires that operating system family also be provided"],
+  ] as const)('fails for PID mode %s and operating system %s', (pidMode, operatingSystemFamily, error) => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cpu: 1024,
+      memoryLimitMiB: 2048,
+      taskImageOptions: { image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample') },
+      runtimePlatform: operatingSystemFamily ? { operatingSystemFamily } : undefined,
+      pidMode,
+    })).toThrow(error);
+  });
+
+  test('preserves the PID mode of a supplied task definition', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'ExistingTask', {
+      pidMode: ecs.PidMode.TASK,
+      runtimePlatform: { operatingSystemFamily: ecs.OperatingSystemFamily.LINUX },
+    });
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ containerPort: 80 }],
+    });
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', { taskDefinition });
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::TaskDefinition', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', { PidMode: 'task' });
+  });
+
   test('setting healthCheckGracePeriod works', () => {
     // GIVEN
     const stack = new cdk.Stack();
