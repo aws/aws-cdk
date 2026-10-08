@@ -47,10 +47,10 @@ function renderMetadata(
   const rendered = { ...metadata };
 
   if (contextFromApi !== undefined) {
-    if (rendered[METADATA_CONTEXT_KEY] !== undefined) {
-      // A manually added Context block and API/mixin/template-produced Context
-      // collide at the same location. Fail loudly instead of silently
-      // overwriting or merging incompatible blocks.
+    // A directly written resource block is already merged into the
+    // API-produced block. At template level the two collide: fail loudly
+    // instead of silently overwriting or merging incompatible blocks.
+    if (level === 'template' && rendered[METADATA_CONTEXT_KEY] !== undefined) {
       throw new ValidationError(
         lit`MetadataContextCollision`,
         `both a manually added '${METADATA_CONTEXT_KEY}' metadata block and one produced by the ${level} MetadataContext API target this location; remove one to resolve the conflict`,

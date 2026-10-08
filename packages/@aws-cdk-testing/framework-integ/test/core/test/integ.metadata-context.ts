@@ -1,4 +1,4 @@
-import { App, ContextMutability, ContextTrustConfidence, ContextTrustSource, ResourceMetadataContext, Stack, TemplateMetadataContext } from 'aws-cdk-lib';
+import { App, CfnContextMutability, CfnContextTrustConfidence, CfnContextTrustSource, CfnResourceMetadataContext, CfnTemplateMetadataContext, ConstructSelector, Stack } from 'aws-cdk-lib';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -10,7 +10,7 @@ const stack = new Stack(app, 'MetadataContextTestStack', {
 });
 
 // Template-level cross-cutting context
-TemplateMetadataContext.of(stack).add({
+CfnTemplateMetadataContext.of(stack).add({
   arch: 'SQS buffer -> consumer; DLQ for poison msgs',
   must: ['all queues encrypted w/ SSE'],
   ref: [
@@ -24,21 +24,21 @@ const queue = new sqs.Queue(stack, 'OrderQueue', {
   // Explicit so the template states the encryption the template-level `must` promises.
   encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
-ResourceMetadataContext.of(queue).add({
+CfnResourceMetadataContext.of(queue).add({
   why: 'buffer order events async; std queue (throughput > ordering)',
   must: ['VisTimeout >= 6x consumer timeout, else dup on retry'],
-  mutable: ContextMutability.CHANGE_WITH_CONSTRAINTS,
-  mutability: { QueueName: ContextMutability.MUST_NEVER_CHANGE },
-  trust: { src: ContextTrustSource.AUTHORED, conf: ContextTrustConfidence.HIGH },
+  mutable: CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
+  mutability: { QueueName: CfnContextMutability.MUST_NEVER_CHANGE },
+  trust: { src: CfnContextTrustSource.AUTHORED, conf: CfnContextTrustConfidence.HIGH },
 });
 
 // Scope-level context propagated to every resource beneath the scope
 const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
-ResourceMetadataContext.of(subsystem).add({
+CfnResourceMetadataContext.of(subsystem).add({
   why: 'fan-out of alert events to oncall channels',
 }, {
-  propagate: true,
+  selector: ConstructSelector.all(),
 });
 
 new integ.IntegTest(app, 'MetadataContextInteg', {

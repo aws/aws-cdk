@@ -22,10 +22,6 @@
             "src": "authored",
             "conf": "high"
           }
-        },
-        "options": {
-          "propagate": false,
-          "inheritAncestorContext": true
         }
       }
     }
@@ -36,10 +32,6 @@
       "data": {
         "context": {
           "why": "fan-out of alert events to oncall channels"
-        },
-        "options": {
-          "propagate": true,
-          "inheritAncestorContext": true
         }
       }
     }
