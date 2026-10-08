@@ -664,7 +664,7 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_11_1 = new Runtime('syn-python-selenium-11.1', RuntimeFamily.PYTHON);
 
   /**
-   * `syn-python-selenium-11.12` includes the following:
+   * `syn-python-selenium-12.0` includes the following:
    * - Lambda runtime Python 3.12
    * - Selenium version 4.32.0
    * - Chromium version 150.0.7871.24
