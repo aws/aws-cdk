@@ -135,7 +135,7 @@
   },
   "devDependencies": {
     "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
-    "@aws-cdk/aws-service-spec": "0.1.216",
+    "@aws-cdk/aws-service-spec": "0.1.218",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/check-peer-dependencies": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
@@ -439,6 +439,7 @@
     "./aws-networkflowmonitor": "./aws-networkflowmonitor/index.js",
     "./aws-networkmanager": "./aws-networkmanager/index.js",
     "./aws-networkmonitor": "./aws-networkmonitor/index.js",
+    "./aws-networksecuritymanager": "./aws-networksecuritymanager/index.js",
     "./aws-nimblestudio": "./aws-nimblestudio/index.js",
     "./aws-notifications": "./aws-notifications/index.js",
     "./aws-notificationscontacts": "./aws-notificationscontacts/index.js",

@@ -1450,6 +1450,13 @@
       }
     ]
   },
+  "aws-networksecuritymanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkSecurityManager"
+      }
+    ]
+  },
   "aws-nimblestudio": {
     "scopes": [
       {
