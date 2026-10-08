@@ -1,0 +1,14 @@
+{
+  "/BedrockAgentCoreOnlineEvaluationEvaluatorTypes/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreOnlineEvaluationEvaluatorTypes/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

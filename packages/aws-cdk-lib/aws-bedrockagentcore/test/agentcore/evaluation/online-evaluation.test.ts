@@ -13,12 +13,13 @@
 
 import { Template, Match } from '../../../../assertions';
 import * as iam from '../../../../aws-iam';
-import { App, Duration, Lazy, Stack, Tags } from '../../../../core';
+import { App, Duration, Lazy, Stack, Tags, Validations } from '../../../../core';
 import {
   OnlineEvaluationConfig,
   EvaluatorSelector,
   DataSourceConfig,
   BuiltinEvaluator,
+  ThirdPartyEvaluator,
   ExecutionStatus,
   FilterOperator,
   FilterValue,
@@ -256,6 +257,99 @@ describe('OnlineEvaluationConfig', () => {
       expect(EvaluatorSelector.builtin(BuiltinEvaluator.RESPONSE_RELEVANCE).evaluatorId).toBe('Builtin.ResponseRelevance');
       expect(EvaluatorSelector.builtin(BuiltinEvaluator.CONCISENESS).evaluatorId).toBe('Builtin.Conciseness');
       expect(EvaluatorSelector.builtin(BuiltinEvaluator.INSTRUCTION_FOLLOWING).evaluatorId).toBe('Builtin.InstructionFollowing');
+      expect(EvaluatorSelector.builtin(BuiltinEvaluator.SKILL_SELECTION_ACCURACY).evaluatorId).toBe('Builtin.SkillSelectionAccuracy');
+      expect(EvaluatorSelector.builtin(BuiltinEvaluator.SKILL_INSTRUCTION_FOLLOWING).evaluatorId).toBe('Builtin.SkillInstructionFollowing');
+    });
+
+    test('synthesizes skill evaluators', () => {
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators: [
+          EvaluatorSelector.builtin(BuiltinEvaluator.SKILL_SELECTION_ACCURACY),
+          EvaluatorSelector.builtin(BuiltinEvaluator.SKILL_INSTRUCTION_FOLLOWING),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Evaluators: [
+          { EvaluatorId: 'Builtin.SkillSelectionAccuracy' },
+          { EvaluatorId: 'Builtin.SkillInstructionFollowing' },
+        ],
+      });
+    });
+
+    test('creates third-party evaluator reference', () => {
+      const evaluator = EvaluatorSelector.thirdParty(ThirdPartyEvaluator.DEEP_EVAL_BIAS);
+
+      expect(evaluator.evaluatorId).toBe('ThirdParty.DeepEval.Bias');
+      expect(evaluator.bind()).toEqual({ evaluatorId: 'ThirdParty.DeepEval.Bias' });
+    });
+
+    test.each([
+      [ThirdPartyEvaluator.DEEP_EVAL_BIAS, 'ThirdParty.DeepEval.Bias'],
+      [ThirdPartyEvaluator.DEEP_EVAL_TOXICITY, 'ThirdParty.DeepEval.Toxicity'],
+      [ThirdPartyEvaluator.DEEP_EVAL_PII_LEAKAGE, 'ThirdParty.DeepEval.PIILeakage'],
+      [ThirdPartyEvaluator.DEEP_EVAL_SUMMARIZATION, 'ThirdParty.DeepEval.Summarization'],
+      [ThirdPartyEvaluator.DEEP_EVAL_TASK_COMPLETION, 'ThirdParty.DeepEval.TaskCompletion'],
+      [ThirdPartyEvaluator.DEEP_EVAL_CONVERSATION_COMPLETENESS, 'ThirdParty.DeepEval.ConversationCompleteness'],
+      [ThirdPartyEvaluator.DEEP_EVAL_KNOWLEDGE_RETENTION, 'ThirdParty.DeepEval.KnowledgeRetention'],
+      [ThirdPartyEvaluator.DEEP_EVAL_TURN_RELEVANCY, 'ThirdParty.DeepEval.TurnRelevancy'],
+      [ThirdPartyEvaluator.DEEP_EVAL_GOAL_ACCURACY, 'ThirdParty.DeepEval.GoalAccuracy'],
+      [ThirdPartyEvaluator.DEEP_EVAL_TOOL_USE, 'ThirdParty.DeepEval.ToolUse'],
+      [ThirdPartyEvaluator.AUTO_EVAL_SECURITY, 'ThirdParty.AutoEval.Security'],
+      [ThirdPartyEvaluator.AUTO_EVAL_HUMOR, 'ThirdParty.AutoEval.Humor'],
+      [ThirdPartyEvaluator.AUTO_EVAL_POSSIBLE, 'ThirdParty.AutoEval.Possible'],
+    ])('third-party evaluator %# has id %s', (evaluator, expectedId) => {
+      expect(EvaluatorSelector.thirdParty(evaluator).evaluatorId).toBe(expectedId);
+    });
+
+    test('synthesizes third-party evaluators alongside built-in evaluators', () => {
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators: [
+          EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS),
+          EvaluatorSelector.thirdParty(ThirdPartyEvaluator.DEEP_EVAL_TASK_COMPLETION),
+          EvaluatorSelector.thirdParty(ThirdPartyEvaluator.AUTO_EVAL_SECURITY),
+          EvaluatorSelector.thirdParty(new ThirdPartyEvaluator('ThirdParty.DeepEval.NewMetric_v2-beta')),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Evaluators: [
+          { EvaluatorId: 'Builtin.Helpfulness' },
+          { EvaluatorId: 'ThirdParty.DeepEval.TaskCompletion' },
+          { EvaluatorId: 'ThirdParty.AutoEval.Security' },
+          { EvaluatorId: 'ThirdParty.DeepEval.NewMetric_v2-beta' },
+        ],
+      });
+    });
+
+    test.each([
+      'DeepEval.Bias',
+      'Builtin.Helpfulness',
+      'ThirdParty.DeepEval',
+      'ThirdParty.DeepEval.',
+      'ThirdParty..Bias',
+      'ThirdParty.DeepEval.Bias.Extra',
+      'ThirdParty.Deep Eval.Bias',
+      'thirdparty.DeepEval.Bias',
+      ' ThirdParty.DeepEval.Bias',
+      '',
+    ])('fails for malformed third-party evaluator id %j', (id) => {
+      expect(() => new ThirdPartyEvaluator(id)).toThrow(/Third-party evaluator ID .* does not match required pattern/);
+    });
+
+    test('accepts token third-party evaluator id without validation', () => {
+      const id = Lazy.string({ produce: () => 'ThirdParty.DeepEval.Bias' });
+      expect(EvaluatorSelector.thirdParty(new ThirdPartyEvaluator(id)).evaluatorId).toBe(id);
     });
   });
 
@@ -378,13 +472,35 @@ describe('OnlineEvaluationConfig', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
           onlineEvaluationConfigName: 'test_evaluation',
-          evaluators: Array(11).fill(EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)),
+          evaluators: Array(26).fill(EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)),
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
             serviceNames: ['service'],
           }),
         });
-      }).toThrow(/At most 10 evaluators are allowed/);
+      }).toThrow(/At most 25 evaluators are allowed, got 26/);
+    });
+
+    test('accepts the maximum of 25 evaluators', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'The service allows 25 evaluators; the bundled CloudFormation schema still lists a maximum of 10',
+      });
+      const evaluators = Array.from({ length: 25 }, (_, i) =>
+        EvaluatorSelector.thirdParty(new ThirdPartyEvaluator(`ThirdParty.DeepEval.Metric${i}`)));
+
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators,
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/log-group'],
+          serviceNames: ['service'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Evaluators: Array.from({ length: 25 }, (_, i) => ({ EvaluatorId: `ThirdParty.DeepEval.Metric${i}` })),
+      });
     });
 
     test('throws error for invalid sampling percentage - too low', () => {
@@ -555,10 +671,36 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for too many log group names', () => {
       expect(() => {
         DataSourceConfig.fromCloudWatchLogs({
-          logGroupNames: Array(6).fill('/aws/log-group'),
+          logGroupNames: Array(11).fill('/aws/log-group'),
           serviceNames: ['service'],
         });
-      }).toThrow(/At most 5 log group names are allowed/);
+      }).toThrow(/At most 10 log group names are allowed, got 11/);
+    });
+
+    test('accepts the maximum of 10 log group names', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'The published CloudFormation schema allows 10 log group names; the bundled copy still lists a maximum of 5',
+      });
+      const logGroupNames = Array.from({ length: 10 }, (_, i) => `/aws/log-group-${i}`);
+
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators: [EvaluatorSelector.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames,
+          serviceNames: ['service'],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        DataSourceConfig: {
+          CloudWatchLogs: {
+            LogGroupNames: logGroupNames,
+            ServiceNames: ['service'],
+          },
+        },
+      });
     });
 
     test('throws error for empty service names', () => {
