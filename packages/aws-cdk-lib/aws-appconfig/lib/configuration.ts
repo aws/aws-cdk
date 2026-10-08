@@ -482,7 +482,7 @@ export class HostedConfiguration extends ConfigurationBase {
       type: this.type,
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
-      kmsKeyIdentifier: props.kmsKey?.keyRef.keyArn,
+      kmsKeyIdentifier: props.kmsKey?.keyRef.keyId,
     });
     this.configurationProfileId = this._cfnConfigurationProfile.ref;
     this.configurationProfileArn = Stack.of(this).formatArn({
