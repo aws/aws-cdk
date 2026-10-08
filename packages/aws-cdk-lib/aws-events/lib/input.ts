@@ -48,19 +48,6 @@ export abstract class RuleTargetInput {
    * sees the surrounding quotes (for example, an SNS topic delivering to an
    * email subscriber shows `"something"`). To send a structured payload, use
    * `RuleTargetInput.fromObject()` instead.
-   *
-   * @example
-   *
-   * declare const rule: events.Rule;
-   * declare const topic: sns.Topic;
-   *
-   * // Referencing the event turns this into an InputTransformer, with the paths
-   * // lifted into InputPathsMap and this string used as the InputTemplate.
-   * rule.addTarget(new targets.SnsTopic(topic, {
-   *   message: events.RuleTargetInput.fromText(
-   *     `Instance ${events.EventField.fromPath('$.detail.instance-id')} is now ${events.EventField.fromPath('$.detail.state')}`,
-   *   ),
-   * }));
    */
   public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
@@ -78,18 +65,6 @@ export abstract class RuleTargetInput {
    * As with `fromText`, each line is JSON-encoded, so every line is wrapped in
    * double quotes in the synthesized template. Whether those quotes are visible
    * to the recipient depends on the target service.
-   *
-   * @example
-   *
-   * declare const rule: events.Rule;
-   * declare const topic: sns.Topic;
-   *
-   * // Each line is passed to the target as a separate argument.
-   * rule.addTarget(new targets.SnsTopic(topic, {
-   *   message: events.RuleTargetInput.fromMultilineText(
-   *     `First line\nSecond line`,
-   *   ),
-   * }));
    */
   public static fromMultilineText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Multiline);
@@ -112,9 +87,7 @@ export abstract class RuleTargetInput {
    *   message: events.RuleTargetInput.fromObject({ source: 'my-app' }),
    * }));
    *
-   * // Referencing the event makes it an `InputTransformer` instead: each path
-   * // becomes an `InputPathsMap` entry keyed by a readable hint derived from the
-   * // path, with a matching <hint> placeholder substituted into the `InputTemplate`.
+   * // Referencing the event inserts those fields from each matched event.
    * rule.addTarget(new targets.SnsTopic(topic, {
    *   message: events.RuleTargetInput.fromObject({
    *     instance: events.EventField.fromPath('$.detail.instance-id'),
@@ -134,16 +107,6 @@ export abstract class RuleTargetInput {
    * This emits CloudFormation's `InputPath` directly, so the target receives only
    * the selected fragment of the event. Use this when you want to forward part of
    * the event unchanged; use `fromObject()` when you need to reshape it.
-   *
-   * @example
-   *
-   * declare const rule: events.Rule;
-   * declare const topic: sns.Topic;
-   *
-   * // The target receives only the `detail` object from the event.
-   * rule.addTarget(new targets.SnsTopic(topic, {
-   *   message: events.RuleTargetInput.fromEventPath('$.detail'),
-   * }));
    */
   public static fromEventPath(path: string): RuleTargetInput {
     return new LiteralEventInput({ inputPath: path });
