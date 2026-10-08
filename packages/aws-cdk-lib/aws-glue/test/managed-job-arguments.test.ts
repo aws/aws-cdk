@@ -223,7 +223,7 @@ describe('defaultArguments managed-key invariant', () => {
         jobName: 'Job',
         defaultArguments: { [tokenKey]: 'false' },
       });
-      Annotations.fromStack(stack).hasWarning('/S/Job', Match.stringLikeRegexp('.*unresolved token as an argument key.*'));
+      Annotations.fromStack(stack).hasWarning('/S/Job', Match.stringLikeRegexp('.*unresolved token as an argument key.*\\[ack: @aws-cdk/aws-glue:tokenJobArgumentKey\\]'));
     });
 
     test('construct-managed value takes precedence when a token key resolves to a managed key', () => {
