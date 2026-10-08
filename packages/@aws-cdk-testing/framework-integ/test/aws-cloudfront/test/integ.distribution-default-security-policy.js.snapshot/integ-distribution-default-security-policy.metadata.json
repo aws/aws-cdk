@@ -1,0 +1,53 @@
+{
+  "/integ-distribution-default-security-policy/Cert": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "validation": "*"
+      }
+    }
+  ],
+  "/integ-distribution-default-security-policy/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "domainNames": "*",
+        "certificate": "*"
+      }
+    }
+  ],
+  "/integ-distribution-default-security-policy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-default-security-policy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-distribution-default-security-policy/Cert/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cert5C9FAEC1"
+    }
+  ],
+  "/integ-distribution-default-security-policy/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ],
+  "/integ-distribution-default-security-policy/Exports/Output{\"Ref\":\"Distribution830FAC52\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistribution830FAC524DF81588"
+    }
+  ]
+}
