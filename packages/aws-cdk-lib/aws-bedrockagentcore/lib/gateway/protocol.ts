@@ -1,4 +1,7 @@
 import type { CfnGateway } from '../../../aws-bedrockagentcore';
+import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/helpers-internal';
 
 /******************************************************************************
  *                                 Enums
@@ -147,6 +150,23 @@ export interface McpConfiguration {
    * @default - No specific versions specified
    */
   readonly supportedVersions?: MCPProtocolVersion[];
+
+  /**
+   * The session timeout for the gateway.
+   *
+   * After this timeout, the session expires and subsequent requests to this session receive an error.
+   * Must be between 15 minutes and 8 hours.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly sessionTimeout?: Duration;
+
+  /**
+   * Whether the gateway streams responses from targets back to the client.
+   *
+   * @default - Determined by the service
+   */
+  readonly enableResponseStreaming?: boolean;
 }
 
 /**
@@ -167,11 +187,33 @@ export class McpProtocolConfiguration implements IGatewayProtocolConfig {
    */
   public readonly instructions?: string;
 
+  /**
+   * The session timeout for the gateway
+   */
+  public readonly sessionTimeout?: Duration;
+
+  /**
+   * Whether the gateway streams responses from targets back to the client
+   */
+  public readonly enableResponseStreaming?: boolean;
+
   constructor(props?: McpConfiguration) {
     this.searchType = props?.searchType?.value;
     this.supportedVersions = props?.supportedVersions;
     this.instructions = props?.instructions;
     this.protocolType = GatewayProtocolType.MCP;
+    this.sessionTimeout = props?.sessionTimeout;
+    this.enableResponseStreaming = props?.enableResponseStreaming;
+
+    if (this.sessionTimeout !== undefined && !this.sessionTimeout.isUnresolved()) {
+      const sessionTimeoutSeconds = this.sessionTimeout.toSeconds();
+      if (sessionTimeoutSeconds < 900 || sessionTimeoutSeconds > 28800) {
+        throw new UnscopedValidationError(
+          lit`McpSessionTimeoutOutOfRange`,
+          `sessionTimeout must be between 900 and 28800 seconds (15 minutes to 8 hours), got ${sessionTimeoutSeconds} seconds`,
+        );
+      }
+    }
   }
 
   /**
@@ -182,6 +224,8 @@ export class McpProtocolConfiguration implements IGatewayProtocolConfig {
       ...(this.instructions && { instructions: this.instructions }),
       ...(this.searchType && { searchType: this.searchType }),
       ...(this.supportedVersions && { supportedVersions: this.supportedVersions.map(v => v.value) }),
+      ...(this.sessionTimeout !== undefined && { sessionConfiguration: { sessionTimeoutInSeconds: this.sessionTimeout.toSeconds() } }),
+      ...(this.enableResponseStreaming !== undefined && { streamingConfiguration: { enableResponseStreaming: this.enableResponseStreaming } }),
     };
     return { mcp: mcpConfig };
   }
