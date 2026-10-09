@@ -85,6 +85,46 @@ describe('Vpc V2 with full control', () => {
     }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
   });
 
+  test.each([
+    ['10.1.0.0/16', '198.18.0.0/26'],
+    ['10.1.0.0/16', '100.64.0.0/16'],
+    ['10.1.0.0/16', '10.2.0.0/16'],
+    ['172.20.0.0/16', '172.21.0.0/16'],
+    ['172.16.0.0/16', '198.51.100.0/24'],
+    ['192.168.0.0/16', '203.0.113.0/24'],
+    ['100.64.0.0/16', '100.65.0.0/16'],
+    ['54.0.0.0/16', '100.64.0.0/16'],
+    ['198.19.0.0/16', '203.0.113.0/24'],
+  ])('VPC with primary %s allows secondary IPv4 address %s', (primary, secondary) => {
+    new vpc.VpcV2(stack, 'TestVpc', {
+      primaryAddressBlock: vpc.IpAddresses.ipv4(primary),
+      secondaryAddressBlocks: [vpc.IpAddresses.ipv4(secondary, {
+        cidrBlockName: 'SecondaryIpv4',
+      })],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      CidrBlock: secondary,
+    });
+  });
+
+  test.each([
+    ['172.16.0.0/16', '10.1.0.0/16'],
+    ['192.168.0.0/16', '172.16.0.0/16'],
+    ['10.1.0.0/16', '198.19.0.0/16'],
+    ['100.64.0.0/16', '10.1.0.0/16'],
+    ['54.0.0.0/16', '192.168.0.0/16'],
+    ['54.0.0.0/16', '198.19.0.0/16'],
+  ])('VPC with primary %s throws error with secondary IPv4 address %s', (primary, secondary) => {
+    expect(() => {
+      new vpc.VpcV2(stack, 'TestVpc', {
+        primaryAddressBlock: vpc.IpAddresses.ipv4(primary),
+        secondaryAddressBlocks: [vpc.IpAddresses.ipv4(secondary, {
+          cidrBlockName: 'SecondaryIpv4',
+        })],
+      });
+    }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
+  });
+
   test('VPC supports secondary Amazon Provided IPv6 address', () => {
     new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),

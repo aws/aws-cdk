@@ -886,13 +886,34 @@ interface IPaddressConfig {
 }
 
 /**
- * Validates whether a secondary IPv4 address is within the same private IP address range as the primary IPv4 address.
+ * Returns the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12 or 192.168.0.0/16) an address belongs to, if any.
+ */
+function rfc1918Range(ip: IPaddressConfig): string | undefined {
+  if (ip.octet1 === 10) {
+    return '10.0.0.0/8';
+  }
+  if (ip.octet1 === 172 && ip.octet2 >= 16 && ip.octet2 <= 31) {
+    return '172.16.0.0/12';
+  }
+  if (ip.octet1 === 192 && ip.octet2 === 168) {
+    return '192.168.0.0/16';
+  }
+  return undefined;
+}
+
+/**
+ * Validates whether a secondary IPv4 CIDR block can be associated with a VPC that has the given primary IPv4 CIDR block.
  *
  * @param cidr1 The secondary IPv4 CIDR block to be validated.
  * @param cidr2 The primary IPv4 CIDR block to validate against.
- * @returns True if the secondary IPv4 CIDR block is within the same private IP address range as the primary IPv4 CIDR block, false otherwise.
+ * @returns True if the association is permitted, false otherwise.
  * @internal
- * The private IP address ranges are defined by RFC 1918 as 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.
+ * Follows the IPv4 CIDR block association restrictions in the Amazon VPC User Guide:
+ * https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#add-cidr-block-restrictions
+ * - An RFC 1918 primary permits blocks from the same RFC 1918 range, publicly routable blocks and 100.64.0.0/10,
+ *   but not blocks from the other RFC 1918 ranges.
+ * - A non-RFC 1918 primary (publicly routable or 100.64.0.0/10) does not permit RFC 1918 blocks.
+ * - 198.19.0.0/16 is never permitted as a secondary block.
  */
 function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
   if (!cidr1 || !cidr2) {
@@ -916,7 +937,14 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     octet2: octetsCidr2[1],
   };
 
-  return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
-    (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
-    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
+  if (ip1.octet1 === 198 && ip1.octet2 === 19) {
+    return false;
+  }
+
+  const secondaryRange = rfc1918Range(ip1);
+  const primaryRange = rfc1918Range(ip2);
+  if (primaryRange === undefined) {
+    return secondaryRange === undefined;
+  }
+  return secondaryRange === undefined || secondaryRange === primaryRange;
 }
