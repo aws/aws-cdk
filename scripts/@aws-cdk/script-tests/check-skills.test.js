@@ -95,11 +95,18 @@ describe('check-skills frontmatter and names', () => {
     expect(located(result)).toEqual(oneError('frontmatter', 1));
   });
 
-  // The Agent Skills spec makes `metadata` a map, which this single-line parser does not support.
-  test('fails a metadata map, naming the line and the single-line rule', () => {
+  // The Agent Skills spec makes `metadata` a map, which this single-line parser does not support,
+  // so the key is not allowed in any form.
+  test('fails a metadata map, saying nested values are not supported', () => {
     const result = checkSkills(withFrontmatter(`name: ${SKILL}`, 'description: Reviews.', 'metadata:', '  owner: cdk'));
     expect(located(result)).toEqual(oneError('frontmatter', 5));
     expect(result.findings[0].message).toContain('single-line');
+    expect(result.findings[0].message).toContain('not nested maps, lists or multi-line values');
+  });
+
+  test('fails a scalar metadata value as an unknown key', () => {
+    const result = checkSkills(withFrontmatter(`name: ${SKILL}`, 'description: Reviews.', 'metadata: none'));
+    expect(located(result)).toEqual(oneError('frontmatter-keys', 4));
   });
 
   test.each([
@@ -428,6 +435,7 @@ describe('check-skills links', () => {
     ['a link with a title', '[guide](../../../docs/guide.md "The guide")'],
     ['a blob/main link', `[guide](${BLOB}/docs/guide.md#guide)`],
     ['a blob/main link to a directory', `[docs](${BLOB}/docs)`],
+    ['a tree/main link to a directory', '[docs](https://github.com/aws/aws-cdk/tree/main/docs)'],
     ['a fragment on a .ts target, which is not checked', `[code](${BLOB}/lib/code.ts#L10)`],
   ])('accepts %s', (_, link) => {
     const result = checkSkills(withBody(link, { 'lib/code.ts': 'export {};\n' }));
@@ -469,6 +477,12 @@ describe('check-skills links', () => {
     const result = checkSkills(withBody(`[x](${BLOB}/docs/missing.md#guide)`));
     expect(located(result)).toEqual(oneError('link-target', BODY_LINE));
     expect(result.counts.fragments).toBe(0);
+  });
+
+  test('fails a missing tree/main path', () => {
+    const result = checkSkills(withBody('[x](https://github.com/aws/aws-cdk/tree/main/docs/missing)'));
+    expect(located(result)).toEqual(oneError('link-target', BODY_LINE));
+    expect(result.findings[0].message).toContain('docs/missing not found');
   });
 
   test('fails an unknown fragment', () => {
@@ -584,6 +598,7 @@ describe('check-skills links', () => {
     test.each([
       ['a relative link', () => `../../../../${path.basename(outside)}/secret.md#secret`],
       ['a blob/main "../" path', () => `${BLOB}/../${path.basename(outside)}/secret.md#secret`],
+      ['a tree/main "../" path', () => `https://github.com/aws/aws-cdk/tree/main/../${path.basename(outside)}/secret.md#secret`],
       ['a blob/main "%2e%2e" path', () => `${BLOB}/%2e%2e/${path.basename(outside)}/secret.md#secret`],
       ['a blob/main absolute path', () => `${BLOB}/${encodeURIComponent(outside)}/secret.md#secret`],
     ])('fails %s that escapes the root, without touching the target', (_, target) => {

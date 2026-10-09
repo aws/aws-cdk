@@ -13,12 +13,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const ALLOWED_KEYS = new Set(['name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools']);
+const ALLOWED_KEYS = new Set(['name', 'description', 'license', 'compatibility', 'allowed-tools']);
 const MAX_NAME_LENGTH = 64;
 const MAX_DESCRIPTION_LENGTH = 1024;
 const MAX_SKILL_LINES = 500;
 const MAX_SYMLINKS = 40;
-const BLOB_MAIN = 'https://github.com/aws/aws-cdk/blob/main/';
+// GitHub serves blob/ and tree/ for the same paths. Links pinned to another ref, such as a commit
+// SHA or a tag, are deliberately not checked: a rename cannot break them, and checking them needs
+// git history, which the build does not use.
+const MAIN = /^https:\/\/github\.com\/aws\/aws-cdk\/(?:blob|tree)\/main\//;
 
 /** Thrown when the check cannot run at all, as opposed to finding problems. */
 class CheckError extends Error {}
@@ -200,8 +203,8 @@ function checkSkillReferences(file, doc, skillNames, report) {
 }
 
 /**
- * A link without a URL scheme, or to this repository's blob/main, must resolve to a file or
- * directory inside the root; a fragment on a .md target must be one of its heading slugs.
+ * A link without a URL scheme, or to this repository's blob/main or tree/main, must resolve to a
+ * file or directory inside the root; a fragment on a .md target must be one of its heading slugs.
  * Containment is checked on the path before any filesystem access, then on each symlink
  * before it is followed.
  */
@@ -213,9 +216,10 @@ function checkLink(file, line, target, context) {
 
   let base;
   let encodedPath;
-  if (location.startsWith(BLOB_MAIN)) {
+  const main = MAIN.exec(location);
+  if (main) {
     base = root;
-    encodedPath = location.slice(BLOB_MAIN.length);
+    encodedPath = location.slice(main[0].length);
   } else if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(location) || location.startsWith('//')) {
     return;
   } else {
@@ -505,7 +509,7 @@ function parseFrontmatter(file, lines, report) {
     if (!entry) {
       valid = false;
       report(file, line, 'error', 'frontmatter',
-        `unsupported frontmatter line ${JSON.stringify(text)}; only single-line \`key: value\` entries with plain or quoted values are supported`);
+        `unsupported frontmatter line ${JSON.stringify(text)}; only single-line \`key: value\` entries with plain or quoted values are supported, not nested maps, lists or multi-line values`);
     } else if (entries.has(entry.key)) {
       valid = false;
       report(file, line, 'error', 'frontmatter', `duplicate frontmatter key ${JSON.stringify(entry.key)}`);
