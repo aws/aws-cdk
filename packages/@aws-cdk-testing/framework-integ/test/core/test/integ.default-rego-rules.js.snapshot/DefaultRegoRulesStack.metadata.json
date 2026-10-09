@@ -17,6 +17,18 @@
       "data": "ViolatingAlias"
     }
   ],
+  "/DefaultRegoRulesStack/ParameterGroup": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParameterGroup"
+    }
+  ],
+  "/DefaultRegoRulesStack/ViolatingReplicationGroup": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ViolatingReplicationGroup"
+    }
+  ],
   "/DefaultRegoRulesStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
