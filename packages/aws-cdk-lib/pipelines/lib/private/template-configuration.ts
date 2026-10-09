@@ -3,7 +3,7 @@ import * as fs from 'fs';
 /**
  * Write template configuration to the given file
  */
-export function writeTemplateConfiguration(filename: string, config: TemplateConfiguration) {
+export function writeTemplateConfiguration(filename: string, config: TemplateConfiguration): void {
   fs.writeFileSync(filename, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
 }
 
