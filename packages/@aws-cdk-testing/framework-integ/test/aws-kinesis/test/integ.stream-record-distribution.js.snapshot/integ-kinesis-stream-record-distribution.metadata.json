@@ -1,0 +1,35 @@
+{
+  "/integ-kinesis-stream-record-distribution/AutoDistributionStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "streamMode": "ON_DEMAND",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/integ-kinesis-stream-record-distribution/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+    }
+  ],
+  "/integ-kinesis-stream-record-distribution/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-kinesis-stream-record-distribution/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-kinesis-stream-record-distribution/AutoDistributionStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoDistributionStream3C3F397C"
+    }
+  ]
+}
