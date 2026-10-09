@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FsxOntapIntegTest/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxOntap"
+      ],
+      "assertionStack": "FsxOntapIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxOntapIntegTestDefaultTestDeployAssertA094664B"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

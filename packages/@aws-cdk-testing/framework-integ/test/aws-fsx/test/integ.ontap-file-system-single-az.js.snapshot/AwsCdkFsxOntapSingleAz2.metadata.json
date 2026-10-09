@@ -1,0 +1,497 @@
+{
+  "/AwsCdkFsxOntapSingleAz2": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:73:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "restrictDefaultSecurityGroup": false,
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/OntapFileSystem": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Svm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Volume": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Gen2FileSystemId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gen2FileSystemId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:116:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511:2)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:576:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "synthesizeTree (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:503:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:73:3)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511:2)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:576:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "synthesizeTree (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:503:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:73:3)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1627:21)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1694:19)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1700:19)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/OntapFileSystem/FsxOntapSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/OntapFileSystem/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OntapFileSystem2386F5E2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OntapFileSystem (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/ontap-file-system.ts:322:23)",
+        "new OntapFileSystem (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:80:24)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Svm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Svm3B78B53D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OntapStorageVirtualMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/ontap-storage-virtual-machine.ts:238:16)",
+        "new OntapStorageVirtualMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:93:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Volume/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VolumeA92988D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OntapVolume (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/ontap-volume.ts:500:19)",
+        "new OntapVolume (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:99:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/Exports/Output{\"Ref\":\"OntapFileSystem2386F5E2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefOntapFileSystem2386F5E2CDC770B7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.ts:1326:7)",
+        "createImportValue (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:351:31)",
+        "resolveValue (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:268:12)",
+        "resolveReferences (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:101:24)",
+        "prepareApp (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:58:13)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)",
+        "process.<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:263:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2233:19)",
+        "WrappedClass.<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708:2)",
+        "Array.forEach (:)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1705:46)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2506:40)",
+        "WrappedClass.<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2504:17)",
+        "WrappedClass.<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2326:19)",
+        "WrappedClass.<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureSubnet (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:330:12)",
+        "NatGatewayProvider.configureNat (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:323:12)",
+        "WrappedClass.createNatGateways (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:75:17)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/AwsCdkFsxOntapSingleAz2/OntapFileSystem/FsxOntapSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OntapFileSystemFsxOntapSecurityGroupC50CBE6D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.ts:552:26)",
+        "new SecurityGroup (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new SecurityGroup (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new OntapFileSystem (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/aws-fsx/lib/ontap-file-system.ts:316:50)",
+        "new OntapFileSystem (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:80:24)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
