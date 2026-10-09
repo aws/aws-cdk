@@ -64,3 +64,11 @@ export const DISABLE_CREATION_STACK_TRACES = 'aws:cdk:disable-creation-stack-tra
  * Run bundling for stacks specified in this context key
  */
 export const BUNDLING_STACKS = 'aws:cdk:bundling-stacks';
+
+/**
+ * If set to `true`, the app is synthesizing in draft mode.
+ *
+ * In draft mode, app authors should only instantiate a subset of stacks
+ * to speed up synthesis during development.
+ */
+export const DRAFT_MODE_SYNTH_CONTEXT = 'aws:cdk:draft-mode-synth';
