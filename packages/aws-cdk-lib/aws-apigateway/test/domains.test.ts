@@ -63,6 +63,62 @@ describe('domains', () => {
     });
   });
 
+  test('accept all possible IpAddressType', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'ipv4-domain', {
+      domainName: 'ipv4.example.com',
+      certificate: cert,
+      ipAddressType: apigw.IpAddressType.IPV4,
+    });
+
+    new apigw.DomainName(stack, 'dualstack-domain', {
+      domainName: 'dualstack.example.com',
+      certificate: cert,
+      ipAddressType: apigw.IpAddressType.DUAL_STACK,
+    });
+
+    new apigw.DomainName(stack, 'default-domain', {
+      domainName: 'default.example.com',
+      certificate: cert,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'ipv4.example.com',
+      'EndpointConfiguration': { 'IpAddressType': 'ipv4' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'dualstack.example.com',
+      'EndpointConfiguration': { 'IpAddressType': 'dualstack' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'default.example.com',
+      'EndpointConfiguration': { 'IpAddressType': Match.absent() },
+    });
+  });
+
+  test('rejects IpAddressType.IPV4 with EndpointType.PRIVATE', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN/THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'ipv4-domain', {
+        domainName: 'ipv4.example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.PRIVATE,
+        ipAddressType: apigw.IpAddressType.IPV4,
+      });
+    }).toThrow(/For PRIVATE endpoint type, only DUAL_STACK is supported/);
+  });
+
   test('accepts different security policies', () => {
     // GIVEN
     const stack = new Stack();
