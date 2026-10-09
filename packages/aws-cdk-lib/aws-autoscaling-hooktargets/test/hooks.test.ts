@@ -338,4 +338,138 @@ describe('given an AutoScalingGroup and a role', () => {
       ],
     });
   });
+
+  test('can use Lambda function as hook target with a role and encrypted SNS', () => {
+    // GIVEN
+    const key = new kms.Key(stack, 'key');
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.index',
+    });
+    const myrole = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('custom.role.domain.com'),
+    });
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.FunctionHook(fn, key),
+      role: myrole,
+    });
+
+    // THEN
+    // The caller-provided role must receive the KMS grant directly -
+    // createRole() must not silently swap in a freshly created role instead.
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+      KmsMasterKeyId: {
+        'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Effect: 'Allow',
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'keyFEDD6EC0',
+                'Arn',
+              ],
+            },
+          },
+        ]),
+      },
+      PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
+      Roles: [
+        {
+          Ref: 'MyRoleF48FFE04',
+        },
+      ],
+    });
+  });
+});
+
+describe('given imported (unowned) target resources', () => {
+  let stack: Stack;
+  let asg: autoscaling.AutoScalingGroup;
+
+  beforeEach(() => {
+    stack = new Stack();
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+  });
+
+  test('can use an imported queue as hook target', () => {
+    // GIVEN
+    const queue = sqs.Queue.fromQueueArn(stack, 'ImportedQueue', 'arn:aws:sqs:us-east-1:123456789012:external-queue');
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.QueueHook(queue),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: 'arn:aws:sqs:us-east-1:123456789012:external-queue',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:sqs:us-east-1:123456789012:external-queue',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    // This stack doesn't own the queue, so it must not try to attach a resource policy to it.
+    Template.fromStack(stack).resourceCountIs('AWS::SQS::QueuePolicy', 0);
+  });
+
+  test('can use an imported topic as hook target', () => {
+    // GIVEN
+    const topic = sns.Topic.fromTopicArn(stack, 'ImportedTopic', 'arn:aws:sns:us-east-1:123456789012:external-topic');
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.TopicHook(topic),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
+      NotificationTargetARN: 'arn:aws:sns:us-east-1:123456789012:external-topic',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: 'arn:aws:sns:us-east-1:123456789012:external-topic',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    // This stack doesn't own the topic, so it must not try to attach a resource policy to it.
+    Template.fromStack(stack).resourceCountIs('AWS::SNS::TopicPolicy', 0);
+  });
 });
