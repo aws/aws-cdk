@@ -82,7 +82,7 @@ describe('Vpc V2 with full control', () => {
         enableDnsSupport: true,
       },
       );
-    }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
+    }).toThrow('cannot be added as a secondary block to a VPC whose primary CIDR block is');
   });
 
   test.each([
@@ -122,7 +122,7 @@ describe('Vpc V2 with full control', () => {
           cidrBlockName: 'SecondaryIpv4',
         })],
       });
-    }).toThrow('CIDR block should be in the same RFC 1918 range in the VPC');
+    }).toThrow('cannot be added as a secondary block to a VPC whose primary CIDR block is');
   });
 
   test('VPC supports secondary Amazon Provided IPv6 address', () => {

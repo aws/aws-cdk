@@ -558,7 +558,7 @@ export class VpcV2 extends VpcV2Base {
         if (secondaryVpcOptions.ipv4CidrBlock!) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
-            throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
+            throw new Error(`CIDR block ${secondaryVpcOptions.ipv4CidrBlock} cannot be added as a secondary block to a VPC whose primary CIDR block is ${this.resource.cidrBlock}. See the IPv4 CIDR block association restrictions in the Amazon VPC User Guide: https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#add-cidr-block-restrictions`);
           }
         }
         if (secondaryVpcOptions.ipv4IpamProvisionedCidrs!) {
