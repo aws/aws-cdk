@@ -2334,6 +2334,39 @@ describe('cluster', () => {
       expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPublicAccess).toEqual(false);
     });
 
+    test('PUBLIC_AND_PRIVATE.onlyFrom sets PublicAccessCidrs to the specified CIDR', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE.onlyFrom('1.2.3.4/32'),
+        prune: false,
+      });
+
+      const app = stack.node.root as cdk.App;
+      const template = app.synth().getStackArtifact(stack.stackName).template;
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPrivateAccess).toEqual(true);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPublicAccess).toEqual(true);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.PublicAccessCidrs).toEqual(['1.2.3.4/32']);
+    });
+
+    test('PRIVATE endpoint access emits empty PublicAccessCidrs', () => {
+      // https://github.com/aws/aws-cdk/issues/37926
+      // GIVEN
+      const { stack } = testFixture();
+      new eks.Cluster(stack, 'Cluster1', {
+        version: CLUSTER_VERSION,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        prune: false,
+      });
+
+      const app = stack.node.root as cdk.App;
+      const template = app.synth().getStackArtifact(stack.stackName).template;
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPrivateAccess).toEqual(true);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.EndpointPublicAccess).toEqual(false);
+      expect(template.Resources.Cluster192CD0375.Properties.ResourcesVpcConfig.PublicAccessCidrs).toEqual([]);
+    });
+
     test('kubectl provider chooses only private subnets', () => {
       const { stack } = testFixture();
 
