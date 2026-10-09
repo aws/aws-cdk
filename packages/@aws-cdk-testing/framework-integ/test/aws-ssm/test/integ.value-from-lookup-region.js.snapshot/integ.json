@@ -1,0 +1,14 @@
+{
+  "enableLookups": true,
+  "version": "53.0.0",
+  "testCases": {
+    "ValueFromLookupRegionTest/DefaultTest": {
+      "stacks": [
+        "value-from-lookup-region"
+      ],
+      "assertionStack": "ValueFromLookupRegionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ValueFromLookupRegionTestDefaultTestDeployAssertCAC06D55"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
