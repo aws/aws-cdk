@@ -1,17 +1,17 @@
 {
-  "/integ-tests/DefaultTest/DeployAssert": [
+  "/MskClusterAuth/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
         "new IntegTestCase (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-resources.js:91:1)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:94:1)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-tests/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/MskClusterAuth/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/MskClusterAuth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"

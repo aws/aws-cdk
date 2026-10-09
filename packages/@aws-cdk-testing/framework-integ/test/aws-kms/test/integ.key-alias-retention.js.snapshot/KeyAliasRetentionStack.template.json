@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyKey6AB29FA6": {
+  "Key961B73FD": {
    "Type": "AWS::KMS::Key",
    "Properties": {
     "KeyPolicy": {
@@ -27,74 +27,27 @@
         }
        },
        "Resource": "*"
-      },
-      {
-       "Action": "kms:encrypt",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Ref": "AWS::AccountId"
-        }
-       },
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
-  "MyKeyAlias1B45D9DA": {
+  "KeyAlias910D852D": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/bar",
+    "AliasName": "alias/cdk-integ-kms-key-retention",
     "TargetKeyId": {
      "Fn::GetAtt": [
-      "MyKey6AB29FA6",
+      "Key961B73FD",
       "Arn"
      ]
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AsymmetricKey26BBC514": {
-   "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "KeySpec": "ECC_NIST_P256",
-    "KeyUsage": "SIGN_VERIFY"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {
