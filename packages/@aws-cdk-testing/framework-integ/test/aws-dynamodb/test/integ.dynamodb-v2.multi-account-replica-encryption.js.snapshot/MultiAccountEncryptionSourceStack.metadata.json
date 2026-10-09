@@ -1,0 +1,40 @@
+{
+  "/MultiAccountEncryptionSourceStack/SourceTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "SourceTable70380C26"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/MultiAccountEncryptionSourceStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MultiAccountEncryptionSourceStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MultiAccountEncryptionSourceStack/SourceTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceTable70380C26"
+    }
+  ]
+}
