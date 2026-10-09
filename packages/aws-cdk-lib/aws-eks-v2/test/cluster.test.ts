@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
@@ -2775,6 +2776,111 @@ describe('cluster', () => {
         PrincipalArn: { 'Fn::GetAtt': ['NodeRoleB5643E21', 'Arn'] },
         Type: 'EC2',
         AccessPolicies: [],
+      });
+    });
+
+    describe('grantClusterAdminAccess', () => {
+      test('IAM Role に cluster admin 権限を付与できる', () => {
+        // GIVEN
+        const { stack, vpc } = testFixture();
+        const cluster = new eks.Cluster(stack, 'Cluster', { vpc, version: CLUSTER_VERSION });
+        const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+        // WHEN
+        cluster.grantClusterAdminAccess('AdminAccess', role);
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+          PrincipalArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+          AccessPolicies: [
+            {
+              AccessScope: { Type: 'cluster' },
+              PolicyArn: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy']],
+              },
+            },
+          ],
+        });
+      });
+
+      test('IAM User に cluster admin 権限を付与できる', () => {
+        // GIVEN
+        const { stack, vpc } = testFixture();
+        const cluster = new eks.Cluster(stack, 'Cluster', { vpc, version: CLUSTER_VERSION });
+        const user = new iam.User(stack, 'User');
+
+        // WHEN
+        cluster.grantClusterAdminAccess('AdminAccess', user);
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+          PrincipalArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+          AccessPolicies: [
+            {
+              AccessScope: { Type: 'cluster' },
+              PolicyArn: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy']],
+              },
+            },
+          ],
+        });
+      });
+
+      test('ServicePrincipal を渡すとエラーになる', () => {
+        // GIVEN
+        const { stack, vpc } = testFixture();
+        const cluster = new eks.Cluster(stack, 'Cluster', { vpc, version: CLUSTER_VERSION });
+        const servicePrincipal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+        // WHEN / THEN
+        expect(() => {
+          cluster.grantClusterAdminAccess('AdminAccess', servicePrincipal);
+        }).toThrow('Cannot determine the ARN from the provided `iamPrincipal`');
+      });
+
+      test('同じ principal に grantAccess を追加で呼んでも AccessEntry が重複しない', () => {
+        // GIVEN
+        const { stack, vpc } = testFixture();
+        const cluster = new eks.Cluster(stack, 'Cluster', { vpc, version: CLUSTER_VERSION });
+        const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+        // WHEN: grantClusterAdminAccess → 同一 role で grantAccess
+        cluster.grantClusterAdminAccess('AdminAccess', role);
+        cluster.grantAccess('ExtraAccess', role.roleArn, [
+          eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
+            accessScopeType: eks.AccessScopeType.CLUSTER,
+          }),
+        ]);
+
+        // THEN: AccessEntry は 1 つのみ（ポリシーが追記されている）
+        Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 1);
+        const resources = Template.fromStack(stack).findResources('AWS::EKS::AccessEntry');
+        const policies = Object.values(resources)[0].Properties.AccessPolicies;
+        expect(policies).toHaveLength(2);
+      });
+    });
+
+    // grantClusterAdmin は deprecated のため testDeprecated でラップする
+    testDeprecated('grantClusterAdmin（deprecated）は従来通り AccessEntry を作成する', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', { vpc, version: CLUSTER_VERSION });
+      const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+      // WHEN
+      cluster.grantClusterAdmin('AdminAccess', role.roleArn);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        PrincipalArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
+        AccessPolicies: [
+          {
+            AccessScope: { Type: 'cluster' },
+            PolicyArn: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy']],
+            },
+          },
+        ],
       });
     });
   });
