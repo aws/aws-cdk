@@ -1,4 +1,5 @@
 import { Annotations, Match, Template } from '../../assertions';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../cx-api';
@@ -1459,6 +1460,112 @@ describe('Distributed Map State', () => {
           Ref: 'StateMachineRoleB840431D',
         },
       ],
+    });
+  }),
+
+  test('State Machine With Distributed Map State and ResultWriterV2 using encrypted bucket generate correct KMS IAM Policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, true);
+    const outputKey = new kms.Key(stack, 'OutputKey');
+    const outputBucket = new s3.Bucket(stack, 'OutputBucket', {
+      encryption: s3.BucketEncryption.KMS,
+      encryptionKey: outputKey,
+    });
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      resultWriterV2: new stepfunctions.ResultWriterV2({
+        bucket: outputBucket,
+        prefix: 'test',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+              'kms:Decrypt',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [Match.stringLikeRegexp('OutputKey'), 'Arn'],
+            },
+          },
+        ]),
+      },
+    });
+  }),
+
+  test('State Machine With Distributed Map State, encrypted ItemReader and ResultWriter generate correct KMS IAM Policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const inputKey = new kms.Key(stack, 'InputKey');
+    const outputKey = new kms.Key(stack, 'OutputKey');
+    const inputBucket = new s3.Bucket(stack, 'InputBucket', {
+      encryption: s3.BucketEncryption.KMS,
+      encryptionKey: inputKey,
+    });
+    const outputBucket = new s3.Bucket(stack, 'OutputBucket', {
+      encryption: s3.BucketEncryption.KMS,
+      encryptionKey: outputKey,
+    });
+
+    // WHEN
+    const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+      itemReader: new stepfunctions.S3JsonItemReader({
+        bucket: inputBucket,
+        key: 'some-object',
+      }),
+      resultWriter: new stepfunctions.ResultWriter({
+        bucket: outputBucket,
+        prefix: 'some-prefix',
+      }),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: map,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+              'kms:Decrypt',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [Match.stringLikeRegexp('OutputKey'), 'Arn'],
+            },
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [Match.stringLikeRegexp('InputKey'), 'Arn'],
+            },
+          },
+        ]),
+      },
     });
   }),
 
