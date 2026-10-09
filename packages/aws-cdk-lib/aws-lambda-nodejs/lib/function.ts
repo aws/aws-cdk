@@ -159,10 +159,10 @@ export class NodejsFunction extends lambda.Function {
       });
     } else {
       // Entry and defaults
-      const entry = path.resolve(findEntry(scope, id, props.entry));
       const architecture = props.architecture ?? Architecture.X86_64;
       const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
       const projectRoot = path.resolve(props.projectRoot ?? path.dirname(depsLockFilePath));
+      const entry = path.resolve(findEntry(scope, id, props.entry, projectRoot));
       const handler = props.handler ?? 'handler';
 
       super(scope, id, {
@@ -244,6 +244,8 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
 /**
  * Searches for an entry file. Preference order is the following:
  * 1. Given entry file
+ *    - if absolute, that entry file
+ *    - if relative, the entry file relative to the project root
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
  * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
@@ -251,15 +253,38 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
  * 6. A .cts file name as the defining file with id as suffix (defining-file.id.cts)
  * 7. A .cjs file name as the defining file with id as suffix (defining-file.id.cjs)
  */
-function findEntry(scope: Construct, id: string, entry?: string): string {
+function findEntry(scope: Construct, id: string, entry?: string, projectRoot?: string): string {
   if (entry) {
     if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
       throw new ValidationError(lit`OnlyJavaScriptTypeScriptEntrySupported`, 'Only JavaScript or TypeScript entry files are supported.', scope);
     }
-    if (!fs.existsSync(entry)) {
-      throw new ValidationError(lit`CannotFindEntryFile`, `Cannot find entry file at ${entry}`, scope);
+    if (fs.existsSync(entry)) {
+      return entry;
     }
-    return entry;
+    if (path.isAbsolute(entry)) {
+      throw new ValidationError(
+        lit`EntryFileNotFoundAtAbsolutePath`,
+        `Cannot find entry file at ${entry}`,
+        scope,
+      );
+    }
+    if (!projectRoot) {
+      throw new ValidationError(
+        lit`EntryFileNotFoundRelativeToProjectRoot`,
+        `Cannot find entry file at ${entry} relative to the current working directory,
+        and no projectRoot is set, so cannot look for it relative to the project root`,
+        scope,
+      );
+    }
+    const entryInProjectRoot = path.join(projectRoot, entry);
+    if (!fs.existsSync(entryInProjectRoot)) {
+      throw new ValidationError(
+        lit`EntryFileNotFoundRelativeToCwdOrProjectRoot`,
+        `Cannot find entry file at ${entry} nor at ${entryInProjectRoot} (relative to the project root ${projectRoot})`,
+        scope,
+      );
+    }
+    return entryInProjectRoot;
   }
 
   const definingFile = findDefiningFile(scope);

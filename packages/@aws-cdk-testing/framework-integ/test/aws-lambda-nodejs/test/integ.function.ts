@@ -104,6 +104,18 @@ class TestStack extends Stack {
         ),
       ],
     });
+
+    new lambda.NodejsFunction(this, 'entry-relative-to-cwd', {
+      runtime: STANDARD_NODEJS_RUNTIME,
+      entry: 'packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/ts-handler.ts',
+    });
+
+    new lambda.NodejsFunction(this, 'entry-relative-to-projectRoot', {
+      runtime: STANDARD_NODEJS_RUNTIME,
+      entry: 'dependencies-pnpm.ts',
+      projectRoot: path.join(__dirname, 'integ-handlers/yarn'),
+      depsLockFilePath: path.join(__dirname, 'integ-handlers/yarn/yarn.lock'),
+    });
   }
 }
 
