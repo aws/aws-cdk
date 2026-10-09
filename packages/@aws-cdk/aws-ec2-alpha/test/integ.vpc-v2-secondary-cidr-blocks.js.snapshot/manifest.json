@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "55.0.0",
   "artifacts": {
     "aws-cdk-vpcv2-secondary-cidr-blocks.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4869857caf2d93060e34450b780f3be01cf151fbae3a596461258aac577acaf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aab2747030fde86c334e6fae748862a96ae1ae71d60e26c8e0c05e27d8c50349.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,296 +33,7 @@
       "dependencies": [
         "aws-cdk-vpcv2-secondary-cidr-blocks.assets"
       ],
-      "metadata": {
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcWithPublicSecondaryBF5A0D37"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/PublicSecondary": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/PublicSecondary/PublicSecondary": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcWithPublicSecondary37F623CC"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary1Subnet5C380FE6"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary1RouteTable59D20080"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary1RouteTableAssociation224C6485"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary1Subnet62C43D82"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary1RouteTableCF35A59B"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary1RouteTableAssociation37CAF808"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcWithCarrierGradeNat25F9C610"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/CarrierGradeNat": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/CarrierGradeNat/CarrierGradeNat": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcWithCarrierGradeNat305AA356"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary2SubnetEEEF7613"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary2RouteTable33F5782D"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInPrimary2RouteTableAssociation7CC84555"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInCarrierGradeNatSubnet2F832324"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInCarrierGradeNatRouteTable25368D21"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInCarrierGradeNatRouteTableAssociation37723610"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc192WithPublicSecondary78CAABEE"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/PublicSecondary192": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/PublicSecondary192/PublicSecondary192": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc192WithPublicSecondaryPublicSecondary192B3051894"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary192Subnet2DB1C862"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary192RouteTable2653E5DB"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary192RouteTableAssociation600A62D7"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc172WithPublicSecondary2C1AA5BA"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/PublicSecondary172": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/PublicSecondary172/PublicSecondary172": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary172Subnet41AB8D38"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTable/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary172RouteTableE469B078"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SubnetInSecondary172RouteTableAssociation9D476A66"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-vpcv2-secondary-cidr-blocks/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-vpcv2-secondary-cidr-blocks.metadata.json",
       "displayName": "aws-cdk-vpcv2-secondary-cidr-blocks"
     },
     "integtestsecondarycidrblocksDefaultTestDeployAssert2FDA9A3A.assets": {
@@ -342,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/984148173ca0786a323c393690b4ebe9c335f028d52a11e11833a6fbb21ee821.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,22 +66,10 @@
         }
       },
       "dependencies": [
+        "aws-cdk-vpcv2-secondary-cidr-blocks",
         "integtestsecondarycidrblocksDefaultTestDeployAssert2FDA9A3A.assets"
       ],
-      "metadata": {
-        "/integtest-secondary-cidr-blocks/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integtest-secondary-cidr-blocks/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integtestsecondarycidrblocksDefaultTestDeployAssert2FDA9A3A.metadata.json",
       "displayName": "integtest-secondary-cidr-blocks/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -670,6 +369,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -701,16 +405,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -857,6 +551,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -868,12 +563,72 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "userValue": "weak",
+            "recommendedValue": "weak",
+            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+          },
+          "@aws-cdk/core:validateAgainstDefaultRules": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Treat CloudFormation Validate findings as errors"
+          },
+          "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
+          },
+          "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": {
+            "recommendedValue": true,
+            "explanation": "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1145.0"
 }

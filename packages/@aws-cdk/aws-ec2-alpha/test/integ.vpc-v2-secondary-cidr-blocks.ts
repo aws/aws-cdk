@@ -8,7 +8,7 @@
  * see the main CONTRIBUTING.md file.
  */
 
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { IpCidr, SubnetV2 } from '../lib';
@@ -92,6 +92,30 @@ new SubnetV2(stack, 'SubnetInSecondary172', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-new IntegTest(app, 'integtest-secondary-cidr-blocks', {
+const integ = new IntegTest(app, 'integtest-secondary-cidr-blocks', {
   testCases: [stack],
 });
+
+// Assert that each documented secondary CIDR block is actually associated with
+// its VPC. These assertions also give the DeployAssert stack a resource so the
+// snapshot can be generated (an empty assertion stack fails template validation).
+const secondaryBlocks: Array<[vpc_v2.VpcV2, string]> = [
+  [vpcWithPublicSecondary, '198.18.0.0/26'],
+  [vpcWithCarrierGradeNat, '100.64.0.0/16'],
+  [vpc192WithPublicSecondary, '203.0.113.0/24'],
+  [vpc172WithPublicSecondary, '198.51.100.0/24'],
+];
+
+for (const [vpc, secondaryCidr] of secondaryBlocks) {
+  integ.assertions.awsApiCall('ec2', 'DescribeVpcsCommand', {
+    VpcIds: [vpc.vpcId],
+  }).expect(ExpectedResult.objectLike({
+    Vpcs: Match.arrayWith([
+      Match.objectLike({
+        CidrBlockAssociationSet: Match.arrayWith([
+          Match.objectLike({ CidrBlock: secondaryCidr }),
+        ]),
+      }),
+    ]),
+  }));
+}
