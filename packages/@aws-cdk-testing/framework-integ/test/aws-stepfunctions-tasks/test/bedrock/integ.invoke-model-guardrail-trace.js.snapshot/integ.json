@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "testCases": {
     "InvokeModel/DefaultTest": {
       "stacks": [
@@ -14,5 +14,6 @@
       "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

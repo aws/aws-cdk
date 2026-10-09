@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "testCases": {
     "StateMachineDisableXray/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "StateMachineDisableXray/DefaultTest/DeployAssert",
       "assertionStackName": "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

@@ -1,0 +1,100 @@
+{
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58dWaitForRole4ADA3976"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58dWaitForC4C5367B"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58dWaitForIsCompleteProviderInvoke6C751880"
+    }
+  ],
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58d/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameter68bbf4bb1dba3013bc7a4e1da34ac58dWaitForTimeoutProviderInvokeBA2506AF"
+    }
+  ]
+}

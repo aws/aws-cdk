@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "4fb8fc5b748a9099daee6e8722c67d181660b652a0c75f40bc2a440f8a3e9921": {
+    "fc026b3706cb1cfa2722bed4c3ca7f277aa88375c7fb889c2c01021dc9c9f2c2": {
       "displayName": "StepFunctionsRestApiDeploymentStack Template",
       "source": {
         "path": "StepFunctionsRestApiDeploymentStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d6ad2f3a": {
+        "current_account-current_region-543a6816": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4fb8fc5b748a9099daee6e8722c67d181660b652a0c75f40bc2a440f8a3e9921.json",
+          "objectKey": "fc026b3706cb1cfa2722bed4c3ca7f277aa88375c7fb889c2c01021dc9c9f2c2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

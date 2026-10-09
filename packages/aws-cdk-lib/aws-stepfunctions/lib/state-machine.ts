@@ -473,8 +473,26 @@ export class StateMachine extends StateMachineBase {
       this.validateLogOptions(props.logs);
     }
 
+    // TrustPolicy - https://docs.aws.amazon.com/step-functions/latest/dg/procedure-create-iam-role.html#prevent-cross-service-confused-deputy
+    const stack = Stack.of(this) ;
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('states.amazonaws.com',
+        {
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'states',
+                resource: 'stateMachine',
+                resourceName: '*',
+                arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              }),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.account,
+            },
+          },
+        },
+      ),
     });
 
     const definitionBody = props.definitionBody ?? DefinitionBody.fromChainable(props.definition!);
