@@ -194,7 +194,7 @@ class SESEmail extends UserPoolEmail {
 function encodeAndTest(input: string | undefined): string | undefined {
   if (input) {
     const local = input.split('@')[0];
-    if (!/[\p{ASCII}]+/u.test(local)) {
+    if (!/^[\p{ASCII}]+$/u.test(local)) {
       throw new UnscopedValidationError(lit`LocalPartEmailAddress`, 'the local part of the email address must use ASCII characters only');
     }
     return punycodeEncode(input);
