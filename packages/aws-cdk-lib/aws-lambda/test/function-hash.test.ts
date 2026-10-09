@@ -278,6 +278,68 @@ describe('function hash', () => {
 
       expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
     });
+
+    test('unattached layer in same stack does not affect function hash', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+      const stack = new Stack(app, 'Stack');
+
+      const layer = new lambda.LayerVersion(stack, 'AttachedLayer', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+
+      const fn = new lambda.Function(stack, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer],
+      });
+
+      const hashBefore = calculateFunctionHash(fn);
+
+      // Create a second layer in the same stack but do NOT attach it to the function.
+      new lambda.LayerVersion(stack, 'UnattachedLayer', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+
+      const hashAfter = calculateFunctionHash(fn);
+
+      expect(hashAfter).toEqual(hashBefore);
+    });
+
+    test('imported layer added to one function does not affect hash of another function in the same stack', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+      const stack = new Stack(app, 'Stack');
+
+      const layer1 = lambda.LayerVersion.fromLayerVersionArn(
+        stack, 'Layer1', 'arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1',
+      );
+      const layer2 = lambda.LayerVersion.fromLayerVersionArn(
+        stack, 'Layer2', 'arn:aws:lambda:us-east-1:123456789012:layer:my-layer:2',
+      );
+
+      const fnA = new lambda.Function(stack, 'FunctionA', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+        handler: 'index.handler',
+        layers: [layer1],
+      });
+
+      const hashA_before = calculateFunctionHash(fnA);
+
+      // Adding layer2 to functionB should not change functionA's hash.
+      new lambda.Function(stack, 'FunctionB', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+        handler: 'index.handler',
+        layers: [layer2],
+      });
+
+      const hashA_after = calculateFunctionHash(fnA);
+
+      expect(hashA_after).toEqual(hashA_before);
+    });
   });
 
   describe('impact of env variables order on hash', () => {
