@@ -87,6 +87,9 @@ fi
 # Check that the yarn.lock is consistent
 node ./scripts/check-yarn-lock.js
 
+# Check the skills under skills/, including their links to headings in the docs
+node ./scripts/check-skills.js
+
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
