@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ListenerConditionsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-alb-listener-conditions-integ"
+      ],
+      "assertionStack": "ListenerConditionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ListenerConditionsTestDefaultTestDeployAssertF782E172"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
