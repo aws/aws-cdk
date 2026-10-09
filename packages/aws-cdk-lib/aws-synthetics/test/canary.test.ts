@@ -1341,7 +1341,7 @@ describe('Browser configurations', () => {
     synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_10_0,
     synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_0,
     synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_1,
-    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_12_0
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_12_0,
   ])('throws error when Firefox is used with Python Selenium runtime %s', (runtime) => {
     // GIVEN
     const stack = new Stack();
