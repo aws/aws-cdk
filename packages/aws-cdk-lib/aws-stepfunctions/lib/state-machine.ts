@@ -490,24 +490,17 @@ export class StateMachine extends StateMachineBase {
       }
     }
 
+    const hasStateMachineName = props.stateMachineName !== undefined;
+
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
-      this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: [
-          'kms:Decrypt', 'kms:GenerateDataKey',
-        ],
-        resources: [`${props.encryptionConfiguration.kmsKey.keyArn}`],
-        conditions: {
-          StringEquals: {
-            'kms:EncryptionContext:aws:states:stateMachineArn': Stack.of(this).formatArn({
-              service: 'states',
-              resource: 'stateMachine',
-              sep: ':',
-              resourceName: this.physicalName,
-            }),
-          },
-        },
-      }));
+      if (hasStateMachineName) {
+        this.role.addToPrincipalPolicy(encryptionKeyStatement(props.encryptionConfiguration.kmsKey.keyArn, Stack.of(this).formatArn({
+          service: 'states',
+          resource: 'stateMachine',
+          sep: ':',
+          resourceName: this.physicalName,
+        })));
+      }
 
       if (props.logs && props.logs.level !== LogLevel.OFF) {
         this.role.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -548,6 +541,15 @@ export class StateMachine extends StateMachineBase {
 
     resource.node.addDependency(this.role);
     this.resource = resource;
+
+    if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration && !hasStateMachineName) {
+      // A separate policy that the state machine does not depend on, as
+      // referencing the state machine from the role's default policy would
+      // create a circular dependency.
+      this.role.attachInlinePolicy(new iam.Policy(this, 'EncryptionPolicy', {
+        statements: [encryptionKeyStatement(props.encryptionConfiguration.kmsKey.keyArn, resource.ref)],
+      }));
+    }
 
     if (definitionBody instanceof ChainDefinitionBody) {
       graph!.bind(this);
@@ -836,4 +838,22 @@ export class ChainDefinitionBody extends DefinitionBody {
       }),
     };
   }
+}
+
+/**
+ * Allows executions of the given state machine to use its encryption key
+ */
+function encryptionKeyStatement(keyArn: string, stateMachineArn: string): iam.PolicyStatement {
+  return new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: [
+      'kms:Decrypt', 'kms:GenerateDataKey',
+    ],
+    resources: [keyArn],
+    conditions: {
+      StringEquals: {
+        'kms:EncryptionContext:aws:states:stateMachineArn': stateMachineArn,
+      },
+    },
+  });
 }

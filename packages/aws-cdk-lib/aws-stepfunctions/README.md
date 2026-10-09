@@ -1481,6 +1481,20 @@ const stateMachine = new sfn.StateMachine(this, 'StateMachineWithCMKEncryptionCo
 });
 ```
 
+The state machine's role is only allowed to use the key for this state machine's executions.
+If you don't set `stateMachineName`, the state machine's ARN isn't known until CloudFormation
+creates it, so this permission is added in a separate policy that is created after the state machine.
+If something in the same stack starts executions during deployment, such as a custom resource that
+calls `StartExecution`, add a dependency on the state machine so that it waits for this policy.
+Referencing the state machine's ARN alone is not enough:
+
+```ts
+declare const stateMachine: sfn.StateMachine;
+declare const executionStarter: Construct;
+
+executionStarter.node.addDependency(stateMachine);
+```
+
 ### Encrypting state machine logs in Cloud Watch Logs
 If a state machine is encrypted with a customer managed key and has logging enabled, its decrypted execution history will be stored in CloudWatch Logs. If you want to encrypt the logs from the state machine using your own KMS key, you can do so by configuring the `LogGroup` associated with the state machine to use a KMS key.
 ```ts

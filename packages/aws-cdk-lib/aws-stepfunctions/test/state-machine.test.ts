@@ -1249,6 +1249,146 @@ describe('State Machine', () => {
     });
   }),
 
+  test('unnamed StateMachine with Customer Managed Key scopes key access to the state machine ARN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Policy', 1);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:stateMachineArn': { Ref: 'MyStateMachine6C968CA5' },
+              },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [{ Ref: 'MyStateMachineRoleD59FFEBC' }],
+    });
+
+    // The state machine must not depend on a policy that references it
+    template.hasResource('AWS::StepFunctions::StateMachine', {
+      DependsOn: ['MyStateMachineRoleD59FFEBC'],
+    });
+  });
+
+  test('unnamed StateMachine with Customer Managed Key and CWL Encryption keeps logging permissions on the default policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+    const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
+      logs: {
+        destination: logGroup,
+        level: sfn.LogLevel.ALL,
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Policy', 2);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('^MyStateMachineEncryptionPolicy'),
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Condition: {
+              StringEquals: {
+                'kms:EncryptionContext:aws:states:stateMachineArn': { Ref: 'MyStateMachine6C968CA5' },
+              },
+            },
+          }),
+        ],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('^MyStateMachineRoleDefaultPolicy'),
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'kms:GenerateDataKey' }),
+        ]),
+      },
+    });
+  });
+
+  test('unnamed StateMachine with Customer Managed Key attaches key access to a supplied role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/MyRole');
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
+      role,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyName: Match.stringLikeRegexp('^MyStateMachineEncryptionPolicy'),
+      Roles: ['MyRole'],
+    });
+  });
+
+  test('dependencies on an unnamed StateMachine with Customer Managed Key include its key access policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+      encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
+    });
+    const executionStarter = new cdk.CfnResource(stack, 'ExecutionStarter', { type: 'Custom::ExecutionStarter' });
+
+    // WHEN
+    executionStarter.node.addDependency(stateMachine);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Custom::ExecutionStarter', {
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('^MyStateMachineEncryptionPolicy')]),
+    });
+  });
+
+  test('fails for an empty name with Customer Managed Key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const kmsKey = new kms.Key(stack, 'Key');
+
+    // THEN
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: '',
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
+        encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(kmsKey),
+      });
+    }).toThrow('State Machine name must be between 1 and 80 characters. Received: ');
+  });
+
   test('StateMachine with CWL Encryption generates the correct iam and key policies', () => {
     // GIVEN
     const stack = new cdk.Stack();
