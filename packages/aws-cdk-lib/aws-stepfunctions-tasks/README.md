@@ -727,6 +727,36 @@ new tasks.DynamoUpdateItem(this, 'UpdateItem', {
 });
 ```
 
+### TransactWriteItems
+
+The [TransactWriteItems](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_TransactWriteItems.html) operation
+writes up to 100 items to one or more tables in a single all-or-nothing transaction. Each item is a put, update, delete
+or condition check, and the task grants the IAM action DynamoDB checks for each item type (`PutItem`, `UpdateItem`,
+`DeleteItem` or `ConditionCheckItem`) on that item's table.
+
+This task uses the AWS SDK service integration, so it supports only the request response integration pattern.
+
+```ts
+declare const ordersTable: dynamodb.Table;
+declare const inventoryTable: dynamodb.Table;
+tasks.DynamoTransactWriteItems.jsonPath(this, 'PlaceOrder', {
+  transactItems: [
+    tasks.DynamoTransactWriteItem.put({
+      table: ordersTable,
+      item: { OrderId: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.orderId')) },
+      conditionExpression: 'attribute_not_exists(OrderId)',
+    }),
+    tasks.DynamoTransactWriteItem.update({
+      table: inventoryTable,
+      key: { Sku: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.sku')) },
+      updateExpression: 'SET Stock = Stock - :one',
+      conditionExpression: 'Stock >= :one',
+      expressionAttributeValues: { ':one': tasks.DynamoAttributeValue.fromNumber(1) },
+    }),
+  ],
+});
+```
+
 ## ECS
 
 Step Functions supports [ECS/Fargate](https://docs.aws.amazon.com/step-functions/latest/dg/connect-ecs.html) through the service integration pattern.
