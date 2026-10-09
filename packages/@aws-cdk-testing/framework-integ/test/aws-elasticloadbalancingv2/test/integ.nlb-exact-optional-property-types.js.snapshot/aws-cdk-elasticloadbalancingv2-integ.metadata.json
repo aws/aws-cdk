@@ -1,0 +1,508 @@
+{
+  "/aws-cdk-elasticloadbalancingv2-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "[eval]:10: ([eval]:10:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:3)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:347:9)",
+        "visit (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:344:9)",
+        "synthesizeTree (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:300:5)",
+        "synthesize (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:76:5)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:29)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:29)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:848:29)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals...",
+        "node:internal/main/eval_string:71 (:)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/SG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SGADB53937"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:440:34)",
+        "[eval]:17: ([eval]:17:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/LB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LB8A12904C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseLoadBalancer (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-load-balancer.js:224:26)",
+        "new NetworkLoadBalancer (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/nlb/network-load-balancer.js:310:13)",
+        "[eval]:19 (:)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1581:50)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1579:25)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1558:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1581:50)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1579:25)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals...",
+        "[eval]-wrapper:6: ([eval]-wrapper:6:2)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1419:27)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1630:13)",
+        "/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticloadbalancingv2-integ/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1419:27)",
+        "WrappedClass.<anonymous> (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/Users/sanya/Documents/opensource/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "[eval]:12: ([eval]:12:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
