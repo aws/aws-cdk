@@ -912,6 +912,34 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Splits the provided ARN into its components, returning `undefined` instead of
+   * throwing when the ARN is not well-formed.
+   *
+   * This is the non-throwing counterpart of `splitArn`. Use it to parse a string
+   * that may or may not be a valid ARN (for example, a value that could be either a
+   * full ARN or a bare resource name/id), instead of wrapping `splitArn` in a
+   * `try`/`catch` purely to recover from the throw.
+   *
+   * It behaves identically to `splitArn` for everything except malformed concrete
+   * strings:
+   *
+   * - If `arn` is a concrete, well-formed ARN string, it is parsed and the resulting
+   *   `ArnComponents` is returned.
+   * - If `arn` is an unresolved Token, it is parsed best-effort exactly like `splitArn`
+   *   and the returned `ArnComponents` contains Tokens for the subexpressions. In other
+   *   words, this does NOT return `undefined` for Tokens; callers that need to reject
+   *   Tokens must guard with `Token.isUnresolved` themselves.
+   * - If `arn` is a concrete string that is NOT a well-formed ARN, `undefined` is returned.
+   *
+   * @param arn the ARN to split into its components
+   * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   * @returns the parsed `ArnComponents`, or `undefined` if `arn` is a concrete string that is not a well-formed ARN
+   */
+  public trySplitArn(arn: string, arnFormat: ArnFormat): ArnComponents | undefined {
+    return Arn.tryParse(arn, arnFormat);
+  }
+
+  /**
    * Returns the list of AZs that are available in the AWS environment
    * (account/region) associated with this stack.
    *

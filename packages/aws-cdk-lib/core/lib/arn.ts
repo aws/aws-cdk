@@ -1,6 +1,7 @@
 import { Fn } from './cfn-fn';
 import { UnscopedValidationError } from './errors';
 import { lit } from './private/literal-string';
+import type { LiteralString } from './private/literal-string';
 import type { Stack } from './stack';
 import { Token } from './token';
 import { filterUndefined } from './util';
@@ -225,80 +226,56 @@ export class Arn {
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   * @throws if `arn` is a concrete string that is not a well-formed ARN. Use `Arn.tryParse` for a non-throwing variant that returns `undefined` instead.
    */
   public static split(arn: string, arnFormat: ArnFormat): ArnComponents {
-    const components = parseArnShape(arn);
-    if (components === 'token') {
+    const shape = parseArnShape(arn);
+    if (shape.kind === 'malformed') {
+      throw new UnscopedValidationError(shape.errorCode, shape.message);
+    }
+    if (shape.kind === 'token') {
       return parseTokenArn(arn, arnFormat);
     }
+    return parseArnComponents(shape.components, arnFormat);
+  }
 
-    const [, partition, service, region, account, resourceTypeOrName, ...rest] = components;
-
-    let resource: string;
-    let resourceName: string | undefined;
-    let sep: string | undefined;
-    let resourcePartStartIndex = 0;
-    let detectedArnFormat: ArnFormat;
-
-    let slashIndex = resourceTypeOrName.indexOf('/');
-    if (slashIndex === 0) {
-      // new-style ARNs are of the form 'arn:aws:s4:us-west-1:12345:/resource-type/resource-name'
-      slashIndex = resourceTypeOrName.indexOf('/', 1);
-      resourcePartStartIndex = 1;
-      detectedArnFormat = ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
+  /**
+   * Splits the provided ARN into its components, returning `undefined` instead of
+   * throwing when the ARN is not well-formed.
+   *
+   * This is the non-throwing counterpart of `Arn.split`. Use it to parse a string
+   * that may or may not be a valid ARN (for example, a value that could be either a
+   * full ARN or a bare resource name/id), instead of wrapping `Arn.split` in a
+   * `try`/`catch` purely to recover from the throw.
+   *
+   * It behaves identically to `Arn.split` for everything except malformed concrete
+   * strings:
+   *
+   * - If `arn` is a concrete, well-formed ARN string, it is parsed and the resulting
+   *   `ArnComponents` is returned.
+   * - If `arn` is an unresolved Token (either a full Token, or a string of the form
+   *   `arn:...` that contains Token fragments), it is parsed best-effort exactly like
+   *   `Arn.split`, and the returned `ArnComponents` contains Tokens for the
+   *   subexpressions. In other words, `tryParse` does NOT return `undefined` for
+   *   Tokens; callers that need to reject Tokens must guard with `Token.isUnresolved`
+   *   themselves (just as they would around `Arn.split`).
+   * - If `arn` is a concrete string that is NOT a well-formed ARN (it does not start
+   *   with `arn:`, or is missing a required `partition`, `service` or `resource`
+   *   component), `undefined` is returned.
+   *
+   * @param arn the ARN to split into its components
+   * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   * @returns the parsed `ArnComponents`, or `undefined` if `arn` is a concrete string that is not a well-formed ARN
+   */
+  public static tryParse(arn: string, arnFormat: ArnFormat): ArnComponents | undefined {
+    const shape = parseArnShape(arn);
+    if (shape.kind === 'malformed') {
+      return undefined;
     }
-    if (slashIndex !== -1) {
-      // the slash is only a separator if ArnFormat is not NO_RESOURCE_NAME
-      if (arnFormat === ArnFormat.NO_RESOURCE_NAME) {
-        sep = undefined;
-        slashIndex = -1;
-        detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
-      } else {
-        sep = '/';
-        detectedArnFormat = resourcePartStartIndex === 0
-          ? ArnFormat.SLASH_RESOURCE_NAME
-          // need to repeat this here, as otherwise the compiler thinks 'detectedArnFormat' is not initialized in all paths
-          : ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
-      }
-    } else if (rest.length > 0) {
-      sep = ':';
-      slashIndex = -1;
-      detectedArnFormat = ArnFormat.COLON_RESOURCE_NAME;
-    } else {
-      sep = undefined;
-      detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
+    if (shape.kind === 'token') {
+      return parseTokenArn(arn, arnFormat);
     }
-
-    if (slashIndex !== -1) {
-      resource = resourceTypeOrName.substring(resourcePartStartIndex, slashIndex);
-      resourceName = resourceTypeOrName.substring(slashIndex + 1);
-    } else {
-      resource = resourceTypeOrName;
-    }
-
-    if (rest.length > 0) {
-      if (!resourceName) {
-        resourceName = '';
-      } else {
-        resourceName += ':';
-      }
-
-      resourceName += rest.join(':');
-    }
-
-    // "|| undefined" will cause empty strings to be treated as "undefined".
-    // Optional ARN attributes (e.g. region, account) should return as empty string
-    // if they are provided as such.
-    return filterUndefined({
-      service: service || undefined,
-      resource: resource || undefined,
-      partition: partition || undefined,
-      region,
-      account,
-      resourceName,
-      sep,
-      arnFormat: detectedArnFormat,
-    });
+    return parseArnComponents(shape.components, arnFormat);
   }
 
   /**
@@ -317,13 +294,15 @@ export class Arn {
    * Only necessary for ARN formats for which the type-name separator is `/`.
    */
   public static extractResourceName(arn: string, resourceType: string): string {
-    const components = parseArnShape(arn);
-    if (components === 'token') {
+    const shape = parseArnShape(arn);
+    if (shape.kind === 'token') {
       return Fn.select(1, Fn.split(`:${resourceType}/`, arn));
     }
 
     // Apparently we could just parse this right away. Validate that we got the right
     // resource type (to notify authors of incorrect assumptions right away).
+    // Note: a malformed concrete ARN falls through to Arn.split below, which throws
+    // the same detailed error it always has.
     const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
       throw new UnscopedValidationError(lit`ExpectedResourceType`, `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
@@ -402,19 +381,41 @@ function parseTokenArn(arnToken: string, arnFormat: ArnFormat): ArnComponents {
 }
 
 /**
- * Validate that a string is either unparseable or looks mostly like an ARN
+ * The result of determining the "shape" of a string with respect to being an ARN.
+ *
+ * This is the single, non-throwing authority used by both `Arn.split` (which turns a
+ * `malformed` result into an `UnscopedValidationError`) and `Arn.tryParse` (which turns
+ * it into `undefined`), so the two share exactly one notion of what a well-formed ARN is.
  */
-function parseArnShape(arn: string): 'token' | string[] {
+type ArnShape =
+  /** `arn` is an unresolved Token that does not textually look like an ARN. */
+  | { readonly kind: 'token' }
+  /** `arn` looks like a well-formed ARN; `components` is its ':'-separated split (which may contain Token fragments). */
+  | { readonly kind: 'arn'; readonly components: string[] }
+  /** `arn` is a concrete value that is not a well-formed ARN; `errorCode`/`message` describe why. */
+  | { readonly kind: 'malformed'; readonly errorCode: LiteralString; readonly message: string };
+
+/**
+ * Determine the "shape" of a string with respect to being an ARN, without throwing.
+ *
+ * This performs the best-effort "is this even an ARN?" check that both the throwing
+ * (`Arn.split`) and non-throwing (`Arn.tryParse`) parsers build on. It does not throw:
+ * callers decide what to do with a `malformed` result.
+ */
+function parseArnShape(arn: string): ArnShape {
   // assume anything that starts with 'arn:' is an ARN,
   // so we can report better errors
   const looksLikeArn = arn.startsWith('arn:');
 
   if (!looksLikeArn) {
     if (Token.isUnresolved(arn)) {
-      return 'token';
-    } else {
-      throw new UnscopedValidationError(lit`ArnsMustStartWithArn`, `ARNs must start with "arn:" and have at least 6 components: ${arn}`);
+      return { kind: 'token' };
     }
+    return {
+      kind: 'malformed',
+      errorCode: lit`ArnsMustStartWithArn`,
+      message: `ARNs must start with "arn:" and have at least 6 components: ${arn}`,
+    };
   }
 
   // If the ARN merely contains Tokens, but otherwise *looks* mostly like an ARN,
@@ -425,22 +426,110 @@ function parseArnShape(arn: string): 'token' | string[] {
 
   const partition = components.length > 1 ? components[1] : undefined;
   if (!partition) {
-    throw new UnscopedValidationError(lit`ArnPartitionRequired`, 'The `partition` component (2nd component) of an ARN is required: ' + arn);
+    return {
+      kind: 'malformed',
+      errorCode: lit`ArnPartitionRequired`,
+      message: 'The `partition` component (2nd component) of an ARN is required: ' + arn,
+    };
   }
 
   const service = components.length > 2 ? components[2] : undefined;
   if (!service) {
-    throw new UnscopedValidationError(lit`ArnServiceRequired`, 'The `service` component (3rd component) of an ARN is required: ' + arn);
+    return {
+      kind: 'malformed',
+      errorCode: lit`ArnServiceRequired`,
+      message: 'The `service` component (3rd component) of an ARN is required: ' + arn,
+    };
   }
 
   const resource = components.length > 5 ? components[5] : undefined;
   if (!resource) {
-    throw new UnscopedValidationError(lit`ArnResourceRequired`, 'The `resource` component (6th component) of an ARN is required: ' + arn);
+    return {
+      kind: 'malformed',
+      errorCode: lit`ArnResourceRequired`,
+      message: 'The `resource` component (6th component) of an ARN is required: ' + arn,
+    };
   }
 
   // Region can be missing in global ARNs (such as used by IAM)
 
   // Account can be missing in some ARN types (such as used for S3 buckets)
 
-  return components;
+  return { kind: 'arn', components };
+}
+
+/**
+ * Parse the ':'-separated components of a concrete (non-Token) ARN into `ArnComponents`.
+ *
+ * `components` must be a well-formed ARN split as produced by `parseArnShape`
+ * (i.e. an `{ kind: 'arn' }` result).
+ */
+function parseArnComponents(components: string[], arnFormat: ArnFormat): ArnComponents {
+  const [, partition, service, region, account, resourceTypeOrName, ...rest] = components;
+
+  let resource: string;
+  let resourceName: string | undefined;
+  let sep: string | undefined;
+  let resourcePartStartIndex = 0;
+  let detectedArnFormat: ArnFormat;
+
+  let slashIndex = resourceTypeOrName.indexOf('/');
+  if (slashIndex === 0) {
+    // new-style ARNs are of the form 'arn:aws:s4:us-west-1:12345:/resource-type/resource-name'
+    slashIndex = resourceTypeOrName.indexOf('/', 1);
+    resourcePartStartIndex = 1;
+    detectedArnFormat = ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
+  }
+  if (slashIndex !== -1) {
+    // the slash is only a separator if ArnFormat is not NO_RESOURCE_NAME
+    if (arnFormat === ArnFormat.NO_RESOURCE_NAME) {
+      sep = undefined;
+      slashIndex = -1;
+      detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
+    } else {
+      sep = '/';
+      detectedArnFormat = resourcePartStartIndex === 0
+        ? ArnFormat.SLASH_RESOURCE_NAME
+        // need to repeat this here, as otherwise the compiler thinks 'detectedArnFormat' is not initialized in all paths
+        : ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME;
+    }
+  } else if (rest.length > 0) {
+    sep = ':';
+    slashIndex = -1;
+    detectedArnFormat = ArnFormat.COLON_RESOURCE_NAME;
+  } else {
+    sep = undefined;
+    detectedArnFormat = ArnFormat.NO_RESOURCE_NAME;
+  }
+
+  if (slashIndex !== -1) {
+    resource = resourceTypeOrName.substring(resourcePartStartIndex, slashIndex);
+    resourceName = resourceTypeOrName.substring(slashIndex + 1);
+  } else {
+    resource = resourceTypeOrName;
+  }
+
+  if (rest.length > 0) {
+    if (!resourceName) {
+      resourceName = '';
+    } else {
+      resourceName += ':';
+    }
+
+    resourceName += rest.join(':');
+  }
+
+  // "|| undefined" will cause empty strings to be treated as "undefined".
+  // Optional ARN attributes (e.g. region, account) should return as empty string
+  // if they are provided as such.
+  return filterUndefined({
+    service: service || undefined,
+    resource: resource || undefined,
+    partition: partition || undefined,
+    region,
+    account,
+    resourceName,
+    sep,
+    arnFormat: detectedArnFormat,
+  });
 }
