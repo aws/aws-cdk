@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_elasticloadbalancingv2_actions"
+    },
+    "ruby": {
+      "module": "AWSCDK::ElasticLoadBalancingv2Actions"
     }
   }
 }

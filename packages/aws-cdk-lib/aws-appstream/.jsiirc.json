@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_appstream"
+    },
+    "ruby": {
+      "module": "AWSCDK::AppStream"
     }
   }
 }

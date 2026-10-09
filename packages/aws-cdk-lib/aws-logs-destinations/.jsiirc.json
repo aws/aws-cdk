@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_logs_destinations"
+    },
+    "ruby": {
+      "module": "AWSCDK::LogsDestinations"
     }
   }
 }
