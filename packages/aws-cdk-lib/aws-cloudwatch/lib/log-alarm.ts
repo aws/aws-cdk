@@ -7,7 +7,7 @@ import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
-import { Annotations, ArnFormat, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError } from '../../core';
 import type { ArnComponents, Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -39,9 +39,7 @@ export interface ScheduledQuerySchedule {
    * minutes or hours are supported.
    *
    * A rate whose amount is only known at deploy time must be given in minutes,
-   * hours, or days, and is rendered in that unit, which is always plural. Such a
-   * rate must not resolve to 1, because the schedule expression requires the
-   * singular unit for a value of 1.
+   * hours, or days, and is rendered in that unit.
    */
   readonly rate: Duration;
 
@@ -689,15 +687,14 @@ export class LogAlarm extends AlarmBase {
    * Log group identifiers for the scheduled query.
    *
    * The scheduled query accepts a log group name or ARN, and only an ARN carries an
-   * account, so a concrete ARN is passed through to keep cross-account queries working.
-   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed.
-   * An ARN that is still a token cannot be edited, and a log group with a tokenized ARN
-   * belongs to this account, so its name is used instead.
+   * account, so the ARN is always passed through to keep cross-account queries working.
+   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed. An
+   * ARN that is still a token has the suffix removed at deploy time instead.
    */
   private renderLogGroupIdentifiers(logGroups?: ILogGroupRef[]): string[] | undefined {
     return logGroups?.map(logGroup => {
       const arn = logGroup.logGroupRef.logGroupArn;
-      return Token.isUnresolved(arn) ? logGroup.logGroupRef.logGroupName : arn.replace(/:\*$/, '');
+      return Token.isUnresolved(arn) ? Fn.select(0, Fn.split(':*', arn)) : arn.replace(/:\*$/, '');
     });
   }
 
@@ -719,8 +716,8 @@ export class LogAlarm extends AlarmBase {
    * Render the schedule rate as a `rate(...)` expression.
    *
    * An unresolved rate is read before any other conversion, because a duration built
-   * from a token can only be read in the unit it was created with. Its unit cannot be
-   * singularised and whole hours cannot be collapsed, so it is rendered as minutes.
+   * from a token can only be read in the unit it was created with. It is rendered in
+   * that unit, which is singularised at deploy time when the amount resolves to 1.
    */
   private renderRate(rate: Duration): string {
     if (rate.isUnresolved()) {
@@ -728,7 +725,17 @@ export class LogAlarm extends AlarmBase {
       if (unit !== 'minutes' && unit !== 'hours' && unit !== 'days') {
         throw new ValidationError(lit`InvalidScheduleRateUnit`, `schedule rate must be given as Duration.minutes(), Duration.hours(), or Duration.days() when its amount comes from a token, got Duration.${unit}`, this);
       }
-      return `rate(${rate.formatTokenToNumber()})`;
+      const amount = unit === 'minutes'
+        ? rate.toMinutes({ integral: false })
+        : unit === 'hours'
+          ? rate.toHours({ integral: false })
+          : rate.toDays({ integral: false });
+      const amountToken = Tokenization.stringifyNumber(amount);
+      const rateUnitIsOne = new CfnCondition(this, 'ScheduleRateUnitIsOne', {
+        expression: Fn.conditionEquals(amountToken, '1'),
+      });
+      const scheduleUnit = Fn.conditionIf(rateUnitIsOne.logicalId, unit.slice(0, -1), unit).toString();
+      return `rate(${amountToken} ${scheduleUnit})`;
     }
     const minutes = rate.toMinutes({ integral: false });
     if (!Number.isInteger(minutes) || minutes < 1) {

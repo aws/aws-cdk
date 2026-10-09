@@ -1,7 +1,7 @@
 import { Annotations, Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
-import { Duration, Stack, Token } from '../../core';
+import { Duration, Fn, Stack, Token } from '../../core';
 import type { IAlarmAction } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
@@ -45,7 +45,9 @@ describe('LogAlarm', () => {
       ScheduledQueryConfiguration: {
         QueryString: 'fields @message | filter @message like /ERROR/',
         AggregationExpression: 'count(*)',
-        LogGroupIdentifiers: [{ Ref: Match.stringLikeRegexp('^LogGroup') }],
+        LogGroupIdentifiers: [{
+          'Fn::Select': [0, { 'Fn::Split': [':*', { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] }] }],
+        }],
         ScheduleConfiguration: { ScheduleExpression: 'rate(5 minutes)' },
       },
     });
@@ -309,7 +311,7 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('renders the name for a log group imported by name', () => {
+  test('renders the arn for a log group imported by name, keeping the stack account', () => {
     const props = baseProps();
     new LogAlarm(stack, 'Alarm', {
       ...props,
@@ -321,7 +323,37 @@ describe('LogAlarm', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ScheduledQueryConfiguration: Match.objectLike({
-        LogGroupIdentifiers: ['/aws/lambda/local'],
+        LogGroupIdentifiers: [{
+          'Fn::Select': [0, {
+            'Fn::Split': [':*', {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':',
+                { Ref: 'AWS::AccountId' }, ':log-group:/aws/lambda/local:*',
+              ]],
+            }],
+          }],
+        }],
+      }),
+    });
+  });
+
+  test('renders the arn for a log group imported by a tokenized arn, keeping its account', () => {
+    const props = baseProps();
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        logGroups: [LogGroup.fromLogGroupArn(stack, 'Imported', Fn.importValue('SharedLogGroupArn'))],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: Match.objectLike({
+        LogGroupIdentifiers: [{
+          'Fn::Select': [0, {
+            'Fn::Split': [':*', { 'Fn::Join': ['', [{ 'Fn::ImportValue': 'SharedLogGroupArn' }, ':*']] }],
+          }],
+        }],
       }),
     });
   });
@@ -478,32 +510,11 @@ describe('LogAlarm', () => {
     })).toThrow(/actionLogLineRole is only used when actionLogLineCount is greater than 0/);
   });
 
-  test('accepts a tokenized schedule rate, rendering minutes', () => {
-    const props = baseProps();
-    new LogAlarm(stack, 'Alarm', {
-      ...props,
-      scheduledQueryConfiguration: {
-        ...props.scheduledQueryConfiguration,
-        schedule: {
-          rate: Duration.minutes(Token.asNumber({ Ref: 'RateParam' })),
-          startTimeOffset: Duration.minutes(5),
-        },
-      },
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
-      ScheduledQueryConfiguration: Match.objectLike({
-        ScheduleConfiguration: Match.objectLike({
-          ScheduleExpression: { 'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ' minutes)']] },
-        }),
-      }),
-    });
-  });
-
   test.each([
+    ['minutes', Duration.minutes(Token.asNumber({ Ref: 'RateParam' })), 'minutes'],
     ['hours', Duration.hours(Token.asNumber({ Ref: 'RateParam' })), 'hours'],
     ['days', Duration.days(Token.asNumber({ Ref: 'RateParam' })), 'days'],
-  ])('renders a tokenized rate given in %s without converting units', (_name, rate, unit) => {
+  ])('renders a tokenized rate given in %s, singularising the unit at deploy time', (_name, rate, unit) => {
     const props = baseProps();
     new LogAlarm(stack, 'Alarm', {
       ...props,
@@ -513,10 +524,16 @@ describe('LogAlarm', () => {
       },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+    const template = Template.fromStack(stack);
+    const conditions = template.findConditions('*', { 'Fn::Equals': [{ Ref: 'RateParam' }, '1'] });
+    const conditionId = Object.keys(conditions)[0];
+    expect(conditionId).toMatch(/^AlarmScheduleRateUnitIsOne/);
+    template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ScheduledQueryConfiguration: Match.objectLike({
         ScheduleConfiguration: Match.objectLike({
-          ScheduleExpression: { 'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ` ${unit})`]] },
+          ScheduleExpression: {
+            'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ' ', { 'Fn::If': [conditionId, unit.slice(0, -1), unit] }, ')']],
+          },
         }),
       }),
     });

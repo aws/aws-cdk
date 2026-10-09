@@ -67,7 +67,20 @@
      "AggregationExpression": "count(*)",
      "LogGroupIdentifiers": [
       {
-       "Ref": "LogGroupF5B46931"
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ":*",
+          {
+           "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
       }
      ],
      "QueryString": "fields @message | filter @message like /ERROR/",
@@ -249,7 +262,20 @@
      "AggregationExpression": "count(*)",
      "LogGroupIdentifiers": [
       {
-       "Ref": "LogGroupF5B46931"
+       "Fn::Select": [
+        0,
+        {
+         "Fn::Split": [
+          ":*",
+          {
+           "Fn::GetAtt": [
+            "LogGroupF5B46931",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
       }
      ],
      "QueryString": "fields @message | filter @message like /WARN/",
