@@ -181,11 +181,6 @@ packages/.../test/integ.my-feature.ts           (changed)
 packages/.../test/integ.my-feature.js.snapshot/  (unchanged — no companion update)
 ```
 
-- **Flag the uncertainty, never assert staleness blind:** a `*.snapshot/` is routinely filtered out of a
-  review diff, so its absence does NOT prove it was skipped. When it is not in the diff, say the snapshot
-  could not be confirmed and ask the author to verify it matches synthesis, per the "Judge only a snapshot
-  the diff SHOWS" guard on `[TEST-INTEG-DANGEROUS-SNAPSHOT]`.
-
 See
 [`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)
 for the snapshot-as-template fact and
