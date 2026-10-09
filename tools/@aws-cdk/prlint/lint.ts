@@ -119,6 +119,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
     console.log('evaluation: ', JSON.stringify({
       draft: pr.draft,
+      mergeable: pr.mergeable,
       mergeable_state: pr.mergeable_state,
       prLinterFailed,
       maintainerRequestedChanges,
@@ -138,7 +139,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
       // we don't need to review drafts
       pr.draft
         // or PRs with conflicts
-        || pr.mergeable_state === 'dirty'
+        || pr.mergeable === false
         // or PRs that already have changes requested by a maintainer
         || maintainerRequestedChanges
         // or the PR linter failed and the user didn't request an exemption
