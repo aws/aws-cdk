@@ -1,4 +1,284 @@
 {
+ "Resources": {
+  "AwsApiCallec2DescribeVpcsCommand993ff20e24bc7d111f7c2b2c0c572627": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeVpcsCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeVpcsCommand",
+    "expected": "{\"$ObjectLike\":{\"Vpcs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlockAssociationSet\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlock\":\"198.18.0.0/26\"}}]}}}]}}}",
+    "parameters": {
+     "VpcIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::GetStackOutput": {
+          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
+          "Region": {
+           "Ref": "AWS::Region"
+          },
+          "OutputName": "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685"
+         }
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791562700335"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ec2:DescribeVpcs"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeVpcs"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeVpcs"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeVpcs"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallec2DescribeVpcsCommand3acfde997faf7c86170db02bc7464a19": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeVpcsCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeVpcsCommand",
+    "expected": "{\"$ObjectLike\":{\"Vpcs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlockAssociationSet\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlock\":\"100.64.0.0/16\"}}]}}}]}}}",
+    "parameters": {
+     "VpcIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::GetStackOutput": {
+          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
+          "Region": {
+           "Ref": "AWS::Region"
+          },
+          "OutputName": "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F"
+         }
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791562700338"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallec2DescribeVpcsCommand04ccead6faf3b15c91641f46013580ff": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeVpcsCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeVpcsCommand",
+    "expected": "{\"$ObjectLike\":{\"Vpcs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlockAssociationSet\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlock\":\"203.0.113.0/24\"}}]}}}]}}}",
+    "parameters": {
+     "VpcIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::GetStackOutput": {
+          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
+          "Region": {
+           "Ref": "AWS::Region"
+          },
+          "OutputName": "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67"
+         }
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791562700339"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallec2DescribeVpcsCommand488abd6f933202784f67cd9a58ca8d98": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeVpcsCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeVpcsCommand",
+    "expected": "{\"$ObjectLike\":{\"Vpcs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlockAssociationSet\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"CidrBlock\":\"198.51.100.0/24\"}}]}}}]}}}",
+    "parameters": {
+     "VpcIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::GetStackOutput": {
+          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
+          "Region": {
+           "Ref": "AWS::Region"
+          },
+          "OutputName": "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E"
+         }
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791562700339"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallec2DescribeVpcsCommand993ff20e24bc7d111f7c2b2c0c572627": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeVpcsCommand993ff20e24bc7d111f7c2b2c0c572627",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeVpcsCommand3acfde997faf7c86170db02bc7464a19": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeVpcsCommand3acfde997faf7c86170db02bc7464a19",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeVpcsCommand04ccead6faf3b15c91641f46013580ff": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeVpcsCommand04ccead6faf3b15c91641f46013580ff",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeVpcsCommand488abd6f933202784f67cd9a58ca8d98": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeVpcsCommand488abd6f933202784f67cd9a58ca8d98",
+     "assertion"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
