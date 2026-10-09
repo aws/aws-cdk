@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "SubnetIpam/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-ipam-subnet"
+      ],
+      "assertionStack": "SubnetIpam/DefaultTest/DeployAssert",
+      "assertionStackName": "SubnetIpamDefaultTestDeployAssert4E5C46C4"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
