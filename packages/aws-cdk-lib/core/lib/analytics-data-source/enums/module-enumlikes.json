@@ -214,6 +214,9 @@
       "ANTHROPIC_CLAUDE_SONNET_5_5",
       "ANTHROPIC_CLAUDE_FABLE_5_1",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
+      "ANTHROPIC_CLAUDE_SONNET_5",
+      "ANTHROPIC_CLAUDE_OPUS_5",
+      "ANTHROPIC_CLAUDE_FABLE_5",
       "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
@@ -2219,6 +2222,9 @@
       "ANTHROPIC_CLAUDE_OPUS_5_5",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_SONNET_5",
+      "ANTHROPIC_CLAUDE_OPUS_5",
+      "ANTHROPIC_CLAUDE_MYTHOS_5",
+      "ANTHROPIC_CLAUDE_FABLE_5",
       "ANTHROPIC_CLAUDE_SONNET_5_5",
       "ANTHROPIC_CLAUDE_FABLE_5_1",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
@@ -2438,6 +2444,10 @@
       "HTTP",
       "A2A",
       "AGUI"
+    ],
+    "PlatformVersion": [
+      "V1",
+      "V2"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -3311,6 +3321,7 @@
       "ECS_TELEMETRY",
       "EKS",
       "EKS_AUTH",
+      "EKS_PROXY",
       "ELASTIC_BEANSTALK",
       "ELASTIC_BEANSTALK_HEALTH",
       "ELASTIC_DISASTER_RECOVERY",
