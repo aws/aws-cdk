@@ -1,0 +1,266 @@
+{
+  "/LambdaGeneratedNameStack/myfn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "code": "*",
+        "runtime": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultIntegration": "*",
+        "handler": "*",
+        "cloudWatchRole": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "cloudWatchRole": true
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaGeneratedNameStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/LambdaGeneratedNameStack/myfn/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/myfn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myfn8C66D016"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiF559E4F2"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/CloudWatchRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "applyRemovalPolicy": [
+          "retain"
+        ]
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Account": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiAccount856938D8"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiEndpoint4A61B166"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/LambdaGeneratedNameStack/myfn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myfnServiceRole7822DC24"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/CloudWatchRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiCloudWatchRoleA142878F"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiDeployment2E401BD8184e1493cf426ab6e7d6519b943054e1"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiDeploymentStageprodA05F84EA"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "defaultMethodOptions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiproxyB0E963B7"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/ANY/ApiPermission.LambdaGeneratedNameStacklambdarestapiBD9C4154.ANY..": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiANYApiPermissionLambdaGeneratedNameStacklambdarestapiBD9C4154ANY7B93D4E3"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/ANY/ApiPermission.Test.LambdaGeneratedNameStacklambdarestapiBD9C4154.ANY..": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiANYApiPermissionTestLambdaGeneratedNameStacklambdarestapiBD9C4154ANYA0DF730E"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiANYB9BB3FB2"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.LambdaGeneratedNameStacklambdarestapiBD9C4154.ANY..{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiproxyANYApiPermissionLambdaGeneratedNameStacklambdarestapiBD9C4154ANYproxy72D52D0A"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}/ANY/ApiPermission.Test.LambdaGeneratedNameStacklambdarestapiBD9C4154.ANY..{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiproxyANYApiPermissionTestLambdaGeneratedNameStacklambdarestapiBD9C4154ANYproxyCB9CE89E"
+    }
+  ],
+  "/LambdaGeneratedNameStack/lambdarestapi/Default/{proxy+}/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdarestapiproxyANYC900233F"
+    }
+  ]
+}
