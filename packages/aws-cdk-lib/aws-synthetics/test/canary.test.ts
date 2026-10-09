@@ -4,7 +4,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { Duration, Lazy, Size, Stack } from '../../core';
+import { Aws, Duration, Lazy, Size, Stack } from '../../core';
 import * as synthetics from '../lib';
 
 test('Basic canary properties work', () => {
@@ -1253,6 +1253,161 @@ describe('environment variables encryption key', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
       KmsKeyArn: 'arn:aws:kms:us-east-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
     });
+  });
+});
+
+describe('replicas (multi-location)', () => {
+  function newCanary(stack: Stack, replicas: synthetics.CanaryReplica[]) {
+    return new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      replicas,
+    });
+  }
+
+  test('not set on the canary by default', () => {
+    const stack = new Stack();
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: Match.absent(),
+    });
+  });
+
+  test('single region', () => {
+    const stack = new Stack();
+    newCanary(stack, [{ region: 'us-west-2' }]);
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{ Location: 'us-west-2' }],
+    });
+  });
+
+  test('multiple regions', () => {
+    const stack = new Stack();
+    newCanary(stack, [{ region: 'us-west-2' }, { region: 'eu-west-1' }]);
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{ Location: 'us-west-2' }, { Location: 'eu-west-1' }],
+    });
+  });
+
+  test('a token region renders as a replica Location and is excluded from the logs condition', () => {
+    const stack = new Stack();
+    // A token region (e.g. Aws.REGION) is allowed as a replica Location, but is
+    // skipped in the aws:RequestedRegion condition since it cannot be resolved.
+    newCanary(stack, [{ region: Aws.REGION }, { region: 'eu-west-1' }]);
+
+    const template = Template.fromStack(stack);
+    // Both replicas are rendered, including the token region.
+    template.hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{ Location: stack.resolve(Aws.REGION) }, { Location: 'eu-west-1' }],
+    });
+    // Only the resolvable region scopes the logs grant.
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+            Condition: { StringEquals: { 'aws:RequestedRegion': ['eu-west-1'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('with VPC config, KMS key ARN and tag replication', () => {
+    const stack = new Stack();
+    newCanary(stack, [{
+      region: 'us-west-2',
+      environmentEncryptionKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+      resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
+      vpcConfig: {
+        vpcId: 'vpc-123',
+        subnetIds: ['subnet-1', 'subnet-2'],
+        securityGroupIds: ['sg-1'],
+        ipv6AllowedForDualStack: true,
+      },
+    }]);
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{
+        Location: 'us-west-2',
+        KmsKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+        ResourcesToReplicateTags: ['lambda-function'],
+        VpcConfig: {
+          VpcId: 'vpc-123',
+          SubnetIds: ['subnet-1', 'subnet-2'],
+          SecurityGroupIds: ['sg-1'],
+          Ipv6AllowedForDualStack: true,
+        },
+      }],
+    });
+  });
+
+  test('grants the execution role decrypt on replica KMS key ARNs', () => {
+    const stack = new Stack();
+    newCanary(stack, [
+      { region: 'us-west-2', environmentEncryptionKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/k1' },
+      { region: 'eu-west-1', environmentEncryptionKeyArn: 'arn:aws:kms:eu-west-1:111122223333:key/k2' },
+    ]);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:kms:us-west-2:111122223333:key/k1',
+              'arn:aws:kms:eu-west-1:111122223333:key/k2',
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grants cross-region logs permission scoped by aws:RequestedRegion', () => {
+    const stack = new Stack();
+    newCanary(stack, [{ region: 'us-west-2' }, { region: 'eu-west-1' }]);
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Condition: { StringEquals: { 'aws:RequestedRegion': ['us-west-2', 'eu-west-1'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('throws on empty replicas array', () => {
+    const stack = new Stack();
+    expect(() => newCanary(stack, [])).toThrow('replicas must contain at least one replica if specified.');
+  });
+
+  test('throws on more than 50 replicas', () => {
+    const stack = new Stack();
+    const replicas = Array.from({ length: 51 }, (_, i) => ({ region: `region-${i}` }));
+    expect(() => newCanary(stack, replicas)).toThrow('You can specify up to 50 replicas, got: 51.');
+  });
+
+  test('throws on duplicate regions', () => {
+    const stack = new Stack();
+    expect(() => newCanary(stack, [{ region: 'us-west-2' }, { region: 'us-west-2' }]))
+      .toThrow('replicas must not contain duplicate regions, got duplicate: us-west-2.');
+  });
+
+  test('throws on empty region string', () => {
+    const stack = new Stack();
+    expect(() => newCanary(stack, [{ region: '  ' }])).toThrow('Each replica must specify a non-empty region.');
   });
 });
 
