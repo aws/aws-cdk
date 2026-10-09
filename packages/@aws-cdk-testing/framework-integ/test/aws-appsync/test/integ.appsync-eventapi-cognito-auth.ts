@@ -43,6 +43,13 @@ class EventApiCognitoAuthStack extends cdk.Stack {
       },
     });
 
+    // Auth providers can also be attached after the API has been defined, which is what a construct
+    // that only gets hold of the API later has to do. This is rendered exactly like passing the
+    // provider in `authorizationConfig.authProviders`.
+    this.eventApi.addAuthProvider({
+      authorizationType: appsync.AppSyncAuthorizationType.API_KEY,
+    });
+
     this.eventApi.addChannelNamespace('default');
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
@@ -52,6 +59,7 @@ class EventApiCognitoAuthStack extends cdk.Stack {
         EVENT_API_HTTP_URL: `https://${this.eventApi.httpDns}/event`,
         USER_POOL_ID: userPool.userPoolId,
         CLIENT_ID: client.userPoolClientId,
+        API_KEY: this.eventApi.apiKeys.Default.attrApiKey,
       },
       bundling: {
         bundleAwsSDK: true,
@@ -104,6 +112,36 @@ integTest.assertions.invokeFunction({
     action: 'subscribe',
     channel: 'default',
     authMode: 'USER_POOL',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'subscribe_success',
+  }),
+}));
+
+// Validate publish works with the API key provider that was added after the API was defined
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'publish',
+    channel: 'default',
+    authMode: 'API_KEY',
+  }),
+}).expect(ExpectedResult.objectLike({
+  Payload: JSON.stringify({
+    statusCode: 200,
+    msg: 'publish_success',
+  }),
+}));
+
+// Validate subscribe works with the API key provider that was added after the API was defined
+integTest.assertions.invokeFunction({
+  functionName: stack.lambdaTestFn.functionName,
+  payload: JSON.stringify({
+    action: 'subscribe',
+    channel: 'default',
+    authMode: 'API_KEY',
   }),
 }).expect(ExpectedResult.objectLike({
   Payload: JSON.stringify({
