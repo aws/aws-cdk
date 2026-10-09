@@ -59,10 +59,7 @@
      "Ref": "MyAppConfigB4B63E75"
     },
     "KmsKeyIdentifier": {
-     "Fn::GetAtt": [
-      "MyKey6AB29FA6",
-      "Arn"
-     ]
+     "Ref": "MyKey6AB29FA6"
     },
     "LocationUri": "hosted",
     "Name": "awsappconfigconfigurationkms-MyHostedConfigFromFile-EF9016BD"
