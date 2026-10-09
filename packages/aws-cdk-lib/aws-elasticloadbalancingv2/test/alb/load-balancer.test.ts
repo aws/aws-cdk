@@ -503,6 +503,30 @@ describe('tests', () => {
       });
     });
 
+    test('logging bucket permissions for environment-agnostic stack', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const bucket = new s3.Bucket(stack, 'AccessLogBucket');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.logAccessLogs(bucket);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+            }),
+          ]),
+        },
+      });
+    });
+
     test('access logging with prefix', () => {
       // GIVEN
       const { stack, bucket, lb } = loggingSetup();
@@ -835,6 +859,30 @@ describe('tests', () => {
               },
             },
           ],
+        },
+      });
+    });
+
+    test('logging bucket permissions for environment-agnostic stack', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const bucket = new s3.Bucket(stack, 'ConnectionLogBucket');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.logConnectionLogs(bucket);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+            }),
+          ]),
         },
       });
     });
