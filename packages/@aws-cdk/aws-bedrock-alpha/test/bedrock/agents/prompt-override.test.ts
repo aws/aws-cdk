@@ -1,4 +1,4 @@
-import { Stack } from 'aws-cdk-lib';
+import { CfnParameter, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import type {
   PromptRoutingClassifierConfigCustomParser,
@@ -279,6 +279,29 @@ describe('PromptOverrideConfiguration', () => {
           },
         ]);
       }).toThrow('MaximumLength must be between 0 and 4096');
+    });
+
+    test('does not fail validation if inference values are late-bound', () => {
+      const numberParam = (id: string) => new CfnParameter(stack, id, { type: 'Number' }).valueAsNumber;
+      const inferenceConfig = {
+        temperature: numberParam('Temperature'),
+        topP: numberParam('TopP'),
+        topK: numberParam('TopK'),
+        stopSequences: new CfnParameter(stack, 'StopSequences', { type: 'CommaDelimitedList' }).valueAsList,
+        maximumLength: numberParam('MaximumLength'),
+      };
+
+      // WHEN
+      const config = PromptOverrideConfiguration.fromSteps([
+        {
+          stepType: AgentStepType.PRE_PROCESSING,
+          inferenceConfig,
+        },
+      ]);
+
+      // THEN
+      const configs = config._render().promptConfigurations as any[];
+      expect(configs[0].inferenceConfiguration).toEqual(inferenceConfig);
     });
   });
 

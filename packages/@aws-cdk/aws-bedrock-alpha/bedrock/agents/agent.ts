@@ -456,7 +456,7 @@ export class Agent extends AgentBase implements IAgent {
 
     // Validate idleSessionTTL
     if (props.idleSessionTTL !== undefined &&
-        !Token.isUnresolved(props.idleSessionTTL) &&
+        !props.idleSessionTTL.isUnresolved() &&
         (props.idleSessionTTL.toMinutes() < 1 || props.idleSessionTTL.toMinutes() > 60)) {
       throw new ValidationError(lit`IdleSessionTtlOutOfRange`, 'idleSessionTTL must be between 1 and 60 minutes', this);
     }
