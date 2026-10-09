@@ -299,4 +299,127 @@ describe('Code', () => {
       })).toThrow(/associated with another stack/);
     });
   });
+
+  describe('.fromAsset() with a custom bucket', () => {
+    const filePath = path.join(__dirname, 'job-script', 'hello_world.py');
+    let bucket: s3.IBucket;
+
+    beforeEach(() => {
+      bucket = new s3.Bucket(stack, 'ScriptsBucket');
+    });
+
+    test('deploys the script into the custom bucket and points the job at it', () => {
+      script = glue.Code.fromAsset(filePath, undefined, bucket);
+
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+
+      // The job's script location points at the object in the custom bucket (not the CDK asset bucket).
+      template.hasResourceProperties('AWS::Glue::Job', {
+        Command: {
+          ScriptLocation: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                { Ref: Match.stringLikeRegexp('ScriptsBucket') },
+                '/hello_world.py',
+              ],
+            ],
+          },
+        },
+      });
+
+      // A BucketDeployment is created to deploy the script into the custom bucket.
+      template.resourceCountIs('Custom::CDKBucketDeployment', 1);
+      template.hasResourceProperties('Custom::CDKBucketDeployment', {
+        DestinationBucketName: { Ref: Match.stringLikeRegexp('ScriptsBucket') },
+        // Never prune unrelated objects that already exist in the user's bucket.
+        Prune: false,
+      });
+    });
+
+    test('grants the job read access to the object in the custom bucket', () => {
+      script = glue.Code.fromAsset(filePath, undefined, bucket);
+
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      });
+
+      // Role policy should grant reading the script object from the custom bucket.
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+              ],
+              Effect: 'Allow',
+              Resource: Match.arrayWith([
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      { 'Fn::GetAtt': [Match.stringLikeRegexp('ScriptsBucket'), 'Arn'] },
+                      '/hello_world.py',
+                    ],
+                  ],
+                },
+              ]),
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('reuses a single deployment when the same code is used by more than one job in the same stack', () => {
+      script = glue.Code.fromAsset(filePath, undefined, bucket);
+
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role1', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      });
+      new glue.PythonShellJob(stack, 'Job2', {
+        script,
+        role: new Role(stack, 'Role2', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      });
+
+      // The script is only deployed once even though it is used by two jobs.
+      Template.fromStack(stack).resourceCountIs('Custom::CDKBucketDeployment', 1);
+    });
+
+    test('throws if trying to rebind in another stack', () => {
+      script = glue.Code.fromAsset(filePath, undefined, bucket);
+
+      new glue.PythonShellJob(stack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role1', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      });
+      const differentStack = new cdk.Stack();
+
+      expect(() => new glue.PythonShellJob(differentStack, 'Job1', {
+        script,
+        role: new Role(stack, 'Role2', {
+          assumedBy: new ServicePrincipal('glue.amazonaws.com'),
+        }),
+      })).toThrow(/associated with another stack/);
+    });
+  });
 });

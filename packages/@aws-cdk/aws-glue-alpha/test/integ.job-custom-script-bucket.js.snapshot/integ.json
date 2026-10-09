@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "aws-glue-job-custom-script-bucket-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-job-custom-script-bucket"
+      ],
+      "assertionStack": "aws-glue-job-custom-script-bucket-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluejobcustomscriptbucketintegtestDefaultTestDeployAssertFC186E9C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
