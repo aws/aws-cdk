@@ -1,0 +1,15 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "integ.step-scaling": {
+      "stacks": [
+        "aws-applicationautoscaling-step-scaling"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false,
+  "minimumCliVersion": "2.1106.1"
+}
