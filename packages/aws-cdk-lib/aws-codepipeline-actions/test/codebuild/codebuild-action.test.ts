@@ -1,10 +1,10 @@
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
-import { App, SecretValue, Stack } from '../../../core';
+import { App, CfnParameter, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -376,6 +376,77 @@ describe('CodeBuild Action', () => {
             },
           ],
         });
+      });
+    });
+
+    test('environment variables with tokens are correctly serialized', () => {
+      const stack = new Stack();
+
+      // Create a token-based environment variable using CfnParameter
+      const parameter = new CfnParameter(stack, 'MyParameter', {
+        type: 'String',
+        default: 'test-value',
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.S3SourceAction({
+                actionName: 'S3_Source',
+                bucket: new s3.Bucket(stack, 'Bucket'),
+                bucketKey: 'key',
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'CodeBuild',
+                input: sourceOutput,
+                project: new codebuild.PipelineProject(stack, 'Project'),
+                environmentVariables: {
+                  MY_VAR: {
+                    value: parameter.valueAsString,
+                  },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      // Verify the CloudFormation template structure
+      const template = Template.fromStack(stack);
+
+      // The EnvironmentVariables should be a Fn::Join that properly embeds the token reference
+      // This ensures tokens are resolved at deployment time without double-encoding
+      template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        Stages: Match.arrayWith([
+          Match.objectLike({
+            Name: 'Build',
+            Actions: [
+              Match.objectLike({
+                Name: 'CodeBuild',
+                Configuration: Match.objectLike({
+                  EnvironmentVariables: {
+                    'Fn::Join': [
+                      '',
+                      Match.arrayWith([
+                        Match.stringLikeRegexp('.*MY_VAR.*'),
+                        { Ref: 'MyParameter' },
+                      ]),
+                    ],
+                  },
+                }),
+              }),
+            ],
+          }),
+        ]),
       });
     });
   });
