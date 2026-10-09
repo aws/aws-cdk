@@ -1,0 +1,43 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.7.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W2001",
+          "description": "Parameters/AssetParametersd02e1d5d3c8d94ccc5c3354c52ef6032af0ffb8e8c3b99d26d142851b2e71a25ArtifactHashAC1F146C: Parameter 'AssetParametersd02e1d5d3c8d94ccc5c3354c52ef6032af0ffb8e8c3b99d26d142851b2e71a25ArtifactHashAC1F146C' is not referenced anywhere in the template",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-custom-resource-external-id-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
