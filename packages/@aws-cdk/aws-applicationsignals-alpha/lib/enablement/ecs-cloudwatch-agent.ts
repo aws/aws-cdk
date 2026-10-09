@@ -157,7 +157,7 @@ export class CloudWatchAgentIntegration extends Construct {
     this.agentContainer = props.taskDefinition.addContainer(props.containerName, {
       image: ecs.ContainerImage.fromRegistry(CloudWatchAgentVersion.getCloudWatchAgentImage(props.operatingSystemFamily)),
       cpu: props.cpu,
-      essential: props.essential? props.essential:true,
+      essential: props.essential ?? true,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
       logging: props.enableLogging? new ecs.AwsLogDriver({
