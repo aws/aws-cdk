@@ -156,20 +156,6 @@ for the breaking-change rule.
   type, logical ID, or real property value changed, the diff is mechanical — do not flag it, and do not
   wave one through because "snapshots always change."
 
-**[TEST-INTEG-CONSTRUCT-MISUSE] (RECOMMENDED)** — A new integ test not using the
-`@aws-cdk/integ-tests-alpha` `IntegTest` pattern (no `testCases`, or a stack that never reaches an
-`IntegTest`), or a snapshot hand-edited or produced with `cdk-integ --dry-run` (regenerated from synthesis
-without a real deploy) instead of by a real deploy — so it no longer proves the template deploys. See
-[`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) for
-the `IntegTest`/`testCases` pattern,
-[`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
-for the no-`--dry-run` hard rule, and the
-[`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
-- **Placement (doc-absent detail):** don't false-flag a correctly-placed test. Stable modules' integ tests
-  live in `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`; alpha modules
-  (`@aws-cdk/<service>-alpha`) keep theirs in the alpha package's own `test/` dir, NOT in `framework-integ`.
-  An alpha test in its own `test/` dir is placed correctly.
-
 **[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
 no `*.snapshot/` at all). The snapshot IS the synthesized template, so a test change that alters synthesis
@@ -186,6 +172,20 @@ See
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
 for the regenerate-via-real-deploy rule.
+
+**[TEST-INTEG-CONSTRUCT-MISUSE] (RECOMMENDED)** — A new integ test not using the
+`@aws-cdk/integ-tests-alpha` `IntegTest` pattern (no `testCases`, or a stack that never reaches an
+`IntegTest`), or a snapshot hand-edited or produced with `cdk-integ --dry-run` (regenerated from synthesis
+without a real deploy) instead of by a real deploy — so it no longer proves the template deploys. See
+[`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) for
+the `IntegTest`/`testCases` pattern,
+[`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
+for the no-`--dry-run` hard rule, and the
+[`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
+- **Placement (doc-absent detail):** don't false-flag a correctly-placed test. Stable modules' integ tests
+  live in `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`; alpha modules
+  (`@aws-cdk/<service>-alpha`) keep theirs in the alpha package's own `test/` dir, NOT in `framework-integ`.
+  An alpha test in its own `test/` dir is placed correctly.
 
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change owes a deploy-time assertion. Independently, a verification
