@@ -18,7 +18,7 @@ import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
-import type { Duration } from '../../core';
+import type { Duration, RemovalPolicy } from '../../core';
 import { ContextProvider, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
@@ -58,6 +58,20 @@ export interface CommonHostedZoneProps {
    * @default disabled
    */
   readonly queryLogsLogGroupArn?: string;
+
+  /**
+   * The removal policy to apply to the hosted zone.
+   *
+   * When set to `RemovalPolicy.RETAIN`, the hosted zone is preserved when it is
+   * removed from the stack or the stack is deleted. This protects against
+   * accidental loss of a hosted zone: the name servers Route 53 assigns to a
+   * public hosted zone are chosen at creation time and cannot be recovered once
+   * the zone is deleted, so a recreated zone gets different name servers that
+   * must be re-registered with the parent domain and propagated through DNS.
+   *
+   * @default RemovalPolicy.DESTROY - the hosted zone is deleted when it is removed from the stack
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -263,6 +277,10 @@ export class HostedZone extends Resource implements IHostedZone {
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
       vpcs: this._vpcs,
     });
+
+    if (props.removalPolicy !== undefined) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
 
     this.hostedZoneId = resource.ref;
     this.hostedZoneNameServers = resource.attrNameServers;

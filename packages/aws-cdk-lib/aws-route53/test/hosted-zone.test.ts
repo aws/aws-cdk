@@ -788,3 +788,76 @@ describe('acceleratedRecoveryEnabled', () => {
     });
   });
 });
+
+describe('removalPolicy', () => {
+  test.each([
+    [cdk.RemovalPolicy.RETAIN, 'Retain'],
+    [cdk.RemovalPolicy.DESTROY, 'Delete'],
+  ])('removalPolicy=%p sets DeletionPolicy=%p on a PublicHostedZone', (removalPolicy, expected) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      removalPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Route53::HostedZone', {
+      DeletionPolicy: expected,
+      UpdateReplacePolicy: expected,
+    });
+  });
+
+  test('is not set on the template when removalPolicy is omitted', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PublicHostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Route53::HostedZone', {
+      DeletionPolicy: Match.absent(),
+      UpdateReplacePolicy: Match.absent(),
+    });
+  });
+
+  test('is honored on the base HostedZone', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Route53::HostedZone', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('is honored on a PrivateHostedZone', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new PrivateHostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Route53::HostedZone', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+});
