@@ -170,29 +170,27 @@ for the no-`--dry-run` hard rule, and the
   (`@aws-cdk/<service>-alpha`) keep theirs in the alpha package's own `test/` dir, NOT in `framework-integ`.
   An alpha test in its own `test/` dir is placed correctly.
 
-**[TEST-INTEG-STALE-SNAPSHOT] (RECOMMENDED)** — The diff shows a changed `integ.*.ts` but its companion
-`*.snapshot/` is untouched (or a brand-new `integ.*.ts` arrives with no `*.snapshot/` at all). The snapshot
-IS the synthesized template, so a test change that alters synthesis must change the snapshot too; when it
-does not, the committed snapshot no longer proves the test deploys. See
+**[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
+`*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
+no `*.snapshot/` at all). The snapshot IS the synthesized template, so a test change that alters synthesis
+must change the snapshot too; when it does not, the committed snapshot no longer proves the test deploys.
+
+```
+# FLAG: a .ts changed in the diff must bring its snapshot folder along
+packages/.../test/integ.my-feature.ts           (changed)
+packages/.../test/integ.my-feature.js.snapshot/  (unchanged — no companion update)
+```
+
+- **Flag the uncertainty, never assert staleness blind:** a `*.snapshot/` is routinely filtered out of a
+  review diff, so its absence does NOT prove it was skipped. When it is not in the diff, say the snapshot
+  could not be confirmed and ask the author to verify it matches synthesis, per the "Judge only a snapshot
+  the diff SHOWS" guard on `[TEST-INTEG-DANGEROUS-SNAPSHOT]`.
+
+See
 [`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
 for the regenerate-via-real-deploy rule.
-
-```
-# FLAG: integ test changed, but the snapshot folder is absent from the diff
-packages/.../test/integ.my-feature.ts          (changed)
-packages/.../test/integ.my-feature.js.snapshot/ (NOT in diff — no companion update)
-```
-
-- **Flag the uncertainty, never assert staleness blind (doc-absent detail):** a `*.snapshot/` is large and
-  routinely filtered out of a review diff, so its absence from your diff does NOT prove it was skipped. Say
-  "the integ test changed but its snapshot was not in the diff, so I could not confirm it was regenerated;
-  please verify it matches synthesis" rather than asserting it is stale. Defers to the "Judge only a
-  snapshot the diff SHOWS" guard on `[TEST-INTEG-DANGEROUS-SNAPSHOT]`.
-- **Conditional (doc-absent detail):** up-tier BLOCKING when a visible snapshot mismatch hides a dangerous
-  template change (hand it to `[TEST-INTEG-DANGEROUS-SNAPSHOT]`); down-tier OPTIONAL when the test change is
-  cosmetic (a rename, a comment) that cannot alter the template.
 
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change owes a deploy-time assertion. Independently, a verification
