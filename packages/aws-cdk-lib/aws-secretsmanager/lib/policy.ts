@@ -14,6 +14,13 @@ export interface ResourcePolicyProps {
    * The secret to attach a resource-based permissions policy
    */
   readonly secret: ISecret;
+
+  /**
+   * Specifies whether to block resource-based policies that allow broad access to the secret.
+   *
+   * @default - AWS Secrets Manager default
+   */
+  readonly blockPublicPolicy?: boolean;
 }
 
 /**
@@ -47,6 +54,7 @@ export class ResourcePolicy extends Resource {
     new CfnResourcePolicy(this, 'Resource', {
       resourcePolicy: this.document,
       secretId: props.secret.secretArn,
+      blockPublicPolicy: props.blockPublicPolicy,
     });
   }
 }
