@@ -4,6 +4,7 @@ import { Archive } from './archive';
 import { EventBusGrants } from './events-grants.generated';
 import type { EventBusReference, IEventBusRef } from './events.generated';
 import { CfnEventBus, CfnEventBusPolicy } from './events.generated';
+import type { Writeable } from './private/writeable';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type * as sqs from '../../aws-sqs';
@@ -306,6 +307,20 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
 }
 
 /**
+ * Assigns the `eventSourceName` on an `EventBusBase`.
+ *
+ * `eventSourceName` is declared `readonly` (to match the `IEventBus` contract
+ * under `exactOptionalPropertyTypes`) but is set after construction, so the write
+ * goes through a `Writeable` cast. The `undefined` check keeps the property absent
+ * rather than set to `undefined`, which `exactOptionalPropertyTypes` forbids.
+ */
+function setEventSourceName(eventBus: EventBusBase, eventSourceName: string | undefined): void {
+  if (eventSourceName !== undefined) {
+    (eventBus as Writeable<EventBusBase>).eventSourceName = eventSourceName;
+  }
+}
+
+/**
  * Define an EventBridge EventBus
  *
  * @resource AWS::Events::EventBus
@@ -485,10 +500,7 @@ export class EventBus extends EventBusBase {
   /**
    * The name of the partner event source
    */
-  @memoizedGetter
-  public get eventSourceName(): string | undefined {
-    return this._resource.eventSourceName;
-  }
+  public readonly eventSourceName?: string;
 
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
@@ -514,6 +526,8 @@ export class EventBus extends EventBusBase {
       kmsKeyIdentifier: props?.kmsKey?.keyArn,
       logConfig: props?.logConfig,
     });
+
+    setEventSourceName(this, eventSourceName);
 
     /**
      * Allow EventBridge to use customer managed key
@@ -588,7 +602,7 @@ class ImportedEventBus extends EventBusBase {
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
     this.eventBusPolicy = attrs.eventBusPolicy;
-    this.eventSourceName = attrs.eventSourceName;
+    setEventSourceName(this, attrs.eventSourceName);
   }
 
   @MethodMetadata()
