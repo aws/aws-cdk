@@ -55,8 +55,51 @@
     "Roles": [
      {
       "Ref": "TestRole6C9272DF"
+     },
+     {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::Split": [
+         "/",
+         {
+          "Fn::Select": [
+           5,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "ImmutableTestRole908E7982",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
      }
     ]
+   }
+  },
+  "ImmutableTestRole908E7982": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sqs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    }
   },
   "TestRole25D98AB21": {

@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
@@ -805,6 +805,44 @@ describe('managed policy', () => {
 
     // THEN
     Template.fromStack(otherStack).resourceCountIs('AWS::IAM::ManagedPolicy', 1);
+  });
+
+  test('attachToRole with immutable role does not include role in synthesized Roles property', () => {
+    const immutableRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::1234:role/MyRole', { mutable: false });
+    const policy = new ManagedPolicy(stack, 'MyManagedPolicy', {
+      statements: [new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] })],
+    });
+
+    policy.attachToRole(immutableRole);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      Roles: Match.absent(),
+    });
+  });
+
+  test('attachToRole with mutable imported role includes role in synthesized Roles property', () => {
+    const mutableRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::1234:role/MyRole', { mutable: true });
+    const policy = new ManagedPolicy(stack, 'MyManagedPolicy', {
+      statements: [new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] })],
+    });
+
+    policy.attachToRole(mutableRole);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      Roles: Match.arrayWith([Match.objectLike({})]),
+    });
+  });
+
+  test('constructor roles prop with immutable role does not include role in synthesized Roles property', () => {
+    const immutableRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::1234:role/MyRole', { mutable: false });
+    new ManagedPolicy(stack, 'MyManagedPolicy', {
+      statements: [new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] })],
+      roles: [immutableRole],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      Roles: Match.absent(),
+    });
   });
 });
 
