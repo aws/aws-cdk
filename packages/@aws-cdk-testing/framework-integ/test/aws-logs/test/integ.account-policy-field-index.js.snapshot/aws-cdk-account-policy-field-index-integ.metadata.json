@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-account-policy-field-index-integ/DataSourceScoped": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-account-policy-field-index-integ/PrefixScoped": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-account-policy-field-index-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-field-index-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-field-index-integ/DataSourceScoped/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataSourceScoped6DC1932E"
+    }
+  ],
+  "/aws-cdk-account-policy-field-index-integ/PrefixScoped/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrefixScopedB57BCCD9"
+    }
+  ]
+}
