@@ -1,0 +1,20 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "be17cbdbac017ca001300a0475c624f2aad0d26c2e8750a615d5f89291c25834": {
+      "displayName": "aws-ecs-integ-imported-taskdef-consumer Template",
+      "source": {
+        "path": "aws-ecs-integ-imported-taskdef-consumer.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-747830bb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "be17cbdbac017ca001300a0475c624f2aad0d26c2e8750a615d5f89291c25834.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
