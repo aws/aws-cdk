@@ -177,7 +177,9 @@ export interface CustomTopicProps {
   readonly name: string;
   /**
    * Provide a clear definition to detect and block user inputs and FM responses
-   * that fall into this topic. Avoid starting with "don't".
+   * that fall into this topic. Avoid starting with "don't". Up to 200 characters
+   * with the CLASSIC tier, or 1000 with the STANDARD tier. Examples are counted
+   * separately.
    * @example `Investment advice refers to inquiries, guidance, or recommendations
    * regarding the management or allocation of funds or assets with the goal of
    * generating returns or achieving specific financial objectives.`
