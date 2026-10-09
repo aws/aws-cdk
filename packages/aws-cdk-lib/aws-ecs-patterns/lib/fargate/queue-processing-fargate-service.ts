@@ -130,6 +130,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       capacityProviderStrategies: props.capacityProviderStrategies,
       enableExecuteCommand: props.enableExecuteCommand,
       healthCheckGracePeriod: props.healthCheckGracePeriod,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     });
 
     this.configureAutoscalingForService(this.service);
