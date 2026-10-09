@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { App, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
@@ -283,6 +283,210 @@ describe('service account', () => {
       })).toThrow(
         'Pod Identity is not supported in Fargate. Use IRSA identity type instead.',
       );
+    });
+
+    test('uses provided role when role prop is specified', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // the provided role ARN should be used in PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        ClusterName: { Ref: 'Cluster9EE0221C' },
+        Namespace: 'default',
+        RoleArn: { 'Fn::GetAtt': ['ExistingRole5EDF2D93', 'Arn'] },
+        ServiceAccount: 'stackmyserviceaccount58b9529e',
+      });
+      // no auto-generated IAM role for ServiceAccount should exist
+      // the auto-generated role has a statement with sts:TagSession; ExistingRole does not
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 0);
+      // the Pod Identity Agent addon should be created
+      t.hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+      });
+    });
+
+    test('throws if role is specified without POD_IDENTITY identity type', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN / THEN
+      expect(() => new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.IRSA,
+        role: existingRole,
+      })).toThrow(
+        'The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.',
+      );
+    });
+
+    test('throws if role is specified with default identity type', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN / THEN (identityType defaults to IRSA when not specified)
+      expect(() => new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        role: existingRole,
+      })).toThrow(
+        'The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.',
+      );
+    });
+
+    test('sa.role returns the provided role', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // THEN
+      expect(sa.role).toBe(existingRole);
+    });
+
+    test('grants on the service account are applied to the provided role', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // WHEN
+      iam.Grant.addToPrincipal({
+        grantee: sa,
+        actions: ['s3:GetObject'],
+        resourceArns: ['arn:aws:s3:::my-bucket/*'],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            { Action: 's3:GetObject', Effect: 'Allow', Resource: 'arn:aws:s3:::my-bucket/*' },
+          ],
+        },
+        Roles: [{ Ref: 'ExistingRole5EDF2D93' }],
+      });
+    });
+
+    test('accepts an L1 CfnRole imported with Role.fromRoleArn', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const cfnRole = new iam.CfnRole(stack, 'CfnRole', {
+        assumeRolePolicyDocument: {
+          Statement: [{
+            Effect: 'Allow',
+            Principal: { Service: 'pods.eks.amazonaws.com' },
+            Action: ['sts:AssumeRole', 'sts:TagSession'],
+          }],
+        },
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: iam.Role.fromRoleArn(stack, 'ImportedRole', cfnRole.attrArn),
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // the L1 role's ARN should be used in PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        RoleArn: { 'Fn::GetAtt': ['CfnRole', 'Arn'] },
+      });
+      // no auto-generated role should exist: the only role with the Pod Identity trust policy is the CfnRole itself
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 1);
+    });
+
+    test('sa.role returns auto-generated role when no role prop is provided', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      const cluster = new Cluster(stack, 'Cluster', {
+        version: KubernetesVersion.V1_30,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // WHEN
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+
+      // THEN - role returns the auto-generated Role instance
+      expect(sa.role).toBeInstanceOf(iam.Role);
     });
   });
   describe('Service Account with eks.IdentityType.IRSA', () => {
