@@ -93,6 +93,15 @@ interface CallAwsServiceCrossRegionOptions {
    * @default true
    */
   readonly retryOnServiceExceptions?: boolean;
+
+  /**
+   * The timeout for the Lambda function that performs the cross-region AWS API call.
+   *
+   * The value must be between 1 and 900 seconds.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly lambdaTimeout?: Duration;
 }
 
 /**
@@ -157,6 +166,13 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
       throw new ValidationError(lit`MustBeActionCamelCase`, `action must be camelCase, got: ${props.action}`, this);
     }
 
+    if (props.lambdaTimeout !== undefined) {
+      const seconds = props.lambdaTimeout.toSeconds();
+      if (seconds < 1 || seconds > 900) {
+        throw new ValidationError(lit`LambdaTimeoutOutOfRange`, `lambdaTimeout must be between 1 and 900 seconds, got: ${JSON.stringify(seconds)}`, this);
+      }
+    }
+
     if (props.endpoint && isJsonPathOrJsonataExpression(props.endpoint)) {
       Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-stepfunctions-tasks:crossRegionEndpointSsrfRisk',
@@ -181,7 +197,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     this.lambdaFunction = new CrossRegionAwsSdkSingletonFunction(this, 'Handler', {
       uuid: '8a0c93f3-dbef-4b71-ac13-7aaf2048ce7e',
       lambdaPurpose: 'CrossRegionAwsSdk',
-      timeout: Duration.seconds(30),
+      timeout: props.lambdaTimeout ?? Duration.seconds(30),
     });
 
     [
