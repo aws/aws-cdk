@@ -16,6 +16,8 @@ import { NetworkMode } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { CfnService, ServiceReference } from '../ecs.generated';
 import type { PlacementConstraint, PlacementStrategy } from '../placement';
+import type { ServiceMonitoringConfiguration } from '../service-monitoring';
+import { renderServiceMonitoring, usesHighResolutionMetrics } from '../service-monitoring';
 
 /**
  * The properties for defining a service using the EC2 launch type.
@@ -104,6 +106,22 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * @default AvailabilityZoneRebalancing.ENABLED
    */
   readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
+
+  /**
+   * The monitoring configuration for the service, which defines the resolution of the
+   * service-level `CPUUtilization` and `MemoryUtilization` CloudWatch metrics.
+   *
+   * Collecting these metrics at a 20-second resolution lets Application Auto Scaling
+   * react to load changes faster. To scale on them, use the high-resolution predefined
+   * metrics on the scaling policy.
+   *
+   * Requires the ECS deployment controller. The CODE_DEPLOY and EXTERNAL deployment
+   * controllers do not support high-resolution metrics.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/target-tracking-faster-auto-scaling.html
+   * @default - Amazon ECS uses the default resolution of 60 seconds.
+   */
+  readonly monitoring?: ServiceMonitoringConfiguration;
 }
 
 /**
@@ -180,6 +198,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
   private readonly daemon: boolean;
   private readonly availabilityZoneRebalancingEnabled: boolean;
+  private readonly highResolutionMetricsEnabled: boolean;
 
   /**
    * Constructs a new instance of the Ec2Service class.
@@ -232,6 +251,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementStrategies: strategies.derive(s => this.strategiesInitialized ? s : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      monitoring: renderServiceMonitoring(scope, props.monitoring, props.deploymentController?.type),
     }, props.taskDefinition);
 
     this.constraints = constraints;
@@ -241,6 +261,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
     this.daemon = props.daemon || false;
     this.availabilityZoneRebalancingEnabled = props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED;
+    this.highResolutionMetricsEnabled = usesHighResolutionMetrics(props.monitoring);
 
     let securityGroups;
     if (props.securityGroup !== undefined) {
@@ -348,6 +369,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
       throw new ValidationError(lit`AvailabilityZoneRebalancing`, 'AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
+    }
+    if (this.highResolutionMetricsEnabled) {
+      throw new ValidationError(lit`ServiceMonitoringDisallowsClassicLB`, 'high-resolution monitoring disallows using the service as a target of a Classic Load Balancer', this);
     }
     super.attachToClassicLB(loadBalancer);
   }
