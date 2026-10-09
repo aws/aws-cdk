@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as targets from '../../../aws-events-targets';
 import type * as s3 from '../../../aws-s3';
@@ -114,6 +114,7 @@ export class S3SourceAction extends Action {
 
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
+    const dependencies = new Array<IDependable>();
     if (this.props.trigger === S3Trigger.EVENTS) {
       const id = this.generateEventId(stage);
       this.props.bucket.onCloudTrailWriteObject(id, {
@@ -124,12 +125,13 @@ export class S3SourceAction extends Action {
     }
 
     // we need to read from the source bucket...
-    this.props.bucket.grantRead(options.role, this.props.bucketKey);
+    dependencies.push(this.props.bucket.grantRead(options.role, this.props.bucketKey));
 
     // ...and write to the Pipeline bucket
-    options.bucket.grantWrite(options.role);
+    dependencies.push(options.bucket.grantWrite(options.role));
 
     return {
+      dependencies,
       configuration: {
         S3Bucket: this.props.bucket.bucketName,
         S3ObjectKey: this.props.bucketKey,
