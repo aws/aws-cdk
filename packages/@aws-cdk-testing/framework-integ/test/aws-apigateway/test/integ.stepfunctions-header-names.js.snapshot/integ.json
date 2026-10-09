@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "aws-apigateway-stepfunctions-header-names/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigateway-stepfunctions-header-names"
+      ],
+      "assertionStack": "aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert",
+      "assertionStackName": "awsapigatewaystepfunctionsheadernamesDefaultTestDeployAssertF4C97857"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
