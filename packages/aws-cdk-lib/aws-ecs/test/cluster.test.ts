@@ -3652,6 +3652,143 @@ describe('cluster', () => {
       });
     });
 
+    test('with scaleInAfter', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        scaleInAfter: cdk.Duration.minutes(5),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: Match.objectLike({
+          InfrastructureOptimization: { ScaleInAfter: 300 },
+        }),
+      });
+    });
+
+    test('with disableInfrastructureOptimization', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+        disableInfrastructureOptimization: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: Match.objectLike({
+          InfrastructureOptimization: { ScaleInAfter: -1 },
+        }),
+      });
+    });
+
+    test('fails when scaleInAfter and disableInfrastructureOptimization are both specified', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN / THEN
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
+          scaleInAfter: cdk.Duration.minutes(5),
+          disableInfrastructureOptimization: true,
+        });
+      }).toThrow('The options "scaleInAfter" and "disableInfrastructureOptimization" are mutually exclusive');
+    });
+
     test('throws when subnets are not provided', () => {
       // GIVEN
       const app = new cdk.App();

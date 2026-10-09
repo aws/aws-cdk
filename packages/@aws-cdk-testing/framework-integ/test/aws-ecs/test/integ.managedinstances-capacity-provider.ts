@@ -33,6 +33,7 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'Mana
     vCpuCountMin: 1,
     memoryMin: cdk.Size.gibibytes(2),
   },
+  scaleInAfter: cdk.Duration.minutes(5),
 });
 
 // Configure security group rules using IConnectable interface
