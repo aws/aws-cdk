@@ -17,6 +17,18 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-mediapackagev2/myNamedEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myNamedEndpointPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-mediapackagev2/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -51,6 +63,18 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myNamedEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myNamedEndpointA6F9DBFE"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myNamedEndpointPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myNamedEndpointPolicy25E8CB79"
     }
   ],
   "/aws-cdk-mediapackagev2/myEndpoint/Policy/Resource": [
