@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "LogRetentionRegionInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-log-retention-region-integ"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LogRetentionRegionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LogRetentionRegionIntegDefaultTestDeployAssert1EA249D3"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
