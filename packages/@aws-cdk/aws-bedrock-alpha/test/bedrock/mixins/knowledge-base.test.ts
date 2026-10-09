@@ -195,28 +195,17 @@ describe('knowledge base mixins', () => {
 });
 
 describe('knowledge base mixin service role', () => {
-  test('grants to a bare CfnRole through an imported role that is reused across mixins', () => {
+  test('fails for a bare CfnRole', () => {
     const stack = new cdk.Stack();
     const cfnRole = new iam.CfnRole(stack, 'CfnServiceRole', {
       assumeRolePolicyDocument: {
         Statement: [{ Effect: 'Allow', Principal: { Service: 'bedrock.amazonaws.com' }, Action: 'sts:AssumeRole' }],
       },
     });
-    newCfnKnowledgeBase(stack, { roleArn: cfnRole.attrArn })
-      .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack)))
-      .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack)));
+    const kb = newCfnKnowledgeBase(stack, { roleArn: cfnRole.attrArn });
 
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::IAM::Policy', 1);
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      Roles: [{ Ref: 'CfnServiceRole' }],
-      PolicyDocument: {
-        Statement: [
-          Match.objectLike({ Action: 'aoss:APIAccessAll' }),
-          Match.objectLike({ Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject'] }),
-        ],
-      },
-    });
+    expect(() => kb.with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack))))
+      .toThrow(/role Default\/CfnServiceRole is a bare iam.CfnRole, which cannot be granted permissions/);
   });
 
   test('fails when the role ARN does not reference a role defined in the app', () => {
@@ -224,15 +213,22 @@ describe('knowledge base mixin service role', () => {
     const kb = newCfnKnowledgeBase(stack, { roleArn: iam.Role.fromRoleArn(stack, 'Imported', ROLE_ARN).roleArn });
 
     expect(() => kb.with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack))))
-      .toThrow(/roleArn must reference an iam.Role or iam.CfnRole defined in this app/);
+      .toThrow(/cannot determine the role for roleArn; it must reference an iam.Role defined in this app/);
   });
 
-  test('fails when the role is used with withoutPolicyUpdates()', () => {
+  test('grants nothing to a KnowledgeBase role that is used with withoutPolicyUpdates()', () => {
     const stack = new cdk.Stack();
-    const kb = newCfnKnowledgeBase(stack, { roleArn: serviceRole(stack).withoutPolicyUpdates().roleArn });
+    const kb = new bedrock.KnowledgeBase(stack, 'L2', {
+      type: bedrock.KnowledgeBaseType.vector({
+        embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+        vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+      }),
+      role: serviceRole(stack).withoutPolicyUpdates(),
+    });
 
-    expect(() => kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage(supplementalProps(stack))))
-      .toThrow(/role Default\/KbRole is used with withoutPolicyUpdates\(\)/);
+    kb.with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({ bucket: bucket(stack) }));
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   });
 
   test('uses the role of a KnowledgeBase when applied retrospectively, including an imported role', () => {

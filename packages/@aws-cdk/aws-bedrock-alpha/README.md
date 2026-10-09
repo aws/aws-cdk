@@ -1754,7 +1754,7 @@ Mixins add a feature to an L1 or L2 construct with `.with()`. See the
 in the `aws-cdk-lib` documentation.
 
 The mixins grant permissions to the knowledge base's role. On a `CfnKnowledgeBase`,
-`roleArn` must reference an `iam.Role` or `iam.CfnRole` defined in your app; for an
+`roleArn` must reference an `iam.Role` defined in your app; for an
 imported role or one used with `withoutPolicyUpdates()`, use `KnowledgeBase`.
 
 ### KnowledgeBaseEmbeddingsModel

@@ -3,6 +3,7 @@ import { ArnFormat, Names, Resource, Stack } from 'aws-cdk-lib';
 import type { IKnowledgeBaseRef, KnowledgeBaseReference } from 'aws-cdk-lib/aws-bedrock';
 import { CfnKnowledgeBase } from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -210,8 +211,7 @@ export class KnowledgeBase extends KnowledgeBaseBase {
     return new Import(scope, id, { environmentFromArn: attrs.knowledgeBaseArn });
   }
 
-  public readonly knowledgeBaseArn: string;
-  public readonly knowledgeBaseId: string;
+  private readonly resource: CfnKnowledgeBase;
 
   /**
    * The service role that Amazon Bedrock assumes to operate the knowledge base.
@@ -233,21 +233,28 @@ export class KnowledgeBase extends KnowledgeBaseBase {
     this.role = role;
     this.grantPrincipal = role.grantPrincipal;
 
-    const resource = new CfnKnowledgeBase(this, 'Resource', {
+    this.resource = new CfnKnowledgeBase(this, 'Resource', {
       name: props.knowledgeBaseName ?? Names.uniqueResourceName(this, { maxLength: 100 }),
       description: props.description,
       roleArn: role.roleRef.roleArn,
       knowledgeBaseConfiguration: { type: props.type._typeName },
       tags: props.tags,
     });
-    // The type's mixins resolve the role from `roleArn` when applied, so it must be bound first
-    GrantableRoles.bind(resource, role);
+    // The type's mixins resolve the role from `roleArn` when applied, so it must be recorded first
+    GrantableRoles.recordRoleRef(this.resource, role);
 
     for (const mixin of props.type._mixins) {
       this.with(mixin);
     }
+  }
 
-    this.knowledgeBaseArn = resource.attrKnowledgeBaseArn;
-    this.knowledgeBaseId = resource.ref;
+  @memoizedGetter
+  public get knowledgeBaseArn(): string {
+    return this.resource.attrKnowledgeBaseArn;
+  }
+
+  @memoizedGetter
+  public get knowledgeBaseId(): string {
+    return this.resource.ref;
   }
 }
