@@ -1,0 +1,29 @@
+{
+  "resources": {
+    "KnowledgeBase": {
+      "hasResourcePolicy": false,
+      "grants": {
+        "retrieve": {
+          "actions": [
+            "bedrock:Retrieve"
+          ],
+          "docSummary": "Grant permissions to query this knowledge base and retrieve relevant chunks.\n\nThis will grant the following permissions on the knowledge base:\n\n  - bedrock:Retrieve"
+        },
+        "retrieveAndGenerate": {
+          "arnFormat": "*",
+          "actions": [
+            "bedrock:RetrieveAndGenerate"
+          ],
+          "docSummary": "Grant permissions to query a knowledge base and generate a response with a foundation model.\n\n`bedrock:RetrieveAndGenerate` does not support resource-level permissions, so it is granted on all resources (`*`). Access to a specific knowledge base is controlled by `bedrock:Retrieve`, so also call `retrieve()` on this knowledge base, and grant `bedrock:InvokeModel` on the generation model with `BedrockFoundationModel.grantInvoke()`.\n\nThis will grant the following permissions:\n\n  - bedrock:RetrieveAndGenerate"
+        },
+        "getDocumentContent": {
+          "actions": [
+            "bedrock:Retrieve",
+            "bedrock:GetDocumentContent"
+          ],
+          "docSummary": "Grant permissions to retrieve the original or extracted content of documents ingested into this knowledge base.\n\n`bedrock:GetDocumentContent` requires `bedrock:Retrieve` on the same knowledge base, so both are granted.\n\nThis will grant the following permissions on the knowledge base:\n\n  - bedrock:Retrieve\n  - bedrock:GetDocumentContent"
+        }
+      }
+    }
+  }
+}

@@ -50,6 +50,7 @@
   },
   "scripts": {
     "build": "cdk-build",
+    "gen": "gen-cdk",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
