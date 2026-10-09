@@ -41,6 +41,7 @@ jobs:
   # Runs on ubuntu-latest — does not need the CodeBuild runner or Atmosphere.
   validate:
     runs-on: ubuntu-latest
+    environment: automation
     if: github.event.workflow_run.conclusion == 'success'
     outputs:
       pr_number: ${{ steps.find-pr.outputs.pr_number }}
