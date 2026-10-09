@@ -34,6 +34,18 @@ const cluster = new dsql.Cluster(this, 'Cluster', {
 });
 ```
 
+## Encrypting a Cluster with a Customer-Managed KMS Key
+
+By default, clusters use an AWS-managed KMS key. To encrypt the cluster with
+your own KMS key, pass it via the `encryptionKey` property:
+
+```ts
+declare const myKey: kms.IKeyRef;
+const cluster = new dsql.Cluster(this, 'Cluster', {
+  encryptionKey: myKey,
+});
+```
+
 ## Granting Connect Access
 
 You can grant IAM principals the ability to connect to the cluster:
