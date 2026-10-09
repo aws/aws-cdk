@@ -311,6 +311,32 @@ export interface SecurityGroupProps {
    * @default false
    */
   readonly disableInlineRules?: boolean;
+
+  /**
+   * Whether to add self-referencing ingress and egress rules that allow all
+   * traffic (all protocols and ports) between resources associated with this
+   * security group.
+   *
+   * When set to `true`, this creates a self-referencing
+   * `AWS::EC2::SecurityGroupIngress` **and** `AWS::EC2::SecurityGroupEgress`
+   * rule where both the source/destination and the group are this security
+   * group itself. This is the exact configuration required by Elastic Fabric
+   * Adapter (EFA) network interfaces, which need all traffic allowed to and
+   * from the members of the same security group.
+   *
+   * The self-referencing egress rule is emitted regardless of the value of
+   * `allowAllOutbound`. The `allowAllOutbound` "all traffic to 0.0.0.0/0"
+   * shortcut only subsumes CIDR-based egress rules and does **not** cover a
+   * self-referencing security-group egress rule, so both rules are always
+   * created when `allowAllSelf` is `true`. This means you can keep the default
+   * `allowAllOutbound: true` and still get the self-referencing egress rule
+   * that EFA requires.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa-start.html#efa-start-security
+   *
+   * @default false
+   */
+  readonly allowAllSelf?: boolean;
 }
 
 /**
@@ -563,6 +589,44 @@ export class SecurityGroup extends SecurityGroupBase {
 
     this.addDefaultEgressRule();
     this.addDefaultIpv6EgressRule();
+
+    if (props.allowAllSelf) {
+      this.addAllowAllSelfRules();
+    }
+  }
+
+  /**
+   * Add self-referencing "all traffic" ingress and egress rules.
+   *
+   * This is the ergonomic equivalent of calling
+   * `connections.allowInternally(Port.allTraffic())`, used when `allowAllSelf`
+   * is set. It produces the exact security group configuration required by EFA
+   * network interfaces.
+   *
+   * The egress rule is always emitted, even with the default
+   * `allowAllOutbound: true`. When `allowAllOutbound` is `true`,
+   * `addEgressRule` normally drops explicit egress rules on the assumption that
+   * the implicit "all traffic to 0.0.0.0/0" rule subsumes them. That assumption
+   * does not hold for a self-referencing *security-group* egress rule (which is
+   * what EFA needs), so we bypass that shortcut and emit the rule directly.
+   */
+  private addAllowAllSelfRules() {
+    const description = 'Allow all traffic to self (allowAllSelf)';
+    // Ingress: never subsumed, so the standard path is fine.
+    this.addIngressRule(this, Port.allTraffic(), description);
+
+    if (this.allowAllOutbound) {
+      // Bypass the allowAllOutbound egress subsumption shortcut for this
+      // explicit self-referencing rule. A SecurityGroup peer has
+      // `canInlineRule === false`, so the regular path would delegate to
+      // `super.addEgressRule` anyway; calling it directly yields the identical
+      // CfnSecurityGroupEgress resource (same scope and id) without the shortcut.
+      super.addEgressRule(this, Port.allTraffic(), description);
+    } else {
+      // With allowAllOutbound=false there is no subsumption; the regular path
+      // also removes the placeholder "no traffic" egress rule for us.
+      this.addEgressRule(this, Port.allTraffic(), description);
+    }
   }
 
   @MethodMetadata()
