@@ -1,5 +1,6 @@
 export * from './aspect';
 export * from './tag-aspect';
+export * from './metadata-context';
 
 export * from './mixins';
 
