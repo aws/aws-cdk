@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "02e78c8d8455277ff33ea6b5ad85a4187f62453464b15200f3a209404f3c0e85": {
+      "displayName": "aws-ecs-fargate-s3-files Template",
+      "source": {
+        "path": "aws-ecs-fargate-s3-files.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e1ec1977": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "02e78c8d8455277ff33ea6b5ad85a4187f62453464b15200f3a209404f3c0e85.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
