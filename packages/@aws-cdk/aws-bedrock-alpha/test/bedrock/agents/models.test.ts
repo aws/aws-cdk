@@ -232,6 +232,10 @@ describe('BedrockFoundationModel', () => {
 
       expect(BedrockFoundationModel.ANTHROPIC_CLAUDE_V2.modelId).toBe('anthropic.claude-v2');
       expect(BedrockFoundationModel.ANTHROPIC_CLAUDE_V2.supportsAgents).toBe(true);
+
+      expect(BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_5_5.modelId).toBe('anthropic.claude-haiku-5-5');
+      expect(BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_5_5.supportsAgents).toBe(true);
+      expect(BedrockFoundationModel.ANTHROPIC_CLAUDE_HAIKU_5_5.supportsCrossRegion).toBe(true);
     });
 
     test('Cohere models are configured correctly', () => {
