@@ -693,6 +693,60 @@ table.addLocalSecondaryIndex({
 });
 ```
 
+## Vector Indexes
+
+Vector indexes enable similarity search over an embedding attribute stored on a
+table. A vector index defines the embedding attribute to search
+(`vectorAttribute`), the number of `dimensions` of each vector, the
+`distanceFunction` used to compare vectors, and an optional `searchSchema` that
+partitions the index (`HASH`) and declares additional inline filters
+(`INLINE_FILTER`).
+
+Vector indexes can only be used with tables in `PAY_PER_REQUEST` (on-demand)
+billing mode (the default for `TableV2`), and are inherited by all replica
+tables, so every replica region must support vector indexes. You can provide
+them as a `vectorIndexes` property or with the `addVectorIndex` method:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+});
+
+table.addVectorIndex({
+  indexName: 'SimilarItems',
+  vectorAttribute: 'embedding',
+  dimensions: 128,
+  distanceFunction: dynamodb.VectorDistanceFunction.COSINE,
+  searchSchema: [
+    { attribute: { name: 'category', type: dynamodb.AttributeType.STRING }, type: dynamodb.SearchSchemaElementType.HASH },
+    { attribute: { name: 'year', type: dynamodb.AttributeType.NUMBER }, type: dynamodb.SearchSchemaElementType.INLINE_FILTER },
+  ],
+  projectionType: dynamodb.ProjectionType.ALL,
+});
+```
+
+The attribute referenced by `vectorAttribute` has an implicit type of List and
+does not need to be declared in the table's attribute definitions. Attributes
+referenced by the `searchSchema` are added to the table's attribute definitions
+automatically. Index names must be unique across all global secondary indexes,
+local secondary indexes, and vector indexes on the table.
+
+A `searchSchema` may contain at most one `HASH` element. When a `HASH` element
+is declared, queries against the vector index must provide a search condition
+expression targeting it.
+
+Searching a vector index requires the `dynamodb:SearchVectors` permission on
+the index resource. It is not included in `grantReadData` because fine-grained
+access control condition keys (such as `dynamodb:LeadingKeys`) have no effect
+on `SearchVectors`. Grant it explicitly with `grantVectorSearch`:
+
+```ts
+declare const table: dynamodb.TableV2;
+declare const grantee: iam.IGrantable;
+
+table.grantVectorSearch(grantee);
+```
+
 ## Streams
 
 Each DynamoDB table produces an independent stream based on all its writes, regardless of the origination point for those writes. DynamoDB supports two stream types:
