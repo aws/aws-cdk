@@ -1,5 +1,5 @@
 {
-  "version": "55.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "aws-cdk-vpcv2-secondary-cidr-blocks.assets": {
       "type": "cdk:asset-manifest",
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/984148173ca0786a323c393690b4ebe9c335f028d52a11e11833a6fbb21ee821.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef697b1dad8f714862d98d3040cc443380e4a59eab023dc213bf42cd0209ade8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -613,12 +613,10 @@
             }
           },
           "@aws-cdk/core:validateAgainstDefaultRules": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Treat CloudFormation Validate findings as errors"
           },
           "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
           },
@@ -630,5 +628,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1145.0"
+  "minimumCliVersion": "2.1131.0"
 }
