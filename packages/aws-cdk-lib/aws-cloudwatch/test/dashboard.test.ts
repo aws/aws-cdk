@@ -5,6 +5,7 @@ import {
   Dashboard, DashboardVariable, DefaultValue,
   GraphWidget,
   MathExpression,
+  Metric,
   PeriodOverride,
   TextWidget,
   TextWidgetBackground, Values,
@@ -24,6 +25,32 @@ describe('Dashboard', () => {
 
     expect(widget.warnings).toEqual([]);
     expect(widget.warningsV2).toEqual({});
+  });
+
+  test('fails if a graph widget has no metrics', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    dashboard.addWidgets(new GraphWidget({ title: 'Empty' }));
+
+    // THEN
+    expect(() => Template.fromStack(stack)).toThrow(/metric widget "Empty" has no metrics, add at least one metric to it or remove it from the dashboard/);
+  });
+
+  test('graph widget with metrics added after creation passes validation', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+    const widget = new GraphWidget({ title: 'Later' });
+    dashboard.addWidgets(widget);
+
+    // WHEN
+    widget.addLeftMetric(new Metric({ namespace: 'CDK', metricName: 'Test' }));
+
+    // THEN
+    expect(() => Template.fromStack(stack)).not.toThrow();
   });
 
   test('widgets in different adds are laid out underneath each other', () => {
@@ -103,7 +130,7 @@ describe('Dashboard', () => {
 
     // WHEN
     dashboard.addWidgets(
-      new GraphWidget({ width: 1, height: 1 }), // GraphWidget has internal reference to current region
+      new GraphWidget({ width: 1, height: 1, left: [new Metric({ namespace: 'CDK', metricName: 'Test' })] }), // GraphWidget has internal reference to current region
     );
 
     // THEN
@@ -112,7 +139,7 @@ describe('Dashboard', () => {
         'Fn::Join': ['', [
           '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
           { Ref: 'AWS::Region' },
-          '","yAxis":{}}}]}',
+          '","metrics":[["CDK","Test"]],"yAxis":{}}}]}',
         ]],
       },
     });
@@ -130,7 +157,7 @@ describe('Dashboard', () => {
 
     // WHEN
     dashboard.addWidgets(
-      new GraphWidget({ width: 1, height: 1 }), // GraphWidget has internal reference to current region
+      new GraphWidget({ width: 1, height: 1, left: [new Metric({ namespace: 'CDK', metricName: 'Test' })] }), // GraphWidget has internal reference to current region
     );
 
     // THEN
@@ -140,7 +167,7 @@ describe('Dashboard', () => {
           '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
 "widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
           { Ref: 'AWS::Region' },
-          '","yAxis":{}}}]}',
+          '","metrics":[["CDK","Test"]],"yAxis":{}}}]}',
         ]],
       },
     });
@@ -154,7 +181,7 @@ describe('Dashboard', () => {
       defaultInterval: Duration.days(7),
     });
     dashboard.addWidgets(
-      new GraphWidget({ width: 1, height: 1 }), // GraphWidget has internal reference to current region
+      new GraphWidget({ width: 1, height: 1, left: [new Metric({ namespace: 'CDK', metricName: 'Test' })] }), // GraphWidget has internal reference to current region
     );
 
     // THEN
@@ -164,7 +191,7 @@ describe('Dashboard', () => {
           '{"start":"-P7D",\
 "widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
           { Ref: 'AWS::Region' },
-          '","yAxis":{}}}]}',
+          '","metrics":[["CDK","Test"]],"yAxis":{}}}]}',
         ]],
       },
     });
