@@ -170,6 +170,32 @@ for the no-`--dry-run` hard rule, and the
   (`@aws-cdk/<service>-alpha`) keep theirs in the alpha package's own `test/` dir, NOT in `framework-integ`.
   An alpha test in its own `test/` dir is placed correctly.
 
+**[TEST-INTEG-STALE-SNAPSHOT] (RECOMMENDED)** — The diff adds or changes an `integ.*.ts`, the diff viewer
+DOES surface the companion `*.snapshot/` files, yet the test's change is not reflected in them (an edited
+test with an untouched snapshot) — or a brand-new `integ.*.ts` arrives with no `*.snapshot/` directory the
+diff would have shown. The snapshot IS the synthesized template, so a test change with no corresponding
+snapshot change means the committed snapshot no longer matches synthesis and the test's deploy proof is
+stale. See
+[`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)
+for the snapshot-as-template fact and
+[`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
+for the regenerate-via-real-deploy rule.
+- **Flag the uncertainty, never assert staleness blind (doc-absent detail):** this rule fires ONLY when
+  the diff you were given contains BOTH the `integ.*.ts` change AND the snapshot files (or shows the new
+  test with no snapshot alongside). A `*.snapshot/` is large and routinely filtered out of a review diff,
+  so when the snapshot is NOT in the diff you can see, you CANNOT know whether it was updated — say "the
+  integ test changed but its snapshot was not included in the diff, so I could not confirm it was
+  regenerated; please verify it matches synthesis" rather than asserting it is stale. This defers to the
+  "Judge only a snapshot the diff SHOWS" guard on `[TEST-INTEG-DANGEROUS-SNAPSHOT]`.
+- **Conditional (doc-absent detail):** up-tier BLOCKING only when the visible mismatch reveals a dangerous
+  template change (hand it to `[TEST-INTEG-DANGEROUS-SNAPSHOT]` instead); down-tier OPTIONAL when the test
+  change is cosmetic (a rename, a comment) that cannot alter the synthesized template.
+- **Detection method (doc-absent detail):** when both are in the diff, confirm the `integ.*.ts` edit is
+  one that would change synthesis (a new resource, a changed prop, a new construct) and then check the
+  `*.snapshot/template.json` for the corresponding change; a semantic test change with a template that
+  did not move is the gap. Mechanical churn (asset hashes, version strings) is OUT OF SCOPE per
+  `[TEST-INTEG-DANGEROUS-SNAPSHOT]`.
+
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change owes a deploy-time assertion. Independently, a verification
 scaffold that never verifies — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
