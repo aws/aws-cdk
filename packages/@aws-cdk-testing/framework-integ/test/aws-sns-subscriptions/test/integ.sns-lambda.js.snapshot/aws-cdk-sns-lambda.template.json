@@ -94,6 +94,9 @@
   },
   "DeadLetterQueue9F481546": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
