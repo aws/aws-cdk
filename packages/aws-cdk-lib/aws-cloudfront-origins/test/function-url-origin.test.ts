@@ -139,6 +139,28 @@ describe('FunctionUrlOriginAccessControl', () => {
         ],
       },
     });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
+    });
   });
 
   test('Creates Lambda Function URL origin with default Origin Access Control', () => {
@@ -217,6 +239,28 @@ describe('FunctionUrlOriginAccessControl', () => {
           ],
         ],
       },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
     });
   });
 
@@ -329,6 +373,28 @@ describe('FunctionUrlOriginAccessControl', () => {
           ],
         ],
       },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['ImportedFunctionFunctionUrlB3FF8A17', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
     });
   });
   test('Correctly creates a Lambda Function URL Origin with default properties', () => {
