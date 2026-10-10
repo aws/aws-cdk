@@ -335,4 +335,116 @@ describe('arn', () => {
     expect(stack.resolve(parsed.resourceName)).toEqual('S3Access');
     expect(parsed.sep).toEqual('/');
   });
+
+  describe('Arn.tryParse() / Stack.trySplitArn()', () => {
+    // One well-formed concrete ARN per ArnFormat, with its expected components.
+    const validArns: { [arn: string]: ArnComponents } = {
+      'arn:aws:s3:::my_corporate_bucket': {
+        partition: 'aws',
+        service: 's3',
+        region: '',
+        account: '',
+        resource: 'my_corporate_bucket',
+        arnFormat: ArnFormat.NO_RESOURCE_NAME,
+      },
+      'arn:aws-cn:cloud9::123456789012:environment:81e900317347585a0601e04c8d52eaEX': {
+        partition: 'aws-cn',
+        service: 'cloud9',
+        region: '',
+        account: '123456789012',
+        resource: 'environment',
+        resourceName: '81e900317347585a0601e04c8d52eaEX',
+        sep: ':',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      },
+      'arn:aws:iam::123456789012:role/abc123': {
+        partition: 'aws',
+        service: 'iam',
+        region: '',
+        account: '123456789012',
+        resource: 'role',
+        resourceName: 'abc123',
+        sep: '/',
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      },
+      'arn:aws:servicecatalog:us-east-1:123456789012:/applications/0aqmvxvgmry0ecc4mjhwypun6i': {
+        partition: 'aws',
+        service: 'servicecatalog',
+        region: 'us-east-1',
+        account: '123456789012',
+        resource: 'applications',
+        resourceName: '0aqmvxvgmry0ecc4mjhwypun6i',
+        sep: '/',
+        arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
+      },
+    };
+
+    test('parses a well-formed concrete ARN for each ArnFormat', () => {
+      for (const [arn, expected] of Object.entries(validArns)) {
+        expect(Arn.tryParse(arn, expected.arnFormat!)).toEqual(expected);
+      }
+    });
+
+    test('returns exactly what Arn.split returns for a well-formed ARN', () => {
+      for (const [arn, expected] of Object.entries(validArns)) {
+        expect(Arn.tryParse(arn, expected.arnFormat!)).toEqual(Arn.split(arn, expected.arnFormat!));
+      }
+    });
+
+    describe('returns undefined where Arn.split throws', () => {
+      // Each of these is a concrete string that is not a well-formed ARN.
+      const malformed = [
+        'barn:foo:x:a:1:2', // does not start with "arn:"
+        'not-an-arn', // not an ARN at all
+        'arn:is:too:short', // missing the resource (6th) component
+        'arn:aws::4:5:6', // missing the service (3rd) component
+        'arn:aws:service:::', // missing the resource (6th) component
+      ];
+
+      test.each(malformed)('%s', (arn) => {
+        // tryParse returns undefined...
+        expect(Arn.tryParse(arn, ArnFormat.SLASH_RESOURCE_NAME)).toBeUndefined();
+        // ...for exactly the inputs where split throws
+        expect(() => Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME)).toThrow();
+      });
+    });
+
+    test('does NOT return undefined for a fully-unresolved Token; parses it like Arn.split', () => {
+      const stack = new Stack();
+      const tokenArn = Token.asString(new Intrinsic({ Ref: 'TheArn' }));
+
+      const parsed = Arn.tryParse(tokenArn, ArnFormat.COLON_RESOURCE_NAME);
+
+      // a Token is parsed best-effort (not rejected), identically to Arn.split
+      expect(parsed).toBeDefined();
+      expect(stack.resolve(parsed)).toEqual(stack.resolve(Arn.split(tokenArn, ArnFormat.COLON_RESOURCE_NAME)));
+    });
+
+    test('parses an "arn:"-prefixed string that only partially contains Tokens, like Arn.split', () => {
+      const stack = new Stack();
+      // partition is a Token, the rest is concrete
+      const partialTokenArn = `arn:${Aws.PARTITION}:iam::123456789012:role/S3Access`;
+
+      const parsed = Arn.tryParse(partialTokenArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+      expect(parsed).toBeDefined();
+      expect(stack.resolve(parsed!.partition)).toEqual({ Ref: 'AWS::Partition' });
+      expect(parsed!.service).toEqual('iam');
+      expect(parsed!.resource).toEqual('role');
+      expect(parsed!.resourceName).toEqual('S3Access');
+      expect(parsed).toEqual(Arn.split(partialTokenArn, ArnFormat.SLASH_RESOURCE_NAME));
+    });
+
+    test('Stack.trySplitArn delegates to Arn.tryParse', () => {
+      const stack = new Stack();
+
+      // well-formed
+      const arn = 'arn:aws:iam::123456789012:role/abc123';
+      expect(stack.trySplitArn(arn, ArnFormat.SLASH_RESOURCE_NAME))
+        .toEqual(Arn.tryParse(arn, ArnFormat.SLASH_RESOURCE_NAME));
+
+      // malformed -> undefined
+      expect(stack.trySplitArn('not-an-arn', ArnFormat.SLASH_RESOURCE_NAME)).toBeUndefined();
+    });
+  });
 });
