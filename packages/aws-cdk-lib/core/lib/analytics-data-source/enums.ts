@@ -989,6 +989,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "INTERNET",
     "VPC_LINK"
   ],
+  "ConsumableResourceType": [
+    "REPLENISHABLE",
+    "NON_REPLENISHABLE"
+  ],
   "ContainerDependencyCondition": [
     "START",
     "COMPLETE",
@@ -1790,7 +1794,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "3.0",
     "4.0",
     "5.0",
-    "5.1"
+    "5.1",
+    "6.0"
   ],
   "GraphWidgetView": [
     "timeSeries",
@@ -2776,6 +2781,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bun.lockb",
     "bun.lock",
     "pnpm-lock.yaml"
+  ],
+  "LogDestinationType": [
+    "s3",
+    "cloudwatch"
+  ],
+  "LogExport": [
+    "connectionlog",
+    "useractivitylog",
+    "userlog"
   ],
   "LogFormat": [
     "Text",

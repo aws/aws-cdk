@@ -427,6 +427,60 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Opus 5.5 model, Anthropic's most capable Opus model.
+   * Better at coding, knowledge work, and long-running tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global`, `us`, `eu`, `au` and `jp` cross-region inference profiles.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-opus-5-5',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 5.5 model.
+   * Improved coding and knowledge work over Claude Sonnet 5, at a lower cost per task.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global` cross-region inference profile.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-5-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Fable 5.1 model, Anthropic's frontier model for ambitious coding,
+   * long-horizon agents, and enterprise knowledge work.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Only available through the `global` and `us` cross-region inference profiles.
+   *
+   * Using this model requires opting in to the `aws_review` data
+   * retention mode; see the Amazon Bedrock model card for details.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5_1 = new BedrockFoundationModel(
+    'anthropic.claude-fable-5-1',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
    * Anthropic's Claude Sonnet 4.6 model.
    * Improved performance for coding, agentic workflows, and browser-based automation.
    *
@@ -439,6 +493,56 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new BedrockFoundationModel(
     'anthropic.claude-sonnet-4-6',
     { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 5 model, the first Sonnet of the Claude 5 family.
+   * Strong performance across coding, agentic workflows, and enterprise applications.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Coding, agentic workflows, enterprise applications
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 5 model, Anthropic's most advanced Opus model,
+   * powering long-running agents while delivering improvements in coding and
+   * professional work.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5 = new BedrockFoundationModel(
+    'anthropic.claude-opus-5',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
+   * Anthropic's Claude Fable 5 model, Anthropic's next-generation model for
+   * complex knowledge work and coding, capable of sustained autonomous operation
+   * across multi-day tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Using this model requires opting in to the `provider_data_share` data
+   * retention mode; see the Amazon Bedrock model card for details.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5 = new BedrockFoundationModel(
+    'anthropic.claude-fable-5',
+    { supportsAgents: true, supportsCrossRegion: true },
   );
 
   /**

@@ -237,4 +237,87 @@ describe('cluster user', () => {
       },
     });
   });
+
+  describe('PUBLIC user name', () => {
+    const publicSpellings = ['PUBLIC', 'public', 'Public'];
+
+    it.each(publicSpellings)('fails when a user is created with the name %j', (username) => {
+      expect(() => new redshift.User(stack, 'User', { ...databaseOptions, username }))
+        .toThrow(/pseudo-role/);
+    });
+
+    it.each(publicSpellings)('fails when table privileges are granted to an imported user named %j', (username) => {
+      const user = redshift.User.fromUserAttributes(stack, 'User', {
+        ...databaseOptions,
+        username,
+        password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+      });
+      const table = redshift.Table.fromTableAttributes(stack, 'Table', {
+        tableName: 'tableName',
+        tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+        cluster,
+        databaseName: 'databaseName',
+      });
+
+      expect(() => table.grant(user, redshift.TableAction.INSERT)).toThrow(/pseudo-role/);
+    });
+
+    it.each(publicSpellings)('imports a user named %j when no privileges are granted', (username) => {
+      const user = redshift.User.fromUserAttributes(stack, 'User', {
+        ...databaseOptions,
+        username,
+        password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+      });
+
+      expect(user.username).toBe(username);
+      Template.fromStack(stack).resourceCountIs('Custom::RedshiftDatabaseQuery', 0);
+    });
+
+    it('allows a user name that merely contains "public"', () => {
+      new redshift.User(stack, 'User', { ...databaseOptions, username: 'public_reader' });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        GenerateSecretString: {
+          SecretStringTemplate: '{"username":"public_reader"}',
+        },
+      });
+    });
+
+    it.each([
+      ['publıc', '{"username":"publıc"}'],
+      ['PuBlıC', '{"username":"PuBlıC"}'],
+      ['PUBLİC', '{"username":"PUBLİC"}'],
+      ['ＰＵＢＬＩＣ', '{"username":"ＰＵＢＬＩＣ"}'],
+      ['pubℓic', '{"username":"pubℓic"}'],
+    ])('preserves distinct non-ASCII name %s during construction', (username, expectedSecret) => {
+      new redshift.User(stack, 'User', { ...databaseOptions, username });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        GenerateSecretString: {
+          SecretStringTemplate: expectedSecret,
+        },
+      });
+    });
+
+    it.each(['publıc', 'PuBlıC', 'PUBLİC', 'ＰＵＢＬＩＣ', 'pubℓic'])('grants table privileges to an imported user named %s', (username) => {
+      const user = redshift.User.fromUserAttributes(stack, 'User', {
+        ...databaseOptions,
+        username,
+        password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+      });
+      const table = redshift.Table.fromTableAttributes(stack, 'Table', {
+        tableName: 'tableName',
+        tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+        cluster,
+        databaseName: 'databaseName',
+      });
+
+      table.grant(user, redshift.TableAction.INSERT);
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'user-table-privileges',
+        username,
+      });
+    });
+  });
 });
