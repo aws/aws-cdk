@@ -361,6 +361,12 @@ test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_8_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_9_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_10_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_1,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_12_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
@@ -1393,7 +1399,15 @@ describe('Browser configurations', () => {
     }).toThrow('browserConfigs must contain at least one browser type if specified.');
   });
 
-  test('throws error when Firefox is used with Python Selenium runtime', () => {
+  test.each([
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_8_0,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_9_0,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_10_0,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_0,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_11_1,
+    synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_12_0,
+  ])('throws error when Firefox is used with Python Selenium runtime %s', (runtime) => {
     // GIVEN
     const stack = new Stack();
 
@@ -1405,7 +1419,7 @@ describe('Browser configurations', () => {
           handler: 'index.handler',
           code: synthetics.Code.fromInline('/* Synthetics handler code */'),
         }),
-        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+        runtime: runtime,
         browserConfigs: [synthetics.BrowserType.FIREFOX],
       });
     }).toThrow('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.');
