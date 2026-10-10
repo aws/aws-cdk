@@ -640,6 +640,7 @@ describe('batch:SubmitJob policy job definition resources', () => {
     ['imported ARN with a revision', 'arn:aws:batch:us-east-1:123456789012:job-definition/my-job-def:3'],
     ['imported ARN without a revision', 'arn:aws:batch:us-east-1:123456789012:job-definition/my-job-def'],
     ['plain job definition name', 'my-job-def'],
+    ['name with a revision', 'my-job-def:3'],
   ])('are scoped to the job definition for %s', (_inputShape, jobDefinitionArn) => {
     expectSubmitJobResources(submitJobPolicyTemplate(jobDefinitionArn, true), [
       jobDefinitionArnFor('my-job-def'),
@@ -665,7 +666,7 @@ describe('batch:SubmitJob policy job definition resources', () => {
     ]);
   });
 
-  test('fall back to job-definition/* for an unresolved token job definition ARN when the flag is on', () => {
+  test('are scoped to the job definition for an unresolved token job definition ARN when the flag is on', () => {
     const tokenApp = new cdk.App({ context: { [STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY]: true } });
     const tokenStack = new cdk.Stack(tokenApp, 'TokenStack', { env });
 
@@ -691,10 +692,125 @@ describe('batch:SubmitJob policy job definition resources', () => {
     const submitJobStatement = policies
       .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
       .find((statement: any) => statement.Action === 'batch:SubmitJob');
-    // The token ARN must not be split at deploy time: a name-resolving token would make Fn::Select out-of-range
+    const tokenJobDefResource = {
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            '/',
+            {
+              'Fn::Select': [
+                5,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      Ref: 'JobDefinition24FFE3ED',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
     expect(submitJobStatement.Resource).toEqual([
-      jobDefinitionArnFor('*'),
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            `:batch:${env.region}:${env.account}:job-definition/`,
+            tokenJobDefResource,
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            `:batch:${env.region}:${env.account}:job-definition/`,
+            tokenJobDefResource,
+            ':*',
+          ],
+        ],
+      },
       queueArn,
     ]);
   });
+
+  test('integ stack synthesizes as expected', () => {
+    const app = new cdk.App({
+      context: {
+        [STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY]: true,
+      },
+    });
+    const testStack = new cdk.Stack(app, 'aws-stepfunctions-integ');
+    const vpc = new ec2.Vpc(testStack, 'vpc', { restrictDefaultSecurityGroup: false });
+    const batchQueue = new batch.JobQueue(testStack, 'JobQueue', {
+      computeEnvironments: [
+        {
+          order: 1,
+          computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(testStack, 'ComputeEnv', {
+            vpc,
+          }),
+        },
+      ],
+    });
+    const jobDefinitionName = 'submit-job-definition';
+    new batch.EcsJobDefinition(testStack, 'JobDefinition', {
+      jobDefinitionName,
+      container: new batch.EcsEc2ContainerDefinition(testStack, 'Container', {
+        image: ecs.ContainerImage.fromAsset(
+          path.resolve(__dirname, 'batchjob-image'),
+        ),
+        cpu: 256,
+        memory: cdk.Size.mebibytes(2048),
+      }),
+    });
+    const submitJob = new BatchSubmitJob(testStack, 'Submit Job', {
+      jobDefinitionArn: jobDefinitionName,
+      jobQueueArn: batchQueue.jobQueueArn,
+      jobName: 'MyJob',
+      containerOverrides: {
+        environment: { key: 'value' },
+        memory: cdk.Size.mebibytes(256),
+        vcpus: 1,
+      },
+      payload: sfn.TaskInput.fromObject({
+        foo: sfn.JsonPath.stringAt('$.bar'),
+      }),
+      attempts: 3,
+      taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
+      tags: {
+        key: 'value',
+      },
+    });
+    const definition = new sfn.Pass(testStack, 'Start', {
+      result: sfn.Result.fromObject({ bar: 'SomeValue' }),
+    }).next(submitJob);
+    new sfn.StateMachine(testStack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
+    });
+    new cdk.CfnOutput(testStack, 'JobQueueArn', {
+      value: batchQueue.jobQueueArn,
+    });
+    new cdk.CfnOutput(testStack, 'StateMachineArn', {
+      value: 'dummy',
+    });
+
+    const template = Template.fromStack(testStack);
+    const policies = Object.values(template.findResources('AWS::IAM::Policy'));
+    const submitJobStatement = policies
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
+      .find((statement: any) => statement.Action === 'batch:SubmitJob');
+    console.log('SUBMIT_JOB_RESOURCES:', JSON.stringify(submitJobStatement.Resource, null, 2));
+    const jobDefs = Object.values(template.findResources('AWS::Batch::JobDefinition'));
+    console.log('JOB_DEF_PROPERTIES:', JSON.stringify(jobDefs[0], null, 2));
+  });
 });
+

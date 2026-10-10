@@ -310,9 +310,8 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
-      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
+      // Batch supports resource-level access control for job definitions by scoping to revisions or wildcards:
+      // https://docs.aws.amazon.com/batch/latest/userguide/iam-example-restrict-job-submission.html
       new iam.PolicyStatement({
         // Only a dynamic queue needs `*`
         resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn)
@@ -342,13 +341,11 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       resourceName,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-
-    const name = this.jobDefinitionName();
-    if (!FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY) || name === undefined) {
-      return [jobDefinition('*')];
-    }
-    // With and without revision: SubmitJob accepts both, and both stay scoped to one definition.
-    return [jobDefinition(name), jobDefinition(`${name}:*`)];
+    const scoped = FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY);
+    const name = scoped ? this.jobDefinitionName() : undefined;
+    return name === undefined
+      ? [jobDefinition('*')]
+      : [jobDefinition(name), jobDefinition(`${name}:*`)];
   }
 
   /**
@@ -357,16 +354,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
    */
   private jobDefinitionName(): string | undefined {
     const jobDefinitionArn = this.props.jobDefinitionArn;
-    if (isJsonPathOrJsonataExpression(jobDefinitionArn) || Token.isUnresolved(jobDefinitionArn)) {
+    if (isJsonPathOrJsonataExpression(jobDefinitionArn)) {
       return undefined;
     }
-    // SubmitJob accepts a plain job definition name next to an ARN
-    if (!jobDefinitionArn.startsWith('arn:')) {
-      return jobDefinitionArn || undefined;
-    }
-    // arn:<partition>:batch:<region>:<account-id>:job-definition/<name>[:<revision>]
-    const name = jobDefinitionArn.split(':').slice(5).join(':').split('/')[1]?.split(':')[0];
-    return name || undefined;
+    const resourceName = Token.isUnresolved(jobDefinitionArn) || jobDefinitionArn.startsWith('arn:')
+      ? Stack.of(this).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName
+      : jobDefinitionArn;
+    return resourceName?.split(':')[0] || undefined;
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
