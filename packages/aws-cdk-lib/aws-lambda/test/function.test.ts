@@ -1126,6 +1126,155 @@ describe('function', () => {
     });
   });
 
+  test('default function with SQS DLQ encrypted with a customer managed key grants the function access to the key', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'DlqKey');
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+      encryption: sqs.QueueEncryption.KMS,
+      encryptionMasterKey: key,
+    });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'] },
+          },
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['DlqKey1CBAEEF0', 'Arn'] },
+          },
+        ],
+      },
+    });
+  });
+
+  test('default function with SQS DLQ using KMS encryption without an explicit key grants the function access to the generated key', () => {
+    const stack = new cdk.Stack();
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
+      encryption: sqs.QueueEncryption.KMS,
+    });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^DeadLetterQueueKey'), 'Arn'] },
+          },
+        ]),
+      },
+    });
+  });
+
+  test('default function with imported SQS DLQ with a key ARN grants the function access to the key', () => {
+    const stack = new cdk.Stack();
+    const dlQueue = sqs.Queue.fromQueueAttributes(stack, 'DeadLetterQueue', {
+      queueArn: 'arn:aws:sqs:us-east-1:123456789012:dlq',
+      keyArn: 'arn:aws:kms:us-east-1:123456789012:key/11111111-2222-3333-4444-555555555555',
+    });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: 'arn:aws:sqs:us-east-1:123456789012:dlq',
+          },
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:kms:us-east-1:123456789012:key/11111111-2222-3333-4444-555555555555',
+          },
+        ],
+      },
+    });
+  });
+
+  test.each([
+    ['unencrypted', sqs.QueueEncryption.UNENCRYPTED],
+    ['SQS managed', sqs.QueueEncryption.SQS_MANAGED],
+  ])('default function with %s SQS DLQ does not grant any KMS permissions', (_name, encryption) => {
+    const stack = new cdk.Stack();
+    const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', { encryption });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['DeadLetterQueue9F481546', 'Arn'] },
+          },
+        ],
+      },
+    });
+  });
+
+  test('default function with SQS DLQ encrypted with a key in another stack synthesizes without a cyclic reference', () => {
+    const app = new cdk.App();
+    const keyStack = new cdk.Stack(app, 'KeyStack');
+    const key = new kms.Key(keyStack, 'DlqKey');
+    const dlQueue = new sqs.Queue(keyStack, 'DeadLetterQueue', {
+      encryption: sqs.QueueEncryption.KMS,
+      encryptionMasterKey: key,
+    });
+    const fnStack = new cdk.Stack(app, 'FunctionStack');
+
+    new lambda.Function(fnStack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterQueue: dlQueue,
+    });
+
+    expect(() => app.synth()).not.toThrow();
+    Template.fromStack(fnStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Effect: 'Allow',
+            Resource: { 'Fn::ImportValue': Match.stringLikeRegexp('KeyStack:ExportsOutputFnGetAttDlqKey') },
+          },
+        ]),
+      },
+    });
+  });
+
   test('default function with SQS DLQ when client provides Queue to be used as DLQ and deadLetterQueueEnabled set to true', () => {
     const stack = new cdk.Stack();
 
@@ -1220,6 +1369,36 @@ describe('function', () => {
         TargetArn: {
           Ref: 'DeadLetterTopicC237650B',
         },
+      },
+    });
+  });
+
+  test('default function with SNS DLQ encrypted with a customer managed key grants the function access to the key', () => {
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'DlqKey');
+    const dlTopic = new sns.Topic(stack, 'DeadLetterTopic', { masterKey: key });
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      deadLetterTopic: dlTopic,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: { Ref: 'DeadLetterTopicC237650B' },
+          },
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['DlqKey1CBAEEF0', 'Arn'] },
+          },
+        ],
       },
     });
   });
