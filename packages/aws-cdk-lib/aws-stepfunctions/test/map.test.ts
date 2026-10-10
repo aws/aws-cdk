@@ -642,10 +642,38 @@ describe('Map State', () => {
     expect(() => app.synth()).toThrow(/Provide either `maxConcurrency` or `maxConcurrencyPath`, but not both/);
   }),
 
-  test('does not fail synthesis when maxConcurrency is a jsonPath', () => {
+  test('fails in synthesis when maxConcurrency is a jsonPath', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
         maxConcurrency: stepfunctions.JsonPath.numberAt('$.maxConcurrency'),
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/maxConcurrency does not support JSON paths, got "\$.maxConcurrency"; use `maxConcurrencyPath: "\$.maxConcurrency"` instead/);
+  });
+
+  test('fails in synthesis when maxConcurrency of a DistributedMap is a jsonPath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: stepfunctions.JsonPath.numberAt('$.maxConcurrency'),
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/maxConcurrency does not support JSON paths/);
+  });
+
+  test('does not fail synthesis when maxConcurrency is a non-JSON path token', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: cdk.Lazy.number({ produce: () => 5 }),
         itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
       });
       map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
