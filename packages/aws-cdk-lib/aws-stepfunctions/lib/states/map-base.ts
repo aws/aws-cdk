@@ -5,6 +5,7 @@ import { renderJsonPath, State } from './state';
 import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
+import { jsonPathFromAny } from '../private/json-path';
 import { isValidJsonataExpression } from '../private/jsonata';
 import type { IChainable, INextable, QueryLanguage } from '../types';
 import { ProcessorMode } from '../types';
@@ -98,6 +99,9 @@ export interface MapBaseOptions extends AssignableStateOptions {
    * MaxConcurrency
    *
    * An upper bound on the number of iterations you want running at once.
+   *
+   * JSON paths (for example `JsonPath.numberAt()`) are not supported here,
+   * use `maxConcurrencyPath` to read the value from the state input.
    *
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
@@ -236,6 +240,13 @@ export abstract class MapBase extends State implements INextable {
 
     if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
+    }
+
+    // Step Functions only accepts an integer for MaxConcurrency, a JSON path
+    // must be given in MaxConcurrencyPath instead.
+    const maxConcurrencyJsonPath = this.maxConcurrency !== undefined ? jsonPathFromAny(this.maxConcurrency) : undefined;
+    if (maxConcurrencyJsonPath !== undefined) {
+      errors.push(`maxConcurrency does not support JSON paths, got ${JSON.stringify(maxConcurrencyJsonPath)}; use \`maxConcurrencyPath: ${JSON.stringify(maxConcurrencyJsonPath)}\` instead`);
     }
 
     if (this.maxConcurrency && this.maxConcurrencyPath) {
