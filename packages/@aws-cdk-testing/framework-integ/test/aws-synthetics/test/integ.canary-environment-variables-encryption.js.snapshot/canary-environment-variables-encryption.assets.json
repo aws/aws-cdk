@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "871b798918ccec634cca6725ceeb616209f86baed2ac9be1a8a39c057c1dea03": {
+      "displayName": "canary-environment-variables-encryption Template",
+      "source": {
+        "path": "canary-environment-variables-encryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5d5f6409": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "871b798918ccec634cca6725ceeb616209f86baed2ac9be1a8a39c057c1dea03.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

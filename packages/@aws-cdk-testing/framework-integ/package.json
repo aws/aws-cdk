@@ -33,6 +33,7 @@
     "@aws-cdk/integ-runner": "^2.202.3",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
+    "@aws-sdk/client-bedrock-agentcore-control": "3.1143.0",
     "@aws-sdk/client-ec2": "3.632.0",
     "@aws-sdk/client-rds": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
