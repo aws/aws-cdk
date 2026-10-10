@@ -1,0 +1,1436 @@
+{
+  "/test-s3files-filesystem-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:11:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy",
+        "versioned": true
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "vpc": "*",
+        "filesystem": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
+        "new RestrictDefaultSgProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
+        "new RestrictDefaultSgProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:13:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
+        "new AutoDeleteObjectsProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:13:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
+        "new AutoDeleteObjectsProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/private/tmp/s3files-alpha/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:13:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystem8A8E25C0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:219:30)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/MountTarget-PrivateSubnet1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemMountTargetPrivateSubnet1DA207B1B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:253:37)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/MountTarget-PrivateSubnet2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemMountTargetPrivateSubnet293CF443B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:253:37)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/AccessPoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": "*",
+        "allowAllIpv6Outbound": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEgressRule": [
+          "*",
+          {},
+          "*",
+          false
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+      "trace": [
+        "Annotations.addMessage (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "WrappedClass.addEgressRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:474:51)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:106:31",
+        "ReactiveList.forEachAndForever (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:105:51",
+        "ReactiveList.forEachAndForever (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowTo (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:104:30)",
+        "WrappedClass.configureVpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:1209:38)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:717:33)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1529:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
+        "Module.load (node:internal/modules/cjs/loader:1275:32)",
+        "Module._load (node:internal/modules/cjs/loader:1096:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTester30EA718A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Exports/Output{\"Ref\":\"MountTester30EA718A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMountTester30EA718A7481FEEE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
+        "resolveValue (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
+        "resolveReferences (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
+        "prepareApp (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.restrictDefaultSecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:12:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:287:31)",
+        "WrappedClass.enableAutoDeleteObjects (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2082:18)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:13:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:13:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemServiceRole31A18070"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createServiceRole (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:299:26)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:218:44)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemSecurityGroup2269DE17"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:240:58)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/AccessPoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemAccessPointF8178182"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AccessPoint (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/access-point.js:119:30)",
+        "new AccessPoint (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addAccessPoint (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:276:20)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:22:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterServiceRoleA51AB6DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterSecurityGroup393D8976"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureVpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:1198:62)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:717:33)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterLogGroup5FBA55DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:777:34)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemServiceRoleDefaultPolicy458B4F25"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.createServiceRole (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:318:18)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/lib/file-system.js:218:44)",
+        "new FileSystem (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/AccessPoint/MountTargetSG0/from tests3filesfilesystemintegMountTesterSecurityGroup2874C60D:2049": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemAccessPointMountTargetSG0fromtests3filesfilesystemintegMountTesterSecurityGroup2874C60D2049F42B3EDE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "MutableImport.addIngressRule (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowTo (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-ec2/lib/connections.js:112:31)",
+        "WrappedClass.configureVpc (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:1209:38)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:717:33)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterServiceRoleDefaultPolicy9CC96161"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:627: (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:627:3)",
+        "Array.forEach (:)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:37)",
+        "new Function (/private/tmp/s3files-alpha/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/private/tmp/s3files-alpha/packages/@aws-cdk/aws-s3files-alpha/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
