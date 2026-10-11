@@ -53,6 +53,7 @@ Principles:
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Review skills | [`skills/cdk-review/`](./skills/cdk-review/README.md) | Skills for reviewing changes to AWS CDK code, locally or on a pull request, with any agent |
 
 ## Architecture — The Layer Model
 

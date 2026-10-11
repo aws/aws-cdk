@@ -885,7 +885,7 @@ The following access entry types are supported:
 - `HYBRID_LINUX` - For EKS Hybrid Nodes
 - `HYPERPOD_LINUX` - For Amazon SageMaker HyperPod
 
-**Note**: Access entries with type `EC2`, `HYBRID_LINUX`, or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
+**Note**: Access entries with type `HYBRID_LINUX` or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
 
 By default, the cluster creator role will be granted the cluster admin permissions. You can disable it by setting 
 `bootstrapClusterCreatorAdminPermissions` to false. 
