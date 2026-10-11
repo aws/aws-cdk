@@ -1572,7 +1572,8 @@ export abstract class BaseService extends Resource
 
   private executeCommandLogConfiguration() {
     if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
-      Annotations.of(this).addInfo(
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs:executeCommandLogImportedTaskDefinition',
         'Using an imported TaskDefinition. Execute Command permissions must be manually configured on the task role.',
       );
       return;
@@ -2070,7 +2071,8 @@ export abstract class BaseService extends Resource
 
   private enableExecuteCommand() {
     if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
-      Annotations.of(this).addInfo(
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ecs:executeCommandImportedTaskDefinition',
         'Using an imported TaskDefinition. Execute Command SSM permissions must be manually configured on the task role.',
       );
       return;

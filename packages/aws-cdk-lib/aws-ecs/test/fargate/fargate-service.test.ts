@@ -5339,7 +5339,7 @@ describe('fargate service', () => {
       }).toThrow(/taskDefinitionRevision requires an owned TaskDefinition/);
     });
 
-    test('adds info annotation when using Execute Command with imported TaskDefinition', () => {
+    test('adds warning annotation when using Execute Command with imported TaskDefinition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -5360,7 +5360,7 @@ describe('fargate service', () => {
 
       // THEN
       const annotations = Annotations.fromStack(stack);
-      annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*Execute Command SSM permissions.*manually configured.*'));
+      annotations.hasWarning('/Default/Service', Match.stringLikeRegexp('.*Execute Command SSM permissions.*manually configured.*'));
     });
 
     test('throws when creating load balancer target with imported TaskDefinition', () => {

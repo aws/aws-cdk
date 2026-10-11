@@ -1217,15 +1217,20 @@ const externalService = new ecs.ExternalService(this, 'ExternalService', {
 **Limitations when using imported task definitions:**
 
 When using an imported task definition, the following features are not available
-because container and IAM information is not accessible at synthesis time:
+because container and IAM information is not accessible at synthesis time.
+Features that cannot work at all fail at synthesis time with an error. Features
+that degrade but still function emit a warning (suppressible with
+`Annotations.of(...).acknowledgeWarning()`) so you can configure them manually:
 
-- **Service Connect**: Requires an owned task definition with named port mappings.
-- **Automatic load balancer target configuration**: `loadBalancerTarget()` and
+- **Service Connect** (error): Requires an owned task definition with named port mappings.
+- **Automatic load balancer target configuration** (error): `loadBalancerTarget()` and
   `attachToApplicationTargetGroup()` require an owned task definition. Configure
   load balancer targets manually.
-- **Execute Command IAM permissions**: SSM permissions are not automatically added
-  to the task role. Configure the task role policies manually before creating the
-  service.
+- **CODE_DEPLOY deployment controller and `taskDefinitionRevision`** (error): Both
+  require an owned task definition.
+- **Execute Command IAM permissions** (warning): SSM permissions are not automatically
+  added to the task role. Configure the task role policies manually before creating
+  the service.
 - **Advanced validations**: Platform version checks for `ephemeralStorage`,
   `pidMode`, and container configuration are skipped.
 - **EC2 network mode detection** (EC2 only): The `networkMode` of the task definition
