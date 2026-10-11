@@ -626,6 +626,7 @@ alarmMuteRule.addAlarm(alarm2);
 ```
 
 For more information on alarm mute rules, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html).
+
 ## Log Alarms
 
 Log alarms evaluate a scheduled CloudWatch Logs query against one or more log
@@ -669,11 +670,32 @@ new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
 });
 ```
 
+### Querying Encrypted Log Groups
+
+A log group encrypted with a KMS key can only be queried with `kms:Decrypt` on that key.
+The construct does not grant it.
+Grant it to the scheduled query role yourself:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const logGroupKey: kms.IKey;
+declare const logAlarm: cloudwatch.LogAlarm;
+
+logGroupKey.grantDecrypt(logAlarm.scheduledQueryRole);
+```
+
 ### Including Log Lines in Notifications
 
 Set `actionLogLineCount` to include matching log lines in alarm notifications.
 When it is greater than 0, a role that lets CloudWatch read the log lines is
-auto-created; pass `actionLogLineRole` to supply your own instead:
+auto-created; pass `actionLogLineRole` to supply your own instead.
+
+The log lines are delivered verbatim to the alarm action targets.
+Those targets may reach a wider audience than the source log group.
+Shape the output with `fields` in the query.
+Mask sensitive data with CloudWatch Logs data protection.
+Restrict and encrypt the targets.
 
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -710,7 +732,6 @@ actions the same way as standard alarms:
 
 ```ts
 import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
-import * as sns from 'aws-cdk-lib/aws-sns';
 
 declare const logAlarm: cloudwatch.LogAlarm;
 declare const topic: sns.Topic;
@@ -718,9 +739,9 @@ declare const topic: sns.Topic;
 logAlarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
-Log alarms dispatch a narrower set of action types than metric alarms. An action the
-service does not dispatch is ignored rather than rejected, so adding one emits a
-synthesis-time warning where the action type can be determined from its ARN.
+Log alarms dispatch a narrower set of action types than metric alarms.
+Adding an action of a type log alarms do not dispatch emits a synthesis-time warning.
+The type is only checked when the action ARN is known at synthesis time.
 
 ### Delaying Evaluation with a Warm-Up Period
 

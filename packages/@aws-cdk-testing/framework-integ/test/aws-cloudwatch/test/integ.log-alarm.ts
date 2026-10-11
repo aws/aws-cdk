@@ -60,8 +60,7 @@ const integ = new IntegTest(app, 'LogAlarmInteg', {
   testCases: [stack],
 });
 
-// Confirms the service actually created the alarm, and that its scheduled query is not
-// stuck in a failed state (a misconfigured query role leaves the alarm in INSUFFICIENT_DATA).
+// Confirms the service created the alarm.
 integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
   AlarmNames: ['integ-log-alarm'],
   AlarmTypes: ['LogAlarm'],

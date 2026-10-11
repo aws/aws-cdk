@@ -270,16 +270,21 @@ describe('LogAlarm', () => {
     });
   });
 
+  test('does not fail synthesis for an action value that is not an ARN', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    expect(() => alarm.addAlarmAction({ bind: () => ({ alarmActionArn: 'not-an-arn' }) })).not.toThrow();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::LogAlarm', 1);
+  });
+
   test.each([
-    'not-an-arn',
     'arn:aws:sns:us-east-1:123456789012:',
     'arn::sns:us-east-1:123456789012:my-topic',
     'arn:',
-  ])('does not fail synthesis for an action ARN of %s', (alarmActionArn) => {
+  ])('fails for a malformed action ARN of %s', (alarmActionArn) => {
     const alarm = new LogAlarm(stack, 'Alarm', baseProps());
 
-    expect(() => alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) })).not.toThrow();
-    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::LogAlarm', 1);
+    expect(() => alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) })).toThrow(/ARN/);
   });
 
   test('fails for an unresolved logGroups list', () => {
@@ -643,6 +648,20 @@ describe('LogAlarm', () => {
     Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::LogAlarm', 1);
   });
 
+  test.each([
+    ['startTimeOffset', { startTimeOffset: Duration.minutes(Token.asNumber({ Ref: 'StartOffsetParam' })) }],
+    ['endTimeOffset', { startTimeOffset: Duration.minutes(5), endTimeOffset: Duration.minutes(Token.asNumber({ Ref: 'EndOffsetParam' })) }],
+  ])('fails for a tokenized %s not given in seconds', (name, offsets) => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: { rate: Duration.minutes(5), ...offsets },
+      },
+    })).toThrow(new RegExp(`${name} must be given as Duration.seconds\\(\\) when its amount comes from a token`));
+  });
+
   test('fails for an anomaly-detection comparison operator', () => {
     expect(() => new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
@@ -673,6 +692,57 @@ describe('LogAlarm', () => {
     template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ActionLogLineCount: 10,
       ActionLogLineRoleArn: Match.anyValue(),
+    });
+  });
+
+  test('scopes the log line role trust policy to the alarm when alarmName is given', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      alarmName: 'my-log-alarm',
+      actionLogLineCount: 10,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [Match.objectLike({
+          Principal: { Service: 'cloudwatch.amazonaws.com' },
+          Condition: Match.objectLike({
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':cloudwatch:', { Ref: 'AWS::Region' }, ':',
+                  { Ref: 'AWS::AccountId' }, ':alarm:my-log-alarm',
+                ]],
+              },
+            },
+          }),
+        })],
+      },
+    });
+  });
+
+  test('matches any alarm in the log line role trust policy when alarmName is generated', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLineCount: 10,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [Match.objectLike({
+          Principal: { Service: 'cloudwatch.amazonaws.com' },
+          Condition: Match.objectLike({
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':cloudwatch:', { Ref: 'AWS::Region' }, ':',
+                  { Ref: 'AWS::AccountId' }, ':alarm:*',
+                ]],
+              },
+            },
+          }),
+        })],
+      },
     });
   });
 

@@ -31,7 +31,7 @@ const DISPATCHABLE_ACTIONS: { [service: string]: (arn: ArnComponents) => boolean
 /**
  * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
  */
-export interface ScheduledQuerySchedule {
+export interface LogAlarmScheduledQuerySchedule {
   /**
    * How often the scheduled query runs.
    *
@@ -49,6 +49,9 @@ export interface ScheduledQuerySchedule {
    * Must be between 1 second and 2592000 seconds (30 days). This is required by
    * the scheduled query service; omitting it causes the alarm creation to be
    * rejected at deploy time.
+   *
+   * An offset whose amount is only known at deploy time must be given as
+   * `Duration.seconds()`.
    */
   readonly startTimeOffset: Duration;
 
@@ -56,6 +59,9 @@ export interface ScheduledQuerySchedule {
    * How far into the past the query window ends, relative to each run.
    *
    * Must be between 0 seconds and 2592000 seconds (30 days).
+   *
+   * An offset whose amount is only known at deploy time must be given as
+   * `Duration.seconds()`.
    *
    * @default - no end offset
    */
@@ -65,7 +71,7 @@ export interface ScheduledQuerySchedule {
 /**
  * Configuration of the scheduled query that a log alarm evaluates.
  */
-export interface ScheduledQueryConfiguration {
+export interface LogAlarmScheduledQueryConfiguration {
   /**
    * The query to run against the log groups.
    */
@@ -126,13 +132,14 @@ export interface ScheduledQueryConfiguration {
   /**
    * The schedule on which the query runs and the time window it evaluates.
    */
-  readonly schedule: ScheduledQuerySchedule;
+  readonly schedule: LogAlarmScheduledQuerySchedule;
 
   /**
    * Tags to apply to the scheduled query that backs the alarm.
    *
    * The scheduled query is a separate CloudWatch Logs resource, so these are
-   * independent of the tags applied to the alarm itself. At most 50 tags.
+   * independent of the tags applied to the alarm itself through `LogAlarmProps.tags`.
+   * At most 50 tags.
    *
    * @default - no tags
    */
@@ -174,7 +181,7 @@ export interface LogAlarmProps {
   /**
    * Configuration of the scheduled query that this alarm evaluates.
    */
-  readonly scheduledQueryConfiguration: ScheduledQueryConfiguration;
+  readonly scheduledQueryConfiguration: LogAlarmScheduledQueryConfiguration;
 
   /**
    * Name of the alarm.
@@ -211,6 +218,11 @@ export interface LogAlarmProps {
    * The number of matching log lines to include in alarm notifications.
    *
    * Must be between 0 and 50.
+   *
+   * The included log lines are delivered verbatim to the alarm action targets
+   * (e.g. an SNS topic or Lambda), which may reach a wider audience than the
+   * source log group. Shape the output with `fields`, apply CloudWatch Logs data
+   * protection / masking for sensitive data, and restrict and encrypt the targets.
    *
    * @default - no log lines are included in notifications
    */
@@ -257,7 +269,8 @@ export interface LogAlarmProps {
   /**
    * Tags to apply to the alarm.
    *
-   * At most 50 tags.
+   * These do not apply to the scheduled query that backs the alarm, which is tagged
+   * through `LogAlarmScheduledQueryConfiguration.tags`. At most 50 tags.
    *
    * @default - no tags
    */
@@ -271,7 +284,7 @@ export interface LogAlarmProps {
    *
    * @default - the alarm evaluates as soon as it has data
    */
-  readonly warmUpConfiguration?: WarmUpConfiguration;
+  readonly warmUpConfiguration?: LogAlarmWarmUpConfiguration;
 }
 
 /**
@@ -280,7 +293,7 @@ export interface LogAlarmProps {
  * During the warm-up period the alarm stays in `INSUFFICIENT_DATA` and does not
  * perform alarm actions.
  */
-export interface WarmUpConfiguration {
+export interface LogAlarmWarmUpConfiguration {
   /**
    * The length of the warm-up period.
    *
@@ -461,7 +474,10 @@ export class LogAlarm extends AlarmBase {
       throw new ValidationError(lit`ActionLogLineRoleWithoutLogLines`, 'actionLogLineRole is only used when actionLogLineCount is greater than 0; set actionLogLineCount or remove the role', this);
     }
     this.actionLogLineRole = props.actionLogLineRole
-      ?? (includesLogLines ? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm') : undefined);
+      ?? (includesLogLines
+        ? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm',
+          props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined)
+        : undefined);
     if (this.actionLogLineRole !== undefined) {
       this.grantReadLogLines(this.actionLogLineRole);
     }
@@ -556,27 +572,17 @@ export class LogAlarm extends AlarmBase {
   }
 
   /**
-   * Components of an action ARN, or `undefined` when they cannot be read.
+   * Components of an action ARN, or `undefined` when it cannot be classified.
    *
-   * An `IAlarmAction` may return any string, and `splitArn` rejects anything that is not
-   * a well-formed ARN, so the value is only parsed once it carries the leading `arn:` and
-   * the non-empty partition, service and resource segments the parser requires. Segments
-   * that resolve at deploy time are not a shape that can be checked, so they read as
-   * unknown rather than producing a warning that names a token.
+   * A value that resolves at deploy time cannot be checked, and a value that is not an
+   * ARN is not this check's concern. A value that starts with `arn:` commits to being an
+   * ARN, so a malformed one fails synthesis.
    */
   private actionArnComponents(arn: string): ArnComponents | undefined {
-    const segments = arn.split(':');
-    const parseable = !Token.isUnresolved(arn)
-      && arn.startsWith('arn:')
-      && segments.length >= 6
-      && segments[1] !== '' && segments[2] !== '' && segments[5] !== '';
-    if (!parseable) {
+    if (Token.isUnresolved(arn) || !arn.startsWith('arn:')) {
       return undefined;
     }
-    const components = Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME);
-    const unresolved = Token.isUnresolved(components.service) || Token.isUnresolved(components.resource)
-      || (components.resourceName !== undefined && Token.isUnresolved(components.resourceName));
-    return unresolved ? undefined : components;
+    return Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME);
   }
 
   private validateTagCount(propName: string, tags?: { [key: string]: string }): void {
@@ -589,7 +595,7 @@ export class LogAlarm extends AlarmBase {
     return tags && Object.entries(tags).map(([key, value]) => ({ key, value }));
   }
 
-  private renderScheduledQuery(config: ScheduledQueryConfiguration): CfnLogAlarm.ScheduledQueryConfigurationProperty {
+  private renderScheduledQuery(config: LogAlarmScheduledQueryConfiguration): CfnLogAlarm.ScheduledQueryConfigurationProperty {
     return {
       queryString: config.queryString,
       aggregationExpression: config.aggregationExpression,
@@ -597,32 +603,44 @@ export class LogAlarm extends AlarmBase {
       scheduledQueryRoleArn: this.scheduledQueryRole.roleArn,
       scheduleConfiguration: {
         scheduleExpression: this.renderRate(config.schedule.rate),
-        startTimeOffset: config.schedule.startTimeOffset.toSeconds(),
-        endTimeOffset: config.schedule.endTimeOffset?.toSeconds(),
+        startTimeOffset: this.renderOffset('startTimeOffset', config.schedule.startTimeOffset),
+        endTimeOffset: config.schedule.endTimeOffset !== undefined
+          ? this.renderOffset('endTimeOffset', config.schedule.endTimeOffset)
+          : undefined,
       },
       tags: this.renderTags(config.tags),
     };
+  }
+
+  private renderOffset(name: string, offset: Duration): number {
+    if (offset.isUnresolved() && offset.unitLabel() !== 'seconds') {
+      throw new ValidationError(lit`UnresolvedTimeOffsetUnit`, `${name} must be given as Duration.seconds() when its amount comes from a token, got Duration.${offset.unitLabel()}`, this);
+    }
+    return offset.toSeconds();
   }
 
   /**
    * Create a role that a CloudWatch service principal can assume, restricted to
    * this account and to the given source ARN pattern to prevent confused-deputy
    * access.
+   *
+   * The source is named when its name is known at synthesis time, and matched by
+   * wildcard otherwise.
    */
-  private createServiceRole(id: string, servicePrincipal: string, sourceService: string, sourceResource: string): IRole {
+  private createServiceRole(id: string, servicePrincipal: string, sourceService: string, sourceResource: string, sourceName?: string): IRole {
     const stack = Stack.of(this);
     return new Role(this, id, {
       assumedBy: new ServicePrincipal(servicePrincipal, {
         conditions: {
           StringEquals: { 'aws:SourceAccount': stack.account },
           ArnLike: {
-            // The source cannot be named: the scheduled query's name is generated by the
-            // service, and referencing the alarm's own ARN would make the role depend on
-            // the alarm that depends on the role. Narrowing this breaks the trust policy.
+            // The scheduled query's name is generated by the service, and a generated alarm
+            // name is only known once the alarm exists, which depends on the role. Neither
+            // can be named here, so those sources are matched by wildcard.
             'aws:SourceArn': stack.formatArn({
               service: sourceService,
               resource: sourceResource,
-              resourceName: '*',
+              resourceName: sourceName ?? '*',
               arnFormat: ArnFormat.COLON_RESOURCE_NAME,
             }),
           },
@@ -645,7 +663,7 @@ export class LogAlarm extends AlarmBase {
    * resource types.
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
-    const selectsOwnLogGroups = logGroups === undefined || logGroups.length === 0;
+    const selectsOwnLogGroups = logGroups === undefined;
     Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:StartQuery'],
@@ -666,7 +684,7 @@ export class LogAlarm extends AlarmBase {
     });
   }
 
-  private renderWarmUp(warmUp?: WarmUpConfiguration): CfnLogAlarm.WarmUpConfigurationProperty | undefined {
+  private renderWarmUp(warmUp?: LogAlarmWarmUpConfiguration): CfnLogAlarm.WarmUpConfigurationProperty | undefined {
     if (warmUp === undefined) {
       return undefined;
     }
@@ -706,7 +724,7 @@ export class LogAlarm extends AlarmBase {
    * selects its log groups inline.
    */
   private logGroupPolicyResources(logGroups?: ILogGroupRef[]): string[] {
-    if (logGroups === undefined || logGroups.length === 0) {
+    if (logGroups === undefined) {
       return [Stack.of(this).formatArn({ service: 'logs', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
     }
     return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);

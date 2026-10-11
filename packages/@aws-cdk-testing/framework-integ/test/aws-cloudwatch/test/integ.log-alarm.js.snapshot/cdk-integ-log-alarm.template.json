@@ -207,7 +207,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":alarm:*"
+            ":alarm:integ-log-alarm-auto-role"
            ]
           ]
          }
