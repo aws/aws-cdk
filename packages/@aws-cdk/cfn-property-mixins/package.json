@@ -208,6 +208,7 @@
     "./aws-networkflowmonitor": "./lib/services/aws-networkflowmonitor/index.js",
     "./aws-networkmanager": "./lib/services/aws-networkmanager/index.js",
     "./aws-networkmonitor": "./lib/services/aws-networkmonitor/index.js",
+    "./aws-networksecuritymanager": "./lib/services/aws-networksecuritymanager/index.js",
     "./aws-nimblestudio": "./lib/services/aws-nimblestudio/index.js",
     "./aws-notifications": "./lib/services/aws-notifications/index.js",
     "./aws-notificationscontacts": "./lib/services/aws-notificationscontacts/index.js",
