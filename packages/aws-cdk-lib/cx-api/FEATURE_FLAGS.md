@@ -2626,10 +2626,13 @@ it never expires, and when it has a fixed name, the next deployment of the stack
 the log group already exists.
 
 When this flag is enabled and CDK creates the function's role, the role gets an inline policy
-that denies `logs:CreateLogGroup` if the function's log group is defined in the app: either a
-`LogGroup` passed as `logGroup`, or the log group created by
+that denies `logs:CreateLogGroup` on the function's log group if it is defined in the app:
+either a `LogGroup` passed as `logGroup`, or the log group created by
 `@aws-cdk/aws-lambda:useCdkManagedLogGroup`. Logs delivered after the log group is deleted are
-then dropped instead of recreating it.
+then dropped instead of recreating it. Other log groups the role may create, such as Lambda
+Insights' `/aws/lambda-insights`, are unaffected. When the function has no literal
+`functionName`, the managed log group's name is not known to the role, so the deny covers
+`/aws/lambda/*`.
 
 A role passed as `role`, an imported log group, `logRetention`, and functions that leave the log
 group to Lambda are not affected, since Lambda may need to create the log group in those cases.

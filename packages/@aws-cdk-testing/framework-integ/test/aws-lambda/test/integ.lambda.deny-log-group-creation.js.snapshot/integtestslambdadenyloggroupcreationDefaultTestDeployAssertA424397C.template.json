@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1791735713767"
+    "salt": "1791747484831"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -180,7 +180,7 @@
      "PolicyName": "\"DenyLogGroupCreation\""
     },
     "flattenResponse": "false",
-    "salt": "1791735713768"
+    "salt": "1791747484832"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
