@@ -48,7 +48,7 @@ import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
+import { LAMBDA_DENY_LOG_GROUP_CREATION, LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -1020,9 +1020,27 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
+    // Lambda delivers logs a few seconds after an invocation ends. If the log group is in the app,
+    // it can be deleted with the stack before they arrive, and the delivery would then create it
+    // again outside the stack. The deny is an inline policy of the role, not a separate policy
+    // resource, so it lasts as long as the role.
+    const hasLogGroupInApp = props.logGroup !== undefined
+      ? props.logGroup instanceof logs.LogGroup
+      : props.logRetention === undefined && FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP);
+    const isLogGroupCreationDenied = hasLogGroupInApp && FeatureFlags.of(this).isEnabled(LAMBDA_DENY_LOG_GROUP_CREATION);
+
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies,
+      inlinePolicies: isLogGroupCreationDenied ? {
+        DenyLogGroupCreation: new iam.PolicyDocument({
+          statements: [new iam.PolicyStatement({
+            effect: iam.Effect.DENY,
+            actions: ['logs:CreateLogGroup'],
+            resources: ['*'],
+          })],
+        }),
+      } : undefined,
     });
     this.grantPrincipal = this.role;
     this.tenancyConfig = props.tenancyConfig;

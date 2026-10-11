@@ -346,6 +346,14 @@ const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
 });
 ```
 
+### Log groups deleted with the stack
+
+Lambda delivers an invocation's logs a few seconds after the invocation ends, using the function's execution role. When a stack is deleted, a log group defined in the app can be deleted before those logs arrive, and the delivery then creates the log group again outside the stack. That log group never expires, and when it has a fixed name, the next deployment of the stack fails because it already exists.
+
+With the `@aws-cdk/aws-lambda:denyLogGroupCreation` feature flag enabled, the role that CDK creates for a function denies `logs:CreateLogGroup` when the function's log group is defined in the app: a `LogGroup` passed as `logGroup`, or the log group created with `@aws-cdk/aws-lambda:useCdkManagedLogGroup`. Late logs are then dropped instead. The deny is an inline policy of the role, so it lasts as long as the role.
+
+The flag does not change a role passed as `role`, a function whose `logGroup` is imported, a function with `logRetention`, or a function whose log group Lambda creates, since Lambda may need to create the log group in those cases. To get the same protection with your own role, add the deny to the role itself rather than with `addToRolePolicy()`, which puts it in a separate policy that CloudFormation can delete before the role.
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda

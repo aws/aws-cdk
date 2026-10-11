@@ -1,0 +1,79 @@
+{
+  "/lambda-deny-log-group-creation/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-deny-log-group-creation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-deny-log-group-creation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ],
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/lambda-deny-log-group-creation/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Function/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/lambda-deny-log-group-creation/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction76856677C48862D5"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Exports/Output{\"Ref\":\"FunctionServiceRole675BB04A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunctionServiceRole675BB04A6EC0B3E0"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Function/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionLogGroup55B80E27"
+    }
+  ]
+}

@@ -120,6 +120,7 @@ Flags come in three types:
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
+| [@aws-cdk/aws-lambda:denyLogGroupCreation](#aws-cdkaws-lambdadenyloggroupcreation) | Deny `logs:CreateLogGroup` to the default role of a Lambda function whose log group is in the app | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -182,6 +183,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
     "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
     "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
+    "@aws-cdk/aws-lambda:denyLogGroupCreation": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
@@ -2609,6 +2611,34 @@ viewer then follows with a second request. That additional request is billable.
 | 2.273.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
+
+
+### @aws-cdk/aws-lambda:denyLogGroupCreation
+
+*Deny `logs:CreateLogGroup` to the default role of a Lambda function whose log group is in the app*
+
+Flag type: Backwards incompatible bugfix
+
+Lambda delivers an invocation's logs a few seconds after the invocation ends, using the
+function's execution role. When the stack is deleted, the function's log group can be deleted
+before those logs arrive, and the delivery then creates the log group again outside the stack:
+it never expires, and when it has a fixed name, the next deployment of the stack fails because
+the log group already exists.
+
+When this flag is enabled and CDK creates the function's role, the role gets an inline policy
+that denies `logs:CreateLogGroup` if the function's log group is defined in the app: either a
+`LogGroup` passed as `logGroup`, or the log group created by
+`@aws-cdk/aws-lambda:useCdkManagedLogGroup`. Logs delivered after the log group is deleted are
+then dropped instead of recreating it.
+
+A role passed as `role`, an imported log group, `logRetention`, and functions that leave the log
+group to Lambda are not affected, since Lambda may need to create the log group in those cases.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
