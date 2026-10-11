@@ -5363,6 +5363,65 @@ describe('fargate service', () => {
       annotations.hasWarning('/Default/Service', Match.stringLikeRegexp('.*Execute Command SSM permissions.*manually configured.*'));
     });
 
+    test('does not throw when using Execute Command with a KMS key cluster and imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', {
+        vpc,
+        executeCommandConfiguration: {
+          kmsKey: new kms.Key(stack, 'Key'),
+          logging: ecs.ExecuteCommandLogging.NONE,
+        },
+      });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasWarning('/Default/Service', Match.stringLikeRegexp('.*Execute Command SSM permissions.*manually configured.*'));
+    });
+
+    test('adds warning annotation for Execute Command log permissions when using imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', {
+        vpc,
+        executeCommandConfiguration: {
+          logging: ecs.ExecuteCommandLogging.DEFAULT,
+        },
+      });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasWarning('/Default/Service', Match.stringLikeRegexp('.*Execute Command permissions.*manually configured.*'));
+    });
+
     test('throws when creating load balancer target with imported TaskDefinition', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -5389,7 +5448,10 @@ describe('fargate service', () => {
       }).toThrow(/Cannot create load balancer target from imported TaskDefinition/);
     });
 
-    test('throws when using Service Connect with imported TaskDefinition', () => {
+    test.each([
+      ['without config', undefined],
+      ['with services', { services: [{ portMappingName: 'api', dnsName: 'api', port: 80 }] }],
+    ])('fails when using Service Connect %s on an imported TaskDefinition', (_name, config) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -5411,8 +5473,8 @@ describe('fargate service', () => {
 
       // WHEN/THEN
       expect(() => {
-        service.enableServiceConnect();
-      }).toThrow(/Task definition must have at least one container to enable service connect/);
+        service.enableServiceConnect(config);
+      }).toThrow(/Service Connect requires an owned TaskDefinition/);
     });
   });
 });

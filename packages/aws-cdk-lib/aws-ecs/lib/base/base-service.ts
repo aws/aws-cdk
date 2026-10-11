@@ -1397,10 +1397,16 @@ export abstract class BaseService extends Resource
    * Validate Service Connect Configuration
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
-    const hasDefaultContainer = TaskDefinition.isTaskDefinition(this.taskDefinition) &&
-      this.taskDefinition.defaultContainer !== undefined;
+    // Service Connect needs the containers and port mappings of the task definition, which are not available for imported task definitions
+    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      throw new ValidationError(
+        lit`ServiceConnectRequiresOwnedTaskDefinition`,
+        'Service Connect requires an owned TaskDefinition. Cannot use imported task definitions with Service Connect.',
+        this,
+      );
+    }
 
-    if (!hasDefaultContainer) {
+    if (this.taskDefinition.defaultContainer === undefined) {
       throw new ValidationError(lit`TaskDefinitionLeastContainer`, 'Task definition must have at least one container to enable service connect.', this);
     }
 
@@ -1426,15 +1432,6 @@ export abstract class BaseService extends Resource
 
     if (!config.services) {
       return;
-    }
-
-    // Service Connect with services requires an owned TaskDefinition for port mapping lookups
-    if (!TaskDefinition.isTaskDefinition(this.taskDefinition)) {
-      throw new ValidationError(
-        lit`ServiceConnectRequiresOwnedTaskDefinition`,
-        'Service Connect requires an owned TaskDefinition. Cannot use imported task definitions with Service Connect.',
-        this,
-      );
     }
 
     let portNames = new Map<string, string[]>();

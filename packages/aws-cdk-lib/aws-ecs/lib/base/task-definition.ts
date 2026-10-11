@@ -362,10 +362,13 @@ export class TaskDefinition extends TaskDefinitionBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.TaskDefinition';
 
   /**
-   * Return whether the given object is a TaskDefinition (owned construct).
-   * This uses a Symbol-based check for JSII compatibility.
+   * Return whether the given object is an owned TaskDefinition.
+   *
+   * Returns `true` if `x` is a `TaskDefinition` created in this app, and `false`
+   * for imported task definitions (`ITaskDefinition`, e.g. from `fromTaskDefinitionArn`).
    */
   public static isTaskDefinition(x: any): x is TaskDefinition {
+    // Symbol-based check instead of `instanceof` for JSII compatibility.
     return x !== null && typeof(x) === 'object' && TASK_DEFINITION_SYMBOL in x;
   }
 
