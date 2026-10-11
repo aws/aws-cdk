@@ -1228,6 +1228,13 @@ that degrade but still function emit a warning (suppressible with
   load balancer targets manually.
 - **CODE_DEPLOY deployment controller and `taskDefinitionRevision`** (error): Both
   require an owned task definition.
+- **Cloud Map service discovery** (error): `cloudMapOptions` and `enableCloudMap()`
+  require the `networkMode` of the task definition. A task definition imported from
+  only an ARN has no `networkMode`, so enabling Cloud Map fails at synthesis. If you
+  import it with `networkMode` specified (for example with
+  `fromTaskDefinitionAttributes()`), A records with `awsvpc` work. SRV records
+  (required for `bridge` and `host` network modes) need an owned task definition,
+  because the container and port are looked up from it.
 - **Execute Command IAM permissions** (warning): SSM permissions are not automatically
   added to the task role. Configure the task role policies manually before creating
   the service.
