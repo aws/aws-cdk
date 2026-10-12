@@ -1,6 +1,7 @@
 import { App, Bitrate, Duration, Lazy, Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import * as medialive from 'aws-cdk-lib/aws-medialive';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { SourceConfiguration, NetworkConfiguration, FlowOutput, OutputConfiguration } from '../lib';
 import { Flow } from '../lib/flow';
@@ -330,7 +331,7 @@ test('Router input name validation - invalid characters', () => {
         protocol: RouterInputProtocol.rtp({ port: 5000 }),
       }),
     });
-  }).toThrow('Router input name must contain only alphanumeric characters and hyphens');
+  }).toThrow('Router input name must contain only alphanumeric characters, hyphens, and underscores');
 });
 
 describe('maximum bitrate validation', () => {
@@ -684,22 +685,23 @@ test('mediaConnectFlowWithoutConnection with encryption', () => {
 });
 
 test('mediaLiveChannel configuration', () => {
+  const mlChannel = new medialive.CfnChannel(stack, 'MlChannel', { name: 'ml-ch' });
   new RouterInput(stack, 'routerInput', {
     routerInputName: 'medialive-channel',
     maximumBitrate: Bitrate.mbps(10),
     routingScope: RoutingScope.REGIONAL,
     tier: RouterInputTier.INPUT_20,
     configuration: RouterInputConfiguration.mediaLiveChannel({
-      mediaLiveChannelArn: 'arn:aws:medialive:us-east-1:123456789012:channel:1234567',
-      mediaLiveChannelOutputName: 'output1',
-      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+      channel: mlChannel,
+      outputName: 'output1',
+      pipeline: MediaLivePipeline.PIPELINE_0,
     }),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::RouterInput', {
     Configuration: {
       MediaLiveChannel: {
-        MediaLiveChannelArn: 'arn:aws:medialive:us-east-1:123456789012:channel:1234567',
+        MediaLiveChannelArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('MlChannel'), 'Arn'] },
         MediaLiveChannelOutputName: 'output1',
         MediaLivePipelineId: 'PIPELINE_0',
         SourceTransitDecryption: {
@@ -713,6 +715,7 @@ test('mediaLiveChannel configuration', () => {
 test('mediaLiveChannel configuration with encryption', () => {
   const role = new Role(stack, 'role', { assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com') });
   const secret = new Secret(stack, 'secret');
+  const mlChannel = new medialive.CfnChannel(stack, 'MlChannel', { name: 'ml-ch' });
 
   new RouterInput(stack, 'routerInput', {
     routerInputName: 'medialive-channel-enc',
@@ -720,9 +723,9 @@ test('mediaLiveChannel configuration with encryption', () => {
     routingScope: RoutingScope.REGIONAL,
     tier: RouterInputTier.INPUT_20,
     configuration: RouterInputConfiguration.mediaLiveChannel({
-      mediaLiveChannelArn: 'arn:aws:medialive:us-east-1:123456789012:channel:1234567',
-      mediaLiveChannelOutputName: 'output1',
-      mediaLivePipelineId: MediaLivePipeline.PIPELINE_1,
+      channel: mlChannel,
+      outputName: 'output1',
+      pipeline: MediaLivePipeline.PIPELINE_1,
       sourceTransitDecryption: ({ role, secret }),
     }),
   });
@@ -784,6 +787,60 @@ test('router input with tags and maintenance', () => {
 test('fromRouterInputArn', () => {
   const imported = RouterInput.fromRouterInputArn(stack, 'imported', 'arn:aws:mediaconnect:us-east-1:123456789012:router-input:1-abc:test');
   expect(imported.routerInputArn).toBe('arn:aws:mediaconnect:us-east-1:123456789012:router-input:1-abc:test');
+});
+
+test('AZ validation skips when region is a token (no explicit env)', () => {
+  const noEnvStack = new Stack(app, 'NoEnvStack'); // no env = token region
+  const ni = new RouterNetworkInterface(noEnvStack, 'NI', {
+    routerNetworkInterfaceName: 'test-ni',
+    configuration: RouterNetworkConfiguration.publicNetwork({ cidr: ['10.0.0.0/16'] }),
+  });
+
+  expect(() => new RouterInput(noEnvStack, 'Input', {
+    routerInputName: 'token-region-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface: ni,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: 'us-east-1c',
+    }),
+  })).not.toThrow();
+});
+
+test('AZ validation throws when region and AZ mismatch (both concrete)', () => {
+  expect(() => new RouterInput(stack, 'MismatchInput', {
+    routerInputName: 'mismatch-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: 'us-west-2a',
+    }),
+  })).toThrow(/must be within region/);
+});
+
+test('AZ validation skips when AZ contains a token', () => {
+  const noEnvStack = new Stack(app, 'TokenAzStack');
+  const ni = new RouterNetworkInterface(noEnvStack, 'NI', {
+    routerNetworkInterfaceName: 'test-ni-2',
+    configuration: RouterNetworkConfiguration.publicNetwork({ cidr: ['10.0.0.0/16'] }),
+  });
+
+  expect(() => new RouterInput(noEnvStack, 'Input', {
+    routerInputName: 'token-az-input',
+    maximumBitrate: Bitrate.mbps(10),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface: ni,
+      protocol: RouterInputProtocol.rtp({ port: 5000 }),
+      availabilityZone: `${noEnvStack.region}a`,
+    }),
+  })).not.toThrow();
 });
 
 test('RoutingScope of() and toString()', () => {
@@ -924,14 +981,15 @@ test('imported router input throws when accessing endpoints', () => {
 });
 
 test('MediaLive channel router input throws when accessing endpoints', () => {
+  const mlChannel = new medialive.CfnChannel(stack, 'MlChannel', { name: 'ml-ch' });
   const input = new RouterInput(stack, 'MlcUrlInput', {
     routerInputName: 'mlc-url-test',
     maximumBitrate: Bitrate.mbps(5),
     routingScope: RoutingScope.REGIONAL,
     configuration: RouterInputConfiguration.mediaLiveChannel({
-      mediaLiveChannelArn: 'arn:aws:medialive:us-east-1:123456789012:channel:1234567',
-      mediaLiveChannelOutputName: 'output1',
-      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+      channel: mlChannel,
+      outputName: 'output1',
+      pipeline: MediaLivePipeline.PIPELINE_0,
     }),
   });
   expect(() => input.endpoints).toThrow(/endpoints.*is not available/);
