@@ -1,0 +1,176 @@
+package cdk_rules.gamelift
+
+import rego.v1
+
+# Cross-field GameLift invariants ported from the aws-gamelift-alpha L2
+# constructs (build-fleet.ts, fleet-base.ts, alias.ts). Only checks the
+# CloudFormation resource schema cannot express are included here — schema
+# limits (lengths, item counts, per-field ranges, patterns) are already
+# covered by the engine's built-in rules (F3031-F3034).
+#
+# The fleet rules (001-003) catch verified deploy-time failures: the GameLift
+# API rejects inverted port ranges at CreateFleet and out-of-range capacity
+# values at UpdateFleetCapacity, so these mistakes otherwise surface as a
+# CloudFormation rollback mid-deployment. The alias rules (004-005) catch
+# contradictory configuration that the service accepts but partially ignores:
+# a routing strategy carrying both a fleet and a terminal message deploys
+# successfully, with one of the two fields silently unused.
+#
+# The cross-resource rules (006-007) join a fleet to the build it references
+# through the template's Ref graph — an invariant no construct can check in
+# isolation: a Build's operating system determines the filesystem layout on
+# fleet instances, so every server-process launch path must live under the
+# OS-specific install root. A mismatch is schema-valid and deploys, then the
+# fleet activates and lands in ERROR state when no server process can start.
+# The join only exists when the build is defined in the same template; for an
+# imported build (literal BuildId string) the OS is unknowable and the rules
+# stay silent.
+#
+# Because these run on the synthesized template, they also cover L1
+# constructs, escape hatches, and CfnInclude, and token-valued properties
+# are already resolved.
+
+# An ingress rule's port range must not be inverted (FromPort <= ToPort)
+violation contains v if {
+	some name in resources_of_type("AWS::GameLift::Fleet")
+	permissions := resolve(name, "Properties.EC2InboundPermissions")
+	is_array(permissions)
+	some i, permission in permissions
+	from_port := permission.FromPort
+	to_port := permission.ToPort
+	is_number(from_port)
+	is_number(to_port)
+	from_port > to_port
+	v := make_diag_at(
+		"CDK-GameLift-001", "ERROR", name,
+		sprintf("Properties.EC2InboundPermissions.%d.FromPort", [i]),
+		sprintf("Ingress rule port range is inverted: FromPort %v is greater than ToPort %v", [from_port, to_port]),
+	)
+}
+
+# A location's capacity must satisfy MinSize <= MaxSize
+violation contains v if {
+	some name in resources_of_type("AWS::GameLift::Fleet")
+	locations := resolve(name, "Properties.Locations")
+	is_array(locations)
+	some i, location in locations
+	min_size := location.LocationCapacity.MinSize
+	max_size := location.LocationCapacity.MaxSize
+	is_number(min_size)
+	is_number(max_size)
+	min_size > max_size
+	v := make_diag_at(
+		"CDK-GameLift-002", "ERROR", name,
+		sprintf("Properties.Locations.%d.LocationCapacity.MinSize", [i]),
+		sprintf("Location capacity MinSize %v is greater than MaxSize %v", [min_size, max_size]),
+	)
+}
+
+# A location's DesiredEC2Instances must lie within [MinSize, MaxSize]
+violation contains v if {
+	some name in resources_of_type("AWS::GameLift::Fleet")
+	locations := resolve(name, "Properties.Locations")
+	is_array(locations)
+	some i, location in locations
+	desired := location.LocationCapacity.DesiredEC2Instances
+	min_size := location.LocationCapacity.MinSize
+	max_size := location.LocationCapacity.MaxSize
+	is_number(desired)
+	is_number(min_size)
+	is_number(max_size)
+	min_size <= max_size # avoid double-reporting on top of CDK-GameLift-002
+	outside_range(desired, min_size, max_size)
+	v := make_diag_at(
+		"CDK-GameLift-003", "ERROR", name,
+		sprintf("Properties.Locations.%d.LocationCapacity.DesiredEC2Instances", [i]),
+		sprintf("Location capacity DesiredEC2Instances %v is outside the range [MinSize %v, MaxSize %v]", [desired, min_size, max_size]),
+	)
+}
+
+outside_range(value, lower, upper) if value < lower
+
+outside_range(value, lower, upper) if value > upper
+
+# An alias with SIMPLE routing must not carry a terminal Message
+violation contains v if {
+	some name, res in input.resources
+	res.resourceType == "AWS::GameLift::Alias"
+	res.properties.RoutingStrategy.Type == "SIMPLE"
+	res.properties.RoutingStrategy.Message
+	v := make_diag_at(
+		"CDK-GameLift-004", "ERROR", name,
+		"Properties.RoutingStrategy.Message",
+		"Alias with SIMPLE routing must not set a terminal Message; either route to a fleet or set a terminal message, not both",
+	)
+}
+
+# An alias with TERMINAL routing must not point at a fleet
+violation contains v if {
+	some name, res in input.resources
+	res.resourceType == "AWS::GameLift::Alias"
+	res.properties.RoutingStrategy.Type == "TERMINAL"
+	res.properties.RoutingStrategy.FleetId
+	v := make_diag_at(
+		"CDK-GameLift-005", "ERROR", name,
+		"Properties.RoutingStrategy.FleetId",
+		"Alias with TERMINAL routing must not reference a fleet; either route to a fleet or set a terminal message, not both",
+	)
+}
+
+# Game builds are installed on fleet instances at an OS-specific root:
+# C:\game on Windows, /local/game on Linux.
+# https://docs.aws.amazon.com/gamelift/latest/developerguide/fleets-multiprocess.html
+windows_launch_root := "C:\\game"
+
+linux_launch_root := "/local/game"
+
+# The Build a fleet references, when it is defined in the same template.
+# resolve() follows the Ref to the build's logical ID; for an imported build
+# the BuildId is a literal fleet-external ID and the resource lookup fails,
+# so the cross-resource rules stay silent.
+build_for_fleet(fleet_name) := build if {
+	build_name := resolve(fleet_name, "Properties.BuildId")
+	is_string(build_name)
+	build := input.resources[build_name]
+	build.resourceType == "AWS::GameLift::Build"
+}
+
+# A fleet on a Windows build must launch server processes from C:\game
+violation contains v if {
+	some fleet_name in resources_of_type("AWS::GameLift::Fleet")
+	build := build_for_fleet(fleet_name)
+	os := build.properties.OperatingSystem
+	is_string(os)
+	startswith(os, "WINDOWS_")
+	processes := resolve(fleet_name, "Properties.RuntimeConfiguration.ServerProcesses")
+	is_array(processes)
+	some i, process in processes
+	launch_path := process.LaunchPath
+	is_string(launch_path)
+	not startswith(launch_path, windows_launch_root)
+	v := make_diag_at(
+		"CDK-GameLift-006", "ERROR", fleet_name,
+		sprintf("Properties.RuntimeConfiguration.ServerProcesses.%d.LaunchPath", [i]),
+		sprintf("Launch path %v does not match the referenced build's Windows operating system (%v); Windows launch paths must start with C:\\game", [launch_path, os]),
+	)
+}
+
+# A fleet on a Linux build must launch server processes from /local/game
+violation contains v if {
+	some fleet_name in resources_of_type("AWS::GameLift::Fleet")
+	build := build_for_fleet(fleet_name)
+	os := build.properties.OperatingSystem
+	is_string(os)
+	startswith(os, "AMAZON_LINUX")
+	processes := resolve(fleet_name, "Properties.RuntimeConfiguration.ServerProcesses")
+	is_array(processes)
+	some i, process in processes
+	launch_path := process.LaunchPath
+	is_string(launch_path)
+	not startswith(launch_path, linux_launch_root)
+	v := make_diag_at(
+		"CDK-GameLift-007", "ERROR", fleet_name,
+		sprintf("Properties.RuntimeConfiguration.ServerProcesses.%d.LaunchPath", [i]),
+		sprintf("Launch path %v does not match the referenced build's Linux operating system (%v); Linux launch paths must start with /local/game", [launch_path, os]),
+	)
+}

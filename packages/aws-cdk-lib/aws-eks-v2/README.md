@@ -272,6 +272,33 @@ cluster.addNodegroupCapacity('specialized-workload', {
 
 3. Auto Mode requires specific IAM permissions. The construct will automatically attach the required managed policies.
 
+### Provisioned Control Plane
+
+Amazon EKS Provisioned Control Plane allows you to select a scaling tier to ensure high and predictable performance for demanding workloads such as AI training/inference, high-performance computing, or large-scale data processing.
+
+The scaling tier is configured through the `controlPlaneScalingTier` property using the `ControlPlaneScalingTier` enum-like class.
+
+```ts
+const cluster = new eks.Cluster(this, 'HighPerformanceCluster', {
+  version: eks.KubernetesVersion.V1_36,
+  controlPlaneScalingTier: eks.ControlPlaneScalingTier.TIER_XL,
+});
+```
+
+Available scaling tiers:
+
+- `STANDARD` - Standard control plane (default, no additional cost)
+- `TIER_XL` - Extra-large provisioned tier
+- `TIER_2XL` - 2x extra-large provisioned tier
+- `TIER_4XL` - 4x extra-large provisioned tier
+- `TIER_8XL` - 8x extra-large provisioned tier
+
+For a tier that is not yet available as a named member, use the `ControlPlaneScalingTier.of(...)` escape hatch, for example `eks.ControlPlaneScalingTier.of('tier-16xl')`.
+
+If `controlPlaneScalingTier` is omitted, the EKS service applies its default (`standard`) control plane.
+
+> For more details visit [Amazon EKS Provisioned Control Plane](https://docs.aws.amazon.com/eks/latest/userguide/eks-provisioned-control-plane.html).
+
 ### Managed node groups
 
 Amazon EKS managed node groups automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
@@ -858,7 +885,7 @@ The following access entry types are supported:
 - `HYBRID_LINUX` - For EKS Hybrid Nodes
 - `HYPERPOD_LINUX` - For Amazon SageMaker HyperPod
 
-**Note**: Access entries with type `EC2`, `HYBRID_LINUX`, or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
+**Note**: Access entries with type `HYBRID_LINUX` or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
 
 By default, the cluster creator role will be granted the cluster admin permissions. You can disable it by setting 
 `bootstrapClusterCreatorAdminPermissions` to false. 

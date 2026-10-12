@@ -146,6 +146,8 @@ export function parseErrorStack(stack: string): CallSite[] {
  * new <constructor> (<file>:<line>:<col>)
  * <file>:<line>:<col>
  * ```
+ *
+ * See https://v8.dev/docs/stack-trace-api#appendix%3A-stack-trace-format
  */
 function parseStackFrame(frame: string): CallSite {
   let fileName;
@@ -163,7 +165,9 @@ function parseStackFrame(frame: string): CallSite {
 
   let asI = functionName.indexOf(' [as ');
   if (asI > -1) {
-    functionName = functionName.slice(0, asI);
+    const endOfAlias = functionName.indexOf(']', asI);
+    const lastPeriod = functionName.lastIndexOf('.', asI);
+    functionName = functionName.slice(0, lastPeriod + 1) + functionName.slice(asI + 5, endOfAlias);
   }
 
   // line = <file>:<line>:<col>, but file can contain : as well.
@@ -266,17 +270,38 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
 }
 
 /**
+ * Interface for a class that can determine whether a stack frame is interesting to the user or not.
+ *
+ * The input is a formatted stack frame, as produced by `captureCallStack` and
+ * `renderCallStackJustMyCode`. The output is a boolean indicating whether the
+ * frame is user code or not.
+ */
+export interface StackFrameFinder {
+  isUserCodeFrame(frame: string): boolean;
+}
+
+/**
+ * Recognize "actual" call frames by them containing ` (` and ending in `)`.
+ *
+ * The `node_modules` frames have already been masked away by
+ * `renderCallStackJustMyCode` during capture.
+ */
+export const DEFAULT_STACK_FRAME_FINDER: StackFrameFinder = {
+  isUserCodeFrame(frame: string): boolean {
+    return frame.includes(' (') && frame.endsWith(')');
+  },
+};
+
+/**
  * Return the first user frame from a "Just My Code" call stack
  *
  * With all the NON-"my code" call frames redacted, the top level frame should
  * be the last user frame that is associated with the given call stack.
  *
- * May return `undefined` if no such call frame is found. We recognize
- * "actual" call frames by them containing ` (` and ending in `)`.
  */
-export function topUserFrame(stackTrace: string[]): CallSite | undefined {
+export function topUserFrame(stackTrace: string[], frameFinder: StackFrameFinder): CallSite | undefined {
   for (const frame of stackTrace) {
-    if (frame.includes(' (') && frame.endsWith(')')) {
+    if (frameFinder.isUserCodeFrame(frame)) {
       return parseStackFrame(frame);
     }
   }
