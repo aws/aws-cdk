@@ -2,8 +2,9 @@ import { Match, Template } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ec2 from '../../../aws-ec2';
+import * as iam from '../../../aws-iam';
 import { Bucket } from '../../../aws-s3';
-import { Stack, Token } from '../../../core';
+import { App, Stack, Token } from '../../../core';
 import * as cpactions from '../../lib';
 
 describe('Commands Action', () => {
@@ -797,6 +798,104 @@ describe('Commands Action', () => {
             },
           ]),
         },
+      });
+    });
+
+    describe('VPC in another environment', () => {
+      let app: App;
+      let pipelineStack: Stack;
+      let crossPipeline: codepipeline.Pipeline;
+      let crossSource: codepipeline.Artifact;
+
+      beforeEach(() => {
+        app = new App();
+        pipelineStack = new Stack(app, 'PipelineStack', { env: { account: '111111111111', region: 'us-east-1' } });
+        crossSource = new codepipeline.Artifact('SourceArtifact');
+        crossPipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+          pipelineName: 'MyPipeline',
+          crossAccountKeys: true,
+        });
+        crossPipeline.addStage({
+          stageName: 'Source',
+          actions: [new cpactions.S3SourceAction({
+            actionName: 'Source',
+            bucket: new Bucket(pipelineStack, 'SourceBucket'),
+            bucketKey: 'sample.zip',
+            output: crossSource,
+          })],
+        });
+      });
+
+      function addCrossAccountAction(vpcStack: Stack, props: Partial<cpactions.CommandsActionProps>) {
+        const vpc = ec2.Vpc.fromVpcAttributes(vpcStack, 'Vpc', {
+          vpcId: 'vpc-12345',
+          availabilityZones: ['us-east-1a'],
+          privateSubnetIds: ['subnet-private1'],
+        });
+        const role = new iam.Role(vpcStack, 'ActionRole', {
+          assumedBy: new iam.AccountPrincipal('111111111111'),
+          roleName: 'ActionRole',
+        });
+        crossPipeline.addStage({
+          stageName: 'Commands',
+          actions: [new cpactions.CommandsAction({
+            actionName: 'Commands',
+            commands: ['echo hello'],
+            input: crossSource,
+            vpc,
+            role,
+            ...props,
+          })],
+        });
+      }
+
+      test('fails to create a default security group for a VPC in another account', () => {
+        // GIVEN
+        const otherStack = new Stack(app, 'OtherStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+        // THEN
+        expect(() => addCrossAccountAction(otherStack, {}))
+          .toThrow("The VPC of the Commands action 'Commands' is in a different account than the pipeline, specify 'securityGroups' that belong to the VPC");
+      });
+
+      test('scopes the network interface permissions to the account of the VPC', () => {
+        // GIVEN
+        const otherStack = new Stack(app, 'OtherStack', { env: { account: '222222222222', region: 'us-east-1' } });
+        const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(otherStack, 'Sg', 'sg-1');
+
+        // WHEN
+        addCrossAccountAction(otherStack, { securityGroups: [securityGroup] });
+
+        // THEN
+        Template.fromStack(pipelineStack).resourceCountIs('AWS::EC2::SecurityGroup', 0);
+        Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: Match.arrayWith([{
+              Action: 'ec2:CreateNetworkInterfacePermission',
+              Condition: {
+                StringEquals: {
+                  'ec2:Subnet': [{
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-east-1:222222222222:subnet/subnet-private1']],
+                  }],
+                },
+              },
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-east-1:222222222222:network-interface/*']],
+              },
+            }]),
+          },
+        });
+      });
+
+      test('fails for a VPC in another region', () => {
+        // GIVEN
+        const otherStack = new Stack(app, 'OtherStack', { env: { account: '111111111111', region: 'us-west-2' } });
+        const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(otherStack, 'Sg', 'sg-1');
+
+        // THEN
+        expect(() => addCrossAccountAction(otherStack, { securityGroups: [securityGroup] }))
+          .toThrow("The VPC of the Commands action 'Commands' must be in the same region as the pipeline, got: 'us-west-2' and 'us-east-1'");
       });
     });
 

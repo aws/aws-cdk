@@ -112,6 +112,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    * The VPC in which to run the commands.
    *
    * Set this when your commands need to connect to resources in a VPC.
+   * The VPC must be in the same region as the pipeline.
    *
    * @default - the commands do not run in a VPC
    */
@@ -129,7 +130,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The security groups to associate with the network interfaces of the build environment.
    *
-   * Only used if `vpc` is supplied.
+   * Only used if `vpc` is supplied. Required if the VPC is in a different account than the pipeline.
    *
    * @default - a new security group that allows all outbound traffic is created
    */
@@ -266,17 +267,29 @@ export class CommandsAction extends Action {
 
   private configureVpc(scope: Construct, role: iam.IRole, vpc: ec2.IVpc): { [key: string]: string } {
     const subnetIds = vpc.selectSubnets(this.props.subnetSelection).subnetIds;
-    const securityGroups = this.props.securityGroups && this.props.securityGroups.length > 0
-      ? this.props.securityGroups
-      : [new ec2.SecurityGroup(scope, 'SecurityGroup', {
+    // the network interfaces are created in the account and region of the VPC
+    const vpcStack = cdk.Stack.of(vpc);
+    const actionStack = cdk.Stack.of(scope);
+    if (cdk.Token.compareStrings(actionStack.region, vpcStack.region) === cdk.TokenComparison.DIFFERENT) {
+      throw new cdk.ValidationError(lit`CommandsVpcRegionMismatch`, `The VPC of the Commands action '${this.actionProperties.actionName}' must be in the same region as the pipeline, got: '${vpcStack.region}' and '${actionStack.region}'`, scope);
+    }
+
+    let securityGroups = this.props.securityGroups;
+    if (!securityGroups || securityGroups.length === 0) {
+      // the generated security group is created in the scope of the action (the pipeline stack),
+      // so it can only be used for a VPC in the same account as the pipeline
+      if (cdk.Token.compareStrings(actionStack.account, vpcStack.account) === cdk.TokenComparison.DIFFERENT) {
+        throw new cdk.ValidationError(lit`CommandsVpcSecurityGroupsRequired`, `The VPC of the Commands action '${this.actionProperties.actionName}' is in a different account than the pipeline, specify 'securityGroups' that belong to the VPC`, scope);
+      }
+      securityGroups = [new ec2.SecurityGroup(scope, 'SecurityGroup', {
         vpc,
         description: 'Automatic generated security group for CodePipeline Commands action',
         allowAllOutbound: true,
       })];
+    }
 
     // grant the Role the permissions required to create the network interfaces of the build environment in the VPC
     // see: https://docs.aws.amazon.com/codebuild/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#customer-managed-policies-example-create-vpc-network-interface
-    const stack = cdk.Stack.of(scope);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
@@ -290,11 +303,11 @@ export class CommandsAction extends Action {
       ],
     }));
     role.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [stack.formatArn({ service: 'ec2', resource: 'network-interface', resourceName: '*' })],
+      resources: [vpcStack.formatArn({ service: 'ec2', resource: 'network-interface', resourceName: '*' })],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
         StringEquals: {
-          'ec2:Subnet': subnetIds.map(subnetId => stack.formatArn({ service: 'ec2', resource: 'subnet', resourceName: subnetId })),
+          'ec2:Subnet': subnetIds.map(subnetId => vpcStack.formatArn({ service: 'ec2', resource: 'subnet', resourceName: subnetId })),
         },
       },
     }));
