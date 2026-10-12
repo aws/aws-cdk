@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.273.0](https://github.com/aws/aws-cdk/compare/v2.272.0...v2.273.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-appstream: AWS::AppStream::StackFleetAssociation: FleetName property is now immutable.
+aws-appstream: AWS::AppStream::StackFleetAssociation: StackName property is now immutable.
+aws-appsync: AWS::AppSync::ApiCache: AtRestEncryptionEnabled property is now immutable.
+aws-appsync: AWS::AppSync::ApiCache: TransitEncryptionEnabled property is now immutable.
+aws-bedrockagentcore: AWS::BedrockAgentCore::OnlineEvaluationConfig: OutputConfig attribute removed.
+aws-cloud9: AWS::Cloud9::EnvironmentEC2: Id attribute removed.
+aws-config: AWS::Config::ConfigurationRecorder: Id attribute removed.
+aws-config: AWS::Config::OrganizationConfigRule: Id attribute removed.
+aws-datazone: AWS::DataZone::PolicyGrant: Detail property is now required.
+aws-datazone: AWS::DataZone::PolicyGrant: Principal property is now required.
+aws-directoryservice: AWS::DirectoryService::MicrosoftAD: Id attribute removed.
+aws-lambda: AWS::Lambda::NetworkConnector: VpcEgressConfiguration.NetworkProtocol property is now required.
+aws-lambda: AWS::Lambda::NetworkConnector: VpcEgressConfiguration.SecurityGroupIds property is now required.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38969](https://github.com/aws/aws-cdk/issues/38969)) ([ed0df78](https://github.com/aws/aws-cdk/commit/ed0df78359cc92b367d4bbd609bb1637b68f5573))
+* **batch:** add ConsumableResource L2 construct ([#36971](https://github.com/aws/aws-cdk/issues/36971)) ([a12f3a1](https://github.com/aws/aws-cdk/commit/a12f3a1c7ca1626c16608c126fa4a60a45ac010b))
+* **bedrockagentcore:** support runtime platformVersion ([#38924](https://github.com/aws/aws-cdk/issues/38924)) ([227423f](https://github.com/aws/aws-cdk/commit/227423f0129d829a9bdddce5af57f63469839097))
+* **cloudfront:** default Distribution behaviors to redirect HTTP to HTTPS ([#38721](https://github.com/aws/aws-cdk/issues/38721)) ([6ede006](https://github.com/aws/aws-cdk/commit/6ede0060d93bab5903a0528bdd323a56e1430003)), closes [#38599](https://github.com/aws/aws-cdk/issues/38599)
+* **opensearchservice:** add useLatestServiceSoftwareForBlueGreen support ([#38499](https://github.com/aws/aws-cdk/issues/38499)) ([6aa03e5](https://github.com/aws/aws-cdk/commit/6aa03e5444241550487c6a34011283d2599ff31e)), closes [#38664](https://github.com/aws/aws-cdk/issues/38664) [#38664](https://github.com/aws/aws-cdk/issues/38664)
+* **pipelines:** add `executionMode` support in CodePipeline L3 construct ([#35022](https://github.com/aws/aws-cdk/issues/35022)) ([7283d38](https://github.com/aws/aws-cdk/commit/7283d38c615c83b7698111e639c9773abd41b45a)), closes [#35014](https://github.com/aws/aws-cdk/issues/35014)
+
+
+### Bug Fixes
+
+* bump bundled brace-expansion to 5.0.12 ([#38929](https://github.com/aws/aws-cdk/issues/38929)) ([ff25def](https://github.com/aws/aws-cdk/commit/ff25def6c473addeafc091d93a01fcb5b5b5cb25)), closes [#38932](https://github.com/aws/aws-cdk/issues/38932)
+* **applicationautoscaling:** target tracking silently ignores custom metric account and region ([#36503](https://github.com/aws/aws-cdk/issues/36503)) ([5d10288](https://github.com/aws/aws-cdk/commit/5d1028868e59642f71af364d4b019f9d5911e455)), closes [#36401](https://github.com/aws/aws-cdk/issues/36401)
+* **bedrockagentcore:** accept aws-cn ECR image URIs in Runtime container URI validation ([#38948](https://github.com/aws/aws-cdk/issues/38948)) ([49ac618](https://github.com/aws/aws-cdk/commit/49ac618636a31bd4ecfa74e0a224ccabcfd291b2)), closes [#38947](https://github.com/aws/aws-cdk/issues/38947)
+* **cloudfront-origins:** missing OAC permissions for Function URL ([#35919](https://github.com/aws/aws-cdk/issues/35919)) ([d213cc7](https://github.com/aws/aws-cdk/commit/d213cc71761267788354887039e2d3c4f26b3032)), closes [#35872](https://github.com/aws/aws-cdk/issues/35872) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts#L144-L153](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts/issues/L144-L153) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts#L144-L153](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts/issues/L144-L153) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts#L577](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts/issues/L577) [#35725](https://github.com/aws/aws-cdk/issues/35725)
+* **core:** validation  E2001 inadvertently not enabled ([#38920](https://github.com/aws/aws-cdk/issues/38920)) ([0b763a7](https://github.com/aws/aws-cdk/commit/0b763a780c0a89b518d596d6b7bcde2778ffd29b))
+* **eks:** allow access policies on AccessEntryType.EC2 access entries ([#38782](https://github.com/aws/aws-cdk/issues/38782)) ([e507e07](https://github.com/aws/aws-cdk/commit/e507e07dcc2404845413e0a73c784bec0207aab3)), closes [#37496](https://github.com/aws/aws-cdk/issues/37496)
+* **s3-deployment:** `Source.data` objectKey can write outside the staging directory ([#38921](https://github.com/aws/aws-cdk/issues/38921)) ([53439f9](https://github.com/aws/aws-cdk/commit/53439f95a933165414afaae7a33faefccad8bf57))
+
 ## [2.272.0](https://github.com/aws/aws-cdk/compare/v2.271.0...v2.272.0) (2026-09-30)
 
 

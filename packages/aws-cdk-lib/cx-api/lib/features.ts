@@ -1973,7 +1973,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
       viewer then follows with a second request. That additional request is billable.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.273.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
