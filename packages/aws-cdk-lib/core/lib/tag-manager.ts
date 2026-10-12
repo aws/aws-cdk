@@ -69,10 +69,6 @@ interface ITagFormatter {
  */
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
-    if (isResolvableObject(cfnPropertyTags)) {
-      return { tags: [], dynamicTags: cfnPropertyTags };
-    }
-
     if (!Array.isArray(cfnPropertyTags)) {
       throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
@@ -111,10 +107,6 @@ class StandardFormatter implements ITagFormatter {
  */
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
-    if (isResolvableObject(cfnPropertyTags)) {
-      return { tags: [], dynamicTags: cfnPropertyTags };
-    }
-
     if (!Array.isArray(cfnPropertyTags)) {
       throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
     }
@@ -403,7 +395,14 @@ export class TagManager {
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
 
-    if (isResolvableObject(this.dynamicTags) && this.tags.size === 0) {
+    if (isResolvableObject(this.dynamicTags)) {
+      if (this.tags.size > 0) {
+        throw new UnscopedValidationError(
+          lit`CombineTagsIntrinsicWithLiteral`,
+          'Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). ' +
+          'Remove the literal tags or resolve the intrinsic at the property level.',
+        );
+      }
       return this.dynamicTags;
     }
 
@@ -472,6 +471,10 @@ export class TagManager {
    */
   private parseExternalTags(initialTags: any) {
     if (initialTags !== undefined) {
+      if (isResolvableObject(initialTags)) {
+        this.dynamicTags = initialTags;
+        return;
+      }
       const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
       this.dynamicTags = parseTagsResult.dynamicTags;
       this._setTag(...parseTagsResult.tags);
