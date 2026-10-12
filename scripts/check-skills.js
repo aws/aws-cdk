@@ -186,14 +186,18 @@ function checkSkillMd(file, text, folder, report) {
 }
 
 /**
- * A code span whose whole text looks like a skill name must name a discovered skill.
+ * A code span whose whole text looks like a skill name must name a discovered skill. It looks like
+ * one when it is `cdk-<words>-<ending>` and some skill's name also ends in `-<ending>`, such as
+ * `review` or `principles`; other `cdk-` spans, like package or command names, are not checked.
  * A span `X` where `cdk-X` is a skill is the name from before the `cdk-` prefix was added.
  */
 function checkSkillReferences(file, doc, skillNames, report) {
+  const endings = new Set([...skillNames].map((name) => name.slice(name.lastIndexOf('-') + 1)));
   for (const { line, spans } of doc) {
     for (const span of spans) {
       const text = span.content.trim();
-      if (/^cdk-[a-z0-9-]+-(?:review|principles)$/.test(text) && !skillNames.has(text)) {
+      const ending = text.slice(text.lastIndexOf('-') + 1);
+      if (/^cdk-[a-z0-9-]+-[a-z0-9]+$/.test(text) && endings.has(ending) && !skillNames.has(text)) {
         report(file, line, 'error', 'skill-reference', `\`${text}\` is not a skill; the skills are ${[...skillNames].sort().join(', ')}`);
       } else if (skillNames.has(`cdk-${text}`)) {
         report(file, line, 'warning', 'skill-reference', `\`${text}\` is a former skill name; use \`cdk-${text}\``);
