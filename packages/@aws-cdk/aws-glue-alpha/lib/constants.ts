@@ -262,6 +262,25 @@ export enum PythonVersion {
 }
 
 /**
+ * The set of pre-installed Python libraries available to a Python shell job running Python 3.9.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-job-python.html#python-shell-supported-library
+ */
+export enum LibrarySet {
+  /**
+   * Include the common analytics libraries for Python 3.9 (e.g. pandas, numpy, scikit-learn,
+   * awswrangler).
+   */
+  ANALYTICS = 'analytics',
+
+  /**
+   * Do not install the common library set. Use this when your libraries are custom or conflict
+   * with the pre-installed ones.
+   */
+  NONE = 'none',
+}
+
+/**
  * AWS Glue runtime determines the runtime engine of the job.
  *
  * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.

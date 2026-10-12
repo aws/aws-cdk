@@ -415,12 +415,19 @@ export interface IBucket extends IResource, IBucketRef {
   enableEventBridgeNotification(): void;
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket.
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
@@ -1077,12 +1084,19 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
     const results: boolean[] = [];
@@ -1588,21 +1602,36 @@ export interface ReplicationRule {
   /**
    * The destination bucket for the replicated objects.
    *
-   * The destination can be either in the same AWS account or a cross account.
+   * The destination can be in the same AWS account or a different account.
    *
-   * If you want to configure cross-account replication,
-   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   * For cross-account replication, the destination bucket must have a policy that allows the source
+   * bucket to replicate objects to it. Use `addReplicationPolicy()` to add the required permissions
+   * when the destination bucket is managed by CDK. If the destination bucket is referenced, configure
+   * the policy separately in the destination account.
+   *
+   * When importing a cross-account destination into the source stack, use
+   * `Bucket.fromBucketAttributes()` and set the `account` attribute to the destination bucket owner's
+   * account ID. `Bucket.fromBucketArn()` and `Bucket.fromBucketName()` assume the bucket is owned by
+   * the same account as the scope in which it is imported.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
    */
   readonly destination: IBucket;
 
   /**
-   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   * Whether to change replica ownership to the AWS account that owns the destination bucket.
    *
    * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
    *
-   * @default - The replicas are owned by same AWS account that owns the source object
+   * When enabled, use `addReplicationPolicy()` on the destination bucket with the source bucket
+   * owner's account ID to grant the required permissions.
+   *
+   * This is not required when the destination bucket uses `ObjectOwnership.BUCKET_OWNER_ENFORCED`,
+   * because the destination bucket owner automatically owns all objects.
+   *
+   * @default - The replicas are owned by the source object owner, unless the destination bucket uses
+   * `ObjectOwnership.BUCKET_OWNER_ENFORCED`
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   readonly accessControlTransition?: boolean;
 
@@ -1615,9 +1644,12 @@ export interface ReplicationRule {
   readonly replicationTimeControl?: ReplicationTimeValue;
 
   /**
-   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   * A container specifying replication metrics-related settings to configure `Status` of replication metrics and `EventThreshold` .
    *
-   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   * The specified eventThreshold duration takes effect only when `replicationTimeControl` is enabled .
+   * Otherwise, the duration is ignored and replication metrics are enabled without an event threshold.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/repl-metrics.html
    *
    * @default - Replication metrics are not enabled
    */
@@ -3249,10 +3281,12 @@ export class Bucket extends BucketBase {
             } : undefined,
             metrics: rule.metrics !== undefined ? {
               status: 'Enabled',
-              eventThreshold: {
-                minutes: rule.metrics.minutes,
-              },
-            } : undefined,
+              ...(rule.replicationTimeControl !== undefined ? {
+                eventThreshold: {
+                  minutes: rule.metrics.minutes,
+                },
+              } : {}),
+            }:undefined,
           },
           filter,
           // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
