@@ -144,6 +144,64 @@ describe('default tests', () => {
     });
   });
 
+  test('default Lambda timeout is 30 seconds', () => {
+    // WHEN
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'getObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: sfn.JsonPath.stringAt('$.key'),
+      },
+      region: 'us-east-1',
+      iamResources: ['*'],
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 30,
+    });
+  });
+
+  test('with custom lambdaTimeout', () => {
+    // WHEN
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'CopyObject', {
+      service: 's3',
+      action: 'copyObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: sfn.JsonPath.stringAt('$.key'),
+        CopySource: sfn.JsonPath.stringAt('$.source'),
+      },
+      region: 'us-east-1',
+      iamResources: ['*'],
+      lambdaTimeout: cdk.Duration.minutes(15),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 900,
+    });
+  });
+
+  test.each([0, 901])('fails when lambdaTimeout is out of range (%d seconds)', (seconds) => {
+    expect(() => new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'getObject',
+      region: 'us-east-1',
+      iamResources: ['*'],
+      lambdaTimeout: cdk.Duration.seconds(seconds),
+    })).toThrow(/lambdaTimeout must be between 1 and 900 seconds/);
+  });
+
   test('with retryOnServiceExceptions disabled', () => {
     // WHEN
     const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
