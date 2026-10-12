@@ -668,6 +668,16 @@ export enum InstanceClass {
   C8G = 'c8g',
 
   /**
+   * Compute optimized instances for high performance computing, 9th generation with Graviton5 processors
+   */
+  COMPUTE9_GRAVITON = 'compute9-graviton',
+
+  /**
+   * Compute optimized instances for high performance computing, 9th generation with Graviton5 processors
+   */
+  C9G = 'c9g',
+
+  /**
    * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
    * and local NVME drive
    */
@@ -1999,6 +2009,8 @@ export class InstanceType {
     [InstanceClass.C8A]: 'c8a',
     [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
     [InstanceClass.C8G]: 'c8g',
+    [InstanceClass.COMPUTE9_GRAVITON]: 'c9g',
+    [InstanceClass.C9G]: 'c9g',
     [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
     [InstanceClass.C8GD]: 'c8gd',
     [InstanceClass.COMPUTE8_GRAVITON4_HIGH_NETWORK_BANDWIDTH]: 'c8gn',
