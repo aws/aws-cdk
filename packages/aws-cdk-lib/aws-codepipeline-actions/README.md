@@ -1539,5 +1539,46 @@ const deployAction = new codepipeline_actions.S3DeployAction({
 });
 ```
 
+By default, the commands run on a `BUILD_GENERAL1_SMALL` compute type in a `LINUX_CONTAINER` environment.
+Use the `environmentType` and `computeType` properties to change the build environment. The Commands action
+supports the `ComputeType.SMALL`, `ComputeType.MEDIUM` and `ComputeType.LARGE` compute types.
+The `WINDOWS_SERVER_2022_CONTAINER` environment type is not compatible with `ComputeType.SMALL`.
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'dir',
+  ],
+  input: sourceArtifact,
+  environmentType: codepipeline_actions.CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+  computeType: codebuild.ComputeType.MEDIUM,
+});
+```
+
+If your commands need to connect to resources in a VPC, such as an internal API or a database, specify the `vpc`
+property. The commands run in the private subnets of the VPC, unless you select other subnets with `subnetSelection`.
+If you don't pass `securityGroups`, a security group that allows all outbound traffic is created for the action.
+The permissions required to create the network interfaces in the VPC are added to the action role.
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const vpc: ec2.IVpc;
+declare const securityGroup: ec2.ISecurityGroup;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    'curl https://internal.example.com/health',
+  ],
+  input: sourceArtifact,
+  vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  securityGroups: [securityGroup],
+});
+```
+
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html)
 for more details about using Commands action in CodePipeline.
