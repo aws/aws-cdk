@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Checks the skills under skills/: their SKILL.md frontmatter and names, the names
- * they use for each other, each group's README index, and their links into the repository.
+ * Checks the skills under skills/: their SKILL.md frontmatter and names, each group's
+ * README index, and their links into the repository.
  *
  * Usage: node scripts/check-skills.js [<repository root>]
  *
@@ -76,13 +76,7 @@ function checkSkills(repoRoot) {
     checkSkillMd(file, texts.get(file), path.basename(dir), report);
   }
 
-  const skillNames = new Set(skillDirs.map((dir) => path.basename(dir)));
-  const documents = new Map();
-  for (const [file, text] of texts) {
-    const doc = parseMarkdown(text);
-    documents.set(file, doc);
-    checkSkillReferences(file, doc, skillNames, report);
-  }
+  const documents = new Map([...texts].map(([file, text]) => [file, parseMarkdown(text)]));
 
   const context = { root, realRoot: fs.realpathSync(root), rootStat, counts, report, slugsByFile: new Map(), resolved: new Map() };
   for (const [file, doc] of documents) {
@@ -181,27 +175,6 @@ function checkSkillMd(file, text, folder, report) {
   for (const [key, { line }] of frontmatter) {
     if (!ALLOWED_KEYS.has(key)) {
       report(file, line, 'error', 'frontmatter-keys', `unknown frontmatter key ${JSON.stringify(key)}; allowed keys are ${[...ALLOWED_KEYS].join(', ')}`);
-    }
-  }
-}
-
-/**
- * A code span whose whole text looks like a skill name must name a discovered skill. It looks like
- * one when it is `cdk-<words>-<ending>` and some skill's name also ends in `-<ending>`, such as
- * `review` or `principles`; other `cdk-` spans, like package or command names, are not checked.
- * A span `X` where `cdk-X` is a skill is the name from before the `cdk-` prefix was added.
- */
-function checkSkillReferences(file, doc, skillNames, report) {
-  const endings = new Set([...skillNames].map((name) => name.slice(name.lastIndexOf('-') + 1)));
-  for (const { line, spans } of doc) {
-    for (const span of spans) {
-      const text = span.content.trim();
-      const ending = text.slice(text.lastIndexOf('-') + 1);
-      if (/^cdk-[a-z0-9-]+-[a-z0-9]+$/.test(text) && endings.has(ending) && !skillNames.has(text)) {
-        report(file, line, 'error', 'skill-reference', `\`${text}\` is not a skill; the skills are ${[...skillNames].sort().join(', ')}`);
-      } else if (skillNames.has(`cdk-${text}`)) {
-        report(file, line, 'warning', 'skill-reference', `\`${text}\` is a former skill name; use \`cdk-${text}\``);
-      }
     }
   }
 }
@@ -416,8 +389,8 @@ function checkReadmeIndex(readme, documents, folders, report) {
 }
 
 /**
- * Splits markdown into the lines outside fenced code blocks. Each line carries its
- * inline code spans and its inline links and images, ignoring `[...](...)` inside code spans.
+ * Splits markdown into the lines outside fenced code blocks. Each line carries its inline
+ * links and images, ignoring `[...](...)` inside code spans.
  */
 function parseMarkdown(text) {
   const result = [];
@@ -442,7 +415,7 @@ function parseMarkdown(text) {
       from = span.end;
     }
     parts.push(lineText.slice(from));
-    result.push({ line: i + 1, text: lineText, spans, ...inlineLinks(parts.join('')) });
+    result.push({ line: i + 1, text: lineText, ...inlineLinks(parts.join('')) });
   });
   return result;
 }
@@ -465,7 +438,7 @@ function codeSpans(text) {
       continue;
     }
     const { start, length } = runs[k];
-    spans.push({ start, end: runs[close].start + length, content: text.slice(start + length, runs[close].start) });
+    spans.push({ start, end: runs[close].start + length });
     k = close + 1;
   }
   return spans;

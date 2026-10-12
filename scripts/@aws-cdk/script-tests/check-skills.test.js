@@ -287,82 +287,6 @@ describe('check-skills SKILL.md length', () => {
   });
 });
 
-describe('check-skills skill names in text', () => {
-  const REF_PATH = `${GROUP}/${SKILL}/references/rules.md`;
-
-  function withReference(...lines) {
-    return checkSkills(repo({ [REF_PATH]: ['# Rules', '', ...lines, ''].join('\n') }));
-  }
-
-  test('accepts code spans that name real skills', () => {
-    expect(withReference('Apply `cdk-beta-principles` and ``cdk-alpha-review`` first.').findings).toEqual([]);
-  });
-
-  test('fails a code span naming an unknown skill', () => {
-    const result = withReference('See `cdk-perf-review` too.');
-    expect(located(result)).toEqual(oneError('skill-reference', 3, REF_PATH));
-    expect(result.findings[0].message).toContain('cdk-perf-review');
-  });
-
-  test('fails an unknown principles skill', () => {
-    expect(located(withReference('', 'Apply `cdk-gamma-principles`.'))).toEqual(oneError('skill-reference', 4, REF_PATH));
-  });
-
-  test('warns on a bare pre-rename skill name', () => {
-    const result = withReference('Run `alpha-review` next.');
-    expect(located(result)).toEqual([{ path: REF_PATH, line: 3, severity: 'warning', rule: 'skill-reference' }]);
-    expect(result.findings[0].message).toContain('cdk-alpha-review');
-  });
-
-  describe('with a skill whose name ends in another word', () => {
-    const GUIDE = 'cdk-foo-guide';
-
-    function withGuideSkill(text) {
-      return checkSkills(repo({
-        [`${GROUP}/README.md`]: readme([SKILL, 'cdk-beta-principles', GUIDE]),
-        [`${GROUP}/${GUIDE}/SKILL.md`]: skillMd({ name: GUIDE }),
-        [REF_PATH]: ['# Rules', '', text, ''].join('\n'),
-      }));
-    }
-
-    test('fails an unknown skill name with that ending', () => {
-      const result = withGuideSkill('See `cdk-bar-guide` too.');
-      expect(located(result)).toEqual(oneError('skill-reference', 3, REF_PATH));
-      expect(result.findings[0].message).toContain('cdk-bar-guide');
-    });
-
-    test('accepts the skill itself', () => {
-      expect(withGuideSkill('See `cdk-foo-guide` too.').findings).toEqual([]);
-    });
-  });
-
-  test('does not check a name whose ending no skill has', () => {
-    expect(withReference('See `cdk-bar-guide` and `cdk-bar-tools`.').findings).toEqual([]);
-  });
-
-  test('takes the endings only from the skills that exist', () => {
-    const root = tempDir();
-    writeFiles(root, {
-      [`${GROUP}/README.md`]: readme(['cdk-foo-guide']),
-      [`${GROUP}/cdk-foo-guide/SKILL.md`]: skillMd({ name: 'cdk-foo-guide', body: '# Guide\n\nSee `cdk-bar-review`.\n' }),
-    });
-    expect(checkSkills(root).findings).toEqual([]);
-  });
-
-  test('ignores names in fenced blocks, in plain text and in longer code spans', () => {
-    const result = withReference(
-      '```sh',
-      'echo `cdk-perf-review` `alpha-review`',
-      '```',
-      'Plain cdk-perf-review text and `npx cdk-perf-review --x`.',
-      '~~~',
-      '`cdk-perf-review`',
-      '~~~',
-    );
-    expect(result.findings).toEqual([]);
-  });
-});
-
 describe('check-skills README index', () => {
   const README = `${GROUP}/README.md`;
 
@@ -789,10 +713,10 @@ describe('check-skills command line', () => {
   });
 
   test('exits 0 and prints warnings when there are only warnings', () => {
-    const root = repo({ [`${GROUP}/${SKILL}/references/rules.md`]: '# Rules\n\nRun `alpha-review`.\n' });
+    const root = repo({ [`${GROUP}/${SKILL}/references/rules.md`]: '# Rules\n\nSee [the [main] rule](missing.md).\n' });
     const { status, stdout } = run(root);
     expect(status).toBe(0);
-    expect(stdout).toMatch(new RegExp(`^${GROUP}/${SKILL}/references/rules.md:3: warning skill-reference: .*cdk-alpha-review`, 'm'));
+    expect(stdout).toMatch(new RegExp(`^${GROUP}/${SKILL}/references/rules.md:3: warning link-syntax: `, 'm'));
     expect(stdout).toContain('errors: 0, warnings: 1');
     expect(stdout).not.toContain('rerun');
   });
