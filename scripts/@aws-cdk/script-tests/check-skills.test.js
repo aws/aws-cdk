@@ -514,6 +514,19 @@ describe('check-skills links', () => {
     expect(result.counts.links).toBe(README_LINKS);
   });
 
+  // Code spans follow CommonMark: a span ends at the next backtick run of the same length, and an
+  // unmatched run is literal text, so a link after it is still a link.
+  test.each([
+    ['a link after a lone backtick is still checked', 'A lone ` tick, then [x](missing.md).', 1],
+    ['a link inside a double-backtick span is ignored', 'A ``[x](missing.md)`` span.', 0],
+    ['a single backtick does not close a double-backtick span', 'A ``one ` [x](missing.md) ` two`` span.', 0],
+    ['an unmatched opener is literal, and a later pair forms the span', 'A `one ``[x](missing.md)`` span.', 0],
+  ])('%s', (_, body, checked) => {
+    const result = checkSkills(withBody(body));
+    expect(located(result)).toEqual(checked ? oneError('link-target', BODY_LINE) : []);
+    expect(result.counts.links).toBe(README_LINKS + checked);
+  });
+
   test('fails an undecodable blob/main path', () => {
     const result = checkSkills(withBody(`[x](${BLOB}/docs/%E0%A4%A.md)`));
     expect(located(result)).toEqual(oneError('link-target', BODY_LINE));
