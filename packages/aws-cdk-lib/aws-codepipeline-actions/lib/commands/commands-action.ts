@@ -101,7 +101,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    *
    * Only `ComputeType.SMALL`, `ComputeType.MEDIUM` and `ComputeType.LARGE` are supported.
    * `CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER` is not compatible with
-   * `ComputeType.SMALL`, so set `ComputeType.MEDIUM` or `ComputeType.LARGE` when you use it.
+   * `ComputeType.SMALL`, so you must set `ComputeType.MEDIUM` or `ComputeType.LARGE` when you use it.
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html#action-reference-Commands-config
    * @default - CodePipeline uses `BUILD_GENERAL1_SMALL`
@@ -179,9 +179,14 @@ export class CommandsAction extends Action {
       throw new cdk.UnscopedValidationError(lit`UnsupportedCommandsComputeType`, `Unsupported compute type for the Commands action: ${JSON.stringify(props.computeType)}, supported compute types are: ${SUPPORTED_COMPUTE_TYPES.join(', ')}`);
     }
 
-    if (props.environmentType?.value === CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER.value
-      && props.computeType === codebuild.ComputeType.SMALL) {
-      throw new cdk.UnscopedValidationError(lit`IncompatibleCommandsEnvironmentComputeType`, `The environment type ${CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER.value} is not compatible with the compute type ${codebuild.ComputeType.SMALL}, use ${codebuild.ComputeType.MEDIUM} or ${codebuild.ComputeType.LARGE} instead`);
+    if (props.environmentType?.value === CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER.value) {
+      if (props.computeType === codebuild.ComputeType.SMALL) {
+        throw new cdk.UnscopedValidationError(lit`IncompatibleCommandsEnvironmentComputeType`, `The environment type ${CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER.value} is not compatible with the compute type ${codebuild.ComputeType.SMALL}, use ${codebuild.ComputeType.MEDIUM} or ${codebuild.ComputeType.LARGE} instead`);
+      }
+      // CodePipeline defaults the compute type to BUILD_GENERAL1_SMALL, which is not compatible with Windows
+      if (props.computeType === undefined) {
+        throw new cdk.UnscopedValidationError(lit`CommandsWindowsComputeTypeRequired`, `The environment type ${CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER.value} requires 'computeType' to be set to ${codebuild.ComputeType.MEDIUM} or ${codebuild.ComputeType.LARGE}, because the default compute type ${codebuild.ComputeType.SMALL} is not compatible with it`);
+      }
     }
 
     if (!props.vpc && (props.subnetSelection !== undefined || props.securityGroups !== undefined)) {

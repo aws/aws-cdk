@@ -1542,7 +1542,8 @@ const deployAction = new codepipeline_actions.S3DeployAction({
 By default, the commands run on a `BUILD_GENERAL1_SMALL` compute type in a `LINUX_CONTAINER` environment.
 Use the `environmentType` and `computeType` properties to change the build environment. The Commands action
 supports the `ComputeType.SMALL`, `ComputeType.MEDIUM` and `ComputeType.LARGE` compute types.
-The `WINDOWS_SERVER_2022_CONTAINER` environment type is not compatible with `ComputeType.SMALL`.
+The `WINDOWS_SERVER_2022_CONTAINER` environment type is not compatible with `ComputeType.SMALL`, so you must set
+`computeType` to `ComputeType.MEDIUM` or `ComputeType.LARGE` when you use it.
 
 ```ts
 declare const sourceArtifact: codepipeline.Artifact;

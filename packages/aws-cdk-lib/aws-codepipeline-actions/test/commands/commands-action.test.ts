@@ -660,6 +660,18 @@ describe('Commands Action', () => {
       }).toThrow('The environment type WINDOWS_SERVER_2022_CONTAINER is not compatible with the compute type BUILD_GENERAL1_SMALL, use BUILD_GENERAL1_MEDIUM or BUILD_GENERAL1_LARGE instead');
     });
 
+    test('fails for windows environment type without a compute type', () => {
+      // THEN
+      expect(() => {
+        new cpactions.CommandsAction({
+          actionName: 'Commands',
+          commands: ['echo hello'],
+          input: sourceOutput1,
+          environmentType: cpactions.CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+        });
+      }).toThrow('The environment type WINDOWS_SERVER_2022_CONTAINER requires \'computeType\' to be set to BUILD_GENERAL1_MEDIUM or BUILD_GENERAL1_LARGE, because the default compute type BUILD_GENERAL1_SMALL is not compatible with it');
+    });
+
     test.each([
       ['subnetSelection', { subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS } }],
       ['securityGroups', { securityGroups: [] }],
