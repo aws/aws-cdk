@@ -1388,9 +1388,12 @@ describe('replicas (multi-location)', () => {
     });
   });
 
-  test('throws on empty replicas array', () => {
+  test('an empty replicas array is treated as no replicas', () => {
     const stack = new Stack();
-    expect(() => newCanary(stack, [])).toThrow('replicas must contain at least one replica if specified.');
+    newCanary(stack, []);
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: Match.absent(),
+    });
   });
 
   test('throws on more than 50 replicas', () => {

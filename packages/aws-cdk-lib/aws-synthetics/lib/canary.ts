@@ -773,12 +773,9 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   }
 
   private validateReplicas(replicas?: CanaryReplica[]) {
-    if (!replicas) {
+    // An empty array is treated the same as omitting the prop (no replicas).
+    if (!replicas || replicas.length === 0) {
       return;
-    }
-
-    if (replicas.length === 0) {
-      throw new ValidationError(lit`EmptyReplicas`, 'replicas must contain at least one replica if specified.', this);
     }
 
     if (replicas.length > 50) {
