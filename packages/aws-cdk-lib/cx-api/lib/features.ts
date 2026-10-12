@@ -160,6 +160,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const VALIDATE_NESTED_STACK_TEMPLATES = '@aws-cdk/core:validateNestedStackTemplates';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1977,6 +1978,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATE_NESTED_STACK_TEMPLATES]: {
+    type: FlagType.BugFix,
+    summary: 'Pass the templates of nested stacks and other stacks synthesized as assets to synthesis-time validation',
+    detailsMd: `
+      Synthesis-time template validation, including the default CloudFormation validation and any plugin
+      registered with \`Validations.of(app).addPlugins()\`, only receives the templates of top-level stacks.
+      The template of a \`NestedStack\`, or of any other stack synthesized as an asset of its parent, is never
+      validated, so a resource that fails validation in a top-level stack passes silently inside a nested stack.
+
+      When this flag is enabled, every \`Stack\` construct in a stage whose template was written to the cloud
+      assembly is validated, including nested stacks. Findings in nested templates are reported against the
+      constructs that produced them and can be acknowledged with \`Validations.of(scope).acknowledge()\`.
+
+      Enabling this can surface new findings in nested stacks: errors fail synthesis when
+      \`@aws-cdk/core:validateAgainstDefaultRules\` is enabled, and new warnings can fail \`cdk synth --strict\`.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Leave this flag unset to keep validating only top-level stack templates, or acknowledge new findings with `Validations.of(scope).acknowledge()`.',
   },
 };
 
