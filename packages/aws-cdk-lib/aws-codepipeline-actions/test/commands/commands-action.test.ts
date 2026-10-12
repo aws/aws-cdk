@@ -899,6 +899,63 @@ describe('Commands Action', () => {
       });
     });
 
+    test('allows connections from the generated security group', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+      const database = new ec2.SecurityGroup(stack, 'DatabaseSecurityGroup', { vpc });
+      const action = new cpactions.CommandsAction({
+        actionName: 'Commands',
+        commands: ['echo hello'],
+        input: sourceOutput1,
+        vpc,
+      });
+
+      // WHEN
+      action.connections.allowTo(database, ec2.Port.tcp(5432));
+      pipeline.addStage({ stageName: 'Commands', actions: [action] });
+
+      // THEN
+      expect(action.connections.securityGroups).toHaveLength(1);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        FromPort: 5432,
+        ToPort: 5432,
+        GroupId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^DatabaseSecurityGroup'), 'GroupId'] },
+        SourceSecurityGroupId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^PipelineCommandsSecurityGroup'), 'GroupId'] },
+      });
+    });
+
+    test('exposes the given security groups as connections', () => {
+      // GIVEN
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+      // WHEN
+      const action = new cpactions.CommandsAction({
+        actionName: 'Commands',
+        commands: ['echo hello'],
+        input: sourceOutput1,
+        vpc,
+        securityGroups: [securityGroup],
+      });
+      pipeline.addStage({ stageName: 'Commands', actions: [action] });
+
+      // THEN
+      expect(action.connections.securityGroups).toEqual([securityGroup]);
+    });
+
+    test('fails to access connections without a VPC', () => {
+      // GIVEN
+      const action = new cpactions.CommandsAction({
+        actionName: 'Commands',
+        commands: ['echo hello'],
+        input: sourceOutput1,
+      });
+
+      // THEN
+      expect(() => action.connections).toThrow('Only Commands actions that run in a VPC have security groups to manage, supply the \'vpc\' property when creating the action');
+    });
+
     test('does not grant VPC permissions without a VPC', () => {
       // WHEN
       addCommandsAction({ computeType: codebuild.ComputeType.MEDIUM });

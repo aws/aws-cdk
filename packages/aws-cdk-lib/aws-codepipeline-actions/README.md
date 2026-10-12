@@ -1581,5 +1581,24 @@ const commandsAction = new codepipeline_actions.CommandsAction({
 });
 ```
 
+The action implements `ec2.IConnectable`, so you can allow the commands to connect to other resources in the VPC,
+including when the security group is generated:
+
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const vpc: ec2.IVpc;
+declare const databaseSecurityGroup: ec2.ISecurityGroup;
+
+const commandsAction = new codepipeline_actions.CommandsAction({
+  actionName: 'Commands',
+  commands: [
+    './migrate-database.sh',
+  ],
+  input: sourceArtifact,
+  vpc,
+});
+commandsAction.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432));
+```
+
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html)
 for more details about using Commands action in CodePipeline.

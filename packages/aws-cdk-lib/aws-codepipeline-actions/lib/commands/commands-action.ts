@@ -151,9 +151,10 @@ const SUPPORTED_COMPUTE_TYPES: string[] = [
 /**
  * CodePipeline compute action that uses AWS Commands.
  */
-export class CommandsAction extends Action {
+export class CommandsAction extends Action implements ec2.IConnectable {
   private readonly outputVariables: string[];
   private readonly props: CommandsActionProps;
+  private readonly _connections?: ec2.Connections;
 
   constructor(props: CommandsActionProps) {
     super({
@@ -196,6 +197,23 @@ export class CommandsAction extends Action {
 
     this.outputVariables = props.outputVariables || [];
     this.props = props;
+    if (props.vpc) {
+      this._connections = new ec2.Connections({ securityGroups: props.securityGroups });
+    }
+  }
+
+  /**
+   * The network connections of the build environment that runs the commands.
+   *
+   * Only available if `vpc` is supplied. If no `securityGroups` are supplied,
+   * the generated security group is added when the action is added to a pipeline,
+   * and rules that you add before that are applied to it.
+   */
+  public get connections(): ec2.Connections {
+    if (!this._connections) {
+      throw new cdk.UnscopedValidationError(lit`CommandsActionNotInVpc`, 'Only Commands actions that run in a VPC have security groups to manage, supply the \'vpc\' property when creating the action');
+    }
+    return this._connections;
   }
 
   /**
@@ -286,6 +304,7 @@ export class CommandsAction extends Action {
         description: 'Automatic generated security group for CodePipeline Commands action',
         allowAllOutbound: true,
       })];
+      this._connections?.addSecurityGroup(...securityGroups);
     }
 
     // grant the Role the permissions required to create the network interfaces of the build environment in the VPC
