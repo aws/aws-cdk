@@ -1031,7 +1031,8 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    ***************************************************************************/
 
   /**
-   * OpenAI's GPT-6.1 Sol model, with performance approaching GPT-6 Astra at Sol pricing.
+   * OpenAI's GPT-6.1 Sol model, with performance approaching GPT-6 Astra on several
+   * demanding evaluations, at Sol pricing.
    * Advances coding, professional work, and agentic workflows.
    *
    * Features:
@@ -1045,7 +1046,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   });
 
   /**
-   * OpenAI's GPT-6 Astra model, the most capable OpenAI model on Bedrock.
+   * OpenAI's GPT-6 Astra model, the most capable model of the GPT-6 family.
    * Built for complex reasoning, coding, computer use, research, and
    * document creation.
    *
@@ -1116,7 +1117,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * OpenAI's GPT-5.6 Luna model, fast and affordable inference.
-   * OpenAI's lowest cost model, built for high-volume tasks.
+   * The lowest cost model of the GPT-5.6 family, built for high-volume tasks.
    *
    * Features:
    * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
