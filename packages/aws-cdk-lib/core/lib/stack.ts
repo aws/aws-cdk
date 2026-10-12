@@ -1373,7 +1373,7 @@ export class Stack extends Construct implements ITaggable {
    * @internal
    */
   public get _isTopLevelStack(): boolean {
-    return this.constructor === Stack;
+    return true;
   }
 
   /**

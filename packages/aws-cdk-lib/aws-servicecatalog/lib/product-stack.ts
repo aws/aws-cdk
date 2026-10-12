@@ -167,6 +167,15 @@ export class ProductStack extends cdk.Stack {
 
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
   }
+
+  /**
+   * Not a true top-level stack.
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return false;
+  }
 }
 
 /**
