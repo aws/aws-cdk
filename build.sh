@@ -87,8 +87,11 @@ fi
 # Check that the yarn.lock is consistent
 node ./scripts/check-yarn-lock.js
 
-# Check the skills under skills/, including their links to headings in the docs
-node ./scripts/check-skills.js
+# Check the skills under skills/, including their links to headings in the docs.
+# Only GitHub builds set PR_BUILD, so release pipelines skip this check.
+if [ "${PR_BUILD:-}" == "true" ]; then
+  node ./scripts/check-skills.js
+fi
 
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
