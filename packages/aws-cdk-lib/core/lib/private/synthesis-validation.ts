@@ -224,9 +224,10 @@ function assetStackTemplates(stage: IConstruct, assemblies: Map<string, private_
     if (!STACK_TYPE.isMarked(construct)) {
       continue;
     }
-    const stackAssembly = assemblies.get(stageOf(construct)?.artifactId ?? '');
+    const stackStage = stageOf(construct);
+    const stackAssembly = stackStage ? assemblies.get(stackStage.artifactId) : undefined;
     if (!stackAssembly) {
-      continue;
+      throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stack ${construct.node.path}`);
     }
     const templatePath = path.join(stackAssembly.directory, construct.templateFile);
     if (!fs.existsSync(templatePath)) {
