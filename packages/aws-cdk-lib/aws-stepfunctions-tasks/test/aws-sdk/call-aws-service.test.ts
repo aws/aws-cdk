@@ -495,3 +495,100 @@ test('IAM policy for elasticloadbalancingv2', () => {
     },
   });
 });
+
+test('CallAwsService without iamResources - no IAM policy generated', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'StartExecution', {
+    service: 'sfn',
+    action: 'startExecution',
+    parameters: {
+      StateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      Input: sfn.JsonPath.objectAt('$'),
+    },
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::aws-sdk:sfn:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'StateMachineArn': 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      'Input.$': '$',
+    },
+  });
+
+  // Verify no IAM policy is created
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
+
+test('CallAwsService with only additionalIamStatements - only additional statements included', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'StartExecution', {
+    service: 'sfn',
+    action: 'startExecution',
+    parameters: {
+      StateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      Input: sfn.JsonPath.objectAt('$'),
+    },
+    additionalIamStatements: [
+      new iam.PolicyStatement({
+        actions: ['states:StartExecution'],
+        resources: ['arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine'],
+      }),
+    ],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'states:StartExecution',
+          Effect: 'Allow',
+          Resource: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('CallAwsService without iamResources and without additionalIamStatements - no IAM policy generated', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'StartExecution', {
+    service: 'sfn',
+    action: 'startExecution',
+    parameters: {
+      StateMachineArn: 'arn:aws:states:us-east-1:123456789012:stateMachine:MyStateMachine',
+      Input: sfn.JsonPath.objectAt('$'),
+    },
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  // Verify no IAM policy is created
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
