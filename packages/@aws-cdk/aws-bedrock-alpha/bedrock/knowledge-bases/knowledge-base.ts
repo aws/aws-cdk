@@ -232,6 +232,7 @@ export class KnowledgeBase extends KnowledgeBaseBase {
       tags: props.tags,
     });
 
+    // TODO: Temporarily here ONLY to deal with Role.fromRoleArn() objects; this should be generalized
     // The type's mixins resolve the role from `roleArn` when applied, so it must be registered first.
     GrantableRoles.of(this).registerRoleObject(role.roleRef.roleArn, role);
 
@@ -240,11 +241,11 @@ export class KnowledgeBase extends KnowledgeBaseBase {
 
   @memoizedGetter
   public get knowledgeBaseArn(): string {
-    return this.resource.attrKnowledgeBaseArn;
+    return this.resource.knowledgeBaseRef.knowledgeBaseArn;
   }
 
   @memoizedGetter
   public get knowledgeBaseId(): string {
-    return this.resource.ref;
+    return this.resource.knowledgeBaseRef.knowledgeBaseId;
   }
 }
