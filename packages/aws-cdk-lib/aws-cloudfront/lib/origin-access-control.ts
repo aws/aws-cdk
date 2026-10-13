@@ -117,6 +117,18 @@ export enum SigningBehavior {
    */
   ALWAYS = 'always',
   /**
+   * Sign all origin requests, and pass the Authorization header
+   * from the viewer request to the origin unchanged.
+   *
+   * CloudFront adds its signature in a dedicated header instead of the
+   * Authorization header. This is the only signing behavior supported by
+   * AWS Lambda Web Function origins, and it isn't supported by any other
+   * origin type.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html
+   */
+  ALWAYS_AMZ_AUTH = 'always-amz-auth',
+  /**
    * Do not sign any origin requests.
    * This value turns off origin access control for all origins in all
    * distributions that use this origin access control.
@@ -147,6 +159,14 @@ export class Signing {
    * Sign all origin requests using the AWS Signature Version 4 signing protocol.
    */
   public static readonly SIGV4_ALWAYS = new Signing(SigningProtocol.SIGV4, SigningBehavior.ALWAYS);
+
+  /**
+   * Sign all origin requests using the AWS Signature Version 4 signing protocol,
+   * and pass the viewer's Authorization header to the origin unchanged.
+   *
+   * Use with regional AWS Lambda Web Function endpoints.
+   */
+  public static readonly SIGV4_ALWAYS_AMZ_AUTH = new Signing(SigningProtocol.SIGV4, SigningBehavior.ALWAYS_AMZ_AUTH);
 
   /**
    * Sign only if the viewer request doesn't contain the Authorization header
