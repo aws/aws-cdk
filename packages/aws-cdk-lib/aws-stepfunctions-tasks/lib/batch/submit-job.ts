@@ -350,16 +350,18 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   /**
    * The name of the job definition, or `undefined` when it cannot be determined at
-   * synthesis time (JsonPath/JSONata expression, unresolved token, or unparseable ARN).
+   * synthesis time (JsonPath/JSONata expression, or an ARN whose resource name cannot be parsed).
+   * An unresolved token is resolved via CloudFormation intrinsics rather than returning `undefined`.
    */
   private jobDefinitionName(): string | undefined {
     const jobDefinitionArn = this.props.jobDefinitionArn;
     if (isJsonPathOrJsonataExpression(jobDefinitionArn)) {
       return undefined;
     }
-    const resourceName = Token.isUnresolved(jobDefinitionArn) || jobDefinitionArn.startsWith('arn:')
-      ? Stack.of(this).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName
-      : jobDefinitionArn;
+    if (!Token.isUnresolved(jobDefinitionArn) && !jobDefinitionArn.startsWith('arn:')) {
+      return jobDefinitionArn || undefined;
+    }
+    const resourceName = Stack.of(this).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     return resourceName?.split(':')[0] || undefined;
   }
 
