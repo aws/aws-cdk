@@ -1,0 +1,140 @@
+{
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineKeyE4B4725B"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActivityKey371097A6"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActivityWithCMKEncryptionConfiguration3D01813A"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfiguration10773462"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachineWithCMKEncryptionConfiguration107734624DC890C0"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefActivityWithCMKEncryptionConfiguration3D01813A4B9ECB48"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35"
+    }
+  ]
+}

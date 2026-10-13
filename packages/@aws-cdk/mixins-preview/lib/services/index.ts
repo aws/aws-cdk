@@ -28,6 +28,7 @@ export * as aws_eks from './aws-eks';
 export * as aws_elasticache from './aws-elasticache';
 export * as aws_elasticloadbalancing from './aws-elasticloadbalancing';
 export * as aws_elasticloadbalancingv2 from './aws-elasticloadbalancingv2';
+export * as aws_elementalinference from './aws-elementalinference';
 export * as aws_emr from './aws-emr';
 export * as aws_entityresolution from './aws-entityresolution';
 export * as aws_events from './aws-events';
