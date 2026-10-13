@@ -283,17 +283,6 @@ describe('KnowledgeBase of type vector', () => {
     });
   });
 
-  describe('type guard', () => {
-    test.each<[string, boolean, (stack: cdk.Stack) => unknown]>([
-      ['a KnowledgeBase', true, (stack) => newKnowledgeBase(stack)],
-      ['an imported knowledge base', false, (stack) => bedrock.KnowledgeBase.fromKnowledgeBaseArn(stack, 'Imported', 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB123')],
-      ['null', false, () => null],
-      ['a plain object', false, () => ({})],
-    ])('isKnowledgeBase(%s) is %p', (_label, expected, value) => {
-      expect(bedrock.KnowledgeBase.isKnowledgeBase(value(new cdk.Stack()))).toBe(expected);
-    });
-  });
-
   describe('type reuse', () => {
     test('the same KnowledgeBaseType configures and grants each knowledge base it is used with', () => {
       const stack = new cdk.Stack();

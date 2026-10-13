@@ -18,8 +18,6 @@ import {
 import { KnowledgeBaseGrants } from '../../lib/bedrock-grants.generated';
 import { KnowledgeBaseTypeConfiguration } from '../mixins/knowledge-base';
 
-const KNOWLEDGE_BASE_SYMBOL = Symbol.for('@aws-cdk/aws-bedrock-alpha.KnowledgeBase');
-
 /**
  * Represents an Amazon Bedrock knowledge base of any type, either created
  * with the CDK or imported
@@ -174,13 +172,6 @@ export class KnowledgeBase extends KnowledgeBaseBase {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-alpha.KnowledgeBase';
 
   /**
-   * Return whether the given object is a `KnowledgeBase`.
-   */
-  public static isKnowledgeBase(x: any): x is KnowledgeBase {
-    return x !== null && typeof x === 'object' && KNOWLEDGE_BASE_SYMBOL in x;
-  }
-
-  /**
    * Reference an existing knowledge base by ARN.
    */
   public static fromKnowledgeBaseArn(scope: Construct, id: string, knowledgeBaseArn: string): IKnowledgeBase {
@@ -226,7 +217,6 @@ export class KnowledgeBase extends KnowledgeBaseBase {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
-    Object.defineProperty(this, KNOWLEDGE_BASE_SYMBOL, { value: true });
 
     validateKnowledgeBaseProps(this, props);
 
