@@ -130,6 +130,20 @@ describe('S3OriginAccessControl', () => {
     });
   });
 
+  test('creates a FunctionUrlOriginAccessControl with the always-amz-auth signing behavior', () => {
+    new FunctionUrlOriginAccessControl(stack, 'WebFunctionOriginAccessControl', {
+      signing: Signing.SIGV4_ALWAYS_AMZ_AUTH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: 'always-amz-auth',
+        SigningProtocol: SigningProtocol.SIGV4,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.LAMBDA,
+      },
+    });
+  });
+
   test('imports a FunctionUrlOriginAccessControl from ID', () => {
     const originAccessControlId = 'XYZ789XYZ789XY';
 

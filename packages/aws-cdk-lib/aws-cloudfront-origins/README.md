@@ -951,3 +951,24 @@ new cloudfront.Distribution(this, 'MyDistribution', {
 ### Function URL permissions
 
 Lambda requires both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` for CloudFront to call a newly created function URL through OAC. `FunctionUrlOrigin.withOriginAccessControl` adds both permissions.
+
+## From a Lambda Web Function
+
+An [AWS Lambda Web Function](https://docs.aws.amazon.com/lambda/latest/dg/web-functions.html) endpoint with the `IamAuth` authentication type can be a CloudFront origin protected by origin access control. Web Function origins support only the `always-amz-auth` signing behavior, which signs every origin request and passes the viewer's `Authorization` header to the function unchanged. For a regional endpoint, use `Signing.SIGV4_ALWAYS_AMZ_AUTH`:
+
+```ts
+const oac = new cloudfront.FunctionUrlOriginAccessControl(this, 'WebFunctionOAC', {
+  signing: cloudfront.Signing.SIGV4_ALWAYS_AMZ_AUTH,
+});
+
+new cloudfront.Distribution(this, 'MyDistribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('bcdfghjklmnpqrst.b7t.lambda-web.us-east-1.on.aws', {
+      originAccessControlId: oac.originAccessControlId,
+    }),
+    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+  },
+});
+```
+
+Web Function endpoints return HTTP 404 if the `Host` header isn't the endpoint domain name, so don't forward the viewer's `Host` header. You must also attach a resource-based policy to the Web Function that allows `cloudfront.amazonaws.com` to call `lambda:InvokeWebFunctionEndpoint`. See [Restrict access to an AWS Lambda Web Function origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html).
