@@ -6,7 +6,7 @@
     "Name": "my-rest-api"
    }
   },
-  "myrestapiDeployment010A9D4Fb39fc503654870f8583ab75c4ff2d97d": {
+  "myrestapiDeployment010A9D4F8e8e301b212ed632dba452e5aafc8171": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -15,7 +15,7 @@
     }
    },
    "DependsOn": [
-    "myrestapiGET3A49A218"
+    "myrestapiPOST155A9625"
    ],
    "Metadata": {
     "aws:cdk:do-not-refactor": true
@@ -25,7 +25,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "myrestapiDeployment010A9D4Fb39fc503654870f8583ab75c4ff2d97d"
+     "Ref": "myrestapiDeployment010A9D4F8e8e301b212ed632dba452e5aafc8171"
     },
     "RestApiId": {
      "Ref": "myrestapiBAC2BF45"
@@ -33,7 +33,7 @@
     "StageName": "prod"
    }
   },
-  "myrestapiGETStartSyncExecutionRoleC284C05B": {
+  "myrestapiPOSTStartSyncExecutionRole7AFBE835": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -50,7 +50,7 @@
     }
    }
   },
-  "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF": {
+  "myrestapiPOSTStartSyncExecutionRoleDefaultPolicy7D411AE9": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -65,23 +65,23 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF",
+    "PolicyName": "myrestapiPOSTStartSyncExecutionRoleDefaultPolicy7D411AE9",
     "Roles": [
      {
-      "Ref": "myrestapiGETStartSyncExecutionRoleC284C05B"
+      "Ref": "myrestapiPOSTStartSyncExecutionRole7AFBE835"
      }
     ]
    }
   },
-  "myrestapiGET3A49A218": {
+  "myrestapiPOST155A9625": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
-    "HttpMethod": "GET",
+    "HttpMethod": "POST",
     "Integration": {
      "Credentials": {
       "Fn::GetAtt": [
-       "myrestapiGETStartSyncExecutionRoleC284C05B",
+       "myrestapiPOSTStartSyncExecutionRole7AFBE835",
        "Arn"
       ]
      },
@@ -221,7 +221,7 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "DefinitionString": "{\"StartAt\":\"passTask\",\"States\":{\"passTask\":{\"Type\":\"Pass\",\"End\":true}}}",
+    "DefinitionString": "{\"StartAt\":\"passTask\",\"States\":{\"passTask\":{\"Type\":\"Pass\",\"Parameters\":{\"headers.$\":\"States.JsonToString($.header)\"},\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
@@ -262,6 +262,22 @@
       "/"
      ]
     ]
+   }
+  },
+  "ExportsOutputRefmyrestapiBAC2BF454376510F": {
+   "Value": {
+    "Ref": "myrestapiBAC2BF45"
+   },
+   "Export": {
+    "Name": "aws-cdk-aws-apigateway-stepfunctions-header-names:ExportsOutputRefmyrestapiBAC2BF454376510F"
+   }
+  },
+  "ExportsOutputRefmyrestapiDeploymentStageprod3140E1BE2BD27DD5": {
+   "Value": {
+    "Ref": "myrestapiDeploymentStageprod3140E1BE"
+   },
+   "Export": {
+    "Name": "aws-cdk-aws-apigateway-stepfunctions-header-names:ExportsOutputRefmyrestapiDeploymentStageprod3140E1BE2BD27DD5"
    }
   }
  },

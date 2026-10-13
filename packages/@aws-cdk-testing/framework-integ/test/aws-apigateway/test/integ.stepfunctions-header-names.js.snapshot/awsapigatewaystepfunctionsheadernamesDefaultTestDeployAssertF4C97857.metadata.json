@@ -1,4 +1,24 @@
 {
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)"
+      ]
+    }
+  ],
   "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -9,6 +29,44 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/HttpApiCallc4ac8b7dd6bfebbb496a1ae8a99aec05/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/HttpApiCallc4ac8b7dd6bfebbb496a1ae8a99aec05/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsHttpApiCallc4ac8b7dd6bfebbb496a1ae8a99aec05"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/aws-apigateway-stepfunctions-header-names/DefaultTest/DeployAssert/HttpApiCallc4ac8b7dd6bfebbb496a1ae8a99aec05/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCallc4ac8b7dd6bfebbb496a1ae8a99aec05"
     }
   ]
 }

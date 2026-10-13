@@ -1,16 +1,29 @@
 {
   "version": "54.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "2edadb0c50f27f98759ea0d096fbbbb7dc06339a5fe5aaedaacf3ce10cc0eae4": {
+      "source": {
+        "path": "asset.2edadb0c50f27f98759ea0d096fbbbb7dc06339a5fe5aaedaacf3ce10cc0eae4.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-a75aeca0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2edadb0c50f27f98759ea0d096fbbbb7dc06339a5fe5aaedaacf3ce10cc0eae4.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "fbe0b05ce93920248ea3743b27a9ee8c054062f46c76505fc924e794aaaf1fee": {
       "displayName": "awsapigatewaystepfunctionsheadernamesDefaultTestDeployAssertF4C97857 Template",
       "source": {
         "path": "awsapigatewaystepfunctionsheadernamesDefaultTestDeployAssertF4C97857.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-0cb0a339": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "fbe0b05ce93920248ea3743b27a9ee8c054062f46c76505fc924e794aaaf1fee.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

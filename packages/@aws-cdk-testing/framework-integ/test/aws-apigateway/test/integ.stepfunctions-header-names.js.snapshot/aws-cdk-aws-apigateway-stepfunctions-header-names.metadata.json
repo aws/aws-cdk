@@ -87,10 +87,22 @@
       "data": "StateMachine2E01A3A5"
     }
   ],
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/Exports/Output{\"Ref\":\"myrestapiBAC2BF45\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyrestapiBAC2BF454376510F"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/Exports/Output{\"Ref\":\"myrestapiDeploymentStageprod3140E1BE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyrestapiDeploymentStageprod3140E1BE2BD27DD5"
+    }
+  ],
   "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Deployment/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "myrestapiDeployment010A9D4Fb39fc503654870f8583ab75c4ff2d97d"
+      "data": "myrestapiDeployment010A9D4F8e8e301b212ed632dba452e5aafc8171"
     }
   ],
   "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/DeploymentStage.prod/Resource": [
@@ -99,7 +111,7 @@
       "data": "myrestapiDeploymentStageprod3140E1BE"
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -149,7 +161,7 @@
       "data": "StateMachineRoleB840431D"
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET/StartSyncExecutionRole": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST/StartSyncExecutionRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -184,19 +196,19 @@
       }
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET/Resource": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "myrestapiGET3A49A218"
+      "data": "myrestapiPOST155A9625"
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST/StartSyncExecutionRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "myrestapiGETStartSyncExecutionRoleC284C05B"
+      "data": "myrestapiPOSTStartSyncExecutionRole7AFBE835"
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -226,10 +238,10 @@
       }
     }
   ],
-  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy/Resource": [
+  "/aws-cdk-aws-apigateway-stepfunctions-header-names/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF"
+      "data": "myrestapiPOSTStartSyncExecutionRoleDefaultPolicy7D411AE9"
     }
   ]
 }
