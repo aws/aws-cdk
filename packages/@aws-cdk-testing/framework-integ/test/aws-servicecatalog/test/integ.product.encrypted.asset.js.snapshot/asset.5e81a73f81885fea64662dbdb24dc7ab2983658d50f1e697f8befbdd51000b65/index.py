@@ -39,14 +39,14 @@ def handler(event, context):
 
     def cfn_error(message=None):
         if message:
-            logger.error("| cfn_error: %s" % message.encode())
+            logger.error("| cfn_error: %s" % sanitize_message(message))
         cfn_send(event, context, CFN_FAILED, reason=message, physicalResourceId=event.get('PhysicalResourceId', None))
 
 
     try:
         # We are not logging ResponseURL as this is a pre-signed S3 URL, and could be used to tamper
         # with the response CloudFormation sees from this Custom Resource execution.
-        logger.info({ key:value for (key, value) in event.items() if key != 'ResponseURL'})
+        logger.info(sanitize_message({ key:value for (key, value) in event.items() if key != 'ResponseURL'}))
 
         # cloudformation request type (create/update/delete)
         request_type = event['RequestType']
@@ -152,7 +152,7 @@ def handler(event, context):
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
-        logger.exception(e)
+        logger.exception("| unhandled error: %s" % sanitize_message(str(e)))
         cfn_error(str(e))
 
 #---------------------------------------------------------------------------------------------------
@@ -160,6 +160,10 @@ def handler(event, context):
 def sanitize_message(message):
     if not message:
         return message
+
+    # Convert non-string types to string for sanitization
+    if not isinstance(message, str):
+        message = str(message)
 
     # Sanitize the message to prevent log injection and HTTP response splitting
     sanitized_message = message.replace('\n', '').replace('\r', '')
@@ -201,7 +205,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 logger.info("archive: %s" % archive)
                 aws_command("s3", "cp", s3_source_zip, archive)
                 logger.info("| extracting archive to: %s\n" % contents_dir)
-                logger.info("| markers: %s" % markers)
+                logger.info("| markers: %s" % sanitize_message(markers))
                 extract_and_replace_markers(archive, contents_dir, markers, markers_config)
             else:
                 logger.info("| copying archive to: %s\n" % contents_dir)
@@ -278,7 +282,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
 # executes an "aws" cli command
 def aws_command(*args):
     aws="/opt/awscli/aws" # from AwsCliLayer
-    logger.info("| aws %s" % ' '.join(args))
+    logger.info("| aws %s" % sanitize_message(' '.join(args)))
     subprocess.check_call([aws] + list(args))
 
 #---------------------------------------------------------------------------------------------------
@@ -298,7 +302,7 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     responseBody['Data'] = responseData
 
     body = json.dumps(responseBody)
-    logger.info("| response body:\n" + body)
+    logger.info("| response body: " + sanitize_message(body))
 
     headers = {
         'content-type' : '',
@@ -311,7 +315,7 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
             logger.info("| status code: " + response.reason)
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
-        logger.exception(e)
+        logger.exception("| unable to send response: %s" % sanitize_message(str(e)))
 
 
 #---------------------------------------------------------------------------------------------------
@@ -328,7 +332,7 @@ def bucket_owned(bucketName, keyPrefix):
         return any((x["Key"].startswith(tag)) for x in request["TagSet"])
     except Exception as e:
         logger.info("| error getting tags from bucket")
-        logger.exception(e)
+        logger.exception("| error getting tags: %s" % sanitize_message(str(e)))
         return False
 
 # extract archive and replace markers in output files
@@ -401,6 +405,6 @@ def replace_markers_in_json(json_object, replace_tokens):
         processed = replace_in_structure(json_object)
         return json.dumps(processed)
     except Exception as e:
-        logger.error(f'Error processing JSON: {e}')
-        logger.exception(e)
+        logger.error("| error processing JSON: %s" % sanitize_message(str(e)))
+        logger.exception("| error processing JSON: %s" % sanitize_message(str(e)))
         return json_object

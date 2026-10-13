@@ -61,10 +61,12 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
   currentVersionLocked: false,
+  directory: path.join(__dirname, 'product-stack-snapshots'),
 });
 
 const kmsKey = new kms.Key(stack, 'KmsKey', {
   description: 'Kms key for asset bucket',
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const testAssetBucket = new s3.Bucket(stack, 'TestAssetBucket', {

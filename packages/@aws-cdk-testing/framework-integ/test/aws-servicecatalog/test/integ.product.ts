@@ -112,6 +112,7 @@ const productStackHistory = new ProductStackHistory(stack, 'ProductStackHistory'
   productStack: new TestProductStack(stack, 'SNSTopicProduct3'),
   currentVersionName: 'v1',
   currentVersionLocked: false,
+  directory: path.join(__dirname, 'product-stack-snapshots'),
 });
 
 const testAssetBucket = new s3.Bucket(stack, 'TestAssetBucket', {

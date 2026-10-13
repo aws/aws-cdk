@@ -1,5 +1,5 @@
 import type { StackProps } from 'aws-cdk-lib';
-import { App, Stack, NestedStack } from 'aws-cdk-lib';
+import { App, Stack, NestedStack, RemovalPolicy } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as sc from 'aws-cdk-lib/aws-servicecatalog';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -19,6 +19,8 @@ class ServiceCatalogStack extends Stack {
 
     const assetBucket = new s3.Bucket(this, 'AssetBucket', {
       bucketName: `asset-bucket-${this.account}-${this.region}`,
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
     });
 
     new sc.CloudFormationProduct(this, 'SampleProduct', {
