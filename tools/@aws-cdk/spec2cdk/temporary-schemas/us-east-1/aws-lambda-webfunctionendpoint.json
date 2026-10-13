@@ -1,0 +1,285 @@
+{
+    "typeName": "AWS::Lambda::WebFunctionEndpoint",
+    "description": "Resource Type definition for AWS::Lambda::WebFunctionEndpoint. An endpoint exposes a Lambda web function over HTTPS and routes traffic to one or more revisions. The endpoint type determines how traffic is served and routed across Regions.",
+    "properties": {
+        "FunctionName": {
+            "type": "string",
+            "description": "The name of the function this endpoint belongs to.",
+            "minLength": 1,
+            "maxLength": 256
+        },
+        "FunctionArn": {
+            "type": "string",
+            "description": "The Amazon Resource Name (ARN) of the function.",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^arn:(aws[a-z-]*):lambda:[a-z0-9-]+:[0-9]{12}:web-function/.+$"
+        },
+        "EndpointName": {
+            "type": "string",
+            "description": "The name of the endpoint.",
+            "minLength": 1,
+            "maxLength": 256
+        },
+        "EndpointArn": {
+            "type": "string",
+            "description": "The Amazon Resource Name (ARN) of the endpoint.",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^arn:(aws[a-z-]*):lambda:[a-z0-9-]+:[0-9]{12}:web-function/.+/endpoint/.+$"
+        },
+        "Description": {
+            "type": "string",
+            "description": "A description of the endpoint.",
+            "minLength": 0,
+            "maxLength": 256
+        },
+        "EndpointType": {
+            "type": "string",
+            "description": "The type of the endpoint.",
+            "enum": ["HomeRegion", "MultiRegion", "PerRegion"]
+        },
+        "AuthType": {
+            "type": "string",
+            "description": "The authentication type for the endpoint.",
+            "enum": ["ApplicationManaged", "IamAuth"]
+        },
+        "RevisionWeights": {
+            "type": "array",
+            "description": "List of revision routing entries. 1 or 2 entries. With 1 entry, weight must be 100. With 2 entries, weights must sum to 100.",
+            "items": {
+                "$ref": "#/definitions/RevisionWeight"
+            },
+            "minItems": 1,
+            "maxItems": 2,
+            "insertionOrder": false
+        },
+        "Regions": {
+            "type": "array",
+            "description": "The list of AWS Regions for the endpoint.",
+            "items": {
+                "type": "string",
+                "description": "The AWS Region name.",
+                "minLength": 1,
+                "maxLength": 50,
+                "pattern": "^([a-z]{2,}-){2,}[0-9]$"
+            },
+            "uniqueItems": true,
+            "insertionOrder": false
+        },
+        "ScalingConfig": {
+            "description": "The scaling configuration for the endpoint. Optionally constrains how many concurrent execution environments the endpoint can use, in addition to your account's vCPU quota.",
+            "$ref": "#/definitions/ScalingConfig"
+        },
+        "ThrottleConfig": {
+            "description": "The throttling configuration for the endpoint. Optionally constrains the request rate that the endpoint accepts, in addition to your account's rate limit quota.",
+            "$ref": "#/definitions/ThrottleConfig"
+        },
+        "DomainName": {
+            "type": "string",
+            "description": "The domain name of the endpoint.",
+            "minLength": 4,
+            "maxLength": 256,
+            "pattern": "^([a-z0-9-]+\\.)+[a-z]+$"
+        },
+        "State": {
+            "type": "string",
+            "description": "The current state of the endpoint.",
+            "enum": ["Pending", "Active", "Failed", "Deleting"]
+        },
+        "StateReason": {
+            "type": "string",
+            "description": "The reason for the endpoint's current state."
+        },
+        "UpdateStatus": {
+            "type": "string",
+            "description": "The status of the last update operation.",
+            "enum": ["InProgress", "Successful", "Failed"]
+        },
+        "UpdateStatusReason": {
+            "type": "string",
+            "description": "The reason for the update status."
+        },
+        "RegionalEndpoints": {
+            "type": "object",
+            "description": "Per-region endpoint status and configuration.",
+            "patternProperties": {
+                "^([a-z]{2,}-){2,}[0-9]$": {
+                    "$ref": "#/definitions/RegionalEndpoint"
+                }
+            },
+            "additionalProperties": false
+        },
+        "CreatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the endpoint was created."
+        },
+        "UpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the endpoint was last updated."
+        }
+    },
+    "definitions": {
+        "RevisionWeight": {
+            "type": "object",
+            "description": "A revision routing entry.",
+            "properties": {
+                "RevisionId": {
+                    "type": "string",
+                    "description": "The revision identifier.",
+                    "minLength": 1,
+                    "maxLength": 256
+                },
+                "Weight": {
+                    "type": "integer",
+                    "description": "The traffic weight for this revision.",
+                    "minimum": 1,
+                    "maximum": 100
+                }
+            },
+            "required": ["RevisionId", "Weight"],
+            "additionalProperties": false
+        },
+        "ScalingConfig": {
+            "type": "object",
+            "description": "The scaling configuration for the endpoint. Optionally constrains how many concurrent execution environments the endpoint can use, in addition to your account's vCPU quota.",
+            "properties": {
+                "MaxEnvironments": {
+                    "type": "integer",
+                    "description": "The maximum number of concurrent execution environments for the endpoint. This optional limit further constrains the endpoint's scaling. When omitted, the endpoint's scaling is limited only by your account's vCPU quota.",
+                    "minimum": 2
+                }
+            },
+            "additionalProperties": false
+        },
+        "ThrottleConfig": {
+            "type": "object",
+            "description": "The throttling configuration for the endpoint. Optionally constrains the request rate that the endpoint accepts, in addition to your account's rate limit quota.",
+            "properties": {
+                "RateLimit": {
+                    "type": "integer",
+                    "description": "The maximum request rate per second for the endpoint, up to a maximum of 10000. This optional limit further constrains the endpoint's request rate. When omitted, the endpoint's request rate is limited only by your account's rate limit quota. Specify 0 to reject all new requests. Other supported values are 100 through 1000 in increments of 100, and 2000 through 10000 in increments of 1000. Supported values can vary by Region; if you specify an unsupported value, the error lists the values available in that Region.",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false
+        },
+        "RegionalEndpoint": {
+            "type": "object",
+            "description": "Per-region endpoint information.",
+            "properties": {
+                "DomainName": {
+                    "type": "string",
+                    "description": "The domain name of the endpoint."
+                },
+                "AuthType": {
+                    "type": "string",
+                    "description": "The authentication type for the endpoint.",
+                    "enum": ["ApplicationManaged", "IamAuth"]
+                },
+                "RevisionWeights": {
+                    "type": "array",
+                    "description": "The revision weights for the endpoint.",
+                    "items": {
+                        "$ref": "#/definitions/RevisionWeight"
+                    },
+                    "insertionOrder": false
+                },
+                "ScalingConfig": {
+                    "description": "The scaling configuration for the endpoint.",
+                    "$ref": "#/definitions/ScalingConfig"
+                },
+                "ThrottleConfig": {
+                    "description": "The throttling configuration for the endpoint.",
+                    "$ref": "#/definitions/ThrottleConfig"
+                },
+                "State": {
+                    "type": "string",
+                    "description": "The current state of the endpoint.",
+                    "enum": ["Pending", "Active", "Failed", "Deleting"]
+                },
+                "StateReason": {
+                    "type": "string",
+                    "description": "The reason for the current state of the endpoint."
+                },
+                "UpdateStatus": {
+                    "type": "string",
+                    "description": "The status of the most recent update to the endpoint.",
+                    "enum": ["InProgress", "Successful", "Failed"]
+                },
+                "UpdateStatusReason": {
+                    "type": "string",
+                    "description": "The reason for the current update status of the endpoint."
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": ["FunctionName", "EndpointName", "EndpointType", "AuthType"],
+    "additionalProperties": false,
+    "primaryIdentifier": ["/properties/EndpointArn"],
+    "additionalIdentifiers": [["/properties/FunctionName", "/properties/EndpointName"]],
+    "readOnlyProperties": [
+        "/properties/FunctionArn",
+        "/properties/EndpointArn",
+        "/properties/DomainName",
+        "/properties/State",
+        "/properties/StateReason",
+        "/properties/UpdateStatus",
+        "/properties/UpdateStatusReason",
+        "/properties/RegionalEndpoints",
+        "/properties/CreatedAt",
+        "/properties/UpdatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/FunctionName",
+        "/properties/EndpointName",
+        "/properties/EndpointType",
+        "/properties/Regions"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": [
+                "lambda:CreateWebFunctionEndpoint",
+                "lambda:GetWebFunctionEndpoint"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "lambda:GetWebFunctionEndpoint"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "lambda:UpdateWebFunctionEndpoint",
+                "lambda:GetWebFunctionEndpoint"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "lambda:DeleteWebFunctionEndpoint",
+                "lambda:GetWebFunctionEndpoint"
+            ]
+        },
+        "list": {
+            "handlerSchema": {
+                "properties": {
+                    "FunctionName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                    }
+                },
+                "required": ["FunctionName"]
+            },
+            "permissions": [
+                "lambda:ListWebFunctionEndpoints"
+            ]
+        }
+    }
+}

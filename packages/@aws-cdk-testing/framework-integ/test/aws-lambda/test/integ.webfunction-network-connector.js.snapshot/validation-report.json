@@ -1,0 +1,110 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunction'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack/Function/Function",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnectorStack.template.json",
+                "logicalId": "Function042596DC"
+              }
+            },
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack/Function/Revision",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnectorStack.template.json",
+                "logicalId": "FunctionRevision22F51A9C"
+              }
+            },
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack/Function/Endpoint",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnectorStack.template.json",
+                "logicalId": "FunctionEndpoint85BE574A"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F6101",
+          "description": "Outputs/ConnectorVersionArn/Value.Fn::GetAtt.1: 'LatestVersionArn' is not one of ['Arn', 'State']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "E9004",
+          "description": "ServiceConfig.EgressNetworkConnectorArn: 'LatestVersionArn' is not one of ['Arn', 'State']",
+          "suggestedFix": "Check the resource type documentation for valid GetAtt attributes",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Intrinsic Function"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack/Function/Revision",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnectorStack.template.json",
+                "logicalId": "FunctionRevision22F51A9C",
+                "propertyPaths": [
+                  "Properties.ServiceConfig.EgressNetworkConnectorArn"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W3030",
+          "description": "Configuration.VpcEgressConfiguration.AssociatedComputeResourceTypes.0: 'WebFunction' is not one of ['MicroVm']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnectorStack/Connector/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnNetworkConnector",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnectorStack.template.json",
+                "logicalId": "ConnectorC537A2FB",
+                "propertyPaths": [
+                  "Properties.Configuration.VpcEgressConfiguration.AssociatedComputeResourceTypes.0"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
