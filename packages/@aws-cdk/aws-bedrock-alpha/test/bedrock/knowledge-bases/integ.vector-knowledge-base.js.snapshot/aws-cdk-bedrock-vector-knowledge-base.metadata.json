@@ -91,7 +91,13 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseEmbeddingsModel"
+        "mixin": "aws-cdk-lib.Mixin"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
@@ -103,13 +109,13 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseOpenSearchServerlessStorage"
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseSupplementalDataStorage"
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
@@ -216,7 +222,13 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseEmbeddingsModel"
+        "mixin": "aws-cdk-lib.Mixin"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
@@ -228,13 +240,13 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseOpenSearchServerlessStorage"
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "@aws-cdk/aws-bedrock-alpha.mixins.KnowledgeBaseSupplementalDataStorage"
+        "mixin": "aws-cdk-lib.Mixin"
       }
     },
     {
