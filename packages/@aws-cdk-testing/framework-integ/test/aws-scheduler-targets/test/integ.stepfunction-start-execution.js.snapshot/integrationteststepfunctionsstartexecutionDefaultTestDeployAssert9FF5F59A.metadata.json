@@ -1,0 +1,100 @@
+{
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForRole9ED837B7"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForD1C4776F"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForIsCompleteProviderInvokeB88D7FB1"
+    }
+  ],
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSSMgetParameterb39dc1574b03e33d60318219fdc43b01WaitForTimeoutProviderInvoke74E2CEFE"
+    }
+  ]
+}

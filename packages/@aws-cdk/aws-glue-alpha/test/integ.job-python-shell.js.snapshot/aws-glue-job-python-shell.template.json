@@ -108,11 +108,9 @@
      }
     },
     "DefaultArguments": {
-     "--job-language": "python",
-     "library-set": "analytics",
      "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     "--job-language": "python",
+     "library-set": "analytics"
     },
     "GlueVersion": "3.0",
     "JobRunQueuingEnabled": false,
@@ -131,7 +129,7 @@
    "Properties": {
     "Command": {
      "Name": "pythonshell",
-     "PythonVersion": "3",
+     "PythonVersion": "3.9",
      "ScriptLocation": {
       "Fn::Join": [
        "",
@@ -146,10 +144,9 @@
      }
     },
     "DefaultArguments": {
-     "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     "--job-language": "python",
+     "library-set": "analytics"
     },
     "GlueVersion": "1.0",
     "JobRunQueuingEnabled": false,
@@ -183,6 +180,7 @@
      }
     },
     "DefaultArguments": {
+     "--enable-continuous-cloudwatch-log": "true",
      "--job-language": "python",
      "library-set": "analytics",
      "--extra-py-files": {
@@ -196,10 +194,7 @@
         "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
        ]
       ]
-     },
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true"
+     }
     },
     "GlueVersion": "3.0",
     "JobRunQueuingEnabled": false,
@@ -233,13 +228,11 @@
      }
     },
     "DefaultArguments": {
-     "--job-language": "python",
-     "library-set": "analytics",
-     "--enable-continuous-cloudwatch-log": "true",
-     "--enable-metrics": "",
-     "--enable-observability-metrics": "true",
      "arg1": "value1",
-     "arg2": "value2"
+     "arg2": "value2",
+     "--enable-continuous-cloudwatch-log": "true",
+     "--job-language": "python",
+     "library-set": "analytics"
     },
     "Description": "My detailed Python 3.9 Shell Job",
     "GlueVersion": "3.0",

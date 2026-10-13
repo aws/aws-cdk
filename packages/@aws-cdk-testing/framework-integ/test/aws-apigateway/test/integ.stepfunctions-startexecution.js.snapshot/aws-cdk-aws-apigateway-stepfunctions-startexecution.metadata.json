@@ -152,8 +152,8 @@
       "trace": [
         "Annotations.addMessage (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.addMethodResponse (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:307:47)",
-        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "PropertyInjectable.addMethodResponse (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:307:47)",
+        "PropertyInjectable.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "StepFunctionsExecutionIntegration.bind (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/stepfunctions.js:136:24)",
         "new Method (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:227:44)",
         "new Method (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -237,8 +237,8 @@
       "trace": [
         "Annotations.addMessage (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "WrappedClass.addMethodResponse (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:307:47)",
-        "WrappedClass.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "PropertyInjectable.addMethodResponse (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:307:47)",
+        "PropertyInjectable.<anonymous> (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "StepFunctionsExecutionIntegration.bind (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/stepfunctions.js:136:24)",
         "new Method (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:227:44)",
         "new Method (/Users/vishwak/Documents/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",

@@ -1,4 +1,21 @@
 {
+  "/aws-cdk-rds-s3-postgres-15-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)",
+        "    at PostgresS3TestStack._silenceLiteralAzWarning (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new PostgresS3TestStack (/Users/jaheljo/IdeaProjects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-s3.postgres.js:47:21)",
+        "    at <anonymous> (/Users/jaheljo/IdeaProjects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-s3.postgres.js:66:17)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-rds-s3-postgres-15-integ/VPC": [
     {
       "type": "aws:cdk:analytics:construct",
