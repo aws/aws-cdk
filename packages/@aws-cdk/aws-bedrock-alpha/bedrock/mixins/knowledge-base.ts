@@ -82,7 +82,7 @@ export class KnowledgeBaseOpenSearchServerlessStorage extends Mixin {
       );
     }
 
-    const role = GrantableRoles.forRoleArn(construct, construct.roleArn);
+    const role = GrantableRoles.of(construct).forRoleArn(construct.roleArn);
     addVectorTypeValidation(construct, 'VectorStore');
 
     const collectionArn = this.props.collection.collectionRef.collectionArn;
@@ -171,7 +171,7 @@ export class KnowledgeBaseEmbeddingsModel extends Mixin {
     }
 
     assertVectorConfigurationResolved(construct, 'EmbeddingsModel');
-    const role = GrantableRoles.forRoleArn(construct, construct.roleArn);
+    const role = GrantableRoles.of(construct).forRoleArn(construct.roleArn);
     addVectorTypeValidation(construct, 'EmbeddingsModel');
 
     const dimensions = embeddingsModel.supportsConfigurableDimensions ? embeddingsModel.vectorDimensions : undefined;
@@ -231,7 +231,7 @@ export class KnowledgeBaseSupplementalDataStorage extends Mixin {
     }
 
     assertVectorConfigurationResolved(construct, 'SupplementalDataStorage');
-    const role = GrantableRoles.forRoleArn(construct, construct.roleArn);
+    const role = GrantableRoles.of(construct).forRoleArn(construct.roleArn);
     addVectorTypeValidation(construct, 'SupplementalDataStorage');
 
     // `CfnPropsMixin` deep-merges into the existing configuration

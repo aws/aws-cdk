@@ -205,7 +205,7 @@ describe('knowledge base mixin service role', () => {
     const kb = newCfnKnowledgeBase(stack, { roleArn: cfnRole.attrArn });
 
     expect(() => kb.with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage(storageProps(stack))))
-      .toThrow(/role Default\/CfnServiceRole is a bare iam.CfnRole, which cannot be granted permissions/);
+      .toThrow(/role Default\/CfnServiceRole cannot be granted permissions/);
   });
 
   test('fails when the role ARN does not reference a role defined in the app', () => {

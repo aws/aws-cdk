@@ -240,8 +240,9 @@ export class KnowledgeBase extends KnowledgeBaseBase {
       knowledgeBaseConfiguration: { type: props.type._typeName },
       tags: props.tags,
     });
-    // The type's mixins resolve the role from `roleArn` when applied, so it must be recorded first
-    GrantableRoles.recordRoleRef(this.resource, role);
+
+    // The type's mixins resolve the role from `roleArn` when applied, so it must be registered first.
+    GrantableRoles.of(this).registerRoleObject(role.roleRef.roleArn, role);
 
     for (const mixin of props.type._mixins) {
       this.with(mixin);
