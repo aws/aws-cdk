@@ -16,6 +16,7 @@ import {
   validateKnowledgeBaseProps,
 } from './private/knowledge-base-helpers';
 import { KnowledgeBaseGrants } from '../../lib/bedrock-grants.generated';
+import { KnowledgeBaseTypeConfiguration } from '../mixins/knowledge-base';
 
 const KNOWLEDGE_BASE_SYMBOL = Symbol.for('@aws-cdk/aws-bedrock-alpha.KnowledgeBase');
 
@@ -244,9 +245,7 @@ export class KnowledgeBase extends KnowledgeBaseBase {
     // The type's mixins resolve the role from `roleArn` when applied, so it must be registered first.
     GrantableRoles.of(this).registerRoleObject(role.roleRef.roleArn, role);
 
-    for (const mixin of props.type._mixins) {
-      this.with(mixin);
-    }
+    this.with(new KnowledgeBaseTypeConfiguration(props.type));
   }
 
   @memoizedGetter

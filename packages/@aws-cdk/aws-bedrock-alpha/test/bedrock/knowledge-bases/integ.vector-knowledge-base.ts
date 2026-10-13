@@ -96,21 +96,12 @@ const mixinKnowledgeBase = new bedrockCfn.CfnKnowledgeBase(stack, 'MixinKnowledg
   roleArn: mixinRole.roleArn,
   knowledgeBaseConfiguration: { type: 'VECTOR' },
 });
-mixinKnowledgeBase
-  .with(new bedrock.mixins.KnowledgeBaseEmbeddingsModel({
-    embeddingsModel,
-    vectorType: bedrock.VectorType.FLOATING_POINT,
-  }))
-  .with(new bedrock.mixins.KnowledgeBaseOpenSearchServerlessStorage({
-    collection,
-    vectorIndexName: indexName,
-    vectorField,
-    textField,
-    metadataField,
-  }))
-  .with(new bedrock.mixins.KnowledgeBaseSupplementalDataStorage({
-    bucket: supplementalBucket,
-  }));
+mixinKnowledgeBase.with(new bedrock.mixins.KnowledgeBaseTypeConfiguration(bedrock.KnowledgeBaseType.vector({
+  embeddingsModel,
+  vectorType: bedrock.VectorType.FLOATING_POINT,
+  vectorStore,
+  supplementalDataStorageBucket: supplementalBucket,
+})));
 
 // The CloudFormation execution role creates the index through the data plane; the
 // knowledge base roles get only the permissions Bedrock documents for its service role.

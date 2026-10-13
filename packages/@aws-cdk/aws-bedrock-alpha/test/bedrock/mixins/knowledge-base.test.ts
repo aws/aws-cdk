@@ -408,3 +408,57 @@ describe('KnowledgeBaseSupplementalDataStorage', () => {
       .toThrow(/configuration contains deploy-time object values/);
   });
 });
+
+describe('KnowledgeBaseTypeConfiguration', () => {
+  function vectorType(stack: cdk.Stack): bedrock.KnowledgeBaseType {
+    return bedrock.KnowledgeBaseType.vector({
+      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+      vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack)),
+      supplementalDataStorageBucket: bucket(stack),
+    });
+  }
+
+  test('supports CfnKnowledgeBase and does not support unrelated constructs', () => {
+    const stack = new cdk.Stack();
+    const mixin = new bedrock.mixins.KnowledgeBaseTypeConfiguration(vectorType(stack));
+
+    expect(mixin.supports(newCfnKnowledgeBase(stack))).toBe(true);
+    expect(mixin.supports(new TestConstruct(stack, 'Test'))).toBe(false);
+    expect(mixin.supports(new s3.CfnBucket(stack, 'CfnBucket'))).toBe(false);
+  });
+
+  test('configures a CfnKnowledgeBase the same way as the type property of KnowledgeBase', () => {
+    const l2Stack = new cdk.Stack();
+    new bedrock.KnowledgeBase(l2Stack, 'KB', {
+      type: vectorType(l2Stack),
+      role: serviceRole(l2Stack),
+    });
+
+    const l1Stack = new cdk.Stack();
+    new aws_bedrock.CfnKnowledgeBase(l1Stack, 'KB', {
+      name: 'my-kb',
+      roleArn: serviceRole(l1Stack).roleArn,
+      knowledgeBaseConfiguration: { type: 'VECTOR' },
+    }).with(new bedrock.mixins.KnowledgeBaseTypeConfiguration(vectorType(l1Stack)));
+
+    const l2Template = Template.fromStack(l2Stack);
+    const l1Template = Template.fromStack(l1Stack);
+    const [l2KnowledgeBase] = Object.values(l2Template.findResources('AWS::Bedrock::KnowledgeBase'));
+    const [l1KnowledgeBase] = Object.values(l1Template.findResources('AWS::Bedrock::KnowledgeBase'));
+
+    expect(l1KnowledgeBase.Properties.KnowledgeBaseConfiguration).toEqual(l2KnowledgeBase.Properties.KnowledgeBaseConfiguration);
+    expect(l1KnowledgeBase.Properties.StorageConfiguration).toEqual(l2KnowledgeBase.Properties.StorageConfiguration);
+    expect(l1KnowledgeBase.DependsOn).toEqual(l2KnowledgeBase.DependsOn);
+    expect(l1Template.findResources('AWS::IAM::Policy')).toEqual(l2Template.findResources('AWS::IAM::Policy'));
+  });
+
+  test('throws when applied to a knowledge base that already has a storage configuration', () => {
+    const stack = new cdk.Stack();
+    const kb = new bedrock.KnowledgeBase(stack, 'L2', { type: vectorType(stack) });
+
+    expect(() => kb.with(new bedrock.mixins.KnowledgeBaseTypeConfiguration(bedrock.KnowledgeBaseType.vector({
+      embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+      vectorStore: bedrock.VectorStore.openSearchServerless(storageProps(stack, {}, 'Other')),
+    })))).toThrow(/the knowledge base already has a storage configuration; only one vector store can be configured/);
+  });
+});

@@ -40,7 +40,8 @@ export interface VectorKnowledgeBaseTypeProps {
 /**
  * The type of a knowledge base, which determines how its data is stored and queried.
  *
- * Use one of the static factory methods to configure a type.
+ * Use one of the static factory methods to configure a type. To configure a
+ * `CfnKnowledgeBase` as a type, apply `mixins.KnowledgeBaseTypeConfiguration`.
  */
 export class KnowledgeBaseType {
   /**

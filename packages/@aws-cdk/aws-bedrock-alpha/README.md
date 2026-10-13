@@ -1757,6 +1757,34 @@ The mixins grant permissions to the knowledge base's role. On a `CfnKnowledgeBas
 `roleArn` must reference an `iam.Role` defined in your app; for an
 imported role or one used with `withoutPolicyUpdates()`, use `KnowledgeBase`.
 
+### KnowledgeBaseTypeConfiguration
+
+Configures a knowledge base as a `KnowledgeBaseType`. This applies the type-specific
+configuration that the `type` property of `KnowledgeBase` applies, so you can configure
+a `CfnKnowledgeBase` from the same `KnowledgeBaseType` you would pass to the L2.
+
+```ts fixture=default
+declare const collection: opensearchserverless.ICollectionRef;
+declare const role: iam.Role;
+
+new aws_bedrock_cfn.CfnKnowledgeBase(this, 'KnowledgeBase', {
+  name: 'product-documentation',
+  roleArn: role.roleArn,
+  knowledgeBaseConfiguration: { type: 'VECTOR' },
+}).with(new bedrock.mixins.KnowledgeBaseTypeConfiguration(bedrock.KnowledgeBaseType.vector({
+  embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
+  vectorStore: bedrock.VectorStore.openSearchServerless({
+    collection,
+    vectorIndexName: 'bedrock-knowledge-base-default-index',
+    vectorField: 'bedrock-knowledge-base-default-vector',
+    textField: 'AMAZON_BEDROCK_TEXT_CHUNK',
+    metadataField: 'AMAZON_BEDROCK_METADATA',
+  }),
+})));
+```
+
+To configure only some features, apply the individual mixins below instead.
+
 ### KnowledgeBaseEmbeddingsModel
 
 Configures the embeddings model of a vector knowledge base. This is the mixin

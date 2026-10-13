@@ -1,9 +1,10 @@
-import { isResolvableObject, Mixin, Token, ValidationError } from 'aws-cdk-lib';
+import { ConstructSelector, isResolvableObject, Mixin, Mixins, Token, ValidationError } from 'aws-cdk-lib';
 import { CfnKnowledgeBase } from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnPropsMixin, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
+import type { KnowledgeBaseType } from '../knowledge-bases/knowledge-base-type';
 import { GrantableRoles } from '../knowledge-bases/private/grantable-roles';
 import { VECTOR_KNOWLEDGE_BASE_TYPE } from '../knowledge-bases/private/knowledge-base-helpers';
 import type { OpenSearchServerlessVectorStoreProps } from '../knowledge-bases/vector-store';
@@ -175,7 +176,7 @@ export class KnowledgeBaseEmbeddingsModel extends Mixin {
     addVectorTypeValidation(construct, 'EmbeddingsModel');
 
     const dimensions = embeddingsModel.supportsConfigurableDimensions ? embeddingsModel.vectorDimensions : undefined;
-    construct.with(new CfnPropsMixin(CfnKnowledgeBase, {
+    Mixins.of(construct, ConstructSelector.onlyItself()).apply(new CfnPropsMixin(CfnKnowledgeBase, {
       knowledgeBaseConfiguration: {
         vectorKnowledgeBaseConfiguration: {
           embeddingModelArn: embeddingsModel.modelArn,
@@ -235,7 +236,7 @@ export class KnowledgeBaseSupplementalDataStorage extends Mixin {
     addVectorTypeValidation(construct, 'SupplementalDataStorage');
 
     // `CfnPropsMixin` deep-merges into the existing configuration
-    construct.with(new CfnPropsMixin(CfnKnowledgeBase, {
+    Mixins.of(construct, ConstructSelector.onlyItself()).apply(new CfnPropsMixin(CfnKnowledgeBase, {
       knowledgeBaseConfiguration: {
         vectorKnowledgeBaseConfiguration: {
           supplementalDataStorageConfiguration: {
@@ -255,5 +256,30 @@ export class KnowledgeBaseSupplementalDataStorage extends Mixin {
       .applyBefore(construct);
 
     construct.node.addDependency(role);
+  }
+}
+
+/**
+ * Configures a knowledge base as the given type.
+ *
+ * Applies the type-specific configuration, permissions and dependencies that the
+ * `type` property of `KnowledgeBase` applies, so a `CfnKnowledgeBase` can be
+ * configured from a `KnowledgeBaseType` without applying its individual mixins.
+ */
+export class KnowledgeBaseTypeConfiguration extends Mixin {
+  constructor(private readonly knowledgeBaseType: KnowledgeBaseType) {
+    super();
+  }
+
+  public supports(construct: IConstruct): construct is CfnKnowledgeBase {
+    return CfnKnowledgeBase.isCfnKnowledgeBase(construct);
+  }
+
+  public applyTo(construct: IConstruct): void {
+    if (!this.supports(construct)) {
+      return;
+    }
+
+    Mixins.of(construct, ConstructSelector.onlyItself()).apply(...this.knowledgeBaseType._mixins);
   }
 }
