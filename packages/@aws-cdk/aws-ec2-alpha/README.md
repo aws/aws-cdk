@@ -63,6 +63,31 @@ new SubnetV2(this, 'subnetA', {
 })
 ```
 
+### Availability Zone Specification
+
+SubnetV2 supports two ways to specify the availability zone:
+
+1. **Availability Zone Name** (`availabilityZone`): Standard AZ name like 'us-east-1a'
+2. **Availability Zone ID** (`availabilityZoneId`): AZ ID like 'use1-az1' for cross-account consistency
+
+**When to use AZ IDs**: Use `availabilityZoneId` when you need consistent placement across AWS accounts, as AZ names can map to different physical zones per account, but AZ IDs remain consistent.
+
+**Important**: AZ IDs are account-specific. The same AZ ID (e.g., 'use1-az1') may not exist in all accounts.
+
+```ts
+const myVpc = new VpcV2(this, 'MyVpc', {
+  primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
+});
+
+// Using AZ ID for cross-account consistency
+new SubnetV2(this, 'CrossAccountSubnet', {
+  vpc: myVpc,
+  availabilityZoneId: 'use1-az1',
+  ipv4CidrBlock: new IpCidr('10.0.1.0/24'),
+  subnetType: SubnetType.PUBLIC,
+})
+```
+
 Since `VpcV2` does not create subnets automatically, users have full control over IP addresses allocation across subnets.
 
 ## IP Addresses Management
