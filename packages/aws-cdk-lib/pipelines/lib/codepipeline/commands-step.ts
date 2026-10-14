@@ -367,8 +367,10 @@ export class CommandsStep extends Step {
       throw new UnscopedValidationError(lit`CommandsStepExportedVariableAfterRender`, 'exportedVariable(): Pipeline has already been produced, cannot call this function anymore');
     }
 
+    if (!this._outputVariables.has(variableName) && this._outputVariables.size >= MAX_OUTPUT_VARIABLES) {
+      throw new UnscopedValidationError(lit`CommandsStepInvalidOutputVariablesLength`, `'${this.id}': a Commands action can export between 1 and ${MAX_OUTPUT_VARIABLES} output variables, got ${this._outputVariables.size + 1}`);
+    }
     this._outputVariables.add(variableName);
-    this.validateOutputVariables();
 
     return makeCodePipelineOutput(this, variableName);
   }

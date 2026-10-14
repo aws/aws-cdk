@@ -447,6 +447,21 @@ describe('CommandsStep', () => {
       expect(() => Template.fromStack(pipelineStack)).toThrow(/can only be used in a pipeline of type V2/);
     });
 
+    test('cannot be used as the synth step', () => {
+      // The output artifact of a Commands action keeps the paths of the files, so
+      // the cloud assembly would not be at the root of the artifact
+      new cdkp.CodePipeline(pipelineStack, 'Cdk', {
+        pipelineType: cp.PipelineType.V2,
+        synth: new cdkp.CommandsStep('Synth', {
+          input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+          commands: ['npx cdk synth'],
+          outputFiles: ['cdk.out/**/*'],
+        }),
+      });
+
+      expect(() => Template.fromStack(pipelineStack)).toThrow(/CommandsStep 'Synth' cannot be used as the synth step/);
+    });
+
     test('requires at least one command', () => {
       expect(() => new cdkp.CommandsStep('Smoke', { commands: [] })).toThrow(/'commands' must contain at least one command/);
     });
@@ -476,6 +491,9 @@ describe('CommandsStep', () => {
       const outputVariables = Array.from({ length: 15 }, (_, i) => `V${i}`);
       const step = new cdkp.CommandsStep('Smoke', { commands: ['ls'], outputVariables });
       expect(() => step.exportedVariable('V15')).toThrow(/between 1 and 15 output variables, got 16/);
+      // the rejected variable is not added, and an already exported variable can still be referenced
+      expect(step.outputVariables).toEqual(outputVariables);
+      expect(() => step.exportedVariable('V14')).not.toThrow();
       expect(() => new cdkp.CommandsStep('Smoke', { commands: ['ls'], outputVariables: [] })).toThrow(/between 1 and 15 output variables, got 0/);
     });
 
