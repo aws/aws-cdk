@@ -5,19 +5,16 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { StackProps, StageProps } from 'aws-cdk-lib';
-import { App, CfnOutput, RemovalPolicy, Stack, Stage } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack, Stage } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 class AppStage extends Stage {
-  public readonly queueUrl: CfnOutput;
-
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
     const stack = new Stack(this, 'Stack');
-    const queue = new sqs.Queue(stack, 'Queue');
-    this.queueUrl = new CfnOutput(stack, 'QueueUrl', { value: queue.queueUrl });
+    new sqs.Queue(stack, 'Queue');
   }
 }
 
@@ -44,31 +41,24 @@ class PipelineStack extends Stack {
 
     const smokeTest = new pipelines.CommandsStep('SmokeTest', {
       input: source,
-      env: { STAGE: 'beta' },
-      envFromCfnOutputs: { QUEUE_URL: beta.queueUrl },
       commands: [
         'mkdir -p report',
-        'aws sqs get-queue-attributes --queue-url "$QUEUE_URL" > report/queue.json',
-        'export RESULT="$STAGE is healthy"',
+        'aws sqs list-queues > report/queues.json',
+        'export RESULT="beta is healthy"',
       ],
       outputFiles: ['report/**/*'],
       computeType: codebuild.ComputeType.SMALL,
       rolePolicyStatements: [new iam.PolicyStatement({
-        actions: ['sqs:GetQueueAttributes'],
+        actions: ['sqs:ListQueues'],
         resources: ['*'],
       })],
     });
 
     const report = new pipelines.CommandsStep('Report', {
       input: smokeTest,
-      additionalInputs: {
-        '../assembly': pipeline.cloudAssemblyFileSet,
-      },
-      env: { RESULT: smokeTest.exportedVariable('RESULT') },
       commands: [
-        'cat report/queue.json',
-        'ls ../assembly',
-        'echo "$RESULT"',
+        'cat report/queues.json',
+        `echo "${smokeTest.exportedVariable('RESULT')}"`,
       ],
     });
 

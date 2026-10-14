@@ -5,12 +5,6 @@
       "data": "*"
     }
   ],
-  "/PipelineWithCommandsStep/Beta/Stack/QueueUrl": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "QueueUrl"
-    }
-  ],
   "/PipelineWithCommandsStep/Beta/Stack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

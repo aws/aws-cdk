@@ -6,7 +6,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
-import { AppWithOutput, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp } from '../testhelpers';
+import { ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -91,31 +91,6 @@ describe('CommandsStep', () => {
     });
   });
 
-  test('links additional inputs into their directories', () => {
-    // GIVEN
-    const pipeline = v2Pipeline();
-
-    // WHEN
-    pipeline.addWave('MyWave', {
-      post: [new cdkp.CommandsStep('Check', {
-        input: pipeline.gitHubSource,
-        additionalInputs: {
-          'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
-        },
-        commands: ['ls some/deep/directory'],
-      })],
-    });
-
-    // THEN
-    expect(action('MyWave', 'Check')).toMatchObject({
-      InputArtifacts: [{ Name: 'test_test_Source' }, { Name: 'test2_test2_Source' }],
-      Commands: [
-        '[ ! -d "some/deep/directory" ] || { echo \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && mkdir -p -- "some/deep" && ln -s -- "$CODEBUILD_SRC_DIR_test2_test2_Source" "some/deep/directory"',
-        'ls some/deep/directory',
-      ],
-    });
-  });
-
   test('outputFiles produce an output artifact with a Files filter that can be consumed', () => {
     // GIVEN
     const pipeline = v2Pipeline();
@@ -139,41 +114,6 @@ describe('CommandsStep', () => {
     expect(action('MyWave', 'Publish')).toMatchObject({
       InputArtifacts: [{ Name: 'Report_Output' }],
       RunOrder: 2,
-    });
-  });
-
-  test('env and envFromCfnOutputs are exported before the commands', () => {
-    // GIVEN
-    const pipeline = v2Pipeline();
-    const myApp = new AppWithOutput(app, 'Alpha');
-
-    // WHEN
-    pipeline.addStage(myApp, {
-      post: [new cdkp.CommandsStep('Smoke', {
-        env: {
-          STAGE: 'beta',
-          QUOTED: 'it\'s',
-          EXECUTION: '#{codepipeline.PipelineExecutionId}',
-        },
-        envFromCfnOutputs: { BUCKET: myApp.theOutput },
-        commands: ['echo "$BUCKET"'],
-      })],
-    });
-
-    // THEN
-    expect(action('Alpha', 'Stack.Deploy')).toMatchObject({
-      Namespace: 'AlphaStack6B3389FA',
-      RunOrder: 2,
-    });
-    expect(action('Alpha', 'Smoke')).toMatchObject({
-      Commands: [
-        'export STAGE=\'beta\'',
-        'export QUOTED=\'it\'"\'"\'s\'',
-        'export EXECUTION=\'#{codepipeline.PipelineExecutionId}\'',
-        'export BUCKET=\'#{AlphaStack6B3389FA.MyOutput}\'',
-        'echo "$BUCKET"',
-      ],
-      RunOrder: 3,
     });
   });
 
@@ -236,7 +176,7 @@ describe('CommandsStep', () => {
     });
   });
 
-  test('can consume the exported variable of a CodeBuildStep', () => {
+  test('commands can reference the exported variable of a CodeBuildStep', () => {
     // GIVEN
     const pipeline = v2Pipeline();
     const producer = new cdkp.CodeBuildStep('Produce', {
@@ -246,15 +186,14 @@ describe('CommandsStep', () => {
     // WHEN
     pipeline.addWave('MyWave', {
       post: [new cdkp.CommandsStep('Consume', {
-        env: { THE_VAR: producer.exportedVariable('MY_VAR') },
-        commands: ['echo "$THE_VAR"'],
+        commands: [`echo "${producer.exportedVariable('MY_VAR')}"`],
       }), producer],
     });
 
     // THEN
     expect(action('MyWave', 'Produce')).toMatchObject({ Namespace: 'MyWave@Produce', RunOrder: 1 });
     expect(action('MyWave', 'Consume')).toMatchObject({
-      Commands: ['export THE_VAR=\'#{MyWave@Produce.MY_VAR}\'', 'echo "$THE_VAR"'],
+      Commands: ['echo "#{MyWave@Produce.MY_VAR}"'],
       RunOrder: 2,
     });
   });
@@ -463,7 +402,7 @@ describe('CommandsStep', () => {
     });
 
     test('requires at least one command', () => {
-      expect(() => new cdkp.CommandsStep('Smoke', { commands: [] })).toThrow(/'commands' must contain at least one command/);
+      expect(() => new cdkp.CommandsStep('Smoke', { commands: [] })).toThrow(/'commands' must contain between 1 and 50 commands, got 0/);
     });
 
     test('rejects multi-line commands', () => {
@@ -474,13 +413,12 @@ describe('CommandsStep', () => {
       expect(() => new cdkp.CommandsStep('Smoke', { commands: ['x'.repeat(1001)] })).toThrow(/at most 1000 characters long, got 1001/);
     });
 
-    test('counts generated commands towards the limit of 50 commands', () => {
-      const commands = Array.from({ length: 49 }, (_, i) => `echo ${i}`);
+    test('rejects more than 50 commands', () => {
+      const commands = Array.from({ length: 50 }, (_, i) => `echo ${i}`);
       expect(() => new cdkp.CommandsStep('Smoke', { commands })).not.toThrow();
       expect(() => new cdkp.CommandsStep('Smoke', {
-        commands,
-        env: { A: 'a', B: 'b' },
-      })).toThrow(/supports at most 50 commands, got 51 \(49 commands, 2 environment variables and 0 additional inputs/);
+        commands: [...commands, 'echo 50'],
+      })).toThrow(/'commands' must contain between 1 and 50 commands, got 51/);
     });
 
     test.each([[[]], [Array.from({ length: 11 }, (_, i) => `f${i}`)]])('rejects %j outputFiles', (outputFiles) => {
@@ -495,27 +433,6 @@ describe('CommandsStep', () => {
       expect(step.outputVariables).toEqual(outputVariables);
       expect(() => step.exportedVariable('V14')).not.toThrow();
       expect(() => new cdkp.CommandsStep('Smoke', { commands: ['ls'], outputVariables: [] })).toThrow(/between 1 and 15 output variables, got 0/);
-    });
-
-    test('rejects more than 9 additional inputs', () => {
-      const additionalInputs: Record<string, cdkp.IFileSetProducer> = {};
-      for (let i = 0; i < 10; i++) {
-        additionalInputs[`dir${i}`] = cdkp.CodePipelineSource.gitHub(`test/repo${i}`, 'main');
-      }
-      expect(() => new cdkp.CommandsStep('Smoke', { commands: ['ls'], additionalInputs })).toThrow(/at most 9 additional inputs, got 10/);
-    });
-
-    test('rejects invalid environment variable names', () => {
-      expect(() => new cdkp.CommandsStep('Smoke', { commands: ['ls'], env: { 'MY-VAR': 'x' } })).toThrow(/environment variable names must start with a letter or underscore/);
-    });
-
-    test('rejects generated commands in a Windows environment', () => {
-      expect(() => new cdkp.CommandsStep('Smoke', {
-        commands: ['dir'],
-        env: { A: 'a' },
-        environmentType: cpa.CommandsEnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
-        computeType: codebuild.ComputeType.MEDIUM,
-      })).toThrow(/only supported in a Linux environment/);
     });
 
     test('cannot add exported variables after the pipeline has been built', () => {

@@ -734,27 +734,17 @@ available in pipelines of type `PipelineType.V2`.
 
 ```ts
 declare const synth: pipelines.ShellStep;
-class MyOutputStage extends Stage {
-  public readonly url: CfnOutput;
-
-  constructor(scope: Construct, id: string, props?: StageProps) {
-    super(scope, id, props);
-    this.url = new CfnOutput(new Stack(this, 'Stack'), 'Url', { value: 'https://my.webservice.com/' });
-  }
-}
+declare const beta: Stage;
 
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   pipelineType: codepipeline.PipelineType.V2,
   synth,
 });
-const beta = new MyOutputStage(this, 'Beta');
 
 const smokeTest = new pipelines.CommandsStep('SmokeTest', {
-  envFromCfnOutputs: { URL: beta.url },
-  env: { STAGE: 'beta' },
   commands: [
     'mkdir -p report',
-    'curl -fsS "$URL/health" > report/health.json',
+    'curl -fsS https://my.webservice.com/health > report/health.json',
     'export RESULT=healthy',
   ],
   // Exported as the primary output of the step, paths are kept as they are
@@ -774,22 +764,26 @@ pipeline.addStage(beta, {
 });
 ```
 
-A `CommandsStep` supports the `input`, `additionalInputs`, `env` and `envFromCfnOutputs`
-properties of a `ShellStep`, and `exportedVariable()` of a `CodeBuildStep`. Some
-differences apply because of the Commands action:
+A `CommandsStep` supports the `input` property of a `ShellStep` and `exportedVariable()` of a
+`CodeBuildStep`. Some differences apply because of the Commands action:
 
-* At most 50 single-line commands run. Every environment variable and every additional
-  input adds one command to the commands that you specify.
-* Environment variables are set by `export` commands (in a Linux environment), because the
-  Commands action does not support action environment variables in the CDK yet. Values that
-  CodePipeline resolves when the pipeline runs, such as stack outputs, must not contain single quotes.
+* At most 50 single-line commands run.
+* Environment variables (`env`, `envFromCfnOutputs`) and `additionalInputs` are not supported yet.
+  They will follow once the Commands action supports action environment variables in the CDK
+  ([#35741](https://github.com/aws/aws-cdk/pull/35741)). Until then, a command can reference the
+  `exportedVariable()` of another step directly, for example
+  `` `echo "${build.exportedVariable('VERSION')}"` ``. CodePipeline substitutes the value into the
+  command text before the command runs, without quoting or escaping it, so only reference variables
+  whose values you trust.
 * The output is selected with `outputFiles` patterns. Unlike `primaryOutputDirectory`, the files
-  keep their paths in the output, and there is at most one output.
+  keep their paths in the output, and there is at most one output. For this reason, a `CommandsStep`
+  can't be used as the synth step.
 * Use `computeType`, `environmentType`, `vpc`, `subnetSelection` and `securityGroups` to configure
   the build environment. The pipeline's `codeBuildDefaults` don't apply to a `CommandsStep`.
 * The commands run with the credentials of the action role. Use `rolePolicyStatements` or
-  `actionRole` to allow them to call AWS APIs. A Commands action can't currently be combined with
-  `usePipelineRoleForActions` ([#34522](https://github.com/aws/aws-cdk/issues/34522)).
+  `actionRole` to allow them to call AWS APIs. Unlike for a `CodeBuildStep`, `rolePolicyStatements`
+  are added to the action role, not to a CodeBuild project role. A Commands action can't currently
+  be combined with `usePipelineRoleForActions` ([#34522](https://github.com/aws/aws-cdk/issues/34522)).
 * Build images, caching, privileged mode and timeouts can't be configured; the timeout is 55 minutes.
   Use a `CodeBuildStep` if you need these.
 

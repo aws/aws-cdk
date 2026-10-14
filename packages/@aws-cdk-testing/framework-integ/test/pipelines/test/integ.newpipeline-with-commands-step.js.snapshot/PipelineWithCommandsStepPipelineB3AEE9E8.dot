@@ -22,12 +22,10 @@ digraph G {
 "BEGIN Beta.Stack" -> "Beta.Stack.Prepare";
 "Beta.Stack.Deploy" -> "END Beta.Stack";
 "Beta.SmokeTest";
-"Beta.Stack.Deploy" -> "Beta.SmokeTest";
 "END Beta.Stack" -> "Beta.SmokeTest";
 "Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7" -> "Beta.SmokeTest";
 "Beta.Report";
 "Beta.SmokeTest" -> "Beta.Report";
-"Build.Synth" -> "Beta.Report";
 "END Beta.Stack" -> "Beta.Report";
 "BEGIN Beta" -> "BEGIN Beta.Stack";
 "Beta.Report" -> "END Beta";

@@ -373,7 +373,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 /**
  * Generate commands to move additional input artifacts into the right place
  */
-export function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
+function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
   return inputs.map(input => {
     const fragments = [];
 

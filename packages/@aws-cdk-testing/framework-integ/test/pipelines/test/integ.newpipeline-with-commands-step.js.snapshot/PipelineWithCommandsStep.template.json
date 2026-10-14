@@ -560,7 +560,6 @@
          "ChangeSetName": "PipelineChange"
         },
         "Name": "Stack.Deploy",
-        "Namespace": "PipelineWithCommandsStepBetaStackEBA8F97A",
         "RoleArn": {
          "Fn::Join": [
           "",
@@ -594,11 +593,9 @@
          "Version": "1"
         },
         "Commands": [
-         "export STAGE='beta'",
-         "export QUEUE_URL='#{PipelineWithCommandsStepBetaStackEBA8F97A.QueueUrl}'",
          "mkdir -p report",
-         "aws sqs get-queue-attributes --queue-url \"$QUEUE_URL\" > report/queue.json",
-         "export RESULT=\"$STAGE is healthy\""
+         "aws sqs list-queues > report/queues.json",
+         "export RESULT=\"beta is healthy\""
         ],
         "Configuration": {
          "ComputeType": "BUILD_GENERAL1_SMALL"
@@ -637,18 +634,12 @@
          "Version": "1"
         },
         "Commands": [
-         "export RESULT='#{Beta@SmokeTest.RESULT}'",
-         "[ ! -d \"../assembly\" ] || { echo 'additionalInputs: \"../assembly\" must not exist yet. If you want to merge multiple artifacts, use a \"cp\" command.'; exit 1; } && ln -s -- \"$CODEBUILD_SRC_DIR_Synth_Output\" \"../assembly\"",
-         "cat report/queue.json",
-         "ls ../assembly",
-         "echo \"$RESULT\""
+         "cat report/queues.json",
+         "echo \"#{Beta@SmokeTest.RESULT}\""
         ],
         "InputArtifacts": [
          {
           "Name": "SmokeTest_Output"
-         },
-         {
-          "Name": "Synth_Output"
          }
         ],
         "Name": "Report",
@@ -991,7 +982,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "sqs:GetQueueAttributes",
+       "Action": "sqs:ListQueues",
        "Effect": "Allow",
        "Resource": "*"
       },

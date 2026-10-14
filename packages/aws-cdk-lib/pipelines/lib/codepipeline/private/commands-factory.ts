@@ -1,4 +1,3 @@
-import { generateInputArtifactLinkCommands } from './codebuild-factory';
 import * as codepipeline from '../../../../aws-codepipeline';
 import * as cpa from '../../../../aws-codepipeline-actions';
 import * as iam from '../../../../aws-iam';
@@ -24,11 +23,10 @@ export class CommandsFactory implements ICodePipelineActionFactory {
     const pipeline = options.pipeline.pipeline;
 
     if (isV2Pipeline(pipeline) === false) {
-      throw new ValidationError(lit`CommandsStepRequiresV2Pipeline`, `CommandsStep '${step.id}' can only be used in a pipeline of type V2, set 'pipelineType: PipelineType.V2' on the pipeline`, options.pipeline);
+      throw new ValidationError(lit`CommandsStepRequiresV2Pipeline`, `CommandsStep '${step.id}' can only be used in a pipeline of type V2, set 'pipelineType: PipelineType.V2' on the pipeline (a pipeline type set with 'addPropertyOverride()' is not detected)`, options.pipeline);
     }
 
     const mainInput = step.inputs.find(x => x.directory === '.');
-    const extraInputs = step.inputs.filter(x => x.directory !== '.');
 
     const inputArtifact = mainInput
       ? options.artifacts.toCodePipeline(mainInput.fileSet)
@@ -36,25 +34,10 @@ export class CommandsFactory implements ICodePipelineActionFactory {
     if (!inputArtifact) {
       throw new ValidationError(lit`CommandsStepRequiresInput`, `CommandsStep '${step.id}' requires an input (and the pipeline doesn't have a Source to fall back to). Add an input or a pipeline source.`, options.pipeline);
     }
-    const extraInputArtifacts = extraInputs.map(x => options.artifacts.toCodePipeline(x.fileSet));
 
     const outputArtifact = step.primaryOutput && step.outputFiles
       ? options.artifacts._toCodePipelineWithFiles(step.primaryOutput, step.outputFiles)
       : undefined;
-
-    // The Commands action has no environment variables yet, so environment variables are
-    // set by 'export' commands. CodePipeline substitutes variables in the commands.
-    const envCommands = [
-      ...Object.entries(step.env).map(([name, value]) => renderEnvExport(name, value)),
-      ...Object.entries(step.envFromCfnOutputs).map(([name, outputRef]) =>
-        renderEnvExport(name, options.stackOutputsMap.toCodePipeline(outputRef))),
-    ];
-
-    const commands = [
-      ...envCommands,
-      ...generateInputArtifactLinkCommands(options.artifacts, extraInputs),
-      ...step.commands,
-    ];
 
     const role = this.actionRole(options);
 
@@ -63,10 +46,9 @@ export class CommandsFactory implements ICodePipelineActionFactory {
       runOrder: options.runOrder,
       variablesNamespace: options.variablesNamespace,
       input: inputArtifact,
-      extraInputs: extraInputArtifacts.length > 0 ? extraInputArtifacts : undefined,
       output: outputArtifact,
       outputVariables: step._renderOutputVariables(),
-      commands,
+      commands: step.commands,
       environmentType: step.environmentType,
       computeType: step.computeType,
       vpc: step.vpc,
@@ -130,12 +112,3 @@ function isV2Pipeline(pipeline: codepipeline.Pipeline): boolean | undefined {
   return pipelineType === codepipeline.PipelineType.V2;
 }
 
-/**
- * Render a POSIX shell command that exports an environment variable
- *
- * The value is single-quoted, so the shell does not interpret it. CodePipeline
- * variables in the value (`#{...}`) are substituted before the command runs.
- */
-export function renderEnvExport(name: string, value: string): string {
-  return `export ${name}='${value.replace(/'/g, '\'"\'"\'')}'`;
-}

@@ -1,15 +1,12 @@
-import { renderEnvExport } from './private/commands-factory';
 import { makeCodePipelineOutput } from './private/outputs';
 import type * as codebuild from '../../../aws-codebuild';
 import type * as cpa from '../../../aws-codepipeline-actions';
 import type * as ec2 from '../../../aws-ec2';
 import type * as iam from '../../../aws-iam';
-import type { CfnOutput } from '../../../core';
 import { Token, UnscopedValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { FileSetLocation, IFileSetProducer } from '../blueprint';
-import { FileSet, StackOutputReference, Step } from '../blueprint';
-import { mapValues } from '../private/javascript';
+import { FileSet, Step } from '../blueprint';
 
 /**
  * The maximum number of commands of a Commands action
@@ -20,11 +17,6 @@ const MAX_COMMANDS = 50;
  * The maximum length of a single command of a Commands action
  */
 const MAX_COMMAND_LENGTH = 1000;
-
-/**
- * The maximum number of input artifacts of a Commands action
- */
-const MAX_INPUTS = 10;
 
 /**
  * The maximum number of file patterns of an output artifact
@@ -43,9 +35,14 @@ export interface CommandsStepProps {
   /**
    * Shell commands to run
    *
-   * Every command must be a single line. The Commands action runs at most 50
-   * commands, including the commands that this step adds to set environment
-   * variables (one per variable) and to link additional inputs (one per input).
+   * Every command must be a single line, and the Commands action runs at most 50
+   * commands.
+   *
+   * Environment variables are not supported yet. A command may reference the
+   * `exportedVariable()` of another step: CodePipeline substitutes the value
+   * of the variable into the command text before the command runs. Such values
+   * are not quoted or escaped, so only reference variables whose values you
+   * trust, and quote them as appropriate for the shell.
    */
   readonly commands: string[];
 
@@ -53,27 +50,11 @@ export interface CommandsStepProps {
    * FileSet to run these commands on
    *
    * The files in the FileSet will be placed in the working directory when
-   * the commands are executed. Use `additionalInputs` to download file sets
-   * to other directories as well.
+   * the commands are executed.
    *
    * @default - the first artifact produced in the pipeline (normally the source)
    */
   readonly input?: IFileSetProducer;
-
-  /**
-   * Additional FileSets to put in other directories
-   *
-   * Specifies a mapping from directory name to FileSets. During the
-   * execution of the commands, the FileSets will be available in the
-   * directories indicated, which may be relative to the working directory
-   * (for example `'../siblingdir'`).
-   *
-   * At most 9 additional inputs are supported, because the Commands
-   * action accepts at most 10 input artifacts.
-   *
-   * @default - No additional inputs
-   */
-  readonly additionalInputs?: Record<string, IFileSetProducer>;
 
   /**
    * Files to export as the primary output of this step
@@ -102,34 +83,7 @@ export interface CommandsStepProps {
   readonly outputVariables?: string[];
 
   /**
-   * Environment variables to set
-   *
-   * The values may reference CodePipeline variables, such as the
-   * `exportedVariable()` of another step. The variables are set by
-   * `export` commands that run before `commands`, so they count towards
-   * the limit of 50 commands. Values that are resolved when the pipeline
-   * runs (CodePipeline variables) must not contain single quotes.
-   *
-   * @default - No environment variables
-   */
-  readonly env?: Record<string, string>;
-
-  /**
-   * Set environment variables based on Stack Outputs
-   *
-   * `CommandsStep`s following stack or stage deployments may
-   * access the `CfnOutput`s of those stacks to get access to
-   * --for example--automatically generated resource names or
-   * endpoint URLs. The same considerations as for `env` apply.
-   *
-   * @default - No environment variables created from stack outputs
-   */
-  readonly envFromCfnOutputs?: Record<string, CfnOutput>;
-
-  /**
    * The operating system image of the build environment that runs the commands
-   *
-   * `env`, `envFromCfnOutputs` and `additionalInputs` require a Linux environment.
    *
    * @default - CodePipeline uses `LINUX_CONTAINER`
    */
@@ -187,6 +141,11 @@ export interface CommandsStepProps {
    *
    * Can be used to allow the commands to call AWS APIs.
    *
+   * The statements are added to the role of the Commands action (`actionRole`,
+   * a role created for the action, or the pipeline role if `usePipelineRoleForActions`
+   * is set on the pipeline). This differs from `CodeBuildStep`, which adds its
+   * `rolePolicyStatements` to the role of its CodeBuild project.
+   *
    * @default - No policy statements are added
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
@@ -197,11 +156,13 @@ export interface CommandsStepProps {
  *
  * The commands run on CodeBuild compute that CodePipeline manages, without a
  * CodeBuild project. This step can only be used in pipelines of type
- * `PipelineType.V2`.
+ * `PipelineType.V2`. The pipeline type is read from the `pipelineType`
+ * property of the pipeline; a pipeline type set with
+ * `addPropertyOverride('PipelineType', ...)` is not detected.
  *
  * Use a `ShellStep` or `CodeBuildStep` if you need a custom build image,
- * a build timeout other than 55 minutes, caching, privileged mode or
- * multiple output directories.
+ * a build timeout other than 55 minutes, caching, privileged mode,
+ * environment variables, additional inputs or multiple output directories.
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Commands.html
  */
@@ -212,20 +173,11 @@ export class CommandsStep extends Step {
   public readonly commands: string[];
 
   /**
-   * Environment variables to set
-   */
-  public readonly env: Record<string, string>;
-
-  /**
-   * Environment variables set from Stack Outputs
-   */
-  public readonly envFromCfnOutputs: Record<string, StackOutputReference>;
-
-  /**
    * Input FileSets
    *
    * A list of `(FileSet, directory)` pairs, which are a copy of the
-   * input properties. This list should not be modified directly.
+   * input properties. A `CommandsStep` has at most one input, in the
+   * directory `'.'`. This list should not be modified directly.
    */
   public readonly inputs: FileSetLocation[] = [];
 
@@ -279,7 +231,7 @@ export class CommandsStep extends Step {
   public readonly actionRole?: iam.IRole;
 
   /**
-   * Policy statements to add to the role that the commands run with
+   * Policy statements to add to the role of the Commands action
    *
    * @default - No policy statements are added
    */
@@ -292,8 +244,6 @@ export class CommandsStep extends Step {
     super(id);
 
     this.commands = props.commands;
-    this.env = props.env ?? {};
-    this.envFromCfnOutputs = mapValues(props.envFromCfnOutputs ?? {}, x => StackOutputReference.fromCfnOutput(x));
     this.outputFiles = props.outputFiles;
     this.environmentType = props.environmentType;
     this.computeType = props.computeType;
@@ -303,10 +253,9 @@ export class CommandsStep extends Step {
     this.actionRole = props.actionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
 
-    // Both the commands and the environment variables can reference outputs of other steps
+    // The commands can reference outputs of other steps
     this.discoverReferencedOutputs({
       commands: this.commands,
-      env: this.env,
     });
 
     // Inputs
@@ -317,22 +266,6 @@ export class CommandsStep extends Step {
       }
       this.addDependencyFileSet(fileSet);
       this.inputs.push({ directory: '.', fileSet });
-    }
-
-    const additionalInputs = Object.entries(props.additionalInputs ?? {});
-    if (additionalInputs.length > MAX_INPUTS - 1) {
-      throw new UnscopedValidationError(lit`CommandsStepTooManyInputs`, `'${id}': the Commands action supports at most ${MAX_INPUTS - 1} additional inputs, got ${additionalInputs.length}`);
-    }
-    for (const [directory, step] of additionalInputs) {
-      if (directory === '.') {
-        throw new UnscopedValidationError(lit`CommandsStepInputDirectory`, `'${id}': input for directory '.' should be passed via 'input' property`);
-      }
-      const fileSet = step.primaryOutput;
-      if (!fileSet) {
-        throw new UnscopedValidationError(lit`CommandsStepAdditionalInputNoFileSet`, `'${id}': additionalInput for directory '${directory}' should be a step that has produced a file set, got ${step}`);
-      }
-      this.addDependencyFileSet(fileSet);
-      this.inputs.push({ directory, fileSet });
     }
 
     // Outputs
@@ -350,7 +283,7 @@ export class CommandsStep extends Step {
       this.validateOutputVariables();
     }
 
-    this.validateCommands(id, additionalInputs.length);
+    this.validateCommands(id);
   }
 
   /**
@@ -384,10 +317,6 @@ export class CommandsStep extends Step {
     return this._outputVariables.size > 0 ? Array.from(this._outputVariables) : undefined;
   }
 
-  public get consumedStackOutputs(): StackOutputReference[] {
-    return Object.values(this.envFromCfnOutputs);
-  }
-
   /**
    * Return the output variables and prevent further additions
    *
@@ -404,9 +333,9 @@ export class CommandsStep extends Step {
     }
   }
 
-  private validateCommands(id: string, additionalInputCount: number) {
-    if (this.commands.length < 1) {
-      throw new UnscopedValidationError(lit`CommandsStepNoCommands`, `'${id}': 'commands' must contain at least one command`);
+  private validateCommands(id: string) {
+    if (this.commands.length < 1 || this.commands.length > MAX_COMMANDS) {
+      throw new UnscopedValidationError(lit`CommandsStepInvalidCommandsLength`, `'${id}': 'commands' must contain between 1 and ${MAX_COMMANDS} commands, got ${this.commands.length}`);
     }
     for (const command of this.commands) {
       if (Token.isUnresolved(command)) {
@@ -418,32 +347,6 @@ export class CommandsStep extends Step {
       if (command.length > MAX_COMMAND_LENGTH) {
         throw new UnscopedValidationError(lit`CommandsStepCommandTooLong`, `'${id}': a command of the Commands action can be at most ${MAX_COMMAND_LENGTH} characters long, got ${command.length} characters`);
       }
-    }
-
-    const envNames = [...Object.keys(this.env), ...Object.keys(this.envFromCfnOutputs)];
-    for (const name of envNames) {
-      if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
-        throw new UnscopedValidationError(lit`CommandsStepInvalidEnvName`, `'${id}': environment variable names must start with a letter or underscore and contain only letters, digits and underscores, got: ${JSON.stringify(name)}`);
-      }
-    }
-    for (const [name, value] of Object.entries(this.env)) {
-      if (Token.isUnresolved(value) || value.includes('#{')) {
-        continue;
-      }
-      const length = renderEnvExport(name, value).length;
-      if (length > MAX_COMMAND_LENGTH) {
-        throw new UnscopedValidationError(lit`CommandsStepEnvTooLong`, `'${id}': the value of environment variable '${name}' is too long, the command that sets it can be at most ${MAX_COMMAND_LENGTH} characters long, got ${length} characters`);
-      }
-    }
-
-    const generatedCommands = envNames.length + additionalInputCount;
-    if (generatedCommands > 0 && this.environmentType && this.environmentType.value.startsWith('WINDOWS')) {
-      throw new UnscopedValidationError(lit`CommandsStepWindowsGeneratedCommands`, `'${id}': 'env', 'envFromCfnOutputs' and 'additionalInputs' are only supported in a Linux environment, got environment type ${this.environmentType.value}`);
-    }
-
-    const total = this.commands.length + generatedCommands;
-    if (total > MAX_COMMANDS) {
-      throw new UnscopedValidationError(lit`CommandsStepTooManyCommands`, `'${id}': the Commands action supports at most ${MAX_COMMANDS} commands, got ${total} (${this.commands.length} commands, ${envNames.length} environment variables and ${additionalInputCount} additional inputs, which add one command each)`);
     }
   }
 }

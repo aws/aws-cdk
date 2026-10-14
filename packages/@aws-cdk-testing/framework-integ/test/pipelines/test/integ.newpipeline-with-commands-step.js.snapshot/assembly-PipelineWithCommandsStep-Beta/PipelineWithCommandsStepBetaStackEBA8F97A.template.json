@@ -6,13 +6,6 @@
    "DeletionPolicy": "Delete"
   }
  },
- "Outputs": {
-  "QueueUrl": {
-   "Value": {
-    "Ref": "Queue4A7E3555"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
