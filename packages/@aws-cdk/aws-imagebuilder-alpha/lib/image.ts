@@ -539,6 +539,11 @@ export class Image extends ImageBase {
       deletionSettings: this.buildDeletionSettings(props),
       tags: props.tags,
     });
+    // https://github.com/aws-cloudformation/cloudformation-validate/issues/186
+    cdk.Validations.of(image).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'OnFailure "Abort" is a valid value that works, leaving it for legacy reasons.',
+    });
 
     return [image, recipe];
   }

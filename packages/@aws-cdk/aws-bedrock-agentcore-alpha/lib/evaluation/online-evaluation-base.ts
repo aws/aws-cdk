@@ -18,6 +18,7 @@ import type { Construct } from 'constructs';
 
 /**
  * Interface for OnlineEvaluationConfig resources.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable, IOnlineEvaluationConfigRef {
   /**
@@ -75,6 +76,7 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable, IOnl
 /**
  * Abstract base class for OnlineEvaluationConfig.
  * Contains methods and attributes valid for configurations either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class OnlineEvaluationBase extends Resource implements IOnlineEvaluationConfig {
   public abstract readonly onlineEvaluationConfigArn: string;

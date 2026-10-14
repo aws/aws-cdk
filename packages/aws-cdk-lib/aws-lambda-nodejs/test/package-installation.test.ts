@@ -1,4 +1,4 @@
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import { PackageInstallation } from '../lib/package-installation';
 import * as util from '../lib/util';
 

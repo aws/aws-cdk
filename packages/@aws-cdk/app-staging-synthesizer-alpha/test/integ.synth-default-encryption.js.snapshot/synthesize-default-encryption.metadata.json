@@ -1,0 +1,11 @@
+{
+  "/synthesize-default-encryption": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/app-staging-synthesizer-alpha/test/integ.synth-default-encryption.js:13:32)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -1203,13 +1203,25 @@ export class AuroraPostgresEngineVersion {
    * @deprecated Version 13.17 is no longer supported by Amazon RDS.
    */
   public static readonly VER_13_17 = AuroraPostgresEngineVersion.of('13.17', '13', { s3Import: true, s3Export: true });
-  /** Version "13.18". */
+  /**
+   * Version "13.18"
+   * @deprecated Version 13.18 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_18 = AuroraPostgresEngineVersion.of('13.18', '13', { s3Import: true, s3Export: true });
-  /** Version "13.20". */
+  /**
+   * Version "13.20"
+   * @deprecated Version 13.20 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_20 = AuroraPostgresEngineVersion.of('13.20', '13', { s3Import: true, s3Export: true });
-  /** Version "13.21". */
+  /**
+   * Version "13.21"
+   * @deprecated Version 13.21 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_21 = AuroraPostgresEngineVersion.of('13.21', '13', { s3Import: true, s3Export: true });
-  /** Version "13.22". */
+  /**
+   * Version "13.22"
+   * @deprecated Version 13.22 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_22 = AuroraPostgresEngineVersion.of('13.22', '13', { s3Import: true, s3Export: true });
   /** Version "13.23". */
   public static readonly VER_13_23 = AuroraPostgresEngineVersion.of('13.23', '13', { s3Import: true, s3Export: true });
@@ -1382,6 +1394,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_16_11_LIMITLESS = AuroraPostgresEngineVersion.of('16.11-limitless', '16', { s3Import: true, s3Export: true });
   /** Version "16.13". */
   public static readonly VER_16_13 = AuroraPostgresEngineVersion.of('16.13', '16', { s3Import: true, s3Export: true });
+  /** Version "16.13 limitless". */
+  public static readonly VER_16_13_LIMITLESS = AuroraPostgresEngineVersion.of('16.13-limitless', '16', { s3Import: true, s3Export: true });
 
   /**
    * Version "17.1"

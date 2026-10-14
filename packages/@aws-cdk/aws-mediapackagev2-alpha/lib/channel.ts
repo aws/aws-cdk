@@ -694,7 +694,7 @@ export class Channel extends ChannelBase implements IChannel {
     // For imported constructs, defaultChild is undefined (no CFN resource to order against).
     const groupCfn = props.channelGroup.node.defaultChild as CfnResource | undefined;
     if (groupCfn && CfnResource.isCfnResource(groupCfn)) {
-      channel.addDependency(groupCfn);
+      channel.addResourceDependency(groupCfn);
     }
   }
 }

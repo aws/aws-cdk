@@ -1,7 +1,12 @@
 {
   "extends": "../../tsconfig.pr-issue-check.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "types": [
+      "jest"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "**/*.test.ts",

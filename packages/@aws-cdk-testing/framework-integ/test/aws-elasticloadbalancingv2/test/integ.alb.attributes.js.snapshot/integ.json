@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "Elbv2Test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "Elbv2Test/DefaultTest/DeployAssert",
       "assertionStackName": "Elbv2TestDefaultTestDeployAssert82DC2DEA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

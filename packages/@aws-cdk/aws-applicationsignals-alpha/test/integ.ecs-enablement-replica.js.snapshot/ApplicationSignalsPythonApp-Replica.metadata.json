@@ -1,0 +1,181 @@
+{
+  "/ApplicationSignalsPythonApp-Replica": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/PythonTaskDefinition": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/PythonECSIntegration": [
+    {
+      "type": "aws:cdk:warning",
+      "data": " Application Signals functionality requires prior deployment of the CloudWatch Agent with appropriate security group settings. Missing or incorrect configurations will prevent successful collection of observability data. [ack: PythonECSIntegration]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "ApplicationSignalsIntegration.mutateTaskDefinition (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/ecs.js:97:48)",
+        "new ApplicationSignalsIntegration (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/lib/enablement/ecs.js:71:14)",
+        "new PythonStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:92:9)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/PythonApp": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:475:47)",
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:161:13)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:111:9)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:486:47)",
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:161:13)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:111:9)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:142:5)"
+      ]
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:142:5)"
+      ]
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/PythonTaskDefinition/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PythonTaskDefinition2F79666C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TaskDefinition (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.js:395:29)",
+        "new TaskDefinition (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FargateTaskDefinition (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-task-definition.js:144:13)",
+        "new FargateTaskDefinition (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:75:32)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ApplicationSignalsPythonApp-Replica/PythonApp/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PythonAppServiceF84D7198"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:428:29)",
+        "new BaseService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:161:13)",
+        "new FargateService (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:111:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-applicationsignals-alpha/test/integ.ecs-enablement-replica.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

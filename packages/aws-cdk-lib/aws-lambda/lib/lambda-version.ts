@@ -344,7 +344,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       return undefined;
     }
 
-    if (props.provisionedConcurrentExecutions <= 0) {
+    if (!Token.isUnresolved(props.provisionedConcurrentExecutions) && props.provisionedConcurrentExecutions <= 0) {
       throw new ValidationError(lit`ProvisionedConcurrentExecutionsValueGreater`, 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 

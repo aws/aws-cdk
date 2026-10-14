@@ -80,7 +80,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
  */
 export interface ZoneSigningOptions {
   /**
-   * The customer-managed KMS key that that will be used to sign the records.
+   * The customer-managed KMS key that will be used to sign the records.
    *
    * The KMS Key must be unique for each KSK within a hosted zone. Additionally, the
    * KMS key must be an asymetric customer-managed key using the ECC_NIST_P256 algorithm.
@@ -317,7 +317,7 @@ export class HostedZone extends Resource implements IHostedZone {
       hostedZoneId: this.hostedZoneId,
     });
     // The KSK must exist and be in an 'ACTIVE' status before DNSSEC can be enabled.
-    dnssec.addDependency(this.keySigningKey.node.defaultChild as CfnKeySigningKey);
+    dnssec.addResourceDependency(this.keySigningKey.node.defaultChild as CfnKeySigningKey);
     return this.keySigningKey;
   }
 }

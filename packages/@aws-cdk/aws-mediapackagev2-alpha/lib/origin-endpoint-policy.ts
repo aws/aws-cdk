@@ -16,6 +16,10 @@ import type { IOriginEndpoint } from './endpoint';
 export interface CdnAuthConfiguration {
   /**
    * Secrets to use for CDN authorization.
+   *
+   * Each secret must be a JSON object with a `MediaPackageV2CDNIdentifier` key whose
+   * value is the CDN-Identifier header value. See the
+   * {@link https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html | MediaPackage CDN authorization docs}.
    */
   readonly secrets: ISecret[];
   /**

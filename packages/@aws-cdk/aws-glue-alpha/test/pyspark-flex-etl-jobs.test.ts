@@ -14,6 +14,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -33,9 +37,9 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Default Glue Version should be 3.0', () => {
+    test('Default Glue Version should be 5.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        GlueVersion: '3.0',
+        GlueVersion: '5.0',
       });
     });
 
@@ -143,7 +147,7 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V3_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -153,7 +157,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
       });
     });

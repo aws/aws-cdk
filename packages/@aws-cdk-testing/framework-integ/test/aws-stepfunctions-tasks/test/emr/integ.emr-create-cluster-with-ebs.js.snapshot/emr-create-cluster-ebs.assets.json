@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "0c6cc786999d2468bd2d7d9dc1d3dfdc4d72ac537f7eade8edcdc16b7cc199da": {
       "displayName": "emr-create-cluster-ebs Template",

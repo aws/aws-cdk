@@ -25,9 +25,10 @@ import {
   VpnConnectionType,
   VpnGateway,
 } from 'aws-cdk-lib/aws-ec2';
-import type { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+type VPCReference = aws_ec2.VPCReference;
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { aws_ec2 } from 'aws-cdk-lib/interfaces';
 import type { IConstruct, IDependable } from 'constructs';
 import { Dependable, DependencyGroup } from 'constructs';
 import type {

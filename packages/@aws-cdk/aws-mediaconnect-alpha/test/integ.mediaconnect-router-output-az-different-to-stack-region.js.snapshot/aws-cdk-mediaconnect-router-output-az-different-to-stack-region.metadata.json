@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/RouterOutput1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/RouterOutput2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/RouterOutput1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutput170DDDF13"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-output-az-different-to-stack-region/RouterOutput2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutput2A789A788"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Lazy, Stack } from '../../core';
+import { CfnParameter, Lazy, Stack } from '../../core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
@@ -211,6 +211,29 @@ describe('alias', () => {
           ],
         },
       }],
+    });
+  });
+
+  test('provisionedConcurrentExecutions can be a token', () => {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+    const pce = new CfnParameter(stack, 'ProvisionedConcurrentExecutions', { type: 'Number' });
+
+    new lambda.Alias(stack, 'Alias', {
+      aliasName: 'prod',
+      version: fn.currentVersion,
+      provisionedConcurrentExecutions: pce.valueAsNumber,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
+      Name: 'prod',
+      ProvisionedConcurrencyConfig: {
+        ProvisionedConcurrentExecutions: { Ref: 'ProvisionedConcurrentExecutions' },
+      },
     });
   });
 

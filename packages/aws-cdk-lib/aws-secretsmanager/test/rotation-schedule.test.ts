@@ -585,7 +585,7 @@ describe('default tests', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const rotationLambda = new lambda.Function(stack, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('export.handler = event => event;'),
       handler: 'index.handler',
     });

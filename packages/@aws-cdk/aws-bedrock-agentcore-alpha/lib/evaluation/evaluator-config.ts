@@ -27,6 +27,7 @@ import {
  *
  * Uses a foundation model to assess agent performance based on
  * custom instructions and a rating scale.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface LlmAsAJudgeOptions {
   /**
@@ -81,6 +82,7 @@ export interface LlmAsAJudgeOptions {
  * Options for configuring a code-based custom evaluator using a Lambda function.
  *
  * Uses a Lambda function to implement custom evaluation logic.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CodeBasedOptions {
   /**
@@ -123,6 +125,7 @@ export interface CodeBasedOptions {
  *   { label: 'Good', definition: 'Adequate response.', value: 3 },
  *   { label: 'Excellent', definition: 'Outstanding response.', value: 5 },
  * ]);
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class EvaluatorRatingScale {
   /**
@@ -189,6 +192,7 @@ export class EvaluatorRatingScale {
  * const codeConfig = agentcore.EvaluatorConfig.codeBased({
  *   lambdaFunction: myEvalFunction,
  * });
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class EvaluatorConfig {
   /**

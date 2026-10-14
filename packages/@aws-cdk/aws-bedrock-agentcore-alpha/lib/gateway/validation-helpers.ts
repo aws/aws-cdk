@@ -22,6 +22,7 @@ interface StringLengthValidation extends IntervalValidation {
  * @returns true if validation passes
  * @throws Error if validation fails with current length information
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateStringField(params: StringLengthValidation): string[] {
   const errors: string[] = [];
@@ -63,6 +64,7 @@ export function validateStringField(params: StringLengthValidation): string[] {
  * @returns true if validation passes
  * @throws Error if validation fails with detailed message
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateFieldPattern(
   value: string,
@@ -108,6 +110,7 @@ export type ValidationFn<T> = (param: T) => string[];
 /**
  * OpenAPI schema validation parameters
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OpenApiSchemaValidationParams {
   /**
@@ -364,6 +367,7 @@ function validateCallbacksAndWebhooks(schemaObj: any, schemaName: string, errors
  * @param params - The validation parameters
  * @returns Array of validation error messages (empty if valid)
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateOpenApiSchema(params: OpenApiSchemaValidationParams): string[] {
   const errors: string[] = [];

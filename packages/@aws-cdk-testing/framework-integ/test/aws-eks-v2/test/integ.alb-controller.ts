@@ -9,7 +9,7 @@ import * as kplus from 'cdk8s-plus-27';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 import { Pinger } from './pinger/pinger';
 
-const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
+const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V3_2_2;
 class EksClusterAlbControllerStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -65,7 +65,7 @@ class EksClusterAlbControllerStack extends Stack {
     });
 
     // the pinger must wait for the ingress and echoServer to be deployed.
-    pinger.node.addDependency(ingress, echoServer);
+    pinger.node.addDependency(echoServer);
 
     // this should display the 'hello' text we gave to the server
     new CfnOutput(this, 'IngressPingerResponse', {
@@ -77,7 +77,7 @@ class EksClusterAlbControllerStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

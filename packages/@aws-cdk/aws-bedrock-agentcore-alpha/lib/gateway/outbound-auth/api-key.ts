@@ -10,6 +10,7 @@ import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS
  *****************************************************************************/
 /**
  * API Key additional configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyAdditionalConfiguration {
 
@@ -35,6 +36,7 @@ export interface ApiKeyAdditionalConfiguration {
 /**
  * API Key credential location type
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum ApiKeyCredentialLocationType {
   HEADER = 'HEADER',
@@ -43,6 +45,7 @@ export enum ApiKeyCredentialLocationType {
 
 /**
  * API Key location within the request
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiKeyCredentialLocation {
   /**
@@ -99,6 +102,7 @@ export class ApiKeyCredentialLocation {
  * API key credential provider ARNs for gateway outbound auth (Token Vault identity).
  *
  * Pass this to {@link GatewayCredentialProvider.fromApiKeyIdentityArn} or to {@link ApiKeyCredentialProviderConfiguration}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiKeyCredentialProviderProps {
   /**
@@ -128,6 +132,7 @@ export interface ApiKeyCredentialProviderProps {
  * API Key credential provider configuration implementation
  * Can be used with OpenAPI targets
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiKeyCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.API_KEY;

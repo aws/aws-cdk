@@ -5,6 +5,10 @@ import * as iotevents from '../lib';
 test('full stack with detector model synthesizes correctly', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E3710',
+    reason: 'Service is shutdown',
+  });
 
   const input = new iotevents.Input(stack, 'MyInput', {
     inputName: 'test_input',

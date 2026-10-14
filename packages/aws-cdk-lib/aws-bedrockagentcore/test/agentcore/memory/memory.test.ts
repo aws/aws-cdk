@@ -1,14 +1,18 @@
-import { Template, Match } from '../../../../assertions';
+import { Match, Template } from '../../../../assertions';
 import { FoundationModel, FoundationModelIdentifier } from '../../../../aws-bedrock';
 import * as cloudwatch from '../../../../aws-cloudwatch';
 import * as iam from '../../../../aws-iam';
+import * as kinesis from '../../../../aws-kinesis';
 import * as kms from '../../../../aws-kms';
 import * as s3 from '../../../../aws-s3';
 import * as sns from '../../../../aws-sns';
-import { Duration } from '../../../../core';
 import * as cdk from '../../../../core';
+import { Duration } from '../../../../core';
 import {
   Memory,
+  StreamDeliveryContentType,
+  StreamDeliveryContentLevel,
+  StreamDeliveryResource,
 } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
@@ -189,10 +193,10 @@ describe('Memory with built-in strategies tests', () => {
       Description: 'A test memory with built-in strategies',
       EventExpiryDuration: 60,
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
-        Match.objectLike({ EpisodicMemoryStrategy: Match.objectLike({ Type: 'EPISODIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
+        Match.objectLike({ EpisodicMemoryStrategy: Match.objectLike({ Name: 'episodic_builtin_cdkGen0001' }) }),
       ]),
     });
 
@@ -573,7 +577,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_semantic_strategy',
             Description: 'Custom semantic memory strategy with overrides',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -600,7 +603,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_user_preference_strategy',
             Description: 'Custom user preference strategy with overrides',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
-            Type: 'USER_PREFERENCE',
             Configuration: {
               UserPreferenceOverride: {
                 Consolidation: {
@@ -627,7 +629,6 @@ describe('Memory with custom strategies tests', () => {
             Name: 'custom_summary_strategy',
             Description: 'Custom summary strategy with override',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}/custom'],
-            Type: 'SUMMARIZATION',
             Configuration: {
               SummaryOverride: {
                 Consolidation: {
@@ -715,7 +716,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         // Built-in semantic
@@ -724,7 +724,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
         },
         // Custom semantic
@@ -733,7 +732,6 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
             Name: 'hybrid_semantic_strategy',
             Description: 'Hybrid semantic strategy combining built-in and custom',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/hybrid'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -756,8 +754,8 @@ describe('Memory with mixed built-in and custom strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_mixed_strategies',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'hybrid_semantic_strategy' }) }),
       ]),
     });
@@ -826,7 +824,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         {
@@ -834,7 +831,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
         },
         {
@@ -842,7 +838,6 @@ describe('Memory with addMemoryStrategy method tests', () => {
             Name: 'added_custom_strategy',
             Description: 'Custom strategy added via addMemoryStrategy method',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/added'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -944,7 +939,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'USER_PREFERENCE',
           },
         },
         // Dynamically added strategies
@@ -953,7 +947,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
         },
         {
@@ -961,7 +954,6 @@ describe('Memory with dynamic strategy addition tests', () => {
             Name: 'dynamic_summary_strategy',
             Description: 'Dynamic summary strategy',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/dynamic'],
-            Type: 'SUMMARIZATION',
             Configuration: {
               SummaryOverride: {
                 Consolidation: {
@@ -980,8 +972,8 @@ describe('Memory with dynamic strategy addition tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_dynamic',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'dynamic_summary_strategy' }) }),
       ]),
     });
@@ -1252,7 +1244,9 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
       MemoryStrategies: Match.arrayWith([
         Match.objectLike({
           SemanticMemoryStrategy: Match.objectLike({
-            Type: 'SEMANTIC',
+            Namespaces: [
+              '/strategies/{memoryStrategyId}/actors/{actorId}',
+            ],
           }),
         }),
       ]),
@@ -1307,9 +1301,9 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
       ]),
     });
   });
@@ -1430,7 +1424,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('summary_builtin_cdkGen0001'),
       description: 'Summarize interactions to preserve critical context and key insights',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-      type: 'SUMMARIZATION',
     });
   });
 
@@ -1443,7 +1436,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('semantic_builtin_cdkGen0001'),
       description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'SEMANTIC',
     });
   });
 
@@ -1456,7 +1448,6 @@ describe('BuiltInMemoryStrategy unit tests', () => {
       name: expect.stringMatching('preference_builtin_cdkGen0001'),
       description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
       namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-      type: 'USER_PREFERENCE',
     });
   });
 
@@ -2100,30 +2091,27 @@ describe('Memory with custom execution role and strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       MemoryStrategies: Match.arrayWith([
         // Built-in summarization
-        {
+        Match.objectLike({
           SummaryMemoryStrategy: {
             Name: Match.stringLikeRegexp('summary_builtin_.*'),
             Description: 'Summarize interactions to preserve critical context and key insights',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/sessions/{sessionId}'],
-            Type: 'SUMMARIZATION',
           },
-        },
+        }),
         // Built-in semantic
-        {
+        Match.objectLike( {
           SemanticMemoryStrategy: {
             Name: Match.stringLikeRegexp('semantic_builtin_.*'),
             Description: 'Extract general factual knowledge, concepts and meanings from raw conversations in a context-independent format.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'SEMANTIC',
           },
-        },
+        }),
         // Custom semantic strategy
-        {
+        Match.objectLike({
           CustomMemoryStrategy: {
             Name: 'custom_semantic_strategy',
             Description: 'Custom semantic strategy with custom role',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/custom'],
-            Type: 'SEMANTIC',
             Configuration: {
               SemanticOverride: {
                 Consolidation: {
@@ -2137,13 +2125,12 @@ describe('Memory with custom execution role and strategies tests', () => {
               },
             },
           },
-        },
+        }),
         // Self-managed strategy
-        {
+        Match.objectLike({
           CustomMemoryStrategy: {
             Name: 'self_managed_strategy',
             Description: 'Self-managed strategy with custom role',
-            Type: 'CUSTOM',
             Configuration: {
               SelfManagedConfiguration: {
                 HistoricalContextWindowSize: 4,
@@ -2175,7 +2162,7 @@ describe('Memory with custom execution role and strategies tests', () => {
               },
             },
           },
-        },
+        }),
       ]),
     });
   });
@@ -2189,7 +2176,6 @@ describe('Memory with custom execution role and strategies tests', () => {
             Name: Match.stringLikeRegexp('preference_builtin_.*'),
             Description: 'Capture individual preferences, interaction patterns, and personalized settings to enhance future experiences.',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
-            Type: 'USER_PREFERENCE',
           },
         },
         // Custom user preference added via addMemoryStrategy
@@ -2198,7 +2184,6 @@ describe('Memory with custom execution role and strategies tests', () => {
             Name: 'added_user_preference_strategy',
             Description: 'User preference strategy added via addMemoryStrategy',
             Namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}/preferences'],
-            Type: 'USER_PREFERENCE',
             Configuration: {
               UserPreferenceOverride: {
                 Consolidation: {
@@ -2217,11 +2202,11 @@ describe('Memory with custom execution role and strategies tests', () => {
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       Name: 'test_memory_custom_role_strategies',
       MemoryStrategies: Match.arrayWith([
-        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Type: 'SUMMARIZATION' }) }),
-        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Type: 'SEMANTIC' }) }),
+        Match.objectLike({ SummaryMemoryStrategy: Match.objectLike({ Name: 'summary_builtin_cdkGen0001' }) }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.objectLike({ Name: 'semantic_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'custom_semantic_strategy' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'self_managed_strategy' }) }),
-        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Type: 'USER_PREFERENCE' }) }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.objectLike({ Name: 'preference_builtin_cdkGen0001' }) }),
         Match.objectLike({ CustomMemoryStrategy: Match.objectLike({ Name: 'added_user_preference_strategy' }) }),
       ]),
     });
@@ -2336,7 +2321,6 @@ describe('Episodic Memory Strategy unit tests', () => {
     expect((rendered as any).episodicMemoryStrategy).toMatchObject({
       name: expect.stringMatching('episodic_builtin_cdkGen0001'),
       namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}'],
-      type: 'EPISODIC',
       reflectionConfiguration: {
         namespaces: ['/strategy/{memoryStrategyId}/actor/{actorId}'],
       },
@@ -2732,5 +2716,411 @@ describe('Episodic strategy validation edge cases tests', () => {
         namespaces: ['/journey/{badVariable}/episodes'],
       });
     }).toThrow('Namespace with templates should contain valid variables: /journey/{badVariable}/episodes');
+  });
+});
+
+describe('Memory with stream delivery resources tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const stream = new kinesis.Stream(stack, 'MemoryEventStream');
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_with_stream',
+      description: 'A test memory with stream delivery',
+      expirationDuration: Duration.days(30),
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream, {
+          contentConfigurations: [
+            {
+              type: StreamDeliveryContentType.MEMORY_RECORDS,
+              level: StreamDeliveryContentLevel.FULL_CONTENT,
+            },
+          ],
+        }),
+      ],
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should have the correct resources', () => {
+    template.resourceCountIs('AWS::BedrockAgentCore::Memory', 1);
+    template.resourceCountIs('AWS::Kinesis::Stream', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+  });
+
+  test('Should have Memory resource with StreamDeliveryResources', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      Name: 'test_memory_with_stream',
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: 'FULL_CONTENT',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Should grant Kinesis write permissions to execution role', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ]),
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+          }),
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: 'kinesis:DescribeStream',
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should have stream delivery resource in construct property', () => {
+    expect(memory.streamDeliveryResources).toHaveLength(1);
+  });
+});
+
+describe('Memory with addStreamDeliveryResource method tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const stream = new kinesis.Stream(stack, 'AddedStream');
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_add_stream',
+    });
+
+    memory.addStreamDeliveryResource(StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        {
+          type: StreamDeliveryContentType.MEMORY_RECORDS,
+          level: StreamDeliveryContentLevel.METADATA_ONLY,
+        },
+      ],
+    }));
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should have Memory resource with StreamDeliveryResources added via method', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('AddedStream*'), 'Arn'] },
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: 'METADATA_ONLY',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Should grant Kinesis write permissions via addStreamDeliveryResource', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should have stream delivery resources in construct property', () => {
+    expect(memory.streamDeliveryResources).toHaveLength(1);
+  });
+});
+
+describe('Memory stream delivery validation tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Should throw error for more than one content configuration', () => {
+    const stream = new kinesis.Stream(stack, 'TooManyConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'invalid-memory', {
+        memoryName: 'invalid_stream_memory',
+        streamDeliveryResources: [
+          StreamDeliveryResource.kinesis(stream, {
+            contentConfigurations: [
+              { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
+              { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+            ],
+          }),
+        ],
+      });
+    }).toThrow('Stream delivery resource currently supports at most one content configuration');
+  });
+
+  test('fails for empty content configurations array', () => {
+    const stream = new kinesis.Stream(stack, 'EmptyConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'empty-config-memory', {
+        memoryName: 'empty_config_memory',
+        streamDeliveryResources: [
+          StreamDeliveryResource.kinesis(stream, {
+            contentConfigurations: [],
+          }),
+        ],
+      });
+    }).toThrow('contentConfigurations must be specified');
+  });
+
+  test('fails for missing content configurations', () => {
+    const stream = new kinesis.Stream(stack, 'MissingConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'missing-config-memory', {
+        memoryName: 'missing_config_memory',
+        streamDeliveryResources: [
+          // A JavaScript or jsii caller can bypass the required type, so this must
+          // still surface a ValidationError rather than a TypeError
+          StreamDeliveryResource.kinesis(stream, {} as any),
+        ],
+      });
+    }).toThrow('contentConfigurations must be specified');
+  });
+
+  test('Should throw error when adding more than one stream delivery resource', () => {
+    const stream1 = new kinesis.Stream(stack, 'Stream1');
+    const stream2 = new kinesis.Stream(stack, 'Stream2');
+
+    const memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream1, {
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+          ],
+        }),
+      ],
+    });
+
+    expect(() => {
+      memory.addStreamDeliveryResource(StreamDeliveryResource.kinesis(stream2, {
+        contentConfigurations: [
+          { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+        ],
+      }));
+    }).toThrow('Memory currently supports at most one stream delivery resource');
+  });
+
+  test('Should not include StreamDeliveryResources when not configured', () => {
+    new Memory(stack, 'no-stream-memory', {
+      memoryName: 'no_stream_memory',
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+    expect(memoryResource.Properties.StreamDeliveryResources).toBeUndefined();
+  });
+
+  test.each([
+    [StreamDeliveryContentLevel.METADATA_ONLY, 'METADATA_ONLY'],
+    [StreamDeliveryContentLevel.FULL_CONTENT, 'FULL_CONTENT'],
+  ])('Should always render the explicitly configured level %s', (level, expected) => {
+    const stream = new kinesis.Stream(stack, `LevelStream${expected}`);
+
+    new Memory(stack, 'level-memory', {
+      memoryName: 'level_memory',
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream, {
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level },
+          ],
+        }),
+      ],
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: expected,
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+});
+
+describe('StreamDeliveryResource factory tests', () => {
+  test('kinesis() exposes the stream and content configurations it was created with', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'factory-stack');
+    const stream = new kinesis.Stream(stack, 'FactoryStream');
+
+    const resource = StreamDeliveryResource.kinesis(stream, {
+      contentConfigurations: [
+        { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+      ],
+    });
+
+    expect(resource.stream).toBe(stream);
+    expect(resource.contentConfigurations).toEqual([
+      { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+    ]);
+  });
+
+  test('kinesis() accepts an imported stream', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'imported-stack');
+    const stream = kinesis.Stream.fromStreamArn(stack, 'ImportedStream', 'arn:aws:kinesis:us-east-1:123456789012:stream/imported');
+
+    const memory = new Memory(stack, 'imported-stream-memory', {
+      memoryName: 'imported_stream_memory',
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream, {
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+          ],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: 'arn:aws:kinesis:us-east-1:123456789012:stream/imported',
+              ContentConfigurations: [
+                { Type: 'MEMORY_RECORDS', Level: 'METADATA_ONLY' },
+              ],
+            },
+          },
+        ],
+      },
+    });
+    expect(memory.streamDeliveryResources).toHaveLength(1);
+  });
+});
+
+describe('Memory with KMS-encrypted Kinesis stream tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const kmsKey = new kms.Key(stack, 'StreamEncryptionKey');
+    const stream = new kinesis.Stream(stack, 'EncryptedStream', {
+      encryptionKey: kmsKey,
+    });
+
+    new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_kms_stream',
+      streamDeliveryResources: [
+        StreamDeliveryResource.kinesis(stream, {
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
+          ],
+        }),
+      ],
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should grant KMS permissions when stream uses customer-managed key', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ]),
+          }),
+        ]),
+      },
+    });
   });
 });

@@ -11,6 +11,7 @@ import { GATEWAY_OAUTH_PERMS, GATEWAY_OAUTH_COMPLETE_AUTH_PERMS, GATEWAY_WORKLOA
 
 /**
  * OAuth configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OAuthConfiguration {
   /**
@@ -59,6 +60,7 @@ export interface OAuthConfiguration {
  * OAuth credential provider configuration implementation
  * Can be used with OpenAPI targets
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class OAuthCredentialProviderConfiguration implements ICredentialProviderConfig {
   public readonly credentialProviderType = CredentialProviderType.OAUTH;

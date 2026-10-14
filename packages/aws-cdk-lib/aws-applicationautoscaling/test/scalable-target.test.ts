@@ -5,10 +5,19 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as appscaling from '../lib';
 
+function testStack() {
+  const stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3030',
+    reason: 'test:TestCount is not a valid dimension',
+  });
+  return stack;
+}
+
 describe('scalable target', () => {
   test('test scalable target creation', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = testStack();
 
     // WHEN
     new appscaling.ScalableTarget(stack, 'Target', {
@@ -31,7 +40,7 @@ describe('scalable target', () => {
 
   test('validation does not fail when using Tokens', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = testStack();
 
     // WHEN
     new appscaling.ScalableTarget(stack, 'Target', {
@@ -220,7 +229,7 @@ describe('scalable target', () => {
   });
 
   test('create scalable target with negative minCapacity throws error', () => {
-    const stack = new cdk.Stack();
+    const stack = testStack();
     expect(() => {
       new appscaling.ScalableTarget(stack, 'Target', {
         serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
@@ -233,7 +242,7 @@ describe('scalable target', () => {
   });
 
   test('create scalable target with negative maxCapacity throws error', () => {
-    const stack = new cdk.Stack();
+    const stack = testStack();
     expect(() => {
       new appscaling.ScalableTarget(stack, 'Target', {
         serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
@@ -246,7 +255,7 @@ describe('scalable target', () => {
   });
 
   test('create scalable target with maxCapacity less than minCapacity throws error', () => {
-    const stack = new cdk.Stack();
+    const stack = testStack();
     expect(() => {
       new appscaling.ScalableTarget(stack, 'Target', {
         serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
@@ -260,7 +269,7 @@ describe('scalable target', () => {
 
   test('create scalable target with custom role', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = testStack();
 
     // WHEN
     new appscaling.ScalableTarget(stack, 'Target', {

@@ -50,17 +50,17 @@ export interface EmrModifyInstanceFleetByNameJsonataProps extends sfn.TaskStateJ
 export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps, EmrModifyInstanceFleetByNameOptions { }
 
 /**
- * A Step Functions Task to to modify an InstanceFleet on an EMR Cluster.
+ * A Step Functions Task to modify an InstanceFleet on an EMR Cluster.
  */
 export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
   /**
-   * A Step Functions Task using JSONPath to to modify an InstanceFleet on an EMR Cluster.
+   * A Step Functions Task using JSONPath to modify an InstanceFleet on an EMR Cluster.
    */
   public static jsonPath(scope: Construct, id: string, props: EmrModifyInstanceFleetByNameJsonPathProps) {
     return new EmrModifyInstanceFleetByName(scope, id, props);
   }
   /**
-   * A Step Functions Task using JSONata to to modify an InstanceFleet on an EMR Cluster.
+   * A Step Functions Task using JSONata to modify an InstanceFleet on an EMR Cluster.
    */
   public static jsonata(scope: Construct, id: string, props: EmrModifyInstanceFleetByNameJsonataProps) {
     return new EmrModifyInstanceFleetByName(scope, id, {

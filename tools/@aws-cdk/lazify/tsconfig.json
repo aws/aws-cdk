@@ -11,7 +11,7 @@
       "es2022",
       "dom"
     ],
-    "module": "CommonJS",
+    "module": "Node20",
     "noEmitOnError": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -24,7 +24,12 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2022"
+    "target": "ES2022",
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "bin/**/*.ts",

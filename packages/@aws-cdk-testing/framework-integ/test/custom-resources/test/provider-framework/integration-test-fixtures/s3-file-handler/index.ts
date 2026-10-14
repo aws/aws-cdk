@@ -5,7 +5,7 @@ import * as api from './api';
 
 const s3 = new S3();
 
-export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
+export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest): Promise<AWSCDKAsyncCustomResource.OnEventResponse | void> {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':

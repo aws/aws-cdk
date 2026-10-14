@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-deletion-protection-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-deletion-protection"
+      ],
+      "assertionStack": "aws-cdk-eks-cluster-deletion-protection-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

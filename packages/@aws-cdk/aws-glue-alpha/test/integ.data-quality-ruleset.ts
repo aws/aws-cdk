@@ -31,9 +31,9 @@ const partitionKeys = [{
   type: glue.Schema.BIG_INT,
 }];
 
-const csvTable = new glue.Table(stack, 'CSVTable', {
+const csvTable = new glue.S3Table(stack, 'CSVTable', {
   database,
-  bucket,
+  storage: glue.S3TableStorage.fromBucket(bucket),
   tableName: 'csv_table',
   columns,
   partitionKeys,
@@ -41,15 +41,14 @@ const csvTable = new glue.Table(stack, 'CSVTable', {
 });
 
 new glue.DataQualityRuleset(stack, 'DataQualityRuleset', {
-  clientToken: 'client_token',
   description: 'my description',
   rulesetName: 'my_ruleset',
-  rulesetDqdl: 'Rules = [RowCount > 10]',
+  dqdl: glue.Dqdl.fromString('Rules = [RowCount > 10]'),
   tags: {
     key1: 'value1',
     key2: 'value2',
   },
-  targetTable: new glue.DataQualityTargetTable(database.databaseName, csvTable.tableName),
+  targetTable: glue.DataQualityTargetTable.fromTable(database, csvTable),
 });
 
 new IntegTest(app, 'glue-data-quality-ruleset', {

@@ -340,3 +340,101 @@ describe('update', () => {
     }));
   });
 });
+
+describe('special-character handling', () => {
+  const specialUsername = 'gr"p';
+
+  test('quotes the user name and doubles embedded double quotes in GRANT', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+    const properties = { ...resourceProperties, username: specialUsername };
+
+    await managePrivileges(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('TO "gr""p"'),
+    }));
+  });
+
+  test('quotes the user name and doubles embedded double quotes in REVOKE', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    const properties = { ...resourceProperties, username: specialUsername };
+
+    await managePrivileges(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('FROM "gr""p"'),
+    }));
+  });
+
+  test('quotes the table object name produced by normalizedTableName', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{ tableId, tableName: 'sales report', actions }],
+    };
+
+    await managePrivileges(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('ON "sales report"'),
+    }));
+  });
+
+  test('keeps each bare-safe component of a schema-qualified table object unquoted in GRANT', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{ tableId, tableName: 'public.users', actions }],
+    };
+
+    await managePrivileges(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('ON public.users TO username'),
+    }));
+  });
+
+  test('keeps each bare-safe component of a schema-qualified table object unquoted in REVOKE', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    const properties = {
+      ...resourceProperties,
+      tablePrivileges: [{ tableId, tableName: 'public.users', actions }],
+    };
+
+    await managePrivileges(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringContaining('ON public.users FROM username'),
+    }));
+  });
+
+  test('passes the action list through unchanged', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await managePrivileges(resourceProperties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(/^GRANT INSERT, SELECT ON /),
+    }));
+  });
+});

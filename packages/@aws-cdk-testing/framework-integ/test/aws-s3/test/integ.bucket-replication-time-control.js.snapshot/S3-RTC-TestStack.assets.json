@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "7f7986da23a2cdd13ee879ad5521f69a283fad68d70d019fe4dd43201126595a": {
+      "displayName": "S3-RTC-TestStack Template",
+      "source": {
+        "path": "S3-RTC-TestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-07546dbe": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7f7986da23a2cdd13ee879ad5521f69a283fad68d70d019fe4dd43201126595a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,8 +1,8 @@
 import type { IConstruct, MetadataEntry } from 'constructs';
-import { App } from './app';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { appOf } from './private/core-construct-finders';
 import { lit, type LiteralString } from './private/literal-string';
 
 /**
@@ -230,7 +230,7 @@ export class Annotations {
  */
 class Acknowledgements {
   public static of(scope: IConstruct): Acknowledgements {
-    const app = App.of(scope);
+    const app = appOf(scope);
     if (!app) {
       return new Acknowledgements();
     }

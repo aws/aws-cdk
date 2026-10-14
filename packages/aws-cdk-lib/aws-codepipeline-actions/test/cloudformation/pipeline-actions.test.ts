@@ -388,6 +388,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public get pipelineRef(): import('../../../interfaces/generated/aws-codepipeline-interfaces.generated').PipelineReference {
     return {
       pipelineName: this.pipelineName,
+      pipelineArn: this.pipelineArn,
     };
   }
 }
