@@ -19,9 +19,9 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
-   * If this is a relative path, it will be evaluated with respect to the
-   * JavaScript/TypeScript source file that instantiates the `NodejsFunction`
-   * construct. If the current project is not a Node project, relative paths are
+   * If this is a relative path, it is first resolved against the current working
+   * directory. If no file exists there, it is resolved against the `projectRoot`
+   * directory. If the current project is not a Node project, relative paths are
    * not reliable and absolute paths should be used.
    *
    * This file should be located underneath the `projectRoot` directory (by default,
@@ -271,8 +271,7 @@ function findEntry(scope: Construct, id: string, entry?: string, projectRoot?: s
     if (!projectRoot) {
       throw new ValidationError(
         lit`EntryFileNotFoundRelativeToProjectRoot`,
-        `Cannot find entry file at ${entry} relative to the current working directory,
-        and no projectRoot is set, so cannot look for it relative to the project root`,
+        `Cannot find entry file at ${entry} relative to the current working directory, and no projectRoot is set, so cannot look for it relative to the project root`,
         scope,
       );
     }
