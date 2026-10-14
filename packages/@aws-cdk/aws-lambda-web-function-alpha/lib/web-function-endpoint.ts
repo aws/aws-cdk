@@ -127,11 +127,10 @@ export interface WebFunctionEndpointProps {
   readonly endpointType?: WebFunctionEndpointType;
 
   /**
-   * The authentication type of the endpoint.
-   *
-   * @default WebFunctionAuthType.IAM_AUTH
+   * The authentication type of the endpoint. There is no default, so making an endpoint public
+   * (`APPLICATION_MANAGED`) is always an explicit choice.
    */
-  readonly authType?: WebFunctionAuthType;
+  readonly authType: WebFunctionAuthType;
 
   /**
    * How traffic is split across revisions. Either one entry with a weight of 100, or two entries
@@ -251,7 +250,7 @@ export class WebFunctionEndpoint extends cdk.Resource implements IWebFunctionEnd
       endpointName: this.endpointName,
       description: props.description,
       endpointType: props.endpointType ?? WebFunctionEndpointType.HOME_REGION,
-      authType: props.authType ?? WebFunctionAuthType.IAM_AUTH,
+      authType: props.authType,
       revisionWeights: revisionWeights.map((rw) => ({ revisionId: rw.revisionId, weight: rw.weight })),
       regions: props.regions,
       scalingConfig: props.maxEnvironments !== undefined ? { maxEnvironments: props.maxEnvironments } : undefined,

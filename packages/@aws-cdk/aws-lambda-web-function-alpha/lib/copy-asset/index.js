@@ -1,3 +1,5 @@
+// Runs in the Node.js runtime, which provides @aws-sdk/client-s3. It is plain JavaScript so that
+// the package does not depend on the SDK at build time. Typed in index.d.ts.
 const { S3Client, CopyObjectCommand } = require('@aws-sdk/client-s3');
 
 /**

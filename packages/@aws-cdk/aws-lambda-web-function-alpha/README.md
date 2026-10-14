@@ -31,7 +31,7 @@ This module provides:
 ```ts
 import * as path from 'path';
 import { Duration } from 'aws-cdk-lib';
-import { WebFunction, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+import { WebFunction, WebFunctionAuthType, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
 
 const fn = new WebFunction(this, 'WebFunction', {
   code: WebFunctionCode.fromAsset(path.join(__dirname, 'app')),
@@ -41,6 +41,7 @@ const fn = new WebFunction(this, 'WebFunction', {
 
 new WebFunctionEndpoint(this, 'Endpoint', {
   webFunction: fn,
+  authType: WebFunctionAuthType.IAM_AUTH,
 });
 ```
 
@@ -57,7 +58,9 @@ app.listen(Number(port), host);
 * `WebFunctionCode.fromAsset(path)` uploads a local directory and deploys it as the code.
 * `WebFunctionCode.fromBucket(bucket, key, versionId?)` uses an existing S3 object. The bucket must have
   versioning enabled, and `lambda.amazonaws.com` must be able to read the object
-  (`s3:GetObject` and `s3:GetObjectVersion`).
+  (`s3:GetObject` and `s3:GetObjectVersion`). For a bucket defined in the same app, versioning and
+  encryption are checked at synth time. The AWS managed KMS key (`KMS_MANAGED`, `DSSE_MANAGED`) is
+  rejected, because its key policy cannot grant the service access. SSE-S3 and a customer managed key work.
 
 #### Workaround: asset code is copied to a bucket the service can read
 
@@ -70,7 +73,8 @@ Until bootstrap grants the access, `fromAsset` works around it. It:
 
 1. Stages the directory as a CDK asset, as usual.
 2. Creates a versioned, private S3 bucket in the web function's scope. The bucket policy lets
-   `lambda.amazonaws.com` read objects, only for requests from the same account.
+   `lambda.amazonaws.com` read objects, only for requests from the same account and only for the
+   revisions of this web function (`aws:SourceArn`).
 3. Copies the asset into that bucket with a custom resource, and uses the version ID of the copy.
 
 The bucket is destroyed with the stack, and its objects are removed with it. Each web function
@@ -81,6 +85,12 @@ gets its own bucket.
 Until then, `fromAsset` creates one extra bucket, a copy function and a custom resource per web
 function.
 
+### Customer managed KMS key
+
+If `kmsKey` is a key defined in this app, the construct grants `kms:Decrypt` to `lambda.amazonaws.com`
+on it, conditioned on the account and the function's revisions. An imported key cannot be changed, so
+you must grant the access in its key policy; the construct adds a warning in that case.
+
 ### Execution role
 
 If you don't pass `role`, the construct creates a role that Lambda can assume, with the
@@ -88,8 +98,8 @@ If you don't pass `role`, the construct creates a role that Lambda can assume, w
 
 ## Endpoint
 
-By default an endpoint is `HomeRegion`, uses `IamAuth`, and sends 100% of traffic to the
-revision of its web function:
+An endpoint needs an explicit `authType`, so that making it public is always a choice. Its traffic goes
+100% to the revision of its web function unless you set `revisionWeights`:
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -115,7 +125,7 @@ weight of 100, or two entries whose weights sum to 100:
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { WebFunction, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+import { WebFunction, WebFunctionAuthType, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
 
 const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-code-bucket');
 const fn = new WebFunction(this, 'WebFunction', {
@@ -124,6 +134,7 @@ const fn = new WebFunction(this, 'WebFunction', {
 
 new WebFunctionEndpoint(this, 'Canary', {
   webFunction: fn,
+  authType: WebFunctionAuthType.IAM_AUTH,
   revisionWeights: [
     { revisionId: 'previous-revision-id', weight: 90 },
     { revisionId: fn.revisionId, weight: 10 },
@@ -140,13 +151,13 @@ principal's identity policy:
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { WebFunction, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+import { WebFunction, WebFunctionAuthType, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
 
 const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'my-code-bucket');
 const fn = new WebFunction(this, 'WebFunction', {
   code: WebFunctionCode.fromBucket(bucket, 'app.zip'),
 });
-const endpoint = new WebFunctionEndpoint(this, 'Endpoint', { webFunction: fn });
+const endpoint = new WebFunctionEndpoint(this, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
 
 const callerRole = new iam.Role(this, 'Caller', {
   assumedBy: new iam.AccountRootPrincipal(),
@@ -163,7 +174,7 @@ A web function or endpoint created elsewhere can be referenced by its attributes
 
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { WebFunction, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+import { WebFunction, WebFunctionAuthType, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
 
 const callerRole = new iam.Role(this, 'Caller', {
   assumedBy: new iam.AccountRootPrincipal(),

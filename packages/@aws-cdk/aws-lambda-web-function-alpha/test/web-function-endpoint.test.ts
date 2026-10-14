@@ -27,7 +27,7 @@ beforeEach(() => {
 
 describe('WebFunctionEndpoint', () => {
   test('routes all traffic to the revision of the function by default', () => {
-    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, webFunctionEndpointName: 'prod' });
+    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH, webFunctionEndpointName: 'prod' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
       FunctionName: 'my-web-function',
@@ -42,7 +42,7 @@ describe('WebFunctionEndpoint', () => {
   });
 
   test('depends on the function so it is created after it', () => {
-    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn });
+    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
 
     Template.fromStack(stack).hasResource('AWS::Lambda::WebFunctionEndpoint', {
       DependsOn: Match.arrayWith([Match.stringLikeRegexp('^WebFunction[0-9A-F]{8}$')]),
@@ -73,6 +73,7 @@ describe('WebFunctionEndpoint', () => {
   test('splits traffic between two revisions', () => {
     new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
       revisionWeights: [
         { revisionId: 'rev-old', weight: 90 },
         { revisionId: 'rev-new', weight: 10 },
@@ -88,7 +89,7 @@ describe('WebFunctionEndpoint', () => {
   });
 
   test('exposes L1 escape hatch and attributes', () => {
-    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn });
+    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
 
     expect(endpoint.cfnEndpoint).toBeInstanceOf(CfnWebFunctionEndpoint);
     expect(endpoint.endpointArn).toBeDefined();
@@ -111,12 +112,13 @@ describe('WebFunctionEndpoint', () => {
   ])('rejects revision weights with %s', (_label, revisionWeights, message) => {
     expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
       revisionWeights,
     })).toThrow(message);
   });
 
   test('grants invoke permission on the endpoint', () => {
-    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn });
+    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
     const role = new iam.Role(stack, 'Caller', { assumedBy: new iam.AccountRootPrincipal() });
 
     endpoint.grants.invoke(role);
@@ -139,7 +141,7 @@ describe('WebFunctionEndpoint', () => {
       revisionId: 'rev-1',
     });
 
-    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: imported });
+    new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: imported, authType: WebFunctionAuthType.IAM_AUTH });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
       FunctionName: 'existing-fn',
@@ -168,7 +170,7 @@ describe('WebFunctionEndpoint', () => {
   });
 
   test('exposes a reference to the endpoint', () => {
-    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn });
+    const endpoint = new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
 
     expect(endpoint.webFunctionEndpointRef).toEqual({ endpointArn: endpoint.endpointArn });
   });
@@ -176,6 +178,7 @@ describe('WebFunctionEndpoint', () => {
   test('rejects a rate limit above 10000', () => {
     expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
       rateLimit: 10001,
     })).toThrow(/rateLimit/);
   });
@@ -183,6 +186,7 @@ describe('WebFunctionEndpoint', () => {
   test('rejects an empty list of Regions', () => {
     expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
       regions: [],
     })).toThrow(/regions/);
   });

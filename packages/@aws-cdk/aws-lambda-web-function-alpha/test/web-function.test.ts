@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -246,5 +246,90 @@ describe('WebFunction', () => {
       code: WebFunctionCode.fromAsset(FIXTURE_DIR),
       webFunctionName: functionName,
     })).toThrow(/Web function name/);
+  });
+});
+
+describe('code bucket and key access for the service', () => {
+  test('limits the code bucket policy to the revisions of the function', () => {
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Condition: {
+            StringEquals: { 'aws:SourceAccount': '123456789012' },
+            ArnLike: { 'aws:SourceArn': Match.anyValue() },
+          },
+        })]),
+      },
+    });
+  });
+
+  test('grants the service decrypt on a customer managed key', () => {
+    const key = new kms.Key(stack, 'Key');
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      kmsKey: key,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Action: Match.anyValue(),
+          Condition: {
+            StringEquals: { 'aws:SourceAccount': '123456789012' },
+            ArnLike: { 'aws:SourceArn': Match.anyValue() },
+          },
+        })]),
+      },
+    });
+  });
+
+  test('warns when the key is imported, since its policy cannot be changed', () => {
+    const key = kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:us-east-1:123456789012:key/1234abcd-12ab-34cd-56ef-1234567890ab');
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      kmsKey: key,
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/WebFunction', Match.stringLikeRegexp('imported'));
+  });
+
+  test('fails at synth when a bucket for code is not versioned', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket', { versioned: false });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromBucket(bucket, 'app.zip'),
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/must have versioning enabled/);
+  });
+
+  test('fails at synth when a bucket for code uses the AWS managed KMS key', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      versioned: true,
+      encryption: s3.BucketEncryption.KMS_MANAGED,
+    });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromBucket(bucket, 'app.zip'),
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/AWS managed KMS key/);
+  });
+
+  test('accepts a versioned bucket with SSE-S3 encryption', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket', {
+      versioned: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+    });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromBucket(bucket, 'app.zip'),
+    });
+
+    expect(() => Template.fromStack(stack)).not.toThrow();
   });
 });

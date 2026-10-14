@@ -192,7 +192,7 @@ export interface WebFunctionProps {
  * @example
  * import * as path from 'path';
  * import { Duration } from 'aws-cdk-lib';
- * import { WebFunction, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+ * import { WebFunction, WebFunctionAuthType, WebFunctionCode, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
  *
  * const fn = new WebFunction(this, 'WebFunction', {
  *   code: WebFunctionCode.fromAsset(path.join(__dirname, 'app')),
@@ -200,7 +200,7 @@ export interface WebFunctionProps {
  *   environment: { NODE_ENV: 'production' },
  * });
  *
- * new WebFunctionEndpoint(this, 'Endpoint', { webFunction: fn });
+ * new WebFunctionEndpoint(this, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
  */
 export class WebFunction extends cdk.Resource implements IWebFunction {
   /**
@@ -279,7 +279,7 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
     });
     this.functionArn = this.cfnWebFunction.attrFunctionArn;
 
-    const code = props.code.bind(this);
+    const code = props.code.bind(this, this.functionArn);
     const loggingConfig = (props.logGroup || props.applicationLogLevel || props.systemLogLevel)
       ? {
         logGroup: props.logGroup?.logGroupRef.logGroupName,
@@ -314,6 +314,10 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
     });
     // The revision references the function by name, which does not create a dependency
     this.cfnRevision.addDependency(this.cfnWebFunction);
+
+    if (props.kmsKey) {
+      grantServiceDecrypt(this, props.kmsKey, this.functionArn);
+    }
 
     this.revisionId = this.cfnRevision.attrRevisionId;
     this.revisionArn = this.cfnRevision.attrRevisionArn;
@@ -364,4 +368,24 @@ class ImportedWebFunction extends cdk.Resource implements IWebFunction {
   public get webFunctionRef(): WebFunctionReference {
     return { functionArn: this.functionArn };
   }
+}
+
+/**
+ * Lets the Web Functions service decrypt the revision's code and environment with a customer managed key
+ */
+function grantServiceDecrypt(scope: Construct, key: kms.IKey, webFunctionArn: string) {
+  if (!cdk.Resource.isOwnedResource(key)) {
+    cdk.Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-lambda-web-function-alpha:importedKmsKey',
+      'The KMS key is imported, so kms:Decrypt cannot be granted to lambda.amazonaws.com on it. Grant it in the key policy.',
+    );
+    return;
+  }
+
+  key.grantDecrypt(new iam.ServicePrincipal('lambda.amazonaws.com', {
+    conditions: {
+      StringEquals: { 'aws:SourceAccount': cdk.Stack.of(scope).account },
+      ArnLike: { 'aws:SourceArn': `${webFunctionArn}/revision/*` },
+    },
+  }));
 }

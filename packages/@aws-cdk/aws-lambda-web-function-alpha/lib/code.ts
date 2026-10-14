@@ -56,6 +56,10 @@ export abstract class WebFunctionCode {
    *
    * The bucket must have versioning enabled, and the Web Functions service must be able to
    * read the object (`s3:GetObject` and `s3:GetObjectVersion` for `lambda.amazonaws.com`).
+   * For a bucket defined in this app, versioning and encryption are validated at synth time.
+   * Encryption with the AWS managed key (`BucketEncryption.KMS_MANAGED` or
+   * `BucketEncryption.DSSE_MANAGED`) is not supported, because its key policy cannot grant the
+   * service access. SSE-S3 and a customer managed key both work.
    *
    * @param bucket the bucket containing the code archive
    * @param key the object key of the code archive
@@ -69,8 +73,9 @@ export abstract class WebFunctionCode {
    * Returns the S3 location of the code, creating any required resources in the given scope.
    *
    * @param scope the construct that owns the code resources
+   * @param webFunctionArn the ARN of the web function that reads the code
    */
-  public abstract bind(scope: Construct): WebFunctionCodeConfig;
+  public abstract bind(scope: Construct, webFunctionArn: string): WebFunctionCodeConfig;
 }
 
 class AssetWebFunctionCode extends WebFunctionCode {
@@ -78,7 +83,7 @@ class AssetWebFunctionCode extends WebFunctionCode {
     super();
   }
 
-  public bind(scope: Construct): WebFunctionCodeConfig {
+  public bind(scope: Construct, webFunctionArn: string): WebFunctionCodeConfig {
     const asset = new s3assets.Asset(scope, 'Code', { path: this.path, ...this.options });
 
     // Versioned bucket owned by the web function. The service reads the code from here
@@ -97,6 +102,7 @@ class AssetWebFunctionCode extends WebFunctionCode {
       resources: [bucket.arnForObjects('*')],
       conditions: {
         StringEquals: { 'aws:SourceAccount': cdk.Stack.of(scope).account },
+        ArnLike: { 'aws:SourceArn': `${webFunctionArn}/revision/*` },
       },
     }));
 
@@ -137,7 +143,39 @@ class BucketWebFunctionCode extends WebFunctionCode {
     super();
   }
 
-  public bind(_scope: Construct): WebFunctionCodeConfig {
+  public bind(scope: Construct, _webFunctionArn: string): WebFunctionCodeConfig {
+    // Only buckets defined in this app can be inspected; imported buckets are not validated
+    if (cdk.Resource.isOwnedResource(this.bucket)) {
+      scope.node.addValidation({
+        validate: () => validateCodeBucket(this.bucket),
+      });
+    }
     return { bucket: this.bucket.bucketName, key: this.key, versionId: this.versionId };
   }
+}
+
+/**
+ * Checks that a bucket used for web function code has versioning and a supported encryption
+ */
+function validateCodeBucket(bucket: s3.IBucket): string[] {
+  const cfn = bucket.node.defaultChild;
+  if (!s3.CfnBucket.isCfnBucket(cfn)) {
+    return [];
+  }
+
+  const errors: string[] = [];
+  const versioning = cfn.versioningConfiguration as s3.CfnBucket.VersioningConfigurationProperty | undefined;
+  if (versioning?.status !== 'Enabled') {
+    errors.push(`fromBucket: bucket ${bucket.node.path} must have versioning enabled`);
+  }
+
+  const encryption = cfn.bucketEncryption as s3.CfnBucket.BucketEncryptionProperty | undefined;
+  const rules = encryption?.serverSideEncryptionConfiguration as s3.CfnBucket.ServerSideEncryptionRuleProperty[] | undefined;
+  const sse = rules?.[0]?.serverSideEncryptionByDefault as s3.CfnBucket.ServerSideEncryptionByDefaultProperty | undefined;
+  const managedKms = sse?.sseAlgorithm === 'aws:kms:dsse' || (sse?.sseAlgorithm === 'aws:kms' && sse.kmsMasterKeyId === undefined);
+  if (managedKms) {
+    errors.push(`fromBucket: bucket ${bucket.node.path} must not use the AWS managed KMS key (BucketEncryption.KMS_MANAGED or DSSE_MANAGED); use SSE-S3 or a customer managed key`);
+  }
+
+  return errors;
 }

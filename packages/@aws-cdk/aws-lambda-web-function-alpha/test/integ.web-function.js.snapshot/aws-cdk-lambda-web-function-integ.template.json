@@ -159,6 +159,22 @@
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
          }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "WebFunction291B7D47",
+              "FunctionArn"
+             ]
+            },
+            "/revision/*"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",
@@ -324,7 +340,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7dd7f47aad988edb5d86eeefed749abd62bde2c1b2e86e227bd07ee1b9758687.zip"
+     "S3Key": "8932fdd268686eb981c0c4a626cc18020e04666b047b2238f405d835241edcc4.zip"
     },
     "Handler": "index.handler",
     "Role": {
