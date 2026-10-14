@@ -217,6 +217,7 @@ export * as aws_networkfirewall from './aws-networkfirewall';
 export * as aws_networkflowmonitor from './aws-networkflowmonitor';
 export * as aws_networkmanager from './aws-networkmanager';
 export * as aws_networkmonitor from './aws-networkmonitor';
+export * as aws_networksecuritymanager from './aws-networksecuritymanager';
 export * as aws_nimblestudio from './aws-nimblestudio';
 export * as aws_notifications from './aws-notifications';
 export * as aws_notificationscontacts from './aws-notificationscontacts';

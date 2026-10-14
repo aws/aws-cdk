@@ -929,6 +929,15 @@ describe('vpc endpoint', () => {
       });
     });
 
+    test('EKS_PROXY uses the com.amazonaws prefix in eusc-de-east-1', () => {
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      new Vpc(stack, 'VPC').addInterfaceEndpoint('EksProxy', { service: InterfaceVpcEndpointAwsService.EKS_PROXY });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.eusc-de-east-1.eks-proxy',
+      });
+    });
+
     test.each([
       ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
       ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
