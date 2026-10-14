@@ -235,4 +235,129 @@ describe('special-character handling', () => {
       Sql: 'ALTER USER u PASSWORD \'p\'\'q\'',
     }));
   });
+
+  test('quotes the user name and doubles embedded double quotes in ALTER USER', async () => {
+    const properties = { ...resourceProperties, username: 'ab"c' };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      ...genericEvent,
+      RequestType: 'Update',
+      OldResourceProperties: properties,
+      ResourceProperties: properties,
+      PhysicalResourceId: physicalResourceId,
+    };
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'old' }) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'new' }) }));
+
+    await manageUser(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'ALTER USER "ab""c" PASSWORD \'new\'',
+    }));
+  });
+});
+
+describe('PUBLIC user name', () => {
+  const publicSpellings = ['PUBLIC', 'public', 'Public'];
+
+  test.each(publicSpellings)('fails for user name %j on create, before any statement runs', async (username_) => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await expect(manageUser({ ...resourceProperties, username: username_ }, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['publıc', 'CREATE USER publıc PASSWORD \'password\''],
+    ['PuBlıC', 'CREATE USER PuBlıC PASSWORD \'password\''],
+    ['PUBLİC', 'CREATE USER PUBLİC PASSWORD \'password\''],
+    ['ＰＵＢＬＩＣ', 'CREATE USER ＰＵＢＬＩＣ PASSWORD \'password\''],
+    ['pubℓic', 'CREATE USER pubℓic PASSWORD \'password\''],
+  ])('preserves distinct non-ASCII name %s during CREATE', async (username_, expected) => {
+    const properties = { ...resourceProperties, username: username_ };
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...genericEvent,
+      RequestType: 'Create',
+      ResourceProperties: properties,
+    };
+
+    await manageUser(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({ Sql: expected }));
+  });
+
+  test.each([
+    ['publıc', 'ALTER USER publıc PASSWORD \'new\''],
+    ['PuBlıC', 'ALTER USER PuBlıC PASSWORD \'new\''],
+  ])('preserves distinct non-ASCII name %s during password ALTER', async (username_, expected) => {
+    const properties = { ...resourceProperties, username: username_ };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      ...genericEvent,
+      RequestType: 'Update',
+      OldResourceProperties: properties,
+      ResourceProperties: properties,
+      PhysicalResourceId: physicalResourceId,
+    };
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'old' }) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'new' }) }));
+
+    await manageUser(properties, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({ Sql: expected }));
+  });
+
+  test('drops the user on delete rather than refusing', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+
+    await manageUser({ ...resourceProperties, username: 'PUBLIC' }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: 'DROP USER PUBLIC',
+    }));
+  });
+
+  test('emits a padded spelling as a quoted identifier', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await manageUser({ ...resourceProperties, username: ' PUBLIC ' }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `CREATE USER " PUBLIC " PASSWORD '${password}'`,
+    }));
+  });
+
+  test('fails for user name PUBLIC on update, before any statement runs', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: { ...resourceProperties, username: 'oldUsername' },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+
+    await expect(manageUser({ ...resourceProperties, username: 'PUBLIC' }, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('fails for user name PUBLIC when only the password changes, before any statement runs', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: { ...resourceProperties, username: 'PUBLIC' },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'old' }) }));
+    mockGetSecretValue.mockImplementationOnce(async () => ({ SecretString: JSON.stringify({ password: 'new' }) }));
+
+    await expect(manageUser({ ...resourceProperties, username: 'PUBLIC' }, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
 });
