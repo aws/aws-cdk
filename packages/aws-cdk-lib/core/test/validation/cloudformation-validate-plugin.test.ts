@@ -798,3 +798,71 @@ function validationContext(templatePath: string): IPolicyValidationContext {
     region: undefined,
   };
 }
+
+describe('nested stack templates', () => {
+  function appWithNestedResource(isValidatingNestedTemplates: boolean) {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: 'true',
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+        [cxapi.VALIDATE_NESTED_STACK_TEMPLATES]: isValidatingNestedTemplates,
+      },
+    });
+    const parent = new core.Stack(app, 'Parent');
+    const child = new core.NestedStack(parent, 'Child');
+    new core.CfnResource(child, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+    return { app, child };
+  }
+
+  test('fails synthesis for an invalid resource in a nested stack when the flag is enabled', () => {
+    const { app } = appWithNestedResource(true);
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('does not validate nested stack templates when the flag is not enabled', () => {
+    const { app } = appWithNestedResource(false);
+
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('findings in a nested stack can be acknowledged on the nested stack', () => {
+    const { app, child } = appWithNestedResource(true);
+    core.Validations.of(child).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'testing acknowledgement in nested stacks' });
+
+    expect(() => app.synth()).not.toThrow();
+    const report = JSON.parse(fs.readFileSync(path.join(app.outdir, 'validation-report.json'), 'utf-8'));
+    const suppressed = report.pluginReports
+      .flatMap((r: any) => r.suppressedViolations ?? [])
+      .find((v: any) => v.ruleName === 'F3002');
+    expect(suppressed).toEqual(expect.objectContaining({ acknowledgedAt: 'Parent/Child' }));
+    expect(suppressed.violatingConstructs.map((c: any) => c.constructPath)).toEqual(['Parent/Child/MyBucket']);
+  });
+
+  test('passes the nested stack template to plugins with the nested stack construct path', () => {
+    const app = new core.App({ context: { [cxapi.VALIDATE_NESTED_STACK_TEMPLATES]: true } });
+    const parent = new core.Stack(app, 'Parent');
+    const child = new core.NestedStack(parent, 'Child');
+    new core.CfnResource(child, 'Queue', { type: 'AWS::SQS::Queue' });
+
+    const received: core.PolicyValidationStack[] = [];
+    core.Validations.of(app).addPlugins({
+      name: 'capturing-plugin',
+      validate(context: IPolicyValidationContext) {
+        received.push(...context.stackTemplates);
+        return { success: true, violations: [] };
+      },
+    });
+
+    app.synth();
+
+    expect(received.map(s => s.stackConstructPath).sort()).toEqual(['Parent', 'Parent/Child']);
+    const nested = received.find(s => s.stackConstructPath === 'Parent/Child')!;
+    expect(nested.templatePath).toEqual(path.join(app.outdir, child.templateFile));
+  });
+});

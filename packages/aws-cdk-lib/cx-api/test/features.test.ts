@@ -54,6 +54,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
     [feats.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false,
     [feats.CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: false,
+    [feats.VALIDATE_NESTED_STACK_TEMPLATES]: false,
 
   });
 });

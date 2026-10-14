@@ -120,6 +120,7 @@ Flags come in three types:
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
+| [@aws-cdk/core:validateNestedStackTemplates](#aws-cdkcorevalidatenestedstacktemplates) | Pass the templates of nested stacks and other stacks synthesized as assets to synthesis-time validation | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -218,6 +219,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
       "aws-cn"
     ],
     "@aws-cdk/core:validateAgainstDefaultRules": true,
+    "@aws-cdk/core:validateNestedStackTemplates": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
@@ -2609,6 +2611,33 @@ viewer then follows with a second request. That additional request is billable.
 | 2.273.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
+
+
+### @aws-cdk/core:validateNestedStackTemplates
+
+*Pass the templates of nested stacks and other stacks synthesized as assets to synthesis-time validation*
+
+Flag type: Backwards incompatible bugfix
+
+Synthesis-time template validation, including the default CloudFormation validation and any plugin
+registered with `Validations.of(app).addPlugins()`, only receives the templates of top-level stacks.
+The template of a `NestedStack`, or of any other stack synthesized as an asset of its parent, is never
+validated, so a resource that fails validation in a top-level stack passes silently inside a nested stack.
+
+When this flag is enabled, every `Stack` construct in a stage whose template was written to the cloud
+assembly is validated, including nested stacks. Findings in nested templates are reported against the
+constructs that produced them and can be acknowledged with `Validations.of(scope).acknowledge()`.
+
+Enabling this can surface new findings in nested stacks: errors fail synthesis when
+`@aws-cdk/core:validateAgainstDefaultRules` is enabled, and new warnings can fail `cdk synth --strict`.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Leave this flag unset to keep validating only top-level stack templates, or acknowledge new findings with `Validations.of(scope).acknowledge()`.
 
 
 <!-- END details -->
