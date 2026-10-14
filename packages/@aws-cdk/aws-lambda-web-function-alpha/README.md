@@ -54,8 +54,32 @@ app.listen(Number(port), host);
 
 ### Code
 
-* `WebFunctionCode.fromAsset(path)` uploads a directory to S3 as a CDK asset.
-* `WebFunctionCode.fromBucket(bucket, key, versionId?)` uses an existing S3 object.
+* `WebFunctionCode.fromAsset(path)` uploads a local directory and deploys it as the code.
+* `WebFunctionCode.fromBucket(bucket, key, versionId?)` uses an existing S3 object. The bucket must have
+  versioning enabled, and `lambda.amazonaws.com` must be able to read the object
+  (`s3:GetObject` and `s3:GetObjectVersion`).
+
+#### Workaround: asset code is copied to a bucket the service can read
+
+The Web Functions service cannot read assets in the CDK bootstrap bucket. Deploying an asset
+with the default bootstrap fails with `lambda service principal lambda.amazonaws.com does not have
+s3:GetObject ... on s3://cdk-hnb659fds-assets-...`. Rerunning bootstrap does not fix this, because
+the current bootstrap template does not grant that access.
+
+Until bootstrap grants the access, `fromAsset` works around it. It:
+
+1. Stages the directory as a CDK asset, as usual.
+2. Creates a versioned, private S3 bucket in the web function's scope. The bucket policy lets
+   `lambda.amazonaws.com` read objects, only for requests from the same account.
+3. Copies the asset into that bucket with a custom resource, and uses the version ID of the copy.
+
+The bucket is destroyed with the stack, and its objects are removed with it. Each web function
+gets its own bucket.
+
+**To fix this:** update the CDK bootstrap template so the bootstrap bucket grants read access to
+`lambda.amazonaws.com`, then move the code to the bootstrap bucket and remove the workaround.
+Until then, `fromAsset` creates one extra bucket, a copy function and a custom resource per web
+function.
 
 ### Execution role
 
@@ -124,13 +148,13 @@ const fn = new WebFunction(this, 'WebFunction', {
 });
 const endpoint = new WebFunctionEndpoint(this, 'Endpoint', { webFunction: fn });
 
-const caller = new iam.Role(this, 'Caller', {
+const callerRole = new iam.Role(this, 'Caller', {
   assumedBy: new iam.AccountRootPrincipal(),
 });
-endpoint.grants.invoke(caller);
+endpoint.grants.invoke(callerRole);
 ```
 
-A caller in another account also needs a resource-based policy on the web function. This module
+A callerRole in another account also needs a resource-based policy on the web function. This module
 does not manage resource-based policies yet.
 
 ## Importing existing resources
@@ -138,7 +162,12 @@ does not manage resource-based policies yet.
 A web function or endpoint created elsewhere can be referenced by its attributes:
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { WebFunction, WebFunctionEndpoint } from '@aws-cdk/aws-lambda-web-function-alpha';
+
+const callerRole = new iam.Role(this, 'Caller', {
+  assumedBy: new iam.AccountRootPrincipal(),
+});
 
 const fn = WebFunction.fromWebFunctionAttributes(this, 'ImportedFunction', {
   functionArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/existing-fn',
@@ -150,7 +179,7 @@ const endpoint = WebFunctionEndpoint.fromWebFunctionEndpointAttributes(this, 'Im
   endpointArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/existing-fn/endpoint/prod',
   endpointName: 'prod',
 });
-endpoint.grants.invoke(caller);
+endpoint.grants.invoke(callerRole);
 ```
 
 ## Escape hatches

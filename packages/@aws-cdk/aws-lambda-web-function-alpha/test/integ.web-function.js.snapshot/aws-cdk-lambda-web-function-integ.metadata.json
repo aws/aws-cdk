@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-lambda-web-function-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
   "/aws-cdk-lambda-web-function-integ/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -33,10 +39,60 @@
       "data": "WebFunction291B7D47"
     }
   ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "encryption": "S3_MANAGED",
+        "blockPublicAccess": "*",
+        "enforceSSL": true,
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-lambda-web-function-integ/WebFunction/Revision": [
     {
       "type": "aws:cdk:logicalId",
       "data": "WebFunctionRevisionE34E43F6"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
   "/aws-cdk-lambda-web-function-integ/Endpoint/Resource": [
@@ -61,6 +117,334 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeBucketD3FDAEE3"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyHandler58D257B3"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopy/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopy13032201"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeBucketPolicy43AD3499"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeBucketAutoDeleteObjectsCustomResource705F0D37"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyHandlerServiceRole7540BC0E"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyHandlerLogGroup542C396A"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyProviderframeworkonEvent7E14D161"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyHandler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyHandlerServiceRoleDefaultPolicy1A689A99"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyProviderframeworkonEventServiceRoleCF60F804"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyProviderframeworkonEventLogGroup2B54DEAD"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/CodeCopyProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionCodeCopyProviderframeworkonEventServiceRoleDefaultPolicy38FA956F"
     }
   ]
 }

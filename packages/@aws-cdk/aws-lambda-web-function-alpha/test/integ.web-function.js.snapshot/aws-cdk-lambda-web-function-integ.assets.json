@@ -15,16 +15,58 @@
         }
       }
     },
-    "358fa92c31ae1a260f76ca7ee8e7cc79656e363bc1f958b96c58d202b0ff8d27": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-cdk-lambda-web-function-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7dd7f47aad988edb5d86eeefed749abd62bde2c1b2e86e227bd07ee1b9758687": {
+      "displayName": "WebFunction/CodeCopyHandler/Code",
+      "source": {
+        "path": "asset.7dd7f47aad988edb5d86eeefed749abd62bde2c1b2e86e227bd07ee1b9758687",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-52bfd2a9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7dd7f47aad988edb5d86eeefed749abd62bde2c1b2e86e227bd07ee1b9758687.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e": {
+      "displayName": "WebFunction/CodeCopyProvider/framework-onEvent/Code",
+      "source": {
+        "path": "asset.775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-790bc5ee": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6366cc947999d0f5cf554842609ffb99fd3868b41bc59ddcc5bf39123a62e162": {
       "displayName": "aws-cdk-lambda-web-function-integ Template",
       "source": {
         "path": "aws-cdk-lambda-web-function-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-438e5b26": {
+        "current_account-current_region-9feb925f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "358fa92c31ae1a260f76ca7ee8e7cc79656e363bc1f958b96c58d202b0ff8d27.json",
+          "objectKey": "6366cc947999d0f5cf554842609ffb99fd3868b41bc59ddcc5bf39123a62e162.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -65,6 +65,45 @@ describe('WebFunction', () => {
     });
   });
 
+  test('copies an asset into a versioned bucket the service can read', () => {
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::Bucket', {
+      VersioningConfiguration: { Status: 'Enabled' },
+      BucketEncryption: Match.anyValue(),
+      PublicAccessBlockConfiguration: {
+        BlockPublicAcls: true,
+        BlockPublicPolicy: true,
+        IgnorePublicAcls: true,
+        RestrictPublicBuckets: true,
+      },
+    });
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Action: ['s3:GetObject', 's3:GetObjectVersion'],
+          Condition: { StringEquals: { 'aws:SourceAccount': '123456789012' } },
+        })]),
+      },
+    });
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: {
+        CodeConfig: {
+          S3Object: {
+            Bucket: { Ref: Match.stringLikeRegexp('^WebFunctionCodeBucket') },
+            Key: Match.stringLikeRegexp('\\.zip$'),
+            VersionId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^WebFunctionCodeCopy'), 'VersionId'] },
+          },
+        },
+      },
+    });
+    template.resourceCountIs('AWS::CloudFormation::CustomResource', 1);
+  });
+
   test('revision depends on the function', () => {
     new WebFunction(stack, 'WebFunction', {
       code: WebFunctionCode.fromAsset(FIXTURE_DIR),
@@ -138,7 +177,11 @@ describe('WebFunction', () => {
     });
 
     expect(fn.role).toBe(role);
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: {
+        ExecutionRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('^Role'), 'Arn'] },
+      },
+    });
   });
 
   test('applies tags to taggable resources', () => {
