@@ -1,0 +1,39 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg PipelineWithCommandsStepPipelineB3AEE9E8.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN Beta";
+"BEGIN Beta.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Beta.Stack.Deploy";
+"Beta.Stack.Prepare" -> "Beta.Stack.Deploy";
+"Beta.Stack.Prepare";
+"Build.Synth" -> "Beta.Stack.Prepare";
+"BEGIN Beta.Stack" -> "Beta.Stack.Prepare";
+"Beta.Stack.Deploy" -> "END Beta.Stack";
+"Beta.SmokeTest";
+"Beta.Stack.Deploy" -> "Beta.SmokeTest";
+"END Beta.Stack" -> "Beta.SmokeTest";
+"Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7" -> "Beta.SmokeTest";
+"Beta.Report";
+"Beta.SmokeTest" -> "Beta.Report";
+"Build.Synth" -> "Beta.Report";
+"END Beta.Stack" -> "Beta.Report";
+"BEGIN Beta" -> "BEGIN Beta.Stack";
+"Beta.Report" -> "END Beta";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7";
+"BEGIN Source" -> "Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7";
+"Source.c8b2a462417cb57fd341d45128570bd90e6ef77ca7" -> "END Source";
+}
