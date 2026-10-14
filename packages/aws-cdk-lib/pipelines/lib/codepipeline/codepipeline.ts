@@ -741,6 +741,12 @@ export class CodePipeline extends PipelineBase {
 
     // Now built-in steps
     if (step instanceof CommandsStep) {
+      if (nodeType === CodeBuildProjectType.SYNTH) {
+        // The output artifact of a Commands action keeps the paths of the files, so the cloud
+        // assembly would not be at the root of the artifact, where the self-mutation and
+        // deployment actions expect it.
+        throw new ValidationError(lit`CommandsStepNotSupportedAsSynth`, `CommandsStep '${step.id}' cannot be used as the synth step, use a ShellStep or CodeBuildStep with 'primaryOutputDirectory' instead`, this);
+      }
       return CommandsFactory.fromCommandsStep(step);
     }
 
