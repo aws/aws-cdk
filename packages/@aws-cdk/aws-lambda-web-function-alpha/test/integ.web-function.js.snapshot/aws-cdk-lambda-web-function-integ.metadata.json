@@ -1,0 +1,66 @@
+{
+  "/aws-cdk-lambda-web-function-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunction291B7D47"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/Revision": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionRevisionE34E43F6"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/PublicEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicEndpointDE11522E"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebFunctionRole2678EDFA"
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/WebFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

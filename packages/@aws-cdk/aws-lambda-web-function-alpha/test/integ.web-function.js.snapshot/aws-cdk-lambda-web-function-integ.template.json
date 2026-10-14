@@ -1,0 +1,162 @@
+{
+ "Resources": {
+  "WebFunctionRole2678EDFA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "WebFunction291B7D47": {
+   "Type": "AWS::Lambda::WebFunction",
+   "Properties": {
+    "FunctionName": "awscdklambdawebfunctioninteg-WebFunction-D5DAD159"
+   }
+  },
+  "WebFunctionRevisionE34E43F6": {
+   "Type": "AWS::Lambda::WebFunctionRevision",
+   "Properties": {
+    "BuildConfig": {
+     "CodeConfig": {
+      "S3Object": {
+       "Bucket": {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "Key": "5d1be74a9b500a90bba6671bab10b704c2c6b604bea79fd5a9c970307e8f1ce3.zip"
+      }
+     },
+     "RuntimeConfig": {
+      "Runtime": "nodejs24.x"
+     }
+    },
+    "FunctionName": "awscdklambdawebfunctioninteg-WebFunction-D5DAD159",
+    "ServiceConfig": {
+     "EnvironmentVariables": {
+      "NODE_ENV": "test"
+     },
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "WebFunctionRole2678EDFA",
+       "Arn"
+      ]
+     },
+     "TimeoutSeconds": 30
+    }
+   },
+   "DependsOn": [
+    "WebFunction291B7D47"
+   ]
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::Lambda::WebFunctionEndpoint",
+   "Properties": {
+    "AuthType": "IamAuth",
+    "EndpointName": "prod",
+    "EndpointType": "HomeRegion",
+    "FunctionName": "awscdklambdawebfunctioninteg-WebFunction-D5DAD159",
+    "RevisionWeights": [
+     {
+      "RevisionId": {
+       "Fn::GetAtt": [
+        "WebFunctionRevisionE34E43F6",
+        "RevisionId"
+       ]
+      },
+      "Weight": 100
+     }
+    ],
+    "ThrottleConfig": {
+     "RateLimit": 100
+    }
+   },
+   "DependsOn": [
+    "WebFunction291B7D47",
+    "WebFunctionRevisionE34E43F6",
+    "WebFunctionRole2678EDFA"
+   ]
+  },
+  "PublicEndpointDE11522E": {
+   "Type": "AWS::Lambda::WebFunctionEndpoint",
+   "Properties": {
+    "AuthType": "ApplicationManaged",
+    "EndpointName": "public",
+    "EndpointType": "HomeRegion",
+    "FunctionName": "awscdklambdawebfunctioninteg-WebFunction-D5DAD159",
+    "RevisionWeights": [
+     {
+      "RevisionId": {
+       "Fn::GetAtt": [
+        "WebFunctionRevisionE34E43F6",
+        "RevisionId"
+       ]
+      },
+      "Weight": 100
+     }
+    ]
+   },
+   "DependsOn": [
+    "WebFunction291B7D47",
+    "WebFunctionRevisionE34E43F6",
+    "WebFunctionRole2678EDFA"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

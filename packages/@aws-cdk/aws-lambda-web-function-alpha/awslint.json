@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.WebFunctionProps.kmsKey",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.WebFunctionProps.role",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.WebFunctionEndpointProps.webFunction"
+  ]
+}
