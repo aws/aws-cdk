@@ -10,6 +10,7 @@ import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import type { IFileSystemLocation } from './file-location';
 import type { IFleet } from './fleet';
+import type { HostKernel } from './host-kernel';
 import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
@@ -1435,6 +1436,7 @@ export class Project extends ProjectBase {
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
       fleet: this.configureFleet(env),
+      hostKernel: env.hostKernel,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1672,6 +1674,20 @@ export interface BuildEnvironment {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
   readonly fleet?: IFleet;
+
+  /**
+   * The host operating system kernel used for the builds.
+   *
+   * The host kernel does not affect the build environment operating system,
+   * which is determined by the `buildImage`.
+   *
+   * Only supported by the `LINUX_CONTAINER`, `ARM_CONTAINER`, `LINUX_EC2` and `ARM_EC2`
+   * environment types. Not supported by Windows, Lambda or Mac build images.
+   *
+   * @default - the default host kernel chosen by CodeBuild for the build image
+   * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ProjectEnvironment.html#CodeBuild-Type-ProjectEnvironment-hostKernel
+   */
+  readonly hostKernel?: HostKernel;
 
   /**
    * Indicates how the project builds Docker images. Specify true to enable
@@ -2182,6 +2198,10 @@ export class WindowsBuildImage implements IBuildImage {
       errors.push('Windows images do not support Lambda compute types');
     }
 
+    if (buildEnvironment.hostKernel) {
+      errors.push('Windows images do not support host kernel selection');
+    }
+
     const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
     if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
@@ -2323,6 +2343,10 @@ export class MacBuildImage implements IBuildImage {
 
     if (!buildEnvironment.fleet) {
       errors.push('Mac images must be used with a fleet');
+    }
+
+    if (buildEnvironment.hostKernel) {
+      errors.push('Mac images do not support host kernel selection');
     }
 
     return errors;

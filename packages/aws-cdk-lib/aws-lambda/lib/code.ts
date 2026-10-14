@@ -1,5 +1,6 @@
 import { spawnSync } from 'child_process';
 import type { Construct } from 'constructs';
+import { CfnFunction, CfnLayerVersion } from './lambda.generated';
 import type * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
 import * as iam from '../../aws-iam';
@@ -9,6 +10,21 @@ import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
+
+/**
+ * How Lambda manages the storage of your code package.
+ */
+export enum S3ObjectStorageMode {
+  /**
+   * Lambda copies the deployment package from your S3 bucket into Lambda-managed storage.
+   */
+  COPY = 'COPY',
+
+  /**
+   * Lambda references your code directly from your S3 bucket.
+   */
+  REFERENCE = 'REFERENCE',
+}
 
 /**
  * Represents the Lambda Handler Code.
@@ -44,7 +60,8 @@ export abstract class Code {
    * @param key The object key
    * @param options Optional parameters for setting the code, current optional parameters to set here are
    * 1. `objectVersion` to set S3 object version
-   * 2. `sourceKMSKey` to set KMS Key for encryption of code
+   * 2. `sourceKMSKey` to configure encryption of Lambda-managed code storage
+   * 3. `s3ObjectStorageMode` to set how Lambda stores the code
    */
   public static fromBucketV2 (bucket: s3.IBucket, key: string, options?: BucketOptions): S3CodeV2 {
     if (options?.objectVersion === undefined) {
@@ -247,10 +264,20 @@ export interface CodeConfig {
   readonly image?: CodeImageConfig;
 
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The ARN of the KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKeyArn?: string;
+
+  /**
+   * How Lambda manages the storage of your code package.
+   *
+   * @default - Lambda copies the deployment package from your S3 bucket into Lambda-managed storage.
+   */
+  readonly s3ObjectStorageMode?: S3ObjectStorageMode;
 }
 
 /**
@@ -323,8 +350,16 @@ export class S3CodeV2 extends Code {
   public readonly isInline = false;
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
+  constructor(private readonly bucket: s3.IBucket, private key: string, private options?: BucketOptions) {
     super();
+    if (options?.s3ObjectStorageMode === S3ObjectStorageMode.REFERENCE && options.objectVersion === undefined) {
+      throw new ValidationError(
+        lit`S3ObjectStorageModeReferenceRequiresObjectVersion`,
+        'set objectVersion when using s3ObjectStorageMode REFERENCE because Lambda requires a versioned S3 object',
+        bucket,
+      );
+    }
+
     if (!bucket.bucketName) {
       throw new ValidationError(lit`BucketNameUndefined`, 'bucketName is undefined for the provided bucket', bucket);
     }
@@ -340,7 +375,118 @@ export class S3CodeV2 extends Code {
         objectVersion: this.options?.objectVersion,
       },
       sourceKMSKeyArn: this.options?.sourceKMSKey?.keyRef.keyArn,
+      s3ObjectStorageMode: this.options?.s3ObjectStorageMode,
     };
+  }
+
+  public bindToResource(resource: cdk.CfnResource, _options?: ResourceBindOptions): void {
+    if (this.options?.s3ObjectStorageMode !== S3ObjectStorageMode.REFERENCE) {
+      return;
+    }
+
+    const stack = cdk.Stack.of(resource);
+    let sourceArn: string;
+    let usesWildcardSourceArn: boolean;
+    let resourceType: string;
+    let nameProperty: string;
+
+    if (CfnFunction.isCfnFunction(resource)) {
+      const functionName = resource.functionName;
+      usesWildcardSourceArn = functionName === undefined || cdk.Token.isUnresolved(functionName);
+      resourceType = 'functions';
+      nameProperty = 'functionName';
+      sourceArn = stack.formatArn({
+        service: 'lambda',
+        resource: 'function',
+        resourceName: usesWildcardSourceArn ? '*' : functionName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    } else if (CfnLayerVersion.isCfnLayerVersion(resource)) {
+      const layerName = resource.layerName;
+      usesWildcardSourceArn = layerName === undefined || cdk.Token.isUnresolved(layerName);
+      resourceType = 'layers';
+      nameProperty = 'layerVersionName';
+      sourceArn = stack.formatArn({
+        service: 'lambda',
+        resource: 'layer',
+        // PublishLayerVersion uses the unversioned layer ARN as aws:SourceArn.
+        resourceName: usesWildcardSourceArn ? '*' : layerName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+    } else {
+      return;
+    }
+
+    if (usesWildcardSourceArn) {
+      // The bucket policy must exist before Lambda creates the resource, so using its generated ARN would create a cycle.
+      cdk.Annotations.of(resource).addWarningV2(
+        '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceWildcardSourceArn',
+        'To avoid a circular dependency between the S3 bucket policy and the Lambda resource during deployment, ' +
+        `a wildcard is used in the aws:SourceArn condition to match all Lambda ${resourceType} in this account ` +
+        '(access is still limited to this account via aws:SourceAccount).\n' +
+        `It is strongly recommended to further scope down the policy by specifying an explicit ${nameProperty}, ` +
+        'following the guidance in the "Self-managed S3 code storage" section of the module README.',
+      );
+    }
+
+    const lambdaServicePrincipal = new iam.ServicePrincipal('lambda.amazonaws.com');
+    const conditions = {
+      StringEquals: {
+        'aws:SourceAccount': stack.account,
+      },
+      ArnLike: {
+        'aws:SourceArn': sourceArn,
+      },
+    };
+    const bucketPolicyResult = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        's3:GetObject',
+        's3:GetObjectVersion',
+      ],
+      resources: [this.bucket.arnForObjects(this.key)],
+      principals: [lambdaServicePrincipal],
+      conditions,
+    }));
+    if (bucketPolicyResult.statementAdded) {
+      // The bucket policy must exist before Lambda creates the resource and reads the object.
+      if (bucketPolicyResult.policyDependable) {
+        resource.node.addDependency(bucketPolicyResult.policyDependable);
+      }
+    } else {
+      cdk.Annotations.of(resource).addWarningV2(
+        '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedBucketPolicy',
+        'Cannot update the policy of an imported bucket for S3ObjectStorageMode.REFERENCE. ' +
+        'Grant the lambda.amazonaws.com service principal s3:GetObject and s3:GetObjectVersion on the referenced object manually. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
+      );
+    }
+
+    const encryptionKey = this.bucket.encryptionKey;
+    if (encryptionKey) {
+      const keyPolicyResult = encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        principals: [lambdaServicePrincipal],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            ...conditions.StringEquals,
+            'kms:ViaService': `s3.${stack.region}.amazonaws.com`,
+          },
+          ArnLike: conditions.ArnLike,
+        },
+      }), true);
+      if (keyPolicyResult.statementAdded) {
+        // The key policy is inline on the key resource, so the key must exist before Lambda reads the object.
+        resource.node.addDependency(encryptionKey);
+      } else {
+        cdk.Annotations.of(resource).addWarningV2(
+          '@aws-cdk/aws-lambda:s3ObjectStorageModeReferenceImportedKeyPolicy',
+          'Cannot update the policy of the KMS key encrypting the code bucket for S3ObjectStorageMode.REFERENCE. ' +
+          'Grant the lambda.amazonaws.com service principal kms:Decrypt on that key manually. ' +
+          'See https://docs.aws.amazon.com/lambda/latest/dg/configuration-self-managed-storage.html for the required policy.',
+        );
+      }
+    }
   }
 }
 
@@ -448,8 +594,11 @@ export interface CfnParametersCodeProps {
    */
   readonly objectKeyParam?: cdk.CfnParameter;
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKey?: IKeyRef;
 }
@@ -714,12 +863,27 @@ export interface CustomCommandOptions extends s3_assets.AssetOptions {
  */
 export interface BucketOptions {
   /**
-   * Optional S3 object version
+   * Optional S3 object version.
+   *
+   * Required when `s3ObjectStorageMode` is set to `S3ObjectStorageMode.REFERENCE`.
+   *
+   * @default - no object version
    */
   readonly objectVersion?: string;
+
   /**
-   * The ARN of the KMS key used to encrypt the handler code.
-   * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
+   * The KMS key that Lambda uses to encrypt the deployment package in Lambda-managed storage.
+   *
+   * This is not the key used to encrypt the source object in Amazon S3.
+   *
+   * @default - Lambda uses an AWS owned key
    */
   readonly sourceKMSKey?: IKeyRef;
+
+  /**
+   * How Lambda manages the storage of your code package.
+   *
+   * @default - Lambda copies the deployment package from your S3 bucket into Lambda-managed storage.
+   */
+  readonly s3ObjectStorageMode?: S3ObjectStorageMode;
 }

@@ -1332,6 +1332,117 @@ describe('Environment', () => {
       }),
     });
   });
+
+  describe('host kernel', () => {
+    test.each([
+      [codebuild.HostKernel.LINUX_KERNEL_4, 'LINUX_KERNEL_4'],
+      [codebuild.HostKernel.LINUX_KERNEL_6, 'LINUX_KERNEL_6'],
+      [codebuild.HostKernel.LINUX_KERNEL_LATEST, 'LINUX_KERNEL_LATEST'],
+    ])('can set the host kernel to %s', (hostKernel, expected) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+          hostKernel,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          Type: 'LINUX_CONTAINER',
+          HostKernel: expected,
+        }),
+      });
+    });
+
+    test('can set the host kernel on an ARM build image', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+          hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          Type: 'ARM_CONTAINER',
+          HostKernel: 'LINUX_KERNEL_6',
+        }),
+      });
+    });
+
+    test('is absent from the template when not specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
+          HostKernel: Match.absent(),
+        }),
+      });
+    });
+
+    test('fails when set on a Windows build image', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+            hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Windows images do not support host kernel selection/);
+    });
+
+    test('fails when set on a Mac build image', () => {
+      const stack = new cdk.Stack();
+      const fleet = new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType: codebuild.EnvironmentType.MAC_ARM,
+      });
+
+      expect(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.MacBuildImage.BASE_14,
+            fleet,
+            hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+          },
+        });
+      }).toThrow(/Invalid CodeBuild environment: Mac images do not support host kernel selection/);
+    });
+  });
 });
 
 describe('EnvironmentVariables', () => {

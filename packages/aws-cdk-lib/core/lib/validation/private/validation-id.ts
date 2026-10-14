@@ -68,7 +68,12 @@ export function parseValidationId(id: string): ValidationId {
  * Normalize the given validation ID to a fully qualified ID, using the `annotation` namespace if no namespace is provided.
  */
 export function normalizeValidationId(id: string | ValidationId, defaultNamespace: ValidationNs): string {
-  const parsed = typeof id === 'string' ? parseValidationId(id) : id;
+  const p = typeof id === 'string' ? parseValidationId(id) : id;
+
+  const parsed = {
+    namespace: p.namespace?.replaceAll(/ /g, '-') as ValidationNs | undefined,
+    ruleId: p.ruleId.replaceAll(/ /g, '-'),
+  };
 
   // Allow aliases for this namespace, but normalize it to the actual namespace we settled on.
   if (parsed.namespace && ['annotation', 'Construct-Annotations'].includes(parsed.namespace)) {
