@@ -1153,6 +1153,16 @@ describe('WebFunction egress network connector', () => {
       .toThrow(/defined in stack 'Other\/Nested'/);
   });
 
+  test('rejects a connector with a regional endpoint', () => {
+    const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Connector', VERSION_ARN);
+
+    expect(() => new WebFunction(stack, 'Test', minimalProps({
+      egressNetworkConnector: connector,
+      endpointType: WebFunctionEndpointType.MULTI_REGION,
+      replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
+    }))).toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint, got MultiRegion/);
+  });
+
   test('rejects a connector in this app created for another compute type', () => {
     const connector = ownedConnector(stack, 'Connector', NetworkConnectorComputeType.MICRO_VM);
 

@@ -309,7 +309,8 @@ export interface WebFunctionProps {
    * changing version cannot be exported — import the version with
    * `NetworkConnector.fromNetworkConnectorVersionArn()`.
    *
-   * The connector must have been created for `NetworkConnectorComputeType.WEB_FUNCTION`.
+   * The connector must have been created for `NetworkConnectorComputeType.WEB_FUNCTION`, and
+   * the endpoint must be `WebFunctionEndpointType.HOME_REGION`.
    *
    * The full `INetworkConnector` is required (rather than a ref) because the revision pins to
    * `latestVersionArn`, which `INetworkConnectorRef` does not carry.
@@ -780,6 +781,13 @@ export class WebFunction extends WebFunctionBase {
       throw new ValidationError(
         lit`WebFunctionRegionalEndpointWithoutReplicaRegions`,
         `replicaRegions must be specified when endpointType is ${endpointType}`,
+        this,
+      );
+    }
+    if (props.egressNetworkConnector && isRegional) {
+      throw new ValidationError(
+        lit`WebFunctionEgressConnectorRequiresHomeRegion`,
+        `egressNetworkConnector is only supported with a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${endpointType}`,
         this,
       );
     }
