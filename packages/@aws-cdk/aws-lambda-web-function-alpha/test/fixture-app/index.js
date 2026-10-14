@@ -2,4 +2,7 @@
 const http = require('http');
 
 const [host, port] = process.env.AWS_LAMBDA_HTTP_ENDPOINT.split(':');
-http.createServer((_req, res) => res.end('ok')).listen(Number(port), host);
+http.createServer((_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({ result: 'ok' }));
+}).listen(Number(port), host);
