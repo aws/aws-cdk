@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import {
   WebFunctionEndpointType,
   NetworkConnector,
@@ -173,3 +174,24 @@ describe('NetworkConnector', () => {
     expect(() => Template.fromStack(stack)).not.toThrow();
   });
 });
+
+describe('operator role', () => {
+  test('attaches the operator policy to an operator role created in the app', () => {
+    const role = new iam.Role(stack, 'OperatorRoleByUser', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    new NetworkConnector(stack, 'NetworkConnector', { vpc, operatorRole: role });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: Match.arrayWith([Match.objectLike({
+        'Fn::Join': ['', Match.arrayWith([':iam::aws:policy/AWSLambdaNetworkConnectorOperatorPolicy'])],
+      })]),
+    });
+  });
+
+  test('warns when the operator role is imported', () => {
+    const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/operator');
+    new NetworkConnector(stack, 'NetworkConnector', { vpc, operatorRole: role });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/NetworkConnector', Match.stringLikeRegexp('cannot be attached'));
+  });
+});
+

@@ -153,14 +153,25 @@ export class NetworkConnector extends cdk.Resource implements INetworkConnector 
       }),
     ];
 
-    // The operator role is trusted by the service. The managed policy lets it create the
-    // network interfaces. A role passed in must already have the policy attached.
-    this.operatorRole = props.operatorRole ?? new iam.Role(this, 'OperatorRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaNetworkConnectorOperatorPolicy'),
-      ],
-    });
+    // The operator role is trusted by the service. The managed policy lets it create the network interfaces.
+    // A role created in this app gets the policy attached; an imported role must already have it.
+    const operatorPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaNetworkConnectorOperatorPolicy');
+    if (props.operatorRole) {
+      this.operatorRole = props.operatorRole;
+      if (cdk.Resource.isOwnedResource(props.operatorRole) && typeof (props.operatorRole as iam.Role).addManagedPolicy === 'function') {
+        (props.operatorRole as iam.Role).addManagedPolicy(operatorPolicy);
+      } else {
+        cdk.Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-lambda-web-function-alpha:importedOperatorRole',
+          'The operator role is imported, so AWSLambdaNetworkConnectorOperatorPolicy cannot be attached to it. Attach the policy to the role.',
+        );
+      }
+    } else {
+      this.operatorRole = new iam.Role(this, 'OperatorRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [operatorPolicy],
+      });
+    }
 
     this.cfnNetworkConnector = new CfnNetworkConnector(this, 'Resource', {
       name: props.networkConnectorName,

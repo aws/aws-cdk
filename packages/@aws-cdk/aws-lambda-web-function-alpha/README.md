@@ -55,7 +55,12 @@ app.listen(Number(port), host);
 
 ### Code
 
-* `WebFunctionCode.fromAsset(path)` uploads a local directory and deploys it as the code.
+* `WebFunctionCode.fromAsset(path)` uploads a local directory and deploys it as the code. The copy goes to
+  a bucket shared by the web functions of the stack (see the workaround below).
+* `WebFunctionCode.fromAssetToProvidedBucket(bucket, path)` uploads a local directory and copies it into a
+  bucket that you provide. The bucket must have versioning enabled, and the service must be able to read the
+  objects; the construct does not change the bucket policy. A bucket defined in this app is validated at synth
+  time, like `fromBucket`.
 * `WebFunctionCode.fromBucket(bucket, key, versionId?)` uses an existing S3 object. The bucket must have
   versioning enabled, and `lambda.amazonaws.com` must be able to read the object
   (`s3:GetObject` and `s3:GetObjectVersion`). For a bucket defined in the same app, versioning and
@@ -72,18 +77,18 @@ the current bootstrap template does not grant that access.
 Until bootstrap grants the access, `fromAsset` works around it. It:
 
 1. Stages the directory as a CDK asset, as usual.
-2. Creates a versioned, private S3 bucket in the web function's scope. The bucket policy lets
-   `lambda.amazonaws.com` read objects, only for requests from the same account and only for the
-   revisions of this web function (`aws:SourceArn`).
+2. Creates a versioned, private S3 bucket for the stack, if it does not exist yet. For each web function,
+   the bucket policy lets `lambda.amazonaws.com` read objects, only for requests from the same account and
+   only for the revisions of that web function (`aws:SourceArn`).
 3. Copies the asset into that bucket with a custom resource, and uses the version ID of the copy.
 
-The bucket is destroyed with the stack, and its objects are removed with it. Each web function
-gets its own bucket.
+The bucket is destroyed with the stack, and its objects are removed with it. All the web functions of a
+stack share one bucket, and one copy function and provider.
 
 **To fix this:** update the CDK bootstrap template so the bootstrap bucket grants read access to
 `lambda.amazonaws.com`, then move the code to the bootstrap bucket and remove the workaround.
-Until then, `fromAsset` creates one extra bucket, a copy function and a custom resource per web
-function.
+Until then, `fromAsset` creates one extra bucket, one copy function and one provider per stack, and one
+custom resource per asset.
 
 ### Customer managed KMS key
 
@@ -178,7 +183,8 @@ const connector = NetworkConnector.fromNetworkConnectorVersionArn(this, 'Connect
 By default the connector uses the private subnets with egress of the VPC, a new security group that allows
 all outbound traffic, and IPv4. Set `networkProtocol: NetworkProtocol.DUAL_STACK` for IPv4 and IPv6. A
 connector creates an operator role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy, unless
-you pass `operatorRole`; a role you pass must have that policy attached.
+you pass `operatorRole`. An operator role created in this app gets that policy attached; for an imported role
+the construct adds a warning, and the policy must already be attached.
 
 ### Temporary schemas
 
@@ -192,7 +198,8 @@ published version, which has all three), these schema files can be removed.
 ## Invoke permissions
 
 An `IamAuth` endpoint is invoked with the `lambda:InvokeWebFunctionEndpoint` permission. Use
-`grants.invoke()` to grant it to a principal in the same account. The grant goes into the
+`endpoint.grants.invoke()` to grant it to a principal in the same account, or `fn.grants.invoke()` for every
+endpoint of a web function. The grant goes into the
 principal's identity policy:
 
 ```ts

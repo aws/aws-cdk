@@ -64,6 +64,11 @@ export interface IWebFunction extends cdk.IResource, IWebFunctionRef {
    * @attribute
    */
   readonly revisionId: string;
+
+  /**
+   * Grants on this web function
+   */
+  readonly grants: WebFunctionGrants;
 }
 
 /**
@@ -258,6 +263,13 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
   }
 
   /**
+   * Grants on this web function
+   */
+  public get grants(): WebFunctionGrants {
+    return WebFunctionGrants.fromWebFunction(this);
+  }
+
+  /**
    * The underlying `AWS::Lambda::WebFunction` resource
    */
   public readonly cfnWebFunction: CfnWebFunction;
@@ -386,6 +398,42 @@ class ImportedWebFunction extends cdk.Resource implements IWebFunction {
 
   public get webFunctionRef(): WebFunctionReference {
     return { functionArn: this.functionArn };
+  }
+
+  public get grants(): WebFunctionGrants {
+    return WebFunctionGrants.fromWebFunction(this);
+  }
+}
+
+/**
+ * Grants on a web function
+ */
+export class WebFunctionGrants {
+  /**
+   * Creates grants for a web function
+   *
+   * @param webFunction the web function to grant on
+   */
+  public static fromWebFunction(webFunction: IWebFunction): WebFunctionGrants {
+    return new WebFunctionGrants(webFunction);
+  }
+
+  private constructor(private readonly webFunction: IWebFunction) {}
+
+  /**
+   * Grants a principal permission to invoke every endpoint of the web function. Applies to endpoints with the
+   * `IamAuth` authentication type.
+   *
+   * The grant is added to the principal's identity policy.
+   *
+   * @param grantee the principal to grant
+   */
+  public invoke(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['lambda:InvokeWebFunctionEndpoint'],
+      resourceArns: [`${this.webFunction.functionArn}/endpoint/*`],
+    });
   }
 }
 

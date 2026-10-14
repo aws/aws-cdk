@@ -1,4 +1,10 @@
 {
+  "/LambdaWebFunctionInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaWebFunctionIntegDefaultTestDeployAssertDAE9911A.template.json"
+    }
+  ],
   "/LambdaWebFunctionInteg/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

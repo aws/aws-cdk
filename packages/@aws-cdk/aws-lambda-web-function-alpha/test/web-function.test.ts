@@ -333,3 +333,65 @@ describe('code bucket and key access for the service', () => {
     expect(() => Template.fromStack(stack)).not.toThrow();
   });
 });
+
+describe('shared code bucket, provided bucket and function grants', () => {
+  test('shares one code bucket between the web functions of a stack', () => {
+    new WebFunction(stack, 'FunctionA', { code: WebFunctionCode.fromAsset(FIXTURE_DIR) });
+    new WebFunction(stack, 'FunctionB', { code: WebFunctionCode.fromAsset(FIXTURE_DIR) });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::S3::Bucket', 1);
+    template.resourceCountIs('AWS::Lambda::WebFunction', 2);
+    const policies = Object.values(template.findResources('AWS::S3::BucketPolicy'));
+    const statements = policies.flatMap((p) => p.Properties.PolicyDocument.Statement);
+    const lambdaStatements = statements.filter((st: { Principal?: { Service?: string } }) => st.Principal?.Service === 'lambda.amazonaws.com');
+    expect(lambdaStatements).toHaveLength(2);
+  });
+
+  test('copies an asset into a bucket the caller provides', () => {
+    const bucket = new s3.Bucket(stack, 'Provided', { versioned: true, encryption: s3.BucketEncryption.S3_MANAGED });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAssetToProvidedBucket(bucket, FIXTURE_DIR),
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::S3::Bucket', 1);
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: {
+        CodeConfig: {
+          S3Object: {
+            Bucket: { Ref: Match.stringLikeRegexp('^Provided') },
+            VersionId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^WebFunctionCodeCopy'), 'VersionId'] },
+          },
+        },
+      },
+    });
+  });
+
+  test('fails when a provided bucket for code is not versioned', () => {
+    const bucket = new s3.Bucket(stack, 'Provided', { versioned: false });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAssetToProvidedBucket(bucket, FIXTURE_DIR),
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/must have versioning enabled/);
+  });
+
+  test('grants invoke on every endpoint of a web function', () => {
+    const fn = new WebFunction(stack, 'WebFunction', { code: WebFunctionCode.fromAsset(FIXTURE_DIR) });
+    const role = new iam.Role(stack, 'Caller', { assumedBy: new iam.AccountRootPrincipal() });
+
+    fn.grants.invoke(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [Match.objectLike({
+          Action: 'lambda:InvokeWebFunctionEndpoint',
+          Effect: 'Allow',
+          Resource: { 'Fn::Join': ['', Match.arrayWith(['/endpoint/*'])] },
+        })],
+      },
+    });
+  });
+});
+
