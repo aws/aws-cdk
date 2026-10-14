@@ -104,6 +104,24 @@ export interface IntegerPartitionProjectionConfigurationProps {
 }
 
 /**
+ * A required-together interval step for DATE partition projection.
+ *
+ * Bundling `interval` and `intervalUnit` into one value makes a partial step
+ * (one without the other) unrepresentable.
+ */
+export interface DateProjectionStep {
+  /**
+   * Interval between partition values.
+   */
+  readonly interval: number;
+
+  /**
+   * Unit for the interval.
+   */
+  readonly intervalUnit: DateIntervalUnit;
+}
+
+/**
  * Properties for DATE partition projection configuration.
  */
 export interface DatePartitionProjectionConfigurationProps {
@@ -141,26 +159,16 @@ export interface DatePartitionProjectionConfigurationProps {
   readonly format: string;
 
   /**
-   * Interval between partition values.
+   * Interval step (`interval` + `intervalUnit`) between partition values.
    *
-   * When the provided dates are at single-day or single-month precision,
-   * the interval is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, interval is required.
+   * The two are supplied together, so a partial step cannot be expressed.
+   * Required when `format` carries sub-day precision — a field finer than a
+   * day, such as hours or AM/PM; at day or coarser precision Athena defaults
+   * the step, so it may be omitted.
    *
-   * @default - 1 for single-day or single-month precision, otherwise required
+   * @default - Athena's default step for the format's precision; required when `format` is sub-day precision
    */
-  readonly interval?: number;
-
-  /**
-   * Unit for the interval.
-   *
-   * When the provided dates are at single-day or single-month precision,
-   * the intervalUnit is optional and defaults to 1 day or 1 month, respectively.
-   * Otherwise, the intervalUnit is required.
-   *
-   * @default - DAYS for single-day precision, MONTHS for single-month precision, otherwise required
-   */
-  readonly intervalUnit?: DateIntervalUnit;
+  readonly step?: DateProjectionStep;
 }
 
 /**
@@ -222,6 +230,45 @@ interface PartitionProjectionConfigurationProps {
    * Explicit list of values for ENUM partitions.
    */
   readonly values?: string[];
+}
+
+/**
+ * Whether a DATE projection `format` carries sub-day precision, in which case
+ * Athena requires both `interval` and `intervalUnit`.
+ *
+ * Athena only requires the two when the format contains a field finer than a
+ * day (hour/minute/second/fraction, or AM/PM). At day, month, or coarser
+ * precision it defaults the step and accepts the format without them — so, e.g.
+ * a plain `yyyy` needs no interval.
+ *
+ * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection-supported-types.html#partition-projection-date-type
+ */
+function dateFormatRequiresInterval(format: string): boolean {
+  // Collect the unquoted Java DateTimeFormatter pattern letters, honoring the
+  // same single-quote literal escaping as the format validation above.
+  const letters = new Set<string>();
+  let inQuote = false;
+  for (let i = 0; i < format.length; i++) {
+    const ch = format[i];
+    if (ch === "'") {
+      if (i + 1 < format.length && format[i + 1] === "'") {
+        i++;
+      } else {
+        inQuote = !inQuote;
+      }
+    } else if (!inQuote && /[a-zA-Z]/.test(ch)) {
+      letters.add(ch);
+    }
+  }
+
+  // Sub-day fields — anything finer than a day. `a` (AM/PM-of-day) splits the
+  // day in two, so it counts alongside hour/minute/second/fraction/nano:
+  //   a am/pm  h clock-hour(1-12)  K hour-of-am-pm(0-11)  k clock-hour(1-24)
+  //   H hour-of-day(0-23)  m minute  s second  S fraction  A milli-of-day
+  //   n nano-of-second  N nano-of-day
+  // Every coarser field (day, month, year, week, quarter, day-of-week) is
+  // accepted by Athena without an interval, so only the sub-day set requires it.
+  return [...'ahKkHmsSAnN'].some(c => letters.has(c));
 }
 
 /**
@@ -348,22 +395,34 @@ export class PartitionProjectionConfiguration {
 
     // Validate interval
     if (
-      props.interval !== undefined &&
-      !Token.isUnresolved(props.interval) &&
-      (!Number.isInteger(props.interval) || props.interval <= 0)
+      props.step !== undefined &&
+      !Token.isUnresolved(props.step.interval) &&
+      (!Number.isInteger(props.step.interval) || props.step.interval <= 0)
     ) {
       throw new UnscopedValidationError(
         lit`DateIntervalInvalid`,
-        `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
+        `DATE partition projection interval must be a positive integer, but got ${props.step.interval}`,
+      );
+    }
+
+    // For sub-day precision (a field finer than a day), Athena requires a step;
+    // at day or coarser precision it defaults one. The interval/unit pairing is
+    // now guaranteed by the `step` type, so only the "sub-day format needs a
+    // step at all" requirement remains. Enforce only when the format is a
+    // resolved literal we can inspect.
+    if (!Token.isUnresolved(props.format) && dateFormatRequiresInterval(props.format) && props.step === undefined) {
+      throw new UnscopedValidationError(
+        lit`DateStepRequired`,
+        `DATE partition projection with format '${props.format}' has sub-day precision, so 'step' (interval and intervalUnit) is required`,
       );
     }
 
     return new PartitionProjectionConfiguration({
       type: PartitionProjectionType.DATE,
       dateRange: [props.min, props.max],
-      interval: props.interval,
+      interval: props.step?.interval,
       format: props.format,
-      intervalUnit: props.intervalUnit,
+      intervalUnit: props.step?.intervalUnit,
     });
   }
 
@@ -421,44 +480,26 @@ export class PartitionProjectionConfiguration {
    */
   public readonly type: PartitionProjectionType;
 
-  /**
-   * Range of partition values for INTEGER type.
-   *
-   * Array of [min, max] as numbers.
-   */
-  public readonly integerRange?: number[];
+  /** Range [min, max] for INTEGER type. */
+  private readonly integerRange?: number[];
 
-  /**
-   * Range of partition values for DATE type.
-   *
-   * Array of [start, end] as date strings.
-   */
-  public readonly dateRange?: string[];
+  /** Range [start, end] for DATE type. */
+  private readonly dateRange?: string[];
 
-  /**
-   * Interval between partition values.
-   */
-  public readonly interval?: number;
+  /** Interval between partition values (INTEGER, or DATE step). */
+  private readonly interval?: number;
 
-  /**
-   * Number of digits to pad INTEGER partition values.
-   */
-  public readonly digits?: number;
+  /** Number of digits to pad INTEGER partition values. */
+  private readonly digits?: number;
 
-  /**
-   * Date format for DATE partition values (Java SimpleDateFormat).
-   */
-  public readonly format?: string;
+  /** Date format for DATE partition values. */
+  private readonly format?: string;
 
-  /**
-   * Unit for DATE partition interval.
-   */
-  public readonly intervalUnit?: DateIntervalUnit;
+  /** Unit for the DATE partition interval. */
+  private readonly intervalUnit?: DateIntervalUnit;
 
-  /**
-   * Explicit list of values for ENUM partitions.
-   */
-  public readonly values?: string[];
+  /** Explicit list of values for ENUM partitions. */
+  private readonly values?: string[];
 
   private constructor(props: PartitionProjectionConfigurationProps) {
     this.type = props.type;

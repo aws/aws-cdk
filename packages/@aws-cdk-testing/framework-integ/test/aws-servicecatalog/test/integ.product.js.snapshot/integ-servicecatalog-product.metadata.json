@@ -394,13 +394,13 @@
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product/TestProduct/Template4246930f4cb7/AssetBucket": [
+  "/integ-servicecatalog-product/TestProduct/Templatef2be850540ce/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product/TestProduct/Template96feb04a97b6/AssetBucket": [
+  "/integ-servicecatalog-product/TestProduct/Template389bdde2f86c/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

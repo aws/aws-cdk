@@ -729,6 +729,17 @@ export interface DomainProps {
   readonly enableAutoSoftwareUpdate?: boolean;
 
   /**
+   * Specifies whether the domain should use the latest service software version during a blue/green deployment.
+   * If enabled, the domain will automatically use the latest available service software when a blue/green
+   * deployment is triggered.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html
+   *
+   * @default - no value is set and the service default is used
+   */
+  readonly useLatestServiceSoftwareForBlueGreen?: boolean;
+
+  /**
    * Specify either dual stack or IPv4 as your IP address type.
    * Dual stack allows you to share domain resources across IPv4 and IPv6 address types, and is the recommended option.
    *
@@ -1810,7 +1821,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
 
       if (props.ebs?.throughput) {
-        const throughputRange = { Min: 125, Max: 1000 };
+        const throughputRange = { Min: 125, Max: 2000 };
         const { Min, Max } = throughputRange;
         if (volumeType != ec2.EbsDeviceVolumeType.GP3) {
           throw new ValidationError(lit`ThroughputRequiresGp3VolumeType`, '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`', this);
@@ -2088,7 +2099,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ...props.customEndpoint && {
           customEndpointEnabled: true,
           customEndpoint: props.customEndpoint.domainName,
-          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateId,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateRef.certificateArn,
         },
       },
       advancedSecurityOptions: advancedSecurityEnabled
@@ -2124,8 +2135,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         },
       } : undefined,
-      softwareUpdateOptions: props.enableAutoSoftwareUpdate !== undefined ? {
+      softwareUpdateOptions: (props.enableAutoSoftwareUpdate !== undefined || props.useLatestServiceSoftwareForBlueGreen !== undefined) ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
+        useLatestServiceSoftwareForBlueGreen: props.useLatestServiceSoftwareForBlueGreen,
       } : undefined,
       ipAddressType: props.ipAddressType,
       aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {

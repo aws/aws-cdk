@@ -87,7 +87,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     // as they are requested. Each element in this queue will depend on its
     // predecessor, ensuring that the deployments occur sequentially in Cfn.
     if (queueSize > 1) {
-      this.deploymentQueue[queueSize - 1].addDependency(this.deploymentQueue[queueSize - 2]);
+      this.deploymentQueue[queueSize - 1].addResourceDependency(this.deploymentQueue[queueSize - 2]);
     }
   }
 

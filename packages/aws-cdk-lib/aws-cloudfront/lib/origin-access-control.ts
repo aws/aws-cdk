@@ -80,6 +80,11 @@ export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps
 export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
+ * Properties for creating a MediaPackage V2 Origin Access Control resource.
+ */
+export interface MediaPackageV2OriginAccessControlProps extends OriginAccessControlBaseProps { }
+
+/**
  * Origin types supported by Origin Access Control.
  */
 export enum OriginAccessControlOriginType {
@@ -112,6 +117,18 @@ export enum SigningBehavior {
    */
   ALWAYS = 'always',
   /**
+   * Sign all origin requests, and pass the Authorization header
+   * from the viewer request to the origin unchanged.
+   *
+   * CloudFront adds its signature in a dedicated header instead of the
+   * Authorization header. This is the only signing behavior supported by
+   * AWS Lambda Web Function origins, and it isn't supported by any other
+   * origin type.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html
+   */
+  ALWAYS_AMZ_AUTH = 'always-amz-auth',
+  /**
    * Do not sign any origin requests.
    * This value turns off origin access control for all origins in all
    * distributions that use this origin access control.
@@ -132,6 +149,15 @@ export enum SigningProtocol {
    * The AWS Signature Version 4 signing protocol.
    */
   SIGV4 = 'sigv4',
+  /**
+   * The AWS Signature Version 4A signing protocol.
+   *
+   * Signs requests for multiple AWS Regions, as needed by origins such as
+   * Amazon S3 Multi-Region Access Points.
+   *
+   * @see https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html
+   */
+  SIGV4A = 'sigv4a',
 }
 
 /**
@@ -144,10 +170,23 @@ export class Signing {
   public static readonly SIGV4_ALWAYS = new Signing(SigningProtocol.SIGV4, SigningBehavior.ALWAYS);
 
   /**
+   * Sign all origin requests using the AWS Signature Version 4 signing protocol,
+   * and pass the viewer's Authorization header to the origin unchanged.
+   *
+   * Use with regional AWS Lambda Web Function endpoints.
+   */
+  public static readonly SIGV4_ALWAYS_AMZ_AUTH = new Signing(SigningProtocol.SIGV4, SigningBehavior.ALWAYS_AMZ_AUTH);
+
+  /**
    * Sign only if the viewer request doesn't contain the Authorization header
    * using the AWS Signature Version 4 signing protocol.
    */
   public static readonly SIGV4_NO_OVERRIDE = new Signing(SigningProtocol.SIGV4, SigningBehavior.NO_OVERRIDE);
+
+  /**
+   * Sign all origin requests using the AWS Signature Version 4A signing protocol.
+   */
+  public static readonly SIGV4A_ALWAYS = new Signing(SigningProtocol.SIGV4A, SigningBehavior.ALWAYS);
 
   /**
    * Do not sign any origin requests.
@@ -287,6 +326,58 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA, // Lambda specific OAC
+      },
+    });
+
+    this.originAccessControlId = resource.attrId;
+  }
+}
+
+/**
+ * An Origin Access Control for AWS Elemental MediaPackage V2 origins.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-mediapackage.html
+ */
+@propertyInjectable
+export class MediaPackageV2OriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.MediaPackageV2OriginAccessControl';
+
+  /**
+   * Imports a MediaPackage V2 origin access control from its id.
+   */
+  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+    class Import extends Resource implements IOriginAccessControl {
+      public readonly originAccessControlId = originAccessControlId;
+      public readonly originAccessControlOriginType = OriginAccessControlOriginType.MEDIAPACKAGEV2;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The unique identifier of this Origin Access Control.
+   * @attribute
+   */
+  public readonly originAccessControlId: string;
+
+  constructor(scope: Construct, id: string, props: MediaPackageV2OriginAccessControlProps = {}) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const resource = new CfnOriginAccessControl(this, 'Resource', {
+      originAccessControlConfig: {
+        description: props.description,
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
+        signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
+        originAccessControlOriginType: OriginAccessControlOriginType.MEDIAPACKAGEV2,
       },
     });
 

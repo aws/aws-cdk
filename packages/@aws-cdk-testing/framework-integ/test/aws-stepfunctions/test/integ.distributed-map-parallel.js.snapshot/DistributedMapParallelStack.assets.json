@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "DistributedMapParallelStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "c548354738f187da9208851e1791e9b588d64f8b711023d92972e561f1108dfd": {
+    "52e35a5b6315988b5e3d5a63b77a13cb61d5a1b500a455a85a7a8d5be3d50779": {
       "displayName": "DistributedMapParallelStack Template",
       "source": {
         "path": "DistributedMapParallelStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-04d323bc": {
+        "current_account-current_region-23996629": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c548354738f187da9208851e1791e9b588d64f8b711023d92972e561f1108dfd.json",
+          "objectKey": "52e35a5b6315988b5e3d5a63b77a13cb61d5a1b500a455a85a7a8d5be3d50779.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -6,8 +6,9 @@ import { Node } from 'constructs';
 import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../errors';
+import { STACK_TYPE } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 
 /**
@@ -103,8 +104,9 @@ function collectStackMetadata(stack: Stack) {
 
   let next;
   while (next = queue.shift()) {
-    // break off if we reached a Stack construct that is not a NestedStack
-    if (Stack.isStack(next) && next !== stack && next.nestedStackParent === undefined) {
+    // break off if we reached a Stack construct that is going to have its own artifact with its own metadata. Otherwise recurse.
+    // (always do the requested Stack)
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
       continue;
     }
 

@@ -474,7 +474,7 @@ In some cases, it is useful to seek feedback by iterating on a design document. 
 
 In many cases, the comments section of the relevant GitHub issue is sufficient for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
-When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for implementation details.
+When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) and [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for implementation details.
 
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
@@ -495,7 +495,8 @@ Work your magic. Here are some guidelines:
     Watch out for their error messages and adjust your code accordingly.
 * For new features, prefer implementing as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits)
   over adding properties or methods directly to L2 constructs. This makes the feature available to both L1 and L2 users.
-  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins.
+  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins and the
+  [Facades and Traits Design Guidelines](./docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md) for how to implement Facades and Traits.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
   * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
@@ -1395,6 +1396,77 @@ Adding a new flag looks as follows:
     `fix(core): impossible to use the same physical stack name for two stacks (under feature flag)`
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/feature-flags.ts
+
+## Default validation rules
+
+Every synthesized template is validated by the `CloudFormationValidatePlugin`
+(see the [Template and Policy Validation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#template-and-policy-validation)
+section of the `aws-cdk-lib` README for the user-facing behavior). On top of
+the validation engine's built-in rule set, the CDK ships its own default rules,
+written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/)
+and loaded from `packages/aws-cdk-lib/core/lib/validation/rules/`.
+
+### When to add a default rule
+
+Default rules exist to check invariants that a single construct's own
+validation cannot. Prefer construct-level (L2) validation whenever the check
+can be expressed on the construct's own props. A default rule is the right tool
+when at least one of the following holds:
+
+- **The CloudFormation resource schema cannot express the check.** Schema
+  limits (lengths, item counts, per-field ranges, patterns) are already covered
+  by the engine's built-in rules — do not duplicate them. Default rules are for
+  *cross-field* invariants (one field constrains another) that the schema
+  cannot state.
+- **The mistake must be caught even when L2 validation is bypassed.** Because
+  the rules run on the synthesized template, they also cover resources defined
+  through L1 constructs, escape hatches, and `CfnInclude`, which L2 validation
+  never sees. Token-valued properties are already resolved at this point.
+- **The invariant spans multiple resources.** A rule can follow the template's
+  `Ref` graph to relate resources — something no single construct can validate
+  in isolation.
+
+Each rule should catch one of two failure modes: (1) configuration that is
+schema-valid but that the service API rejects at deploy time (surfacing as a
+mid-deployment CloudFormation rollback), or (2) contradictory configuration
+that the service accepts but partially ignores. Verify the behavior against the
+real service before adding a rule — probe the API directly and/or deploy a CDK
+app with the misconfiguration, and record what you observed in the PR.
+
+### Placement policy: CDK vs. the validation engine
+
+All of these rules are plain Rego over the engine's template model, so any of
+them *could* eventually be contributed upstream to the engine's built-in rule
+set. CDK-authored default rules are the fast-iteration tier: they ship and are
+fixed on every `aws-cdk-lib` release. Rules that prove generically useful can
+be upstreamed to the validation engine later.
+
+### Current rules
+
+The current rules cover Amazon GameLift resources
+(`packages/aws-cdk-lib/core/lib/validation/rules/gamelift-fleet.rego`):
+
+| Rule ID | Checks |
+|---------|--------|
+| `CDK-GameLift-001` | A fleet ingress rule's port range is not inverted (`FromPort` &le; `ToPort`) |
+| `CDK-GameLift-002` | A fleet location's capacity satisfies `MinSize` &le; `MaxSize` |
+| `CDK-GameLift-003` | A fleet location's `DesiredEC2Instances` lies within `[MinSize, MaxSize]` |
+| `CDK-GameLift-004` | An alias with `SIMPLE` routing does not carry a terminal `Message` |
+| `CDK-GameLift-005` | An alias with `TERMINAL` routing does not reference a fleet |
+| `CDK-GameLift-006` | A fleet referencing a Windows build launches server processes from `C:\game` |
+| `CDK-GameLift-007` | A fleet referencing a Linux build launches server processes from `/local/game` |
+
+The fleet rules (001–003) catch deployment failures: the GameLift API rejects
+these values, rolling back the stack mid-deployment. The alias rules (004–005)
+catch contradictory routing configuration that deploys successfully but leaves
+one of the two fields silently unused. The launch-path rules (006–007) are
+cross-resource: they join a fleet to the `AWS::GameLift::Build` it references
+and check that every server-process launch path lives under the install root
+dictated by the build's operating system. A mismatch deploys, but the fleet
+then activates into `ERROR` state because no server process can start. These
+rules only fire when the build is defined in the same template; a fleet
+referencing an imported build (a literal build ID) is not checked, since the
+build's operating system is not knowable from the template.
 
 ## Versioning and Release
 

@@ -18,9 +18,9 @@ export function accountIfDifferentFromStack(account: string): string {
  * A lazy token that requires an instance of Stack to evaluate
  */
 class StackDependentToken implements cdk.IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
+
   constructor(private readonly originalValue: string, private readonly fn: (stack: cdk.Stack) => string) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {

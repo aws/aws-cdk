@@ -14,6 +14,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -70,12 +74,19 @@ describe('Job', () => {
     test('Has Continuous Logging Enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--enable-continuous-cloudwatch-log': 'true',
           '--job-language': 'python',
           'library-set': 'analytics',
         }),
+      });
+    });
+
+    test('does not set Spark-only profiling metrics args (not supported on Python shell)', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({ '--enable-metrics': Match.anyValue() })),
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({ '--enable-observability-metrics': Match.anyValue() })),
       });
     });
   });
@@ -101,8 +112,6 @@ describe('Job', () => {
     test('Has Continuous Logging enabled with optional args', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--continuous-log-logGroup': Match.objectLike({
             Ref: Match.anyValue(),
           }),
@@ -131,12 +140,51 @@ describe('Job', () => {
     test('Has Continuous Logging Disabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: {
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         },
       });
     });
+  });
+
+  describe('librarySet', () => {
+    test('defaults to analytics on Python 3.9', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJob', { role, script });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({ 'library-set': 'analytics' }),
+      });
+    });
+
+    test('can be overridden to none', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJob', {
+        role,
+        script,
+        librarySet: glue.LibrarySet.NONE,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({ 'library-set': 'none' }),
+      });
+    });
+
+    test('rejects the managed `library-set` key passed via defaultArguments', () => {
+      expect(() => new glue.PythonShellJob(stack, 'PythonShellJob', {
+        role,
+        script,
+        defaultArguments: { 'library-set': 'none' },
+      })).toThrow(/managed by the construct or reserved by Glue/);
+    });
+  });
+
+  describe('Retired Python shell versions', () => {
+    test.each([glue.PythonVersion.TWO, glue.PythonVersion.THREE])(
+      'fails for retired pythonVersion %s',
+      (pythonVersion) => {
+        expect(() => new glue.PythonShellJob(stack, 'PythonShellJob', {
+          role,
+          script,
+          pythonVersion,
+        })).toThrow(/Python shell jobs only support PythonVersion.THREE_NINE/);
+      },
+    );
   });
 
   describe('Create Python Shell Job with overridden Python verion and max capacity', () => {
@@ -145,7 +193,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PythonShellJob',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
       });
     });
@@ -159,12 +207,12 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });
@@ -181,13 +229,12 @@ describe('Job', () => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
         description: 'This is a description',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
         role,
         script,
         glueVersion: glue.GlueVersion.V2_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -197,7 +244,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
       });
     });
@@ -227,8 +273,6 @@ describe('Job', () => {
     test('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         }),
       });
@@ -278,12 +322,12 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });
@@ -295,18 +339,68 @@ describe('Job', () => {
     });
   });
 
+  describe('Create Python Shell Job with extraPythonFiles', () => {
+    test('should set --extra-py-files for a single file', () => {
+      const extraCodeBucket = s3.Bucket.fromBucketName(stack, 'ExtraCodeBucket', 'extra-bucket');
+      const extraPythonFile = glue.Code.fromBucket(extraCodeBucket, 'extra.py');
+
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [extraPythonFile],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': 's3://extra-bucket/extra.py',
+        }),
+      });
+    });
+
+    test('should set --extra-py-files with comma-separated URLs for multiple files', () => {
+      const extraCodeBucket = s3.Bucket.fromBucketName(stack, 'ExtraCodeBucket', 'extra-bucket');
+      const extraFile1 = glue.Code.fromBucket(extraCodeBucket, 'file1.py');
+      const extraFile2 = glue.Code.fromBucket(extraCodeBucket, 'file2.whl');
+
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [extraFile1, extraFile2],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': 's3://extra-bucket/file1.py,s3://extra-bucket/file2.whl',
+        }),
+      });
+    });
+
+    test('should not set --extra-py-files when an empty array is provided', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': Match.absent(),
+        }),
+      });
+    });
+  });
+
   describe('Create Python Shell Job with job run queuing enabled', () => {
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
         jobName: 'PythonShellJobCustomName',
         description: 'This is a description',
-        pythonVersion: glue.PythonVersion.TWO,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
         maxCapacity: glue.MaxCapacity.DPU_1,
         role,
         script,
         glueVersion: glue.GlueVersion.V2_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -316,7 +410,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
         jobRunQueuingEnabled: true,
       });
@@ -347,8 +440,6 @@ describe('Job', () => {
     test('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
-          '--enable-metrics': '',
-          '--enable-observability-metrics': 'true',
           '--job-language': 'python',
         }),
       });
@@ -404,12 +495,12 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden Python version should be 2', () => {
+    test('Overridden Python version should be 3.9', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           Name: glue.JobType.PYTHON_SHELL,
           ScriptLocation: 's3://bucketname/script',
-          PythonVersion: glue.PythonVersion.TWO,
+          PythonVersion: glue.PythonVersion.THREE_NINE,
         },
       });
     });

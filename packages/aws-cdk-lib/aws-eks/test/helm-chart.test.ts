@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
 import { App, Duration, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
@@ -96,6 +96,35 @@ describe('helm chart', () => {
           'Fn::Sub':
             's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf.zip',
         },
+      });
+    });
+
+    test('should add DependsOn from custom resource to IAM policy when chartAsset is used', () => {
+      // WHEN
+      const chartAsset = new Asset(stack, 'ChartAsset', {
+        path: path.join(__dirname, 'test-chart'),
+      });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chartAsset });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResource(eks.HelmChart.RESOURCE_TYPE, {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('.*Policy.*'),
+        ]),
+      });
+    });
+
+    test('should not add DependsOn for IAM policy when using chart repository URL', () => {
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', repository: 'https://charts.example.com' });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResource(eks.HelmChart.RESOURCE_TYPE, {
+        DependsOn: Match.not(Match.arrayWith([
+          Match.stringLikeRegexp('.*Policy.*'),
+        ])),
       });
     });
 

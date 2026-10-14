@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "EcsClusterSettingsMixinTest/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "3eec317e2b3510ca578ce5fff24380b871d9e37ca25881b27e60f7f9bbefc038": {
+    "3f04717975065872ea33863adbe6931589d51c22b0bf22e1bce643943084beab": {
       "displayName": "EcsClusterSettingsMixinTest Template",
       "source": {
         "path": "EcsClusterSettingsMixinTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4ea595ca": {
+        "current_account-current_region-17e37067": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3eec317e2b3510ca578ce5fff24380b871d9e37ca25881b27e60f7f9bbefc038.json",
+          "objectKey": "3f04717975065872ea33863adbe6931589d51c22b0bf22e1bce643943084beab.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

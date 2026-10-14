@@ -86,6 +86,12 @@
       }
     }
   ],
+  "/aws-cdk-ec2-lt-metadata-1/LTWithCpuOptions": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
   "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -156,6 +162,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "LTWithPlacementGroup4B40027C"
+    }
+  ],
+  "/aws-cdk-ec2-lt-metadata-1/LTWithCpuOptions/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LTWithCpuOptions9F54A4F3"
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [

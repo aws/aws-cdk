@@ -95,6 +95,9 @@ export class Runtime {
   /** Flink Version 1.20 */
   public static readonly FLINK_1_20 = Runtime.of('FLINK-1_20');
 
+  /** Flink Version 2.2 */
+  public static readonly FLINK_2_2 = Runtime.of('FLINK-2_2');
+
   /** Zeppelin Flink Version 3.0 */
   public static readonly ZEPPELIN_FLINK_3_0 = Runtime.of('ZEPPELIN-FLINK-3_0');
 
@@ -107,7 +110,7 @@ export class Runtime {
   /** SQL Version 1.0 */
   public static readonly SQL_1_0 = Runtime.of('SQL-1_0');
 
-  /** Create a new Runtime with with an arbitrary Flink version string */
+  /** Create a new Runtime with an arbitrary Flink version string */
   public static of(value: string) {
     return new Runtime(value);
   }

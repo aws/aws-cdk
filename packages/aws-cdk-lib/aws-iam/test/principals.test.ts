@@ -3,6 +3,8 @@ import { App, CfnOutput, Stack } from '../../core';
 import * as iam from '../lib';
 import { ServicePrincipal } from '../lib';
 
+const dummySamlMetadata = '<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">' + 'x'.repeat(1000) + '</md:EntityDescriptor>';
+
 test('use of cross-stack role reference does not lead to URLSuffix being exported', () => {
   // GIVEN
   const app = new App();
@@ -154,7 +156,7 @@ test.each([
   const app = new App();
   const stack = new Stack(app, 'TestStack', { env: { region } });
   const provider = new iam.SamlProvider(stack, 'MyProvider', {
-    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
+    metadataDocument: iam.SamlMetadataDocument.fromXml(dummySamlMetadata),
   });
 
   // WHEN

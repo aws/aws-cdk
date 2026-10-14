@@ -1,6 +1,8 @@
 import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
 import type { IResource } from 'aws-cdk-lib/core';
-import { Duration, Lazy, Resource } from 'aws-cdk-lib/core';
+import { Duration, Resource } from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -157,6 +159,7 @@ export abstract class DnsBlockResponse {
 /**
  * A Firewall Rule Group
  */
+@noBoxStackTraces
 @propertyInjectable
 export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
   /** Uniquely identifies this class. */
@@ -229,18 +232,18 @@ export class FirewallRuleGroup extends Resource implements IFirewallRuleGroup {
    */
   public readonly firewallRuleGroupStatusMessage: string;
 
-  private readonly rules: FirewallRule[];
+  private readonly rules: IArrayBox<FirewallRule>;
 
   constructor(scope: Construct, id: string, props: FirewallRuleGroupProps = {}) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.rules = props.rules ?? [];
+    this.rules = Box.fromArray(props.rules ?? []);
 
     const ruleGroup = new CfnFirewallRuleGroup(this, 'Resource', {
       name: props.name,
-      firewallRules: Lazy.any({ produce: () => this.rules.map(renderRule) }),
+      firewallRules: this.rules.map(renderRule),
     });
 
     this.firewallRuleGroupId = ruleGroup.attrId;

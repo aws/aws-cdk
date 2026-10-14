@@ -3,9 +3,11 @@
 import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import type * as AWSLambda from 'aws-lambda';
 
+import { quoteIdentifier, quoteLiteral } from './escape';
 import { executeStatement } from './redshift-data';
 import type { ClusterProps } from './types';
 import { makePhysicalId } from './util';
+import { validateUsername } from './validate';
 import type { UserHandlerProps } from '../handler-props';
 
 const secretsManager = new SecretsManager({});
@@ -36,13 +38,16 @@ export async function handler(props: UserHandlerProps & ClusterProps, event: AWS
 }
 
 async function dropUser(username: string, clusterProps: ClusterProps) {
-  await executeStatement(`DROP USER ${username}`, clusterProps);
+  await executeStatement(`DROP USER ${quoteIdentifier(username)}`, clusterProps);
 }
 
 async function createUser(username: string, passwordSecretArn: string, clusterProps: ClusterProps) {
+  // Existing users must remain removable during teardown.
+  validateUsername(username);
+
   const password = await getPasswordFromSecret(passwordSecretArn);
 
-  await executeStatement(`CREATE USER ${username} PASSWORD '${password}'`, clusterProps);
+  await executeStatement(`CREATE USER ${quoteIdentifier(username)} PASSWORD ${quoteLiteral(password)}`, clusterProps);
 }
 
 async function updateUser(
@@ -68,7 +73,8 @@ async function updateUser(
   }
 
   if (password !== oldPassword) {
-    await executeStatement(`ALTER USER ${username} PASSWORD '${password}'`, clusterProps);
+    validateUsername(username);
+    await executeStatement(`ALTER USER ${quoteIdentifier(username)} PASSWORD ${quoteLiteral(password)}`, clusterProps);
     return { replace: false };
   }
 

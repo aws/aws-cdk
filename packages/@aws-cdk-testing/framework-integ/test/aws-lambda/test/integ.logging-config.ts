@@ -62,8 +62,8 @@ new Function(stack, 'LambdaWithLogLevel', {
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
   loggingFormat: LoggingFormat.JSON,
-  systemLogLevel: SystemLogLevel.INFO,
-  applicationLogLevel: ApplicationLogLevel.INFO,
+  systemLogLevelV2: SystemLogLevel.INFO,
+  applicationLogLevelV2: ApplicationLogLevel.INFO,
 });
 
 new Function(stack, 'LambdaWithLogLevelV2', {

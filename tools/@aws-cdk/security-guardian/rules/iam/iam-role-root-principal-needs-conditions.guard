@@ -75,7 +75,7 @@ rule IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %iam_roles_with_root_principa
                     when Principal.AWS == /(?i):root$/ {
                         # If using root principal, must have strict condition (no wildcard operators)
                         Condition exists
-                        <<Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.>>
+                        <<##ERROR:Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.##>>
                         Condition.ArnEquals exists or
                         Condition.StringEquals exists
                     }
@@ -88,7 +88,7 @@ rule IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %iam_roles_with_root_principa
                             when this == /(?i):root$/ {
                                 # If using root principal, must have strict condition (no wildcard operators)
                                 Condition exists
-                                <<Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.>>
+                                <<##ERROR:Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.##>>
                                 Condition.ArnEquals exists or
                                 Condition.StringEquals exists
                             }

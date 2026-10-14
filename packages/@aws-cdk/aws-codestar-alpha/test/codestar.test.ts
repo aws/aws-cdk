@@ -8,6 +8,11 @@ describe('GitHub Repository', () => {
 
   beforeEach(() => {
     const app = new cdk.App();
+    cdk.Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::E3710',
+      reason: 'Service is shutdown',
+    });
+
     stack = new cdk.Stack(app, 'GitHubDemo');
   });
 

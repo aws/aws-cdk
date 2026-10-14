@@ -350,7 +350,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     });
 
     if (dependencyStack) {
-      this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.boundStack.addStackDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
       this.dependencyStacks.add(dependencyStack);
     }
 
@@ -370,7 +370,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     });
 
     if (dependencyStack) {
-      this.boundStack.addDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
+      this.boundStack.addStackDependency(dependencyStack, 'stack depends on the staging stack for staging resources');
       this.dependencyStacks.add(dependencyStack);
     }
 

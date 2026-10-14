@@ -231,7 +231,7 @@ export interface RecordSetOptions {
   /**
    * Whether to delete the same record set in the hosted zone if it already exists (dangerous!)
    *
-   * This allows to deploy a new record set while minimizing the downtime because the
+   * This allows you to deploy a new record set while minimizing the downtime because the
    * new record set will be created immediately after the existing one is deleted. It
    * also avoids "manual" actions to delete existing record sets.
    *
@@ -384,6 +384,7 @@ export class RecordSet extends Resource implements IRecordSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
+  private readonly recordType: RecordType;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
@@ -393,6 +394,7 @@ export class RecordSet extends Resource implements IRecordSet {
   public get recordSetRef(): RecordSetReference {
     return {
       recordSetName: this.domainName,
+      type: this.recordType,
     };
   }
 
@@ -440,6 +442,7 @@ export class RecordSet extends Resource implements IRecordSet {
       }
     }
 
+    this.recordType = props.recordType;
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
     this.region = props.region;

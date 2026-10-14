@@ -805,11 +805,11 @@ describe('params and secrets', () => {
     ];
     const parameters = [
       new ssm.StringParameter(stack, 'Parameter1', {
-        parameterName: 'name',
+        parameterName: 'name1',
         stringValue: 'value',
       }),
       new ssm.StringParameter(stack, 'Parameter2', {
-        parameterName: 'name',
+        parameterName: 'name2',
         stringValue: 'value',
       }),
     ];

@@ -20,9 +20,11 @@ rule EC2_NO_OPEN_SECURITY_GROUPS when %security_groups !empty {
             Properties.SecurityGroupIngress[*] {
                 when CidrIp exists {
                     CidrIp != "0.0.0.0/0"
+                        <<##ERROR:Security group must not allow unrestricted ingress. Remove '0.0.0.0/0' from CidrIp and scope to specific IP ranges.##>>
                 }
                 when CidrIpv6 exists {
                     CidrIpv6 != "::/0"
+                        <<##ERROR:Security group must not allow unrestricted ingress. Remove '::/0' from CidrIpv6 and scope to specific IP ranges.##>>
                 }
             }
         }

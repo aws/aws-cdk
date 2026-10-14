@@ -33,12 +33,6 @@
       }
     }
   ],
-  "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
-    {
-      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-      "data": true
-    }
-  ],
   "/aws-cdk-eks-helm-test/AWSCDKCfnUtilsProviderCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -315,7 +309,7 @@
       }
     }
   ],
-  "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider": [
+  "/aws-cdk-eks-helm-test/Cluster/OidcProviderNative": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -331,16 +325,10 @@
       }
     }
   ],
-  "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+  "/aws-cdk-eks-helm-test/ChartAsset/AssetBucket": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
-    }
-  ],
-  "/aws-cdk-eks-helm-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
@@ -461,6 +449,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/aws-cdk-eks-helm-test/KubectlLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-test/Cluster/Role/Resource": [
@@ -588,10 +582,10 @@
       }
     }
   ],
-  "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource": [
+  "/aws-cdk-eks-helm-test/Cluster/OidcProviderNative/Resource": [
     {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterOidcProviderNativeBAC9C7E2"
     }
   ],
   "/aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource": [
@@ -792,12 +786,6 @@
       "data": "*"
     }
   ],
-  "/aws-cdk-eks-helm-test/Cluster/OpenIdConnectProvider/Resource/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterOpenIdConnectProviderE7EB0530"
-    }
-  ],
   "/aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -858,6 +846,18 @@
           {}
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
@@ -1009,6 +1009,12 @@
           {}
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-test/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [

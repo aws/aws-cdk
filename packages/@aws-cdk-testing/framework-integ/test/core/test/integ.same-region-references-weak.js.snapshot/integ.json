@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "SameRegionWeakReferenceTest/DefaultTest": {
+      "stacks": [
+        "SameRegionWeakRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SameRegionWeakReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SameRegionWeakReferenceTestDefaultTestDeployAssert5DE1327F"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

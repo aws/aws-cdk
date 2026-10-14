@@ -518,7 +518,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
-    if (this.tier > 15) {
+    if (this.tier < 0 || this.tier > 15) {
       throw new ValidationError(lit`PromotionTier`, 'promotionTier must be between 0-15', this);
     }
 

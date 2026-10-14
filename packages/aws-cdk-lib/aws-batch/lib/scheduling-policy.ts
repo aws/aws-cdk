@@ -1,11 +1,15 @@
 import type { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Resource, Stack } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type {
+  ISchedulingPolicyRef,
+  SchedulingPolicyReference,
+} from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch
@@ -220,7 +224,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
 
   public readonly computeReservation?: number;
   public readonly shareDecay?: Duration;
-  public readonly shares: Share[];
+  private readonly _shares: IArrayBox<Share>;
 
   private readonly resource: CfnSchedulingPolicy;
 
@@ -231,6 +235,10 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
       resource: 'scheduling-policy',
       resourceName: this.physicalName,
     });
+  }
+
+  public get shares(): Share[] {
+    return this._shares.getMutable();
   }
 
   @memoizedGetter
@@ -244,17 +252,15 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     addConstructMetadata(this, props);
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
-    this.shares = props?.shares ?? [];
+    this._shares = Box.fromArray(props?.shares ?? [], { omitEmpty: false });
     this.resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
         shareDecaySeconds: this.shareDecay?.toSeconds(),
-        shareDistribution: Lazy.any({
-          produce: () => this.shares?.map((share) => ({
-            shareIdentifier: share.shareIdentifier,
-            weightFactor: share.weightFactor,
-          })),
-        }),
+        shareDistribution: this._shares.map(share => ({
+          shareIdentifier: share.shareIdentifier,
+          weightFactor: share.weightFactor,
+        })),
       },
       name: props?.schedulingPolicyName,
     });
@@ -265,6 +271,6 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
    */
   @MethodMetadata()
   public addShare(share: Share) {
-    this.shares.push(share);
+    this._shares.push(share);
   }
 }

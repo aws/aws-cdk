@@ -17,7 +17,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
 
     // THEN
     // With a specific region, runtime resolves to concrete value
-    expect(fn.runtime.name).toBe('nodejs22.x');
+    expect(fn.runtime.name).toBe('nodejs24.x');
     expect(fn.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
   });
 
@@ -51,7 +51,7 @@ describe('NODEJS_LATEST runtime resolution', () => {
     });
 
     // THEN
-    expect(fn.runtime.name).toBe('nodejs22.x');
+    expect(fn.runtime.name).toBe('nodejs24.x');
     expect(fn.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
   });
 
@@ -93,8 +93,8 @@ describe('NODEJS_LATEST runtime resolution', () => {
 
     // THEN
     // Both should resolve to the same concrete runtime
-    expect(usFunction.runtime.name).toBe('nodejs22.x');
-    expect(euFunction.runtime.name).toBe('nodejs22.x');
+    expect(usFunction.runtime.name).toBe('nodejs24.x');
+    expect(euFunction.runtime.name).toBe('nodejs24.x');
     expect(usFunction.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
     expect(euFunction.runtime.family).toBe(lambda.RuntimeFamily.NODEJS);
   });
@@ -111,9 +111,9 @@ describe('NODEJS_LATEST runtime resolution', () => {
     });
 
     // THEN
-    // Verify the CloudFormation template uses correct runtime version (nodejs22.x)
+    // Verify the CloudFormation template uses correct runtime version (nodejs24.x)
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
     });
   });
 });

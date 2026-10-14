@@ -1,4 +1,5 @@
-import type { Construct } from 'constructs';
+import { RootConstruct, type Construct } from 'constructs';
+import { FeatureFlags } from '../lib';
 import { Annotations } from '../lib/annotations';
 import * as metadata from '../lib/metadata-resource';
 import { Token } from '../lib/token';
@@ -51,15 +52,6 @@ describe('redactMetadata', () => {
   });
 });
 
-jest.mock('../lib/token', () => ({
-  Token: {
-    isUnresolved: jest.fn(),
-    asString: jest.fn(),
-    asList: jest.fn(),
-    asNumber: jest.fn(),
-  },
-}));
-
 describe('redactTelemetryDataHelper', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -76,9 +68,7 @@ describe('redactTelemetryDataHelper', () => {
   });
 
   it('should redact unresolved tokens', () => {
-    (Token.isUnresolved as jest.Mock).mockReturnValue(true);
-    expect(metadata.redactTelemetryDataHelper({}, { foo: 'bar' })).toBe('*');
-    expect(Token.isUnresolved).toHaveBeenCalledWith({ foo: 'bar' });
+    expect(metadata.redactTelemetryDataHelper({}, Token.asAny({ foo: 'bar' }))).toBe('*');
   });
 
   it('should recursively redact array elements', () => {
@@ -98,9 +88,10 @@ describe('redactTelemetryDataHelper', () => {
   });
 
   it('should skip unresolved token keys', () => {
-    (Token.isUnresolved as jest.Mock).mockReturnValue(true);
+    // I don't think this tests what this test was originally intended to test, but it does
+    // exactly reproduce the original mocked behavior.
     const allowedKeys = { key1: '*' };
-    const data = { key1: 'value1', unresolvedKey: 'value2' };
+    const data = Token.asAny({ key1: 'value1', unresolvedKey: 'value2' });
     expect(metadata.redactTelemetryDataHelper(allowedKeys, data)).toEqual('*');
   });
 
@@ -119,24 +110,17 @@ describe('redactTelemetryDataHelper', () => {
   });
 });
 
-jest.mock('../lib/analytics-data-source/enums', () => ({
-  AWS_CDK_ENUMS: {
-    ExampleEnum: ['VALUE_ONE', 'VALUE_TWO', 'VALUE_THREE'],
-    AnotherEnum: ['OPTION_A', 'OPTION_B', 'OPTION_C'],
-  },
-}));
-
 describe('isEnumValue', () => {
   test('returns true for valid enum value', () => {
-    expect(metadata.isEnumValue('ExampleEnum', 'VALUE_ONE')).toBe(true);
+    expect(metadata.isEnumValue('AccessEntryType', 'FARGATE_LINUX')).toBe(true);
   });
 
   test('returns false for invalid enum value', () => {
-    expect(metadata.isEnumValue('ExampleEnum', 'INVALID_VALUE')).toBe(false);
+    expect(metadata.isEnumValue('AccessEntryType', 'FLOOPITY_BOOPITY')).toBe(false);
   });
 
   test('returns false for non-existent enum type', () => {
-    expect(metadata.isEnumValue('NonExistentEnum', 'VALUE_ONE')).toBe(false);
+    expect(metadata.isEnumValue('NonExistentEnum', 'FARGATE_LINUX')).toBe(false);
   });
 
   test('returns false if allowedKeys is "*" (wildcard)', () => {
@@ -149,45 +133,26 @@ describe('isEnumValue', () => {
     expect(metadata.isEnumValue(undefined, 'VALUE_ONE')).toBe(false);
     expect(metadata.isEnumValue({}, 'VALUE_ONE')).toBe(false);
   });
-
-  test('returns false if value is not included in the enum values', () => {
-    expect(metadata.isEnumValue('AnotherEnum', 'NOT_AN_OPTION')).toBe(false);
-  });
-
-  test('returns true for another valid enum value', () => {
-    expect(metadata.isEnumValue('AnotherEnum', 'OPTION_A')).toBe(true);
-  });
 });
-
-// Mock Annotations
-jest.mock('../lib/annotations', () => ({
-  Annotations: {
-    of: jest.fn(),
-  },
-}));
 
 describe('addMethodMetadata & addConstructMetadata', () => {
   let mockScope: Construct;
   let mockAnnotations: { addWarningV2: jest.Mock };
+  let annotationsOf: jest.SpiedFunction<typeof Annotations.of>;
 
   beforeEach(() => {
-    jest.clearAllMocks(); // Reset mocks before each test
+    jest.restoreAllMocks(); // Reset mocks before each test
 
     // Create a mock Construct
-    mockScope = {
-      node: {
-        id: 'TestConstruct',
-        addMetadata: jest.fn(),
-      },
-    } as unknown as Construct;
+    mockScope = new RootConstruct('TestConstruct');
 
     mockAnnotations = { addWarningV2: jest.fn() };
-    (Annotations.of as jest.Mock).mockReturnValue(mockAnnotations);
+    annotationsOf = jest.spyOn(Annotations, 'of').mockReturnValue(mockAnnotations as any);
   });
 
   it('addMethodMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
-    jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
+    jest.spyOn(FeatureFlags.prototype, 'isEnabled').mockImplementation(() => {
       throw new Error('Test Error');
     });
 
@@ -196,16 +161,16 @@ describe('addMethodMetadata & addConstructMetadata', () => {
 
     // Assert
 
-    expect(Annotations.of).toHaveBeenCalledWith(mockScope);
+    expect(annotationsOf).toHaveBeenCalledWith(mockScope);
     expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
       '@aws-cdk/core:addMethodMetadataFailed',
-      'Failed to add method metadata for node [TestConstruct], method name testMethod. Reason: TypeError: constructs_1.Node.of(...).tryGetContext is not a function',
+      'Failed to add method metadata for node [TestConstruct], method name testMethod. Reason: Error: Test Error',
     );
   });
 
   it('addConstructMetadata should trigger addWarningV2 when addMetadata throws an error', () => {
     // Mock addMetadata to throw an error
-    jest.spyOn(metadata, 'addMetadata').mockImplementation(() => {
+    jest.spyOn(FeatureFlags.prototype, 'isEnabled').mockImplementation(() => {
       throw new Error('Test Error');
     });
 
@@ -214,10 +179,10 @@ describe('addMethodMetadata & addConstructMetadata', () => {
 
     // Assert
 
-    expect(Annotations.of).toHaveBeenCalledWith(mockScope);
+    expect(annotationsOf).toHaveBeenCalledWith(mockScope);
     expect(mockAnnotations.addWarningV2).toHaveBeenCalledWith(
       '@aws-cdk/core:addConstructMetadataFailed',
-      'Failed to add construct metadata for node [TestConstruct]. Reason: TypeError: constructs_1.Node.of(...).tryGetContext is not a function',
+      'Failed to add construct metadata for node [TestConstruct]. Reason: Error: Test Error',
     );
   });
 });

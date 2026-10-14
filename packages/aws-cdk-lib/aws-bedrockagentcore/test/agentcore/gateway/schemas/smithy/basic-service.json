@@ -1,0 +1,828 @@
+{
+  "smithy": "2.0",
+  "shapes": {
+    "com.amazonaws.cloudwatchlogs#Logs_20140328": {
+      "type": "service",
+      "version": "2014-03-28",
+      "operations": [
+        {
+          "target": "com.amazonaws.cloudwatchlogs#DescribeLogGroups"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#DescribeLogStreams"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#FilterLogEvents"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#GetLogEvents"
+        }
+      ],
+      "traits": {
+        "aws.api#service": {
+          "sdkId": "CloudWatch Logs",
+          "arnNamespace": "logs",
+          "cloudFormationName": "Logs",
+          "endpointPrefix": "logs"
+        },
+        "aws.protocols#awsJson1_1": {},
+        "aws.auth#sigv4": {
+          "name": "logs"
+        },
+        "smithy.api#title": "Amazon CloudWatch Logs"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogGroups": {
+      "type": "operation",
+      "input": {
+        "target": "com.amazonaws.cloudwatchlogs#DescribeLogGroupsRequest"
+      },
+      "output": {
+        "target": "com.amazonaws.cloudwatchlogs#DescribeLogGroupsResponse"
+      },
+      "errors": [
+        {
+          "target": "com.amazonaws.cloudwatchlogs#InvalidParameterException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ServiceUnavailableException"
+        }
+      ],
+      "traits": {
+        "smithy.api#documentation": "<p>Lists the specified log groups. You can list all your log groups or filter the results by prefix.\n      The results are ASCII-sorted by log group name.</p>\n         <p>CloudWatch Logs doesn\u2019t support IAM policies that control access to the <code>DescribeLogGroups</code> action by using the \n      <code>aws:ResourceTag/<i>key-name</i>\n            </code> condition key. Other CloudWatch Logs actions\n      do support the use of the <code>aws:ResourceTag/<i>key-name</i>\n            </code> condition key to control access.\n      For more information about using tags to control access, see \n      <a href=\"https://docs.aws.amazon.com/IAM/latest/UserGuide/access_tags.html\">Controlling access to Amazon Web Services resources using tags</a>.</p>\n         <p>If you are using CloudWatch cross-account observability, you can use this operation in a monitoring account and\n      view data from the linked source accounts. For more information, see\n      <a href=\"https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Unified-Cross-Account.html\">CloudWatch cross-account observability</a>.</p>",
+        "smithy.api#paginated": {
+          "inputToken": "nextToken",
+          "outputToken": "nextToken",
+          "pageSize": "limit",
+          "items": "logGroups"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogGroupsRequest": {
+      "type": "structure",
+      "members": {
+        "accountIdentifiers": {
+          "target": "com.amazonaws.cloudwatchlogs#AccountIds",
+          "traits": {
+            "smithy.api#documentation": "<p>When <code>includeLinkedAccounts</code> is set to <code>True</code>, use this parameter to\n      specify the list of accounts to search. You can specify as many as 20 account IDs in the array. </p>"
+          }
+        },
+        "logGroupNamePrefix": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupName",
+          "traits": {
+            "smithy.api#documentation": "<p>The prefix to match.</p>\n         <note>\n            <p>\n               <code>logGroupNamePrefix</code> and <code>logGroupNamePattern</code> are mutually exclusive. Only one\n      of these parameters can be passed. </p>\n         </note>"
+          }
+        },
+        "logGroupNamePattern": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupNamePattern",
+          "traits": {
+            "smithy.api#documentation": "<p>If you specify a string for this parameter, the operation returns only log groups that have names\n    that match the string based on a case-sensitive substring search. For example, if you specify <code>Foo</code>, log groups\n    named <code>FooBar</code>, <code>aws/Foo</code>, and <code>GroupFoo</code> would match, but <code>foo</code>,\n      <code>F/o/o</code> and <code>Froo</code> would not match.</p>\n         <p>If you specify <code>logGroupNamePattern</code> in your request, then only\n      <code>arn</code>, <code>creationTime</code>, and <code>logGroupName</code>\n      are included in the response. </p>\n         <note>\n            <p>\n               <code>logGroupNamePattern</code> and <code>logGroupNamePrefix</code> are mutually exclusive. Only one\n        of these parameters can be passed. </p>\n         </note>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken",
+          "traits": {
+            "smithy.api#documentation": "<p>The token for the next set of items to return. (You received this token from a previous call.)</p>"
+          }
+        },
+        "limit": {
+          "target": "com.amazonaws.cloudwatchlogs#DescribeLimit",
+          "traits": {
+            "smithy.api#documentation": "<p>The maximum number of items returned. If you don't specify a value, the default is up to 50 items.</p>"
+          }
+        },
+        "includeLinkedAccounts": {
+          "target": "com.amazonaws.cloudwatchlogs#IncludeLinkedAccounts",
+          "traits": {
+            "smithy.api#documentation": "<p>If you are using a monitoring account, set this to <code>True</code> to have the operation\n      return log groups in\n      the accounts listed in <code>accountIdentifiers</code>.</p>\n         <p>If this parameter is set to <code>true</code> and <code>accountIdentifiers</code>\n      contains a null value, the operation returns all log groups in the monitoring account\n      and all log groups in all source accounts that are linked to the monitoring account. </p>"
+          }
+        },
+        "logGroupClass": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupClass",
+          "traits": {
+            "smithy.api#documentation": "<p>Specifies the log group class for this log group. There are two classes:</p>\n         <ul>\n            <li>\n               <p>The <code>Standard</code> log class supports all CloudWatch Logs features.</p>\n            </li>\n            <li>\n               <p>The <code>Infrequent Access</code> log class supports a subset of CloudWatch Logs features\n        and incurs lower costs.</p>\n            </li>\n         </ul>\n         <p>For details about the features supported by each class, see\n      <a href=\"https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html\">Log classes</a>\n         </p>"
+          }
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogGroupsResponse": {
+      "type": "structure",
+      "members": {
+        "logGroups": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroups",
+          "traits": {
+            "smithy.api#documentation": "<p>The log groups.</p>\n         <p>If the <code>retentionInDays</code> value is not included for a log group, then that log group's events do not expire.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken",
+          "traits": {
+            "smithy.api#documentation": "<p>The token for the next set of items to return. The token expires after 24 hours.</p>"
+          }
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogGroups": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#LogGroup"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogGroup": {
+      "type": "structure",
+      "members": {
+        "logGroupName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupName",
+          "traits": {
+            "smithy.api#documentation": "<p>The name of the log group.</p>"
+          }
+        },
+        "creationTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp",
+          "traits": {
+            "smithy.api#documentation": "<p>The creation time of the log group, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>"
+          }
+        },
+        "retentionInDays": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "<p>The number of days to retain the log events in the specified log group.\n      Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, and 3653.</p>\n         <p>To set a log group so that its log events do not expire, use <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_DeleteRetentionPolicy.html\">DeleteRetentionPolicy</a>. </p>"
+          }
+        },
+        "metricFilterCount": {
+          "target": "smithy.api#Integer",
+          "traits": {
+            "smithy.api#documentation": "<p>The number of metric filters.</p>"
+          }
+        },
+        "arn": {
+          "target": "com.amazonaws.cloudwatchlogs#Arn",
+          "traits": {
+            "smithy.api#documentation": "<p>The Amazon Resource Name (ARN) of the log group. This version of the ARN includes a trailing <code>:*</code> after the log group name. </p>\n         <p>Use this version to refer to the ARN in IAM policies when specifying permissions for most API actions. The exception is when specifying permissions for <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_TagResource.html\">TagResource</a>, <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_UntagResource.html\">UntagResource</a>, and\n      <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_ListTagsForResource.html\">ListTagsForResource</a>. The permissions for those three actions require the ARN version that doesn't include a trailing <code>:*</code>.</p>"
+          }
+        },
+        "storedBytes": {
+          "target": "com.amazonaws.cloudwatchlogs#StoredBytes",
+          "traits": {
+            "smithy.api#documentation": "<p>The number of bytes stored.</p>"
+          }
+        },
+        "kmsKeyId": {
+          "target": "com.amazonaws.cloudwatchlogs#KmsKeyId",
+          "traits": {
+            "smithy.api#documentation": "<p>The Amazon Resource Name (ARN) of the KMS key to use when encrypting log data.</p>"
+          }
+        },
+        "dataProtectionStatus": {
+          "target": "com.amazonaws.cloudwatchlogs#DataProtectionStatus",
+          "traits": {
+            "smithy.api#documentation": "<p>Displays whether this log group has a protection policy, or whether it had one in the past. For more information, see\n      <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutDataProtectionPolicy.html\">PutDataProtectionPolicy</a>.</p>"
+          }
+        },
+        "inheritedProperties": {
+          "target": "com.amazonaws.cloudwatchlogs#InheritedProperties",
+          "traits": {
+            "smithy.api#documentation": "<p>Displays all the properties that this log group has inherited from account-level settings.</p>"
+          }
+        },
+        "logGroupClass": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupClass",
+          "traits": {
+            "smithy.api#documentation": "<p>This specifies the log group class for this log group. There are two classes:</p>\n         <ul>\n            <li>\n               <p>The <code>Standard</code> log class supports all CloudWatch Logs features.</p>\n            </li>\n            <li>\n               <p>The <code>Infrequent Access</code> log class supports a subset of CloudWatch Logs features\n          and incurs lower costs.</p>\n            </li>\n         </ul>\n         <p>For details about the features supported by each class, see\n        <a href=\"https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html\">Log classes</a>\n         </p>"
+          }
+        },
+        "logGroupArn": {
+          "target": "com.amazonaws.cloudwatchlogs#Arn",
+          "traits": {
+            "smithy.api#documentation": "<p>The Amazon Resource Name (ARN) of the log group. This version of the ARN doesn't include a trailing <code>:*</code> after the log group name. </p>\n         <p>Use this version to refer to the ARN in the following situations:</p>\n         <ul>\n            <li>\n               <p>In the <code>logGroupIdentifier</code> input field in many CloudWatch Logs APIs.</p>\n            </li>\n            <li>\n               <p>In the <code>resourceArn</code> field in tagging APIs</p>\n            </li>\n            <li>\n               <p>In IAM policies, when specifying permissions for <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_TagResource.html\">TagResource</a>, <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_UntagResource.html\">UntagResource</a>, and\n          <a href=\"https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_ListTagsForResource.html\">ListTagsForResource</a>.</p>\n            </li>\n         </ul>"
+          }
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "<p>Represents a log group.</p>"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#AccountIds": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#AccountId"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#AccountId": {
+      "type": "string",
+      "traits": {
+        "smithy.api#pattern": "^\\d{12}$"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogGroupName": {
+      "type": "string",
+      "traits": {
+        "smithy.api#length": {
+          "min": 1,
+          "max": 512
+        },
+        "smithy.api#pattern": "^[\\.\\-_/#A-Za-z0-9]+$"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogGroupNamePattern": {
+      "type": "string",
+      "traits": {
+        "smithy.api#length": {
+          "min": 0,
+          "max": 512
+        },
+        "smithy.api#pattern": "^[\\x00-\\x7F]*$"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#NextToken": {
+      "type": "string",
+      "traits": {
+        "smithy.api#length": {
+          "min": 1
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLimit": {
+      "type": "integer",
+      "traits": {
+        "smithy.api#range": {
+          "min": 1,
+          "max": 50
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#IncludeLinkedAccounts": {
+      "type": "boolean"
+    },
+    "com.amazonaws.cloudwatchlogs#LogGroupClass": {
+      "type": "string",
+      "traits": {
+        "smithy.api#enum": [
+          {
+            "value": "STANDARD",
+            "name": "STANDARD"
+          },
+          {
+            "value": "INFREQUENT_ACCESS",
+            "name": "INFREQUENT_ACCESS"
+          }
+        ]
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#Timestamp": {
+      "type": "long",
+      "traits": {
+        "smithy.api#range": {
+          "min": 0
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#Arn": {
+      "type": "string"
+    },
+    "com.amazonaws.cloudwatchlogs#StoredBytes": {
+      "type": "long",
+      "traits": {
+        "smithy.api#range": {
+          "min": 0
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#KmsKeyId": {
+      "type": "string",
+      "traits": {
+        "smithy.api#length": {
+          "max": 256
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DataProtectionStatus": {
+      "type": "string",
+      "traits": {
+        "smithy.api#enum": [
+          {
+            "value": "ACTIVATED",
+            "name": "ACTIVATED"
+          },
+          {
+            "value": "DELETED",
+            "name": "DELETED"
+          },
+          {
+            "value": "ARCHIVED",
+            "name": "ARCHIVED"
+          },
+          {
+            "value": "DISABLED",
+            "name": "DISABLED"
+          }
+        ]
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#InheritedProperties": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#InheritedProperty"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#InheritedProperty": {
+      "type": "string",
+      "traits": {
+        "smithy.api#enum": [
+          {
+            "value": "ACCOUNT_DATA_PROTECTION",
+            "name": "ACCOUNT_DATA_PROTECTION"
+          }
+        ]
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#InvalidParameterException": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "<p>A parameter is specified incorrectly.</p>",
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 400
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#ServiceUnavailableException": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "<p>The service cannot complete the request.</p>",
+        "smithy.api#error": "server",
+        "smithy.api#httpError": 500
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogStreams": {
+      "type": "operation",
+      "input": {
+        "target": "com.amazonaws.cloudwatchlogs#DescribeLogStreamsRequest"
+      },
+      "output": {
+        "target": "com.amazonaws.cloudwatchlogs#DescribeLogStreamsResponse"
+      },
+      "errors": [
+        {
+          "target": "com.amazonaws.cloudwatchlogs#InvalidParameterException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ResourceNotFoundException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ServiceUnavailableException"
+        }
+      ],
+      "traits": {
+        "smithy.api#documentation": "<p>Lists the log streams for the specified log group.</p>",
+        "smithy.api#paginated": {
+          "inputToken": "nextToken",
+          "outputToken": "nextToken",
+          "pageSize": "limit",
+          "items": "logStreams"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogStreamsRequest": {
+      "type": "structure",
+      "members": {
+        "logGroupName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupName",
+          "traits": {
+            "smithy.api#required": {},
+            "smithy.api#documentation": "<p>The name of the log group.</p>"
+          }
+        },
+        "logGroupIdentifier": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "<p>Specify either the name or ARN of the log group.</p>"
+          }
+        },
+        "logStreamNamePrefix": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName",
+          "traits": {
+            "smithy.api#documentation": "<p>The prefix to match.</p>"
+          }
+        },
+        "orderBy": {
+          "target": "com.amazonaws.cloudwatchlogs#OrderBy",
+          "traits": {
+            "smithy.api#documentation": "<p>If the value is LogStreamName, the results are ordered by log stream name. If the value is LastEventTime, the results are ordered by the event time.</p>"
+          }
+        },
+        "descending": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "<p>If the value is true, results are returned in descending order.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken"
+        },
+        "limit": {
+          "target": "com.amazonaws.cloudwatchlogs#DescribeLimit"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#DescribeLogStreamsResponse": {
+      "type": "structure",
+      "members": {
+        "logStreams": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreams",
+          "traits": {
+            "smithy.api#documentation": "<p>The log streams.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#FilterLogEvents": {
+      "type": "operation",
+      "input": {
+        "target": "com.amazonaws.cloudwatchlogs#FilterLogEventsRequest"
+      },
+      "output": {
+        "target": "com.amazonaws.cloudwatchlogs#FilterLogEventsResponse"
+      },
+      "errors": [
+        {
+          "target": "com.amazonaws.cloudwatchlogs#InvalidParameterException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ResourceNotFoundException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ServiceUnavailableException"
+        }
+      ],
+      "traits": {
+        "smithy.api#documentation": "<p>Lists log events from the specified log group. You can filter the results using a filter pattern.</p>",
+        "smithy.api#paginated": {
+          "inputToken": "nextToken",
+          "outputToken": "nextToken",
+          "pageSize": "limit",
+          "items": "events"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#FilterLogEventsRequest": {
+      "type": "structure",
+      "members": {
+        "logGroupName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupName",
+          "traits": {
+            "smithy.api#documentation": "<p>The name of the log group.</p>"
+          }
+        },
+        "logGroupIdentifier": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "<p>Specify either the name or ARN of the log group.</p>"
+          }
+        },
+        "logStreamNames": {
+          "target": "com.amazonaws.cloudwatchlogs#InputLogStreamNames",
+          "traits": {
+            "smithy.api#documentation": "<p>Filters the results to include only events from log streams that have names starting with this prefix.</p>"
+          }
+        },
+        "logStreamNamePrefix": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName",
+          "traits": {
+            "smithy.api#documentation": "<p>Filters the results to include only events from log streams that have names starting with this prefix.</p>"
+          }
+        },
+        "startTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp",
+          "traits": {
+            "smithy.api#documentation": "<p>The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>"
+          }
+        },
+        "endTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp",
+          "traits": {
+            "smithy.api#documentation": "<p>The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>"
+          }
+        },
+        "filterPattern": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "<p>The filter pattern to use.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken"
+        },
+        "limit": {
+          "target": "com.amazonaws.cloudwatchlogs#EventsLimit"
+        },
+        "interleaved": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "<p>If the value is true, the operation makes a best effort to provide responses that contain events from multiple log streams within the log group, interleaved in a single response.</p>"
+          }
+        },
+        "unmask": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "<p>Specify true to display the log event fields with all sensitive data unmasked and visible.</p>"
+          }
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#FilterLogEventsResponse": {
+      "type": "structure",
+      "members": {
+        "events": {
+          "target": "com.amazonaws.cloudwatchlogs#FilteredLogEvents",
+          "traits": {
+            "smithy.api#documentation": "<p>The matched events.</p>"
+          }
+        },
+        "searchedLogStreams": {
+          "target": "com.amazonaws.cloudwatchlogs#SearchedLogStreams",
+          "traits": {
+            "smithy.api#documentation": "<p>Indicates which log streams have been searched and whether each has been searched completely.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#GetLogEvents": {
+      "type": "operation",
+      "input": {
+        "target": "com.amazonaws.cloudwatchlogs#GetLogEventsRequest"
+      },
+      "output": {
+        "target": "com.amazonaws.cloudwatchlogs#GetLogEventsResponse"
+      },
+      "errors": [
+        {
+          "target": "com.amazonaws.cloudwatchlogs#InvalidParameterException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ResourceNotFoundException"
+        },
+        {
+          "target": "com.amazonaws.cloudwatchlogs#ServiceUnavailableException"
+        }
+      ],
+      "traits": {
+        "smithy.api#documentation": "<p>Lists log events from the specified log stream.</p>",
+        "smithy.api#paginated": {
+          "inputToken": "nextToken",
+          "outputToken": "nextForwardToken",
+          "pageSize": "limit",
+          "items": "events"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#GetLogEventsRequest": {
+      "type": "structure",
+      "members": {
+        "logGroupName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogGroupName",
+          "traits": {
+            "smithy.api#documentation": "<p>The name of the log group.</p>"
+          }
+        },
+        "logGroupIdentifier": {
+          "target": "smithy.api#String",
+          "traits": {
+            "smithy.api#documentation": "<p>Specify either the name or ARN of the log group.</p>"
+          }
+        },
+        "logStreamName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName",
+          "traits": {
+            "smithy.api#required": {},
+            "smithy.api#documentation": "<p>The name of the log stream.</p>"
+          }
+        },
+        "startTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp",
+          "traits": {
+            "smithy.api#documentation": "<p>The start of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>"
+          }
+        },
+        "endTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp",
+          "traits": {
+            "smithy.api#documentation": "<p>The end of the time range, expressed as the number of milliseconds after Jan 1, 1970 00:00:00 UTC.</p>"
+          }
+        },
+        "nextToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken"
+        },
+        "limit": {
+          "target": "com.amazonaws.cloudwatchlogs#EventsLimit"
+        },
+        "startFromHead": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "<p>If the value is true, the earliest log events are returned first.</p>"
+          }
+        },
+        "unmask": {
+          "target": "smithy.api#Boolean",
+          "traits": {
+            "smithy.api#documentation": "<p>Specify true to display the log event fields with all sensitive data unmasked and visible.</p>"
+          }
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#GetLogEventsResponse": {
+      "type": "structure",
+      "members": {
+        "events": {
+          "target": "com.amazonaws.cloudwatchlogs#OutputLogEvents",
+          "traits": {
+            "smithy.api#documentation": "<p>The events.</p>"
+          }
+        },
+        "nextForwardToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken",
+          "traits": {
+            "smithy.api#documentation": "<p>The token for the next set of items in the forward direction.</p>"
+          }
+        },
+        "nextBackwardToken": {
+          "target": "com.amazonaws.cloudwatchlogs#NextToken",
+          "traits": {
+            "smithy.api#documentation": "<p>The token for the next set of items in the backward direction.</p>"
+          }
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogStreams": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#LogStream"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogStream": {
+      "type": "structure",
+      "members": {
+        "logStreamName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName"
+        },
+        "creationTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "firstEventTimestamp": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "lastEventTimestamp": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "lastIngestionTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "uploadSequenceToken": {
+          "target": "smithy.api#String"
+        },
+        "arn": {
+          "target": "com.amazonaws.cloudwatchlogs#Arn"
+        },
+        "storedBytes": {
+          "target": "com.amazonaws.cloudwatchlogs#StoredBytes"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#LogStreamName": {
+      "type": "string",
+      "traits": {
+        "smithy.api#length": {
+          "min": 1,
+          "max": 512
+        },
+        "smithy.api#pattern": "^[^:*]*$"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#OrderBy": {
+      "type": "string",
+      "traits": {
+        "smithy.api#enum": [
+          {
+            "value": "LogStreamName",
+            "name": "LogStreamName"
+          },
+          {
+            "value": "LastEventTime",
+            "name": "LastEventTime"
+          }
+        ]
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#FilteredLogEvents": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#FilteredLogEvent"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#FilteredLogEvent": {
+      "type": "structure",
+      "members": {
+        "logStreamName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName"
+        },
+        "timestamp": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "message": {
+          "target": "smithy.api#String"
+        },
+        "ingestionTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "eventId": {
+          "target": "smithy.api#String"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#SearchedLogStreams": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#SearchedLogStream"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#SearchedLogStream": {
+      "type": "structure",
+      "members": {
+        "logStreamName": {
+          "target": "com.amazonaws.cloudwatchlogs#LogStreamName"
+        },
+        "searchedCompletely": {
+          "target": "smithy.api#Boolean"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#OutputLogEvents": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#OutputLogEvent"
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#OutputLogEvent": {
+      "type": "structure",
+      "members": {
+        "timestamp": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        },
+        "message": {
+          "target": "smithy.api#String"
+        },
+        "ingestionTime": {
+          "target": "com.amazonaws.cloudwatchlogs#Timestamp"
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#InputLogStreamNames": {
+      "type": "list",
+      "member": {
+        "target": "com.amazonaws.cloudwatchlogs#LogStreamName"
+      },
+      "traits": {
+        "smithy.api#length": {
+          "min": 1,
+          "max": 100
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#EventsLimit": {
+      "type": "integer",
+      "traits": {
+        "smithy.api#range": {
+          "min": 1,
+          "max": 10000
+        }
+      }
+    },
+    "com.amazonaws.cloudwatchlogs#ResourceNotFoundException": {
+      "type": "structure",
+      "members": {
+        "message": {
+          "target": "smithy.api#String"
+        }
+      },
+      "traits": {
+        "smithy.api#documentation": "<p>The specified resource does not exist.</p>",
+        "smithy.api#error": "client",
+        "smithy.api#httpError": 404
+      }
+    }
+  }
+}

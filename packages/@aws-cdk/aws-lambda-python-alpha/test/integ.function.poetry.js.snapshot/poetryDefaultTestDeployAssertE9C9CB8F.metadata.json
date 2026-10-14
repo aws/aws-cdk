@@ -1,0 +1,3025 @@
+{
+  "/poetry/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:219:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "Object.<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1730:14)",
+        "Object..js (node:internal/modules/cjs/loader:1895:10)",
+        "Module.load (node:internal/modules/cjs/loader:1465:32)",
+        "Function._load (node:internal/modules/cjs/loader:1282:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401InvokeCBB1B246"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:111:26)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:28)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:49:25)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:111:26)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:28)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:111:26)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:67:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:28)",
+        "SingletonFunction.ensureFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:196:16)",
+        "new SingletonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:187:36)",
+        "new AssertionsProvider (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:260:24)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:67:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918dInvoke58341E0D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke25144ef98e9004a751090b35f432918d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fInvoke3DACF8AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke1169f1cd9853adbc01aa3feb2303094f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079Invoke233FCD2E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeedc778179c8316b7704f58e7d1b26079"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eInvokeEBD7C3E9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke24315e181a41a235e2e87bafad09a51e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dInvokeC6A22AFA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke885c68516f6c4fbb69fc688aff1ed02d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205Invoke13B8AE32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke07f0bf48404b68e262de7d7930dd8205"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1InvokeCA6FFB87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokec61a044478d06a105f47fc0d2fe27ff1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fInvoke60933A38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke67e31700a87d3520f715da7e26f5039f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90Invoke510DD413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeb89473d31d84fc8db1fc25d666223b90"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48InvokeBD6050E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke4079df0400337907aa2fe7db3d66be48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915InvokeB7A21067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke3250bb32728280619d5b61822c425915"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5Invoke9841938E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke89ccfc23c8b38086a312a181381234c5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eInvoke95DDBED1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokecfdbb2685c588ff401f751735d28688e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9InvokeA06B6C17"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke0203cc956eb1c3d944eac2a14877b1e9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acInvokeC3F6FB37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3Invoke22DE297C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke873736695cbe391c49a0b4a24b0c57b3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57Invoke0FF1450B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke382e32035b9b21ed91d9ce9971ee9a57"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550Invoke76128422"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke078bd41d77bf51a737ab281515e48550"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eInvokeFDECD315"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:206:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:87:25)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:356:38)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "recurse (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:370:43)",
+        "invokeAspectsV2 (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:9)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForRole181D55E1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitFor45B50540"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForRoleD5B665EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForC08529A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForRole0A6165B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForD7215EA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForRoleB15DE8C9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitFor567415C5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForRole8A44F1BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitFor116D1594"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForRole8C5D0CF4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitFor7B4EB976"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForRoleC0F1737A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitFor8CDA3409"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForRole8E050513"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitFor7AFF6CAA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039f"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForRole9C5F196D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitFor49DF98F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForRole26EC687D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitFor361127BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForRole9105599A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitFor997EFE92"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForRole410ED407"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForC1B0E323"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForRole3D51427C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForB0DD46B0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForRole5891B375"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForEDDFB35F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForRoleDCA55B79"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitFor7A562C01"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForRoleE2CFF3D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForDC07FB48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForRole61DCD2A9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitFor7007665D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForRole46497BC3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForE4D2F698"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForRole955BB31A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitFor814B77F7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new AwsApiCall (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:60:32)",
+        "new LambdaInvokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:184:9)",
+        "DeployAssert.invokeFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:79:16)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:226:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForRole830CEEFC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:72:22)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitFor6ADBABD5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:122:26)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForIsCompleteProviderInvoke957D0D8C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForTimeoutProviderInvoke919400C1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForIsCompleteProviderInvoke42E7E2FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForTimeoutProviderInvoke07B9C73C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForIsCompleteProviderInvoke8AE9DA47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForTimeoutProviderInvoke08116B22"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForIsCompleteProviderInvoke40EC9711"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForTimeoutProviderInvoke08AD62B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForIsCompleteProviderInvokeAEA79D76"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForTimeoutProviderInvoke63815EC3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForIsCompleteProviderInvoke80AF7ADE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForTimeoutProviderInvokeEF8D50AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForIsCompleteProviderInvokeE12C71CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForTimeoutProviderInvokeEA5807D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForIsCompleteProviderInvoke62ACD241"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForTimeoutProviderInvoke8B339A09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForIsCompleteProviderInvokeB90B66C3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForTimeoutProviderInvoke7D7F9ADA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForIsCompleteProviderInvoke71470331"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForTimeoutProviderInvokeA7D18943"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForIsCompleteProviderInvokeB45B6D13"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForTimeoutProviderInvoke6A69905F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForIsCompleteProviderInvokeCD1BB57C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForTimeoutProviderInvoke52A6B233"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForIsCompleteProviderInvokeCAE2F497"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForTimeoutProviderInvokeE86B1615"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForIsCompleteProviderInvokeF533D0AF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForTimeoutProviderInvoke5D59FFA2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForIsCompleteProviderInvoke1E3613DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForTimeoutProviderInvoke30080DFA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForIsCompleteProviderInvoke60CAF235"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForTimeoutProviderInvokeD3E5FB6A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForIsCompleteProviderInvokeE184CC0F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForTimeoutProviderInvokeDF70D14F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForIsCompleteProviderInvokeD2FC6A0A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForTimeoutProviderInvokeA8D66E56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForIsCompleteProviderInvokeBAAB9B1B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForTimeoutProviderInvokeD2E30391"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForIsCompleteProviderInvoke81A109FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:132:33)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForTimeoutProviderInvoke9B59DB42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:324:9)",
+        "new WaiterStateMachine (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:133:25)",
+        "LambdaInvokeFunction.waitForAssertions (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:124:24)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:231 (:)",
+        "Array.forEach (:)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:225:24)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
