@@ -6,11 +6,11 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:123:18)",
-        "    at IntegTestBaseStack._silenceLiteralAzWarning (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/Users/jaheljo/IdeaProjects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/Users/jaheljo/IdeaProjects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enhanced-monitoring.js:44:13)",
+        "    at Validations.acknowledge (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enhanced-monitoring.js:44:13)",
         "    ...node internals..."
       ]
     }
@@ -98,7 +98,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -134,7 +137,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
