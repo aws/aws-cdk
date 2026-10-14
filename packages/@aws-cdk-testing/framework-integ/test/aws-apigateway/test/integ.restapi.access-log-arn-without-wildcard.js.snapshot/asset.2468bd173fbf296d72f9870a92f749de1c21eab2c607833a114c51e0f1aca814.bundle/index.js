@@ -1519,7 +1519,7 @@ var require_helpers = __commonJS({
       this.base = base;
       this.schemas = schemas;
     };
-    SchemaContext.prototype.resolve = function resolve7(target) {
+    SchemaContext.prototype.resolve = function resolve6(target) {
       return (() => resolveUrl(this.base, target))();
     };
     SchemaContext.prototype.makeChild = function makeChild(schema, propertyName) {
@@ -2624,7 +2624,7 @@ var require_validator = __commonJS({
       }
       return schema;
     };
-    Validator.prototype.resolve = function resolve7(schema, switchSchema, ctx) {
+    Validator.prototype.resolve = function resolve6(schema, switchSchema, ctx) {
       switchSchema = ctx.resolve(switchSchema);
       if (ctx.schemas[switchSchema]) {
         return { subschema: ctx.schemas[switchSchema], switchSchema };
@@ -8478,7 +8478,7 @@ var init_legacy_moved = __esm({
 });
 
 // ../../aws-cdk-lib/cx-api/lib/cxapi.ts
-var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT;
+var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT, CDK_TEMPLATE_FILE_KEY;
 var init_cxapi = __esm({
   "../../aws-cdk-lib/cx-api/lib/cxapi.ts"() {
     "use strict";
@@ -8493,6 +8493,7 @@ var init_cxapi = __esm({
     STRICT_CFN_VALIDATE_ERRORS = "@aws-cdk/core:strictCfnValidateErrors";
     CDK_APP_MODE_ENV = "CDK_APP_MODE";
     CDK_APP_MODE_CONTEXT = "@aws-cdk/core:appMode";
+    CDK_TEMPLATE_FILE_KEY = "aws:cdk:templateFile";
   }
 });
 
@@ -8511,7 +8512,7 @@ function futureFlagDefault(flag) {
   }
   return value;
 }
-var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
+var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
 var init_features = __esm({
   "../../aws-cdk-lib/cx-api/lib/features.ts"() {
     "use strict";
@@ -8627,6 +8628,7 @@ var init_features = __esm({
     DEFAULT_CROSS_STACK_REFERENCES = "@aws-cdk/core:defaultCrossStackReferences";
     VALIDATE_AGAINST_DEFAULT_RULES = "@aws-cdk/core:validateAgainstDefaultRules";
     ECS_REMOVE_EMPTY_LOAD_BALANCERS = "@aws-cdk/aws-ecs:removeEmptyLoadBalancers";
+    CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps";
     FLAGS = {
       //////////////////////////////////////////////////////////////////////
       [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
@@ -10314,6 +10316,27 @@ var init_features = __esm({
         recommendedValue: true,
         unconfiguredBehavesLike: { v2: false },
         compatibilityWithOldBehaviorMd: "Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: {
+        type: 0 /* ApiDefault */,
+        summary: "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS",
+        detailsMd: `
+      When enabled, cache behaviors on a \`Distribution\` that do not specify an explicit
+      \`viewerProtocolPolicy\` default to \`ViewerProtocolPolicy.REDIRECT_TO_HTTPS\` instead of
+      \`ViewerProtocolPolicy.ALLOW_ALL\`, so viewers are redirected from HTTP to HTTPS rather
+      than being served over plaintext HTTP.
+
+      This applies to the default behavior, to \`additionalBehaviors\`, and to behaviors added
+      later with \`addBehavior()\`. An explicitly specified \`viewerProtocolPolicy\` always wins,
+      regardless of this flag.
+
+      Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
+      viewer then follows with a second request. That additional request is billable.`,
+        introducedIn: { v2: "2.273.0" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false },
+        compatibilityWithOldBehaviorMd: "Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default."
       },
       //////////////////////////////////////////////////////////////////////
       [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
@@ -13563,8 +13586,8 @@ var require_universalify = __commonJS({
       return Object.defineProperty(function(...args) {
         if (typeof args[args.length - 1] === "function") fn.apply(this, args);
         else {
-          return new Promise((resolve7, reject) => {
-            args.push((err, res) => err != null ? reject(err) : resolve7(res));
+          return new Promise((resolve6, reject) => {
+            args.push((err, res) => err != null ? reject(err) : resolve6(res));
             fn.apply(this, args);
           });
         }
@@ -14416,18 +14439,18 @@ var require_fs = __commonJS({
       if (typeof callback === "function") {
         return fs19.exists(filename, callback);
       }
-      return new Promise((resolve7) => {
-        return fs19.exists(filename, resolve7);
+      return new Promise((resolve6) => {
+        return fs19.exists(filename, resolve6);
       });
     };
     exports2.read = function(fd, buffer, offset, length, position, callback) {
       if (typeof callback === "function") {
         return fs19.read(fd, buffer, offset, length, position, callback);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
           if (err) return reject(err);
-          resolve7({ bytesRead, buffer: buffer2 });
+          resolve6({ bytesRead, buffer: buffer2 });
         });
       });
     };
@@ -14435,10 +14458,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.write(fd, buffer, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
           if (err) return reject(err);
-          resolve7({ bytesWritten, buffer: buffer2 });
+          resolve6({ bytesWritten, buffer: buffer2 });
         });
       });
     };
@@ -14446,10 +14469,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.readv(fd, buffers, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.readv(fd, buffers, ...args, (err, bytesRead, buffers2) => {
           if (err) return reject(err);
-          resolve7({ bytesRead, buffers: buffers2 });
+          resolve6({ bytesRead, buffers: buffers2 });
         });
       });
     };
@@ -14457,10 +14480,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.writev(fd, buffers, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
           if (err) return reject(err);
-          resolve7({ bytesWritten, buffers: buffers2 });
+          resolve6({ bytesWritten, buffers: buffers2 });
         });
       });
     };
@@ -14923,8 +14946,8 @@ var require_copy_sync = __commonJS({
       return getStats(destStat, src, dest, opts);
     }
     function getStats(destStat, src, dest, opts) {
-      const statSync5 = opts.dereference ? fs19.statSync : fs19.lstatSync;
-      const srcStat = statSync5(src);
+      const statSync6 = opts.dereference ? fs19.statSync : fs19.lstatSync;
+      const srcStat = statSync6(src);
       if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
       else if (srcStat.isFile() || srcStat.isCharacterDevice() || srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts);
       else if (srcStat.isSymbolicLink()) return onLink(destStat, src, dest, opts);
@@ -15356,9 +15379,9 @@ var require_symlink = __commonJS({
         const dstStat = await fs19.stat(dstpath, { bigint: true });
         if (areIdentical(srcStat, dstStat)) return;
       }
-      const relative6 = await symlinkPaths(srcpath, dstpath);
-      srcpath = relative6.toDst;
-      const toType = await symlinkType(relative6.toCwd, type);
+      const relative7 = await symlinkPaths(srcpath, dstpath);
+      srcpath = relative7.toDst;
+      const toType = await symlinkType(relative7.toCwd, type);
       const dir = path23.dirname(dstpath);
       if (!await pathExists(dir)) {
         await mkdirs(dir);
@@ -15387,9 +15410,9 @@ var require_symlink = __commonJS({
         const dstStat = fs19.statSync(dstpath, { bigint: true });
         if (areIdentical(srcStat, dstStat)) return;
       }
-      const relative6 = symlinkPathsSync(srcpath, dstpath);
-      srcpath = relative6.toDst;
-      type = symlinkTypeSync(relative6.toCwd, type);
+      const relative7 = symlinkPathsSync(srcpath, dstpath);
+      srcpath = relative7.toDst;
+      type = symlinkTypeSync(relative7.toCwd, type);
       const dir = path23.dirname(dstpath);
       const exists = fs19.existsSync(dir);
       if (exists) return fs19.symlinkSync(srcpath, dstpath, type);
@@ -20746,31 +20769,7 @@ var init_classes = __esm({
             }
           },
           "defaultDatabaseName": "*",
-          "loggingProperties": {
-            "loggingBucket": {
-              "bucketArn": "*",
-              "bucketName": "*",
-              "bucketWebsiteUrl": "*",
-              "bucketWebsiteDomainName": "*",
-              "bucketDomainName": "*",
-              "bucketDualStackDomainName": "*",
-              "bucketRegionalDomainName": "*",
-              "isWebsite": "boolean",
-              "encryptionKey": {
-                "keyArn": "*",
-                "keyId": "*",
-                "stack": "*",
-                "node": "*",
-                "env": {
-                  "account": "*",
-                  "region": "*"
-                }
-              },
-              "policy": "*",
-              "replicationRoleArn": "*"
-            },
-            "loggingKeyPrefix": "*"
-          },
+          "logging": "*",
           "removalPolicy": "RemovalPolicy",
           "publiclyAccessible": "boolean",
           "classicResizing": "boolean",
@@ -25012,6 +25011,12 @@ var init_classes = __esm({
         }
       },
       "aws-cdk-lib.aws-batch": {
+        "ConsumableResource": {
+          "consumableResourceName": "*",
+          "resourceType": "ConsumableResourceType",
+          "totalQuantity": "*",
+          "tags": "*"
+        },
         "EcsJobDefinition": {
           "container": {
             "image": "*",
@@ -29675,7 +29680,10 @@ var init_classes = __esm({
           "ipv6CidrBlock": "*",
           "assignIpv6AddressOnCreation": "boolean",
           "addNatGateway": [
-            "*"
+            "*",
+            {
+              "maxDrainDuration": "*"
+            }
           ]
         },
         "PrivateSubnet": {
@@ -36041,6 +36049,7 @@ var init_classes = __esm({
             "minutes": "*"
           },
           "enableAutoSoftwareUpdate": "boolean",
+          "useLatestServiceSoftwareForBlueGreen": "boolean",
           "ipAddressType": "IpAddressType",
           "suppressLogsResourcePolicy": "boolean",
           "coldStorageEnabled": "boolean",
@@ -40610,6 +40619,7 @@ var init_classes = __esm({
               "region": "*"
             }
           },
+          "environmentEncryption": "*",
           "dryRunAndUpdate": "boolean",
           "resourcesToReplicateTags": "ResourceToReplicateTags",
           "browserConfigs": "BrowserType",
@@ -43598,6 +43608,7 @@ var init_classes = __esm({
           "networkConfiguration": "*",
           "description": "*",
           "protocolConfiguration": "*",
+          "platformVersion": "*",
           "environmentVariables": "*",
           "authorizerConfiguration": "*",
           "tags": "*",
@@ -49288,6 +49299,10 @@ var init_enums = __esm({
         "INTERNET",
         "VPC_LINK"
       ],
+      "ConsumableResourceType": [
+        "REPLENISHABLE",
+        "NON_REPLENISHABLE"
+      ],
       "ContainerDependencyCondition": [
         "START",
         "COMPLETE",
@@ -50089,7 +50104,8 @@ var init_enums = __esm({
         "3.0",
         "4.0",
         "5.0",
-        "5.1"
+        "5.1",
+        "6.0"
       ],
       "GraphWidgetView": [
         "timeSeries",
@@ -51075,6 +51091,15 @@ var init_enums = __esm({
         "bun.lockb",
         "bun.lock",
         "pnpm-lock.yaml"
+      ],
+      "LogDestinationType": [
+        "s3",
+        "cloudwatch"
+      ],
+      "LogExport": [
+        "connectionlog",
+        "useractivitylog",
+        "userlog"
       ],
       "LogFormat": [
         "Text",
@@ -55742,7 +55767,7 @@ var require_commonjs2 = __commonJS({
   "../../aws-cdk-lib/node_modules/brace-expansion/dist/commonjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
+    exports2.EXPANSION_MAX_REWRITES = exports2.EXPANSION_MAX_DEPTH = exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
     exports2.expand = expand;
     var balanced_match_1 = require_commonjs();
     var escSlash = "\0SLASH" + Math.random() + "\0";
@@ -55762,6 +55787,8 @@ var require_commonjs2 = __commonJS({
     var periodPattern = /\\\./g;
     exports2.EXPANSION_MAX = 1e5;
     exports2.EXPANSION_MAX_LENGTH = 4e6;
+    exports2.EXPANSION_MAX_DEPTH = 1e3;
+    exports2.EXPANSION_MAX_REWRITES = 1e3;
     function numeric(str) {
       return !isNaN(str) ? parseInt(str, 10) : str.charCodeAt(0);
     }
@@ -55771,36 +55798,44 @@ var require_commonjs2 = __commonJS({
     function unescapeBraces(str) {
       return str.replace(escSlashPattern, "\\").replace(escOpenPattern, "{").replace(escClosePattern, "}").replace(escCommaPattern, ",").replace(escPeriodPattern, ".");
     }
+    function pushAll(target, items) {
+      for (let i = 0; i < items.length; i++) {
+        target.push(items[i]);
+      }
+    }
     function parseCommaParts(str) {
-      if (!str) {
-        return [""];
-      }
       const parts = [];
-      const m = (0, balanced_match_1.balanced)("{", "}", str);
-      if (!m) {
-        return str.split(",");
+      let carry = "";
+      for (; ; ) {
+        const m = (0, balanced_match_1.balanced)("{", "}", str);
+        if (!m) {
+          const tail = str.split(",");
+          tail[0] = carry + tail[0];
+          pushAll(parts, tail);
+          return parts;
+        }
+        const { pre, body, post } = m;
+        const p = pre.split(",");
+        p[0] = carry + p[0];
+        p[p.length - 1] += "{" + body + "}";
+        if (!post.length) {
+          pushAll(parts, p);
+          return parts;
+        }
+        carry = p.pop();
+        pushAll(parts, p);
+        str = post;
       }
-      const { pre, body, post } = m;
-      const p = pre.split(",");
-      p[p.length - 1] += "{" + body + "}";
-      const postParts = parseCommaParts(post);
-      if (post.length) {
-        ;
-        p[p.length - 1] += postParts.shift();
-        p.push.apply(p, postParts);
-      }
-      parts.push.apply(parts, p);
-      return parts;
     }
     function expand(str, options = {}) {
       if (!str) {
         return [];
       }
-      const { max = exports2.EXPANSION_MAX, maxLength = exports2.EXPANSION_MAX_LENGTH } = options;
+      const { max = exports2.EXPANSION_MAX, maxLength = exports2.EXPANSION_MAX_LENGTH, maxDepth = exports2.EXPANSION_MAX_DEPTH, maxRewrites = exports2.EXPANSION_MAX_REWRITES } = options;
       if (str.slice(0, 2) === "{}") {
         str = "\\{\\}" + str.slice(2);
       }
-      return expand_(escapeBraces(str), max, maxLength, true).map(unescapeBraces);
+      return expand_(escapeBraces(str), max, maxLength, maxDepth, 0, maxRewrites, true).map(unescapeBraces);
     }
     function embrace(str) {
       return "{" + str + "}";
@@ -55878,8 +55913,12 @@ var require_commonjs2 = __commonJS({
       }
       return N;
     }
-    function expand_(str, max, maxLength, isTop) {
+    function expand_(str, max, maxLength, maxDepth, depth, maxRewrites, isTop) {
+      if (depth > maxDepth) {
+        return [str];
+      }
       let acc = [""];
+      let rewrites = 0;
       let dropEmpties = false;
       let firstGroup = true;
       for (; ; ) {
@@ -55901,7 +55940,8 @@ var require_commonjs2 = __commonJS({
         const isSequence = isNumericSequence || isAlphaSequence;
         const isOptions = m.body.indexOf(",") >= 0;
         if (!isSequence && !isOptions) {
-          if (m.post.match(/,(?!,).*\}/)) {
+          if (rewrites < maxRewrites && m.post.match(/,(?!,).*\}/)) {
+            rewrites++;
             str = m.pre + "{" + m.body + escClose + m.post;
             isTop = true;
             continue;
@@ -55918,7 +55958,7 @@ var require_commonjs2 = __commonJS({
         } else {
           let n = parseCommaParts(m.body);
           if (n.length === 1 && n[0] !== void 0) {
-            n = expand_(n[0], max, maxLength, false).map(embrace);
+            n = expand_(n[0], max, maxLength, maxDepth, depth + 1, maxRewrites, false).map(embrace);
             if (n.length === 1) {
               acc = combine(acc, pre + n[0], [""], max, maxLength, dropEmpties && !m.post.length);
               if (!m.post.length)
@@ -55936,7 +55976,7 @@ var require_commonjs2 = __commonJS({
           values = [];
           let valuesLength = 0;
           outer: for (let j = 0; j < n.length; j++) {
-            const expanded = expand_(n[j], max, maxLength, false);
+            const expanded = expand_(n[j], max, maxLength, maxDepth, depth + 1, maxRewrites, false);
             for (let k = 0; k < expanded.length; k++) {
               const v = expanded[k];
               if (dropsEmpties && !v)
@@ -57808,13 +57848,13 @@ var init_ignore = __esm({
         this.completeIgnore.add(pattern);
         const negativeMatch = pattern.match(this.negativeIgnoreRegex);
         if (negativeMatch !== null) {
-          let dirname5 = negativeMatch[2];
+          let dirname6 = negativeMatch[2];
           while (true) {
-            dirname5 = path.dirname(dirname5);
-            if (dirname5 === "/" || dirname5 === ".") {
+            dirname6 = path.dirname(dirname6);
+            if (dirname6 === "/" || dirname6 === ".") {
               break;
             }
-            this.completeIgnore.add(negativeMatch[1] + dirname5);
+            this.completeIgnore.add(negativeMatch[1] + dirname6);
           }
         }
       }
@@ -57856,35 +57896,100 @@ var init_ignore = __esm({
 });
 
 // ../../aws-cdk-lib/core/lib/fs/utils.ts
-function shouldFollow(mode, sourceRoot, realPath) {
-  switch (mode) {
-    case "always" /* ALWAYS */:
-      return fs2.existsSync(realPath);
-    case "external" /* EXTERNAL */:
-      return !_isInternal() && fs2.existsSync(realPath);
-    case "internal-only" /* BLOCK_EXTERNAL */:
-      if (_isInternal()) {
-        return fs2.existsSync(realPath);
-      } else {
-        throw new UnscopedValidationError(
-          lit`BundlingFileSymlinkForbidden`,
-          `The file ${realPath} is an external symbolic link which is forbidden due to follow mode ${mode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`
-        );
-      }
-    case "never" /* NEVER */:
-      return false;
-    default:
-      throw new UnscopedValidationError(lit`UnsupportedFollowMode`, `Unsupported FollowMode: ${mode}`);
-  }
-  function _isInternal() {
-    return isInternalPath(path2.resolve(sourceRoot), path2.resolve(realPath));
-  }
-}
 function isInternalPath(rootPath, targetPath) {
   return rootPath === targetPath || targetPath.startsWith(rootPath + path2.sep);
 }
 function resolveLinkTarget(realPath, linkTarget) {
   return path2.isAbsolute(linkTarget) ? path2.resolve(linkTarget) : path2.resolve(path2.dirname(realPath), linkTarget);
+}
+function walkDirectory(directory, options, visitor) {
+  const { follow, ignoreStrategy } = options;
+  const canonicalRoot = realPathOrSelf(options.root ?? directory);
+  const ancestors = /* @__PURE__ */ new Set();
+  walk(directory, directory, realPathOrSelf(directory));
+  function walk(symbolicPath, realPath, canonicalPath) {
+    if (ancestors.has(canonicalPath)) {
+      return;
+    }
+    ancestors.add(canonicalPath);
+    const entries = fs2.readdirSync(realPath, { withFileTypes: true });
+    entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    for (const entry of entries) {
+      const childPath = path2.join(symbolicPath, entry.name);
+      const childRealPath = path2.join(realPath, entry.name);
+      if (entry.isSymbolicLink()) {
+        visitSymlink(childPath, childRealPath);
+      } else if (entry.isDirectory()) {
+        visitDirectory(childPath, childRealPath, path2.join(canonicalPath, entry.name));
+      } else if (entry.isFile()) {
+        visitFile({ path: childPath, realPath: childRealPath });
+      }
+    }
+    ancestors.delete(canonicalPath);
+  }
+  function visitDirectory(symbolicPath, realPath, canonicalPath) {
+    if (ignoreStrategy.completelyIgnores(symbolicPath)) {
+      return;
+    }
+    if (visitor.onDirectory) {
+      visitor.onDirectory({ path: symbolicPath, realPath, ignored: ignoreStrategy.ignores(symbolicPath) });
+    }
+    walk(symbolicPath, realPath, canonicalPath);
+  }
+  function visitFile(entry) {
+    if (!ignoreStrategy.ignores(entry.path)) {
+      visitor.onFile?.(entry);
+    }
+  }
+  function visitSymlink(symbolicPath, realPath) {
+    const linkTarget = fs2.readlinkSync(realPath);
+    const resolvedLinkTarget = canonicalLinkTarget(resolveLinkTarget(realPath, linkTarget));
+    const internal = isInternalPath(canonicalRoot, resolvedLinkTarget);
+    const targetStats = shouldFollow(internal) ? tryStat(resolvedLinkTarget) : void 0;
+    if (!targetStats) {
+      if (!ignoreStrategy.ignores(symbolicPath)) {
+        visitor.onSymlink?.({ path: symbolicPath, realPath, linkTarget, resolvedLinkTarget, internal });
+      }
+      return;
+    }
+    if (targetStats.isDirectory()) {
+      visitDirectory(symbolicPath, resolvedLinkTarget, realPathOrSelf(resolvedLinkTarget));
+    } else if (targetStats.isFile()) {
+      visitFile({ path: symbolicPath, realPath: resolvedLinkTarget, stats: targetStats });
+    } else if (!ignoreStrategy.ignores(symbolicPath)) {
+      visitor.onUnsupported?.({ path: symbolicPath, realPath: resolvedLinkTarget });
+    }
+  }
+  function shouldFollow(internal) {
+    switch (follow) {
+      case "always" /* ALWAYS */:
+        return true;
+      case "external" /* EXTERNAL */:
+        return !internal;
+      case "internal-only" /* BLOCK_EXTERNAL */:
+        return internal;
+      case "never" /* NEVER */:
+      default:
+        return false;
+    }
+  }
+}
+function canonicalLinkTarget(target) {
+  return path2.join(realPathOrSelf(path2.dirname(target)), path2.basename(target));
+}
+function realPathOrSelf(target) {
+  try {
+    return fs2.realpathSync(target);
+  } catch {
+    return target;
+  }
+}
+function tryStat(target) {
+  try {
+    return fs2.statSync(target, { bigint: true });
+  } catch {
+    return void 0;
+  }
 }
 var fs2, path2;
 var init_utils = __esm({
@@ -57893,52 +57998,50 @@ var init_utils = __esm({
     fs2 = __toESM(require("fs"));
     path2 = __toESM(require("path"));
     init_options();
-    init_errors();
-    init_literal_string();
   }
 });
 
 // ../../aws-cdk-lib/core/lib/fs/copy.ts
 function copyDirectory(srcDir, destDir, options = {}, rootDir) {
   const follow = options.follow ?? "external" /* EXTERNAL */;
-  rootDir = rootDir || srcDir;
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
+  const root = rootDir || srcDir;
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
   if (!fs3.statSync(srcDir).isDirectory()) {
     throw new UnscopedValidationError(lit`Directory`, `${srcDir} is not a directory`);
   }
-  const files = fs3.readdirSync(srcDir);
-  for (const file of files) {
-    const sourceFilePath = path3.join(srcDir, file);
-    if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
-      continue;
-    }
-    const destFilePath = path3.join(destDir, file);
-    let stat = follow === "always" /* ALWAYS */ ? fs3.statSync(sourceFilePath) : fs3.lstatSync(sourceFilePath);
-    if (stat && stat.isSymbolicLink()) {
-      const target = fs3.readlinkSync(sourceFilePath);
-      const targetPath = path3.normalize(path3.resolve(srcDir, target));
-      if (shouldFollow(follow, rootDir, targetPath)) {
-        stat = fs3.statSync(sourceFilePath);
-      } else {
-        if (!ignoreStrategy.ignores(sourceFilePath)) {
-          fs3.mkdirSync(destDir, { recursive: true });
-          fs3.symlinkSync(target, destFilePath);
-        }
-        stat = void 0;
+  const canonicalSrcDir = fs3.realpathSync(srcDir);
+  walkDirectory(srcDir, { follow, ignoreStrategy, root }, {
+    onDirectory: (entry) => {
+      if (!entry.ignored) {
+        fs3.mkdirSync(destinationOf(entry.path), { recursive: true });
       }
-    }
-    if (stat && stat.isDirectory()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) fs3.mkdirSync(destFilePath, { recursive: true });
-      copyDirectory(sourceFilePath, destFilePath, options, rootDir);
-      stat = void 0;
-    }
-    if (stat && stat.isFile()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) {
-        fs3.mkdirSync(destDir, { recursive: true });
-        fs3.copyFileSync(sourceFilePath, destFilePath);
+    },
+    onFile: (entry) => {
+      const destination = destinationOf(entry.path);
+      fs3.mkdirSync(path3.dirname(destination), { recursive: true });
+      fs3.copyFileSync(entry.realPath, destination);
+    },
+    onSymlink: (entry) => {
+      if (follow === "internal-only" /* BLOCK_EXTERNAL */ && !entry.internal) {
+        throw new UnscopedValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${follow}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`
+        );
       }
-      stat = void 0;
+      const destination = destinationOf(entry.path);
+      fs3.mkdirSync(path3.dirname(destination), { recursive: true });
+      fs3.symlinkSync(linkTextFor(entry, destination), destination);
     }
+  });
+  function destinationOf(sourcePath) {
+    return path3.join(destDir, path3.relative(srcDir, sourcePath));
+  }
+  function linkTextFor(entry, destination) {
+    if (!isInternalPath(canonicalSrcDir, entry.resolvedLinkTarget)) {
+      return entry.linkTarget;
+    }
+    const copiedTarget = path3.join(destDir, path3.relative(canonicalSrcDir, entry.resolvedLinkTarget));
+    return path3.relative(path3.dirname(destination), copiedTarget) || ".";
   }
 }
 var fs3, path3;
@@ -58069,103 +58172,44 @@ function fingerprint(fileOrDirectory, options = {}) {
   _hashField(hash, "options.extra", options.extraHash || "");
   const follow = options.follow || "external" /* EXTERNAL */;
   _hashField(hash, "options.follow", follow);
-  fileOrDirectory = fs5.realpathSync(fileOrDirectory);
-  const isDir = fs5.statSync(fileOrDirectory).isDirectory();
-  const rootDirectory = isDir ? fileOrDirectory : path5.dirname(fileOrDirectory);
+  const root = fs5.realpathSync(fileOrDirectory);
+  const isDir = fs5.statSync(root).isDirectory();
+  const rootDirectory = isDir ? root : path5.dirname(root);
   const ignoreMode = options.ignoreMode || "glob" /* GLOB */;
   if (ignoreMode != "glob" /* GLOB */) {
     _hashField(hash, "options.ignoreMode", ignoreMode);
   }
   const resolvedRoot = path5.resolve(rootDirectory);
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
   const cache = new FingerprintDiskCache(resolvedRoot);
-  function _contentFingerprint(file) {
-    const stats = fs5.statSync(file, { bigint: true });
-    return contentFingerprintWithStats(file, stats, cache);
-  }
   if (isDir) {
-    _processDirectory(fileOrDirectory, fileOrDirectory);
+    walkDirectory(root, { follow, ignoreStrategy }, {
+      onFile: (entry) => hashFileContent(entry.path, entry.stats ? contentFingerprintWithStats(entry.realPath, entry.stats, cache) : contentFingerprintOf(entry.realPath)),
+      onSymlink: (entry) => hashLinkTarget(entry),
+      onUnsupported: (entry) => {
+        throw new UnscopedValidationError(
+          lit`UnableToUnableHashNeither`,
+          `Unable to hash ${entry.path}: it is neither a file nor a directory`
+        );
+      }
+    });
   } else {
-    const hashComponent = path5.relative(fileOrDirectory, fileOrDirectory).replace(/\\/g, "/");
-    _hashField(hash, `file:${hashComponent}`, _contentFingerprint(fileOrDirectory));
+    hashFileContent(root, contentFingerprintOf(root));
   }
   cache.save();
   return hash.digest("hex");
-  function _shouldFollowLink(resolvedLinkTarget) {
-    switch (follow) {
-      case "always" /* ALWAYS */:
-        return true;
-      case "external" /* EXTERNAL */:
-        return !isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case "internal-only" /* BLOCK_EXTERNAL */:
-        return isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case "never" /* NEVER */:
-        return false;
-      default:
-        return false;
-    }
+  function hashKey(symbolicPath) {
+    return path5.relative(root, symbolicPath).replace(/\\/g, "/");
   }
-  function _processDirectory(symbolicPath, realPath) {
-    const entries = fs5.readdirSync(realPath, { withFileTypes: true });
-    const sorted = entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    for (const entry of sorted) {
-      const childSymbolicPath = path5.join(symbolicPath, entry.name);
-      const childRealPath = path5.join(realPath, entry.name);
-      if (entry.isSymbolicLink()) {
-        _processSymlink(childSymbolicPath, childRealPath);
-      } else if (entry.isFile()) {
-        if (ignoreStrategy.ignores(childSymbolicPath)) {
-          continue;
-        }
-        const hashComponent = path5.relative(fileOrDirectory, childSymbolicPath).replace(/\\/g, "/");
-        _hashField(hash, `file:${hashComponent}`, _contentFingerprint(childRealPath));
-      } else if (entry.isDirectory()) {
-        if (ignoreStrategy.completelyIgnores(childSymbolicPath)) {
-          continue;
-        }
-        _processDirectory(childSymbolicPath, childRealPath);
-      }
-    }
+  function hashFileContent(symbolicPath, contentHash2) {
+    _hashField(hash, `file:${hashKey(symbolicPath)}`, contentHash2);
   }
-  function _processSymlink(symbolicPath, realPath) {
-    const linkTarget = fs5.readlinkSync(realPath);
-    const resolvedLinkTarget = resolveLinkTarget(realPath, linkTarget);
-    if (!_shouldFollowLink(resolvedLinkTarget)) {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
-    let targetStat;
-    try {
-      targetStat = fs5.statSync(resolvedLinkTarget, { bigint: true });
-    } catch {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
-    if (targetStat.isDirectory()) {
-      if (ignoreStrategy.completelyIgnores(symbolicPath)) {
-        return;
-      }
-      _processDirectory(symbolicPath, resolvedLinkTarget);
-    } else if (targetStat.isFile()) {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `file:${hashComponent}`, contentFingerprintWithStats(resolvedLinkTarget, targetStat, cache));
-    } else {
-      throw new UnscopedValidationError(
-        lit`UnableToUnableHashNeither`,
-        `Unable to hash ${symbolicPath}: it is neither a file nor a directory`
-      );
-    }
+  function hashLinkTarget(entry) {
+    const target = entry.internal && path5.isAbsolute(entry.linkTarget) ? hashKey(entry.resolvedLinkTarget) : entry.linkTarget;
+    _hashField(hash, `link:${hashKey(entry.path)}`, target);
+  }
+  function contentFingerprintOf(file) {
+    return contentFingerprintWithStats(file, fs5.statSync(file, { bigint: true }), cache);
   }
 }
 function contentFingerprintWithStats(file, stats, cache) {
@@ -58417,8 +58461,8 @@ var init_fs = __esm({
       /**
        * Deletes a directory
        */
-      static rmrf(dirname5) {
-        fs6.rmSync(dirname5, { force: true, recursive: true });
+      static rmrf(dirname6) {
+        fs6.rmSync(dirname6, { force: true, recursive: true });
       }
       static _tmpdir;
     };
@@ -58934,32 +58978,18 @@ function determineHashType(scope, assetHashType, customSourceFingerprint) {
   }
   return hashType;
 }
-function validateInternalSymlinks(root, scope, followMode, ignoreStrat, subRoot = root) {
-  const entries = fs7.readdirSync(subRoot, { withFileTypes: true });
-  for (const entry of entries) {
-    const childPath = path7.join(subRoot, entry.name);
-    if (entry.isDirectory()) {
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
-    } else if (!entry.isSymbolicLink()) {
-      continue;
-    } else {
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      const linkPath = fs7.readlinkSync(childPath);
-      const resolvedPath3 = resolveLinkTarget(childPath, linkPath);
-      if (!isInternalPath(root, resolvedPath3)) {
+function validateInternalSymlinks(root, scope, followMode, ignoreStrat) {
+  walkDirectory(root, { follow: followMode, ignoreStrategy: ignoreStrat }, {
+    onSymlink: (entry) => {
+      if (!entry.internal) {
         throw new ValidationError(
           lit`BundlingFileSymlinkForbidden`,
-          `The file ${resolvedPath3} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
           scope
         );
       }
     }
-  }
+  });
 }
 function calculateCacheKey(props) {
   return crypto6.createHash("sha256").update(JSON.stringify(sortObject(props), sanitizeHashValue)).digest("hex");
@@ -69042,7 +69072,7 @@ var init_cfn_utils_provider_generated = __esm({
       constructor(scope, id, props) {
         super(scope, id, {
           ...props,
-          codeDirectory: path9.join(__dirname, "C:UsersjosepDesktopProjectscontributingaws-cdkpackages@aws-cdkcustom-resource-handlersdistcorecfn-utils-provider"),
+          codeDirectory: path9.join(__dirname, "cfn-utils-provider"),
           runtimeName: determineLatestNodeRuntimeName(scope)
         });
         this.node.addMetadata("aws:cdk:is-custom-resource-handler-customResourceProvider", true);
@@ -71858,12 +71888,12 @@ ${ctx.indent}`;
       for (const {
         format,
         test,
-        resolve: resolve7
+        resolve: resolve6
       } of tags) {
         if (test) {
           const match = str.match(test);
           if (match) {
-            let res = resolve7.apply(null, match);
+            let res = resolve6.apply(null, match);
             if (!(res instanceof Scalar2)) res = new Scalar2(res);
             if (format) res.format = format;
             return res;
@@ -76837,7 +76867,7 @@ var init_cross_region_ssm_reader_provider_generated = __esm({
       constructor(scope, id, props) {
         super(scope, id, {
           ...props,
-          codeDirectory: path11.join(__dirname, "C:UsersjosepDesktopProjectscontributingaws-cdkpackages@aws-cdkcustom-resource-handlersdistcorecross-region-ssm-reader-handler"),
+          codeDirectory: path11.join(__dirname, "cross-region-ssm-reader-handler"),
           runtimeName: determineLatestNodeRuntimeName(scope)
         });
         this.node.addMetadata("aws:cdk:is-custom-resource-handler-customResourceProvider", true);
@@ -76965,7 +76995,7 @@ var init_cross_region_ssm_writer_provider_generated = __esm({
       constructor(scope, id, props) {
         super(scope, id, {
           ...props,
-          codeDirectory: path12.join(__dirname, "C:UsersjosepDesktopProjectscontributingaws-cdkpackages@aws-cdkcustom-resource-handlersdistcorecross-region-ssm-writer-handler"),
+          codeDirectory: path12.join(__dirname, "cross-region-ssm-writer-handler"),
           runtimeName: determineLatestNodeRuntimeName(scope)
         });
         this.node.addMetadata("aws:cdk:is-custom-resource-handler-customResourceProvider", true);
@@ -77157,7 +77187,7 @@ function* iterateDfsPreorder(root) {
     next = stack.pop();
   }
 }
-function* iterateStackCfnResources(root) {
+function* iterateTemplateCfnResources(root) {
   const stack = [root];
   let next = stack.pop();
   while (next) {
@@ -77773,7 +77803,7 @@ function* dependingResourcesFor(construct) {
     yield construct.construct.nestedStackResource;
   }
   if (construct.type === "construct") {
-    yield* iterateStackCfnResources(construct.construct);
+    yield* iterateTemplateCfnResources(construct.construct);
   }
 }
 function dependencyContainerPath(start) {
@@ -77926,270 +77956,6 @@ var init_prepare_app = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/tree.ts
-var TreeInspector;
-var init_tree = __esm({
-  "../../aws-cdk-lib/core/lib/tree.ts"() {
-    "use strict";
-    TreeInspector = class {
-      /**
-       * Represents the bag of attributes as key-value pairs.
-       */
-      attributes = {};
-      /**
-       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
-       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
-       *
-       * @param key - key for metadata
-       * @param value - value of metadata.
-       */
-      addAttribute(key, value) {
-        this.attributes[key] = value;
-      }
-    };
-  }
-});
-
-// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
-function nodeCount(root) {
-  let count2 = 0;
-  const stack = [root];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    count2 += 1;
-    if (current.children) {
-      for (const child of Object.values(current.children)) {
-        stack.push(child);
-      }
-    }
-  }
-  return count2;
-}
-function setChild(parent, node) {
-  if (!parent.children) {
-    parent.children = {};
-  }
-  parent.children[node.id] = node;
-}
-var fs10, path13, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
-var init_tree_metadata = __esm({
-  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
-    "use strict";
-    fs10 = __toESM(require("fs"));
-    path13 = __toESM(require("path"));
-    import_constructs16 = __toESM(require_lib4());
-    init_runtime_info();
-    init_cloud_assembly_schema();
-    init_annotations();
-    init_tree();
-    init_construct_iteration();
-    init_errors();
-    init_core_construct_finders();
-    init_literal_string();
-    FILE_PATH = "tree.json";
-    TreeMetadata = class extends import_constructs16.Construct {
-      constructor(scope) {
-        super(scope, "Tree");
-      }
-      /**
-       * Create tree.json
-       * @internal
-       */
-      _synthesizeTree(session) {
-        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
-        const builder = session.assembly;
-        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
-        for (const { construct, parent } of iterateBfs(this.node.root)) {
-          const node = {
-            id: construct.node.id || "App",
-            path: construct.node.path,
-            constructInfo: constructInfoFromConstruct(construct)
-          };
-          try {
-            node.attributes = this.synthAttributes(construct);
-          } catch (e) {
-            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
-          }
-          writer.addNode(construct, parent, node);
-        }
-        const rootFilename = writer.writeForest();
-        builder.addArtifact("Tree", {
-          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
-          properties: {
-            file: rootFilename
-          }
-        });
-      }
-      synthAttributes(construct) {
-        function canInspect2(inspectable) {
-          return inspectable.inspect !== void 0;
-        }
-        const inspector = new TreeInspector();
-        if (canInspect2(construct)) {
-          construct.inspect(inspector);
-          return stackOf(construct).resolve(inspector.attributes);
-        }
-        return void 0;
-      }
-    };
-    FragmentedTreeWriter = class {
-      constructor(outdir, rootFilename, options) {
-        this.outdir = outdir;
-        this.rootFilename = rootFilename;
-        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
-      }
-      outdir;
-      rootFilename;
-      /**
-       * We only care about the identify of this object.
-       *
-       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
-       */
-      mainTreePointer = {
-        fileName: "yyy",
-        id: "id",
-        path: "path"
-      };
-      forest = new Array();
-      /**
-       * Maps a Construct to its respective Node
-       */
-      constructMap = /* @__PURE__ */ new Map();
-      /**
-       * Map a root Node to its containing Tree
-       */
-      subtreeRoots = /* @__PURE__ */ new Map();
-      /**
-       * Map a Node to its parent Node
-       */
-      parent = /* @__PURE__ */ new Map();
-      maxNodes;
-      /**
-       * Write the forest to disk, return the root file name
-       */
-      writeForest() {
-        const forestFiles = this.allocateSubTreesToForestFiles();
-        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
-        if (mainTree) {
-          const treeFile = { version: "tree-0.1", tree: mainTree.root };
-          fs10.writeFileSync(path13.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
-        }
-        for (const forestFile of forestFiles) {
-          fs10.writeFileSync(path13.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
-        }
-        return this.rootFilename;
-      }
-      /**
-       * Find all non-main tree and combine them into forest files
-       *
-       * This will mutate the pointing nodes as a side effect.
-       */
-      allocateSubTreesToForestFiles() {
-        const ret = new Array();
-        for (const tree of this.forest) {
-          if (tree.referencingNode === this.mainTreePointer) {
-            continue;
-          }
-          let targetForest;
-          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
-            targetForest = {
-              fileName: `trees-${ret.length + 1}.json`,
-              file: { version: "forest-0.1", forest: {} },
-              nodeCount: 0,
-              treeCount: 0
-            };
-            ret.push(targetForest);
-          } else {
-            targetForest = ret[ret.length - 1];
-          }
-          const treeId = `t${targetForest.treeCount++}`;
-          targetForest.file.forest[treeId] = tree.root;
-          targetForest.nodeCount += tree.nodes;
-          tree.referencingNode.fileName = targetForest.fileName;
-          tree.referencingNode.treeId = treeId;
-        }
-        return ret;
-      }
-      addNode(construct, parent, node) {
-        if (parent === void 0) {
-          if (this.forest.length > 0) {
-            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
-          }
-          this.addNewTree(node, this.mainTreePointer);
-        } else {
-          const parentNode = this.constructMap.get(parent);
-          if (!parentNode) {
-            return;
-          }
-          this.addToExistingTree(node, parentNode);
-        }
-        this.constructMap.set(construct, node);
-      }
-      /**
-       * Add a new tree with the given Node as root
-       */
-      addNewTree(root, referencingNode) {
-        const tree = {
-          root,
-          referencingNode,
-          nodes: nodeCount(root)
-        };
-        this.forest.push(tree);
-        this.subtreeRoots.set(root, tree);
-        return tree;
-      }
-      /**
-       * Add the given node to an existing tree, potentially splitting it
-       */
-      addToExistingTree(node, parent) {
-        let tree = this.treeForNode(parent);
-        if (this.isTreeFull(tree)) {
-          const grandParent = this.parent.get(parent);
-          if (!grandParent) {
-            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
-          }
-          const subtreeReference = {
-            id: parent.id,
-            path: parent.path,
-            fileName: "xxx"
-            // Will be replaced later
-          };
-          tree = this.addNewTree(parent, subtreeReference);
-          setChild(grandParent, subtreeReference);
-          this.subtreeRoots.set(parent, tree);
-        }
-        setChild(parent, node);
-        this.parent.set(node, parent);
-        tree.nodes += 1;
-      }
-      /**
-       * Whether the given tree is full
-       */
-      isTreeFull(t) {
-        return t.nodes >= this.maxNodes;
-      }
-      /**
-       * Return the Tree that contains the given Node
-       */
-      treeForNode(node) {
-        const tried = new Array();
-        let cur = node;
-        tried.push(cur.path);
-        let tree = this.subtreeRoots.get(cur);
-        while (!tree && cur) {
-          cur = this.parent.get(cur);
-          tried.push(cur?.path);
-          tree = cur && this.subtreeRoots.get(cur);
-        }
-        if (tree) {
-          return tree;
-        }
-        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
-      }
-    };
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/validation/private/validation-id.ts
 function parseValidationId(id) {
   let nsSeparator = void 0;
@@ -78274,7 +78040,7 @@ function collectAnnotationReport(root) {
       }
       let templatePath;
       try {
-        templatePath = path14.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
+        templatePath = path13.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
       } catch (e) {
       }
       const resourceLogicalId = CfnResource.isCfnResource(construct) ? stackOf(construct).resolve(construct.logicalId) : void 0;
@@ -78326,11 +78092,11 @@ function splitDescriptionAndId(message) {
   }
   return { message };
 }
-var path14, AnnotationPlugin;
+var path13, AnnotationPlugin;
 var init_annotation_plugin = __esm({
   "../../aws-cdk-lib/core/lib/private/annotation-plugin.ts"() {
     "use strict";
-    path14 = __toESM(require("path"));
+    path13 = __toESM(require("path"));
     init_construct_iteration();
     init_core_construct_finders();
     init_cloud_assembly_schema();
@@ -79672,22 +79438,22 @@ function mapSeverity(severity) {
   }
 }
 function defaultRegoRules() {
-  const rulesDir = path15.join(__dirname, "rules");
-  return fs11.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
+  const rulesDir = path14.join(__dirname, "rules");
+  return fs10.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
     name: f,
-    content: fs11.readFileSync(path15.join(rulesDir, f), "utf-8")
+    content: fs10.readFileSync(path14.join(rulesDir, f), "utf-8")
   }));
 }
 function isContainedWithin(root, child) {
-  const rel = path15.relative(root, child);
-  return !rel.startsWith("..") && !path15.isAbsolute(rel);
+  const rel = path14.relative(root, child);
+  return !rel.startsWith("..") && !path14.isAbsolute(rel);
 }
 function loadSchemasFromDirectory(dir) {
   const schemas = [];
-  if (!fs11.existsSync(dir)) {
+  if (!fs10.existsSync(dir)) {
     return schemas;
   }
-  const rootReal = fs11.realpathSync(dir);
+  const rootReal = fs10.realpathSync(dir);
   function walk(currentDir, depth) {
     if (depth > MAX_SCHEMA_DIRECTORY_DEPTH) {
       throw new UnscopedValidationError(
@@ -79695,9 +79461,9 @@ function loadSchemasFromDirectory(dir) {
         `[CloudFormation Validate] Schema directory exceeds maximum depth of ${MAX_SCHEMA_DIRECTORY_DEPTH}: ${currentDir}`
       );
     }
-    const entries = fs11.readdirSync(currentDir, { withFileTypes: true });
+    const entries = fs10.readdirSync(currentDir, { withFileTypes: true });
     for (const entry of entries) {
-      const fullPath = path15.join(currentDir, entry.name);
+      const fullPath = path14.join(currentDir, entry.name);
       if (entry.isSymbolicLink()) {
         throw new UnscopedValidationError(
           lit`SchemaLoadError`,
@@ -79705,7 +79471,7 @@ function loadSchemasFromDirectory(dir) {
         );
       }
       if (entry.isDirectory()) {
-        const resolved = fs11.realpathSync(fullPath);
+        const resolved = fs10.realpathSync(fullPath);
         if (!isContainedWithin(rootReal, resolved)) {
           throw new UnscopedValidationError(
             lit`SchemaLoadError`,
@@ -79714,7 +79480,7 @@ function loadSchemasFromDirectory(dir) {
         }
         walk(fullPath, depth + 1);
       } else if (entry.isFile() && entry.name.endsWith(".json")) {
-        const content = fs11.readFileSync(fullPath, "utf-8");
+        const content = fs10.readFileSync(fullPath, "utf-8");
         let parsed;
         try {
           parsed = JSON.parse(content);
@@ -79745,12 +79511,12 @@ function loadSchemasFromDirectory(dir) {
   }
   return schemas;
 }
-var fs11, path15, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
+var fs10, path14, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
 var init_cloudformation_validate_plugin = __esm({
   "../../aws-cdk-lib/core/lib/validation/cloudformation-validate-plugin.ts"() {
     "use strict";
-    fs11 = __toESM(require("fs"));
-    path15 = __toESM(require("path"));
+    fs10 = __toESM(require("fs"));
+    path14 = __toESM(require("path"));
     import_cloudformation_validate = __toESM(require_cloudformation_validate());
     init_errors();
     init_literal_string();
@@ -79942,13 +79708,6 @@ var init_cloudformation_validate_plugin = __esm({
       // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
       // span accounts.
       "W9013",
-      // WHAT: value type tracking (parameter default should be a string)
-      // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-      // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-      // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-      "E2001",
       // WHAT: built-in function not recognized
       // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.
       // This diagnostic is intended to protect against typos in templates, but since the intrinsics
@@ -79965,13 +79724,13 @@ function propertyAssignmentMatchesPropertyPath(meta, propertyPath) {
   return propertyPath === `Properties.${meta.data.propertyName}` || propertyPath.startsWith(`Properties.${meta.data.propertyName}.`);
 }
 function isPropertyMutationMetadataEntry(entry) {
-  return entry.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
+  return entry.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
 }
-var import_cloud_assembly_schema3, ConstructTree, STACK_TRACE_HINT;
+var import_cloud_assembly_schema2, ConstructTree, STACK_TRACE_HINT;
 var init_construct_tree = __esm({
   "../../aws-cdk-lib/core/lib/validation/private/construct-tree.ts"() {
     "use strict";
-    import_cloud_assembly_schema3 = __toESM(require_lib2());
+    import_cloud_assembly_schema2 = __toESM(require_lib2());
     init_app2();
     init_cfn_resource();
     init_construct_iteration();
@@ -80087,7 +79846,7 @@ var init_construct_tree = __esm({
        * Returns a stack trace if stack trace information is found, or `undefined` if not.
        */
       creationTrace(construct) {
-        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
+        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
       }
       mutationTracesByPath(constructPath, propertyPath) {
         const construct = this.getConstructByPath(constructPath);
@@ -80593,11 +80352,11 @@ function validateTemplates(root, outdir, assembly) {
     const suppressedByReport = collectSuppressions(root, reports);
     const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
     const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
-    const reportFile = path17.join(assembly.directory, VALIDATION_REPORT_FILE);
-    fs12.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
+    const reportFile = path16.join(assembly.directory, VALIDATION_REPORT_FILE);
+    fs11.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
     if (getBooleanContext(root, VALIDATION_REPORT_JSON_CONTEXT, false)) {
-      fs12.writeFileSync(
-        path17.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+      fs11.writeFileSync(
+        path16.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
         JSON.stringify(formatter.formatLegacyJson(reports), void 0, 2)
       );
     }
@@ -80706,7 +80465,7 @@ function inferConstructPathsFromLogicalIds(reports, tree) {
       for (const resource of violation.violatingResources) {
         if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
           mutable(resource).constructPath = tree.getConstructByLogicalId(
-            path17.basename(resource.templatePath),
+            path16.basename(resource.templatePath),
             resource.resourceLogicalId
           )?.node.path;
         }
@@ -80854,7 +80613,7 @@ function doInvokeValidationPlugins(outdir, plugins, root) {
     for (const v of report.violations) {
       for (const r of v.violatingResources) {
         if (r.templatePath) {
-          mutable(r).templatePath = path17.relative(outdir, path17.resolve(r.templatePath));
+          mutable(r).templatePath = path16.relative(outdir, path16.resolve(r.templatePath));
         }
       }
     }
@@ -80901,8 +80660,8 @@ function hasModifiedPreExistingFiles(snapshot) {
 function collectFilePaths(dir) {
   const results = [];
   function walk(current) {
-    for (const entry of fs12.readdirSync(current, { withFileTypes: true })) {
-      const full = path17.join(current, entry.name);
+    for (const entry of fs11.readdirSync(current, { withFileTypes: true })) {
+      const full = path16.join(current, entry.name);
       if (entry.isDirectory()) {
         walk(full);
       } else if (entry.isFile()) {
@@ -80910,7 +80669,7 @@ function collectFilePaths(dir) {
       } else if (entry.isSymbolicLink()) {
         let st;
         try {
-          st = fs12.lstatSync(full);
+          st = fs11.lstatSync(full);
         } catch {
           continue;
         }
@@ -80924,12 +80683,12 @@ function collectFilePaths(dir) {
   return results;
 }
 function hashFile(filePath) {
-  const content = fs12.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs12.readlinkSync(filePath)) : fs12.readFileSync(filePath);
+  const content = fs11.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs11.readlinkSync(filePath)) : fs11.readFileSync(filePath);
   return crypto7.createHash("sha256").update(content).digest("hex");
 }
 function fileOrSymlinkExists(p) {
   try {
-    fs12.lstatSync(p);
+    fs11.lstatSync(p);
     return true;
   } catch {
     return false;
@@ -80969,13 +80728,13 @@ function cdkAppMode(root) {
   }
   return "unknown";
 }
-var crypto7, fs12, path17, LEGACY_POLICY_VALIDATION_FILE_PATH;
+var crypto7, fs11, path16, LEGACY_POLICY_VALIDATION_FILE_PATH;
 var init_synthesis_validation = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis-validation.ts"() {
     "use strict";
     crypto7 = __toESM(require("crypto"));
-    fs12 = __toESM(require("fs"));
-    path17 = __toESM(require("path"));
+    fs11 = __toESM(require("fs"));
+    path16 = __toESM(require("path"));
     init_annotation_plugin();
     init_collect_acknowledged_rule_ids();
     init_literal_string();
@@ -80992,6 +80751,270 @@ var init_synthesis_validation = __esm({
     init_report2();
     init_validation_id();
     LEGACY_POLICY_VALIDATION_FILE_PATH = "policy-validation-report.json";
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/tree.ts
+var TreeInspector;
+var init_tree = __esm({
+  "../../aws-cdk-lib/core/lib/tree.ts"() {
+    "use strict";
+    TreeInspector = class {
+      /**
+       * Represents the bag of attributes as key-value pairs.
+       */
+      attributes = {};
+      /**
+       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
+       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
+       *
+       * @param key - key for metadata
+       * @param value - value of metadata.
+       */
+      addAttribute(key, value) {
+        this.attributes[key] = value;
+      }
+    };
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
+function nodeCount(root) {
+  let count2 = 0;
+  const stack = [root];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    count2 += 1;
+    if (current.children) {
+      for (const child of Object.values(current.children)) {
+        stack.push(child);
+      }
+    }
+  }
+  return count2;
+}
+function setChild(parent, node) {
+  if (!parent.children) {
+    parent.children = {};
+  }
+  parent.children[node.id] = node;
+}
+var fs12, path17, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
+var init_tree_metadata = __esm({
+  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
+    "use strict";
+    fs12 = __toESM(require("fs"));
+    path17 = __toESM(require("path"));
+    import_constructs16 = __toESM(require_lib4());
+    init_runtime_info();
+    init_cloud_assembly_schema();
+    init_annotations();
+    init_tree();
+    init_construct_iteration();
+    init_errors();
+    init_core_construct_finders();
+    init_literal_string();
+    FILE_PATH = "tree.json";
+    TreeMetadata = class extends import_constructs16.Construct {
+      constructor(scope) {
+        super(scope, "Tree");
+      }
+      /**
+       * Create tree.json
+       * @internal
+       */
+      _synthesizeTree(session) {
+        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
+        const builder = session.assembly;
+        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
+        for (const { construct, parent } of iterateBfs(this.node.root)) {
+          const node = {
+            id: construct.node.id || "App",
+            path: construct.node.path,
+            constructInfo: constructInfoFromConstruct(construct)
+          };
+          try {
+            node.attributes = this.synthAttributes(construct);
+          } catch (e) {
+            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
+          }
+          writer.addNode(construct, parent, node);
+        }
+        const rootFilename = writer.writeForest();
+        builder.addArtifact("Tree", {
+          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
+          properties: {
+            file: rootFilename
+          }
+        });
+      }
+      synthAttributes(construct) {
+        function canInspect2(inspectable) {
+          return inspectable.inspect !== void 0;
+        }
+        const inspector = new TreeInspector();
+        if (canInspect2(construct)) {
+          construct.inspect(inspector);
+          return stackOf(construct).resolve(inspector.attributes);
+        }
+        return void 0;
+      }
+    };
+    FragmentedTreeWriter = class {
+      constructor(outdir, rootFilename, options) {
+        this.outdir = outdir;
+        this.rootFilename = rootFilename;
+        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
+      }
+      outdir;
+      rootFilename;
+      /**
+       * We only care about the identify of this object.
+       *
+       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
+       */
+      mainTreePointer = {
+        fileName: "yyy",
+        id: "id",
+        path: "path"
+      };
+      forest = new Array();
+      /**
+       * Maps a Construct to its respective Node
+       */
+      constructMap = /* @__PURE__ */ new Map();
+      /**
+       * Map a root Node to its containing Tree
+       */
+      subtreeRoots = /* @__PURE__ */ new Map();
+      /**
+       * Map a Node to its parent Node
+       */
+      parent = /* @__PURE__ */ new Map();
+      maxNodes;
+      /**
+       * Write the forest to disk, return the root file name
+       */
+      writeForest() {
+        const forestFiles = this.allocateSubTreesToForestFiles();
+        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
+        if (mainTree) {
+          const treeFile = { version: "tree-0.1", tree: mainTree.root };
+          fs12.writeFileSync(path17.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
+        }
+        for (const forestFile of forestFiles) {
+          fs12.writeFileSync(path17.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
+        }
+        return this.rootFilename;
+      }
+      /**
+       * Find all non-main tree and combine them into forest files
+       *
+       * This will mutate the pointing nodes as a side effect.
+       */
+      allocateSubTreesToForestFiles() {
+        const ret = new Array();
+        for (const tree of this.forest) {
+          if (tree.referencingNode === this.mainTreePointer) {
+            continue;
+          }
+          let targetForest;
+          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
+            targetForest = {
+              fileName: `trees-${ret.length + 1}.json`,
+              file: { version: "forest-0.1", forest: {} },
+              nodeCount: 0,
+              treeCount: 0
+            };
+            ret.push(targetForest);
+          } else {
+            targetForest = ret[ret.length - 1];
+          }
+          const treeId = `t${targetForest.treeCount++}`;
+          targetForest.file.forest[treeId] = tree.root;
+          targetForest.nodeCount += tree.nodes;
+          tree.referencingNode.fileName = targetForest.fileName;
+          tree.referencingNode.treeId = treeId;
+        }
+        return ret;
+      }
+      addNode(construct, parent, node) {
+        if (parent === void 0) {
+          if (this.forest.length > 0) {
+            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
+          }
+          this.addNewTree(node, this.mainTreePointer);
+        } else {
+          const parentNode = this.constructMap.get(parent);
+          if (!parentNode) {
+            return;
+          }
+          this.addToExistingTree(node, parentNode);
+        }
+        this.constructMap.set(construct, node);
+      }
+      /**
+       * Add a new tree with the given Node as root
+       */
+      addNewTree(root, referencingNode) {
+        const tree = {
+          root,
+          referencingNode,
+          nodes: nodeCount(root)
+        };
+        this.forest.push(tree);
+        this.subtreeRoots.set(root, tree);
+        return tree;
+      }
+      /**
+       * Add the given node to an existing tree, potentially splitting it
+       */
+      addToExistingTree(node, parent) {
+        let tree = this.treeForNode(parent);
+        if (this.isTreeFull(tree)) {
+          const grandParent = this.parent.get(parent);
+          if (!grandParent) {
+            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
+          }
+          const subtreeReference = {
+            id: parent.id,
+            path: parent.path,
+            fileName: "xxx"
+            // Will be replaced later
+          };
+          tree = this.addNewTree(parent, subtreeReference);
+          setChild(grandParent, subtreeReference);
+          this.subtreeRoots.set(parent, tree);
+        }
+        setChild(parent, node);
+        this.parent.set(node, parent);
+        tree.nodes += 1;
+      }
+      /**
+       * Whether the given tree is full
+       */
+      isTreeFull(t) {
+        return t.nodes >= this.maxNodes;
+      }
+      /**
+       * Return the Tree that contains the given Node
+       */
+      treeForNode(node) {
+        const tried = new Array();
+        let cur = node;
+        tried.push(cur.path);
+        let tree = this.subtreeRoots.get(cur);
+        while (!tree && cur) {
+          cur = this.parent.get(cur);
+          tried.push(cur?.path);
+          tree = cur && this.subtreeRoots.get(cur);
+        }
+        if (tree) {
+          return tree;
+        }
+        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+      }
+    };
   }
 });
 
@@ -81206,18 +81229,18 @@ var init_synthesis = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis.ts"() {
     "use strict";
     private_cxapi = __toESM(require_lib3());
+    init_core_construct_finders();
     init_feature_flag_report();
     init_literal_string();
     init_metadata_resource2();
     init_prepare_app();
+    init_synthesis_validation();
     init_tree_metadata();
     init_legacy_moved();
     init_annotations();
     init_app2();
     init_aspect();
     init_errors();
-    init_core_construct_finders();
-    init_synthesis_validation();
     CUSTOM_SYNTHESIS_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core:customSynthesis");
   }
 });
@@ -82415,7 +82438,7 @@ function collectStackMetadata(stack) {
   const queue = [stack];
   let next;
   while (next = queue.shift()) {
-    if (STACK_TYPE.isMarked(next) && next !== stack && next.nestedStackParent === void 0) {
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
       continue;
     }
     handleNode(next);
@@ -84538,6 +84561,7 @@ var init_stack = __esm({
        */
       _synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions) {
         const builder = session.assembly;
+        this.node.addMetadata(CDK_TEMPLATE_FILE_KEY, this.templateFile);
         const template = this._toCloudFormation();
         const outPath = path21.join(builder.outdir, this.templateFile);
         if (this.maxResources > 0) {
@@ -84718,6 +84742,40 @@ var init_stack = __esm({
           throw new ValidationError(lit`ExportedStringValueFromExportStringListValue`, "Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead", this);
         }
         return importValue;
+      }
+      /**
+       * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
+       *
+       * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
+       * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
+       * is `CloudFormationProduct`.
+       *
+       * This indicates whether the current class represents a top-level stack
+       * (should only be true for instances of the main `Stack` class), or false for
+       * a construct that simply produces a template and happens to reuse `Stack`
+       * for that purpose.
+       *
+       * Here is the class hierarchy we should have had:
+       *
+       * ```
+       * TemplateProducer
+       * ├── Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * Here is the class hierarchy we actually have:
+       *
+       * ```
+       * Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * @internal
+       */
+      get _isTopLevelStack() {
+        return true;
       }
       /**
        * Returns the naming scheme used to allocate logical IDs. By default, uses
@@ -85781,6 +85839,7 @@ var init_tag_manager = __esm({
     init_errors();
     init_lazy();
     init_literal_string();
+    init_token();
     TAG_MANAGER_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core.TagManager");
     StandardFormatter = class {
       parseTags(cfnPropertyTags, priority) {
@@ -85985,6 +86044,15 @@ var init_tag_manager = __esm({
         }
         this.parseExternalTags(combineWithTags);
         const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+        if (isResolvableObject(this.dynamicTags)) {
+          if (this.tags.size > 0) {
+            throw new UnscopedValidationError(
+              lit`CombineTagsIntrinsicWithLiteral`,
+              "Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). Remove the literal tags or resolve the intrinsic at the property level."
+            );
+          }
+          return this.dynamicTags;
+        }
         if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
           const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
           return ret.length > 0 ? ret : void 0;
@@ -86042,6 +86110,10 @@ var init_tag_manager = __esm({
        */
       parseExternalTags(initialTags) {
         if (initialTags !== void 0) {
+          if (isResolvableObject(initialTags)) {
+            this.dynamicTags = initialTags;
+            return;
+          }
           const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
           this.dynamicTags = parseTagsResult.dynamicTags;
           this._setTag(...parseTagsResult.tags);
@@ -90304,21 +90376,21 @@ var require_dist_cjs19 = __commonJS({
       let sendBody = true;
       if (expect === "100-continue") {
         sendBody = await Promise.race([
-          new Promise((resolve7) => {
-            timeoutId = Number(timing.setTimeout(resolve7, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
+          new Promise((resolve6) => {
+            timeoutId = Number(timing.setTimeout(resolve6, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
           }),
-          new Promise((resolve7) => {
+          new Promise((resolve6) => {
             httpRequest.on("continue", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(true);
+              resolve6(true);
             });
             httpRequest.on("response", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(false);
+              resolve6(false);
             });
             httpRequest.on("error", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(false);
+              resolve6(false);
             });
           })
         ]);
@@ -90354,13 +90426,13 @@ var require_dist_cjs19 = __commonJS({
       constructor(options) {
         this.socketWarningTimestamp = 0;
         this.metadata = { handlerProtocol: "http/1.1" };
-        this.configProvider = new Promise((resolve7, reject) => {
+        this.configProvider = new Promise((resolve6, reject) => {
           if (typeof options === "function") {
             options().then((_options) => {
-              resolve7(this.resolveDefaultConfig(_options));
+              resolve6(this.resolveDefaultConfig(_options));
             }).catch(reject);
           } else {
-            resolve7(this.resolveDefaultConfig(options));
+            resolve6(this.resolveDefaultConfig(options));
           }
         });
       }
@@ -90443,7 +90515,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         return new Promise((_resolve2, _reject) => {
           let writeRequestBodyPromise = void 0;
           const timeouts = [];
-          const resolve7 = /* @__PURE__ */ __name2(async (arg) => {
+          const resolve6 = /* @__PURE__ */ __name2(async (arg) => {
             await writeRequestBodyPromise;
             timeouts.forEach(timing.clearTimeout);
             _resolve2(arg);
@@ -90513,7 +90585,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
               headers: getTransformedHeaders(res.headers),
               body: res
             });
-            resolve7({ response: httpResponse });
+            resolve6({ response: httpResponse });
           });
           req.on("error", (err) => {
             if (NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
@@ -90702,13 +90774,13 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
       constructor(options) {
         this.metadata = { handlerProtocol: "h2" };
         this.connectionManager = new NodeHttp2ConnectionManager({});
-        this.configProvider = new Promise((resolve7, reject) => {
+        this.configProvider = new Promise((resolve6, reject) => {
           if (typeof options === "function") {
             options().then((opts) => {
-              resolve7(opts || {});
+              resolve6(opts || {});
             }).catch(reject);
           } else {
-            resolve7(options || {});
+            resolve6(options || {});
           }
         });
       }
@@ -90738,7 +90810,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           var _a7;
           let fulfilled = false;
           let writeRequestBodyPromise = void 0;
-          const resolve7 = /* @__PURE__ */ __name2(async (arg) => {
+          const resolve6 = /* @__PURE__ */ __name2(async (arg) => {
             await writeRequestBodyPromise;
             _resolve2(arg);
           }, "resolve");
@@ -90794,7 +90866,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
               body: req
             });
             fulfilled = true;
-            resolve7({ response: httpResponse });
+            resolve6({ response: httpResponse });
             if (disableConcurrentStreams) {
               session.close();
               this.connectionManager.deleteSession(authority, session);
@@ -90884,7 +90956,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
       if (isReadableStreamInstance(stream)) {
         return collectReadableStream(stream);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const collector = new Collector();
         stream.pipe(collector);
         stream.on("error", (err) => {
@@ -90894,7 +90966,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         collector.on("error", reject);
         collector.on("finish", function() {
           const bytes = new Uint8Array(Buffer.concat(this.bufferedBytes));
-          resolve7(bytes);
+          resolve6(bytes);
         });
       });
     }, "streamCollector");
@@ -90959,7 +91031,7 @@ var require_dist_cjs20 = __commonJS({
     }
     __name2(createRequest, "createRequest");
     function requestTimeout(timeoutInMs = 0) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         if (timeoutInMs) {
           setTimeout(() => {
             const timeoutError = new Error(`Request did not complete within ${timeoutInMs} ms`);
@@ -91084,7 +91156,7 @@ var require_dist_cjs20 = __commonJS({
         ];
         if (abortSignal) {
           raceOfPromises.push(
-            new Promise((resolve7, reject) => {
+            new Promise((resolve6, reject) => {
               const onAbort = /* @__PURE__ */ __name2(() => {
                 const abortError = new Error("Request aborted");
                 abortError.name = "AbortError";
@@ -91155,7 +91227,7 @@ var require_dist_cjs20 = __commonJS({
     }
     __name2(collectStream, "collectStream");
     function readToBase64(blob) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
           if (reader.readyState !== 2) {
@@ -91164,7 +91236,7 @@ var require_dist_cjs20 = __commonJS({
           const result = reader.result ?? "";
           const commaIndex = result.indexOf(",");
           const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
-          resolve7(result.substring(dataOffset));
+          resolve6(result.substring(dataOffset));
         };
         reader.onabort = () => reject(new Error("Read aborted"));
         reader.onerror = () => reject(reader.error);
@@ -91479,7 +91551,7 @@ var require_headStream = __commonJS({
       if ((0, stream_type_check_1.isReadableStream)(stream)) {
         return (0, headStream_browser_1.headStream)(stream, bytes);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const collector = new Collector();
         collector.limit = bytes;
         stream.pipe(collector);
@@ -91490,7 +91562,7 @@ var require_headStream = __commonJS({
         collector.on("error", reject);
         collector.on("finish", function() {
           const bytes2 = new Uint8Array(Buffer.concat(this.buffers));
-          resolve7(bytes2);
+          resolve6(bytes2);
         });
       });
     };
@@ -93580,7 +93652,7 @@ var require_dist_cjs31 = __commonJS({
         this.refillTokenBucket();
         if (amount > this.currentCapacity) {
           const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
-          await new Promise((resolve7) => _DefaultRateLimiter2.setTimeoutFn(resolve7, delay));
+          await new Promise((resolve6) => _DefaultRateLimiter2.setTimeoutFn(resolve6, delay));
         }
         this.currentCapacity = this.currentCapacity - amount;
       }
@@ -95465,7 +95537,7 @@ var require_dist_cjs34 = __commonJS({
               const delayFromResponse = getDelayFromRetryAfterHeader(err.$response);
               const delay = Math.max(delayFromResponse || 0, delayFromDecider);
               totalDelay += delay;
-              await new Promise((resolve7) => setTimeout(resolve7, delay));
+              await new Promise((resolve6) => setTimeout(resolve6, delay));
               continue;
             }
             if (!err.$metadata) {
@@ -95633,7 +95705,7 @@ var require_dist_cjs34 = __commonJS({
             attempts = retryToken.getRetryCount();
             const delay = retryToken.getRetryDelay();
             totalRetryDelay += delay;
-            await new Promise((resolve7) => setTimeout(resolve7, delay));
+            await new Promise((resolve6) => setTimeout(resolve6, delay));
           }
         }
       } else {
@@ -98636,11 +98708,11 @@ function __metadata(metadataKey, metadataValue) {
 }
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {
-    return value instanceof P ? value : new P(function(resolve7) {
-      resolve7(value);
+    return value instanceof P ? value : new P(function(resolve6) {
+      resolve6(value);
     });
   }
-  return new (P || (P = Promise))(function(resolve7, reject) {
+  return new (P || (P = Promise))(function(resolve6, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -98656,7 +98728,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
       }
     }
     function step(result) {
-      result.done ? resolve7(result.value) : adopt(result.value).then(fulfilled, rejected);
+      result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
@@ -98847,14 +98919,14 @@ function __asyncValues(o) {
   }, i);
   function verb(n) {
     i[n] = o[n] && function(v) {
-      return new Promise(function(resolve7, reject) {
-        v = o[n](v), settle(resolve7, reject, v.done, v.value);
+      return new Promise(function(resolve6, reject) {
+        v = o[n](v), settle(resolve6, reject, v.done, v.value);
       });
     };
   }
-  function settle(resolve7, reject, d, v) {
+  function settle(resolve6, reject, d, v) {
     Promise.resolve(v).then(function(v2) {
-      resolve7({ value: v2, done: d });
+      resolve6({ value: v2, done: d });
     }, reject);
   }
 }
@@ -99256,7 +99328,7 @@ var require_dist_cjs37 = __commonJS({
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         var _a7;
         const req = (0, import_http2.request)({
           method: "GET",
@@ -99286,7 +99358,7 @@ var require_dist_cjs37 = __commonJS({
             chunks.push(chunk);
           });
           res.on("end", () => {
-            resolve7(import_buffer.Buffer.concat(chunks));
+            resolve6(import_buffer.Buffer.concat(chunks));
             req.destroy();
           });
         });
@@ -99723,7 +99795,7 @@ var require_retry_wrapper = __commonJS({
           try {
             return await toRetry();
           } catch (e) {
-            await new Promise((resolve7) => setTimeout(resolve7, delayMs));
+            await new Promise((resolve6) => setTimeout(resolve6, delayMs));
           }
         }
         return await toRetry();
@@ -99754,12 +99826,12 @@ var require_fromHttp = __commonJS({
     var fromHttp = (options = {}) => {
       options.logger?.debug("@aws-sdk/credential-provider-http - fromHttp");
       let host;
-      const relative6 = options.awsContainerCredentialsRelativeUri ?? process.env[AWS_CONTAINER_CREDENTIALS_RELATIVE_URI];
+      const relative7 = options.awsContainerCredentialsRelativeUri ?? process.env[AWS_CONTAINER_CREDENTIALS_RELATIVE_URI];
       const full = options.awsContainerCredentialsFullUri ?? process.env[AWS_CONTAINER_CREDENTIALS_FULL_URI];
       const token = options.awsContainerAuthorizationToken ?? process.env[AWS_CONTAINER_AUTHORIZATION_TOKEN];
       const tokenFile = options.awsContainerAuthorizationTokenFile ?? process.env[AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE];
       const warn = options.logger?.constructor?.name === "NoOpLogger" || !options.logger ? console.warn : options.logger.warn;
-      if (relative6 && full) {
+      if (relative7 && full) {
         warn("@aws-sdk/credential-provider-http: you have set both awsContainerCredentialsRelativeUri and awsContainerCredentialsFullUri.");
         warn("awsContainerCredentialsFullUri will take precedence.");
       }
@@ -99769,8 +99841,8 @@ var require_fromHttp = __commonJS({
       }
       if (full) {
         host = full;
-      } else if (relative6) {
-        host = `${DEFAULT_LINK_LOCAL_HOST}${relative6}`;
+      } else if (relative7) {
+        host = `${DEFAULT_LINK_LOCAL_HOST}${relative7}`;
       } else {
         throw new property_provider_1.CredentialsProviderError(`No HTTP credential provider host provided.
 Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI.`, { logger: options.logger });
@@ -110639,7 +110711,7 @@ var require_tr46 = __commonJS({
       TRANSITIONAL: 0,
       NONTRANSITIONAL: 1
     };
-    function normalize2(str) {
+    function normalize(str) {
       return str.split("\0").map(function(s) {
         return s.normalize("NFC");
       }).join("\0");
@@ -110719,7 +110791,7 @@ var require_tr46 = __commonJS({
         processing_option = PROCESSING_OPTIONS.NONTRANSITIONAL;
       }
       var error = false;
-      if (normalize2(label) !== label || label[3] === "-" && label[4] === "-" || label[0] === "-" || label[label.length - 1] === "-" || label.indexOf(".") !== -1 || label.search(combiningMarksRegex) === 0) {
+      if (normalize(label) !== label || label[3] === "-" && label[4] === "-" || label[0] === "-" || label[label.length - 1] === "-" || label.indexOf(".") !== -1 || label.search(combiningMarksRegex) === 0) {
         error = true;
       }
       var len = countSymbols(label);
@@ -110737,7 +110809,7 @@ var require_tr46 = __commonJS({
     }
     function processing(domain_name, useSTD3, processing_option) {
       var result = mapChars(domain_name, useSTD3, processing_option);
-      result.string = normalize2(result.string);
+      result.string = normalize(result.string);
       var labels = result.string.split(".");
       for (var i = 0; i < labels.length; ++i) {
         try {
@@ -116191,7 +116263,7 @@ var require_lib9 = __commonJS({
       let accum = [];
       let accumBytes = 0;
       let abort = false;
-      return new Body.Promise(function(resolve7, reject) {
+      return new Body.Promise(function(resolve6, reject) {
         let resTimeout;
         if (_this4.timeout) {
           resTimeout = setTimeout(function() {
@@ -116225,7 +116297,7 @@ var require_lib9 = __commonJS({
           }
           clearTimeout(resTimeout);
           try {
-            resolve7(Buffer.concat(accum, accumBytes));
+            resolve6(Buffer.concat(accum, accumBytes));
           } catch (err) {
             reject(new FetchError(`Could not create Buffer from response body for ${_this4.url}: ${err.message}`, "system", err));
           }
@@ -116900,7 +116972,7 @@ var require_lib9 = __commonJS({
         throw new Error("native promise missing, set fetch.Promise to your favorite alternative");
       }
       Body.Promise = fetch3.Promise;
-      return new fetch3.Promise(function(resolve7, reject) {
+      return new fetch3.Promise(function(resolve6, reject) {
         const request2 = new Request2(url2, opts);
         const options = getNodeRequestOptions(request2);
         const send = (options.protocol === "https:" ? https2 : http).request;
@@ -117033,7 +117105,7 @@ var require_lib9 = __commonJS({
                   requestOpts.body = void 0;
                   requestOpts.headers.delete("content-length");
                 }
-                resolve7(fetch3(new Request2(locationURL, requestOpts)));
+                resolve6(fetch3(new Request2(locationURL, requestOpts)));
                 finalize();
                 return;
             }
@@ -117054,7 +117126,7 @@ var require_lib9 = __commonJS({
           const codings = headers.get("Content-Encoding");
           if (!request2.compress || request2.method === "HEAD" || codings === null || res.statusCode === 204 || res.statusCode === 304) {
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           const zlibOptions = {
@@ -117064,7 +117136,7 @@ var require_lib9 = __commonJS({
           if (codings == "gzip" || codings == "x-gzip") {
             body = body.pipe(zlib3.createGunzip(zlibOptions));
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           if (codings == "deflate" || codings == "x-deflate") {
@@ -117076,12 +117148,12 @@ var require_lib9 = __commonJS({
                 body = body.pipe(zlib3.createInflateRaw());
               }
               response = new Response(body, response_options);
-              resolve7(response);
+              resolve6(response);
             });
             raw.on("end", function() {
               if (!response) {
                 response = new Response(body, response_options);
-                resolve7(response);
+                resolve6(response);
               }
             });
             return;
@@ -117089,11 +117161,11 @@ var require_lib9 = __commonJS({
           if (codings == "br" && typeof zlib3.createBrotliDecompress === "function") {
             body = body.pipe(zlib3.createBrotliDecompress());
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           response = new Response(body, response_options);
-          resolve7(response);
+          resolve6(response);
         });
         writeToStream(req, request2);
       });
@@ -117253,9 +117325,9 @@ var CustomResourceHandler = class {
         "content-length": Buffer.byteLength(responseBody, "utf8")
       }
     };
-    return new Promise((resolve7, reject) => {
+    return new Promise((resolve6, reject) => {
       try {
-        const request2 = https.request(requestOptions, resolve7);
+        const request2 = https.request(requestOptions, resolve6);
         request2.on("error", reject);
         request2.write(responseBody);
         request2.end();

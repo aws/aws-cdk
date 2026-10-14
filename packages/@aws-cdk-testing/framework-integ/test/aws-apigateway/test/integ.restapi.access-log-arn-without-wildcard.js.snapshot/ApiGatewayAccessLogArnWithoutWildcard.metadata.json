@@ -1,4 +1,10 @@
 {
+  "/ApiGatewayAccessLogArnWithoutWildcard": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ApiGatewayAccessLogArnWithoutWildcard.template.json"
+    }
+  ],
   "/ApiGatewayAccessLogArnWithoutWildcard/AccessLogs": [
     {
       "type": "aws:cdk:analytics:construct",
