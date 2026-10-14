@@ -6,10 +6,11 @@ import {
   CfnWebFunctionRevision,
   CfnWebFunctionEndpoint,
 } from './lambda.generated';
-import type { IWebFunctionRef, WebFunctionReference } from './lambda.generated';
+import type { IWebFunctionEndpointRef, IWebFunctionRef, WebFunctionEndpointReference, WebFunctionReference } from './lambda.generated';
 import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
 import type { WebFunctionCode } from './webfunction-code';
+import { WebFunctionGrants } from './webfunction-grants';
 import type {
   WebFunctionRuntime,
 } from './webfunction-runtime';
@@ -310,6 +311,11 @@ export interface WebFunctionProps {
    *
    * The connector must have been created for `NetworkConnectorComputeType.WEB_FUNCTION`.
    *
+   * The full `INetworkConnector` is required (rather than a ref) because the revision pins to
+   * `latestVersionArn`, which `INetworkConnectorRef` does not carry.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
    * @default - no VPC egress
    */
   readonly egressNetworkConnector?: INetworkConnector;
@@ -476,7 +482,7 @@ export interface WebFunctionProps {
 /**
  * Represents a WebFunction resource, either created in this stack or imported.
  */
-export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable {
+export interface IWebFunction extends IResource, IWebFunctionRef, IWebFunctionEndpointRef, iam.IGrantable {
   /**
    * The ARN of the WebFunction.
    *
@@ -502,12 +508,9 @@ export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable
   readonly role?: iam.IRoleRef;
 
   /**
-   * Grants permission to invoke the WebFunction's endpoint over HTTP.
-   *
-   * Only meaningful for an endpoint with `WebFunctionAuthType.IAM_AUTH`; requests to it must be
-   * signed by the grantee.
+   * Grant methods for the WebFunction's endpoint.
    */
-  grantInvoke(grantee: iam.IGrantable): iam.Grant;
+  readonly grants: WebFunctionGrants;
 
   /**
    * Adds a statement to the WebFunction's execution role.
@@ -528,7 +531,7 @@ export interface WebFunctionAttributes {
   /**
    * The name of the WebFunction's endpoint.
    *
-   * Required to reference the endpoint, for example to call `grantInvoke()`.
+   * Required to reference the endpoint, for example to call `grants.invoke()`.
    *
    * @default - the endpoint cannot be referenced
    */
@@ -551,6 +554,9 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   /** The principal to grant permissions to. */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /** Grant methods for the WebFunction's endpoint. */
+  public readonly grants: WebFunctionGrants = WebFunctionGrants.fromWebFunctionEndpoint(this);
+
   /**
    * Adds a statement to the WebFunction's execution role.
    *
@@ -561,22 +567,12 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
     this.grantPrincipal.addToPrincipalPolicy(statement);
   }
 
-  /**
-   * Grants permission to invoke the WebFunction's endpoint over HTTP.
-   *
-   * Only meaningful for an endpoint with `WebFunctionAuthType.IAM_AUTH`; requests to it must be
-   * signed by the grantee.
-   */
-  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions: ['lambda:InvokeWebFunctionEndpoint'],
-      resourceArns: [this.endpointArn],
-    });
-  }
-
   public get webFunctionRef(): WebFunctionReference {
     return { functionArn: this.webFunctionArn };
+  }
+
+  public get webFunctionEndpointRef(): WebFunctionEndpointReference {
+    return { endpointArn: this.endpointArn };
   }
 }
 

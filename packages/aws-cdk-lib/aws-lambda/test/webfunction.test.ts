@@ -1226,7 +1226,7 @@ describe('WebFunction grants', () => {
   });
 });
 
-describe('WebFunction grantInvoke', () => {
+describe('WebFunction grants.invoke', () => {
   let stack: Stack;
   let caller: Role;
   beforeEach(() => {
@@ -1236,7 +1236,7 @@ describe('WebFunction grantInvoke', () => {
 
   test('grants InvokeWebFunctionEndpoint on the endpoint', () => {
     const fn = new WebFunction(stack, 'Fn', minimalProps());
-    fn.grantInvoke(caller);
+    fn.grants.invoke(caller);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [{ Ref: Match.stringLikeRegexp('Caller') }],
@@ -1256,7 +1256,7 @@ describe('WebFunction grantInvoke', () => {
       webFunctionArn: arn,
       endpointName: 'staging',
     });
-    imported.grantInvoke(caller);
+    imported.grants.invoke(caller);
 
     expect(imported.endpointArn).toEqual(`${arn}/endpoint/staging`);
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1270,7 +1270,7 @@ describe('WebFunction grantInvoke', () => {
     const imported = WebFunction.fromWebFunctionArn(stack, 'Imported',
       'arn:aws:lambda:us-east-1:123456789012:web-function/existing');
 
-    expect(() => imported.grantInvoke(caller)).toThrow(/imported without an endpoint name/);
+    expect(() => imported.grants.invoke(caller)).toThrow(/imported without an endpoint name/);
     expect(() => imported.endpointArn).toThrow(/imported without an endpoint name/);
   });
 });

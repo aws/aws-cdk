@@ -264,12 +264,12 @@ export class NetworkConnector extends NetworkConnectorBase {
    * parameter, an imported value — cannot be inspected until deployment, where an unqualified
    * ARN is rejected by the service when the revision is created.
    *
-   * @param versionArn A qualified ARN, `arn:...:network-connector:nc-<id>:<version>`
+   * @param networkConnectorVersionArn A qualified ARN, `arn:...:network-connector:nc-<id>:<version>`
    */
-  public static fromNetworkConnectorVersionArn(scope: Construct, id: string, versionArn: string): INetworkConnector {
-    const parsed = Arn.split(versionArn, ArnFormat.COLON_RESOURCE_NAME);
+  public static fromNetworkConnectorVersionArn(scope: Construct, id: string, networkConnectorVersionArn: string): INetworkConnector {
+    const parsed = Arn.split(networkConnectorVersionArn, ArnFormat.COLON_RESOURCE_NAME);
     let connectorId: string;
-    if (Token.isUnresolved(versionArn)) {
+    if (Token.isUnresolved(networkConnectorVersionArn)) {
       // Split on a token selects the segment right after the resource type, which is the connector id;
       // the version is the segment after that and is dropped.
       connectorId = parsed.resourceName ?? '';
@@ -278,7 +278,7 @@ export class NetworkConnector extends NetworkConnectorBase {
       const separator = versionSeparator(resourceName);
       if (separator === undefined) {
         throw new UnscopedValidationError(lit`NetworkConnectorVersionArnUnqualified`,
-          `Expected a qualified network connector ARN ending in ':<version>', got '${versionArn}'. ` +
+          `Expected a qualified network connector ARN ending in ':<version>', got '${networkConnectorVersionArn}'. ` +
           'To import a connector without a version, use fromNetworkConnectorArn().');
       }
       connectorId = resourceName.slice(0, separator);
@@ -288,7 +288,7 @@ export class NetworkConnector extends NetworkConnectorBase {
       resourceName: connectorId,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
-    return NetworkConnector.fromNetworkConnectorAttributes(scope, id, { networkConnectorArn, latestVersionArn: versionArn });
+    return NetworkConnector.fromNetworkConnectorAttributes(scope, id, { networkConnectorArn, latestVersionArn: networkConnectorVersionArn });
   }
 
   /**

@@ -32,6 +32,7 @@ export * from './schema-registry';
 export * from './capacity-provider';
 export * from './webfunction';
 export * from './webfunction-code';
+export * from './webfunction-grants';
 export * from './network-connector';
 export * from './webfunction-runtime';
 
