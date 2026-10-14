@@ -461,6 +461,25 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Haiku 5.5 model, the fastest and most efficient in the Claude 5.5 family.
+   * Built for high-volume, latency-sensitive work, with improved coding and agent performance
+   * over Claude Haiku 4.5. Features a 1M token context window, 128K max output tokens, and
+   * supports reasoning.
+   *
+   * Only available through the `us`, `eu`, `au`, `jp` and `global` cross-region inference
+   * profiles. There is no `apac` profile for this model.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-haiku-5-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
    * Anthropic's Claude Fable 5.1 model, Anthropic's frontier model for ambitious coding,
    * long-horizon agents, and enterprise knowledge work.
    * Features a 1M token context window, 128K max output tokens, and supports reasoning.
