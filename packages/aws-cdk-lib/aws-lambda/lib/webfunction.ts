@@ -64,6 +64,10 @@ export enum WebFunctionAuthType {
 
 /**
  * Predefined region groups for use with WebFunctionReplicaRegions
+ *
+ * Each group is a fixed list as of this version of the library. Regions the service adds later
+ * are not included until the library is updated; to cover a newly launched region, list the
+ * regions explicitly.
  */
 export class WebFunctionRegions {
   /** US regions */
@@ -94,7 +98,7 @@ export class WebFunctionRegions {
   /** South America regions */
   static readonly SA: string[] = Object.freeze(['sa-east-1']) as string[];
 
-  /** All default regions (17 regions enabled by default) */
+  /** All regions in the groups above */
   static readonly ALL_DEFAULT_REGIONS: string[] = Object.freeze([
     ...WebFunctionRegions.US,
     ...WebFunctionRegions.EU,
