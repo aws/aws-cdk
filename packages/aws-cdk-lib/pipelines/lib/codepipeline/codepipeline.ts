@@ -4,7 +4,9 @@ import type { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import type { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CommandsStep } from './commands-step';
 import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { CommandsFactory } from './private/commands-factory';
 import { namespaceStepOutputs } from './private/outputs';
 import { StackOutputsMap } from './stack-outputs-map';
 import * as cb from '../../../aws-codebuild';
@@ -184,6 +186,9 @@ export interface CodePipelineProps {
 
   /**
    * Customize the CodeBuild projects created for this pipeline
+   *
+   * These defaults do not apply to `CommandsStep`s, which do not create
+   * CodeBuild projects.
    *
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
@@ -716,13 +721,14 @@ export class CodePipeline extends PipelineBase {
   /**
    * Take a Step and turn it into a CodePipeline Action
    *
-   * There are only 3 types of Steps we need to support:
+   * There are only 4 types of Steps we need to support:
    *
    * - Shell (generic)
    * - ManualApproval (generic)
+   * - Commands (CodePipeline-specific)
    * - CodePipelineActionFactory (CodePipeline-specific)
    *
-   * The rest is expressed in terms of these 3, or in terms of graph nodes
+   * The rest is expressed in terms of these 4, or in terms of graph nodes
    * which are handled elsewhere.
    */
   private actionFromStep(node: AGraphNode, step: Step): ICodePipelineActionFactory {
@@ -734,6 +740,10 @@ export class CodePipeline extends PipelineBase {
     }
 
     // Now built-in steps
+    if (step instanceof CommandsStep) {
+      return CommandsFactory.fromCommandsStep(step);
+    }
+
     if (step instanceof ShellStep || step instanceof CodeBuildStep) {
       // The 'CdkBuildProject' will be the construct ID of the CodeBuild project, necessary for backwards compat
       let constructId = nodeType === CodeBuildProjectType.SYNTH
