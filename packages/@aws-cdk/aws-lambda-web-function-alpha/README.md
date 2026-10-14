@@ -142,6 +142,40 @@ new WebFunctionEndpoint(this, 'Canary', {
 });
 ```
 
+## VPC egress
+
+A web function reaches resources in a VPC through a `NetworkConnector`. The connector provisions its
+network interfaces once, for all the web functions that use it. It must be created for web functions
+and must be in the same stack as the function, because its version ARN changes on every update.
+
+```ts
+import * as path from 'path';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { NetworkConnector, WebFunction, WebFunctionCode } from '@aws-cdk/aws-lambda-web-function-alpha';
+
+const vpc = new ec2.Vpc(this, 'Vpc');
+const connector = new NetworkConnector(this, 'Connector', { vpc });
+
+new WebFunction(this, 'WebFunction', {
+  code: WebFunctionCode.fromAsset(path.join(__dirname, 'app')),
+  egressNetworkConnector: connector,
+});
+```
+
+By default the connector uses the private subnets with egress of the VPC, a new security group that allows
+all outbound traffic, and IPv4. Set `networkProtocol: NetworkProtocol.DUAL_STACK` for IPv4 and IPv6. A
+connector creates an operator role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy, unless
+you pass `operatorRole`; a role you pass must have that policy attached.
+
+### Temporary schemas
+
+The `@aws-cdk/aws-service-spec` version pinned in this repo (0.1.218) does not have the revision's
+`EgressNetworkConnectorArn` property, and its validator does not know the `WebFunction` compute type or the
+`LatestVersionArn` attribute of a connector. The CloudFormation registry schemas for these two resources are
+therefore kept in `tools/@aws-cdk/spec2cdk/temporary-schemas/us-east-1/`, and the generator uses them to
+produce the L1 classes. This is temporary: once `@aws-cdk/aws-service-spec` is bumped to 0.1.221 (the latest
+published version, which has all three), these schema files can be removed.
+
 ## Invoke permissions
 
 An `IamAuth` endpoint is invoked with the `lambda:InvokeWebFunctionEndpoint` permission. Use

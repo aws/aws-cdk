@@ -7,6 +7,7 @@ import type { IWebFunctionRef, WebFunctionReference } from 'aws-cdk-lib/aws-lamb
 import type * as logs from 'aws-cdk-lib/aws-logs';
 import type { Construct } from 'constructs';
 import type { WebFunctionCode } from './code';
+import type { INetworkConnector } from './network-connector';
 import { WebFunctionValidationError } from './private/errors';
 
 /**
@@ -176,6 +177,16 @@ export interface WebFunctionProps {
   readonly systemLogLevel?: WebFunctionSystemLogLevel;
 
   /**
+   * The network connector that gives the function egress into a VPC.
+   *
+   * The connector must be defined in the same stack. The revision is pinned to the connector's latest
+   * version, so an update to the connector replaces the revision.
+   *
+   * @default - no VPC egress
+   */
+  readonly egressNetworkConnector?: INetworkConnector;
+
+  /**
    * Tags applied to the web function and its taggable children.
    *
    * @default - no tags
@@ -262,6 +273,12 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
     if (props.webFunctionName !== undefined) {
       validateFunctionName(props.webFunctionName);
     }
+    // The latest version ARN of a connector changes on every update, so the connector must be in this stack
+    if (props.egressNetworkConnector && cdk.Stack.of(props.egressNetworkConnector) !== cdk.Stack.of(this)) {
+      throw new WebFunctionValidationError(
+        'egressNetworkConnector must be defined in the same stack as the web function, because its version ARN changes on every update',
+      );
+    }
 
     this.role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -309,6 +326,7 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
         timeoutSeconds: props.timeout?.toSeconds({ integral: true }),
         maxConcurrencyPerEnvironment: props.maxConcurrencyPerEnvironment,
         environmentVariables: props.environment,
+        egressNetworkConnectorArn: props.egressNetworkConnector?.latestVersionArn,
         telemetryConfig: loggingConfig ? { loggingConfig } : undefined,
       },
     });
