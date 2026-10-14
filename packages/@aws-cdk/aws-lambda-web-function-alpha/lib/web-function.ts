@@ -274,7 +274,8 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
       validateFunctionName(props.webFunctionName);
     }
     // The latest version ARN of a connector changes on every update, so the connector must be in this stack
-    if (props.egressNetworkConnector && cdk.Stack.of(props.egressNetworkConnector) !== cdk.Stack.of(this)) {
+    if (props.egressNetworkConnector && cdk.Resource.isOwnedResource(props.egressNetworkConnector)
+      && cdk.Stack.of(props.egressNetworkConnector) !== cdk.Stack.of(this)) {
       throw new WebFunctionValidationError(
         'egressNetworkConnector must be defined in the same stack as the web function, because its version ARN changes on every update',
       );

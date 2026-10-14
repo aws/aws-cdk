@@ -6,7 +6,6 @@
     "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.NetworkConnectorProps.vpc",
     "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.NetworkConnectorProps.operatorRole",
     "prefer-ref-interface:@aws-cdk/aws-lambda-web-function-alpha.WebFunctionProps.egressNetworkConnector",
-    "from-method:@aws-cdk/aws-lambda-web-function-alpha.NetworkConnector",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",

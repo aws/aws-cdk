@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import {
+  WebFunctionEndpointType,
   NetworkConnector,
   NetworkProtocol,
   WebFunction,
@@ -118,5 +119,57 @@ describe('NetworkConnector', () => {
     new WebFunctionEndpoint(stack, 'Endpoint', { webFunction: fn, authType: WebFunctionAuthType.IAM_AUTH });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::WebFunctionEndpoint', 1);
+  });
+
+  test('pins a web function to an imported connector version, including one from another stack', () => {
+    const other = new cdk.Stack(app, 'Other', { env: { account: '123456789012', region: 'us-east-1' } });
+    const versionArn = 'arn:aws:lambda:us-east-1:123456789012:network-connector:nc-1234abcd:3';
+    const imported = NetworkConnector.fromNetworkConnectorVersionArn(other, 'Imported', versionArn);
+
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      egressNetworkConnector: imported,
+    });
+
+    expect(imported.networkConnectorArn).toBe('arn:aws:lambda:us-east-1:123456789012:network-connector:nc-1234abcd');
+    expect(imported.latestVersionArn).toBe(versionArn);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: { EgressNetworkConnectorArn: versionArn },
+    });
+  });
+
+  test('fails when an imported connector ARN has no version', () => {
+    expect(() => NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Imported',
+      'arn:aws:lambda:us-east-1:123456789012:network-connector:nc-1234abcd')).toThrow(/ending in ':<version>'/);
+  });
+
+  test('fails at synth when egress is used with a MultiRegion endpoint', () => {
+    const connector = new NetworkConnector(stack, 'NetworkConnector', { vpc });
+    const fn = new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      egressNetworkConnector: connector,
+    });
+    new WebFunctionEndpoint(stack, 'Endpoint', {
+      webFunction: fn,
+      endpointType: WebFunctionEndpointType.MULTI_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/requires a HomeRegion endpoint/);
+  });
+
+  test('accepts egress with a HomeRegion endpoint', () => {
+    const connector = new NetworkConnector(stack, 'NetworkConnector', { vpc });
+    const fn = new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      egressNetworkConnector: connector,
+    });
+    new WebFunctionEndpoint(stack, 'Endpoint', {
+      webFunction: fn,
+      endpointType: WebFunctionEndpointType.HOME_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
+    });
+
+    expect(() => Template.fromStack(stack)).not.toThrow();
   });
 });

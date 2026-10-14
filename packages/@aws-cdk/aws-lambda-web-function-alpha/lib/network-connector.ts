@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnNetworkConnector } from 'aws-cdk-lib/aws-lambda';
 import type { INetworkConnectorRef, NetworkConnectorReference } from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
+import { WebFunctionValidationError } from './private/errors';
 
 /**
  * The network protocol of a network connector
@@ -97,6 +98,23 @@ export interface NetworkConnectorProps {
  */
 export class NetworkConnector extends cdk.Resource implements INetworkConnector {
   /**
+   * Imports a specific version of a network connector by its qualified ARN.
+   *
+   * A web function that uses this connector stays on this version until the ARN changes, even when the
+   * connector is updated. The connector can be in another stack.
+   *
+   * A literal ARN is checked for a version suffix when the app is synthesized. A token, such as a value
+   * imported from another stack, cannot be checked until deployment.
+   *
+   * @param scope the construct scope
+   * @param id the construct ID
+   * @param networkConnectorVersionArn a qualified ARN, `arn:...:network-connector:nc-<id>:<version>`
+   */
+  public static fromNetworkConnectorVersionArn(scope: Construct, id: string, networkConnectorVersionArn: string): INetworkConnector {
+    return new ImportedNetworkConnector(scope, id, networkConnectorVersionArn);
+  }
+
+  /**
    * The unqualified ARN of the network connector
    */
   public readonly networkConnectorArn: string;
@@ -159,5 +177,44 @@ export class NetworkConnector extends cdk.Resource implements INetworkConnector 
 
     this.networkConnectorArn = this.cfnNetworkConnector.attrArn;
     this.latestVersionArn = this.cfnNetworkConnector.attrLatestVersionArn;
+  }
+}
+
+/**
+ * A network connector version that exists outside this app, or in another stack
+ */
+class ImportedNetworkConnector extends cdk.Resource implements INetworkConnector {
+  public readonly networkConnectorArn: string;
+  public readonly latestVersionArn: string;
+
+  public get networkConnectorRef(): NetworkConnectorReference {
+    return { networkConnectorArn: this.networkConnectorArn };
+  }
+
+  constructor(scope: Construct, id: string, versionArn: string) {
+    super(scope, id, { environmentFromArn: versionArn });
+
+    const parsed = cdk.Arn.split(versionArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    let connectorId: string;
+    if (cdk.Token.isUnresolved(versionArn)) {
+      // On a token, the segment after the resource type is the connector ID; the version follows it
+      connectorId = parsed.resourceName ?? '';
+    } else {
+      const resourceName = parsed.resourceName ?? '';
+      const separator = resourceName.lastIndexOf(':');
+      if (separator < 0 || !/^\d+$/.test(resourceName.slice(separator + 1))) {
+        throw new WebFunctionValidationError(
+          `Expected a qualified network connector ARN ending in ':<version>', got '${versionArn}'`,
+        );
+      }
+      connectorId = resourceName.slice(0, separator);
+    }
+
+    this.networkConnectorArn = cdk.Stack.of(scope).formatArn({
+      ...parsed,
+      resourceName: connectorId,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
+    this.latestVersionArn = versionArn;
   }
 }

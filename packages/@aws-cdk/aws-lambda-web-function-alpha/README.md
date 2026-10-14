@@ -162,6 +162,19 @@ new WebFunction(this, 'WebFunction', {
 });
 ```
 
+Egress needs a `HomeRegion` endpoint; a `MultiRegion` or `PerRegion` endpoint fails at synth.
+
+To pin a web function to a specific version of a connector, import the version. The connector can be in
+another stack. A literal ARN must end in `:<version>`; a token, such as a value imported from another stack,
+is checked at deploy time:
+
+```ts
+import { NetworkConnector } from '@aws-cdk/aws-lambda-web-function-alpha';
+
+const connector = NetworkConnector.fromNetworkConnectorVersionArn(this, 'Connector',
+  'arn:aws:lambda:us-east-1:123456789012:network-connector:nc-1234abcd:3');
+```
+
 By default the connector uses the private subnets with egress of the VPC, a new security group that allows
 all outbound traffic, and IPv4. Set `networkProtocol: NetworkProtocol.DUAL_STACK` for IPv4 and IPv6. A
 connector creates an operator role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy, unless

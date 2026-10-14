@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { CfnWebFunctionEndpoint } from 'aws-cdk-lib/aws-lambda';
+import { CfnWebFunctionEndpoint, CfnWebFunctionRevision } from 'aws-cdk-lib/aws-lambda';
 import type { IWebFunctionEndpointRef, WebFunctionEndpointReference } from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
 import { WebFunctionValidationError } from './private/errors';
@@ -245,6 +245,14 @@ export class WebFunctionEndpoint extends cdk.Resource implements IWebFunctionEnd
       throw new WebFunctionValidationError(`rateLimit must be an integer from 1 to 10000, got ${props.rateLimit}`);
     }
 
+    // Egress through a network connector is only supported with HomeRegion endpoints
+    const endpointType = props.endpointType ?? WebFunctionEndpointType.HOME_REGION;
+    this.node.addValidation({
+      validate: () => (endpointType !== WebFunctionEndpointType.HOME_REGION && webFunctionHasEgress(props.webFunction)
+        ? [`egress through a network connector requires a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${endpointType}`]
+        : []),
+    });
+
     this.cfnEndpoint = new CfnWebFunctionEndpoint(this, 'Resource', {
       functionName: props.webFunction.functionName,
       endpointName: this.endpointName,
@@ -347,4 +355,16 @@ class ImportedWebFunctionEndpoint extends cdk.Resource implements IWebFunctionEn
   public get grants(): WebFunctionEndpointGrants {
     return WebFunctionEndpointGrants.fromEndpoint(this);
   }
+}
+
+/**
+ * Whether a web function's revision has VPC egress. Only a web function defined in this app can be inspected.
+ */
+function webFunctionHasEgress(webFunction: IWebFunction): boolean {
+  const revision = webFunction.node.tryFindChild('Revision');
+  if (!revision || !CfnWebFunctionRevision.isCfnWebFunctionRevision(revision)) {
+    return false;
+  }
+  const serviceConfig = revision.serviceConfig as CfnWebFunctionRevision.ServiceConfigProperty;
+  return serviceConfig?.egressNetworkConnectorArn !== undefined;
 }
