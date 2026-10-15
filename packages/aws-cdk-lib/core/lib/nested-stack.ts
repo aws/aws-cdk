@@ -107,6 +107,11 @@ export interface NestedStackProps {
  * nested stack will automatically be translated to stack parameters and
  * outputs.
  *
+ * `Tags.of(nestedStack)` applies tags to resources within the nested stack.
+ * The `AWS::CloudFormation::Stack` resource representing it belongs to the parent
+ * stack's scope, so these tag operations do not override or remove tags applied
+ * to that resource from the parent scope, even with a higher priority.
+ *
  */
 export class NestedStack extends Stack {
   /**

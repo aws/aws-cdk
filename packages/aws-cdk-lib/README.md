@@ -271,6 +271,28 @@ nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
 
 Nested stacks also support the use of Docker image and file assets.
 
+### Tagging nested stacks
+
+`Tags.of(nestedStack)` applies tags to resources inside the nested stack. The
+`AWS::CloudFormation::Stack` resource representing the nested stack is created
+in the parent stack's scope. Adding or removing a tag through
+`Tags.of(nestedStack)` does not override or remove a tag applied to that stack
+resource from the parent scope, even when a higher tag priority is specified.
+
+```ts
+const parent = new Stack(app, 'Parent');
+Tags.of(parent).add('environment', 'parent');
+
+const nested = new cfn.NestedStack(parent, 'Nested');
+new sqs.Queue(nested, 'Queue');
+Tags.of(nested).add('environment', 'nested', { priority: 300 });
+```
+
+In this example, the queue in the nested template has `environment=nested`,
+while the `AWS::CloudFormation::Stack` resource in the parent template retains
+`environment=parent`. Set tags on the appropriate scope depending on whether
+you want to tag the resources inside the nested stack or its stack resource.
+
 ## Accessing resources in a different stack
 
 You can pass resource references between stacks freely, including across regions and
