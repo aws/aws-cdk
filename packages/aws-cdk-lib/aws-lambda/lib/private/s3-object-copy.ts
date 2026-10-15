@@ -208,6 +208,8 @@ function singletonLogGroup(scope: Construct, uuid: string): logs.ILogGroup {
  * function instead leaves the old one, with its grants, to delete the old object.
  */
 function renderSingletonUuid(props: S3ObjectCopyProps): string {
+  // A fixed, arbitrary seed for the function's logical ID. Do not change it: a new value
+  // replaces the copy function in every stack that has one.
   let uuid = 'e2f8cf6b-1b0f-4b3f-9a2c-6f1f5b6d4a71';
   uuid += `-dest-${destinationIdentity(props.destinationBucket, props.destinationKeyPattern)}`;
 
