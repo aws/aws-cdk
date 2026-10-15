@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "bc9a6c26ae46a08e36400033aa7b84ad30bc1d375874c850f7d8dbbd08e12f00": {
+      "displayName": "EfsBackupPolicy Template",
+      "source": {
+        "path": "EfsBackupPolicy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-10705715": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bc9a6c26ae46a08e36400033aa7b84ad30bc1d375874c850f7d8dbbd08e12f00.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

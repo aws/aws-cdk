@@ -97,6 +97,7 @@ export const APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = '@aws-cdk/a
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
+export const EFS_EXPLICIT_BACKUP_POLICY = '@aws-cdk/aws-efs:explicitBackupPolicy';
 export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
@@ -953,6 +954,26 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.84.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EFS_EXPLICIT_BACKUP_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'Explicitly configure the EFS automatic backup policy when backups are disabled',
+    detailsMd: `
+      When enabled, \`FileSystem\` sets the backup policy to \`DISABLED\` when
+      \`enableAutomaticBackups\` is false or omitted, and to \`ENABLED\` when it is true.
+      Without this flag, false and omitted values leave the backup policy unconfigured,
+      which can leave automatic backups enabled by the service.
+
+      Enabling this flag can disable automatic backups for existing file systems.
+      Set \`enableAutomaticBackups: true\` before enabling the flag if backups
+      should remain enabled.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set this flag to `false` to preserve the existing backup policy when `enableAutomaticBackups` is false or omitted.',
   },
 
   //////////////////////////////////////////////////////////////////////
