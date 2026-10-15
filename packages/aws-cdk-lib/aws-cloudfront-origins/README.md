@@ -996,6 +996,25 @@ new cloudfront.Distribution(this, 'MyGlobalDistribution', {
 
 If you use a different origin request policy, choose one that doesn't forward the viewer's `Host` header.
 
+CloudFront removes the viewer's `Authorization` header from GET and HEAD requests unless it's in the cache key. If your function reads it, add it to the cache policy. This policy works like `CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS` with `Authorization` in place of `Host`, and caches only the responses that your function marks as cacheable with `Cache-Control`:
+
+```ts
+const cachePolicy = new cloudfront.CachePolicy(this, 'WebFunctionCachePolicy', {
+  defaultTtl: Duration.seconds(0),
+  headerBehavior: cloudfront.CacheHeaderBehavior.allowList(
+    'Authorization',
+    'Origin',
+    'X-HTTP-Method',
+    'X-HTTP-Method-Override',
+    'X-Method-Override',
+  ),
+  cookieBehavior: cloudfront.CacheCookieBehavior.all(),
+  queryStringBehavior: cloudfront.CacheQueryStringBehavior.all(),
+});
+```
+
+Set it as the `cachePolicy` of the behavior in either example above.
+
 ### Web Function permissions
 
 Lambda requires `lambda:InvokeWebFunctionEndpoint` for CloudFront to call a Web Function endpoint through OAC. Grant it to `cloudfront.amazonaws.com` in the Web Function's resource-based policy, scoped to your distribution. See [Restrict access to an AWS Lambda Web Function origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html).
