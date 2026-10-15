@@ -302,7 +302,7 @@ export interface WebFunctionProps {
    * `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable. Do not set that
    * variable through `environment` as well.
    *
-   * @default 'index.js'
+   * @default - the runtime's default entry point, `index.js`
    */
   readonly entryPoint?: string;
 
