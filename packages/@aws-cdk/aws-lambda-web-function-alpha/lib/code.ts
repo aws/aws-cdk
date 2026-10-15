@@ -54,10 +54,10 @@ export abstract class WebFunctionCode {
   /**
    * Uploads a local directory and copies it into a bucket that the caller provides.
    *
-   * The bucket must have versioning enabled, and the Web Functions service must be able to read the
-   * objects (`s3:GetObject` and `s3:GetObjectVersion` for `lambda.amazonaws.com`). The construct does not
-   * change the bucket policy. For a bucket defined in this app, versioning and encryption are validated at
-   * synth time.
+   * The bucket must have versioning enabled. The construct adds a bucket policy statement that lets
+   * `lambda.amazonaws.com` read (`s3:GetObject` and `s3:GetObjectVersion`) the revisions of the web function,
+   * scoped to the owning account. For a bucket defined in this app, versioning and encryption are validated
+   * at synth time.
    *
    * @param bucket the bucket that receives the copy of the asset
    * @param path the directory containing the application source
@@ -116,17 +116,17 @@ class AssetWebFunctionCode extends WebFunctionCode {
       scope.node.addValidation({ validate: () => validateCodeBucket(bucket) });
     } else {
       bucket = sharedCodeBucket(scope);
-      // The service reads the code of this function's revisions only
-      bucket.addToResourcePolicy(new iam.PolicyStatement({
-        principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
-        actions: ['s3:GetObject', 's3:GetObjectVersion'],
-        resources: [bucket.arnForObjects('*')],
-        conditions: {
-          StringEquals: { 'aws:SourceAccount': cdk.Stack.of(scope).account },
-          ArnLike: { 'aws:SourceArn': `${webFunctionArn}/revision/*` },
-        },
-      }));
     }
+    // The service reads the code of this function's revisions only
+    bucket.addToResourcePolicy(new iam.PolicyStatement({
+      principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+      actions: ['s3:GetObject', 's3:GetObjectVersion'],
+      resources: [bucket.arnForObjects('*')],
+      conditions: {
+        StringEquals: { 'aws:SourceAccount': cdk.Stack.of(scope).account },
+        ArnLike: { 'aws:SourceArn': `${webFunctionArn}/revision/*` },
+      },
+    }));
 
     // Copies the asset into the bucket and returns the version ID of the copy
     const copier = copyHandler(scope);

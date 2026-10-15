@@ -344,7 +344,10 @@ export class WebFunction extends cdk.Resource implements IWebFunction {
       },
     });
     // The revision references the function by name, which does not create a dependency
-    this.cfnRevision.addDependency(this.cfnWebFunction);
+    this.cfnRevision.addResourceDependency(this.cfnWebFunction);
+    // An endpoint that still routes to a revision blocks its deletion, which fails the stack.
+    // Lambda removes unused revisions beyond the most recent 50 on its own, so keep it on removal.
+    this.cfnRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
     if (props.kmsKey) {
       grantServiceDecrypt(this, props.kmsKey, this.functionArn);

@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
   NetworkConnector,
@@ -43,12 +44,27 @@ new WebFunction(stack, 'ProvidedBucketFunction', {
   code: WebFunctionCode.fromAssetToProvidedBucket(providedBucket, path.join(__dirname, 'fixture-app')),
 });
 
-new WebFunctionEndpoint(stack, 'Endpoint', {
+const prod = new WebFunctionEndpoint(stack, 'Endpoint', {
   webFunction: fn,
   webFunctionEndpointName: 'prod',
   endpointType: WebFunctionEndpointType.HOME_REGION,
   authType: WebFunctionAuthType.IAM_AUTH,
   rateLimit: 100,
+});
+
+// IAM callers of the endpoint also need a resource-based policy on the function, scoped to the endpoint
+new lambda.CfnResourcePolicy(stack, 'ProdInvokePolicy', {
+  resourceArn: fn.functionArn,
+  policyDocument: {
+    Version: '2012-10-17',
+    Statement: [{
+      Sid: 'InvokeProdEndpoint',
+      Effect: 'Allow',
+      Principal: { AWS: stack.account },
+      Action: 'lambda:InvokeWebFunctionEndpoint',
+      Resource: prod.endpointArn,
+    }],
+  },
 });
 
 new WebFunctionEndpoint(stack, 'PublicEndpoint', {

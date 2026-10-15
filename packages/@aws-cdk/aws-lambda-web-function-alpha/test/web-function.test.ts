@@ -115,6 +115,18 @@ describe('WebFunction', () => {
     });
   });
 
+  test('retains the revision on stack deletion or replacement', () => {
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAsset(FIXTURE_DIR),
+      webFunctionName: 'my-web-function',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::WebFunctionRevision', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
   test('uses code from an existing S3 object, including its version', () => {
     const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-code-bucket');
     new WebFunction(stack, 'WebFunction', {
@@ -364,6 +376,26 @@ describe('shared code bucket, provided bucket and function grants', () => {
             VersionId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^WebFunctionCodeCopy'), 'VersionId'] },
           },
         },
+      },
+    });
+  });
+
+  test('lets the service read the revisions of the function from a provided bucket', () => {
+    const bucket = new s3.Bucket(stack, 'Provided', { versioned: true, encryption: s3.BucketEncryption.S3_MANAGED });
+    new WebFunction(stack, 'WebFunction', {
+      code: WebFunctionCode.fromAssetToProvidedBucket(bucket, FIXTURE_DIR),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Action: ['s3:GetObject', 's3:GetObjectVersion'],
+          Condition: {
+            StringEquals: { 'aws:SourceAccount': '123456789012' },
+            ArnLike: { 'aws:SourceArn': { 'Fn::Join': ['', Match.arrayWith(['/revision/*'])] } },
+          },
+        })]),
       },
     });
   });

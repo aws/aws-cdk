@@ -58,8 +58,8 @@ app.listen(Number(port), host);
 * `WebFunctionCode.fromAsset(path)` uploads a local directory and deploys it as the code. The copy goes to
   a bucket shared by the web functions of the stack (see the workaround below).
 * `WebFunctionCode.fromAssetToProvidedBucket(bucket, path)` uploads a local directory and copies it into a
-  bucket that you provide. The bucket must have versioning enabled, and the service must be able to read the
-  objects; the construct does not change the bucket policy. A bucket defined in this app is validated at synth
+  bucket that you provide. The bucket must have versioning enabled. The construct adds a bucket policy statement
+  that lets the service read the revisions of the web function. A bucket defined in this app is validated at synth
   time, like `fromBucket`.
 * `WebFunctionCode.fromBucket(bucket, key, versionId?)` uses an existing S3 object. The bucket must have
   versioning enabled, and `lambda.amazonaws.com` must be able to read the object
@@ -197,7 +197,10 @@ published version, which has all three), these schema files can be removed.
 
 ## Invoke permissions
 
-An `IamAuth` endpoint is invoked with the `lambda:InvokeWebFunctionEndpoint` permission. Use
+An `IamAuth` endpoint is invoked with the `lambda:InvokeWebFunctionEndpoint` permission. Callers sign each
+request with SigV4 using the service name `lambda`, and send the `X-Amz-Content-SHA256` header (the SHA-256 of
+the body, or `UNSIGNED-PAYLOAD`), even for requests without a body. Without that header Lambda returns
+`403 Forbidden`. Use
 `endpoint.grants.invoke()` to grant it to a principal in the same account, or `fn.grants.invoke()` for every
 endpoint of a web function. The grant goes into the
 principal's identity policy:

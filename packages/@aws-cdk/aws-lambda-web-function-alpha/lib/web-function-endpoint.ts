@@ -156,8 +156,11 @@ export interface WebFunctionEndpointProps {
   readonly maxEnvironments?: number;
 
   /**
-   * The maximum request rate per second the endpoint accepts, up to 10000, in addition to the
+   * The maximum request rate per second the endpoint accepts, in each Region, in addition to the
    * account rate limit quota.
+   *
+   * Values up to 1000 must be a multiple of 100, and values above 1000 must be a multiple of 1000.
+   * A value of 0 blocks all traffic.
    *
    * @default - limited only by the account rate limit quota
    */
@@ -237,12 +240,13 @@ export class WebFunctionEndpoint extends cdk.Resource implements IWebFunctionEnd
       throw new WebFunctionValidationError('regions must contain at least one Region when specified');
     }
     if (props.maxEnvironments !== undefined && !cdk.Token.isUnresolved(props.maxEnvironments)
-      && (!Number.isInteger(props.maxEnvironments) || props.maxEnvironments < 1)) {
-      throw new WebFunctionValidationError(`maxEnvironments must be a positive integer, got ${props.maxEnvironments}`);
+      && (!Number.isInteger(props.maxEnvironments) || props.maxEnvironments < 2 || props.maxEnvironments > 10000)) {
+      throw new WebFunctionValidationError(`maxEnvironments must be an integer from 2 to 10000, got ${props.maxEnvironments}`);
     }
-    if (props.rateLimit !== undefined && !cdk.Token.isUnresolved(props.rateLimit)
-      && (!Number.isInteger(props.rateLimit) || props.rateLimit < 1 || props.rateLimit > 10000)) {
-      throw new WebFunctionValidationError(`rateLimit must be an integer from 1 to 10000, got ${props.rateLimit}`);
+    if (props.rateLimit !== undefined && !cdk.Token.isUnresolved(props.rateLimit) && !isValidRateLimit(props.rateLimit)) {
+      throw new WebFunctionValidationError(
+        `rateLimit must be 0 to 10000: a multiple of 100 up to 1000, then a multiple of 1000, got ${props.rateLimit}`,
+      );
     }
 
     // Egress through a network connector is only supported with HomeRegion endpoints
@@ -277,6 +281,16 @@ export class WebFunctionEndpoint extends cdk.Resource implements IWebFunctionEnd
   public get grants(): WebFunctionEndpointGrants {
     return WebFunctionEndpointGrants.fromEndpoint(this);
   }
+}
+
+/**
+ * Checks a rate limit: 0 to 10000, a multiple of 100 up to 1000, and a multiple of 1000 above that
+ */
+function isValidRateLimit(rateLimit: number): boolean {
+  if (!Number.isInteger(rateLimit) || rateLimit < 0 || rateLimit > 10000) {
+    return false;
+  }
+  return rateLimit <= 1000 ? rateLimit % 100 === 0 : rateLimit % 1000 === 0;
 }
 
 /**

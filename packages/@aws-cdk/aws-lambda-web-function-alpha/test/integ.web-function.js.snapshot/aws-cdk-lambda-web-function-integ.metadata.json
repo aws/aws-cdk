@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/Users/davidedesio/Desktop/webfunctions/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
         "    at get availabilityZones (/Users/davidedesio/Desktop/webfunctions/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/Users/davidedesio/Desktop/webfunctions/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/Users/davidedesio/Desktop/webfunctions/aws-cdk/packages/@aws-cdk/aws-lambda-web-function-alpha/test/integ.web-function.js:45:13)",
+        "    at <anonymous> (/Users/davidedesio/Desktop/webfunctions/aws-cdk/packages/@aws-cdk/aws-lambda-web-function-alpha/test/integ.web-function.js:46:13)",
         "    ...node internals..."
       ]
     },
@@ -79,6 +79,12 @@
         "removalPolicy": "destroy",
         "autoDeleteObjects": true
       }
+    }
+  ],
+  "/aws-cdk-lambda-web-function-integ/ProdInvokePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProdInvokePolicy"
     }
   ],
   "/aws-cdk-lambda-web-function-integ/BootstrapVersion": [

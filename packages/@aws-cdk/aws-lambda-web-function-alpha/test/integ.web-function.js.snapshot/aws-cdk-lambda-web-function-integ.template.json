@@ -434,7 +434,9 @@
    },
    "DependsOn": [
     "WebFunction291B7D47"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "WebFunctionCodeBucket1D283E48": {
    "Type": "AWS::S3::Bucket",
@@ -1061,6 +1063,53 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "ProvidedBucketFunctionD82E8D2C",
+              "FunctionArn"
+             ]
+            },
+            "/revision/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "ProvidedCodeBucketFBC378C0",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1183,7 +1232,9 @@
    },
    "DependsOn": [
     "ProvidedBucketFunctionD82E8D2C"
-   ]
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "EndpointEEF1FD8F": {
    "Type": "AWS::Lambda::WebFunctionEndpoint",
@@ -1213,6 +1264,38 @@
     "WebFunctionRevisionE34E43F6",
     "WebFunctionRole2678EDFA"
    ]
+  },
+  "ProdInvokePolicy": {
+   "Type": "AWS::Lambda::ResourcePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Sid": "InvokeProdEndpoint",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Ref": "AWS::AccountId"
+        }
+       },
+       "Action": "lambda:InvokeWebFunctionEndpoint",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EndpointEEF1FD8F",
+         "EndpointArn"
+        ]
+       }
+      }
+     ]
+    },
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "WebFunction291B7D47",
+      "FunctionArn"
+     ]
+    }
+   }
   },
   "PublicEndpointDE11522E": {
    "Type": "AWS::Lambda::WebFunctionEndpoint",

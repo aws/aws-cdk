@@ -183,6 +183,34 @@ describe('WebFunctionEndpoint', () => {
     })).toThrow(/rateLimit/);
   });
 
+  test.each([0, 100, 1000, 2000, 10000])('accepts the valid rate limit %d', (rateLimit) => {
+    new WebFunctionEndpoint(stack, 'Endpoint', {
+      webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
+      rateLimit,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
+      ThrottleConfig: { RateLimit: rateLimit },
+    });
+  });
+
+  test.each([-100, 50, 150, 1500, 10050])('fails for the invalid rate limit %d', (rateLimit) => {
+    expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
+      webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
+      rateLimit,
+    })).toThrow(/rateLimit/);
+  });
+
+  test.each([1, 0, 10001])('fails for the invalid maxEnvironments %d', (maxEnvironments) => {
+    expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
+      webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
+      maxEnvironments,
+    })).toThrow(/maxEnvironments/);
+  });
+
   test('rejects an empty list of Regions', () => {
     expect(() => new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
