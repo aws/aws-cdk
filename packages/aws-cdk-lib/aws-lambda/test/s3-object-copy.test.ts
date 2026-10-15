@@ -188,6 +188,39 @@ describe('S3ObjectCopy', () => {
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
 
+    test('a copy to a different key pattern gets its own function', () => {
+      new S3ObjectCopy(stack, 'Copy1', minimalProps());
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'b/app.zip', destinationKeyPattern: 'b/*' }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+    });
+
+    test('a copy to a different bucket gets its own function', () => {
+      const otherBucket = new s3.Bucket(stack, 'Other', { versioned: true });
+
+      new S3ObjectCopy(stack, 'Copy1', minimalProps());
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationBucket: otherBucket }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+    });
+
+    test('two references to the same bucket share a function', () => {
+      const first = s3.Bucket.fromBucketName(stack, 'First', 'my-code-bucket');
+      const second = s3.Bucket.fromBucketName(stack, 'Second', 'my-code-bucket');
+
+      new S3ObjectCopy(stack, 'Copy1', minimalProps({ destinationBucket: first }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationBucket: second, destinationKey: 'other.zip' }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+    });
+
+    test('key patterns that differ only in punctuation get separate functions', () => {
+      new S3ObjectCopy(stack, 'Copy1', minimalProps({ destinationKey: 'a/b/app.zip', destinationKeyPattern: 'a/b/*' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'ab/app.zip', destinationKeyPattern: 'ab/*' }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+    });
+
     test('the function logs to a log group created in the stack', () => {
       new S3ObjectCopy(stack, 'Copy', minimalProps());
       const template = Template.fromStack(stack);

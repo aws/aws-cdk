@@ -195,9 +195,15 @@ function singletonLogGroup(scope: Construct, uuid: string): logs.ILogGroup {
  *
  * A value is only appended when it is actually set, so adding a new option later leaves the
  * uuid — and therefore the logical ID — unchanged for consumers who do not use it.
+ *
+ * The destination is always part of it. The function's role is scoped to the destination, so
+ * if a moved destination kept the same function, its role would be narrowed in place and the
+ * Delete of the old object, which runs in the cleanup phase, would no longer be allowed. A new
+ * function instead leaves the old one, with its grants, to delete the old object.
  */
 function renderSingletonUuid(props: S3ObjectCopyProps): string {
   let uuid = 'e2f8cf6b-1b0f-4b3f-9a2c-6f1f5b6d4a71';
+  uuid += `-dest-${destinationIdentity(props.destinationBucket, props.destinationKeyPattern)}`;
 
   if (props.role) { uuid += `-role-${props.role.node.addr}`; }
   if (props.vpc) {
@@ -208,6 +214,24 @@ function renderSingletonUuid(props: S3ObjectCopyProps): string {
   if (props.logGroup) { uuid += `-lg-${props.logGroup.node.addr}`; }
 
   return uuid;
+}
+
+/**
+ * A hex identity for where a copy writes to. It feeds the function's uuid here, and the copy's
+ * construct id in `WebFunctionCode`, so the two change together.
+ *
+ * The bucket is identified by its name as CloudFormation sees it — a literal for an imported
+ * bucket, a `Ref` for one defined in the app — rather than by construct path. The copy's id has
+ * to change only when the object it writes changes; a path that moves without the bucket would
+ * give a new copy resource for the same object, and deleting the old one would remove the new
+ * copy's object as well.
+ *
+ * Hashed because `SingletonFunction` drops the non-alphanumeric characters of the uuid, which
+ * would make patterns such as `a/b/*` and `ab/*` the same identity.
+ */
+export function destinationIdentity(bucket: s3.IBucket, keyPattern: string): string {
+  const bucketName = JSON.stringify(cdk.Stack.of(bucket).resolve(bucket.bucketName));
+  return md5hash(`${bucketName}/${keyPattern}`);
 }
 
 /**

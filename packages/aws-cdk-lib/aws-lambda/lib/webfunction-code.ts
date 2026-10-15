@@ -5,7 +5,7 @@ import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { S3ObjectCopy } from './private/s3-object-copy';
+import { S3ObjectCopy, destinationIdentity } from './private/s3-object-copy';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 
@@ -345,12 +345,18 @@ abstract class StagedAssetCode extends WebFunctionCode {
     // bucket gets a statement scoped to this one key.
     this.grantDestinationRead(destination, key, scope, options);
 
-    const copy = new S3ObjectCopy(scope, 'CodeCopy', {
+    // A copy to a new destination uses a new function (see S3ObjectCopy), and CloudFormation
+    // does not allow a custom resource's ServiceToken to change. Deriving the construct id from
+    // the destination makes a move create a new copy resource instead, and the old one is
+    // deleted by the old function.
+    const keyPattern = this.destinationKeyPattern();
+    const copyId = `CodeCopy${destinationIdentity(destination, keyPattern).slice(0, 8)}`;
+    const copy = new S3ObjectCopy(scope, copyId, {
       sourceBucket: this.asset.bucket,
       sourceKey: this.asset.s3ObjectKey,
       destinationBucket: destination,
       destinationKey: key,
-      destinationKeyPattern: this.destinationKeyPattern(),
+      destinationKeyPattern: keyPattern,
       ...this.options.copyOptions,
     });
 

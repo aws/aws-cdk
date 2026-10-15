@@ -562,6 +562,25 @@ describe('WebFunctionCode', () => {
       });
     });
 
+    test('a new key prefix gives the copy a new logical ID, a code change does not', () => {
+      // The copy's function changes with its destination, and CloudFormation rejects a new
+      // ServiceToken on an existing custom resource, so a move has to create a new resource.
+      const copyLogicalId = (keyPrefix: string, assetPath: string) => {
+        const s = new cdk.Stack();
+        const bucket = new s3.Bucket(s, 'MyBucket', { versioned: true });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath, { keyPrefix }),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          authType: WebFunctionAuthType.IAM_AUTH,
+        });
+        return Object.keys(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+      };
+
+      const original = copyLogicalId('a/', ASSET_PATH);
+      expect(copyLogicalId('b/', ASSET_PATH)).not.toEqual(original);
+      expect(copyLogicalId('a/', path.join(__dirname, 'handler.zip'))).toEqual(original);
+    });
+
     test('lets the copy handler delete under the key prefix only', () => {
       // Renaming the construct replaces the copy resource and the old key must still be
       // deletable, so the grant covers the caller's prefix rather than the single key — but
