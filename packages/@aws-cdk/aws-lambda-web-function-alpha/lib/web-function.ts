@@ -128,6 +128,8 @@ export interface WebFunctionProps {
   /**
    * The execution role of the web function.
    *
+   * [disable-awslint:prefer-ref-interface] The execution role is granted to the service and, when created here, gets managed policies, which a reference does not allow.
+   *
    * @default - a new role that can write to CloudWatch Logs
    */
   readonly role?: iam.IRole;
@@ -156,6 +158,8 @@ export interface WebFunctionProps {
   /**
    * The KMS key used to encrypt the revision.
    *
+   * [disable-awslint:prefer-ref-interface] The key needs the full IKey, since the service decrypt grant edits its resource policy, which a reference does not allow.
+   *
    * @default - the service default encryption
    */
   readonly kmsKey?: kms.IKey;
@@ -183,6 +187,8 @@ export interface WebFunctionProps {
 
   /**
    * The network connector that gives the function egress into a VPC.
+   *
+   * [disable-awslint:prefer-ref-interface] The revision pins the connector's latest version ARN, which a connector reference does not carry.
    *
    * The connector must be defined in the same stack. The revision is pinned to the connector's latest
    * version, so an update to the connector replaces the revision.

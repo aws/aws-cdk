@@ -56,6 +56,8 @@ export interface NetworkConnectorProps {
 
   /**
    * The VPC in which the connector provisions its network interfaces.
+   *
+   * [disable-awslint:prefer-ref-interface] The connector reads the subnets of the VPC; there is no VPC reference type.
    */
   readonly vpc: ec2.IVpc;
 
@@ -82,6 +84,8 @@ export interface NetworkConnectorProps {
 
   /**
    * The role that the service assumes to manage the network interfaces. It must have the
+   *
+   * [disable-awslint:prefer-ref-interface] A role created in the app gets the operator managed policy attached, which needs the full IRole.
    * `AWSLambdaNetworkConnectorOperatorPolicy` managed policy and trust `lambda.amazonaws.com`.
    *
    * @default - a new role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy

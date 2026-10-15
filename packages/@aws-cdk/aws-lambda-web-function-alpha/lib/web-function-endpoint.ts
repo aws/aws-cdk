@@ -101,6 +101,8 @@ export interface WebFunctionRevisionWeight {
 export interface WebFunctionEndpointProps {
   /**
    * The web function that the endpoint exposes
+   *
+   * [disable-awslint:prefer-ref-interface] The endpoint reads the revision id and function name and depends on the function, which a reference does not carry.
    */
   // Not a Ref interface: the default route needs the revision ID, which a reference does not carry
   readonly webFunction: IWebFunction;
