@@ -1,0 +1,50 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W3030",
+          "description": "Configuration.VpcEgressConfiguration.AssociatedComputeResourceTypes.0: 'WebFunction' is not one of ['MicroVm']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnector/Connector/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnNetworkConnector",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionNetworkConnector.template.json",
+                "logicalId": "ConnectorC537A2FB",
+                "propertyPaths": [
+                  "Properties.Configuration.VpcEgressConfiguration.AssociatedComputeResourceTypes.0"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionNetworkConnectorTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
