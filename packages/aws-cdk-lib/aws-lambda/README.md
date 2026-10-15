@@ -2466,3 +2466,6 @@ wf.resourceEndpoint.addOverride('Properties.SomeField', 'value');
 For configurations the construct does not model, such as splitting traffic across multiple
 revisions, use the L1 constructs (`CfnWebFunction`, `CfnWebFunctionRevision` and
 `CfnWebFunctionEndpoint`) directly.
+
+Metrics are not modeled yet. The endpoint publishes them in the `AWS/Lambda/Web` namespace with
+the `FunctionName` and `EndpointName` dimensions; use `cloudwatch.Metric` to reference them.
