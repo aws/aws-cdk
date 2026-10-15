@@ -938,7 +938,7 @@ export class WebFunction extends WebFunctionBase {
     this.resourceEndpoint = new CfnWebFunctionEndpoint(this, 'Endpoint', {
       functionName: this.resource.ref,
       endpointName: props.endpointName ?? 'prod',
-      endpointType: props.endpointType ?? WebFunctionEndpointType.HOME_REGION,
+      endpointType,
       authType: props.authType,
       revisionWeights: [
         {
