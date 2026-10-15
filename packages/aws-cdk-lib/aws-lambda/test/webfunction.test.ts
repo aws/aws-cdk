@@ -36,6 +36,18 @@ describe('WebFunction validation', () => {
     stack = new Stack();
   });
 
+  test('isWebFunction recognizes a WebFunction only', () => {
+    const fn = new WebFunction(stack, 'Test', minimalProps());
+    const imported = WebFunction.fromWebFunctionArn(stack, 'Imported',
+      'arn:aws:lambda:us-east-1:123456789012:web-function/other');
+
+    expect(WebFunction.isWebFunction(fn)).toBe(true);
+    expect(WebFunction.isWebFunction(imported)).toBe(false);
+    expect(WebFunction.isWebFunction(stack)).toBe(false);
+    expect(WebFunction.isWebFunction({})).toBe(false);
+    expect(WebFunction.isWebFunction(null)).toBe(false);
+  });
+
   describe('functionName', () => {
     test('throws when name exceeds 64 characters', () => {
       expect(() => {

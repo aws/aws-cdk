@@ -236,6 +236,8 @@ function versionSeparator(resourceName: string): number | undefined {
   return separator >= 0 && /^\d+$/.test(resourceName.slice(separator + 1)) ? separator : undefined;
 }
 
+const NETWORK_CONNECTOR_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.NetworkConnector');
+
 /**
  * A Lambda Network Connector: network configuration that Lambda compute attaches to.
  *
@@ -251,6 +253,13 @@ function versionSeparator(resourceName: string): number | undefined {
  */
 @propertyInjectable
 export class NetworkConnector extends NetworkConnectorBase {
+  /**
+   * Return whether the given object is a NetworkConnector.
+   */
+  public static isNetworkConnector(x: any): x is NetworkConnector {
+    return x !== null && typeof x === 'object' && NETWORK_CONNECTOR_SYMBOL in x;
+  }
+
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.NetworkConnector';
 
@@ -398,3 +407,9 @@ export class NetworkConnector extends NetworkConnectorBase {
     return this.resource.attrLatestVersionArn;
   }
 }
+
+Object.defineProperty(NetworkConnector.prototype, NETWORK_CONNECTOR_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

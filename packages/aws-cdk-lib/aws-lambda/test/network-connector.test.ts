@@ -33,6 +33,16 @@ describe('NetworkConnector', () => {
     });
   }
 
+  test('isNetworkConnector recognizes a NetworkConnector only', () => {
+    const connector = new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+    const imported = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Imported', VERSION_ARN);
+
+    expect(NetworkConnector.isNetworkConnector(connector)).toBe(true);
+    expect(NetworkConnector.isNetworkConnector(imported)).toBe(false);
+    expect(NetworkConnector.isNetworkConnector(vpc)).toBe(false);
+    expect(NetworkConnector.isNetworkConnector(null)).toBe(false);
+  });
+
   describe('template', () => {
     test('renders the VPC egress configuration with the compute type', () => {
       new NetworkConnector(stack, 'Connector', {

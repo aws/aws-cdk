@@ -591,6 +591,8 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   }
 }
 
+const WEB_FUNCTION_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.WebFunction');
+
 /**
  * A Lambda WebFunction L2 construct.
  *
@@ -598,6 +600,13 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
  */
 @propertyInjectable
 export class WebFunction extends WebFunctionBase {
+  /**
+   * Return whether the given object is a WebFunction.
+   */
+  public static isWebFunction(x: any): x is WebFunction {
+    return x !== null && typeof x === 'object' && WEB_FUNCTION_SYMBOL in x;
+  }
+
   /**
    * Uniquely identifies this class.
    */
@@ -1123,3 +1132,9 @@ export class WebFunction extends WebFunctionBase {
     }
   }
 }
+
+Object.defineProperty(WebFunction.prototype, WEB_FUNCTION_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
