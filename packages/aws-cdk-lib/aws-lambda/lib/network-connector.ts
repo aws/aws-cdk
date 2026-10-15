@@ -253,15 +253,15 @@ const NETWORK_CONNECTOR_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.NetworkConnecto
  */
 @propertyInjectable
 export class NetworkConnector extends NetworkConnectorBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.NetworkConnector';
+
   /**
    * Return whether the given object is a NetworkConnector.
    */
   public static isNetworkConnector(x: any): x is NetworkConnector {
     return x !== null && typeof x === 'object' && NETWORK_CONNECTOR_SYMBOL in x;
   }
-
-  /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.NetworkConnector';
 
   /**
    * Import a specific version of a connector by its qualified ARN.

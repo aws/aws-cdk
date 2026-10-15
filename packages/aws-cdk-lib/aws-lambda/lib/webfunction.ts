@@ -601,16 +601,16 @@ const WEB_FUNCTION_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.WebFunction');
 @propertyInjectable
 export class WebFunction extends WebFunctionBase {
   /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.WebFunction';
+
+  /**
    * Return whether the given object is a WebFunction.
    */
   public static isWebFunction(x: any): x is WebFunction {
     return x !== null && typeof x === 'object' && WEB_FUNCTION_SYMBOL in x;
   }
-
-  /**
-   * Uniquely identifies this class.
-   */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.WebFunction';
 
   /**
    * Import an existing WebFunction by its ARN.
