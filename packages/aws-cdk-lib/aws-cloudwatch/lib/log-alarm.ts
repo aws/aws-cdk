@@ -319,6 +319,19 @@ export interface LogAlarmWarmUpConfiguration {
 }
 
 /**
+ * Represents a CloudWatch log alarm.
+ */
+export interface ILogAlarm extends IAlarm {
+  /**
+   * The IAM role that CloudWatch assumes to read log lines for notifications.
+   *
+   * Undefined for an imported log alarm, and when no log lines are included in
+   * notifications.
+   */
+  readonly actionLogLineRole?: IRole;
+}
+
+/**
  * A CloudWatch alarm evaluated against the results of a scheduled Logs query.
  *
  * Unlike a metric alarm, a log alarm runs a query against one or more log
@@ -328,17 +341,17 @@ export interface LogAlarmWarmUpConfiguration {
  * @resource AWS::CloudWatch::LogAlarm
  */
 @propertyInjectable
-export class LogAlarm extends AlarmBase {
+export class LogAlarm extends AlarmBase implements ILogAlarm {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.LogAlarm';
 
   /**
    * Import an existing log alarm provided an ARN.
    */
-  public static fromLogAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends AlarmBase implements IAlarm {
-      public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+  public static fromLogAlarmArn(scope: Construct, id: string, logAlarmArn: string): ILogAlarm {
+    class Import extends AlarmBase implements ILogAlarm {
+      public readonly alarmArn = logAlarmArn;
+      public readonly alarmName = Stack.of(scope).splitArn(logAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -346,12 +359,12 @@ export class LogAlarm extends AlarmBase {
   /**
    * Import an existing log alarm provided a Name.
    */
-  public static fromLogAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
+  public static fromLogAlarmName(scope: Construct, id: string, logAlarmName: string): ILogAlarm {
     const stack = Stack.of(scope);
     return this.fromLogAlarmArn(scope, id, stack.formatArn({
       service: 'cloudwatch',
       resource: 'alarm',
-      resourceName: alarmName,
+      resourceName: logAlarmName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     }));
   }
@@ -456,10 +469,6 @@ export class LogAlarm extends AlarmBase {
       throw new ValidationError(lit`InvalidTimeOffsetRange`, `startTimeOffset must be greater than endTimeOffset, got ${sqc.schedule.startTimeOffset.toSeconds()} and ${sqc.schedule.endTimeOffset.toSeconds()} seconds`, this);
     }
 
-    props.alarmActions?.forEach(action => this.addAlarmAction(action));
-    props.okActions?.forEach(action => this.addOkAction(action));
-    props.insufficientDataActions?.forEach(action => this.addInsufficientDataAction(action));
-
     this.scheduledQueryRole = sqc.scheduledQueryRole
       ?? this.createServiceRole('ScheduledQueryRole', 'logs.amazonaws.com', 'logs', 'scheduled-query');
     this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
@@ -500,6 +509,10 @@ export class LogAlarm extends AlarmBase {
       scheduledQueryConfiguration: this.renderScheduledQuery(sqc),
       warmUpConfiguration: this.renderWarmUp(props.warmUpConfiguration),
     });
+
+    props.alarmActions?.forEach(action => this.addAlarmAction(action));
+    props.okActions?.forEach(action => this.addOkAction(action));
+    props.insufficientDataActions?.forEach(action => this.addInsufficientDataAction(action));
   }
 
   /**

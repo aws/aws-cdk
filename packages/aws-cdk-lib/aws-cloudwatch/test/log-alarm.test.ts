@@ -1,8 +1,10 @@
 import { Annotations, Match, Template } from '../../assertions';
+import { LambdaAction } from '../../aws-cloudwatch-actions/lib';
 import { Role, ServicePrincipal } from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
 import { LogGroup } from '../../aws-logs';
 import { Duration, Fn, Stack, Token } from '../../core';
-import type { IAlarmAction } from '../lib';
+import type { IAlarmAction, ILogAlarm } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
 describe('LogAlarm', () => {
@@ -257,6 +259,27 @@ describe('LogAlarm', () => {
       AlarmActions: ['arn:aws:sns:us-east-1:123456789012:alarm-topic'],
       OKActions: ['arn:aws:sns:us-east-1:123456789012:ok-topic'],
       InsufficientDataActions: ['arn:aws:sns:us-east-1:123456789012:insufficient-topic'],
+    });
+  });
+
+  test('binds an action that reads the alarm arn when given through props', () => {
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+    });
+
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      alarmActions: [new LambdaAction(fn)],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      AlarmActions: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('^Function'), 'Arn'] }],
+    });
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      SourceArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('^Alarm'), 'Arn'] },
     });
   });
 
@@ -768,6 +791,22 @@ describe('LogAlarm', () => {
 
     expect(stack.resolve(imported.alarmName)).toEqual('my-log-alarm');
     expect(stack.resolve(imported.alarmArn)).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
+  });
+
+  test('an imported log alarm has no log line role', () => {
+    const imported = LogAlarm.fromLogAlarmArn(stack, 'Imported',
+      'arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
+
+    expect(imported.actionLogLineRole).toBeUndefined();
+  });
+
+  test('exposes its log line role through ILogAlarm', () => {
+    const alarm: ILogAlarm = new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLineCount: 5,
+    });
+
+    expect(alarm.actionLogLineRole).toBeDefined();
   });
 
   test('fromLogAlarmName formats an alarm arn and derives the name back', () => {
