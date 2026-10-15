@@ -2217,12 +2217,8 @@ lambda.WebFunctionCode.fromAssetToManagedBucket(path.join(__dirname, 'my-app'), 
 WebFunctions that pass different `copyOptions` get separate copy functions, since one
 Lambda function cannot carry two configurations.
 
-Without `logGroup`, the copy function's log group depends on the
-`@aws-cdk/aws-lambda:useCdkManagedLogGroup` feature flag, as for every CDK Lambda function.
-With the flag enabled, which `cdk init` does for new apps, CDK creates the log group in the
-stack with the default retention. Without it, Lambda creates one on first invocation,
-outside CloudFormation and without retention. Pass a log group of your own to control its
-retention either way.
+Without `logGroup`, CDK creates a log group for the copy function in the stack, with the
+default retention. Pass a log group of your own to control its retention or encryption.
 
 ### Authentication
 

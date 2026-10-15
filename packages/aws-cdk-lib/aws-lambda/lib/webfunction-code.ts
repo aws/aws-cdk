@@ -265,9 +265,7 @@ export interface WebFunctionCodeCopyOptions {
   /**
    * The log group the Lambda function sends logs to.
    *
-   * @default - with the `@aws-cdk/aws-lambda:useCdkManagedLogGroup` feature flag enabled, a log
-   * group with the default retention is created in the stack; otherwise Lambda creates one on
-   * first invocation, outside CloudFormation and without retention
+   * @default - a log group is created in the stack, shared by every copy that uses the same function
    */
   readonly logGroup?: logs.ILogGroupRef;
 }

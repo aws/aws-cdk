@@ -188,6 +188,35 @@ describe('S3ObjectCopy', () => {
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
 
+    test('the function logs to a log group created in the stack', () => {
+      new S3ObjectCopy(stack, 'Copy', minimalProps());
+      const template = Template.fromStack(stack);
+
+      template.resourceCountIs('AWS::Logs::LogGroup', 1);
+      const logGroupId = Object.keys(template.findResources('AWS::Logs::LogGroup'))[0];
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        LoggingConfig: { LogGroup: { Ref: logGroupId } },
+      });
+    });
+
+    test('copies sharing a function share its log group', () => {
+      new S3ObjectCopy(stack, 'Copy1', minimalProps());
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip' }));
+
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+    });
+
+    test('a given log group is used instead of creating one', () => {
+      const logGroup = new logs.LogGroup(stack, 'LogGroup');
+      new S3ObjectCopy(stack, 'Copy', minimalProps({ logGroup }));
+      const template = Template.fromStack(stack);
+
+      template.resourceCountIs('AWS::Logs::LogGroup', 1);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        LoggingConfig: { LogGroup: { Ref: stack.getLogicalId(logGroup.node.defaultChild as cdk.CfnElement) } },
+      });
+    });
+
     describe('vpcSubnets', () => {
       test('a copy selecting different subnets gets its own function', () => {
         const vpc = new ec2.Vpc(stack, 'Vpc');

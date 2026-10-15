@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as logs from '../../../aws-logs';
 import type * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -119,8 +120,9 @@ export class S3ObjectCopy extends Construct {
       require('../../../custom-resource-handlers/dist/aws-s3-deployment/s3-object-copy-provider.generated') as
         { S3ObjectCopySingletonFunction: typeof S3ObjectCopySingletonFunctionType };
 
+    const uuid = renderSingletonUuid(props);
     const handler = new S3ObjectCopySingletonFunction(this, 'CustomResourceHandler', {
-      uuid: renderSingletonUuid(props),
+      uuid,
       lambdaPurpose: RESOURCE_TYPE,
       // Not exposed as an option yet. lambda.Function defaults to 3 seconds, which is too
       // short for copying a large object, so a usable value has to be set here.
@@ -129,7 +131,7 @@ export class S3ObjectCopy extends Construct {
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
       securityGroups: props.securityGroups,
-      logGroup: props.logGroup,
+      logGroup: props.logGroup ?? singletonLogGroup(this, uuid),
     });
 
     if (!handler.role) {
@@ -170,6 +172,18 @@ export class S3ObjectCopy extends Construct {
     this.destinationObjectKey = this.cr.getAttString('Key');
     this.versionId = this.cr.getAttString('VersionId');
   }
+}
+
+/**
+ * The log group for the singleton function, shared like the function itself.
+ *
+ * Every copy with the same uuid gets the same function, so the log group is keyed by the uuid
+ * too: one log group per function, instead of one per copy that only the first would use.
+ */
+function singletonLogGroup(scope: Construct, uuid: string): logs.ILogGroup {
+  const stack = cdk.Stack.of(scope);
+  const id = `S3ObjectCopyLogGroup${uuid.replace(/[^a-zA-Z0-9]/g, '')}`;
+  return (stack.node.tryFindChild(id) as logs.ILogGroup | undefined) ?? new logs.LogGroup(stack, id);
 }
 
 /**
