@@ -467,6 +467,14 @@ describe('WebFunction template', () => {
     });
   });
 
+  test('the tags prop tags the WebFunction resource', () => {
+    new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func', tags: { env: 'prod' } }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunction', {
+      Tags: [{ Key: 'env', Value: 'prod' }],
+    });
+  });
+
   test('WebFunctionRevision carries maxConcurrencyPerEnvironment in ServiceConfig', () => {
     new WebFunction(stack, 'Test', minimalProps({ maxConcurrencyPerEnvironment: 32 }));
 

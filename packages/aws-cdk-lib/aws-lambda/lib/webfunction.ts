@@ -266,6 +266,16 @@ export interface WebFunctionProps {
   readonly webFunctionName?: string;
 
   /**
+   * Tags to apply to the WebFunction.
+   *
+   * Only the WebFunction resource carries tags. Its revision and endpoint are not
+   * taggable, so nothing is applied to them.
+   *
+   * @default - No tags.
+   */
+  readonly tags?: { [key: string]: string };
+
+  /**
    * A description of the WebFunction revision.
    *
    * Must be 256 characters or fewer.
@@ -882,6 +892,9 @@ export class WebFunction extends WebFunctionBase {
     // Create the CloudFormation resource
     this.resource = new CfnWebFunction(this, 'Function', {
       functionName: functionName,
+      tags: props.tags
+        ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
+        : undefined,
     });
 
     this.resourceRevision = new CfnWebFunctionRevision(this, 'Revision', {
