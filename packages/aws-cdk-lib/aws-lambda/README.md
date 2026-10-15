@@ -2112,6 +2112,11 @@ destination bucket that satisfies those requirements — the CDK bootstrap bucke
 cannot be used directly, since it has no versioning and its policy does not grant
 the Lambda service principal read access.
 
+Staging does not work in an environment bootstrapped with a customer managed KMS key.
+The copy function reads the staged asset from the bootstrap bucket and is not granted
+`kms:Decrypt` on that key, so the deployment fails with `AccessDenied` on `CopyObject`.
+In that case, upload the code to a bucket yourself and use `fromBucket()`.
+
 #### Into a bucket CDK creates
 
 ```ts

@@ -117,6 +117,8 @@ export abstract class WebFunctionCode {
    *
    * The bucket is created with `RemovalPolicy.DESTROY` and `autoDeleteObjects`, so it is
    * removed along with the stack that owns it.
+   *
+   * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
    */
   public static fromAssetToManagedBucket(path: string, options?: ManagedBucketAssetOptions): WebFunctionCode {
     return new ManagedBucketAssetCode(path, options ?? {});
@@ -139,6 +141,8 @@ export abstract class WebFunctionCode {
    * - Encryption must not be `BucketEncryption.KMS_MANAGED` (SSE-KMS with `aws/s3`) or
    *   `BucketEncryption.DSSE_MANAGED`, whose key policy cannot be modified to authorize the
    *   Lambda service principal. SSE-S3 and a customer managed key both work.
+   *
+   * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
    */
   public static fromAssetToProvidedBucket(
     bucket: s3.IBucket,
