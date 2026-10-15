@@ -23,6 +23,7 @@ export interface BundlingOptions extends DockerRunOptions {
 
   /**
    * List of file patterns to exclude when copying assets from source for bundling.
+   * Also applies to source asset staging when bundling is skipped for a stack.
    *
    * @default - Empty list
    */
