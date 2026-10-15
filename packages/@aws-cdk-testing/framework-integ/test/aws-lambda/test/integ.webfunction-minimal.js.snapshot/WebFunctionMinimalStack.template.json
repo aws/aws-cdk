@@ -476,6 +476,24 @@
     "CodeBucketPolicy637E7C14"
    ]
   },
+  "MinimalBucketLogGroup04559959": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionMinimackMinimalBucket31833657",
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "App",
+      "Value": "integ-test"
+     }
+    ]
+   },
+   "DependsOn": [
+    "CodeBucketPolicy637E7C14"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MinimalBucketFunction70777F34": {
    "Type": "AWS::Lambda::WebFunction",
    "Properties": {
@@ -537,6 +555,13 @@
        "MinimalBucketServiceRoleA9DCB6ED",
        "Arn"
       ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "MinimalBucketLogGroup04559959"
+       }
+      }
      },
      "TimeoutSeconds": 30
     }

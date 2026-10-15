@@ -262,6 +262,14 @@
       }
     }
   ],
+  "/WebFunctionMinimalStack/MinimalBucket/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/WebFunctionMinimalStack/MinimalBucket/Function": [
     {
       "type": "aws:cdk:logicalId",
@@ -382,6 +390,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MinimalBucketServiceRoleA9DCB6ED"
+    }
+  ],
+  "/WebFunctionMinimalStack/MinimalBucket/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinimalBucketLogGroup04559959"
     }
   ],
   "/WebFunctionMinimalStack/DeployCode/AwsCliLayer/Code/AssetBucket": [

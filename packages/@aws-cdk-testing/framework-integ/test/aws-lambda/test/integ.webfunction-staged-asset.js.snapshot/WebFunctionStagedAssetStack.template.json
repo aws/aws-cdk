@@ -34,12 +34,12 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticCodeCopy7BEAEB9E": {
+  "AutomaticCodeCopy438c09a99188BEBE": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64",
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085",
       "Arn"
      ]
     },
@@ -58,6 +58,18 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AutomaticLogGroupC4AD0641": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStageetStackAutomaticA68429D7",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "AutomaticFunctionB47C23F8": {
    "Type": "AWS::Lambda::WebFunction",
    "Properties": {
@@ -75,19 +87,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy7BEAEB9E",
+         "AutomaticCodeCopy438c09a99188BEBE",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy7BEAEB9E",
+         "AutomaticCodeCopy438c09a99188BEBE",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy7BEAEB9E",
+         "AutomaticCodeCopy438c09a99188BEBE",
          "VersionId"
         ]
        }
@@ -106,6 +118,13 @@
        "AutomaticServiceRole73715D6D",
        "Arn"
       ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "AutomaticLogGroupC4AD0641"
+       }
+      }
      },
      "TimeoutSeconds": 30
     }
@@ -389,7 +408,15 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52": {
+  "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -420,51 +447,33 @@
     ]
    }
   },
-  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleDefaultPolicyD3929523": {
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
        "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
+        "s3:GetObject",
+        "s3:GetObjectVersion"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           },
-           "/*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           }
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       },
       {
        "Action": [
@@ -477,36 +486,20 @@
         "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "AWSCDKWebFunctionAssetBucket5B596593",
-             "Arn"
-            ]
-           },
-           "/web-function/*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AWSCDKWebFunctionAssetBucket5B596593",
+            "Arn"
+           ]
+          },
+          "/web-function/*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "CallerCodeBucketFB907A2B",
-             "Arn"
-            ]
-           },
-           "/webfunctions/web-function/*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
       },
       {
        "Action": "s3:ListBucketVersions",
@@ -522,34 +515,19 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "s3:ListBucketVersions",
-       "Condition": {
-        "StringLike": {
-         "s3:prefix": "webfunctions/web-function/*"
-        }
-       },
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CallerCodeBucketFB907A2B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleDefaultPolicyD3929523",
+    "PolicyName": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207",
     "Roles": [
      {
-      "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52"
+      "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
      }
     ]
    }
   },
-  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64": {
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -559,9 +537,14 @@
      "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
     },
     "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C"
+     }
+    },
     "Role": {
      "Fn::GetAtt": [
-      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52",
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE",
       "Arn"
      ]
     },
@@ -569,28 +552,9 @@
     "Timeout": 900
    },
    "DependsOn": [
-    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleDefaultPolicyD3929523",
-    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52"
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207",
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
    ]
-  },
-  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71LogGroup9CE6BDD3": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "AutomaticSecondServiceRoleCA7814FD": {
    "Type": "AWS::IAM::Role",
@@ -626,12 +590,12 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticSecondCodeCopy581F2A46": {
+  "AutomaticSecondCodeCopy438c09a91C976B86": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64",
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085",
       "Arn"
      ]
     },
@@ -650,6 +614,18 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "AutomaticSecondLogGroup7FE94734": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStagekAutomaticSecondB3C75A59",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "AutomaticSecondFunctionAB53D7F9": {
    "Type": "AWS::Lambda::WebFunction",
    "Properties": {
@@ -667,19 +643,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy581F2A46",
+         "AutomaticSecondCodeCopy438c09a91C976B86",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy581F2A46",
+         "AutomaticSecondCodeCopy438c09a91C976B86",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy581F2A46",
+         "AutomaticSecondCodeCopy438c09a91C976B86",
          "VersionId"
         ]
        }
@@ -698,6 +674,13 @@
        "AutomaticSecondServiceRoleCA7814FD",
        "Arn"
       ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "AutomaticSecondLogGroup7FE94734"
+       }
+      }
      },
      "TimeoutSeconds": 30
     }
@@ -917,12 +900,12 @@
     "CallerCodeBucketPolicy2C433922"
    ]
   },
-  "SpecificCodeCopyADEC1433": {
+  "SpecificCodeCopyb0df12e157966F01": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64",
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f8D1137DB",
       "Arn"
      ]
     },
@@ -941,6 +924,18 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SpecificLogGroup92FAE761": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStagesetStackSpecificD983D53C",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "SpecificFunction2B9945D8": {
    "Type": "AWS::Lambda::WebFunction",
    "Properties": {
@@ -958,19 +953,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyADEC1433",
+         "SpecificCodeCopyb0df12e157966F01",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyADEC1433",
+         "SpecificCodeCopyb0df12e157966F01",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyADEC1433",
+         "SpecificCodeCopyb0df12e157966F01",
          "VersionId"
         ]
        }
@@ -989,6 +984,13 @@
        "SpecificServiceRole381077C9",
        "Arn"
       ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "SpecificLogGroup92FAE761"
+       }
+      }
      },
      "TimeoutSeconds": 30
     }
@@ -1023,6 +1025,154 @@
     "CallerCodeBucketPolicy2C433922",
     "SpecificFunction2B9945D8",
     "SpecificRevisionF768306C"
+   ]
+  },
+  "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f0A314486": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CallerCodeBucketFB907A2B",
+            "Arn"
+           ]
+          },
+          "/webfunctions/web-function/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:ListBucketVersions",
+       "Condition": {
+        "StringLike": {
+         "s3:prefix": "webfunctions/web-function/*"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CallerCodeBucketFB907A2B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154",
+    "Roles": [
+     {
+      "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289"
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f8D1137DB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
+    },
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f0A314486"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154",
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289"
    ]
   }
  },

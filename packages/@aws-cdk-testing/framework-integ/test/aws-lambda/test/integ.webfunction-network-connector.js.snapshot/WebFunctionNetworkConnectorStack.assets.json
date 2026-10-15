@@ -44,7 +44,7 @@
       }
     },
     "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22": {
-      "displayName": "Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/Code",
+      "displayName": "Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Code",
       "source": {
         "path": "asset.c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22",
         "packaging": "zip"
@@ -57,16 +57,16 @@
         }
       }
     },
-    "94026db86b487421253deb60de1155e8c6651ec6c800c7be9ecc2be283319f75": {
+    "f3e9073ed448360c60243c4220ff47338b2870524056b91683552837531437c0": {
       "displayName": "WebFunctionNetworkConnectorStack Template",
       "source": {
         "path": "WebFunctionNetworkConnectorStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-6c5d57d7": {
+        "current_account-current_region-4b548931": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "94026db86b487421253deb60de1155e8c6651ec6c800c7be9ecc2be283319f75.json",
+          "objectKey": "f3e9073ed448360c60243c4220ff47338b2870524056b91683552837531437c0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

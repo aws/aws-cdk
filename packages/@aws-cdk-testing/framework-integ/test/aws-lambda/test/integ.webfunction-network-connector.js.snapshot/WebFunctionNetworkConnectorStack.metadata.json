@@ -6,11 +6,11 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:45:13)",
+        "    at Validations.acknowledge (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:45:13)",
         "    ...node internals..."
       ]
     }
@@ -76,7 +76,17 @@
       "data": true
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71": [
+  "/WebFunctionNetworkConnectorStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -240,6 +250,14 @@
       }
     }
   ],
+  "/WebFunctionNetworkConnectorStack/Function/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/WebFunctionNetworkConnectorStack/Function/Function": [
     {
       "type": "aws:cdk:logicalId",
@@ -296,7 +314,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole": [
+  "/WebFunctionNetworkConnectorStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -360,18 +384,10 @@
       }
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/Resource": [
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64"
-    }
-  ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/LogGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085"
     }
   ],
   "/WebFunctionNetworkConnectorStack/Exports/Output{\"Fn::GetAtt\":[\"FunctionEndpoint85BE574A\",\"DomainName\"]}": [
@@ -440,7 +456,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy/CustomResourceHandler": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -476,7 +492,7 @@
       }
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy/Resource": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -504,6 +520,12 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Function/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionLogGroup55B80E27"
     }
   ],
   "/WebFunctionNetworkConnectorStack/AWSCDKWebFunctionAssetBucket/Policy/Resource": [
@@ -524,13 +546,13 @@
       "data": "AWSCDKWebFunctionAssetBucketAutoDeleteObjectsCustomResource7C95046A"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/Resource": [
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52"
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/DefaultPolicy": [
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -584,28 +606,22 @@
       }
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/Code/AssetBucket": [
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/LogGroup/Resource": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71LogGroup9CE6BDD3"
+      "data": "FunctionCodeCopy438c09a9065C23CF"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy/Resource/Default": [
+  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "FunctionCodeCopyAB426641"
-    }
-  ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleDefaultPolicyD3929523"
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207"
     }
   ]
 }

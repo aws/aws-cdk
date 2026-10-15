@@ -24,7 +24,21 @@
       "data": true
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71": [
+  "/WebFunctionStagedAssetStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -38,14 +52,6 @@
         "handler": "*",
         "runtime": "*"
       }
-    },
-    {
-      "type": "aws:cdk:is-custom-resource-handler-singleton",
-      "data": true
-    },
-    {
-      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -87,6 +93,40 @@
       "data": "*"
     }
   ],
+  "/WebFunctionStagedAssetStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "role": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
   "/WebFunctionStagedAssetStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -112,6 +152,14 @@
             "managedPolicyArn": "*"
           }
         ]
+      }
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Automatic/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
       }
     }
   ],
@@ -171,7 +219,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole": [
+  "/WebFunctionStagedAssetStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -265,52 +319,12 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/Resource": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a7111E5EE64"
-    }
-  ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/LogGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085"
     }
   ],
   "/WebFunctionStagedAssetStack/AutomaticSecond/ServiceRole": [
@@ -326,6 +340,14 @@
             "managedPolicyArn": "*"
           }
         ]
+      }
+    }
+  ],
+  "/WebFunctionStagedAssetStack/AutomaticSecond/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
       }
     }
   ],
@@ -389,6 +411,14 @@
       }
     }
   ],
+  "/WebFunctionStagedAssetStack/Specific/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/WebFunctionStagedAssetStack/Specific/Function": [
     {
       "type": "aws:cdk:logicalId",
@@ -405,6 +435,82 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "SpecificEndpoint6806C68C"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f0A314486"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f8D1137DB"
     }
   ],
   "/WebFunctionStagedAssetStack/Exports/Output{\"Fn::GetAtt\":[\"AutomaticEndpointC59D3C8A\",\"DomainName\"]}": [
@@ -437,7 +543,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionStagedAssetStack/Automatic/CodeCopy/CustomResourceHandler": [
+  "/WebFunctionStagedAssetStack/Automatic/CodeCopy438c09a9/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -473,7 +579,7 @@
       }
     }
   ],
-  "/WebFunctionStagedAssetStack/Automatic/CodeCopy/Resource": [
+  "/WebFunctionStagedAssetStack/Automatic/CodeCopy438c09a9/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -501,6 +607,12 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Automatic/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticLogGroupC4AD0641"
     }
   ],
   "/WebFunctionStagedAssetStack/AWSCDKWebFunctionAssetBucket/Policy/Resource": [
@@ -521,13 +633,13 @@
       "data": "AWSCDKWebFunctionAssetBucketAutoDeleteObjectsCustomResource7C95046A"
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/Resource": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleC07CCE52"
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/DefaultPolicy": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -611,50 +723,12 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/Code/AssetBucket": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    }
-  ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/LogGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71LogGroup9CE6BDD3"
     }
   ],
   "/WebFunctionStagedAssetStack/AutomaticSecond/ServiceRole/Resource": [
@@ -669,7 +743,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy/CustomResourceHandler": [
+  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy438c09a9/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -705,7 +779,7 @@
       }
     }
   ],
-  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy/Resource": [
+  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy438c09a9/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -733,6 +807,12 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/AutomaticSecond/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticSecondLogGroup7FE94734"
     }
   ],
   "/WebFunctionStagedAssetStack/CallerCodeBucket/Policy/Resource": [
@@ -765,7 +845,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionStagedAssetStack/Specific/CodeCopy/CustomResourceHandler": [
+  "/WebFunctionStagedAssetStack/Specific/CodeCopyb0df12e1/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -801,7 +881,7 @@
       }
     }
   ],
-  "/WebFunctionStagedAssetStack/Specific/CodeCopy/Resource": [
+  "/WebFunctionStagedAssetStack/Specific/CodeCopyb0df12e1/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -831,28 +911,106 @@
       "data": "*"
     }
   ],
-  "/WebFunctionStagedAssetStack/Automatic/CodeCopy/Resource/Default": [
+  "/WebFunctionStagedAssetStack/Specific/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AutomaticCodeCopy7BEAEB9E"
+      "data": "SpecificLogGroup92FAE761"
     }
   ],
-  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71/ServiceRole/DefaultPolicy/Resource": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71ServiceRoleDefaultPolicyD3929523"
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289"
     }
   ],
-  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy/Resource/Default": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/ServiceRole/DefaultPolicy": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "AutomaticSecondCodeCopy581F2A46"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
-  "/WebFunctionStagedAssetStack/Specific/CodeCopy/Resource/Default": [
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Automatic/CodeCopy438c09a9/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "SpecificCodeCopyADEC1433"
+      "data": "AutomaticCodeCopy438c09a99188BEBE"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/AutomaticSecond/CodeCopy438c09a9/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticSecondCodeCopy438c09a91C976B86"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Specific/CodeCopyb0df12e1/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SpecificCodeCopyb0df12e157966F01"
+    }
+  ],
+  "/WebFunctionStagedAssetStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154"
     }
   ]
 }
