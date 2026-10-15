@@ -120,7 +120,7 @@ export abstract class WebFunctionCode {
    *
    * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
    */
-  public static fromAssetToManagedBucket(path: string, options?: ManagedBucketAssetOptions): WebFunctionCode {
+  public static fromAssetToManagedBucket(path: string, options?: WebFunctionManagedBucketAssetOptions): WebFunctionCode {
     return new ManagedBucketAssetCode(path, options ?? {});
   }
 
@@ -147,7 +147,7 @@ export abstract class WebFunctionCode {
   public static fromAssetToProvidedBucket(
     bucket: s3.IBucket,
     path: string,
-    options?: ProvidedBucketAssetOptions,
+    options?: WebFunctionProvidedBucketAssetOptions,
   ): WebFunctionCode {
     return new ProvidedBucketAssetCode(bucket, path, options ?? {});
   }
@@ -295,13 +295,13 @@ export interface WebFunctionAssetOptions extends s3_assets.AssetOptions {
 /**
  * Options for `WebFunctionCode.fromAssetToManagedBucket()`.
  */
-export interface ManagedBucketAssetOptions extends WebFunctionAssetOptions {
+export interface WebFunctionManagedBucketAssetOptions extends WebFunctionAssetOptions {
 }
 
 /**
  * Options for `WebFunctionCode.fromAssetToProvidedBucket()`.
  */
-export interface ProvidedBucketAssetOptions extends WebFunctionAssetOptions {
+export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetOptions {
   /**
    * Prefix for the object key written into your bucket.
    *
@@ -406,7 +406,7 @@ abstract class StagedAssetCode extends WebFunctionCode {
  * Code staged into a per-stack bucket that CDK creates and configures.
  */
 class ManagedBucketAssetCode extends StagedAssetCode {
-  constructor(path: string, options: ManagedBucketAssetOptions) {
+  constructor(path: string, options: WebFunctionManagedBucketAssetOptions) {
     super(path, options);
   }
 
@@ -442,7 +442,7 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
   constructor(
     private readonly bucket: s3.IBucket,
     path: string,
-    private readonly providedOptions: ProvidedBucketAssetOptions,
+    private readonly providedOptions: WebFunctionProvidedBucketAssetOptions,
   ) {
     super(path, providedOptions);
   }
