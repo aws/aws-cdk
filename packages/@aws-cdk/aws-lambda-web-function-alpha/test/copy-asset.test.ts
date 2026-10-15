@@ -1,6 +1,6 @@
 import { CopyObjectCommand } from '@aws-sdk/client-s3';
 import type { CopyAssetEvent } from '../lib/copy-asset';
-import { handler } from '../lib/copy-asset';
+import { BucketNotVersionedError, handler } from '../lib/copy-asset';
 
 const mockSend = jest.fn();
 
@@ -43,7 +43,8 @@ test('copies the asset and returns the version ID of the copy', async () => {
 test('fails when the destination returns no version ID', async () => {
   mockSend.mockResolvedValue({});
 
-  await expect(handler(event('Update'))).rejects.toThrow(/Versioning is not enabled/);
+  await expect(handler(event('Update'))).rejects.toThrow(BucketNotVersionedError);
+  await expect(handler(event('Update'))).rejects.toThrow(/Versioning is not enabled on bucket owned-code-bucket/);
 });
 
 test('does not copy on delete', async () => {

@@ -199,7 +199,8 @@ function copyHandler(scope: Construct): lambda.Function {
   return new lambda.Function(stack, SHARED_COPY_HANDLER_ID, {
     runtime: lambda.Runtime.NODEJS_24_X,
     handler: 'index.handler',
-    code: lambda.Code.fromAsset(join(__dirname, 'copy-asset')),
+    // Only the compiled handler goes into the asset, not the TypeScript sources next to it
+    code: lambda.Code.fromAsset(join(__dirname, 'copy-asset'), { exclude: ['*.ts', '*.map'] }),
     timeout: cdk.Duration.minutes(5),
   });
 }

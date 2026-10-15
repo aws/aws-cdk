@@ -14,8 +14,6 @@ nyc.config.js
 *.snk
 
 !eslint.config.mjs
-!lib/copy-asset/index.js
-!lib/copy-asset/index.d.ts
 !jest.config.js
 
 junit.xml
