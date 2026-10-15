@@ -139,9 +139,15 @@ export class S3ObjectCopy extends Construct {
     }
     this.handlerRole = handler.role;
 
-    // The source is the CDK asset bucket, where objects are keyed by content hash at the root,
-    // so there is no prefix to narrow the read to. Grant the bucket, as `Asset.grantRead` does.
-    props.sourceBucket.grantRead(handler);
+    // CopyObject only reads the source object. The source is the CDK asset bucket, where objects
+    // are keyed by content hash at the root, so there is no prefix to narrow the read to; a grant
+    // per key would grow this shared role's policy with every asset. Bucket-wide object reads are
+    // the deliberate trade between blast radius and policy size.
+    iam.Grant.addToPrincipal({
+      grantee: handler,
+      actions: ['s3:GetObject', 's3:GetObjectVersion'],
+      resourceArns: [props.sourceBucket.arnForObjects('*')],
+    });
     const keyPattern = props.destinationKeyPattern;
     props.destinationBucket.grantPut(handler, keyPattern);
     // Deletion removes every version of the key, which takes a version listing on the bucket

@@ -52,19 +52,26 @@ describe('S3ObjectCopy', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::LayerVersion', 0);
   });
 
-  test('grants the handler read on the whole source bucket and put on the destination key', () => {
+  test('grants no bucket-level or list access on the source bucket', () => {
+    new S3ObjectCopy(stack, 'Copy', minimalProps());
+
+    const statements = Object.values(Template.fromStack(stack).findResources('AWS::IAM::Policy'))
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement);
+    const actions = statements.flatMap((statement: any) => [statement.Action].flat());
+    expect(actions).not.toContain('s3:GetBucket*');
+    expect(actions).not.toContain('s3:List*');
+  });
+
+  test('grants the handler object reads on the source bucket and put on the destination key', () => {
     new S3ObjectCopy(stack, 'Copy', minimalProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: Match.arrayWith(['s3:GetObject*']),
+            Action: ['s3:GetObject', 's3:GetObjectVersion'],
             Effect: 'Allow',
-            Resource: [
-              { 'Fn::GetAtt': [Match.stringLikeRegexp('Source.*'), 'Arn'] },
-              { 'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Source.*'), 'Arn'] }, '/*']] },
-            ],
+            Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Source.*'), 'Arn'] }, '/*']] },
           }),
           Match.objectLike({
             Action: Match.arrayWith(['s3:PutObject']),
