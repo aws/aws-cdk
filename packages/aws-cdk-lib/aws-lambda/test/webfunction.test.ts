@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { Alias, Key } from '../../aws-kms';
+import { LogGroup } from '../../aws-logs';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
@@ -999,6 +1000,39 @@ describe('WebFunction template', () => {
             ApplicationLogLevel: 'INFO',
             SystemLogLevel: 'INFO',
           },
+        },
+      },
+    });
+  });
+
+  test('creates a log group when none is given', () => {
+    new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func' }));
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: '/aws/lambda/web/my-func',
+    });
+    const logGroupId = Object.keys(template.findResources('AWS::Logs::LogGroup'))[0];
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: {
+        TelemetryConfig: {
+          LoggingConfig: { LogGroup: { Ref: logGroupId } },
+        },
+      },
+    });
+  });
+
+  test('uses the given log group instead of creating one', () => {
+    const logGroup = new LogGroup(stack, 'MyLogs', { logGroupName: 'my-logs' });
+    new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func', logGroup }));
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: {
+        TelemetryConfig: {
+          LoggingConfig: { LogGroup: { Ref: stack.getLogicalId(logGroup.node.defaultChild as any) } },
         },
       },
     });

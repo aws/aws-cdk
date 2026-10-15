@@ -17,7 +17,7 @@ import type {
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import { KeyGrants } from '../../aws-kms';
-import type * as logs from '../../aws-logs';
+import * as logs from '../../aws-logs';
 import type { Duration, IResource } from '../../core';
 import { Annotations, ArnFormat, Names, PhysicalName, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -366,7 +366,7 @@ export interface WebFunctionProps {
   /**
    * The CloudWatch log group to send logs to.
    *
-   * @default - the Lambda service's default log group
+   * @default - A log group named `/aws/lambda/web/<function name>` is created.
    */
   readonly logGroup?: logs.ILogGroupRef;
 
@@ -875,6 +875,10 @@ export class WebFunction extends WebFunctionBase {
       );
     }
 
+    const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup', {
+      logGroupName: `/aws/lambda/web/${functionName}`,
+    });
+
     // Create the CloudFormation resource
     this.resource = new CfnWebFunction(this, 'Function', {
       functionName: functionName,
@@ -899,7 +903,7 @@ export class WebFunction extends WebFunctionBase {
         executionRoleArn: role.roleRef.roleArn,
         environmentVariables:
           Object.keys(environment).length > 0 ? environment : undefined,
-        telemetryConfig: this.createTelemetryConfig(props),
+        telemetryConfig: this.createTelemetryConfig(props, logGroup),
         timeoutSeconds: props.timeout?.toSeconds() ?? 30,
         maxConcurrencyPerEnvironment: props.maxConcurrencyPerEnvironment,
         egressNetworkConnectorArn: this.resolveEgressNetworkConnectorArn(props.egressNetworkConnector),
@@ -983,20 +987,13 @@ export class WebFunction extends WebFunctionBase {
    */
   private createTelemetryConfig(
     props: WebFunctionProps,
-  ): CfnWebFunctionRevision.TelemetryConfigProperty | undefined {
-    if (
-      !props.applicationLogLevel &&
-      !props.systemLogLevel &&
-      !props.logGroup
-    ) {
-      return undefined;
-    }
-
+    logGroup: logs.ILogGroupRef,
+  ): CfnWebFunctionRevision.TelemetryConfigProperty {
     return {
       loggingConfig: {
         applicationLogLevel: props.applicationLogLevel,
         systemLogLevel: props.systemLogLevel,
-        logGroup: props.logGroup?.logGroupRef.logGroupName,
+        logGroup: logGroup.logGroupRef.logGroupName,
       },
     };
   }
