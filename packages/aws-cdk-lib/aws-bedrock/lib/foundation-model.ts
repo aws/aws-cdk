@@ -287,8 +287,20 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-sonnet-5". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5');
 
+  /** Base model "anthropic.claude-opus-5". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5 = new FoundationModelIdentifier('anthropic.claude-opus-5');
+
+  /** Base model "anthropic.claude-mythos-5". */
+  public static readonly ANTHROPIC_CLAUDE_MYTHOS_5 = new FoundationModelIdentifier('anthropic.claude-mythos-5');
+
+  /** Base model "anthropic.claude-fable-5". */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5 = new FoundationModelIdentifier('anthropic.claude-fable-5');
+
   /** Base model "anthropic.claude-sonnet-5-5". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_5_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5-5');
+
+  /** Base model "anthropic.claude-haiku-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_5_5 = new FoundationModelIdentifier('anthropic.claude-haiku-5-5');
 
   /** Base model "anthropic.claude-fable-5-1". */
   public static readonly ANTHROPIC_CLAUDE_FABLE_5_1 = new FoundationModelIdentifier('anthropic.claude-fable-5-1');
