@@ -159,7 +159,7 @@ export abstract class WebFunctionCode {
    * @param options - Identity of the WebFunction, used to scope the read policy
    * @returns The S3 location configuration for the code
    */
-  public abstract bind(scope: Construct, options?: WebFunctionCodeBindOptions): WebFunctionCodeConfig;
+  public abstract bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig;
 
   /**
    * Called after the CloudFormation resource has been created, to let the code object bind
@@ -203,7 +203,7 @@ class BucketCode extends WebFunctionCode {
    * @param options - Identity of the WebFunction, used to scope the read policy
    * @returns The S3 location configuration for the code
    */
-  public bind(scope: Construct, options?: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
+  public bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
     scope.node.addValidation({
       validate: () => [
         ...validateBucketVersioned(this.bucket, 'fromBucket'),
@@ -330,7 +330,7 @@ abstract class StagedAssetCode extends WebFunctionCode {
     super();
   }
 
-  public bind(scope: Construct, options?: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
+  public bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
     // The asset belongs to this one function, so it hangs off `scope` rather than the stack.
     this.asset = new s3_assets.Asset(scope, 'Code', {
       path: this.path,
@@ -396,7 +396,7 @@ abstract class StagedAssetCode extends WebFunctionCode {
    * The default does nothing, for destinations that already carry a suitable statement.
    */
   protected grantDestinationRead(
-    _bucket: s3.IBucket, _key: string, _scope: Construct, _options?: WebFunctionCodeBindOptions,
+    _bucket: s3.IBucket, _key: string, _scope: Construct, _options: WebFunctionCodeBindOptions,
   ): void {
     return;
   }
@@ -475,7 +475,7 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
    * this function's code — scoped to that object, not to the whole bucket.
    */
   protected grantDestinationRead(
-    bucket: s3.IBucket, key: string, scope: Construct, options?: WebFunctionCodeBindOptions,
+    bucket: s3.IBucket, key: string, scope: Construct, options: WebFunctionCodeBindOptions,
   ): void {
     grantServiceRead(bucket, key, scope, options);
   }
@@ -485,14 +485,14 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
  * Grant the Lambda service principal read access to one code object.
  *
  * The statement is scoped to the specific object key and conditioned on `aws:SourceAccount`
- * and, when the function is known, on `aws:SourceArn`. The service reads the object on behalf
+ * and `aws:SourceArn`. The service reads the object on behalf
  * of a revision and presents the revision ARN as the source, so the condition matches
  * `<webFunctionArn>/revision/*`. For imported buckets `addToResourcePolicy` is a no-op, so this
  * is best-effort by construction: for those the caller has to carry an equivalent statement
  * already, otherwise `CreateWebFunctionRevision` rejects the deployment.
  */
 function grantServiceRead(
-  bucket: s3.IBucket, key: string, scope: Construct, options?: WebFunctionCodeBindOptions,
+  bucket: s3.IBucket, key: string, scope: Construct, options: WebFunctionCodeBindOptions,
 ): void {
   const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
     principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
@@ -502,7 +502,7 @@ function grantServiceRead(
       StringEquals: {
         'aws:SourceAccount': cdk.Stack.of(scope).account,
       },
-      ...(options ? { ArnLike: { 'aws:SourceArn': `${options.webFunctionArn}/revision/*` } } : {}),
+      ArnLike: { 'aws:SourceArn': `${options.webFunctionArn}/revision/*` },
     },
   }));
 

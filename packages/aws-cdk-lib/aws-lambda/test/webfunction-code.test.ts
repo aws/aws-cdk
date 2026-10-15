@@ -52,7 +52,7 @@ describe('WebFunctionCode', () => {
       const key = 'my-function.zip';
       const version = 'v1.0.0';
       const webFunctionCode = WebFunctionCode.fromBucket(bucket, key, version);
-      const config = webFunctionCode.bind(stack);
+      const config = webFunctionCode.bind(stack, { webFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/my-func' });
 
       expect(config.s3Location).toBeDefined();
       expect(config.s3Location.bucketName).toEqual(bucket.bucketName);
@@ -120,24 +120,6 @@ describe('WebFunctionCode', () => {
                     ]],
                   },
                 },
-              }),
-            }),
-          ]),
-        },
-      });
-    });
-
-    test('bind without a function identity scopes the read policy to the account only', () => {
-      const bucket = new s3.Bucket(stack, 'TestBucket', { versioned: true });
-      WebFunctionCode.fromBucket(bucket, 'my-function.zip').bind(stack);
-
-      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
-        PolicyDocument: {
-          Statement: Match.arrayWith([
-            Match.objectLike({
-              Principal: { Service: 'lambda.amazonaws.com' },
-              Condition: Match.exact({
-                StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
               }),
             }),
           ]),
