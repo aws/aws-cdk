@@ -187,6 +187,14 @@ describe('operator role', () => {
     });
   });
 
+  test('applies tags to the connector', () => {
+    new NetworkConnector(stack, 'NetworkConnector', { vpc, tags: { Team: 'platform' } });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+      Tags: Match.arrayWith([{ Key: 'Team', Value: 'platform' }]),
+    });
+  });
+
   test('warns when the operator role is imported', () => {
     const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/operator');
     new NetworkConnector(stack, 'NetworkConnector', { vpc, operatorRole: role });

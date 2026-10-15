@@ -87,6 +87,13 @@ export interface NetworkConnectorProps {
    * @default - a new role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy
    */
   readonly operatorRole?: iam.IRole;
+
+  /**
+   * Tags applied to the network connector.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -188,6 +195,10 @@ export class NetworkConnector extends cdk.Resource implements INetworkConnector 
 
     this.networkConnectorArn = this.cfnNetworkConnector.attrArn;
     this.latestVersionArn = this.cfnNetworkConnector.attrLatestVersionArn;
+
+    for (const [key, value] of Object.entries(props.tags ?? {})) {
+      cdk.Tags.of(this).add(key, value);
+    }
   }
 }
 

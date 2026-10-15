@@ -200,7 +200,8 @@ published version, which has all three), these schema files can be removed.
 An `IamAuth` endpoint is invoked with the `lambda:InvokeWebFunctionEndpoint` permission. Callers sign each
 request with SigV4 using the service name `lambda`, and send the `X-Amz-Content-SHA256` header (the SHA-256 of
 the body, or `UNSIGNED-PAYLOAD`), even for requests without a body. Without that header Lambda returns
-`403 Forbidden`. Use
+`403 Forbidden`. A `MultiRegion` endpoint uses a global domain and must be signed with SigV4a instead, for the
+region set `*`. `HomeRegion` and `PerRegion` endpoints use SigV4 for the endpoint's Region. Use
 `endpoint.grants.invoke()` to grant it to a principal in the same account, or `fn.grants.invoke()` for every
 endpoint of a web function. The grant goes into the
 principal's identity policy:
