@@ -3,6 +3,7 @@ import type { IRoleRef } from './iam.generated';
 import type { IPrincipal } from './principals';
 import { AccountPrincipal, ServicePrincipal } from './principals';
 import { ValidationError } from '../../core';
+import { warnIfSelfAssume } from './private/warn-self-assume';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -21,12 +22,16 @@ export class RoleGrants {
 
   /**
    * Grant permissions to the given principal to assume this role.
+   *
+   * This only adds an identity-based policy to the principal; it does not update
+   * the role trust policy. A role must explicitly trust itself to assume itself.
    */
   public assumeRole(identity: IPrincipal): Grant {
     // Service and account principals must use assumeRolePolicy
     if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
       throw new ValidationError(lit`CannotServiceAccountPrincipalGrant`, 'Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.', this.role);
     }
+    warnIfSelfAssume(this.role, identity);
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['sts:AssumeRole'],
