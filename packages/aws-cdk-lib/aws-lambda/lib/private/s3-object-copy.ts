@@ -135,7 +135,7 @@ export class S3ObjectCopy extends Construct {
     });
 
     if (!handler.role) {
-      throw new ValidationError(lit`Lambda`, 'S3ObjectCopySingletonFunction should have created a Role', this);
+      throw new ValidationError(lit`S3ObjectCopyHandlerRoleMissing`, 'S3ObjectCopySingletonFunction should have created a Role', this);
     }
     this.handlerRole = handler.role;
 
