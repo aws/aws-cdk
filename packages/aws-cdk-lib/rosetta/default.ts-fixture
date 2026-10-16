@@ -88,6 +88,9 @@ declare const resourceProps: CfnResourceProps;
 
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
+declare class MyApplication extends Stack {
+  constructor(scope: IConstruct, id: string, props: any);
+}
 
 class StackThatProvidesABucket extends Stack {
   public readonly bucket!: s3.IBucket;
@@ -97,19 +100,17 @@ interface StackThatExpectsABucketProps extends StackProps {
   readonly bucket: s3.IBucket;
 }
 
-class StackThatExpectsABucket extends Stack {
-  constructor(scope: Construct, id: string, props: StackThatExpectsABucketProps) {
-    super(scope, id, props);
-  }
+declare class StackThatExpectsABucket extends Stack {
+  constructor(scope: Construct, id: string, props: StackThatExpectsABucketProps);
 }
 
-class MyAspect implements IAspect {
-  visit(node: IConstruct) {}
+declare class MyAspect implements IAspect {
+  visit(node: IConstruct): void;
 }
 
-class MyMixin extends Mixin {
-  supports(_construct: IConstruct): boolean { return true; }
-  applyTo(_construct: IConstruct): void { }
+declare class MyMixin extends Mixin {
+  supports(_construct: IConstruct): boolean;
+  applyTo(_construct: IConstruct): void;
 }
 
 class fixture$construct extends Construct {
