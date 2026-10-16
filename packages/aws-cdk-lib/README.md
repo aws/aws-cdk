@@ -655,6 +655,51 @@ method that can be used to generate ARNs for resources of that type. For example
 Note that the parameter to this method is of type `ITopicRef`, which means that
 it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 
+### Parsing ARNs: the commit-or-throw convention
+
+`splitArn()` (and the underlying `Arn.split()`) is deliberately throw-on-error,
+and that reflects a convention the CDK follows consistently: **a concrete string
+that starts with `arn:` is a commitment to being a valid ARN**. There are only
+three outcomes a caller needs to distinguish, and they are kept distinct on
+purpose:
+
+1. The value is a deploy-time token (`Token.isUnresolved(x)` is `true`), or a
+   concrete string that does *not* start with `arn:`. It is not something this
+   code should parse as an ARN — take the "other" branch (e.g. treat it as a
+   plain name/id).
+2. The value is a concrete string that *does* start with `arn:` but is
+   malformed. This is a **caller error**, and `splitArn()` throwing is the
+   correct, fail-fast outcome — it surfaces the broken input rather than hiding
+   it.
+3. The value is a well-formed ARN (concrete or partially tokenized) — it parses.
+
+So the idiomatic way to handle a value that is only *sometimes* an ARN is to
+branch on outcome (1) yourself and let `splitArn()` enforce (2):
+
+```ts
+declare const stack: Stack;
+
+// Return the region only when the input is actually an ARN we can inspect.
+function regionOfArn(maybeArn: string): string | undefined {
+  // Outcome (1): a token or a non-'arn:' string is not ours to parse.
+  if (Token.isUnresolved(maybeArn) || !maybeArn.startsWith('arn:')) {
+    return undefined;
+  }
+  // Outcome (2)/(3): a concrete 'arn:' string is expected to be valid, so a
+  // malformed one throws here by design.
+  return stack.splitArn(maybeArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+}
+```
+
+Do **not** wrap `splitArn()`/`Arn.split()` in a `try`/`catch` to turn a
+malformed `arn:` string into a silent "not an ARN". That collapses outcomes (1)
+and (2) and swallows a caller error (and catching exceptions as control flow is
+discouraged by the [design
+guidelines](../../docs/DESIGN_GUIDELINES.md#never-catch-exceptions)). A
+non-throwing parser would only be justified for a caller whose input *may
+legitimately not be an ARN at all* — which is distinct from, and should not be
+conflated with, a malformed ARN.
+
 ## Dependencies
 
 ### Construct Dependencies

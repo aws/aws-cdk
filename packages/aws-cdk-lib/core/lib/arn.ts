@@ -223,6 +223,13 @@ export class Arn {
    * (in which case the returned components will also be dynamic CloudFormation expressions,
    * encoded as Tokens).
    *
+   * A concrete string that starts with `arn:` is expected to be a valid ARN; a
+   * malformed one is treated as a caller error and throws. This throw is by
+   * design (see the "Parsing ARNs" convention in the aws-cdk-lib README): to
+   * handle a value that may legitimately not be an ARN, branch on
+   * `Token.isUnresolved(arn)`/`arn.startsWith('arn:')` yourself rather than
+   * catching the exception.
+   *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
    */
