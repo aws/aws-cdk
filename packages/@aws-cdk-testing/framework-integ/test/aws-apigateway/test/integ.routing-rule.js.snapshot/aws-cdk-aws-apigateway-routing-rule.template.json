@@ -1,0 +1,620 @@
+{
+ "Resources": {
+  "Certificate4E7ABB08": {
+   "Type": "Custom::ACMImportRoutingRuleCertificate",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomACMImportRoutingRuleCertificateCustomResourceProviderHandler3019B04B",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomACMImportRoutingRuleCertificateCustomResourceProviderRole3C9B8831": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "acm:ImportCertificate",
+          "acm:DeleteCertificate"
+         ],
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomACMImportRoutingRuleCertificateCustomResourceProviderHandler3019B04B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "9c8063e9a40537fc32a012b43a7b90721ff4f4894e88137c2a69163b20d78506.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomACMImportRoutingRuleCertificateCustomResourceProviderRole3C9B8831",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "CustomACMImportRoutingRuleCertificateCustomResourceProviderRole3C9B8831"
+   ]
+  },
+  "UsersApi5B3C63A8": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "Name": "UsersApi"
+   }
+  },
+  "UsersApiDeploymentC510219C9db7c7ac93a7c6d632390243d18792a5": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "UsersApi5B3C63A8"
+    }
+   },
+   "DependsOn": [
+    "UsersApiGET6E021DF2"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "UsersApiDeploymentStageprodD8448B80": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "UsersApiDeploymentC510219C9db7c7ac93a7c6d632390243d18792a5"
+    },
+    "RestApiId": {
+     "Ref": "UsersApi5B3C63A8"
+    },
+    "StageName": "prod"
+   }
+  },
+  "UsersApiGET6E021DF2": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"ok\"}"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "UsersApi5B3C63A8",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "UsersApi5B3C63A8"
+    }
+   }
+  },
+  "OrdersApi48294D44": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "Name": "OrdersApi"
+   }
+  },
+  "OrdersApiDeployment7E959249c48fd4d0a0784c0e8b97680ca59932d4": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "OrdersApi48294D44"
+    }
+   },
+   "DependsOn": [
+    "OrdersApiGET330FA4BD"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "OrdersApiDeploymentStageprod80C33D00": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "OrdersApiDeployment7E959249c48fd4d0a0784c0e8b97680ca59932d4"
+    },
+    "RestApiId": {
+     "Ref": "OrdersApi48294D44"
+    },
+    "StageName": "prod"
+   }
+  },
+  "OrdersApiGET330FA4BD": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"ok\"}"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "OrdersApi48294D44",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "OrdersApi48294D44"
+    }
+   }
+  },
+  "DefaultApiB4AF0C9B": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "Name": "DefaultApi"
+   }
+  },
+  "DefaultApiDeployment6D827C6A59e9bc11012fc30eeec911674b79b0dd": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "DefaultApiB4AF0C9B"
+    }
+   },
+   "DependsOn": [
+    "DefaultApiGETF9A03454"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "DefaultApiDeploymentStageprod0360157D": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "DefaultApiDeployment6D827C6A59e9bc11012fc30eeec911674b79b0dd"
+    },
+    "RestApiId": {
+     "Ref": "DefaultApiB4AF0C9B"
+    },
+    "StageName": "prod"
+   }
+  },
+  "DefaultApiGETF9A03454": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"ok\"}"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "DefaultApiB4AF0C9B",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "DefaultApiB4AF0C9B"
+    }
+   }
+  },
+  "Domain66AC69E0": {
+   "Type": "AWS::ApiGateway::DomainName",
+   "Properties": {
+    "DomainName": "routing-rule.integ.local",
+    "EndpointConfiguration": {
+     "Types": [
+      "REGIONAL"
+     ]
+    },
+    "RegionalCertificateArn": {
+     "Fn::GetAtt": [
+      "Certificate4E7ABB08",
+      "CertificateArn"
+     ]
+    },
+    "RoutingMode": "ROUTING_RULE_ONLY"
+   },
+   "DependsOn": [
+    "Certificate4E7ABB08"
+   ]
+  },
+  "DomainUsersRule95956427": {
+   "Type": "AWS::ApiGatewayV2::RoutingRule",
+   "Properties": {
+    "Actions": [
+     {
+      "InvokeApi": {
+       "ApiId": {
+        "Ref": "UsersApi5B3C63A8"
+       },
+       "Stage": {
+        "Ref": "UsersApiDeploymentStageprodD8448B80"
+       },
+       "StripBasePath": true
+      }
+     }
+    ],
+    "Conditions": [
+     {
+      "MatchBasePaths": {
+       "AnyOf": [
+        "users"
+       ]
+      }
+     }
+    ],
+    "DomainNameArn": {
+     "Fn::GetAtt": [
+      "Domain66AC69E0",
+      "DomainNameArn"
+     ]
+    },
+    "Priority": 100
+   },
+   "DependsOn": [
+    "Certificate4E7ABB08"
+   ]
+  },
+  "DomainHeaderV2Rule314E58C7": {
+   "Type": "AWS::ApiGatewayV2::RoutingRule",
+   "Properties": {
+    "Actions": [
+     {
+      "InvokeApi": {
+       "ApiId": {
+        "Ref": "OrdersApi48294D44"
+       },
+       "Stage": {
+        "Ref": "OrdersApiDeploymentStageprod80C33D00"
+       }
+      }
+     }
+    ],
+    "Conditions": [
+     {
+      "MatchHeaders": {
+       "AnyOf": [
+        {
+         "Header": "x-api-version",
+         "ValueGlob": "v2"
+        }
+       ]
+      }
+     }
+    ],
+    "DomainNameArn": {
+     "Fn::GetAtt": [
+      "Domain66AC69E0",
+      "DomainNameArn"
+     ]
+    },
+    "Priority": 50
+   },
+   "DependsOn": [
+    "Certificate4E7ABB08"
+   ]
+  },
+  "DomainV2OrdersRule5095D45B": {
+   "Type": "AWS::ApiGatewayV2::RoutingRule",
+   "Properties": {
+    "Actions": [
+     {
+      "InvokeApi": {
+       "ApiId": {
+        "Ref": "OrdersApi48294D44"
+       },
+       "Stage": {
+        "Ref": "OrdersApiDeploymentStageprod80C33D00"
+       },
+       "StripBasePath": true
+      }
+     }
+    ],
+    "Conditions": [
+     {
+      "MatchBasePaths": {
+       "AnyOf": [
+        "orders"
+       ]
+      }
+     },
+     {
+      "MatchHeaders": {
+       "AnyOf": [
+        {
+         "Header": "x-api-version",
+         "ValueGlob": "v2"
+        }
+       ]
+      }
+     }
+    ],
+    "DomainNameArn": {
+     "Fn::GetAtt": [
+      "Domain66AC69E0",
+      "DomainNameArn"
+     ]
+    },
+    "Priority": 75
+   },
+   "DependsOn": [
+    "Certificate4E7ABB08"
+   ]
+  },
+  "DomainCatchAllRuleD6BC3D71": {
+   "Type": "AWS::ApiGatewayV2::RoutingRule",
+   "Properties": {
+    "Actions": [
+     {
+      "InvokeApi": {
+       "ApiId": {
+        "Ref": "DefaultApiB4AF0C9B"
+       },
+       "Stage": {
+        "Ref": "DefaultApiDeploymentStageprod0360157D"
+       }
+      }
+     }
+    ],
+    "Conditions": [],
+    "DomainNameArn": {
+     "Fn::GetAtt": [
+      "Domain66AC69E0",
+      "DomainNameArn"
+     ]
+    },
+    "Priority": 1000000
+   },
+   "DependsOn": [
+    "Certificate4E7ABB08"
+   ]
+  },
+  "StandaloneRule78BD8A42": {
+   "Type": "AWS::ApiGatewayV2::RoutingRule",
+   "Properties": {
+    "Actions": [
+     {
+      "InvokeApi": {
+       "ApiId": {
+        "Ref": "UsersApi5B3C63A8"
+       },
+       "Stage": {
+        "Ref": "UsersApiDeploymentStageprodD8448B80"
+       },
+       "StripBasePath": true
+      }
+     }
+    ],
+    "Conditions": [
+     {
+      "MatchBasePaths": {
+       "AnyOf": [
+        "admin"
+       ]
+      }
+     }
+    ],
+    "DomainNameArn": {
+     "Fn::GetAtt": [
+      "Domain66AC69E0",
+      "DomainNameArn"
+     ]
+    },
+    "Priority": 200
+   }
+  }
+ },
+ "Outputs": {
+  "UsersApiEndpointB5FC4B1D": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "UsersApi5B3C63A8"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "UsersApiDeploymentStageprodD8448B80"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "OrdersApiEndpointAC1CCDAC": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "OrdersApi48294D44"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "OrdersApiDeploymentStageprod80C33D00"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "DefaultApiEndpointB0E75779": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "DefaultApiB4AF0C9B"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "DefaultApiDeploymentStageprod0360157D"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
