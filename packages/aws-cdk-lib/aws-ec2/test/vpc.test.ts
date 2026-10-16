@@ -2098,6 +2098,30 @@ describe('vpc', () => {
   });
 
   describe('NAT instances', () => {
+    describe.each(['legacy', 'v2'])('NAT instance metadata (%s)', providerVersion => {
+      test.each([true, false, undefined])('requireImdsv2=%p', requireImdsv2 => {
+        const stack = new Stack();
+        const props: NatInstanceProps = {
+          instanceType: new InstanceType('t3.micro'),
+          machineImage: new GenericLinuxImage({ 'us-east-1': 'ami-12345678' }),
+          defaultAllowedTraffic: NatTrafficDirection.NONE,
+          requireImdsv2,
+        };
+        new Vpc(stack, 'Vpc', {
+          maxAzs: 1,
+          natGatewayProvider: providerVersion === 'legacy' ? NatProvider.instance(props) : NatProvider.instanceV2(props),
+        });
+        const template = Template.fromStack(stack);
+        if (requireImdsv2) {
+          template.hasResourceProperties('AWS::EC2::LaunchTemplate', {
+            LaunchTemplateData: { MetadataOptions: { HttpTokens: 'required' } },
+          });
+        } else {
+          template.resourceCountIs('AWS::EC2::LaunchTemplate', 0);
+        }
+      });
+    });
+
     test('Can configure NAT instances instead of NAT gateways', () => {
       // GIVEN
       const stack = getTestStack();
