@@ -1,0 +1,314 @@
+{
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithPublicSecondaryBF5A0D37"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/PublicSecondary": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary1Subnet5C380FE6"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary1RouteTableAssociation224C6485"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary1Subnet62C43D82"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary1RouteTableAssociation37CAF808"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithCarrierGradeNat25F9C610"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/CarrierGradeNat": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary2SubnetEEEF7613"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary2RouteTableAssociation7CC84555"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInCarrierGradeNatSubnet2F832324"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInCarrierGradeNatRouteTableAssociation37723610"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc192WithPublicSecondary78CAABEE"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/PublicSecondary192": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary192Subnet2DB1C862"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary192RouteTableAssociation600A62D7"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc172WithPublicSecondary2C1AA5BA"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/PublicSecondary172": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary172Subnet41AB8D38"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary172RouteTableAssociation9D476A66"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"VpcWithPublicSecondaryBF5A0D37\",\"VpcId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"VpcWithCarrierGradeNat25F9C610\",\"VpcId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"Vpc192WithPublicSecondary78CAABEE\",\"VpcId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"Vpc172WithPublicSecondary2C1AA5BA\",\"VpcId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/PublicSecondary/PublicSecondary": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithPublicSecondary37F623CC"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary1/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary1RouteTable59D20080"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary1/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary1RouteTableCF35A59B"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithCarrierGradeNat/CarrierGradeNat/CarrierGradeNat": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcWithCarrierGradeNat305AA356"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInPrimary2/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInPrimary2RouteTable33F5782D"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInCarrierGradeNat/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInCarrierGradeNatRouteTable25368D21"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc192WithPublicSecondary/PublicSecondary192/PublicSecondary192": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc192WithPublicSecondaryPublicSecondary192B3051894"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary192/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary192RouteTable2653E5DB"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Vpc172WithPublicSecondary/PublicSecondary172/PublicSecondary172": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc172WithPublicSecondaryPublicSecondary1724DC311A4"
+    }
+  ],
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/SubnetInSecondary172/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetInSecondary172RouteTableE469B078"
+    }
+  ]
+}

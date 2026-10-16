@@ -463,6 +463,40 @@
    ]
   }
  },
+ "Outputs": {
+  "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VpcWithPublicSecondaryBF5A0D37",
+     "VpcId"
+    ]
+   }
+  },
+  "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "VpcWithCarrierGradeNat25F9C610",
+     "VpcId"
+    ]
+   }
+  },
+  "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Vpc192WithPublicSecondary78CAABEE",
+     "VpcId"
+    ]
+   }
+  },
+  "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Vpc172WithPublicSecondary2C1AA5BA",
+     "VpcId"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
