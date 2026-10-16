@@ -438,3 +438,68 @@ export enum Charset {
    */
   UTF8 = 'utf8',
 }
+
+/**
+ * A single dependency entry in the `devEngines` field of a `package.json`.
+ *
+ * @see https://github.com/openjs-foundation/package-metadata-interoperability-working-group/blob/main/devengines-field-proposal.md
+ */
+export interface DevEngineDependency {
+  /**
+   * The name of the tool (e.g. `node`, `npm`, `yarn`, `pnpm`, `bun`).
+   */
+  readonly name: string;
+
+  /**
+   * A semver version range that specifies which versions are acceptable.
+   */
+  readonly version?: string;
+
+  /**
+   * What to do if the validation for this entry fails.
+   */
+  readonly onFail?: 'ignore' | 'warn' | 'error' | 'download';
+}
+
+/**
+ * The `devEngines` field of a `package.json`, which declares the runtime and
+ * package-manager requirements for developing a project.
+ *
+ * When `nodeModules` are installed during bundling, the `devEngines` field
+ * from the nearest parent `package.json` is forwarded into the minimal
+ * `package.json` that is written to the output directory. Package managers
+ * that understand `devEngines` (e.g. npm >= 10.4 with Corepack) will then use
+ * the declared package manager to perform the install.
+ *
+ * @see https://github.com/openjs-foundation/package-metadata-interoperability-working-group/blob/main/devengines-field-proposal.md
+ */
+export interface DevEngines {
+  /**
+   * The operating system requirements.
+   */
+  readonly os?: DevEngineDependency | DevEngineDependency[];
+
+  /**
+   * The CPU architecture requirements.
+   */
+  readonly cpu?: DevEngineDependency | DevEngineDependency[];
+
+  /**
+   * The C standard library requirements.
+   */
+  readonly libc?: DevEngineDependency | DevEngineDependency[];
+
+  /**
+   * The JavaScript runtime requirements.
+   */
+  readonly runtime?: DevEngineDependency | DevEngineDependency[];
+
+  /**
+   * The package manager requirements.
+   *
+   * When set, the declared package manager (and optionally a specific version)
+   * will be used to install `nodeModules` during bundling, provided the tool
+   * supports this field.
+   */
+  readonly packageManager?: DevEngineDependency | DevEngineDependency[];
+}
