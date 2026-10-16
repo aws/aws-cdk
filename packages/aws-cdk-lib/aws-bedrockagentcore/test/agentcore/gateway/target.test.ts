@@ -19,6 +19,7 @@ import * as lambda from '../../../../aws-lambda';
 import * as s3 from '../../../../aws-s3';
 import * as cdk from '../../../../core';
 import { Gateway } from '../../../lib';
+import type { IMcpGatewayTarget } from '../../../lib';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import {
   ApiSchema,
@@ -55,6 +56,35 @@ describe('GatewayTarget Tests', () => {
       deployOptions: { stageName: 'prod' },
     });
     restApi.root.addResource('test').addMethod('GET');
+  });
+
+  // Regression coverage for issue #37996: under `exactOptionalPropertyTypes`,
+  // GatewayTarget must stay assignable to the optional `IGatewayTarget.description`.
+  // The IMcpGatewayTarget annotation is the type-level guard; the runtime
+  // expectations confirm the field-shape change preserves behavior.
+  describe('description / IMcpGatewayTarget assignability (issue #37996)', () => {
+    test('description is populated when provided and the target is assignable to IMcpGatewayTarget', () => {
+      const target: IMcpGatewayTarget = GatewayTarget.forMcpServer(stack, 'McpTarget', {
+        gateway,
+        gatewayTargetName: 'mcp-target',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [],
+        description: 'my description',
+      });
+
+      expect(target.description).toEqual('my description');
+    });
+
+    test('description is undefined when not provided', () => {
+      const target = GatewayTarget.forMcpServer(stack, 'McpTargetNoDescription', {
+        gateway,
+        gatewayTargetName: 'mcp-target-no-description',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [],
+      });
+
+      expect(target.description).toBeUndefined();
+    });
   });
 
   // These tests verify construct internal state (credentialProviderConfigurations array assignment).
