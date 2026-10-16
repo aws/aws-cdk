@@ -2,13 +2,13 @@ import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import { App, CfnOutput, CfnParameter, Stack } from '../../core';
+import { CfnNetworkConnector } from '../lib/lambda.generated';
 import {
   NetworkConnector,
   NetworkConnectorComputeType,
   NetworkConnectorConfiguration,
   NetworkProtocol,
 } from '../lib/network-connector';
-import { CfnNetworkConnector } from '../lib/lambda.generated';
 
 const CONNECTOR_ARN = 'arn:aws:lambda:us-west-2:123456789012:network-connector:nc-0123abcd';
 const VERSION_ARN = `${CONNECTOR_ARN}:3`;
