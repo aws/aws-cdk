@@ -86,6 +86,13 @@ export interface BasicStepScalingPolicyProps {
    * @default - The statistic from the metric if applicable (MIN, MAX, AVERAGE), otherwise AVERAGE.
    */
   readonly metricAggregationType?: MetricAggregationType;
+
+  /**
+   * How the alarm should handle missing data points.
+   *
+   * @default - CloudWatch default of `TreatMissingData.MISSING`
+   */
+  readonly treatMissingData?: cloudwatch.TreatMissingData;
 }
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
@@ -170,6 +177,7 @@ export class StepScalingPolicy extends Construct {
         evaluationPeriods: props.evaluationPeriods ?? 1,
         datapointsToAlarm: props.datapointsToAlarm,
         threshold,
+        treatMissingData: props.treatMissingData,
       });
       this.lowerAlarm.addAlarmAction(new StepScalingAlarmAction(this.lowerAction));
     }
@@ -201,6 +209,7 @@ export class StepScalingPolicy extends Construct {
         evaluationPeriods: props.evaluationPeriods ?? 1,
         datapointsToAlarm: props.datapointsToAlarm,
         threshold,
+        treatMissingData: props.treatMissingData,
       });
       this.upperAlarm.addAlarmAction(new StepScalingAlarmAction(this.upperAction));
     }
