@@ -93,6 +93,15 @@ export interface AddStageOpts {
   readonly post?: Step[];
 
   /**
+   * Additional steps to run once every stack in the stage has had its change
+   * set prepared, and before any stack in the stage is deployed.
+   *
+   * @default - No additional steps
+   * @see StageDeploymentProps.deployGate for full semantics and restrictions
+   */
+  readonly deployGate?: Step[];
+
+  /**
    * Instructions for stack level steps
    *
    * @default - No additional instructions
