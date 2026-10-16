@@ -1293,3 +1293,17 @@ const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Serv
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
+
+
+### Set the queue worker stop timeout
+
+Both queue processing service patterns accept `stopTimeout` to give a worker time to
+finish processing messages after receiving SIGTERM. Fargate supports a maximum of
+120 seconds. When using a custom task definition, configure its container directly.
+
+```ts
+new ecsPatterns.QueueProcessingFargateService(this, 'Worker', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  stopTimeout: Duration.seconds(120),
+});
+```
