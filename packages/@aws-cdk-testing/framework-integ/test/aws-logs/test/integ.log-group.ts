@@ -21,7 +21,10 @@ class LogGroupIntegStack extends Stack {
     });
 
     const fieldIndexPolicy = new FieldIndexPolicy({
-      fields: ['Operation', 'RequestId'],
+      // The third field name is exactly 100 characters long, exercising the
+      // upper boundary of the field index name length limit that is validated
+      // at synth time (names longer than 100 characters are rejected).
+      fields: ['Operation', 'RequestId', 'CustomerRequestMetadataCorrelationIdentifierForLongFieldNameBoundaryValidationExampleField0000000000'],
     });
 
     new LogGroup(this, 'LogGroupLambda', {
