@@ -1,0 +1,26 @@
+{
+  "/aws-cdk-loggroup-cross-env-grant-log-group/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-loggroup-cross-env-grant-log-group/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-cross-env-grant-log-group/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-cross-env-grant-log-group/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ]
+}
