@@ -2390,6 +2390,12 @@ created. If you pass your own role, that policy is attached to it when the role 
 the same app; a role imported by ARN or name cannot be modified, so a warning is emitted and
 it must already carry the policy or equivalent permissions.
 
+Use a role dedicated to the connector. The service assumes it without presenting a source
+account or ARN, so its trust policy cannot be conditioned, and whatever else uses the role
+gains the permissions to manage network interfaces in the VPC. A function's execution role,
+for example, already trusts `lambda.amazonaws.com`, so passing it as the operator role would
+give that function's code those permissions.
+
 #### Connector versions and how the function follows them
 
 Every update to a connector produces a new, immutable version, and a WebFunction revision

@@ -206,6 +206,12 @@ export interface NetworkConnectorProps {
    * modified from this app, so a warning is emitted instead: make sure it already carries that
    * policy, or equivalent permissions to manage the connector's network interfaces.
    *
+   * Use a role dedicated to this connector. The service assumes it without presenting a source
+   * account or ARN, so its trust policy cannot be conditioned, and whatever else uses the role
+   * gains the permissions to manage network interfaces in the VPC. A function's execution role,
+   * for example, already trusts `lambda.amazonaws.com`, so passing it here would give that
+   * function's code those permissions.
+   *
    * @default - a role is created with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy
    */
   readonly operatorRole?: iam.IRoleRef;
@@ -388,17 +394,25 @@ export class NetworkConnector extends NetworkConnectorBase {
    * connector needs, so it is not called; this construct warns instead.
    */
   private attachOperatorPolicy(role: iam.IRoleRef, policy: iam.IManagedPolicy): void {
-    if (Resource.isOwnedResource(role) && isRoleWithManagedPolicies(role)) {
-      role.addManagedPolicy(policy);
-      return;
-    }
     const roleArn = role.roleRef.roleArn;
     const roleName = Token.isUnresolved(roleArn) ? `'${role.node.path}'` : `'${roleArn}' (${role.node.path})`;
+    if (Resource.isOwnedResource(role) && isRoleWithManagedPolicies(role)) {
+      role.addManagedPolicy(policy);
+      Annotations.of(this).addInfoV2(
+        '@aws-cdk/aws-lambda:networkConnectorOperatorRoleShared',
+        `The ${OPERATOR_MANAGED_POLICY} managed policy was attached to the operator role ${roleName}. ` +
+        'The service assumes this role without a source account or ARN, so its trust cannot be ' +
+        'conditioned: use a role dedicated to this connector.',
+      );
+      return;
+    }
     Annotations.of(this).addWarningV2(
       '@aws-cdk/aws-lambda:networkConnectorOperatorRoleNotModified',
       `The operator role ${roleName} cannot be modified from this app, so the ` +
       `${OPERATOR_MANAGED_POLICY} managed policy was not attached to it. Make sure the role ` +
-      'carries that policy, or equivalent permissions to manage the connector\'s network interfaces.',
+      'carries that policy, or equivalent permissions to manage the connector\'s network interfaces, ' +
+      'and that it is dedicated to this connector, since the service assumes it without a source ' +
+      'account or ARN.',
     );
   }
 
