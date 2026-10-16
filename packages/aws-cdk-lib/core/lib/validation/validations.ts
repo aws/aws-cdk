@@ -1,11 +1,30 @@
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
+import type { IWarningContextFilter } from './warning-context-filter';
 import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import { enhancedStackTrace } from '../private/stack-trace';
 import { ANNOTATION_PLUGIN_NAMESPACE, normalizeValidationIdForAnnotations, parseValidationId } from './private/validation-id';
+
+/**
+ * Options for adding a warning via `Validations.addWarning`.
+ */
+export interface WarningOptions {
+  /**
+   * Structured key/value context describing this specific warning occurrence.
+   *
+   * The construct chooses the keys (e.g. `{ service: 'aiops' }`). A later
+   * `acknowledge({ where })` filter matches against this context to selectively
+   * suppress only the matching occurrences of the warning id, leaving the rest
+   * to warn. When omitted, the warning carries no context and can only be
+   * suppressed by an unfiltered acknowledgement.
+   *
+   * @default - no context is attached
+   */
+  readonly context?: { [key: string]: string };
+}
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -20,6 +39,17 @@ export interface Acknowledgment {
    * The reason for acknowledging this rule.
    */
   readonly reason: string;
+
+  /**
+   * Optional context filters that narrow the acknowledgement to only the
+   * warning occurrences whose call-site context matches every filter.
+   *
+   * Filters are combined with AND. When omitted, all occurrences of the rule
+   * id are acknowledged (backwards-compatible behavior).
+   *
+   * @default - acknowledges all occurrences of the rule id
+   */
+  readonly where?: IWarningContextFilter[];
 }
 
 /**
@@ -79,10 +109,11 @@ export class Validations {
    *
    * @param id unique identifier for the warning, used for acknowledgement
    * @param message the warning message
+   * @param options optional settings, including structured `context` for selective acknowledgement
    */
-  public addWarning(id: string, message: string): void {
+  public addWarning(id: string, message: string, options?: WarningOptions): void {
     id = normalizeValidationIdForAnnotations(id);
-    Annotations.of(this.scope).addWarningV2(id, message);
+    Annotations.of(this.scope).addWarningV2(id, message, options?.context);
   }
 
   /**
@@ -140,11 +171,11 @@ export class Validations {
       //
       // Since we can't know if `Validations.of().acknowledge('<id>')` should
       // suppress the namespaced or unnamespaced version of the warning, we will suppress both.
-      Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+      Annotations.of(this.scope)._acknowledgeWarning(qualifiedId, rule.where);
 
       if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
         const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
-        Annotations.of(this.scope).acknowledgeWarning(annotationId);
+        Annotations.of(this.scope)._acknowledgeWarning(annotationId, rule.where);
       }
     }
   }
