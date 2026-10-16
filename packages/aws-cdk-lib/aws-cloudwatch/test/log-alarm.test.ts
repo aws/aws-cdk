@@ -4,7 +4,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { LogGroup } from '../../aws-logs';
 import { Duration, Fn, Stack, Token } from '../../core';
-import type { IAlarmAction, ILogAlarm } from '../lib';
+import type { IAlarmAction } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
 describe('LogAlarm', () => {
@@ -791,22 +791,6 @@ describe('LogAlarm', () => {
 
     expect(stack.resolve(imported.alarmName)).toEqual('my-log-alarm');
     expect(stack.resolve(imported.alarmArn)).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
-  });
-
-  test('an imported log alarm has no log line role', () => {
-    const imported = LogAlarm.fromLogAlarmArn(stack, 'Imported',
-      'arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
-
-    expect(imported.actionLogLineRole).toBeUndefined();
-  });
-
-  test('exposes its log line role through ILogAlarm', () => {
-    const alarm: ILogAlarm = new LogAlarm(stack, 'Alarm', {
-      ...baseProps(),
-      actionLogLineCount: 5,
-    });
-
-    expect(alarm.actionLogLineRole).toBeDefined();
   });
 
   test('fromLogAlarmName formats an alarm arn and derives the name back', () => {

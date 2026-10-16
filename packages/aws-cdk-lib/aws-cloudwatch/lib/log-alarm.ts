@@ -321,15 +321,7 @@ export interface LogAlarmWarmUpConfiguration {
 /**
  * Represents a CloudWatch log alarm.
  */
-export interface ILogAlarm extends IAlarm {
-  /**
-   * The IAM role that CloudWatch assumes to read log lines for notifications.
-   *
-   * Undefined for an imported log alarm, and when no log lines are included in
-   * notifications.
-   */
-  readonly actionLogLineRole?: IRole;
-}
+export interface ILogAlarm extends IAlarm {}
 
 /**
  * A CloudWatch alarm evaluated against the results of a scheduled Logs query.
