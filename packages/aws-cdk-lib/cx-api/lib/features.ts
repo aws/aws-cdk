@@ -2017,7 +2017,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
-  },
 };
 
 export const CURRENT_MV = 'v2';
