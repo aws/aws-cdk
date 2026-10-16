@@ -1,0 +1,14 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FsxOntapSingleAzIntegTest/DefaultTest": {
+      "stacks": [
+        "AwsCdkFsxOntapSingleAz1",
+        "AwsCdkFsxOntapSingleAz2"
+      ],
+      "assertionStack": "FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxOntapSingleAzIntegTestDefaultTestDeployAssertFA150BE0"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
