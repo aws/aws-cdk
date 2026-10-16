@@ -359,7 +359,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       return undefined;
     }
     if (!Token.isUnresolved(jobDefinitionArn) && !jobDefinitionArn.startsWith('arn:')) {
-      return jobDefinitionArn || undefined;
+      return jobDefinitionArn.split(':')[0] || undefined;
     }
     const resourceName = Stack.of(this).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     return resourceName?.split(':')[0] || undefined;
