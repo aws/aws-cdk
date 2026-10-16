@@ -21,10 +21,13 @@ RUN npm install --global typescript
 ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
+# Disable npm update notifications
+RUN npm config --global set update-notifier false
+
 # Ensure all users can write to npm cache
 RUN mkdir /tmp/npm-cache && \
-    chmod -R 777 /tmp/npm-cache && \
-    npm config --global set cache /tmp/npm-cache
+    npm config --global set cache /tmp/npm-cache && \
+    chmod -R 777 /tmp/npm-cache
 
 # Ensure all users can write to yarn cache
 RUN mkdir /tmp/yarn-cache && \
@@ -35,9 +38,6 @@ RUN mkdir /tmp/yarn-cache && \
 RUN mkdir /tmp/pnpm-cache && \
     chmod -R 777 /tmp/pnpm-cache && \
     pnpm config --global set store-dir /tmp/pnpm-cache
-
-# Disable npm update notifications
-RUN npm config --global set update-notifier false
 
 # create non root user and change allow execute command for non root user
 RUN /sbin/useradd -u 1000 user && chmod 711 /
