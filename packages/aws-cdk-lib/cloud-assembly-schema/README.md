@@ -23,7 +23,7 @@ between the assembly and its consumers, we treat the manifest file as a well def
 ## Schema
 
 This module contains the typescript structs that comprise the `manifest.json` file, as well as the
-generated [_json-schema_](./schema/cloud-assembly.schema.json).
+generated [_json-schema_](https://github.com/aws/aws-cdk-cli/blob/main/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json).
 
 ## Versioning
 
@@ -38,7 +38,7 @@ is considered `major` version bump. All changes that do not impact the schema ar
 
 ## How to consume
 
-If you'd like to consume the [schema file](./schema/cloud-assembly.schema.json) in order to do validations on `manifest.json` files,
+If you'd like to consume the [schema file](https://github.com/aws/aws-cdk-cli/blob/main/packages/@aws-cdk/cloud-assembly-schema/schema/cloud-assembly.schema.json) in order to do validations on `manifest.json` files,
 simply download it from this repo and run it against standard _json-schema_ validators, such as [jsonschema](https://www.npmjs.com/package/jsonschema).
 
 Consumers must take into account the `major` version of the schema they are consuming. They should reject cloud assemblies
