@@ -742,6 +742,7 @@
     "DeploymentConfiguration": {
      "LifecycleHooks": [
       {
+       "HookDetails": "{\"environment\":\"production\",\"timeout\":300}",
        "HookTargetArn": {
         "Fn::GetAtt": [
          "LambdaHookBF1BC8B4",
