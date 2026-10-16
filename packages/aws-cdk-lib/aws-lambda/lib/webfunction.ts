@@ -21,7 +21,7 @@ import * as logs from '../../aws-logs';
 import type { Duration, IResource } from '../../core';
 import { Annotations, ArnFormat, Names, PhysicalName, Reference, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { md5hash, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { findTokens } from '../../core/lib/private/resolve';
@@ -407,11 +407,14 @@ export interface WebFunctionProps {
    * ending with a letter or number.
    *
    * Changing this property replaces the endpoint, which yields a new `domainName`.
-   * Because `endpointType` and `replicaRegions` also replace the endpoint, this
-   * name must be changed together with them; CloudFormation cannot replace a
-   * resource that keeps the same name, so the deployment fails otherwise.
    *
-   * @default 'prod'
+   * `endpointType` and `replicaRegions` also replace the endpoint when they change, and
+   * CloudFormation cannot replace a resource that keeps its name. Without this property the
+   * name is derived from them, so that works. With it, change the name together with them, or
+   * the deployment fails.
+   *
+   * @default - `prod` for a `HOME_REGION` endpoint; for a regional endpoint, `prod-` followed by
+   * a hash of `endpointType` and `replicaRegions`
    */
   readonly endpointName?: string;
 
@@ -426,8 +429,8 @@ export interface WebFunctionProps {
    * set, and `WebFunctionEndpointType.HOME_REGION` (the default) must not be combined with
    * `replicaRegions`.
    *
-   * Changing this property replaces the endpoint, which yields a new `domainName`,
-   * and requires changing `endpointName` at the same time.
+   * Changing this property replaces the endpoint, which yields a new `domainName`. If you set
+   * `endpointName`, change it at the same time.
    *
    * @default WebFunctionEndpointType.HOME_REGION
    */
@@ -450,8 +453,10 @@ export interface WebFunctionProps {
    * non-empty set of regions. Must be omitted for `WebFunctionEndpointType.HOME_REGION`.
    * This constraint is validated at synth time (see `endpointType`).
    *
-   * Changing the set of regions replaces the endpoint, which yields a new
-   * `domainName`, and requires changing `endpointName` at the same time.
+   * Changing the set of regions replaces the endpoint, which yields a new `domainName`. If you
+   * set `endpointName`, change it at the same time. A deploy-time list (for example from a
+   * `CfnParameter`) cannot feed the default name, so changing its value at deployment also
+   * needs a new `endpointName`.
    *
    * The stack's own region always serves traffic, whether or not it is listed here.
    *
@@ -947,7 +952,7 @@ export class WebFunction extends WebFunctionBase {
 
     this.resourceEndpoint = new CfnWebFunctionEndpoint(this, 'Endpoint', {
       functionName: this.resource.ref,
-      endpointName: props.endpointName ?? 'prod',
+      endpointName: props.endpointName ?? this.defaultEndpointName(endpointType, regions),
       endpointType,
       authType: props.authType,
       revisionWeights: [
@@ -1019,6 +1024,23 @@ export class WebFunction extends WebFunctionBase {
         logGroup: logGroup.logGroupRef.logGroupName,
       },
     };
+  }
+
+  /**
+   * The endpoint name used when none is given.
+   *
+   * The name is create-only, and so are the endpoint type and regions, so changing either of
+   * those replaces the endpoint. CloudFormation cannot replace a resource under the same name,
+   * so the name is derived from them: whatever replaces the endpoint also renames it. The
+   * common case, a home-Region endpoint, keeps the plain `prod`.
+   */
+  private defaultEndpointName(endpointType: WebFunctionEndpointType, regions: string[] | undefined): string {
+    if (endpointType === WebFunctionEndpointType.HOME_REGION && regions === undefined) {
+      return 'prod';
+    }
+    // Order is kept: the property is a list, so reordering it replaces the endpoint too.
+    const shape = JSON.stringify([endpointType, Stack.of(this).resolve(regions) ?? null]);
+    return `prod-${md5hash(shape).slice(0, 8)}`;
   }
 
   /**

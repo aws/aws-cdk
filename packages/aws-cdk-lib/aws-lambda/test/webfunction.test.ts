@@ -10,6 +10,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkProtocol } from '../lib/network-connector';
 import { WebFunction, WebFunctionAuthType, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction';
+import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
@@ -816,6 +817,40 @@ describe('WebFunction template', () => {
           Weight: 100,
         },
       ],
+    });
+  });
+
+  describe('the default endpoint name follows the endpoint shape', () => {
+    // Type and regions are create-only, like the name, so changing them replaces the endpoint,
+    // which CloudFormation cannot do under the same name.
+    const nameFor = (props: Partial<WebFunctionProps>) => {
+      const s = new Stack();
+      new WebFunction(s, 'Test', minimalProps(props));
+      const [endpoint] = Object.values(Template.fromStack(s).findResources('AWS::Lambda::WebFunctionEndpoint'));
+      return endpoint.Properties.EndpointName;
+    };
+    const multi = (regions: string[]) => ({
+      endpointType: WebFunctionEndpointType.MULTI_REGION, replicaRegions: WebFunctionReplicaRegions.of(regions),
+    });
+
+    test('a home-Region endpoint is named prod', () => {
+      expect(nameFor({})).toEqual('prod');
+    });
+
+    test('a regional endpoint gets a name derived from its type and regions', () => {
+      const base = nameFor(multi(['us-east-1', 'us-west-2']));
+      expect(base).toMatch(/^prod-[0-9a-f]{8}$/);
+      expect(nameFor(multi(['us-east-1', 'us-west-2']))).toEqual(base);
+      expect(nameFor(multi(['us-east-1', 'eu-west-1']))).not.toEqual(base);
+      expect(nameFor(multi(['us-west-2', 'us-east-1']))).not.toEqual(base);
+      expect(nameFor({
+        endpointType: WebFunctionEndpointType.PER_REGION,
+        replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
+      })).not.toEqual(base);
+    });
+
+    test('an explicit name is used as given', () => {
+      expect(nameFor({ ...multi(['us-east-1']), endpointName: 'live' })).toEqual('live');
     });
   });
 

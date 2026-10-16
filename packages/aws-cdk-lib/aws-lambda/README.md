@@ -2286,9 +2286,12 @@ breaks. Adding a replica region later therefore means a new URL; decide the
 region set up front where you can. Changing `webFunctionName` replaces the whole
 WebFunction, with the same effect.
 
-`endpointName` defaults to a fixed name, and CloudFormation cannot replace a
-resource that keeps the same name. When you change `endpointType` or
-`replicaRegions`, change `endpointName` as well, or the deployment fails.
+CloudFormation cannot replace a resource that keeps the same name. When you leave
+`endpointName` unset, the name is derived from `endpointType` and `replicaRegions`
+(`prod` for a home-Region endpoint), so changing them renames the endpoint too and the
+replacement goes through. If you set `endpointName`, change it together with them, or the
+deployment fails. The same applies to a `replicaRegions` list that is only known at
+deployment, such as a `CfnParameter`, since its value cannot feed the name.
 
 Renaming the construct id has the same effect as changing `webFunctionName`: the
 generated name derives from the construct's path, so CloudFormation creates a new
