@@ -2133,6 +2133,13 @@ encryption, and a policy granting `lambda.amazonaws.com` read access. It is crea
 with `RemovalPolicy.DESTROY` and `autoDeleteObjects`, so it is removed together with
 the stack that owns it.
 
+The read grant covers every object in the bucket and matches any WebFunction revision in
+the account, rather than one statement per function, so that the policy does not grow with
+the number of functions. It does not isolate the functions sharing the bucket from each
+other. That isolation comes from the service: when a revision is created, it reads the code
+object with the caller's own credentials and rejects the request if the caller cannot, so
+creating a revision requires read access to its code.
+
 #### Into a bucket you own
 
 ```ts

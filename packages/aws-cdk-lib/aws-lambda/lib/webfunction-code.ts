@@ -623,6 +623,13 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
   // limit. The source condition is widened to match, to any WebFunction revision in this
   // account, so the statement still refuses reads the service performs on behalf of anything
   // else.
+  //
+  // It does not isolate functions from each other: any revision in the account matches, and
+  // the bucket uses SSE-S3, so there is no key policy behind it. What keeps one function from
+  // using another's code is a check the service makes when a revision is created: it reads the
+  // object with the caller's own credentials (a forward access session) and rejects the request
+  // if the caller cannot, before it checks the service principal's access. A principal can
+  // therefore only create a revision on code it can already read.
   bucket.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['s3:GetObject', 's3:GetObjectVersion'],
     principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
