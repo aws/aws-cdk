@@ -12,13 +12,16 @@ import { createOctomock } from './octomock';
 
 const octomock = createOctomock();
 
-const linter = new PullRequestLinterBase({
+const linterProps = {
   client: octomock as any,
   owner: 'test-owner',
   repo: 'test-repo',
   number: 123,
   linterLogin: 'aws-cdk-automation',
-});
+  mergeabilityRecheckDelayMs: 0,
+};
+
+const linter = new PullRequestLinterBase(linterProps);
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -147,6 +150,49 @@ test('dismissing a review dismisses and changes the text of all previous reviews
   expect(octomock.pulls.dismissReview).not.toHaveBeenCalledWith(expect.objectContaining({
     review_id: 3333,
   }));
+});
+
+test('reading a pull request whose mergeability is not computed yet reads it exactly once more', async () => {
+  // GIVEN a pull request that never leaves the uncomputed state
+  octomock.pulls.get.mockReturnValue({
+    data: {
+      number: 123,
+      base: { ref: 'main' },
+      head: { sha: 'ABC' },
+      mergeable: null,
+      mergeable_state: 'unknown',
+    },
+  });
+  const uncachedLinter = new PullRequestLinterBase(linterProps);
+
+  // WHEN
+  await uncachedLinter.pr();
+  await uncachedLinter.pr();
+
+  // THEN
+  expect(octomock.pulls.get).toHaveBeenCalledTimes(2);
+});
+
+test('reading a pull request memoizes the mergeability found on the second read', async () => {
+  // GIVEN
+  const settled = {
+    number: 123,
+    base: { ref: 'main' },
+    head: { sha: 'ABC' },
+    mergeable: false,
+    mergeable_state: 'dirty',
+  };
+  octomock.pulls.get
+    .mockReturnValueOnce({ data: { ...settled, mergeable: null, mergeable_state: 'unknown' } })
+    .mockReturnValue({ data: settled });
+  const uncachedLinter = new PullRequestLinterBase(linterProps);
+
+  // WHEN
+  await uncachedLinter.pr();
+
+  // THEN
+  expect((await uncachedLinter.pr()).mergeable).toBe(false);
+  expect(octomock.pulls.get).toHaveBeenCalledTimes(2);
 });
 
 test('checks with duplicate names are combined so the latest wins', async () => {
