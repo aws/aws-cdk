@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as servicediscovery from '../lib';
@@ -360,7 +360,7 @@ describe('service', () => {
         dnsRecordType: servicediscovery.DnsRecordType.CNAME,
         loadBalancer: true,
       });
-    }).toThrow(/Must support `A` or `AAAA` records to register loadbalancers/);
+    }).toThrow(/Must use only `A` or `AAAA` records to register loadbalancers/);
   });
 
   test('Throws when specifying loadbalancer with Multivalue routing Policy', () => {
@@ -476,5 +476,148 @@ describe('service', () => {
       },
       Type: 'HTTP',
     });
+  });
+  test('Service for Private DNS namespace with A_SRV renders A and SRV DnsRecords', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc,
+    });
+
+    // WHEN
+    namespace.createService('MyService', {
+      dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+      dnsTtl: cdk.Duration.seconds(30),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      DnsConfig: Match.objectLike({
+        DnsRecords: [
+          { TTL: 30, Type: 'A' },
+          { TTL: 30, Type: 'SRV' },
+        ],
+        RoutingPolicy: 'MULTIVALUE',
+      }),
+    });
+  });
+
+  test('Service for Private DNS namespace with AAAA_SRV renders AAAA and SRV DnsRecords', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc,
+    });
+
+    // WHEN
+    namespace.createService('MyService', {
+      dnsRecordType: servicediscovery.DnsRecordType.AAAA_SRV,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      DnsConfig: Match.objectLike({
+        DnsRecords: [
+          { TTL: 60, Type: 'AAAA' },
+          { TTL: 60, Type: 'SRV' },
+        ],
+      }),
+    });
+  });
+
+  test('Service for Private DNS namespace with A_AAAA_SRV renders A, AAAA and SRV DnsRecords', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc,
+    });
+
+    // WHEN
+    namespace.createService('MyService', {
+      dnsRecordType: servicediscovery.DnsRecordType.A_AAAA_SRV,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      DnsConfig: Match.objectLike({
+        DnsRecords: [
+          { TTL: 60, Type: 'A' },
+          { TTL: 60, Type: 'AAAA' },
+          { TTL: 60, Type: 'SRV' },
+        ],
+      }),
+    });
+  });
+
+  test.each([
+    servicediscovery.DnsRecordType.A,
+    servicediscovery.DnsRecordType.AAAA,
+    servicediscovery.DnsRecordType.SRV,
+  ])('Service for Private DNS namespace with %s renders exactly one DnsRecord', (dnsRecordType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'MyNamespace', {
+      name: 'private',
+      vpc,
+    });
+
+    // WHEN
+    namespace.createService('MyService', { dnsRecordType });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      DnsConfig: Match.objectLike({
+        DnsRecords: [{ TTL: 60, Type: dnsRecordType }],
+      }),
+    });
+  });
+
+  test.each([
+    servicediscovery.DnsRecordType.A_SRV,
+    servicediscovery.DnsRecordType.AAAA_SRV,
+    servicediscovery.DnsRecordType.A_AAAA_SRV,
+  ])('fails to create a Service with loadBalancer and dnsRecordType %s', (dnsRecordType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    // THEN
+    expect(() => {
+      namespace.createService('MyService', {
+        dnsRecordType,
+        loadBalancer: true,
+      });
+    }).toThrow(/Must use only `A` or `AAAA` records to register loadbalancers/);
+  });
+
+  test('fails to create a Service with discoveryType API and dnsRecordType A_SRV', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const namespace = new servicediscovery.PublicDnsNamespace(stack, 'MyNamespace', {
+      name: 'dns',
+    });
+
+    // THEN
+    expect(() => {
+      namespace.createService('MyService', {
+        discoveryType: DiscoveryType.API,
+        dnsRecordType: servicediscovery.DnsRecordType.A_SRV,
+      });
+    }).toThrow(/Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace/);
   });
 });
