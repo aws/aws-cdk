@@ -1,10 +1,10 @@
 // Test property validation source attribution, by means of the S3 construct
 
+import type { IStackFrameFinder } from '@aws-cdk/cloud-assembly-api';
+import { stripAnsi, ValidationReportFormatter } from '@aws-cdk/cloud-assembly-api';
 import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal';
 import type { PropertyMutationMetadataEntry } from '../../cloud-assembly-schema';
 import { App, Stack } from '../../core';
-import type { StackFrameFinder } from '../../core/lib/private/stack-trace';
-import { formatValidationReports, stripAnsi } from '../../core/lib/validation/private/modern-formatter';
 import type { CloudFormationStackArtifact } from '../../cx-api';
 import * as s3 from '../lib';
 
@@ -89,13 +89,14 @@ test('invalid properties are attributed to the correct code line', () => {
   // AND they are all rendered.
   // Use a custom StackFrameFinder to make sure we only render the test frames, ignoring those
   // from the CDK library itself.
-  const finder: StackFrameFinder = {
-    isUserCodeFrame(frame) {
+  const nonLibCode: IStackFrameFinder = {
+    isInterestingFrame(frame) {
       return !frame.includes('/lib/');
     },
   };
 
-  const reportText = stripAnsi(formatValidationReports(__dirname, report.report.pluginReports, finder).join('\n'));
+  const formatter = new ValidationReportFormatter({ frameFinder: nonLibCode });
+  const reportText = stripAnsi(formatter.formatReports(report.report.pluginReports).join('\n'));
   expect(reportText).toMatchInlineSnapshot(`
 "validation.test.ts:22:10
 or validation.test.ts:54:7
