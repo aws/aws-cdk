@@ -273,11 +273,16 @@ Nested stacks also support the use of Docker image and file assets.
 
 ### Tagging nested stacks
 
-`Tags.of(nestedStack)` applies tags to resources inside the nested stack. The
-`AWS::CloudFormation::Stack` resource representing the nested stack is created
-in the parent stack's scope. Adding or removing a tag through
-`Tags.of(nestedStack)` does not override or remove a tag applied to that stack
-resource from the parent scope, even when a higher tag priority is specified.
+`Tags.of(nestedStack)` applies tags to resources inside the nested stack. These
+tags are also copied to the `AWS::CloudFormation::Stack` resource in the parent
+template, but the copy uses priority 0 and does not preserve the priority of the
+nested tag operation. A tag added with `Tags.of(parent).add(...)` has priority
+100 by default, so it takes precedence on that stack resource even if the
+nested tag operation has a higher priority.
+
+Removing a tag through `Tags.of(nestedStack)` removes it from resources inside
+the nested stack and from the tags available to copy. It does not remove a tag
+applied to the stack resource from the parent scope.
 
 ```ts
 const parent = new Stack(app, 'Parent');
