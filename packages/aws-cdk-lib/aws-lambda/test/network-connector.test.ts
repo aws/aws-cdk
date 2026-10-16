@@ -8,6 +8,7 @@ import {
   NetworkConnectorConfiguration,
   NetworkProtocol,
 } from '../lib/network-connector';
+import { CfnNetworkConnector } from '../lib/lambda.generated';
 
 const CONNECTOR_ARN = 'arn:aws:lambda:us-west-2:123456789012:network-connector:nc-0123abcd';
 const VERSION_ARN = `${CONNECTOR_ARN}:3`;
@@ -41,6 +42,16 @@ describe('NetworkConnector', () => {
     expect(NetworkConnector.isNetworkConnector(imported)).toBe(false);
     expect(NetworkConnector.isNetworkConnector(vpc)).toBe(false);
     expect(NetworkConnector.isNetworkConnector(null)).toBe(false);
+  });
+
+  test('exposes its L1 resource for escape hatches', () => {
+    const connector = new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+
+    expect(CfnNetworkConnector.isCfnNetworkConnector(connector.resource)).toBe(true);
+    expect(connector.resource).toBe(connector.node.defaultChild);
+
+    connector.resource.addPropertyOverride('Name', 'overridden');
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', { Name: 'overridden' });
   });
 
   describe('template', () => {

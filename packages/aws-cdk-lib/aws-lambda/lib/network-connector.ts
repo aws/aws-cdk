@@ -350,7 +350,8 @@ export class NetworkConnector extends NetworkConnectorBase {
    */
   public readonly operatorRole: iam.IRoleRef;
 
-  private readonly resource: CfnNetworkConnector;
+  /** The underlying L1 CfnNetworkConnector resource. Use for escape hatches. */
+  public readonly resource: CfnNetworkConnector;
 
   constructor(scope: Construct, id: string, props: NetworkConnectorProps) {
     super(scope, id, { physicalName: props.networkConnectorName });
