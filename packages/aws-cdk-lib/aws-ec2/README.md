@@ -1248,6 +1248,12 @@ The possible values for `ipAddressType` are:
 
 ### VPC endpoint services
 
+Use `applyRemovalPolicy` on a `VpcEndpointService` to control the lifetime of the
+underlying endpoint service. For example, `service.applyRemovalPolicy(RemovalPolicy.RETAIN)`
+retains the service when its stack is deleted. This policy applies to the endpoint
+service itself; configure the load balancers and permissions separately.
+
+
 A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted. You can also enable Contributor Insight rules.
 
 ```ts
