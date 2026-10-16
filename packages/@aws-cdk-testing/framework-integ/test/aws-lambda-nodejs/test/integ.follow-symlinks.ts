@@ -8,7 +8,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 const app = new App();
 const stack = new Stack(app, 'BundledSymlinks');
 const layer = new LayerVersion(stack, 'Layer', {
-  code: Code.fromAsset(path.join(__dirname, 'integ-handlers/symlink-layer')),
+  code: Code.fromAsset(path.join(__dirname, 'integ-handlers', 'symlink-layer')),
 });
 const fn = new NodejsFunction(stack, 'Function', {
   entry: path.join(__dirname, 'integ-handlers/read-symlink.cjs'),
