@@ -289,6 +289,27 @@ an array of commands to run. Commands are chained with `&&`.
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
 
+### Repeated esbuild arguments
+
+Use an array value in `esbuildArgs` to pass the same option more than once. Each
+value becomes a separate CLI argument; an empty array omits the option. Options
+such as `--alias` use esbuild's colon syntax:
+
+```ts
+new nodejs.NodejsFunction(this, 'aliased-handler', {
+  bundling: {
+    esbuildArgs: {
+      '--alias': ['first=./first', 'second=./second'],
+      '--pure': ['console.log', 'console.debug'],
+    },
+  },
+});
+```
+
+This passes `--alias:first=./first`, `--alias:second=./second`,
+`--pure:console.log`, and `--pure:console.debug` to esbuild. Existing string and
+boolean values continue to work.
+
 ## Pre Compilation with TSC
 
 In some cases, `esbuild` may not yet support some newer features of the typescript language, such as,
