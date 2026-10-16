@@ -18,7 +18,7 @@ new Canary(stack, 'Canary', {
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_17_0,
   provisionedResourceCleanup: true,
   replicas: [
-    { region: 'us-west-2' },
+    { location: 'us-west-2' },
   ],
 });
 

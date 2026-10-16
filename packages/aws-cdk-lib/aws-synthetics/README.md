@@ -490,9 +490,9 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   }),
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_17_0,
   replicas: [
-    { region: 'us-west-2' },
+    { location: 'us-west-2' },
     {
-      region: 'eu-west-1',
+      location: 'eu-west-1',
       // The KMS key lives in the replica's region, so it is referenced by ARN.
       environmentEncryptionKeyArn: 'arn:aws:kms:eu-west-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
       vpcConfig: {

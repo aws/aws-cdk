@@ -155,9 +155,11 @@ export interface CanaryReplicaVpcConfig {
  */
 export interface CanaryReplica {
   /**
-   * The AWS region where the replica canary runs, for example `us-west-2`.
+   * The AWS region (location) where the replica canary runs, for example `us-west-2`.
+   *
+   * This maps to the CloudFormation `Location` property.
    */
-  readonly region: string;
+  readonly location: string;
 
   /**
    * The ARN of the customer-managed KMS key used to encrypt the replica canary's
@@ -784,16 +786,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
 
     const seen = new Set<string>();
     for (const replica of replicas) {
-      if (cdk.Token.isUnresolved(replica.region)) {
+      if (cdk.Token.isUnresolved(replica.location)) {
         continue;
       }
-      if (replica.region.trim() === '') {
-        throw new ValidationError(lit`EmptyReplicaRegion`, 'Each replica must specify a non-empty region.', this);
+      if (replica.location.trim() === '') {
+        throw new ValidationError(lit`EmptyReplicaLocation`, 'Each replica must specify a non-empty location.', this);
       }
-      if (seen.has(replica.region)) {
-        throw new ValidationError(lit`DuplicateReplicaRegion`, `replicas must not contain duplicate regions, got duplicate: ${replica.region}.`, this);
+      if (seen.has(replica.location)) {
+        throw new ValidationError(lit`DuplicateReplicaLocation`, `replicas must not contain duplicate locations, got duplicate: ${replica.location}.`, this);
       }
-      seen.add(replica.region);
+      seen.add(replica.location);
     }
   }
 
@@ -803,7 +805,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     }
 
     return replicas.map(replica => ({
-      location: replica.region,
+      location: replica.location,
       kmsKeyArn: replica.environmentEncryptionKeyArn,
       // Omit an empty array to avoid the CloudFormation-Validate F3032 warning
       // that CloudFormation raises for an empty resourcesToReplicateTags.
@@ -838,12 +840,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     }
 
     // Replicas write their logs in their own regions. Scope the grant to the
-    // replica regions using the aws:RequestedRegion condition rather than
+    // replica locations using the aws:RequestedRegion condition rather than
     // embedding the region in the resource ARN.
-    const regions = replicas
-      .map(replica => replica.region)
-      .filter(region => !cdk.Token.isUnresolved(region));
-    if (regions.length > 0) {
+    const locations = replicas
+      .map(replica => replica.location)
+      .filter(location => !cdk.Token.isUnresolved(location));
+    if (locations.length > 0) {
       this.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         resources: [cdk.Stack.of(this).formatArn({
@@ -853,7 +855,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
           arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
           resourceName: '/aws/lambda/cwsyn-*',
         })],
-        conditions: { StringEquals: { 'aws:RequestedRegion': regions } },
+        conditions: { StringEquals: { 'aws:RequestedRegion': locations } },
       }));
     }
   }

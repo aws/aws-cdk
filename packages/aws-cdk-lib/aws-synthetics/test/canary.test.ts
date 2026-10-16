@@ -1284,7 +1284,7 @@ describe('replicas (multi-location)', () => {
 
   test('single region', () => {
     const stack = new Stack();
-    newCanary(stack, [{ region: 'us-west-2' }]);
+    newCanary(stack, [{ location: 'us-west-2' }]);
     Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
       Replicas: [{ Location: 'us-west-2' }],
     });
@@ -1292,17 +1292,17 @@ describe('replicas (multi-location)', () => {
 
   test('multiple regions', () => {
     const stack = new Stack();
-    newCanary(stack, [{ region: 'us-west-2' }, { region: 'eu-west-1' }]);
+    newCanary(stack, [{ location: 'us-west-2' }, { location: 'eu-west-1' }]);
     Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
       Replicas: [{ Location: 'us-west-2' }, { Location: 'eu-west-1' }],
     });
   });
 
-  test('a token region renders as a replica Location and is excluded from the logs condition', () => {
+  test('a token location renders as a replica Location and is excluded from the logs condition', () => {
     const stack = new Stack();
-    // A token region (e.g. Aws.REGION) is allowed as a replica Location, but is
+    // A token location (e.g. Aws.REGION) is allowed as a replica Location, but is
     // skipped in the aws:RequestedRegion condition since it cannot be resolved.
-    newCanary(stack, [{ region: Aws.REGION }, { region: 'eu-west-1' }]);
+    newCanary(stack, [{ location: Aws.REGION }, { location: 'eu-west-1' }]);
 
     const template = Template.fromStack(stack);
     // Both replicas are rendered, including the token region.
@@ -1325,7 +1325,7 @@ describe('replicas (multi-location)', () => {
   test('with VPC config, KMS key ARN and tag replication', () => {
     const stack = new Stack();
     newCanary(stack, [{
-      region: 'us-west-2',
+      location: 'us-west-2',
       environmentEncryptionKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
       resourcesToReplicateTags: [synthetics.ResourceToReplicateTags.LAMBDA_FUNCTION],
       vpcConfig: {
@@ -1353,8 +1353,8 @@ describe('replicas (multi-location)', () => {
   test('grants the execution role decrypt on replica KMS key ARNs', () => {
     const stack = new Stack();
     newCanary(stack, [
-      { region: 'us-west-2', environmentEncryptionKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/k1' },
-      { region: 'eu-west-1', environmentEncryptionKeyArn: 'arn:aws:kms:eu-west-1:111122223333:key/k2' },
+      { location: 'us-west-2', environmentEncryptionKeyArn: 'arn:aws:kms:us-west-2:111122223333:key/k1' },
+      { location: 'eu-west-1', environmentEncryptionKeyArn: 'arn:aws:kms:eu-west-1:111122223333:key/k2' },
     ]);
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -1374,7 +1374,7 @@ describe('replicas (multi-location)', () => {
 
   test('grants cross-region logs permission scoped by aws:RequestedRegion', () => {
     const stack = new Stack();
-    newCanary(stack, [{ region: 'us-west-2' }, { region: 'eu-west-1' }]);
+    newCanary(stack, [{ location: 'us-west-2' }, { location: 'eu-west-1' }]);
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
@@ -1398,19 +1398,19 @@ describe('replicas (multi-location)', () => {
 
   test('throws on more than 50 replicas', () => {
     const stack = new Stack();
-    const replicas = Array.from({ length: 51 }, (_, i) => ({ region: `region-${i}` }));
+    const replicas = Array.from({ length: 51 }, (_, i) => ({ location: `region-${i}` }));
     expect(() => newCanary(stack, replicas)).toThrow('You can specify up to 50 replicas, got: 51.');
   });
 
-  test('throws on duplicate regions', () => {
+  test('throws on duplicate locations', () => {
     const stack = new Stack();
-    expect(() => newCanary(stack, [{ region: 'us-west-2' }, { region: 'us-west-2' }]))
-      .toThrow('replicas must not contain duplicate regions, got duplicate: us-west-2.');
+    expect(() => newCanary(stack, [{ location: 'us-west-2' }, { location: 'us-west-2' }]))
+      .toThrow('replicas must not contain duplicate locations, got duplicate: us-west-2.');
   });
 
-  test('throws on empty region string', () => {
+  test('throws on empty location string', () => {
     const stack = new Stack();
-    expect(() => newCanary(stack, [{ region: '  ' }])).toThrow('Each replica must specify a non-empty region.');
+    expect(() => newCanary(stack, [{ location: '  ' }])).toThrow('Each replica must specify a non-empty location.');
   });
 });
 
