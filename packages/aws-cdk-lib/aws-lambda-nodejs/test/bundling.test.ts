@@ -6,7 +6,7 @@ import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
-import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
+import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack, SymlinkFollowMode } from '../../core';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
@@ -45,6 +45,19 @@ let projectRoot = '/project';
 let depsLockFilePath = '/project/yarn.lock';
 let entry = '/project/lib/handler.ts';
 let tsconfig = '/project/lib/custom-tsconfig.ts';
+
+test.each(Object.values(SymlinkFollowMode))('passes symlink follow mode %s to the Lambda asset', (followSymlinks) => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    followSymlinks,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(projectRoot, expect.objectContaining({ followSymlinks }));
+});
 
 test('esbuild bundling in Docker', () => {
   Bundling.bundle(stack, {
