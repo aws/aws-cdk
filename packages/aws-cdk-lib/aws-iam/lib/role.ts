@@ -461,6 +461,7 @@ export class Role extends Resource implements IRole {
 
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
+  public readonly mutable = true;
 
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
@@ -861,6 +862,13 @@ export interface IRole extends IIdentity, IRoleRef {
    * @attribute
    */
   readonly roleName: string;
+
+  /**
+   * Returns whether role is mutable.
+   *
+   * @attribute
+   */
+  readonly mutable: boolean;
 
   /**
    * Grant the actions defined in actions to the identity Principal on this resource.
