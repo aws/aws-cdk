@@ -50,12 +50,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.1.2.tgz#71733894b092032309523cfcba24dc2bb3e7fd84"
   integrity sha512-pDiuqH+qY3zM9lhhLjbKJ1tnKOHzQ2V4Wr/3qsxyKeKAkuPMI/BVGvZG1PbrikUw949cGVTfVEt4ETKKYnrj0Q==
 
-"@aws-cdk/aws-service-spec@0.1.190":
-  version "0.1.190"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.190.tgz#e45e691ffd75be12692dbf346286cce4e400a888"
-  integrity sha512-x1UIQSZn5M5UEgzVTQEjRRc4SR2/dkL3FR/+Crg18+moTjwAf2Rlk/d8cySweb4a2e5ACteIwbGTngKxU2xPSg==
+"@aws-cdk/aws-service-spec@0.1.217":
+  version "0.1.217"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.217.tgz#3045429e8ec45783233b90fbb46dc435e4d9364b"
+  integrity sha512-wNk9xgDPaKyziVv2pUrp5IA+wVT8SCl13BALs+YbhT2xlYYAkBC59PEKvLp3Ia3dEW5jfzFpEktp0ep6Lq4grA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.256"
+    "@aws-cdk/service-spec-types" "^0.0.283"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/aws-service-spec@0.1.220":
@@ -66,28 +66,29 @@
     "@aws-cdk/service-spec-types" "^0.0.286"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/cloud-assembly-api@^2.2.6":
-  version "2.2.6"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-api/-/cloud-assembly-api-2.2.6.tgz#f774ba547da1cb92a948eaca7441e5212d4494b9"
-  integrity sha512-lw+Z5JT4e5rAMMR8tvj2yKSIQTvlxpBeYMUjfSgpJ4RN9d94vF6CpnvPqq6LsfO37n6jw0ufQrDNrR8ZHWKkuw==
+"@aws-cdk/cloud-assembly-api@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-api/-/cloud-assembly-api-2.5.0.tgz#f63e0059da1ac948d9ab34b2b8c2f582c90c9030"
+  integrity sha512-cE19OP9Ad3f04wkvntxqMxwKXutvkVyymwiqHsvEnmBktXjdm6Ydjd2X7b9QcU3QvbL7Gdt4bc3d4STMROCjfg==
   dependencies:
+    json-source-map "^0.6.1"
     jsonschema "^1.5.0"
-    semver "^7.8.4"
+    semver "^7.8.5"
 
-"@aws-cdk/cloud-assembly-schema@^54.24.0":
-  version "54.24.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-54.24.0.tgz#ad24c3de22e695a1579ecc4c2f9d46e8c8ed86ec"
-  integrity sha512-9sH1pBpWuqZR/9rYAveNi62B/jDrc9BNOL83alD/wtIUSbRkg1aj6JX2r1cSugQwLBjCizQscQZgAb5wWnTTMg==
+"@aws-cdk/cloud-assembly-schema@^55.0.0":
+  version "55.0.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-55.0.0.tgz#4a0a0714bf229b9e0e650025949dca134dfbaea8"
+  integrity sha512-C+gB2iBXFra/Y0YFl9fK8tclOsNJxsSNe29rA9DQF/KFoYu0giPVdVu609r9GGZIw9JUrsD/Sksqfetddc82hQ==
   dependencies:
     jsonschema "^1.5.0"
     semver "^7.8.5"
 
-"@aws-cdk/integ-runner@^2.202.3":
-  version "2.202.3"
-  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.202.3.tgz#9f1b243b9f194b8766b39bce8737861d2857c2e4"
-  integrity sha512-ONJDtPgK3YkrkGGlEvoRsZLBIBp/zspHi7Ul98chGB2enqXkpNDV3Tz9UqfSjUmLGkRq6CP2XMcuI64QB5nadg==
+"@aws-cdk/integ-runner@^2.205.6":
+  version "2.205.6"
+  resolved "https://registry.npmjs.org/@aws-cdk/integ-runner/-/integ-runner-2.205.6.tgz#f36002ac2ce8b3d2b0997631fc08da284f633f1b"
+  integrity sha512-hRNgdsLTAKHzf3553E/8I3OPrLZBFLjYvQmNdK3c/TQ36bBaciTnyjb7kE127OvC3/X8CtloahOIXYQWAwdp2g==
   dependencies:
-    "@aws-cdk/aws-service-spec" "0.1.190"
+    "@aws-cdk/aws-service-spec" "0.1.217"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
   version "2.0.242"
@@ -157,10 +158,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.256":
-  version "0.0.256"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.256.tgz#c787460597647332ab5c50647ab420f213130cb9"
-  integrity sha512-oZz7qWObPzAhnOOxr0fMkM55AT9U9YhUr/PiAnBFjGEuONJnXamjuTaHvsjLfvCVTOiQY3HWSvR+Qo0+Ad3xzw==
+"@aws-cdk/service-spec-types@^0.0.283":
+  version "0.0.283"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.283.tgz#870cedf1b7cdcbca4473b457f0f6e14a9d25b045"
+  integrity sha512-AihmEJwiWu3JYTNPAKZQ+WwWSv5ZEBlB8JGZWhzGMYcybs1KYgWe0wfQpgt8alkz4xMhV1ThTvZVyKc+oFtrAg==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -5984,10 +5985,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk@^2.1131.0:
-  version "2.1131.0"
-  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1131.0.tgz#a108e033a06c941b406a8ce7a38e86fe8c5c6978"
-  integrity sha512-02oAVG4IBFwPtPlDE95H8tDJFfDuxJLdvyrdav6rn72mup/LIZRCfp95IB9kfM+FL4vQ9gn/QCEI7y7aNDTpKA==
+aws-cdk@^2.1145.0:
+  version "2.1145.0"
+  resolved "https://registry.npmjs.org/aws-cdk/-/aws-cdk-2.1145.0.tgz#e8a4ae9935d32e0db7964ec5b8b206a259261601"
+  integrity sha512-kV3vJCQX5XvlyVvmRHH79Nn2kOmDicN1WSFGkSaZXsNaDdNj2Re25yehsp+L2ixv0VCm0/HLLmYSoehmVPDkJg==
 
 aws-sdk-client-mock-jest@4.1.0:
   version "4.1.0"
@@ -10265,6 +10266,11 @@ json-schema-traverse@^0.4.1:
   resolved "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-0.4.1.tgz#69f6a87d9513ab8bb8fe63bdb0979c448e684660"
   integrity sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==
 
+json-source-map@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.npmjs.org/json-source-map/-/json-source-map-0.6.1.tgz#e0b1f6f4ce13a9ad57e2ae165a24d06e62c79a0f"
+  integrity sha512-1QoztHPsMQqhDq0hlXY5ZqcEdUzxQEIxgFkKl4WUp2pgShObl+9ovi4kRh2TfvAfxAoHOJ9vIMEqk3k4iex7tg==
+
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
@@ -13023,7 +13029,7 @@ semver-intersect@^1.5.0:
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.2.tgz#48d55db737c3287cd4835e17fa13feace1c41ef8"
   integrity sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==
 
-semver@7.8.5, semver@^7.0.0, semver@^7.1.1, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.3.8, semver@^7.5.3, semver@^7.5.4, semver@^7.7.2, semver@^7.7.3, semver@^7.8.0, semver@^7.8.1, semver@^7.8.4, semver@^7.8.5:
+semver@7.8.5, semver@^7.0.0, semver@^7.1.1, semver@^7.3.4, semver@^7.3.5, semver@^7.3.7, semver@^7.3.8, semver@^7.5.3, semver@^7.5.4, semver@^7.7.2, semver@^7.7.3, semver@^7.8.0, semver@^7.8.1, semver@^7.8.5:
   version "7.8.5"
   resolved "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz#39b646037dd50c14fb451e7e4cac58ed8b863f69"
   integrity sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==
