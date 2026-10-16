@@ -8,9 +8,49 @@ import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as s3deploy from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib/aws-custom-resource/aws-custom-resource';
 import { CustomResourceConfig } from '../../lib/custom-resource-config/custom-resource-config';
 
 describe('when a singleton-backed custom resource does not have logging defined', () => {
+  test.each([false, true])('addLogRetentionLifetime reuses the log group for a shared provider with aspect stabilization %p', (aspectStabilization) => {
+    // GIVEN
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+        '@aws-cdk/core:aspectStabilization': aspectStabilization,
+      },
+    });
+    const stack = new cdk.Stack(app);
+    for (const id of ['First', 'Second']) {
+      new AwsCustomResource(stack, id, {
+        onCreate: {
+          service: 'Iot',
+          action: 'describeEndpoint',
+          physicalResourceId: PhysicalResourceId.of(id),
+        },
+        policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      });
+    }
+
+    // WHEN
+    CustomResourceConfig.of(app).addLogRetentionLifetime(logs.RetentionDays.ONE_WEEK);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('Custom::AWS', 2);
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: logs.RetentionDays.ONE_WEEK,
+    });
+    const [logGroupId] = Object.keys(template.findResources('AWS::Logs::LogGroup'));
+    template.hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: { Ref: logGroupId },
+      },
+    });
+  });
+
   test('addLogRetentionLifetime creates a new log group with the correct retention period if one does not already exist', () => {
     // GIVEN
     const customResourceLogRetention = logs.RetentionDays.TEN_YEARS;
