@@ -90,7 +90,7 @@ describe('tests', () => {
       targetGroupArn,
     });
 
-    alb.addListener('Listener', { port: 80, defaultTargetGroups: [targetGroup] });
+    alb.addListener('Listener', { port: 80, open: false, defaultTargetGroups: [targetGroup] });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80,
