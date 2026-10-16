@@ -632,7 +632,7 @@ export abstract class State extends Construct implements IChainable {
   private outgoingTransitions(options: FindStateOptions): State[] {
     const ret = new Array<State>();
     if (this._next) { ret.push(this._next); }
-    if (this.defaultChoice) { ret.push(this.defaultChoice); }
+    if (this.defaultChoice && options.includeDefaultChoiceTransitions !== false) { ret.push(this.defaultChoice); }
     for (const c of this.choices) {
       ret.push(c.next);
     }
@@ -655,6 +655,18 @@ export interface FindStateOptions {
    * @default false
    */
   readonly includeErrorHandlers?: boolean;
+
+  /**
+   * Whether or not to follow the default/otherwise transition of a Choice state
+   *
+   * When false, the default (otherwise) branch is excluded from the traversal.
+   * `Choice.afterwards()` passes this as false (matching the `includeOtherwise` option)
+   * so that the otherwise state is not treated as a reachable end state unless
+   * the caller explicitly requested it.
+   *
+   * @default true
+   */
+  readonly includeDefaultChoiceTransitions?: boolean;
 }
 
 /**

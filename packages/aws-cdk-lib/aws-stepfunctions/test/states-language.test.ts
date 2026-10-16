@@ -310,6 +310,47 @@ describe('States Language', () => {
     });
   }),
 
+  test('afterwards() excludes the otherwise state from end states by default (poll-loop pattern)', () => {
+    // GIVEN — a polling loop where the otherwise branch loops back through already-chained states
+    const stack = new cdk.Stack();
+
+    const waitToRepeat = new stepfunctions.Wait(stack, 'WaitToRepeat', {
+      time: stepfunctions.WaitTime.duration(cdk.Duration.seconds(60)),
+    });
+    const checkStatus = new stepfunctions.Pass(stack, 'CheckStatus');
+    const isComplete = new stepfunctions.Choice(stack, 'IsComplete')
+      .when(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), new stepfunctions.Fail(stack, 'Failed'))
+      .when(stepfunctions.Condition.stringEquals('$.status', 'COMPLETED'), new stepfunctions.Pass(stack, 'Completed'))
+      .otherwise(waitToRepeat);
+
+    // WHEN — chaining a next step after the choice; previously threw "StateAlreadyHasNextState"
+    // because afterwards() included waitToRepeat in end states, which already had checkStatus as next
+    waitToRepeat
+      .next(checkStatus)
+      .next(isComplete.afterwards())
+      .next(new stepfunctions.Pass(stack, 'DoOtherThing'));
+
+    // THEN — DoOtherThing is reachable only from Completed, not via the otherwise loop
+    expect(render(waitToRepeat)).toStrictEqual({
+      StartAt: 'WaitToRepeat',
+      States: {
+        WaitToRepeat: { Type: 'Wait', Seconds: 60, Next: 'CheckStatus' },
+        CheckStatus: { Type: 'Pass', Next: 'IsComplete' },
+        IsComplete: {
+          Type: 'Choice',
+          Choices: [
+            { Variable: '$.status', StringEquals: 'FAILED', Next: 'Failed' },
+            { Variable: '$.status', StringEquals: 'COMPLETED', Next: 'Completed' },
+          ],
+          Default: 'WaitToRepeat',
+        },
+        Failed: { Type: 'Fail' },
+        Completed: { Type: 'Pass', Next: 'DoOtherThing' },
+        DoOtherThing: { Type: 'Pass', End: true },
+      },
+    });
+  }),
+
   test('Can include OTHERWISE transition for Choice in afterwards()', () => {
     // GIVEN
     const stack = new cdk.Stack();
