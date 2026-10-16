@@ -2042,3 +2042,16 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
+
+### Version metric dimensions
+
+Enable the `@aws-cdk/aws-lambda:versionMetrics` feature flag to use the qualified
+function name (`function-name:version`) for a version metric's `Resource` dimension.
+Without the flag, existing applications retain their previous metric dimensions.
+Review alarms and dashboards when enabling the flag, because they will query a
+different metric. Explicit `dimensionsMap` options continue to override the defaults.
+
+This controls metrics for direct version invocations. To select an executed version
+behind an alias, provide the alias `Resource` and `ExecutedVersion` dimensions
+explicitly through `dimensionsMap`.

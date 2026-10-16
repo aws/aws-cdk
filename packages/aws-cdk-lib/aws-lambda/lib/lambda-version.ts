@@ -10,11 +10,12 @@ import type { IVersionRef, VersionReference } from './lambda.generated';
 import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
-import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
+import { FeatureFlags, Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 export interface IVersion extends IFunction, IVersionRef {
   /**
@@ -290,13 +291,18 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
   @MethodMetadata()
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
+    if (FeatureFlags.of(this).isEnabled(cxapi.LAMBDA_VERSION_METRICS)) {
+      return super.metric(metricName, {
+        ...props,
+        dimensionsMap: props.dimensionsMap ?? props.dimensions ?? {
+          FunctionName: this.lambda.functionName,
+          Resource: `${this.lambda.functionName}:${this.version}`,
+        },
+      });
+    }
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
-        // construct the ARN from the underlying lambda so that alarms on an alias
-        // don't cause a circular dependency with CodeDeploy
-        // see: https://github.com/aws/aws-cdk/issues/2231
         Resource: `${this.lambda.functionArn}:${this.version}`,
       },
       ...props,
