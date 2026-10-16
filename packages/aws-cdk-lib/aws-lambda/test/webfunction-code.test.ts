@@ -155,6 +155,43 @@ describe('WebFunctionCode', () => {
       expect(() => Template.fromStack(stack)).toThrow(/AWS-managed KMS key/);
     });
 
+    // The AWS-managed key can also be named explicitly by its alias, as a literal or as an
+    // alias ARN built from the stack's partition, Region and account.
+    test.each([
+      ['the literal alias', (_s: cdk.Stack) => 'alias/aws/s3'],
+      ['an imported alias', (s: cdk.Stack) => kms.Alias.fromAliasName(s, 'S3Key', 'alias/aws/s3').keyArn],
+    ])('rejects the AWS-managed key named by %s', (_name, keyId) => {
+      const bucket = new s3.Bucket(stack, 'CodeBucket', { versioned: true });
+      (bucket.node.defaultChild as s3.CfnBucket).bucketEncryption = {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: keyId(stack) },
+        }],
+      };
+      new WebFunction(stack, 'TestFunction', {
+        code: WebFunctionCode.fromBucket(bucket, 'code.zip'),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        authType: WebFunctionAuthType.IAM_AUTH,
+      });
+
+      expect(() => Template.fromStack(stack)).toThrow(/encrypted with an AWS-managed KMS key/);
+    });
+
+    test('accepts a customer managed key named by its alias', () => {
+      const bucket = new s3.Bucket(stack, 'CodeBucket', { versioned: true });
+      (bucket.node.defaultChild as s3.CfnBucket).bucketEncryption = {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: 'alias/my-s3-key' },
+        }],
+      };
+      new WebFunction(stack, 'TestFunction', {
+        code: WebFunctionCode.fromBucket(bucket, 'code.zip'),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        authType: WebFunctionAuthType.IAM_AUTH,
+      });
+
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    });
+
     test('validation fails at synth for dual-layer encryption with the AWS-managed key', () => {
       // DSSE_MANAGED has the same problem under a different algorithm name.
       const bucket = new s3.Bucket(stack, 'TestBucket', {

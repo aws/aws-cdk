@@ -653,6 +653,25 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
  *
  * @param factory the `WebFunctionCode` factory to name in the error message
  */
+/**
+ * Whether a bucket's KMS key id names the AWS-managed `aws/s3` key by its alias, either as
+ * `alias/aws/s3` or as an alias ARN.
+ *
+ * An alias ARN built from the stack's partition, Region or account is a token, as it is for
+ * `kms.Alias.fromAliasName()`. It resolves to an `Fn::Join` whose literal tail still ends with
+ * the alias name, so that tail is checked instead.
+ */
+function namesAwsManagedS3Key(bucket: s3.IBucket, kmsMasterKeyId: string): boolean {
+  const AWS_MANAGED_ALIAS = 'alias/aws/s3';
+  if (!cdk.Token.isUnresolved(kmsMasterKeyId)) {
+    return kmsMasterKeyId.endsWith(AWS_MANAGED_ALIAS);
+  }
+  const resolved = cdk.Stack.of(bucket).resolve(kmsMasterKeyId);
+  const parts = resolved?.['Fn::Join']?.[1];
+  const last = Array.isArray(parts) ? parts[parts.length - 1] : undefined;
+  return typeof last === 'string' && last.endsWith(AWS_MANAGED_ALIAS);
+}
+
 function validateBucketEncryption(bucket: s3.IBucket, factory: string): string[] {
   const cfnBucket = bucket.node.defaultChild;
   if (!s3.CfnBucket.isCfnBucket(cfnBucket)) {
@@ -684,10 +703,12 @@ function validateBucketEncryption(bucket: s3.IBucket, factory: string): string[]
       continue;
     }
 
-    // A key id means a customer managed key, whose policy can be granted on. Its absence
-    // under a KMS algorithm means the AWS-managed key, covering both `KMS_MANAGED`
-    // (`aws:kms`) and `DSSE_MANAGED` (`aws:kms:dsse`).
-    if (sseAlgorithm.startsWith('aws:kms') && kmsMasterKeyId === undefined) {
+    // Under a KMS algorithm, no key id means the AWS-managed key, covering both `KMS_MANAGED`
+    // (`aws:kms`) and `DSSE_MANAGED` (`aws:kms:dsse`). The same key can also be named
+    // explicitly through its alias. Any other key id is taken to be a customer managed key,
+    // whose policy can be granted on; the AWS-managed key's own key ARN cannot be recognized.
+    if (sseAlgorithm.startsWith('aws:kms') &&
+      (kmsMasterKeyId === undefined || namesAwsManagedS3Key(bucket, kmsMasterKeyId))) {
       return [
         `The bucket '${bucket.node.path}' used with WebFunctionCode.${factory}() is encrypted with an ` +
         'AWS-managed KMS key, whose key policy cannot be modified to authorize lambda.amazonaws.com to read ' +
