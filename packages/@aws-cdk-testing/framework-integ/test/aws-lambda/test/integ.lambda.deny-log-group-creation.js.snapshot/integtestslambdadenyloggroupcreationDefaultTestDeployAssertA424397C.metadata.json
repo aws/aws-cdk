@@ -15,8 +15,12 @@
         "App.synth (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
         "process.<anonymous> (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:164:51)",
         "process.wrapper (node:events:639:12)",
-        "process.emit (node:events:514:20)"
+        "process.emit (node:events:514:28)"
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestslambdadenyloggroupcreationDefaultTestDeployAssertA424397C.template.json"
     }
   ],
   "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -69,7 +73,7 @@
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
     }
   ],
-  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMgetRolePolicyb530938c8643d95c4991de1427987fa7/Default": [
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy21c95309c14d65028e7f990d3d58b755/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -83,10 +87,50 @@
       "data": "*"
     }
   ],
-  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMgetRolePolicyb530938c8643d95c4991de1427987fa7/AssertionResults": [
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy21c95309c14d65028e7f990d3d58b755/AssertionResults": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssertionResultsAwsApiCallIAMgetRolePolicyb530938c8643d95c4991de1427987fa7"
+      "data": "AssertionResultsAwsApiCallIAMsimulatePrincipalPolicy21c95309c14d65028e7f990d3d58b755"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy239e15238996a7cb2dd663ad25ef8380/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy239e15238996a7cb2dd663ad25ef8380/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallIAMsimulatePrincipalPolicy239e15238996a7cb2dd663ad25ef8380"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy4951491757bd265f1c78fac259b29d46/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy4951491757bd265f1c78fac259b29d46/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallIAMsimulatePrincipalPolicy4951491757bd265f1c78fac259b29d46"
     }
   ],
   "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
@@ -95,10 +139,22 @@
       "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
     }
   ],
-  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMgetRolePolicyb530938c8643d95c4991de1427987fa7/Default/Default": [
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy21c95309c14d65028e7f990d3d58b755/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AwsApiCallIAMgetRolePolicyb530938c8643d95c4991de1427987fa7"
+      "data": "AwsApiCallIAMsimulatePrincipalPolicy21c95309c14d65028e7f990d3d58b755"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy239e15238996a7cb2dd663ad25ef8380/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallIAMsimulatePrincipalPolicy239e15238996a7cb2dd663ad25ef8380"
+    }
+  ],
+  "/integ-tests-lambda-deny-log-group-creation/DefaultTest/DeployAssert/AwsApiCallIAMsimulatePrincipalPolicy4951491757bd265f1c78fac259b29d46/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallIAMsimulatePrincipalPolicy4951491757bd265f1c78fac259b29d46"
     }
   ]
 }

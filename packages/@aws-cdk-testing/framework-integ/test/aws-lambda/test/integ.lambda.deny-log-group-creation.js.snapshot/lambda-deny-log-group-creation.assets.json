@@ -1,16 +1,16 @@
 {
   "version": "54.0.0",
   "files": {
-    "a2080dff3b43bb7e3c5e2ccfa2a6e342fcc09b810363a7f0f8ad6fd381fe5ca6": {
+    "ea556aeacfad12c77986613a62cb5a53f4dc22c3113c39ebf598bcb42941bc5c": {
       "displayName": "lambda-deny-log-group-creation Template",
       "source": {
         "path": "lambda-deny-log-group-creation.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-54da9d59": {
+        "current_account-current_region-8f776629": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a2080dff3b43bb7e3c5e2ccfa2a6e342fcc09b810363a7f0f8ad6fd381fe5ca6.json",
+          "objectKey": "ea556aeacfad12c77986613a62cb5a53f4dc22c3113c39ebf598bcb42941bc5c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

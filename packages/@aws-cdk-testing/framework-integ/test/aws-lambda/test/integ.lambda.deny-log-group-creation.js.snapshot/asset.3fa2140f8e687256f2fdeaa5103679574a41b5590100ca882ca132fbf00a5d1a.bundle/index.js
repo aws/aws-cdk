@@ -8478,7 +8478,7 @@ var init_legacy_moved = __esm({
 });
 
 // ../../aws-cdk-lib/cx-api/lib/cxapi.ts
-var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT;
+var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT, CDK_TEMPLATE_FILE_KEY;
 var init_cxapi = __esm({
   "../../aws-cdk-lib/cx-api/lib/cxapi.ts"() {
     "use strict";
@@ -8493,6 +8493,7 @@ var init_cxapi = __esm({
     STRICT_CFN_VALIDATE_ERRORS = "@aws-cdk/core:strictCfnValidateErrors";
     CDK_APP_MODE_ENV = "CDK_APP_MODE";
     CDK_APP_MODE_CONTEXT = "@aws-cdk/core:appMode";
+    CDK_TEMPLATE_FILE_KEY = "aws:cdk:templateFile";
   }
 });
 
@@ -8511,7 +8512,7 @@ function futureFlagDefault(flag) {
   }
   return value;
 }
-var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
+var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, LAMBDA_DENY_LOG_GROUP_CREATION, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
 var init_features = __esm({
   "../../aws-cdk-lib/cx-api/lib/features.ts"() {
     "use strict";
@@ -8560,6 +8561,7 @@ var init_features = __esm({
     ENABLE_EMR_SERVICE_POLICY_V2 = "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2";
     EC2_RESTRICT_DEFAULT_SECURITY_GROUP = "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup";
     APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = "@aws-cdk/aws-apigateway:requestValidatorUniqueId";
+    APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard";
     INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = "@aws-cdk/core:includePrefixInUniqueNameGeneration";
     KMS_ALIAS_NAME_REF = "@aws-cdk/aws-kms:aliasNameRef";
     KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal";
@@ -8627,6 +8629,7 @@ var init_features = __esm({
     VALIDATE_AGAINST_DEFAULT_RULES = "@aws-cdk/core:validateAgainstDefaultRules";
     ECS_REMOVE_EMPTY_LOAD_BALANCERS = "@aws-cdk/aws-ecs:removeEmptyLoadBalancers";
     CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps";
+    LAMBDA_DENY_LOG_GROUP_CREATION = "@aws-cdk/aws-lambda:denyLogGroupCreation";
     FLAGS = {
       //////////////////////////////////////////////////////////////////////
       [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
@@ -10335,6 +10338,53 @@ var init_features = __esm({
         recommendedValue: true,
         unconfiguredBehavesLike: { v2: false },
         compatibilityWithOldBehaviorMd: "Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+        type: 1 /* BugFix */,
+        summary: "Render the API Gateway access log destination ARN without the trailing `:*`",
+        detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+        introducedIn: { v2: "V2NEXT" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false },
+        compatibilityWithOldBehaviorMd: "Disable this flag to keep using the log group `Arn` attribute as the destination ARN."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [LAMBDA_DENY_LOG_GROUP_CREATION]: {
+        type: 1 /* BugFix */,
+        summary: "Deny `logs:CreateLogGroup` to the default role of a Lambda function whose log group is in the app",
+        detailsMd: `
+      Lambda delivers an invocation's logs a few seconds after the invocation ends, using the
+      function's execution role. When the stack is deleted, the function's log group can be deleted
+      before those logs arrive, and the delivery then creates the log group again outside the stack:
+      it never expires, and when it has a fixed name, the next deployment of the stack fails because
+      the log group already exists.
+
+      When this flag is enabled and CDK creates the function's role, the role gets an inline policy
+      that denies \`logs:CreateLogGroup\` on the function's log group if it is defined in the app:
+      either a \`LogGroup\` passed as \`logGroup\`, or the log group created by
+      \`@aws-cdk/aws-lambda:useCdkManagedLogGroup\`. Logs delivered after the log group is deleted are
+      then dropped instead of recreating it. Other log groups the role may create, such as Lambda
+      Insights' \`/aws/lambda-insights\`, are unaffected. When the function has no literal
+      \`functionName\`, the managed log group's name is not known to the role, so the deny covers
+      \`/aws/lambda/*\`.
+
+      A role passed as \`role\`, an imported log group, \`logRetention\`, and functions that leave the log
+      group to Lambda are not affected, since Lambda may need to create the log group in those cases.`,
+        introducedIn: { v2: "V2NEXT" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false }
       }
     };
     CURRENT_MV = "v2";
@@ -77164,7 +77214,7 @@ function* iterateDfsPreorder(root) {
     next = stack.pop();
   }
 }
-function* iterateStackCfnResources(root) {
+function* iterateTemplateCfnResources(root) {
   const stack = [root];
   let next = stack.pop();
   while (next) {
@@ -77780,7 +77830,7 @@ function* dependingResourcesFor(construct) {
     yield construct.construct.nestedStackResource;
   }
   if (construct.type === "construct") {
-    yield* iterateStackCfnResources(construct.construct);
+    yield* iterateTemplateCfnResources(construct.construct);
   }
 }
 function dependencyContainerPath(start) {
@@ -77933,270 +77983,6 @@ var init_prepare_app = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/tree.ts
-var TreeInspector;
-var init_tree = __esm({
-  "../../aws-cdk-lib/core/lib/tree.ts"() {
-    "use strict";
-    TreeInspector = class {
-      /**
-       * Represents the bag of attributes as key-value pairs.
-       */
-      attributes = {};
-      /**
-       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
-       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
-       *
-       * @param key - key for metadata
-       * @param value - value of metadata.
-       */
-      addAttribute(key, value) {
-        this.attributes[key] = value;
-      }
-    };
-  }
-});
-
-// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
-function nodeCount(root) {
-  let count2 = 0;
-  const stack = [root];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    count2 += 1;
-    if (current.children) {
-      for (const child of Object.values(current.children)) {
-        stack.push(child);
-      }
-    }
-  }
-  return count2;
-}
-function setChild(parent, node) {
-  if (!parent.children) {
-    parent.children = {};
-  }
-  parent.children[node.id] = node;
-}
-var fs10, path13, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
-var init_tree_metadata = __esm({
-  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
-    "use strict";
-    fs10 = __toESM(require("fs"));
-    path13 = __toESM(require("path"));
-    import_constructs16 = __toESM(require_lib4());
-    init_runtime_info();
-    init_cloud_assembly_schema();
-    init_annotations();
-    init_tree();
-    init_construct_iteration();
-    init_errors();
-    init_core_construct_finders();
-    init_literal_string();
-    FILE_PATH = "tree.json";
-    TreeMetadata = class extends import_constructs16.Construct {
-      constructor(scope) {
-        super(scope, "Tree");
-      }
-      /**
-       * Create tree.json
-       * @internal
-       */
-      _synthesizeTree(session) {
-        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
-        const builder = session.assembly;
-        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
-        for (const { construct, parent } of iterateBfs(this.node.root)) {
-          const node = {
-            id: construct.node.id || "App",
-            path: construct.node.path,
-            constructInfo: constructInfoFromConstruct(construct)
-          };
-          try {
-            node.attributes = this.synthAttributes(construct);
-          } catch (e) {
-            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
-          }
-          writer.addNode(construct, parent, node);
-        }
-        const rootFilename = writer.writeForest();
-        builder.addArtifact("Tree", {
-          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
-          properties: {
-            file: rootFilename
-          }
-        });
-      }
-      synthAttributes(construct) {
-        function canInspect2(inspectable) {
-          return inspectable.inspect !== void 0;
-        }
-        const inspector = new TreeInspector();
-        if (canInspect2(construct)) {
-          construct.inspect(inspector);
-          return stackOf(construct).resolve(inspector.attributes);
-        }
-        return void 0;
-      }
-    };
-    FragmentedTreeWriter = class {
-      constructor(outdir, rootFilename, options) {
-        this.outdir = outdir;
-        this.rootFilename = rootFilename;
-        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
-      }
-      outdir;
-      rootFilename;
-      /**
-       * We only care about the identify of this object.
-       *
-       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
-       */
-      mainTreePointer = {
-        fileName: "yyy",
-        id: "id",
-        path: "path"
-      };
-      forest = new Array();
-      /**
-       * Maps a Construct to its respective Node
-       */
-      constructMap = /* @__PURE__ */ new Map();
-      /**
-       * Map a root Node to its containing Tree
-       */
-      subtreeRoots = /* @__PURE__ */ new Map();
-      /**
-       * Map a Node to its parent Node
-       */
-      parent = /* @__PURE__ */ new Map();
-      maxNodes;
-      /**
-       * Write the forest to disk, return the root file name
-       */
-      writeForest() {
-        const forestFiles = this.allocateSubTreesToForestFiles();
-        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
-        if (mainTree) {
-          const treeFile = { version: "tree-0.1", tree: mainTree.root };
-          fs10.writeFileSync(path13.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
-        }
-        for (const forestFile of forestFiles) {
-          fs10.writeFileSync(path13.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
-        }
-        return this.rootFilename;
-      }
-      /**
-       * Find all non-main tree and combine them into forest files
-       *
-       * This will mutate the pointing nodes as a side effect.
-       */
-      allocateSubTreesToForestFiles() {
-        const ret = new Array();
-        for (const tree of this.forest) {
-          if (tree.referencingNode === this.mainTreePointer) {
-            continue;
-          }
-          let targetForest;
-          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
-            targetForest = {
-              fileName: `trees-${ret.length + 1}.json`,
-              file: { version: "forest-0.1", forest: {} },
-              nodeCount: 0,
-              treeCount: 0
-            };
-            ret.push(targetForest);
-          } else {
-            targetForest = ret[ret.length - 1];
-          }
-          const treeId = `t${targetForest.treeCount++}`;
-          targetForest.file.forest[treeId] = tree.root;
-          targetForest.nodeCount += tree.nodes;
-          tree.referencingNode.fileName = targetForest.fileName;
-          tree.referencingNode.treeId = treeId;
-        }
-        return ret;
-      }
-      addNode(construct, parent, node) {
-        if (parent === void 0) {
-          if (this.forest.length > 0) {
-            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
-          }
-          this.addNewTree(node, this.mainTreePointer);
-        } else {
-          const parentNode = this.constructMap.get(parent);
-          if (!parentNode) {
-            return;
-          }
-          this.addToExistingTree(node, parentNode);
-        }
-        this.constructMap.set(construct, node);
-      }
-      /**
-       * Add a new tree with the given Node as root
-       */
-      addNewTree(root, referencingNode) {
-        const tree = {
-          root,
-          referencingNode,
-          nodes: nodeCount(root)
-        };
-        this.forest.push(tree);
-        this.subtreeRoots.set(root, tree);
-        return tree;
-      }
-      /**
-       * Add the given node to an existing tree, potentially splitting it
-       */
-      addToExistingTree(node, parent) {
-        let tree = this.treeForNode(parent);
-        if (this.isTreeFull(tree)) {
-          const grandParent = this.parent.get(parent);
-          if (!grandParent) {
-            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
-          }
-          const subtreeReference = {
-            id: parent.id,
-            path: parent.path,
-            fileName: "xxx"
-            // Will be replaced later
-          };
-          tree = this.addNewTree(parent, subtreeReference);
-          setChild(grandParent, subtreeReference);
-          this.subtreeRoots.set(parent, tree);
-        }
-        setChild(parent, node);
-        this.parent.set(node, parent);
-        tree.nodes += 1;
-      }
-      /**
-       * Whether the given tree is full
-       */
-      isTreeFull(t) {
-        return t.nodes >= this.maxNodes;
-      }
-      /**
-       * Return the Tree that contains the given Node
-       */
-      treeForNode(node) {
-        const tried = new Array();
-        let cur = node;
-        tried.push(cur.path);
-        let tree = this.subtreeRoots.get(cur);
-        while (!tree && cur) {
-          cur = this.parent.get(cur);
-          tried.push(cur?.path);
-          tree = cur && this.subtreeRoots.get(cur);
-        }
-        if (tree) {
-          return tree;
-        }
-        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
-      }
-    };
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/validation/private/validation-id.ts
 function parseValidationId(id) {
   let nsSeparator = void 0;
@@ -78281,7 +78067,7 @@ function collectAnnotationReport(root) {
       }
       let templatePath;
       try {
-        templatePath = path14.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
+        templatePath = path13.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
       } catch (e) {
       }
       const resourceLogicalId = CfnResource.isCfnResource(construct) ? stackOf(construct).resolve(construct.logicalId) : void 0;
@@ -78333,11 +78119,11 @@ function splitDescriptionAndId(message) {
   }
   return { message };
 }
-var path14, AnnotationPlugin;
+var path13, AnnotationPlugin;
 var init_annotation_plugin = __esm({
   "../../aws-cdk-lib/core/lib/private/annotation-plugin.ts"() {
     "use strict";
-    path14 = __toESM(require("path"));
+    path13 = __toESM(require("path"));
     init_construct_iteration();
     init_core_construct_finders();
     init_cloud_assembly_schema();
@@ -79679,22 +79465,22 @@ function mapSeverity(severity) {
   }
 }
 function defaultRegoRules() {
-  const rulesDir = path15.join(__dirname, "rules");
-  return fs11.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
+  const rulesDir = path14.join(__dirname, "rules");
+  return fs10.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
     name: f,
-    content: fs11.readFileSync(path15.join(rulesDir, f), "utf-8")
+    content: fs10.readFileSync(path14.join(rulesDir, f), "utf-8")
   }));
 }
 function isContainedWithin(root, child) {
-  const rel = path15.relative(root, child);
-  return !rel.startsWith("..") && !path15.isAbsolute(rel);
+  const rel = path14.relative(root, child);
+  return !rel.startsWith("..") && !path14.isAbsolute(rel);
 }
 function loadSchemasFromDirectory(dir) {
   const schemas = [];
-  if (!fs11.existsSync(dir)) {
+  if (!fs10.existsSync(dir)) {
     return schemas;
   }
-  const rootReal = fs11.realpathSync(dir);
+  const rootReal = fs10.realpathSync(dir);
   function walk(currentDir, depth) {
     if (depth > MAX_SCHEMA_DIRECTORY_DEPTH) {
       throw new UnscopedValidationError(
@@ -79702,9 +79488,9 @@ function loadSchemasFromDirectory(dir) {
         `[CloudFormation Validate] Schema directory exceeds maximum depth of ${MAX_SCHEMA_DIRECTORY_DEPTH}: ${currentDir}`
       );
     }
-    const entries = fs11.readdirSync(currentDir, { withFileTypes: true });
+    const entries = fs10.readdirSync(currentDir, { withFileTypes: true });
     for (const entry of entries) {
-      const fullPath = path15.join(currentDir, entry.name);
+      const fullPath = path14.join(currentDir, entry.name);
       if (entry.isSymbolicLink()) {
         throw new UnscopedValidationError(
           lit`SchemaLoadError`,
@@ -79712,7 +79498,7 @@ function loadSchemasFromDirectory(dir) {
         );
       }
       if (entry.isDirectory()) {
-        const resolved = fs11.realpathSync(fullPath);
+        const resolved = fs10.realpathSync(fullPath);
         if (!isContainedWithin(rootReal, resolved)) {
           throw new UnscopedValidationError(
             lit`SchemaLoadError`,
@@ -79721,7 +79507,7 @@ function loadSchemasFromDirectory(dir) {
         }
         walk(fullPath, depth + 1);
       } else if (entry.isFile() && entry.name.endsWith(".json")) {
-        const content = fs11.readFileSync(fullPath, "utf-8");
+        const content = fs10.readFileSync(fullPath, "utf-8");
         let parsed;
         try {
           parsed = JSON.parse(content);
@@ -79752,12 +79538,12 @@ function loadSchemasFromDirectory(dir) {
   }
   return schemas;
 }
-var fs11, path15, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
+var fs10, path14, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
 var init_cloudformation_validate_plugin = __esm({
   "../../aws-cdk-lib/core/lib/validation/cloudformation-validate-plugin.ts"() {
     "use strict";
-    fs11 = __toESM(require("fs"));
-    path15 = __toESM(require("path"));
+    fs10 = __toESM(require("fs"));
+    path14 = __toESM(require("path"));
     import_cloudformation_validate = __toESM(require_cloudformation_validate());
     init_errors();
     init_literal_string();
@@ -79904,16 +79690,17 @@ var init_cloudformation_validate_plugin = __esm({
               templatePath,
               locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : []
             };
-            const existing = violations.find(
-              (v) => v.ruleName === diagnostic.ruleId && v.severity === severity
-            );
             const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, "")}: ` : "";
+            const description = `${propertyPathPefix}${diagnostic.message}`;
+            const existing = violations.find(
+              (v) => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description
+            );
             if (existing) {
               existing.violatingResources.push(violatingResource);
             } else {
               violations.push({
                 ruleName: diagnostic.ruleId,
-                description: `${propertyPathPefix}${diagnostic.message}`,
+                description,
                 severity,
                 fix: diagnostic.suggestedFix,
                 violatingResources: [violatingResource],
@@ -79965,13 +79752,13 @@ function propertyAssignmentMatchesPropertyPath(meta, propertyPath) {
   return propertyPath === `Properties.${meta.data.propertyName}` || propertyPath.startsWith(`Properties.${meta.data.propertyName}.`);
 }
 function isPropertyMutationMetadataEntry(entry) {
-  return entry.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
+  return entry.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
 }
-var import_cloud_assembly_schema3, ConstructTree, STACK_TRACE_HINT;
+var import_cloud_assembly_schema2, ConstructTree, STACK_TRACE_HINT;
 var init_construct_tree = __esm({
   "../../aws-cdk-lib/core/lib/validation/private/construct-tree.ts"() {
     "use strict";
-    import_cloud_assembly_schema3 = __toESM(require_lib2());
+    import_cloud_assembly_schema2 = __toESM(require_lib2());
     init_app2();
     init_cfn_resource();
     init_construct_iteration();
@@ -80087,7 +79874,7 @@ var init_construct_tree = __esm({
        * Returns a stack trace if stack trace information is found, or `undefined` if not.
        */
       creationTrace(construct) {
-        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
+        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
       }
       mutationTracesByPath(constructPath, propertyPath) {
         const construct = this.getConstructByPath(constructPath);
@@ -80593,11 +80380,11 @@ function validateTemplates(root, outdir, assembly) {
     const suppressedByReport = collectSuppressions(root, reports);
     const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
     const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
-    const reportFile = path17.join(assembly.directory, VALIDATION_REPORT_FILE);
-    fs12.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
+    const reportFile = path16.join(assembly.directory, VALIDATION_REPORT_FILE);
+    fs11.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
     if (getBooleanContext(root, VALIDATION_REPORT_JSON_CONTEXT, false)) {
-      fs12.writeFileSync(
-        path17.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+      fs11.writeFileSync(
+        path16.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
         JSON.stringify(formatter.formatLegacyJson(reports), void 0, 2)
       );
     }
@@ -80706,7 +80493,7 @@ function inferConstructPathsFromLogicalIds(reports, tree) {
       for (const resource of violation.violatingResources) {
         if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
           mutable(resource).constructPath = tree.getConstructByLogicalId(
-            path17.basename(resource.templatePath),
+            path16.basename(resource.templatePath),
             resource.resourceLogicalId
           )?.node.path;
         }
@@ -80854,7 +80641,7 @@ function doInvokeValidationPlugins(outdir, plugins, root) {
     for (const v of report.violations) {
       for (const r of v.violatingResources) {
         if (r.templatePath) {
-          mutable(r).templatePath = path17.relative(outdir, path17.resolve(r.templatePath));
+          mutable(r).templatePath = path16.relative(outdir, path16.resolve(r.templatePath));
         }
       }
     }
@@ -80901,8 +80688,8 @@ function hasModifiedPreExistingFiles(snapshot) {
 function collectFilePaths(dir) {
   const results = [];
   function walk(current) {
-    for (const entry of fs12.readdirSync(current, { withFileTypes: true })) {
-      const full = path17.join(current, entry.name);
+    for (const entry of fs11.readdirSync(current, { withFileTypes: true })) {
+      const full = path16.join(current, entry.name);
       if (entry.isDirectory()) {
         walk(full);
       } else if (entry.isFile()) {
@@ -80910,7 +80697,7 @@ function collectFilePaths(dir) {
       } else if (entry.isSymbolicLink()) {
         let st;
         try {
-          st = fs12.lstatSync(full);
+          st = fs11.lstatSync(full);
         } catch {
           continue;
         }
@@ -80924,12 +80711,12 @@ function collectFilePaths(dir) {
   return results;
 }
 function hashFile(filePath) {
-  const content = fs12.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs12.readlinkSync(filePath)) : fs12.readFileSync(filePath);
+  const content = fs11.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs11.readlinkSync(filePath)) : fs11.readFileSync(filePath);
   return crypto7.createHash("sha256").update(content).digest("hex");
 }
 function fileOrSymlinkExists(p) {
   try {
-    fs12.lstatSync(p);
+    fs11.lstatSync(p);
     return true;
   } catch {
     return false;
@@ -80969,13 +80756,13 @@ function cdkAppMode(root) {
   }
   return "unknown";
 }
-var crypto7, fs12, path17, LEGACY_POLICY_VALIDATION_FILE_PATH;
+var crypto7, fs11, path16, LEGACY_POLICY_VALIDATION_FILE_PATH;
 var init_synthesis_validation = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis-validation.ts"() {
     "use strict";
     crypto7 = __toESM(require("crypto"));
-    fs12 = __toESM(require("fs"));
-    path17 = __toESM(require("path"));
+    fs11 = __toESM(require("fs"));
+    path16 = __toESM(require("path"));
     init_annotation_plugin();
     init_collect_acknowledged_rule_ids();
     init_literal_string();
@@ -80992,6 +80779,270 @@ var init_synthesis_validation = __esm({
     init_report2();
     init_validation_id();
     LEGACY_POLICY_VALIDATION_FILE_PATH = "policy-validation-report.json";
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/tree.ts
+var TreeInspector;
+var init_tree = __esm({
+  "../../aws-cdk-lib/core/lib/tree.ts"() {
+    "use strict";
+    TreeInspector = class {
+      /**
+       * Represents the bag of attributes as key-value pairs.
+       */
+      attributes = {};
+      /**
+       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
+       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
+       *
+       * @param key - key for metadata
+       * @param value - value of metadata.
+       */
+      addAttribute(key, value) {
+        this.attributes[key] = value;
+      }
+    };
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
+function nodeCount(root) {
+  let count2 = 0;
+  const stack = [root];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    count2 += 1;
+    if (current.children) {
+      for (const child of Object.values(current.children)) {
+        stack.push(child);
+      }
+    }
+  }
+  return count2;
+}
+function setChild(parent, node) {
+  if (!parent.children) {
+    parent.children = {};
+  }
+  parent.children[node.id] = node;
+}
+var fs12, path17, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
+var init_tree_metadata = __esm({
+  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
+    "use strict";
+    fs12 = __toESM(require("fs"));
+    path17 = __toESM(require("path"));
+    import_constructs16 = __toESM(require_lib4());
+    init_runtime_info();
+    init_cloud_assembly_schema();
+    init_annotations();
+    init_tree();
+    init_construct_iteration();
+    init_errors();
+    init_core_construct_finders();
+    init_literal_string();
+    FILE_PATH = "tree.json";
+    TreeMetadata = class extends import_constructs16.Construct {
+      constructor(scope) {
+        super(scope, "Tree");
+      }
+      /**
+       * Create tree.json
+       * @internal
+       */
+      _synthesizeTree(session) {
+        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
+        const builder = session.assembly;
+        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
+        for (const { construct, parent } of iterateBfs(this.node.root)) {
+          const node = {
+            id: construct.node.id || "App",
+            path: construct.node.path,
+            constructInfo: constructInfoFromConstruct(construct)
+          };
+          try {
+            node.attributes = this.synthAttributes(construct);
+          } catch (e) {
+            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
+          }
+          writer.addNode(construct, parent, node);
+        }
+        const rootFilename = writer.writeForest();
+        builder.addArtifact("Tree", {
+          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
+          properties: {
+            file: rootFilename
+          }
+        });
+      }
+      synthAttributes(construct) {
+        function canInspect2(inspectable) {
+          return inspectable.inspect !== void 0;
+        }
+        const inspector = new TreeInspector();
+        if (canInspect2(construct)) {
+          construct.inspect(inspector);
+          return stackOf(construct).resolve(inspector.attributes);
+        }
+        return void 0;
+      }
+    };
+    FragmentedTreeWriter = class {
+      constructor(outdir, rootFilename, options) {
+        this.outdir = outdir;
+        this.rootFilename = rootFilename;
+        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
+      }
+      outdir;
+      rootFilename;
+      /**
+       * We only care about the identify of this object.
+       *
+       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
+       */
+      mainTreePointer = {
+        fileName: "yyy",
+        id: "id",
+        path: "path"
+      };
+      forest = new Array();
+      /**
+       * Maps a Construct to its respective Node
+       */
+      constructMap = /* @__PURE__ */ new Map();
+      /**
+       * Map a root Node to its containing Tree
+       */
+      subtreeRoots = /* @__PURE__ */ new Map();
+      /**
+       * Map a Node to its parent Node
+       */
+      parent = /* @__PURE__ */ new Map();
+      maxNodes;
+      /**
+       * Write the forest to disk, return the root file name
+       */
+      writeForest() {
+        const forestFiles = this.allocateSubTreesToForestFiles();
+        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
+        if (mainTree) {
+          const treeFile = { version: "tree-0.1", tree: mainTree.root };
+          fs12.writeFileSync(path17.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
+        }
+        for (const forestFile of forestFiles) {
+          fs12.writeFileSync(path17.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
+        }
+        return this.rootFilename;
+      }
+      /**
+       * Find all non-main tree and combine them into forest files
+       *
+       * This will mutate the pointing nodes as a side effect.
+       */
+      allocateSubTreesToForestFiles() {
+        const ret = new Array();
+        for (const tree of this.forest) {
+          if (tree.referencingNode === this.mainTreePointer) {
+            continue;
+          }
+          let targetForest;
+          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
+            targetForest = {
+              fileName: `trees-${ret.length + 1}.json`,
+              file: { version: "forest-0.1", forest: {} },
+              nodeCount: 0,
+              treeCount: 0
+            };
+            ret.push(targetForest);
+          } else {
+            targetForest = ret[ret.length - 1];
+          }
+          const treeId = `t${targetForest.treeCount++}`;
+          targetForest.file.forest[treeId] = tree.root;
+          targetForest.nodeCount += tree.nodes;
+          tree.referencingNode.fileName = targetForest.fileName;
+          tree.referencingNode.treeId = treeId;
+        }
+        return ret;
+      }
+      addNode(construct, parent, node) {
+        if (parent === void 0) {
+          if (this.forest.length > 0) {
+            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
+          }
+          this.addNewTree(node, this.mainTreePointer);
+        } else {
+          const parentNode = this.constructMap.get(parent);
+          if (!parentNode) {
+            return;
+          }
+          this.addToExistingTree(node, parentNode);
+        }
+        this.constructMap.set(construct, node);
+      }
+      /**
+       * Add a new tree with the given Node as root
+       */
+      addNewTree(root, referencingNode) {
+        const tree = {
+          root,
+          referencingNode,
+          nodes: nodeCount(root)
+        };
+        this.forest.push(tree);
+        this.subtreeRoots.set(root, tree);
+        return tree;
+      }
+      /**
+       * Add the given node to an existing tree, potentially splitting it
+       */
+      addToExistingTree(node, parent) {
+        let tree = this.treeForNode(parent);
+        if (this.isTreeFull(tree)) {
+          const grandParent = this.parent.get(parent);
+          if (!grandParent) {
+            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
+          }
+          const subtreeReference = {
+            id: parent.id,
+            path: parent.path,
+            fileName: "xxx"
+            // Will be replaced later
+          };
+          tree = this.addNewTree(parent, subtreeReference);
+          setChild(grandParent, subtreeReference);
+          this.subtreeRoots.set(parent, tree);
+        }
+        setChild(parent, node);
+        this.parent.set(node, parent);
+        tree.nodes += 1;
+      }
+      /**
+       * Whether the given tree is full
+       */
+      isTreeFull(t) {
+        return t.nodes >= this.maxNodes;
+      }
+      /**
+       * Return the Tree that contains the given Node
+       */
+      treeForNode(node) {
+        const tried = new Array();
+        let cur = node;
+        tried.push(cur.path);
+        let tree = this.subtreeRoots.get(cur);
+        while (!tree && cur) {
+          cur = this.parent.get(cur);
+          tried.push(cur?.path);
+          tree = cur && this.subtreeRoots.get(cur);
+        }
+        if (tree) {
+          return tree;
+        }
+        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+      }
+    };
   }
 });
 
@@ -81206,18 +81257,18 @@ var init_synthesis = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis.ts"() {
     "use strict";
     private_cxapi = __toESM(require_lib3());
+    init_core_construct_finders();
     init_feature_flag_report();
     init_literal_string();
     init_metadata_resource2();
     init_prepare_app();
+    init_synthesis_validation();
     init_tree_metadata();
     init_legacy_moved();
     init_annotations();
     init_app2();
     init_aspect();
     init_errors();
-    init_core_construct_finders();
-    init_synthesis_validation();
     CUSTOM_SYNTHESIS_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core:customSynthesis");
   }
 });
@@ -82415,7 +82466,7 @@ function collectStackMetadata(stack) {
   const queue = [stack];
   let next;
   while (next = queue.shift()) {
-    if (STACK_TYPE.isMarked(next) && next !== stack && next.nestedStackParent === void 0) {
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
       continue;
     }
     handleNode(next);
@@ -84538,6 +84589,7 @@ var init_stack = __esm({
        */
       _synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions) {
         const builder = session.assembly;
+        this.node.addMetadata(CDK_TEMPLATE_FILE_KEY, this.templateFile);
         const template = this._toCloudFormation();
         const outPath = path21.join(builder.outdir, this.templateFile);
         if (this.maxResources > 0) {
@@ -84718,6 +84770,40 @@ var init_stack = __esm({
           throw new ValidationError(lit`ExportedStringValueFromExportStringListValue`, "Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead", this);
         }
         return importValue;
+      }
+      /**
+       * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
+       *
+       * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
+       * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
+       * is `CloudFormationProduct`.
+       *
+       * This indicates whether the current class represents a top-level stack
+       * (should only be true for instances of the main `Stack` class), or false for
+       * a construct that simply produces a template and happens to reuse `Stack`
+       * for that purpose.
+       *
+       * Here is the class hierarchy we should have had:
+       *
+       * ```
+       * TemplateProducer
+       * ├── Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * Here is the class hierarchy we actually have:
+       *
+       * ```
+       * Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * @internal
+       */
+      get _isTopLevelStack() {
+        return true;
       }
       /**
        * Returns the naming scheme used to allocate logical IDs. By default, uses
@@ -85781,6 +85867,7 @@ var init_tag_manager = __esm({
     init_errors();
     init_lazy();
     init_literal_string();
+    init_token();
     TAG_MANAGER_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core.TagManager");
     StandardFormatter = class {
       parseTags(cfnPropertyTags, priority) {
@@ -85985,6 +86072,15 @@ var init_tag_manager = __esm({
         }
         this.parseExternalTags(combineWithTags);
         const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+        if (isResolvableObject(this.dynamicTags)) {
+          if (this.tags.size > 0) {
+            throw new UnscopedValidationError(
+              lit`CombineTagsIntrinsicWithLiteral`,
+              "Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). Remove the literal tags or resolve the intrinsic at the property level."
+            );
+          }
+          return this.dynamicTags;
+        }
         if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
           const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
           return ret.length > 0 ? ret : void 0;
@@ -86042,6 +86138,10 @@ var init_tag_manager = __esm({
        */
       parseExternalTags(initialTags) {
         if (initialTags !== void 0) {
+          if (isResolvableObject(initialTags)) {
+            this.dynamicTags = initialTags;
+            return;
+          }
           const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
           this.dynamicTags = parseTagsResult.dynamicTags;
           this._setTag(...parseTagsResult.tags);

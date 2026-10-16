@@ -4,7 +4,8 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Stack verification steps:
- * * The function's role has an inline policy that denies `logs:CreateLogGroup`.
+ * * The function's role is denied `logs:CreateLogGroup` on its log group, in both ARN forms.
+ * * The function's role can still create other log groups, such as Lambda Insights'.
  * * The function still runs and logs to the log group CDK manages for it.
  */
 const app = new cdk.App({
@@ -30,9 +31,23 @@ integ.assertions.invokeFunction({ functionName: fn.functionName }).expect(Expect
   StatusCode: 200,
 }));
 
-integ.assertions.awsApiCall('IAM', 'getRolePolicy', {
-  RoleName: fn.role!.roleName,
-  PolicyName: 'DenyLogGroupCreation',
-}).expect(ExpectedResult.objectLike({
-  PolicyName: 'DenyLogGroupCreation',
-}));
+const logGroupArn = (logGroupName: string) => stack.formatArn({
+  service: 'logs',
+  resource: 'log-group',
+  resourceName: logGroupName,
+  arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+});
+
+const expectCreateLogGroup = (resourceArn: string, decision: string) => {
+  integ.assertions.awsApiCall('IAM', 'simulatePrincipalPolicy', {
+    PolicySourceArn: fn.role!.roleArn,
+    ActionNames: ['logs:CreateLogGroup'],
+    ResourceArns: [resourceArn],
+  }).expect(ExpectedResult.objectLike({
+    EvaluationResults: [{ EvalActionName: 'logs:CreateLogGroup', EvalDecision: decision }],
+  }));
+};
+
+expectCreateLogGroup(logGroupArn(fn.logGroup.logGroupName), 'explicitDeny');
+expectCreateLogGroup(fn.logGroup.logGroupArn, 'explicitDeny');
+expectCreateLogGroup(logGroupArn('/aws/lambda-insights:*'), 'allowed');

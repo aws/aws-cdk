@@ -36,26 +36,48 @@
         {
          "Action": "logs:CreateLogGroup",
          "Effect": "Deny",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":logs:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":log-group:/aws/lambda/*"
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":logs:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":log-group:/aws/lambda/*"
+            ]
            ]
-          ]
-         }
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":logs:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":log-group:/aws/lambda/*:*"
+            ]
+           ]
+          }
+         ]
         }
        ],
        "Version": "2012-10-17"
@@ -113,12 +135,34 @@
     "Name": "lambda-deny-log-group-creation:ExportsOutputRefFunction76856677C48862D5"
    }
   },
-  "ExportsOutputRefFunctionServiceRole675BB04A6EC0B3E0": {
+  "ExportsOutputFnGetAttFunctionServiceRole675BB04AArnDBDBEBBF": {
    "Value": {
-    "Ref": "FunctionServiceRole675BB04A"
+    "Fn::GetAtt": [
+     "FunctionServiceRole675BB04A",
+     "Arn"
+    ]
    },
    "Export": {
-    "Name": "lambda-deny-log-group-creation:ExportsOutputRefFunctionServiceRole675BB04A6EC0B3E0"
+    "Name": "lambda-deny-log-group-creation:ExportsOutputFnGetAttFunctionServiceRole675BB04AArnDBDBEBBF"
+   }
+  },
+  "ExportsOutputRefFunctionLogGroup55B80E27151E9C09": {
+   "Value": {
+    "Ref": "FunctionLogGroup55B80E27"
+   },
+   "Export": {
+    "Name": "lambda-deny-log-group-creation:ExportsOutputRefFunctionLogGroup55B80E27151E9C09"
+   }
+  },
+  "ExportsOutputFnGetAttFunctionLogGroup55B80E27ArnF5F33674": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FunctionLogGroup55B80E27",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "lambda-deny-log-group-creation:ExportsOutputFnGetAttFunctionLogGroup55B80E27ArnF5F33674"
    }
   }
  },

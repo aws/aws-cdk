@@ -1,4 +1,10 @@
 {
+  "/lambda-deny-log-group-creation": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambda-deny-log-group-creation.template.json"
+    }
+  ],
   "/lambda-deny-log-group-creation/Function": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -58,10 +64,22 @@
       "data": "ExportsOutputRefFunction76856677C48862D5"
     }
   ],
-  "/lambda-deny-log-group-creation/Exports/Output{\"Ref\":\"FunctionServiceRole675BB04A\"}": [
+  "/lambda-deny-log-group-creation/Exports/Output{\"Fn::GetAtt\":[\"FunctionServiceRole675BB04A\",\"Arn\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefFunctionServiceRole675BB04A6EC0B3E0"
+      "data": "ExportsOutputFnGetAttFunctionServiceRole675BB04AArnDBDBEBBF"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Exports/Output{\"Ref\":\"FunctionLogGroup55B80E27\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunctionLogGroup55B80E27151E9C09"
+    }
+  ],
+  "/lambda-deny-log-group-creation/Exports/Output{\"Fn::GetAtt\":[\"FunctionLogGroup55B80E27\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttFunctionLogGroup55B80E27ArnF5F33674"
     }
   ],
   "/lambda-deny-log-group-creation/Function/ServiceRole/Resource": [
