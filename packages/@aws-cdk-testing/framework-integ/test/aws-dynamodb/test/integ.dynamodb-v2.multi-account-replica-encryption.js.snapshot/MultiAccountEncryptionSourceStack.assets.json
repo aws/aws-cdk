@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "39f441dfc50c60f63cc851bf22b4eb19273260f32e92f632cebdc9c319b04efd": {
+      "displayName": "MultiAccountEncryptionSourceStack Template",
+      "source": {
+        "path": "MultiAccountEncryptionSourceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-eu-west-1-993f1463": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-eu-west-1",
+          "objectKey": "39f441dfc50c60f63cc851bf22b4eb19273260f32e92f632cebdc9c319b04efd.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,48 @@
+{
+  "/MultiAccountEncryptionReplicaStack/ReplicaKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MultiAccountEncryptionReplicaStack/ReplicaTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "ReplicaTable7C58B8D7"
+      }
+    }
+  ],
+  "/MultiAccountEncryptionReplicaStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MultiAccountEncryptionReplicaStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MultiAccountEncryptionReplicaStack/ReplicaKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicaKey4DE8F013"
+    }
+  ],
+  "/MultiAccountEncryptionReplicaStack/ReplicaTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicaTable7C58B8D7"
+    }
+  ]
+}
