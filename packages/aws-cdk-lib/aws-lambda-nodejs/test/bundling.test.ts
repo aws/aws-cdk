@@ -1815,7 +1815,6 @@ function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }
 
-
 test('repeated esbuild arguments use separate shell-escaped Docker arguments', () => {
   const bundler = new Bundling(stack, {
     entry,

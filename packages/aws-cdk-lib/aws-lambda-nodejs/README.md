@@ -296,12 +296,14 @@ value becomes a separate CLI argument; an empty array omits the option. Options
 such as `--alias` use esbuild's colon syntax:
 
 ```ts
+const esbuildArgs = {
+  '--alias': ['first=./first', 'second=./second'],
+  '--pure': ['console.log', 'console.debug'],
+};
+
 new nodejs.NodejsFunction(this, 'aliased-handler', {
   bundling: {
-    esbuildArgs: {
-      '--alias': ['first=./first', 'second=./second'],
-      '--pure': ['console.log', 'console.debug'],
-    },
+    esbuildArgs,
   },
 });
 ```
