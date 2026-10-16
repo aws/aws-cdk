@@ -6410,11 +6410,11 @@ describe('cluster', () => {
 });
 
 test.each([
-  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain', true],
-  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'RetainExceptOnCreate', 'Retain', true],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent(), Match.absent()],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent(), Match.absent()],
-])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue, deletionProtectionValue) => {
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain', 'Retain', 'Retain', true],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'Retain', 'RetainExceptOnCreate', 'Retain', 'Retain', true],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Snapshot', 'Delete', 'Delete', Match.absent(), Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', 'Delete', 'Delete', Match.absent(), Match.absent()],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterDeletionPolicy, clusterUpdateReplacePolicy, instanceDeletionPolicy, instanceUpdateReplacePolicy, subnetValue, deletionProtectionValue) => {
   const stack = new cdk.Stack();
 
   // WHEN
@@ -6434,13 +6434,13 @@ test.each([
   });
 
   Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
-    DeletionPolicy: clusterValue,
-    UpdateReplacePolicy: clusterValue,
+    DeletionPolicy: clusterDeletionPolicy,
+    UpdateReplacePolicy: clusterUpdateReplacePolicy,
   });
 
   Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
-    DeletionPolicy: instanceValue,
-    UpdateReplacePolicy: instanceValue,
+    DeletionPolicy: instanceDeletionPolicy,
+    UpdateReplacePolicy: instanceUpdateReplacePolicy,
   });
 
   Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
