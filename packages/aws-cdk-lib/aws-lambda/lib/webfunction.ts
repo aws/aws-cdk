@@ -66,9 +66,11 @@ export enum WebFunctionAuthType {
 /**
  * Predefined region groups for use with WebFunctionReplicaRegions
  *
- * Each group is a fixed list as of this version of the library. Regions the service adds later
- * are not included until the library is updated; to cover a newly launched region, list the
- * regions explicitly.
+ * Group membership is fixed by the installed version of `aws-cdk-lib`. A region launched
+ * after that version only appears in a group once you upgrade `aws-cdk-lib`, and nothing
+ * reports it in the meantime. The same applies when you exclude regions from a group: "all
+ * regions except X" built that way does not include a newly launched region either. To cover
+ * one, upgrade `aws-cdk-lib` or list the regions explicitly; explicit lists are unaffected.
  */
 export class WebFunctionRegions {
   /** US regions */
@@ -166,6 +168,9 @@ export class WebFunctionReplicaRegions {
    * `included` may be a deploy-time list (for example `CfnParameter.valueAsList`),
    * in which case it is passed through unchanged. Exclusion is computed at synth
    * time and therefore requires concrete region strings in both lists.
+   *
+   * A `WebFunctionRegions` group contributes the regions it lists in the installed version of
+   * `aws-cdk-lib`, so regions launched later are not included until you upgrade it.
    */
   public static of(included: string[], excluded?: string[]): WebFunctionReplicaRegions {
     return new WebFunctionReplicaRegions(included, excluded ?? []);

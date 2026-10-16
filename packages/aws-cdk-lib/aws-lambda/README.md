@@ -2266,6 +2266,11 @@ lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.ALL_DEFAULT_REGION
 lambda.WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1', 'ap-northeast-1'])
 ```
 
+The groups in `WebFunctionRegions` list the regions known to the installed version of
+`aws-cdk-lib`, and are expanded at synthesis. A region launched later only appears in a
+group, including one you exclude from, once you upgrade `aws-cdk-lib`; nothing reports it
+in the meantime. Explicitly listed regions are unaffected.
+
 For a separate regional endpoint per region (instead of managed latency-based
 routing), use `WebFunctionEndpointType.PER_REGION`. Like `MULTI_REGION`, it requires
 `replicaRegions`:
