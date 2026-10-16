@@ -11,6 +11,9 @@
     },
     "go": {
       "packageName": "awsecsmixins"
+    },
+    "ruby": {
+      "module": "AWSCDK::ECS::Mixins"
     }
   }
 }
