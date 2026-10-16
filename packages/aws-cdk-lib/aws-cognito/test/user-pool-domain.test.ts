@@ -1,8 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { CfnParameter, Stack } from '../../core';
-import { ManagedLoginVersion, UserPool, UserPoolDomain } from '../lib';
+import { ManagedLoginVersion, UserPool, UserPoolDomain, UserPoolDomainSecurityPolicy } from '../lib';
 
 describe('User Pool Domain', () => {
   test('custom domain name', () => {
@@ -27,6 +27,61 @@ describe('User Pool Domain', () => {
       Domain: 'test-domain.example.com',
       CustomDomainConfig: {
         CertificateArn: 'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8',
+      },
+    });
+  });
+
+  test.each([
+    ['TLS_V1', UserPoolDomainSecurityPolicy.TLS_V1, 'TLS_V1'],
+    ['TLS_V1_2_2021', UserPoolDomainSecurityPolicy.TLS_V1_2_2021, 'TLS_V1_2_2021'],
+    ['TLS_V1_3_2025', UserPoolDomainSecurityPolicy.TLS_V1_3_2025, 'TLS_V1_3_2025'],
+    ['from of()', UserPoolDomainSecurityPolicy.of('TLS_V1_2_2021'), 'TLS_V1_2_2021'],
+  ])('custom domain with security policy %s', (_, securityPolicy, expected) => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const certificate = Certificate.fromCertificateArn(stack, 'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
+
+    // WHEN
+    new UserPoolDomain(stack, 'Domain', {
+      userPool: pool,
+      customDomain: {
+        domainName: 'test-domain.example.com',
+        certificate,
+        securityPolicy,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+      CustomDomainConfig: {
+        CertificateArn: 'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8',
+        SecurityPolicy: expected,
+      },
+    });
+  });
+
+  test('custom domain without a security policy does not render one', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+    const certificate = Certificate.fromCertificateArn(stack, 'cert',
+      'arn:aws:acm:eu-west-1:0123456789:certificate/7ec3e4ac-808a-4649-b805-66ae02346ad8');
+
+    // WHEN
+    new UserPoolDomain(stack, 'Domain', {
+      userPool: pool,
+      customDomain: {
+        domainName: 'test-domain.example.com',
+        certificate,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolDomain', {
+      CustomDomainConfig: {
+        SecurityPolicy: Match.absent(),
       },
     });
   });
