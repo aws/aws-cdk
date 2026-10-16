@@ -1,0 +1,444 @@
+{
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithModel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithCrossRegion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/PromptWithRouter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithModelArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppProfileWithModelArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithCrossRegionArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppProfileWithCrossRegionArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/CrossRegionProfileId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionProfileId"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/PromptRouterArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptRouterArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfileArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithAppProfileArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegionArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCrossRegionArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/PromptWithRouterArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptWithRouterArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/GrantProfileUsageRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/GrantProfileUsageRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantProfileUsageRoleArn"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithModel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppProfileWithModel97F8407F"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AppProfileWithCrossRegion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppProfileWithCrossRegion6F6D2846"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithAppProfileCE45BEE6"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCrossRegion6632862D"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/PromptWithRouter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PromptWithRouter4FEB811C"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/GrantProfileUsageRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantProfileUsageRoleCEEB0E3F"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/GrantProfileUsageRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithAppProfileRole53411241"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCrossRegionRoleFDE2C251"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/GrantProfileUsageRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantProfileUsageRoleDefaultPolicy371A8697"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithAppProfile/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithAppProfileRoleDefaultPolicyE0AED950"
+    }
+  ],
+  "/aws-cdk-bedrock-inference-profiles-integ/AgentWithCrossRegion/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentWithCrossRegionRoleDefaultPolicyC1384BE8"
+    }
+  ]
+}
