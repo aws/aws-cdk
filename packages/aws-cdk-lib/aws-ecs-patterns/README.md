@@ -1293,3 +1293,23 @@ const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Serv
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
+
+
+### Supply a task role to a queue processing service
+
+Both EC2 and Fargate queue processing services accept a custom task role when they
+create the task definition. The pattern grants this role access to consume messages
+from its queue. For a supplied Fargate task definition, set its `taskRole` directly;
+do not also pass `taskRole` to the service.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const taskRole = new iam.Role(this, 'QueueWorkerRole', {
+  assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+new ecsPatterns.QueueProcessingFargateService(this, 'Worker', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  taskRole,
+});
+```
