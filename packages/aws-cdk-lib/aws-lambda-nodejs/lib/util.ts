@@ -1,6 +1,7 @@
 import type { SpawnSyncOptions } from 'child_process';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
+import { createRequire } from 'module';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
@@ -92,8 +93,23 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
 /**
  * Returns a module version by requiring its package.json file
+ *
+ * When `fromPath` is given, for example the package.json of the project, the
+ * lookup starts there. This finds modules installed in the `node_modules` of an
+ * npm workspace that are not hoisted next to `aws-cdk-lib`.
+ *
+ * Otherwise, or if that lookup finds nothing, the module is required from the
+ * location of this file.
  */
-export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
+export function tryGetModuleVersionFromRequire(mod: string, fromPath?: string): string | undefined {
+  if (fromPath) {
+    try {
+      return createRequire(fromPath)(`${mod}/package.json`).version;
+    } catch (err) {
+      // Not found from there, try from the location of this file
+    }
+  }
+
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`${mod}/package.json`).version;
@@ -140,7 +156,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
   for (const mod of modules) {
     const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
-      ?? tryGetModuleVersionFromRequire(mod);
+      ?? tryGetModuleVersionFromRequire(mod, pkgPath);
     if (!version) {
       throw new UnscopedValidationError(lit`CannotExtractModuleVersion`, `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }

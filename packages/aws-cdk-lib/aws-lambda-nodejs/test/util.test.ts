@@ -1,8 +1,9 @@
 import child_process from 'child_process';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray, tryGetModuleVersionFromRequire } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -153,6 +154,96 @@ describe('exec', () => {
     expect(() => exec('cmd', ['arg1', 'arg2'])).toThrow(new Error('bad error'));
 
     spawnSyncMock.mockRestore();
+  });
+});
+
+describe('tryGetModuleVersionFromRequire', () => {
+  // A module name that is not installed anywhere in this repository
+  const fakeModule = 'cdk-fake-module-for-version-lookup';
+
+  let tmpRoot: string;
+  let previousCwd: string;
+
+  beforeEach(() => {
+    previousCwd = process.cwd();
+    // realpath because os.tmpdir() is a symlink on macOS
+    tmpRoot = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-module-version-')));
+  });
+
+  afterEach(() => {
+    process.chdir(previousCwd);
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  });
+
+  /**
+   * Creates `<tmpRoot>/<dir>` with a package.json and returns the path of that package.json.
+   * When `version` is given, also installs the fake module in the node_modules of that directory.
+   */
+  function createPackage(dir: string, version?: string): string {
+    const packageDir = path.join(tmpRoot, dir);
+    fs.mkdirSync(packageDir, { recursive: true });
+    const pkgPath = path.join(packageDir, 'package.json');
+    fs.writeFileSync(pkgPath, JSON.stringify({ name: path.basename(dir) }));
+
+    if (version) {
+      const moduleDir = path.join(packageDir, 'node_modules', fakeModule);
+      fs.mkdirSync(moduleDir, { recursive: true });
+      fs.writeFileSync(path.join(moduleDir, 'package.json'), JSON.stringify({ name: fakeModule, version }));
+    }
+
+    return pkgPath;
+  }
+
+  test('does not look in the current working directory without fromPath', () => {
+    const workspacePkgPath = createPackage('packages/my-app', '1.2.3');
+    process.chdir(path.dirname(workspacePkgPath));
+
+    expect(tryGetModuleVersionFromRequire(fakeModule)).toBeUndefined();
+  });
+
+  test('finds a module from fromPath when the current working directory is unrelated', () => {
+    const workspacePkgPath = createPackage('packages/my-app', '1.2.3');
+    const unrelatedPkgPath = createPackage('unrelated');
+    process.chdir(path.dirname(unrelatedPkgPath));
+
+    expect(tryGetModuleVersionFromRequire(fakeModule, workspacePkgPath)).toEqual('1.2.3');
+  });
+
+  test('does not look in the current working directory when fromPath is given', () => {
+    // The module is only installed in the current working directory
+    const cwdPkgPath = createPackage('packages/my-app', '1.2.3');
+    const otherPkgPath = createPackage('packages/other-app');
+    process.chdir(path.dirname(cwdPkgPath));
+
+    expect(tryGetModuleVersionFromRequire(fakeModule, otherPkgPath)).toBeUndefined();
+  });
+
+  test('prefers the version found from fromPath', () => {
+    // Monorepo with a different version of the module in each workspace
+    const cwdPkgPath = createPackage('packages/my-app', '1.0.0');
+    const otherPkgPath = createPackage('packages/other-app', '2.0.0');
+    process.chdir(path.dirname(cwdPkgPath));
+
+    expect(tryGetModuleVersionFromRequire(fakeModule, otherPkgPath)).toEqual('2.0.0');
+  });
+
+  test('falls back to the location of this module', () => {
+    // typescript is not installed in the temporary directory, but it can be
+    // required from the location of aws-cdk-lib
+    const emptyPkgPath = createPackage('empty');
+    process.chdir(path.dirname(emptyPkgPath));
+
+    const { version } = JSON.parse(fs.readFileSync(require.resolve('typescript/package.json'), 'utf-8'));
+    expect(tryGetModuleVersionFromRequire('typescript')).toEqual(version);
+    expect(tryGetModuleVersionFromRequire('typescript', emptyPkgPath)).toEqual(version);
+  });
+
+  test('returns undefined when the module is not installed', () => {
+    const emptyPkgPath = createPackage('empty');
+    process.chdir(path.dirname(emptyPkgPath));
+
+    expect(tryGetModuleVersionFromRequire(fakeModule)).toBeUndefined();
+    expect(tryGetModuleVersionFromRequire(fakeModule, emptyPkgPath)).toBeUndefined();
   });
 });
 
