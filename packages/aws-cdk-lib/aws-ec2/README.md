@@ -165,9 +165,10 @@ Which subnets are selected is evaluated as follows:
     In short: by default ENIs will preferentially be placed in subnets not connected to
     the Internet.
 * `availabilityZones`/`onePerAz`: finally, some availability-zone based filtering may be done.
-  This filtering by availability zones will only be possible if the VPC has been created or
-  looked up in a non-environment agnostic stack (so account and region have been set and
-  availability zones have been looked up).
+  Filtering by literal availability zone names requires the subnet availability zones
+  to be known at synthesis time, for example from an environment-specific lookup or
+  explicit `VpcProps.availabilityZones`. Literal names do not match unresolved AZ
+  tokens, such as those returned by `Fn.getAzs()` in an environment-agnostic stack.
   * `availabilityZones`: only the specific subnets from the selected subnet groups that are
     in the given availability zones will be returned.
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
@@ -181,6 +182,30 @@ Which subnets are selected is evaluated as follows:
   * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
   * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
+
+For example, to select a subnet by its AZ in a newly created VPC, specify the AZs
+explicitly when creating the VPC. Use AZ names that are available in the account
+and Region where you deploy:
+
+```ts
+const vpc = new ec2.Vpc(this, 'VpcWithExplicitAzs', {
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+  natGateways: 0,
+  subnetConfiguration: [{
+    name: 'Application',
+    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  }],
+});
+
+const selectedSubnets = vpc.selectSubnets({
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  availabilityZones: ['us-east-1a'],
+});
+```
+
+Deploying a VPC in another stack does not resolve tokens in the CDK application.
+If you pass that VPC construct to a second stack, its AZ values can still be
+unresolved at synthesis time.
 
 ### Using Regional NAT Gateways
 
