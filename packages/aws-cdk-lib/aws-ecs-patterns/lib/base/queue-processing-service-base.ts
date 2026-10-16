@@ -57,6 +57,9 @@ export interface QueueProcessingServiceBaseProps {
    *
    * Cannot be combined with `taskDefinition`; configure the role on that definition instead.
    * The role receives permission to consume messages from the queue.
+   * The full role interface is required to grant these permissions to the task role.
+   *
+   * [disable-awslint:prefer-ref-interface]
    *
    * @default - a new task role is created
    */
