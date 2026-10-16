@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -80,6 +80,24 @@ describe('tests', () => {
       targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
     });
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
+  });
+
+  test('imported target group forwards from a listener and warns about manual security group updates', () => {
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+    const targetGroupArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/imported/73e2d6bc24d8a067';
+    const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'ImportedTG', {
+      targetGroupArn,
+    });
+
+    alb.addListener('Listener', { port: 80, defaultTargetGroups: [targetGroup] });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      DefaultActions: [{ Type: 'forward', TargetGroupArn: targetGroupArn }],
+    });
+    Annotations.fromStack(stack).hasWarning('/Stack/ImportedTG',
+      'Cannot automatically update target security groups for a listener on an imported target group -- security groups might need to be updated manually [ack: @aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener]');
   });
 
   testDeprecated('Cannot add direct target to imported TargetGroup', () => {
