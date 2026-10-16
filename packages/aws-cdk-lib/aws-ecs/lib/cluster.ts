@@ -13,6 +13,7 @@ import {
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
 } from './ecs.generated';
+import { CapacityProviderInfrastructureOptimization } from './mixins';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type { InstanceRequirementsConfig } from '../../aws-ec2';
@@ -1689,6 +1690,32 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default - `ON_DEMAND`
    */
   readonly capacityOptionType?: CapacityOptionType;
+
+  /**
+   * The amount of time Amazon ECS Managed Instances waits before optimizing
+   * (scaling in) idle or underutilized EC2 instances.
+   *
+   * A longer delay increases the likelihood of placing new tasks on idle or
+   * underutilized instances, reducing startup time. A shorter delay helps
+   * reduce infrastructure costs by optimizing idle or underutilized
+   * instances more quickly.
+   *
+   * Must be between 0 seconds and 3600 seconds (1 hour), inclusive.
+   *
+   * Cannot be used together with `disableInfrastructureOptimization`.
+   *
+   * @default - Use the default optimization behavior.
+   */
+  readonly scaleInAfter?: Duration;
+
+  /**
+   * Disables automatic infrastructure optimization entirely.
+   *
+   * Cannot be used together with `scaleInAfter`.
+   *
+   * @default false
+   */
+  readonly disableInfrastructureOptimization?: boolean;
 }
 
 /**
@@ -1820,6 +1847,13 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     });
 
     this.node.defaultChild = this.capacityProvider;
+
+    if (props.scaleInAfter !== undefined || props.disableInfrastructureOptimization) {
+      this.with(new CapacityProviderInfrastructureOptimization({
+        scaleInAfter: props.scaleInAfter,
+        disableInfrastructureOptimization: props.disableInfrastructureOptimization,
+      }));
+    }
   }
 
   /**
