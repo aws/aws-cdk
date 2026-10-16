@@ -505,6 +505,67 @@ describe('task definition', () => {
         });
       }).toThrow('Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got bridge mode.');
     });
+
+    test('allows runtime platform with EC2 compatibility', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        runtimePlatform: {
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        RequiresCompatibilities: ['EC2'],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'LINUX',
+        },
+      });
+    });
+
+    test('allows Windows operating system family with EC2 compatibility without task size', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+
+      // WHEN
+      new ecs.TaskDefinition(stack, 'TD', {
+        compatibility: ecs.Compatibility.EC2,
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2022_CORE,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        RuntimePlatform: {
+          OperatingSystemFamily: 'WINDOWS_SERVER_2022_CORE',
+        },
+      });
+    });
+
+    test('throws when using runtime platform with External compatibility', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+
+      // THEN
+      expect(() => {
+        new ecs.TaskDefinition(stack, 'TD', {
+          compatibility: ecs.Compatibility.EXTERNAL,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          },
+        });
+      }).toThrow('Cannot specify runtimePlatform in External compatible tasks');
+    });
   });
 
   describe('When importing from an existing Task definition', () => {
