@@ -25,30 +25,40 @@
               }
             },
             {
-              "constructPath": "WebFunctionStagedAssetStack/Automatic/Revision",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "WebFunctionStagedAssetStack.template.json",
-                "logicalId": "AutomaticRevision65EF45A7"
-              }
-            },
-            {
-              "constructPath": "WebFunctionStagedAssetStack/Automatic/Endpoint",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "WebFunctionStagedAssetStack.template.json",
-                "logicalId": "AutomaticEndpointC59D3C8A"
-              }
-            },
-            {
               "constructPath": "WebFunctionStagedAssetStack/AutomaticSecond/Function",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunction",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "WebFunctionStagedAssetStack.template.json",
                 "logicalId": "AutomaticSecondFunctionAB53D7F9"
+              }
+            },
+            {
+              "constructPath": "WebFunctionStagedAssetStack/Specific/Function",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionStagedAssetStack.template.json",
+                "logicalId": "SpecificFunction2B9945D8"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionRevision'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionStagedAssetStack/Automatic/Revision",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionStagedAssetStack.template.json",
+                "logicalId": "AutomaticRevision65EF45A7"
               }
             },
             {
@@ -61,30 +71,40 @@
               }
             },
             {
-              "constructPath": "WebFunctionStagedAssetStack/AutomaticSecond/Endpoint",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "WebFunctionStagedAssetStack.template.json",
-                "logicalId": "AutomaticSecondEndpointA57E8247"
-              }
-            },
-            {
-              "constructPath": "WebFunctionStagedAssetStack/Specific/Function",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunction",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "WebFunctionStagedAssetStack.template.json",
-                "logicalId": "SpecificFunction2B9945D8"
-              }
-            },
-            {
               "constructPath": "WebFunctionStagedAssetStack/Specific/Revision",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "WebFunctionStagedAssetStack.template.json",
                 "logicalId": "SpecificRevisionF768306C"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionEndpoint'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "WebFunctionStagedAssetStack/Automatic/Endpoint",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionStagedAssetStack.template.json",
+                "logicalId": "AutomaticEndpointC59D3C8A"
+              }
+            },
+            {
+              "constructPath": "WebFunctionStagedAssetStack/AutomaticSecond/Endpoint",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "WebFunctionStagedAssetStack.template.json",
+                "logicalId": "AutomaticSecondEndpointA57E8247"
               }
             },
             {

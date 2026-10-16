@@ -23,7 +23,17 @@
                 "templatePath": "WebFunctionNetworkConnectorStack.template.json",
                 "logicalId": "Function042596DC"
               }
-            },
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionRevision'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
             {
               "constructPath": "WebFunctionNetworkConnectorStack/Function/Revision",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
@@ -32,7 +42,17 @@
                 "templatePath": "WebFunctionNetworkConnectorStack.template.json",
                 "logicalId": "FunctionRevision22F51A9C"
               }
-            },
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionEndpoint'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
             {
               "constructPath": "WebFunctionNetworkConnectorStack/Function/Endpoint",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",

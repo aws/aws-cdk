@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "HttpApiCall1e076b772eb3ca399ac7583a5f5035eb": {
-   "Type": "Custom::DeployAssert@HttpCall",
+  "AwsApiCallS3putObject5d965a19a7cf9826f911494ff03b6a97": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,23 +9,26 @@
       "Arn"
      ]
     },
+    "service": "S3",
+    "api": "putObject",
     "parameters": {
-     "url": {
+     "Bucket": {
       "Fn::Join": [
        "",
        [
-        "https://",
+        "\"",
         {
-         "Fn::ImportValue": "WebFunctionNetworkConnectorStack:ExportsOutputFnGetAttFunctionEndpoint85BE574ADomainName48F4D80C"
+         "Fn::ImportValue": "WebFunctionNetworkConnectorStack:ExportsOutputRefEgressBucket1ABE5DC536970BD1"
         },
-        "/"
+        "\""
        ]
       ]
-     }
+     },
+     "Key": "\"egress.txt\"",
+     "Body": "\"reached-through-the-vpc\""
     },
-    "expected": "{\"$ObjectLike\":{\"status\":403}}",
     "flattenResponse": "false",
-    "salt": "1791836762901"
+    "salt": "1792128143864"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -48,6 +51,25 @@
     "ManagedPolicyArns": [
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
      }
     ]
    }
@@ -75,6 +97,39 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
+  },
+  "HttpApiCall1e076b772eb3ca399ac7583a5f5035eb": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "WebFunctionNetworkConnectorStack:ExportsOutputFnGetAttFunctionEndpoint85BE574ADomainName48F4D80C"
+        },
+        "/"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"object\":\"reached-through-the-vpc\"}}}",
+    "flattenResponse": "false",
+    "salt": "1792128143864"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject5d965a19a7cf9826f911494ff03b6a97"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

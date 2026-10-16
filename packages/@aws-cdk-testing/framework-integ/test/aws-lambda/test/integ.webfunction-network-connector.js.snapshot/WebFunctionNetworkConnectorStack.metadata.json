@@ -7,12 +7,16 @@
       },
       "trace": [
         "    at Validations.acknowledge (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
         "    at get availabilityZones (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:45:13)",
+        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:47:13)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionNetworkConnectorStack.template.json"
     }
   ],
   "/WebFunctionNetworkConnectorStack/Vpc": [
@@ -31,6 +35,23 @@
     }
   ],
   "/WebFunctionNetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "blockPublicAccess": "*",
+        "enforceSSL": true,
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
       "data": true
@@ -55,6 +76,25 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "WebFunction endpoint uses APPLICATION_MANAGED auth. The Lambda service will not enforce authentication; ensure your handler code validates every request. [ack: @aws-cdk/aws-lambda:webFunctionPublicEndpoint]",
+      "trace": [
+        "Annotations.addMessage (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:647:47)",
+        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:88:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Object..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
     }
   ],
   "/WebFunctionNetworkConnectorStack/AWSCDKWebFunctionAssetBucket": [
@@ -68,12 +108,6 @@
         "removalPolicy": "destroy",
         "autoDeleteObjects": true
       }
-    }
-  ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-    {
-      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-      "data": true
     }
   ],
   "/WebFunctionNetworkConnectorStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
@@ -194,6 +228,17 @@
       "data": "*"
     }
   ],
+  "/WebFunctionNetworkConnectorStack/Vpc/S3Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "service": {
+          "name": "*"
+        }
+      }
+    }
+  ],
   "/WebFunctionNetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
@@ -204,6 +249,44 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressBucket1ABE5DC5"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
   "/WebFunctionNetworkConnectorStack/ConnectorSecurityGroup/Resource": [
@@ -302,18 +385,6 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-    }
-  ],
-  "/WebFunctionNetworkConnectorStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-    }
-  ],
   "/WebFunctionNetworkConnectorStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -390,6 +461,12 @@
       "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085"
     }
   ],
+  "/WebFunctionNetworkConnectorStack/Exports/Output{\"Ref\":\"EgressBucket1ABE5DC5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefEgressBucket1ABE5DC536970BD1"
+    }
+  ],
   "/WebFunctionNetworkConnectorStack/Exports/Output{\"Fn::GetAtt\":[\"FunctionEndpoint85BE574A\",\"DomainName\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -438,6 +515,30 @@
       "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
     }
   ],
+  "/WebFunctionNetworkConnectorStack/Vpc/S3Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcS3Endpoint4A3DE4B5"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressBucketPolicyBE4DCA6C"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/EgressBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EgressBucketAutoDeleteObjectsCustomResourceB85706DA"
+    }
+  ],
   "/WebFunctionNetworkConnectorStack/Connector/OperatorRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -456,7 +557,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/CustomResourceHandler": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -492,7 +593,7 @@
       }
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/Resource": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -612,10 +713,10 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy438c09a9/Resource/Default": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "FunctionCodeCopy438c09a9065C23CF"
+      "data": "FunctionCodeCopy89659aecA06E4F6B"
     }
   ],
   "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy/Resource": [

@@ -151,6 +151,41 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "VpcS3Endpoint4A3DE4B5": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "VpcisolatedSubnet1RouteTableE442650B"
+     },
+     {
+      "Ref": "VpcisolatedSubnet2RouteTable334F9764"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "WebFunctionNetworkConnectorStack/Vpc"
+     }
+    ],
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
   "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -243,6 +278,216 @@
    },
    "DependsOn": [
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "EgressBucket1ABE5DC5": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EgressBucketPolicyBE4DCA6C": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "EgressBucket1ABE5DC5"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EgressBucket1ABE5DC5",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EgressBucket1ABE5DC5",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EgressBucket1ABE5DC5",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EgressBucket1ABE5DC5",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceVpce": {
+          "Ref": "VpcS3Endpoint4A3DE4B5"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "EgressBucket1ABE5DC5",
+            "Arn"
+           ]
+          },
+          "/egress.txt"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EgressBucketAutoDeleteObjectsCustomResourceB85706DA": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "EgressBucket1ABE5DC5"
+    }
+   },
+   "DependsOn": [
+    "EgressBucketPolicyBE4DCA6C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "EgressBucket1ABE5DC5"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
   "ConnectorSecurityGroup5AD7DC86": {
@@ -361,7 +606,7 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "FunctionCodeCopy438c09a9065C23CF": {
+  "FunctionCodeCopy89659aecA06E4F6B": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -373,11 +618,11 @@
     "SourceBucketName": {
      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
     },
-    "SourceObjectKey": "3437dc7d3d65e4b56b80ec84ded8af0f79779de4328120cca5195282b97295b0.zip",
+    "SourceObjectKey": "f43caef5f59d8d69c7a740076b980608cb5d502efb430a777568820012525e43.zip",
     "DestinationBucketName": {
      "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
     },
-    "DestinationObjectKey": "web-function/WebFunctionNetworkConnectorStackFunction4CFB0255.zip"
+    "DestinationObjectKey": "web-function/WebFunctionNetworkConnectorStackFunction4CFB0255/89659aece587712c5284112f9de6f94c.zip"
    },
    "DependsOn": [
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
@@ -414,19 +659,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "FunctionCodeCopy438c09a9065C23CF",
+         "FunctionCodeCopy89659aecA06E4F6B",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "FunctionCodeCopy438c09a9065C23CF",
+         "FunctionCodeCopy89659aecA06E4F6B",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "FunctionCodeCopy438c09a9065C23CF",
+         "FunctionCodeCopy89659aecA06E4F6B",
          "VersionId"
         ]
        }
@@ -445,6 +690,23 @@
        "ConnectorC537A2FB",
        "LatestVersionArn"
       ]
+     },
+     "EnvironmentVariables": {
+      "OBJECT_URL": {
+       "Fn::Join": [
+        "",
+        [
+         "https://",
+         {
+          "Fn::GetAtt": [
+           "EgressBucket1ABE5DC5",
+           "RegionalDomainName"
+          ]
+         },
+         "/egress.txt"
+        ]
+       ]
+      }
      },
      "ExecutionRoleArn": {
       "Fn::GetAtt": [
@@ -470,7 +732,7 @@
   "FunctionEndpoint85BE574A": {
    "Type": "AWS::Lambda::WebFunctionEndpoint",
    "Properties": {
-    "AuthType": "IamAuth",
+    "AuthType": "ApplicationManaged",
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
@@ -683,64 +945,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs24.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ]
-  },
   "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
@@ -905,6 +1109,14 @@
      "ConnectorC537A2FB",
      "LatestVersionArn"
     ]
+   }
+  },
+  "ExportsOutputRefEgressBucket1ABE5DC536970BD1": {
+   "Value": {
+    "Ref": "EgressBucket1ABE5DC5"
+   },
+   "Export": {
+    "Name": "WebFunctionNetworkConnectorStack:ExportsOutputRefEgressBucket1ABE5DC536970BD1"
    }
   },
   "ExportsOutputFnGetAttFunctionEndpoint85BE574ADomainName48F4D80C": {

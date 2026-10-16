@@ -34,7 +34,7 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticCodeCopy438c09a99188BEBE": {
+  "AutomaticCodeCopyaea738b411903B2E": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -50,7 +50,7 @@
     "DestinationBucketName": {
      "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
     },
-    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7.zip"
+    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
    },
    "DependsOn": [
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
@@ -87,19 +87,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy438c09a99188BEBE",
+         "AutomaticCodeCopyaea738b411903B2E",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy438c09a99188BEBE",
+         "AutomaticCodeCopyaea738b411903B2E",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopy438c09a99188BEBE",
+         "AutomaticCodeCopyaea738b411903B2E",
          "VersionId"
         ]
        }
@@ -590,7 +590,7 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticSecondCodeCopy438c09a91C976B86": {
+  "AutomaticSecondCodeCopyaea738b4D7DB0431": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -606,7 +606,7 @@
     "DestinationBucketName": {
      "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
     },
-    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59.zip"
+    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
    },
    "DependsOn": [
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
@@ -643,19 +643,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy438c09a91C976B86",
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy438c09a91C976B86",
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopy438c09a91C976B86",
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
          "VersionId"
         ]
        }
@@ -837,7 +837,7 @@
             "Arn"
            ]
           },
-          "/webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C.zip"
+          "/webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/*"
          ]
         ]
        }
@@ -900,7 +900,7 @@
     "CallerCodeBucketPolicy2C433922"
    ]
   },
-  "SpecificCodeCopyb0df12e157966F01": {
+  "SpecificCodeCopy35d4cb7aAB40810E": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -916,7 +916,7 @@
     "DestinationBucketName": {
      "Ref": "CallerCodeBucketFB907A2B"
     },
-    "DestinationObjectKey": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C.zip"
+    "DestinationObjectKey": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/35d4cb7add5fb1554e6068dd6d1ba03e.zip"
    },
    "DependsOn": [
     "CallerCodeBucketPolicy2C433922"
@@ -953,19 +953,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyb0df12e157966F01",
+         "SpecificCodeCopy35d4cb7aAB40810E",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyb0df12e157966F01",
+         "SpecificCodeCopy35d4cb7aAB40810E",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "SpecificCodeCopyb0df12e157966F01",
+         "SpecificCodeCopy35d4cb7aAB40810E",
          "VersionId"
         ]
        }
