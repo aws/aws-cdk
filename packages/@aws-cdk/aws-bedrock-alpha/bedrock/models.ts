@@ -461,6 +461,25 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Haiku 5.5 model, the fastest and most efficient in the Claude 5.5 family.
+   * Built for high-volume, latency-sensitive work, with improved coding and agent performance
+   * over Claude Haiku 4.5. Features a 1M token context window, 128K max output tokens, and
+   * supports reasoning.
+   *
+   * Only available through the `us`, `eu`, `au`, `jp` and `global` cross-region inference
+   * profiles. There is no `apac` profile for this model.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_5_5 = new BedrockFoundationModel(
+    'anthropic.claude-haiku-5-5',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
    * Anthropic's Claude Fable 5.1 model, Anthropic's frontier model for ambitious coding,
    * long-horizon agents, and enterprise knowledge work.
    * Features a 1M token context window, 128K max output tokens, and supports reasoning.
@@ -1081,7 +1100,63 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    ***************************************************************************/
 
   /**
-   * OpenAI's GPT-5.6 Sol model, the most capable OpenAI model on Bedrock.
+   * OpenAI's GPT-6.1 Sol model, with performance approaching GPT-6 Astra on several
+   * demanding evaluations, at Sol pricing.
+   * Advances coding, professional work, and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Coding, professional work, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_1_SOL = new BedrockFoundationModel('openai.gpt-6.1-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Astra model, the most capable model of the GPT-6 family.
+   * Built for complex reasoning, coding, computer use, research, and
+   * document creation.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex reasoning, coding, computer use, research
+   */
+  public static readonly OPENAI_GPT_6_ASTRA = new BedrockFoundationModel('openai.gpt-6-astra', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Sol model, built for complex coding and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex coding, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_SOL = new BedrockFoundationModel('openai.gpt-6-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Luna model, designed for focused, high-volume tasks.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Focused, high-volume tasks
+   */
+  public static readonly OPENAI_GPT_6_LUNA = new BedrockFoundationModel('openai.gpt-6-luna', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Sol model, the most capable model of the GPT-5.6 family.
    * Frontier reasoning and agentic performance across coding, cybersecurity,
    * and scientific research.
    *
@@ -1111,7 +1186,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * OpenAI's GPT-5.6 Luna model, fast and affordable inference.
-   * OpenAI's lowest cost model, built for high-volume tasks.
+   * The lowest cost model of the GPT-5.6 family, built for high-volume tasks.
    *
    * Features:
    * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
