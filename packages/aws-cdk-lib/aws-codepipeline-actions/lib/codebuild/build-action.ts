@@ -195,10 +195,11 @@ export class CodeBuildAction extends Action {
       // if any of the inputs come from the CodeStarConnectionsSourceAction
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
+      // (both the legacy 'codestar-connections' and the renamed 'codeconnections' actions are required)
       const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
-          actions: ['codestar-connections:UseConnection'],
+          actions: ['codestar-connections:UseConnection', 'codeconnections:UseConnection'],
           resources: [connectionArn],
         }));
       }

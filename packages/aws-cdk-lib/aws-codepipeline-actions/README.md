@@ -191,17 +191,9 @@ new codepipeline_actions.CodeBuildAction({
 
 CodePipeline can use a BitBucket Git repository as a source:
 
-**Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account.
-This is a one-time operation for a given AWS account in a given region.
-The simplest way to do that is to either start creating a new CodePipeline,
-or edit an existing one, while being logged in to BitBucket.
-Choose BitBucket as the source,
-and grant CodePipeline permissions to your BitBucket account.
-Copy & paste the Connection ARN that you get in the console,
-or use the [`codestar-connections list-connections` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codestar-connections/list-connections.html)
-to find it.
-After that, you can safely abort creating or editing the pipeline -
-the connection has already been created.
+**Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account, using [AWS CodeConnections](https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html) (formerly AWS CodeStar Connections). This is a one-time operation for a given AWS account in a given region. The simplest way to do that is to either start creating a new CodePipeline, or edit an existing one, while being logged in to BitBucket. Choose BitBucket as the source, and grant CodePipeline permissions to your BitBucket account. Copy & paste the Connection ARN that you get in the console, or use the [`codeconnections list-connections` AWS CLI operation](https://docs.aws.amazon.com/cli/latest/reference/codeconnections/list-connections.html) to find it. After that, you can safely abort creating or editing the pipeline - the connection has already been created.
+
+Depending on when and how the connection was created, its ARN uses either the `codestar-connections` or the `codeconnections` service prefix; both are supported. The action grants the pipeline's role both the `codestar-connections:UseConnection` and `codeconnections:UseConnection` permissions on the connection, as [required by CodePipeline](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#edit-role-connections).
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();

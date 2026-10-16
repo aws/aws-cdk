@@ -1,0 +1,104 @@
+{
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2"
+    }
+  ],
+  "/codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+    }
+  ]
+}

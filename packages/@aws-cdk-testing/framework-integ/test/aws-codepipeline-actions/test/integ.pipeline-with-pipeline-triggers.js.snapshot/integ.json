@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "codepipeline-with-pipeline-triggers-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,7 @@
       "assertionStack": "codepipeline-with-pipeline-triggers-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelinewithpipelinetriggerstestDefaultTestDeployAssertE3F8DDE6"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

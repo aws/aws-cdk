@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4466a153a23b181a115261845148e8d83d7cac29ac730285686173152666d23d": {
+      "displayName": "codepipeline-codestar-connections-use-connection Template",
+      "source": {
+        "path": "codepipeline-codestar-connections-use-connection.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a83096dd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4466a153a23b181a115261845148e8d83d7cac29ac730285686173152666d23d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
