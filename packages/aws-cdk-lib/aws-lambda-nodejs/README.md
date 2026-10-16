@@ -137,10 +137,17 @@ OR
 $ yarn add --dev esbuild@0
 ```
 
-If you're using a monorepo layout, the `esbuild` dependency needs to be installed in the "root" `package.json` file,
-not in the workspace. From the reference architecture described [above](#reference-project-architecture), the `esbuild`
-dev dependency needs to be in `./package.json`, not `packages/cool-package/package.json` or
-`packages/super-package/package.json`.
+To find a local installation, `esbuild` is looked up from the location of `aws-cdk-lib`, then from the current
+working directory, usually the directory that contains `cdk.json`, and then on the `PATH`. An `esbuild` found from
+the current working directory also runs from there.
+
+If you're using a monorepo layout, the `esbuild` dependency can be installed in the "root" `package.json` file or in
+the workspace that contains the CDK app. From the reference architecture described
+[above](#reference-project-architecture), this is `./package.json` or `packages/cool-package/package.json` for a CDK
+app in `packages/cool-package`.
+
+Local bundling and Docker bundling can produce different output. When a function starts to bundle locally because
+an `esbuild` installed in the workspace is found, its asset hash can change.
 
 To force bundling in a Docker container even if `esbuild` is available in your environment,
 set `bundling.forceDockerBundling` to `true`. This is useful if your function relies on node

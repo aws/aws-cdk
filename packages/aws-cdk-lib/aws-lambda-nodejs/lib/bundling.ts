@@ -129,7 +129,9 @@ export class Bundling implements cdk.BundlingOptions {
   constructor(scope: IConstruct, private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
-    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    // The paths that bundling passes to esbuild are absolute, so esbuild can run from the directory where it is
+    // installed. tsc is not looked up there, because its `--rootDir` and `--outDir` are relative to its working directory.
+    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild', process.cwd());
     Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
@@ -411,6 +413,7 @@ export class Bundling implements cdk.BundlingOptions {
           outputDir,
           pathJoin: (...args: string[]) => path.join(...args),
           esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
+          esbuildCwd: esbuild.cwd,
           tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
           createFileOps: (deps) => this.localFileOps(outputDir, deps),
         });
@@ -460,7 +463,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
-    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
+    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs], cwd: options.esbuildCwd });
 
     // 4-5. Node modules installation
     if (this.props.nodeModules) {
@@ -583,6 +586,8 @@ interface StepBuilderOptions {
   readonly pathJoin: (...parts: string[]) => string;
   /** The esbuild command as an argv array */
   readonly esbuildRunner: string[];
+  /** The directory to run esbuild from, or undefined for the project root */
+  readonly esbuildCwd?: string;
   /** The tsc command as an argv array, or undefined if not available */
   readonly tscRunner?: string[];
   /** Produces steps for nodeModules file operations (differs between local and Docker) */
