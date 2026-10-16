@@ -17,6 +17,7 @@ import { throwIfInvalidPolicyName, throwIfInvalidDescription, throwIfInvalidPoli
 
 /**
  * Properties for creating a Policy resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface PolicyProps {
   /**
@@ -87,6 +88,7 @@ export interface PolicyProps {
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html
  * @resource AWS::BedrockAgentCore::Policy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 @propertyInjectable
 export class Policy extends PolicyBase {
