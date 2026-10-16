@@ -1,4 +1,5 @@
 export * from './cluster';
+export * from './global-cluster';
 export * from './instance';
 export * from './endpoint';
 export * from './parameter-group';
