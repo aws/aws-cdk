@@ -474,7 +474,7 @@ export class Connection extends cdk.Resource implements IConnection {
             warnOnPlaintextSecrets(
               this,
               this.properties,
-              '@aws-cdk/aws-glue-alpha:plaintextConnectionSecret',
+              '@aws-cdk/aws-glue:plaintextConnectionSecret',
               'Pass a Secrets Manager secret via the connection\'s `secret` property instead.',
             );
             const properties = secretId !== undefined
