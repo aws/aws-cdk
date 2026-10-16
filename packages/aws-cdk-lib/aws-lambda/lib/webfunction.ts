@@ -911,6 +911,10 @@ export class WebFunction extends WebFunctionBase {
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
     });
+    // The id is 'Function' rather than 'Resource', so the default child is not found by
+    // convention. Set it explicitly for escape hatches, Aspects and applyRemovalPolicy(). The
+    // id is kept because renaming it would change the resource's logical ID.
+    this.node.defaultChild = this.resource;
 
     this.resourceRevision = new CfnWebFunctionRevision(this, 'Revision', {
       functionName: this.resource.ref,
