@@ -1,0 +1,81 @@
+{
+  "/cdk-integ-opensearch-deployment-strategy": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.deployment-strategy.js:20:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-deployment-strategy/CapacityOptimized": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "version": "*",
+        "removalPolicy": "destroy",
+        "capacity": {
+          "multiAzWithStandbyEnabled": false
+        }
+      }
+    }
+  ],
+  "/cdk-integ-opensearch-deployment-strategy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-deployment-strategy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-deployment-strategy/CapacityOptimized/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CapacityOptimizedD1F778D9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Domain (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1019:27)",
+        "new Domain (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.deployment-strategy.js:9:9)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/.claude/worktrees/alb-review/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.deployment-strategy.js:20:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
