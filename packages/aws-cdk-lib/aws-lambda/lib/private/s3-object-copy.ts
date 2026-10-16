@@ -63,7 +63,8 @@ export interface S3ObjectCopyProps extends WebFunctionCodeCopyOptions {
  * never prunes:
  *
  * - **On update** the new object is copied and prior versions of the destination object are
- *   left in place, so anything that pinned an earlier version keeps working.
+ *   left in place. `WebFunctionCode` gives each source object its own key and resource, so it
+ *   does not rely on this.
  * - **On delete** every version of the object is removed. By then nothing that read the object
  *   through this resource's outputs exists any more.
  *
@@ -207,7 +208,7 @@ function singletonLogGroup(scope: Construct, uuid: string): logs.ILogGroup {
  * Delete of the old object, which runs in the cleanup phase, would no longer be allowed. A new
  * function instead leaves the old one, with its grants, to delete the old object.
  */
-function renderSingletonUuid(props: S3ObjectCopyProps): string {
+export function renderSingletonUuid(props: S3ObjectCopyFunctionProps): string {
   // A fixed, arbitrary seed for the function's logical ID. Do not change it: a new value
   // replaces the copy function in every stack that has one.
   let uuid = 'e2f8cf6b-1b0f-4b3f-9a2c-6f1f5b6d4a71';
@@ -222,6 +223,25 @@ function renderSingletonUuid(props: S3ObjectCopyProps): string {
   if (props.logGroup) { uuid += `-lg-${props.logGroup.node.addr}`; }
 
   return uuid;
+}
+
+/**
+ * The properties that decide which copy function a copy uses: everything except the object.
+ */
+export type S3ObjectCopyFunctionProps = Pick<S3ObjectCopyProps,
+  'destinationBucket' | 'destinationKeyPattern' | keyof WebFunctionCodeCopyOptions>;
+
+/**
+ * A hex identity for one copy: the function that performs it and the object it copies.
+ *
+ * `WebFunctionCode` derives both the copy's construct id and the destination key from it, so
+ * the two can only change together. That is what makes a replaced copy safe to delete. The
+ * old resource's Delete removes every version of the key it wrote, so its key must never be
+ * the one the new resource writes. And since the old resource keeps its ServiceToken, the old
+ * function, with the grants it had, performs that Delete.
+ */
+export function copyIdentity(props: S3ObjectCopyFunctionProps, sourceIdentity: string): string {
+  return md5hash(`${renderSingletonUuid(props)}/${sourceIdentity}`);
 }
 
 /**

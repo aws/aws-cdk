@@ -15,19 +15,16 @@ export const handler = makeHandler(s3ObjectCopyHandler);
 export async function s3ObjectCopyHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props = event.ResourceProperties as unknown as ResourceProperties;
   // CloudFormation has no schema for a custom resource, so the ID returned here is the only
-  // thing that decides replacement versus in-place update. Deriving it from the destination
-  // keeps a code-only change an update, which is what leaves the previous object version in
-  // place for the rollback window; anything that changed per deployment would instead replace
-  // the resource and delete that version in the cleanup phase.
+  // thing that decides replacement versus in-place update. It names the object written, so a
+  // resource that writes elsewhere is replaced, and its Delete in the cleanup phase removes the
+  // object it wrote rather than the new one.
   const physicalResourceId = `${props.DestinationBucketName}/${props.DestinationObjectKey}`;
 
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      // Update copies the new source object and deliberately leaves prior versions of the
-      // destination object in place. A WebFunction revision reads its pinned version on every
-      // sandbox start, and the revision being replaced keeps serving until the deployment
-      // completes, or again if it rolls back, so historical versions stay readable until the
+      // Update copies the new source object and leaves prior versions of the destination
+      // object in place, so a consumer that pinned an earlier version keeps working until the
       // resource itself is deleted.
       return {
         PhysicalResourceId: physicalResourceId,

@@ -2149,18 +2149,17 @@ new lambda.WebFunction(this, 'MyWebFunction', {
 });
 ```
 
-The code is written to `<keyPrefix>web-function/<unique id>.zip` — `apps/web-function/…`
-above. CDK only ever writes and deletes objects under that `web-function/` segment, never
-elsewhere in your bucket. Changing `keyPrefix` later, or moving to another bucket, leaves
-the old object behind: CDK's permissions follow the current destination, so it can no
-longer delete the old one. Remove it yourself if you need the space back.
+The code is written to `<keyPrefix>web-function/<unique id>/<hash>.zip` —
+`apps/web-function/…` above. CDK only ever writes and deletes objects under that
+`web-function/` segment, never elsewhere in your bucket.
 
 The bucket must meet the same requirements as for `fromBucket()` (see *Code Bucket
 Requirements* above). Since the bucket is yours, CDK makes only the changes it has to and
 leaves the rest to you:
 
 - **Bucket policy** — handled by CDK. Each WebFunction adds its own statement granting
-  `lambda.amazonaws.com` read access to its object, on behalf of its own revisions only.
+  `lambda.amazonaws.com` read access to its own objects, on behalf of its own revisions
+  only.
 - **Key policy** — handled by CDK for a customer managed key: `kms:Decrypt` is granted in a
   single statement shared by all functions. An AWS-managed key
   (`BucketEncryption.KMS_MANAGED` or `BucketEncryption.DSSE_MANAGED`) cannot work, since its
@@ -2185,9 +2184,6 @@ serve more, you can:
   functions. Note that a single statement no longer confines each function to its own code
   object.
 
-If you later move a WebFunction to a different bucket or a different staging method,
-CDK cannot clean up the old code object: its versions stay in the old bucket. Delete the
-old object yourself once nothing references it.
 
 #### Configuring the copy step
 
@@ -2196,11 +2192,12 @@ CloudFormation custom resource: a small Lambda function that CloudFormation invo
 during deployment to copy the object. It returns the S3 version ID of the object it
 wrote, and the WebFunction revision refers to exactly that version.
 
-When you deploy new code, the object gets a new version and the previous version stays
-in the bucket. The previous revision continues to serve from it while the deployment is
-in progress, and if the deployment rolls back, that revision is the one traffic returns
-to. When a WebFunction is removed from the stack, every version of its code object is
-deleted.
+Each deployment of new code writes a new object, and the copy that wrote the previous
+one is replaced. The previous revision keeps serving from its own object while the
+deployment is in progress, and if the deployment rolls back, the new object is removed and
+traffic returns to it. Once the deployment succeeds, the previous object is deleted. The
+same happens when the destination or `copyOptions` change, and when a WebFunction is removed
+from the stack its object is deleted as well.
 
 One copy function is created per stack and shared by all WebFunctions in it. Pass
 `copyOptions` if your organization requires it to run inside a VPC, or to give it an

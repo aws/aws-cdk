@@ -7,6 +7,7 @@ import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { WebFunctionAuthType, WebFunction } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
+import type { WebFunctionProvidedBucketAssetOptions } from '../lib/webfunction-code';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
 // Any real directory works as an asset source; the handler code itself is irrelevant here.
@@ -349,7 +350,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', minimalStaged());
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
-        DestinationObjectKey: Match.stringLikeRegexp('^web-function/[A-Za-z0-9]+\\.zip$'),
+        DestinationObjectKey: Match.stringLikeRegexp('^web-function/[A-Za-z0-9]+/[0-9a-f]{32}\\.zip$'),
       });
     });
 
@@ -544,23 +545,63 @@ describe('WebFunctionCode', () => {
       });
     });
 
-    test('a new key prefix gives the copy a new logical ID, a code change does not', () => {
-      // The copy's function changes with its destination, and CloudFormation rejects a new
-      // ServiceToken on an existing custom resource, so a move has to create a new resource.
-      const copyLogicalId = (keyPrefix: string, assetPath: string) => {
+    describe('the copy resource and its key change together', () => {
+      // A replaced copy resource is deleted in the cleanup phase, and its Delete removes every
+      // version of its key. If the new resource wrote the same key, that would remove the object
+      // the new revision reads. So whatever replaces the resource has to change the key too.
+      interface Setup {
+        readonly bucket: s3.IBucket;
+        readonly assetPath?: string;
+        readonly options?: WebFunctionProvidedBucketAssetOptions;
+      }
+      const copyOf = (configure: (s: cdk.Stack) => Setup) => {
         const s = new cdk.Stack();
-        const bucket = new s3.Bucket(s, 'MyBucket', { versioned: true });
+        const { bucket, assetPath, options } = configure(s);
         new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath, { keyPrefix }),
+          code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath ?? ASSET_PATH, options),
           runtime: WebFunctionRuntime.NODEJS_24_X,
           authType: WebFunctionAuthType.IAM_AUTH,
         });
-        return Object.keys(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        const copies = Template.fromStack(s).findResources('Custom::S3ObjectCopy');
+        const [logicalId] = Object.keys(copies);
+        return { logicalId, key: copies[logicalId].Properties.DestinationObjectKey };
       };
+      const owned = (s: cdk.Stack) => new s3.Bucket(s, 'MyBucket', { versioned: true, bucketName: 'my-bucket' });
+      const original = () => copyOf(s => ({ bucket: owned(s) }));
 
-      const original = copyLogicalId('a/', ASSET_PATH);
-      expect(copyLogicalId('b/', ASSET_PATH)).not.toEqual(original);
-      expect(copyLogicalId('a/', path.join(__dirname, 'handler.zip'))).toEqual(original);
+      test.each<[string, (s: cdk.Stack) => Setup]>([
+        ['new code', s => ({ bucket: owned(s), assetPath: path.join(__dirname, 'handler.zip') })],
+        ['a new key prefix', s => ({ bucket: owned(s), options: { keyPrefix: 'b/' } })],
+        ['the same bucket imported by name', s => ({ bucket: s3.Bucket.fromBucketName(s, 'MyBucket', 'my-bucket') })],
+        ['a copy function in a VPC', s => ({
+          bucket: owned(s), options: { copyOptions: { vpc: new ec2.Vpc(s, 'Vpc') } },
+        })],
+      ])('%s', (_name, configure) => {
+        const before = original();
+        const after = copyOf(configure);
+        expect(after.logicalId).not.toEqual(before.logicalId);
+        expect(after.key).not.toEqual(before.key);
+      });
+
+      test('nothing changes when nothing does', () => {
+        expect(original()).toEqual(original());
+      });
+    });
+
+    test('the read grant stays the same when the code changes', () => {
+      // The revision being replaced keeps reading its own object until the deployment completes,
+      // so the bucket policy must not move to the new object alone.
+      const readGrant = (assetPath: string) => {
+        const s = new cdk.Stack();
+        const bucket = new s3.Bucket(s, 'MyBucket', { versioned: true });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          authType: WebFunctionAuthType.IAM_AUTH,
+        });
+        return Template.fromStack(s).findResources('AWS::S3::BucketPolicy');
+      };
+      expect(readGrant(path.join(__dirname, 'handler.zip'))).toEqual(readGrant(ASSET_PATH));
     });
 
     test('lets the copy handler delete under the key prefix only', () => {
@@ -634,7 +675,7 @@ describe('WebFunctionCode', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
-        DestinationObjectKey: Match.stringLikeRegexp('^webfunctions/web-function/[A-Za-z0-9]+\\.zip$'),
+        DestinationObjectKey: Match.stringLikeRegexp('^webfunctions/web-function/[A-Za-z0-9]+/[0-9a-f]{32}\\.zip$'),
       });
     });
 
@@ -646,7 +687,7 @@ describe('WebFunctionCode', () => {
         authType: WebFunctionAuthType.IAM_AUTH,
       });
 
-      // Scoped to this function's object, not to the whole bucket: the caller owns the bucket
+      // Scoped to this function's objects, not to the whole bucket: the caller owns the bucket
       // and may keep unrelated objects in it.
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
@@ -657,7 +698,7 @@ describe('WebFunctionCode', () => {
               Resource: {
                 'Fn::Join': ['', [
                   { 'Fn::GetAtt': [Match.stringLikeRegexp('MyBucket.*'), 'Arn'] },
-                  Match.stringLikeRegexp('^/.*\\.zip$'),
+                  Match.stringLikeRegexp('^/web-function/[A-Za-z0-9]+/\\*$'),
                 ]],
               },
               Condition: {

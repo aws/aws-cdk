@@ -5,7 +5,7 @@ import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { S3ObjectCopy, destinationIdentity } from './private/s3-object-copy';
+import { S3ObjectCopy, copyIdentity } from './private/s3-object-copy';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 
@@ -128,7 +128,7 @@ export abstract class WebFunctionCode {
    * Create WebFunction code from a local file or directory, staged into a bucket you own.
    *
    * You own the bucket, so CDK only makes the narrowest change it needs: it adds a resource
-   * policy statement granting `lambda.amazonaws.com` read access to this one object, and
+   * policy statement granting `lambda.amazonaws.com` read access to this function's code, and
    * `kms:Decrypt` on the bucket's key if it is encrypted with a customer managed key. Both
    * are best-effort — on an imported bucket or key they are no-ops and a warning is emitted
    * instead, since the policy cannot be modified from this app.
@@ -305,11 +305,8 @@ export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetO
   /**
    * Prefix for the object key written into your bucket.
    *
-   * The object is written at `<keyPrefix>web-function/<unique id>.zip`. The prefix is used
-   * as given, so include a trailing `/` to place the object under a folder-like prefix.
-   *
-   * Changing it later moves the code to a new key and leaves the old object in your bucket:
-   * CDK's permissions follow the current prefix, so it can no longer delete the old one.
+   * The object is written at `<keyPrefix>web-function/<unique id>/<hash>.zip`. The prefix is
+   * used as given, so include a trailing `/` to place the object under a folder-like prefix.
    *
    * @default - objects are written under `web-function/` at the root of the bucket
    */
@@ -341,27 +338,35 @@ abstract class StagedAssetCode extends WebFunctionCode {
     }
 
     const destination = this.destinationBucket(scope);
-    const key = this.destinationKey(scope);
+    const prefix = this.destinationPrefix();
+    // Everything this function's code is ever written to, across deployments.
+    const functionPrefix = `${prefix}${cdk.Names.uniqueId(scope)}/`;
 
     // Let the subclass make sure the service principal can read the object it is about to
     // write, and that nothing reading it is created before that grant exists. The managed
     // bucket carries a wildcard statement already and only needs the ordering; a caller-provided
-    // bucket gets a statement scoped to this one key.
-    this.grantDestinationRead(destination, key, scope, options);
+    // bucket gets a statement scoped to this function's objects. The grant covers the folder
+    // rather than the one key so that it stays the same when the code changes: the revision
+    // being replaced keeps reading its own object until the deployment completes.
+    this.grantDestinationRead(destination, `${functionPrefix}*`, scope, options);
 
-    // A copy to a new destination uses a new function (see S3ObjectCopy), and CloudFormation
-    // does not allow a custom resource's ServiceToken to change. Deriving the construct id from
-    // the destination makes a move create a new copy resource instead, and the old one is
-    // deleted by the old function.
-    const keyPattern = this.destinationKeyPattern();
-    const copyId = `CodeCopy${destinationIdentity(destination, keyPattern).slice(0, 8)}`;
-    const copy = new S3ObjectCopy(scope, copyId, {
+    // Each copy gets its own key and its own construct id, both derived from the source object
+    // and the copy function's configuration (including the destination). Whenever the copy
+    // resource is replaced, its key is new as well. CloudFormation deletes the old resource in
+    // the cleanup phase, through its own ServiceToken, and that Delete removes only the old key,
+    // never the object the new revision reads. Deriving the id from the copy function also keeps
+    // the ServiceToken of a resource fixed, which CloudFormation does not allow to change.
+    const copyProps = {
+      destinationBucket: destination,
+      destinationKeyPattern: `${prefix}*`,
+      ...this.options.copyOptions,
+    };
+    const identity = copyIdentity(copyProps, this.asset.assetHash);
+    const copy = new S3ObjectCopy(scope, `CodeCopy${identity.slice(0, 8)}`, {
+      ...copyProps,
       sourceBucket: this.asset.bucket,
       sourceKey: this.asset.s3ObjectKey,
-      destinationBucket: destination,
-      destinationKey: key,
-      destinationKeyPattern: keyPattern,
-      ...this.options.copyOptions,
+      destinationKey: `${functionPrefix}${identity}.zip`,
     });
 
     return {
@@ -378,25 +383,22 @@ abstract class StagedAssetCode extends WebFunctionCode {
   /** The bucket the code is copied into. */
   protected abstract destinationBucket(scope: Construct): s3.IBucket;
 
-  /** The object key the code is copied to. */
-  protected abstract destinationKey(scope: Construct): string;
-
   /**
-   * Object key pattern the copy function may write, delete and list.
+   * The key prefix everything this module writes to the destination bucket lives under.
    *
-   * The key embeds the function's unique id, so renaming the construct replaces the copy
-   * resource and CloudFormation deletes the old object under the old key. The pattern has to
-   * cover that old key, or the cleanup fails once the role's policy points at the new one.
+   * The copy function may write, delete and list under it. It is shared by every function
+   * copying into the bucket, so the copy function's policy has one set of statements per
+   * bucket rather than one per function.
    */
-  protected abstract destinationKeyPattern(): string;
+  protected abstract destinationPrefix(): string;
 
   /**
-   * Grant the Lambda service principal read access to the copied object.
+   * Grant the Lambda service principal read access to the copied objects matching `keyPattern`.
    *
    * The default does nothing, for destinations that already carry a suitable statement.
    */
   protected grantDestinationRead(
-    _bucket: s3.IBucket, _key: string, _scope: Construct, _options: WebFunctionCodeBindOptions,
+    _bucket: s3.IBucket, _keyPattern: string, _scope: Construct, _options: WebFunctionCodeBindOptions,
   ): void {
     return;
   }
@@ -414,7 +416,7 @@ class ManagedBucketAssetCode extends StagedAssetCode {
     return getOrCreateAssetBucket(scope);
   }
 
-  protected grantDestinationRead(bucket: s3.IBucket, _key: string, scope: Construct): void {
+  protected grantDestinationRead(bucket: s3.IBucket, _keyPattern: string, scope: Construct): void {
     // The statement is already on the bucket, added once when the bucket was created. What
     // each function still needs is the ordering: the service reads the code through that
     // policy when the revision is created, so the revision must not exist before the policy
@@ -424,14 +426,9 @@ class ManagedBucketAssetCode extends StagedAssetCode {
     }
   }
 
-  protected destinationKey(scope: Construct): string {
-    // Unique per function, so that functions sharing the stack's bucket do not collide.
-    return `${CODE_KEY_SEGMENT}${cdk.Names.uniqueId(scope)}.zip`;
-  }
-
-  protected destinationKeyPattern(): string {
+  protected destinationPrefix(): string {
     // The bucket is CDK-owned and holds only WebFunction code, so this covers all of it.
-    return `${CODE_KEY_SEGMENT}*`;
+    return CODE_KEY_SEGMENT;
   }
 }
 
@@ -457,34 +454,28 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
     return this.bucket;
   }
 
-  protected destinationKey(scope: Construct): string {
-    const prefix = this.providedOptions.keyPrefix ?? '';
-    return `${prefix}${CODE_KEY_SEGMENT}${cdk.Names.uniqueId(scope)}.zip`;
-  }
-
-  protected destinationKeyPattern(): string {
+  protected destinationPrefix(): string {
     // Only what this module writes under the caller's prefix; the caller's own objects under
-    // the same prefix stay out of reach. Changing `keyPrefix`, or moving to another bucket,
-    // therefore puts the old object outside this pattern: the replacement's cleanup-phase
-    // Delete cannot reach it, and the handler leaves it in place rather than failing.
-    return `${this.providedOptions.keyPrefix ?? ''}${CODE_KEY_SEGMENT}*`;
+    // the same prefix stay out of reach.
+    return `${this.providedOptions.keyPrefix ?? ''}${CODE_KEY_SEGMENT}`;
   }
 
   /**
    * The caller owns this bucket, so CDK adds only the one statement the service needs to read
-   * this function's code — scoped to that object, not to the whole bucket.
+   * this function's code — scoped to its objects, not to the whole bucket.
    */
   protected grantDestinationRead(
-    bucket: s3.IBucket, key: string, scope: Construct, options: WebFunctionCodeBindOptions,
+    bucket: s3.IBucket, keyPattern: string, scope: Construct, options: WebFunctionCodeBindOptions,
   ): void {
-    grantServiceRead(bucket, key, scope, options);
+    grantServiceRead(bucket, keyPattern, scope, options);
   }
 }
 
 /**
- * Grant the Lambda service principal read access to one code object.
+ * Grant the Lambda service principal read access to code objects.
  *
- * The statement is scoped to the specific object key and conditioned on `aws:SourceAccount`
+ * The statement is scoped to `key` — one object key, or a pattern such as a function's folder —
+ * and conditioned on `aws:SourceAccount`
  * and `aws:SourceArn`. The service reads the object on behalf
  * of a revision and presents the revision ARN as the source, so the condition matches
  * `<webFunctionArn>/revision/*`. For imported buckets `addToResourcePolicy` is a no-op, so this
