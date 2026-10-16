@@ -205,7 +205,9 @@ describe('DynamoAttributeValue', () => {
     const m = '$.path';
 
     // WHEN
-    const attribute = tasks.DynamoAttributeValue.mapFromJsonPath(m);
+    const attribute = tasks.DynamoAttributeValue.mapFromJsonPath(
+      sfn.JsonPath.stringAt(m),
+    );
 
     // THEN
     expect(sfn.FieldUtils.renderObject(attribute)).toEqual({
