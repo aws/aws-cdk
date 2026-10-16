@@ -345,6 +345,20 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly mode?: RestApiMode;
 }
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
+ * Assigns the latest deployment of a RestApi.
+ *
+ * `latestDeployment` is a `readonly` property declared optional (to match
+ * `IRestApi`), so it is populated through this helper rather than a public
+ * setter. It is only ever set to a defined `Deployment`; when `deploy` is
+ * `false` the property is left absent.
+ */
+function setLatestDeployment(api: RestApiBase, deployment: Deployment): void {
+  (api as Writeable<RestApiBase>).latestDeployment = deployment;
+}
+
 /**
  * Base implementation that are common to various implementations of IRestApi
  */
@@ -362,9 +376,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    * This resource will be automatically updated every time the REST API model changes.
    * This will be undefined if `deploy` is false.
    */
-  public get latestDeployment() {
-    return this._latestDeployment;
-  }
+  public readonly latestDeployment?: Deployment;
 
   /**
    * The first domain name mapped to this API, if defined through the `domainName`
@@ -413,7 +425,6 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    */
   public readonly restApiName: string;
 
-  private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
   private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet();
 
@@ -736,18 +747,19 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
   protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
-      this._latestDeployment = new Deployment(this, 'Deployment', {
+      const deployment = new Deployment(this, 'Deployment', {
         description: props.deployOptions?.description ?? props.description ?? 'Automatically created by the RestApi construct',
         api: this,
         retainDeployments: props.retainDeployments,
       });
+      setLatestDeployment(this, deployment);
 
       // encode the stage name into the construct id, so if we change the stage name, it will recreate a new stage.
       // stage name is part of the endpoint, so that makes sense.
       const stageName = (props.deployOptions && props.deployOptions.stageName) || 'prod';
 
       this.deploymentStage = new Stage(this, `DeploymentStage.${stageName}`, {
-        deployment: this._latestDeployment,
+        deployment,
         ...props.deployOptions,
       });
 
