@@ -161,6 +161,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const LAMBDA_DENY_LOG_GROUP_CREATION = '@aws-cdk/aws-lambda:denyLogGroupCreation';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2000,6 +2001,33 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_DENY_LOG_GROUP_CREATION]: {
+    type: FlagType.BugFix,
+    summary: 'Deny `logs:CreateLogGroup` to the default role of a Lambda function whose log group is in the app',
+    detailsMd: `
+      Lambda delivers an invocation's logs a few seconds after the invocation ends, using the
+      function's execution role. When the stack is deleted, the function's log group can be deleted
+      before those logs arrive, and the delivery then creates the log group again outside the stack:
+      it never expires, and when it has a fixed name, the next deployment of the stack fails because
+      the log group already exists.
+
+      When this flag is enabled and CDK creates the function's role, the role gets an inline policy
+      that denies \`logs:CreateLogGroup\` on the function's log group if it is defined in the app:
+      either a \`LogGroup\` passed as \`logGroup\`, or the log group created by
+      \`@aws-cdk/aws-lambda:useCdkManagedLogGroup\`. Logs delivered after the log group is deleted are
+      then dropped instead of recreating it. Other log groups the role may create, such as Lambda
+      Insights' \`/aws/lambda-insights\`, are unaffected. When the function has no literal
+      \`functionName\`, the managed log group's name is not known to the role, so the deny covers
+      \`/aws/lambda/*\`.
+
+      A role passed as \`role\`, an imported log group, \`logRetention\`, and functions that leave the log
+      group to Lambda are not affected, since Lambda may need to create the log group in those cases.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
