@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import type { ApplicationLogLevel, SystemLogLevel } from './function';
 import {
   CfnNetworkConnector,
@@ -19,11 +19,12 @@ import type * as kms from '../../aws-kms';
 import { KeyGrants } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import type { Duration, IResource } from '../../core';
-import { Annotations, ArnFormat, Names, PhysicalName, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, Names, PhysicalName, Reference, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
+import { findTokens } from '../../core/lib/private/resolve';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -1042,6 +1043,19 @@ export class WebFunction extends WebFunctionBase {
    * Exports, so connectors within one top-level stack are fine. A connector imported by
    * version ARN carries no Export and is fine from anywhere.
    */
+  /**
+   * The first construct in another top-level stack that `value` references, if any.
+   *
+   * Such a reference makes CDK export the value from that stack. A nested stack in the same
+   * top-level stack is passed values as parameters instead, so it is not counted.
+   */
+  private referenceToOtherStack(value: string): IConstruct | undefined {
+    const ownStack = topLevelStack(Stack.of(this));
+    const reference = findTokens(this, () => value).find((token): token is Reference =>
+      token instanceof Reference && topLevelStack(Stack.of(token.target)) !== ownStack);
+    return reference?.target;
+  }
+
   private resolveEgressNetworkConnectorArn(connector?: INetworkConnector): string | undefined {
     if (connector === undefined) {
       return undefined;
@@ -1052,6 +1066,17 @@ export class WebFunction extends WebFunctionBase {
         `but this WebFunction is in '${Stack.of(this).node.path}'. Its latest version ARN changes on every update ` +
         'and cannot be exported across stacks. Define the connector in this stack, or import a fixed version ' +
         'from a literal ARN string with NetworkConnector.fromNetworkConnectorVersionArn().', this);
+    }
+    // An import is not owned, but the ARN it was given can still reference a connector in another
+    // stack, typically that connector's `latestVersionArn`. That creates the same Export, which
+    // CloudFormation will not let change on the next update to the connector.
+    const referenced = this.referenceToOtherStack(connector.latestVersionArn);
+    if (referenced !== undefined) {
+      throw new ValidationError(lit`WebFunctionNetworkConnectorVersionArnFromOtherStack`,
+        `The network connector '${connector.node.path}' was imported from a value that references ` +
+        `'${referenced.node.path}' in stack '${Stack.of(referenced).node.path}', but this WebFunction is in ` +
+        `'${Stack.of(this).node.path}'. A connector's version ARN changes on every update and cannot be ` +
+        'exported across stacks. Import the version from a literal ARN string instead.', this);
     }
     // A connector serves one compute type. For one defined in this app the type is in its L1,
     // so a mismatch fails here instead of at deployment; an import carries no configuration

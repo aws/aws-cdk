@@ -4,6 +4,7 @@ import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { Alias, Key } from '../../aws-kms';
 import { LogGroup } from '../../aws-logs';
 import { Bucket } from '../../aws-s3';
+import * as ssm from '../../aws-ssm';
 import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
@@ -1222,6 +1223,31 @@ describe('WebFunction egress network connector', () => {
 
     expect(() => new WebFunction(stack, 'Test', minimalProps({ egressNetworkConnector: connector })))
       .toThrow(/was created for MicroVm, but a WebFunction needs one created for NetworkConnectorComputeType.WEB_FUNCTION/);
+  });
+
+  test('rejects a version ARN imported from a connector in another stack', () => {
+    const other = new Stack(app, 'Other', { env: { account: '123456789012', region: 'us-west-2' } });
+    const source = ownedConnector(other);
+    const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Imported', source.latestVersionArn);
+
+    expect(() => new WebFunction(stack, 'Test', minimalProps({ egressNetworkConnector: connector })))
+      .toThrow(/was imported from a value that references '.*' in stack 'Other'/);
+  });
+
+  test('accepts a version ARN imported from a connector in the same stack', () => {
+    const source = ownedConnector(stack);
+    const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Imported', source.latestVersionArn);
+    new WebFunction(stack, 'Test', minimalProps({ egressNetworkConnector: connector }));
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::WebFunctionRevision', 1);
+  });
+
+  test('accepts a version ARN read from an SSM parameter', () => {
+    const arn = ssm.StringParameter.valueForStringParameter(stack, '/connector/version-arn');
+    const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Imported', arn);
+    new WebFunction(stack, 'Test', minimalProps({ egressNetworkConnector: connector }));
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::WebFunctionRevision', 1);
   });
 
   test('accepts a version ARN imported into another stack', () => {

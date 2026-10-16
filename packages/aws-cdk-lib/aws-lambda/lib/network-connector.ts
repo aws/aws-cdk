@@ -273,6 +273,10 @@ export class NetworkConnector extends NetworkConnectorBase {
    * parameter, an imported value — cannot be inspected until deployment, where an unqualified
    * ARN is rejected by the service when the revision is created.
    *
+   * Do not pass the `latestVersionArn` of a connector in another stack. It changes on every
+   * update to the connector, and CloudFormation does not allow an exported value that another
+   * stack imports to change; a WebFunction rejects such an import at synthesis.
+   *
    * @param networkConnectorVersionArn A qualified ARN, `arn:...:network-connector:nc-<id>:<version>`
    */
   public static fromNetworkConnectorVersionArn(scope: Construct, id: string, networkConnectorVersionArn: string): INetworkConnector {
