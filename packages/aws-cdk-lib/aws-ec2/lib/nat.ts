@@ -278,6 +278,15 @@ export interface RegionalNatGatewayProviderProps {
  */
 export interface NatInstanceProps {
   /**
+   * Whether NAT instances require IMDSv2 for instance metadata requests.
+   *
+   * Ensure a custom machine image supports IMDSv2 before enabling this option.
+   *
+   * @default - follows the Instance default
+   */
+  readonly requireImdsv2?: boolean;
+
+  /**
    * The machine image (AMI) to use
    *
    * By default, will do an AMI lookup for the latest NAT instance image.
@@ -655,6 +664,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         // presence of the key alone triggers the InstanceProps#keyName deprecation warning (#30806)
         ...(this.props.keyName !== undefined ? { keyName: this.props.keyName } : {}),
         creditSpecification: this.props.creditSpecification,
+        requireImdsv2: this.props.requireImdsv2,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
@@ -816,6 +826,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
         // presence of the key alone triggers the InstanceProps#keyName deprecation warning (#30806)
         ...(this.props.keyName !== undefined ? { keyName: this.props.keyName } : {}),
         creditSpecification: this.props.creditSpecification,
+        requireImdsv2: this.props.requireImdsv2,
         userData,
       });
       // NAT instance routes all traffic, both ways
