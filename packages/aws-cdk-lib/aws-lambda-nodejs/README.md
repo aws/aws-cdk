@@ -316,14 +316,14 @@ If your bundle loses metadata from imported modules, configure resolution to use
 JavaScript emitted by `tsc`:
 
 ```ts
+const esbuildArgs = { '--resolve-extensions': '.js' };
+
 new nodejs.NodejsFunction(this, 'metadata-handler', {
   entry: 'lib/handler.ts',
   bundling: {
     preCompilation: true,
     tsconfig: 'tsconfig.lambda.json',
-    esbuildArgs: {
-      '--resolve-extensions': '.js',
-    },
+    esbuildArgs,
   },
 });
 ```
