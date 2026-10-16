@@ -28,6 +28,22 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
+test.each([false, true])('asset exclusions with skip=%s', (skip) => {
+  const entry = path.join(__dirname, 'lambda-handler-nodeps');
+  Bundling.bundle({
+    entry,
+    runtime: Runtime.PYTHON_3_12,
+    assetExcludes: ['*.egg-info'],
+    skip,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    // Bundled assets continue to exclude via rsync, preserving their source hashes.
+    exclude: skip ? ['*.pyc', '*.egg-info'] : ['*.pyc'],
+  }));
+  expect(DockerImage.fromBuild).toHaveBeenCalledTimes(skip ? 0 : 1);
+});
+
 test('Bundling a function without dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
   const assetCode = Bundling.bundle({
