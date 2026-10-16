@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "BedrockAgentCoreOnlineEvaluation/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17"
     }
   },
-  "minimumCliVersion": "2.1121.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

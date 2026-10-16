@@ -61,7 +61,7 @@ export class EvaluatorSelector {
    * const ref = agentcore.EvaluatorSelector.custom(myCustomEvaluator);
    */
   public static custom(evaluator: IEvaluator): EvaluatorSelector {
-    return new EvaluatorSelector(evaluator.evaluatorId);
+    return new EvaluatorSelector(evaluator.evaluatorId, evaluator);
   }
 
   /**
@@ -69,8 +69,16 @@ export class EvaluatorSelector {
    */
   public readonly evaluatorId: string;
 
-  private constructor(evaluatorId: string) {
+  /**
+   * The custom evaluator this selector references.
+   *
+   * Only set for selectors created with `EvaluatorSelector.custom()`.
+   */
+  public readonly evaluator?: IEvaluator;
+
+  private constructor(evaluatorId: string, evaluator?: IEvaluator) {
     this.evaluatorId = evaluatorId;
+    this.evaluator = evaluator;
   }
 
   /**
