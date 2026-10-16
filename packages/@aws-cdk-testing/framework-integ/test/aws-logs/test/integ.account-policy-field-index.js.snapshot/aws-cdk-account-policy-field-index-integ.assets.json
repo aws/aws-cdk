@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d194ade40fe67062c59ba6e0e0b1c90de76a4881f97d81849f1efe5dcbccf451": {
+      "displayName": "aws-cdk-account-policy-field-index-integ Template",
+      "source": {
+        "path": "aws-cdk-account-policy-field-index-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dae8c16b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d194ade40fe67062c59ba6e0e0b1c90de76a4881f97d81849f1efe5dcbccf451.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
