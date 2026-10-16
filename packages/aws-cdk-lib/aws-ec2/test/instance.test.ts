@@ -123,6 +123,15 @@ describe('instance', () => {
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
   });
+  test('c9g instance class renders the c9g instance type and is discerned as arm', () => {
+    // WHEN
+    const instanceType = InstanceType.of(InstanceClass.C9G, InstanceSize.XLARGE);
+
+    // THEN
+    expect(instanceType.toString()).toBe('c9g.xlarge');
+    expect(InstanceType.of(InstanceClass.COMPUTE9_GRAVITON, InstanceSize.XLARGE).toString()).toBe('c9g.xlarge');
+    expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
+  });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
     const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a', 'g6', 'p4de', 'p5', 'm7i-flex']; // A sample of x86-64 instance classes
