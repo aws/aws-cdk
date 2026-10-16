@@ -197,14 +197,10 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   public readonly deploymentKey?: kms.IKey;
 
-  private readonly _deploymentStrategy?: IDeploymentStrategyRef;
-
   /**
    * The deployment strategy for the configuration.
    */
-  public get deploymentStrategy(): IDeploymentStrategy | undefined {
-    return this._deploymentStrategy ? toIDeploymentStrategy(this._deploymentStrategy) : undefined;
-  }
+  public readonly deploymentStrategy?: IDeploymentStrategy;
 
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
@@ -225,9 +221,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
     this.deletionProtectionCheck = props.deletionProtectionCheck;
-    this._deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
+    this.deploymentStrategy = toIDeploymentStrategy(props.deploymentStrategy ?? new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
-    });
+    }));
   }
 
   /**
