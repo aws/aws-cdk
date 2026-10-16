@@ -80,6 +80,10 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps = {}) {
     super(scope, id, props);
 
+    if (props.taskDefinition && props.taskRole) {
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionTaskRole`, 'taskRole cannot be specified with taskDefinition; configure the role on the task definition instead', this);
+    }
+
     if (props.taskDefinition && props.image) {
       throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify only one of taskDefinition or image', this);
     } else if (props.taskDefinition) {
@@ -91,6 +95,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
         cpu: props.cpu || 256,
         ephemeralStorageGiB: props.ephemeralStorageGiB,
         family: props.family,
+        taskRole: props.taskRole,
         runtimePlatform: props.runtimePlatform,
       });
 

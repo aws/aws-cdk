@@ -8,6 +8,7 @@ import type {
 import {
   AwsLogDriver, Cluster,
 } from '../../../aws-ecs';
+import type { IRole } from '../../../aws-iam';
 import type { IQueue } from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack, ValidationError } from '../../../core';
@@ -50,6 +51,16 @@ export interface QueueProcessingServiceBaseProps {
    * @default - the image of the task definition is used for Fargate, required otherwise
    */
   readonly image?: ContainerImage;
+
+  /**
+   * The IAM role assumed by tasks created by this pattern.
+   *
+   * Cannot be combined with `taskDefinition`; configure the role on that definition instead.
+   * The role receives permission to consume messages from the queue.
+   *
+   * @default - a new task role is created
+   */
+  readonly taskRole?: IRole;
 
   /**
    * The command that is passed to the container.
