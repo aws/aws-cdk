@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "WebFunctionEgressTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionEgress"
+      ],
+      "assertionStack": "WebFunctionEgressTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionEgressTestDefaultTestDeployAssert0714DEC0"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
