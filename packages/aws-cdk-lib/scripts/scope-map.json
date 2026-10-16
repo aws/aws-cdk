@@ -101,6 +101,13 @@
       }
     ]
   },
+  "aws-appfabric": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppFabric"
+      }
+    ]
+  },
   "aws-appflow": {
     "scopes": [
       {
@@ -1251,6 +1258,13 @@
     "scopes": [
       {
         "namespace": "AWS::LicenseManager"
+      }
+    ]
+  },
+  "aws-licensemanagerlinuxsubscriptions": {
+    "scopes": [
+      {
+        "namespace": "AWS::LicenseManagerLinuxSubscriptions"
       }
     ]
   },
