@@ -1564,3 +1564,19 @@ function expectToThrow(fn: () => void, msgs: (RegExp | string)[]): void {
     }
   }
 }
+
+describe('resourceCountMatches', () => {
+  const template = Template.fromJSON({ Resources: { One: { Type: 'Foo::Bar' }, Two: { Type: 'Foo::Bar' } } });
+
+  test('supports numeric and existing matchers', () => {
+    template.resourceCountMatches('Foo::Bar', Match.greaterThan(0));
+    template.resourceCountMatches('Foo::Bar', Match.lessThanOrEqual(2));
+    template.resourceCountMatches('Foo::Missing', Match.exact(0));
+    template.resourceCountIs('Foo::Bar', 2);
+  });
+
+  test('reports the type, actual count and comparison failure', () => {
+    expect(() => template.resourceCountMatches('Foo::Bar', Match.greaterThan(2)))
+      .toThrow(/Resource count for Foo::Bar \(2\) did not match:[\s\S]*Expected 2 > 2/);
+  });
+});
