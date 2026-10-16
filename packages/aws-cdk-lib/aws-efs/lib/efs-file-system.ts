@@ -297,7 +297,11 @@ export interface FileSystemProps {
   /**
    * Whether to enable automatic backups for the file system.
    *
-   * @default false
+   * With the `@aws-cdk/aws-efs:explicitBackupPolicy` feature flag enabled,
+   * `false` or an omitted value explicitly disables automatic backups.
+   * Without the flag, these values leave the backup policy unconfigured.
+   *
+   * @default - false with the feature flag enabled; otherwise the backup policy is not configured.
    */
   readonly enableAutomaticBackups?: boolean;
 
@@ -849,7 +853,9 @@ export class FileSystem extends FileSystemBase {
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
-      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
+      backupPolicy: props.enableAutomaticBackups
+        ? { status: 'ENABLED' }
+        : FeatureFlags.of(this).isEnabled(cxapi.EFS_EXPLICIT_BACKUP_POLICY) ? { status: 'DISABLED' } : undefined,
       fileSystemPolicy: Box.combine(
         { grantedClient: this._grantedClient, policy: this._fileSystemPolicy },
         ({ grantedClient, policy }) => {

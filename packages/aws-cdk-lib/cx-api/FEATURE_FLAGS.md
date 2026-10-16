@@ -121,6 +121,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | V2NEXT | fix |
+| [@aws-cdk/aws-efs:explicitBackupPolicy](#aws-cdkaws-efsexplicitbackuppolicy) | Explicitly configure the EFS automatic backup policy when backups are disabled | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -166,6 +167,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
+    "@aws-cdk/aws-efs:explicitBackupPolicy": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
     "@aws-cdk/aws-eks:defaultToAL2023": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
@@ -2637,6 +2639,30 @@ When disabled, the destination ARN keeps using the log group `Arn` attribute.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
+
+
+### @aws-cdk/aws-efs:explicitBackupPolicy
+
+*Explicitly configure the EFS automatic backup policy when backups are disabled*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, `FileSystem` sets the backup policy to `DISABLED` when
+`enableAutomaticBackups` is false or omitted, and to `ENABLED` when it is true.
+Without this flag, false and omitted values leave the backup policy unconfigured,
+which can leave automatic backups enabled by the service.
+
+Enabling this flag can disable automatic backups for existing file systems.
+Set `enableAutomaticBackups: true` before enabling the flag if backups
+should remain enabled.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set this flag to `false` to preserve the existing backup policy when `enableAutomaticBackups` is false or omitted.
 
 
 <!-- END details -->
