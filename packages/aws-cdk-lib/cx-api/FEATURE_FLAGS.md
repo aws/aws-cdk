@@ -119,6 +119,8 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
+| [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | V2NEXT | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy](#aws-cdkaws-stepfunctions-tasksfixbatchsubmitjobpolicy) | When enabled, BatchSubmitJob grants batch:SubmitJob on its job definition instead of every job definition in the account. | V2NEXT | fix |
 
 <!-- END table -->
@@ -134,12 +136,14 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
@@ -2584,6 +2588,59 @@ is added, updated or removed, so expect a one-time deployment of those services.
 **Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
 
 
+### @aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps
+
+*Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS*
+
+Flag type: New default behavior
+
+When enabled, cache behaviors on a `Distribution` that do not specify an explicit
+`viewerProtocolPolicy` default to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS` instead of
+`ViewerProtocolPolicy.ALLOW_ALL`, so viewers are redirected from HTTP to HTTPS rather
+than being served over plaintext HTTP.
+
+This applies to the default behavior, to `additionalBehaviors`, and to behaviors added
+later with `addBehavior()`. An explicitly specified `viewerProtocolPolicy` always wins,
+regardless of this flag.
+
+Note that `REDIRECT_TO_HTTPS` answers an HTTP request with an HTTP 301 redirect, which the
+viewer then follows with a second request. That additional request is billable.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.273.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
+
+
+### @aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard
+
+*Render the API Gateway access log destination ARN without the trailing `:*`*
+
+Flag type: Backwards incompatible bugfix
+
+API Gateway stores the access log destination ARN without the trailing `:*` that
+`LogGroup.logGroupArn` carries. When the CDK renders the log group `Arn` attribute,
+CloudFormation drift detection reports the stage as `MODIFIED` on every run, even
+though the access logging configuration has not changed.
+
+When this flag is enabled, `LogGroupLogDestination` rebuilds the ARN from the log
+group name, so the synthesized template matches the value stored by the service and
+drift detection reports the stage as `IN_SYNC`.
+
+When disabled, the destination ARN keeps using the log group `Arn` attribute.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
+
+
 ### @aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy
 
 *When enabled, BatchSubmitJob grants batch:SubmitJob on its job definition instead of every job definition in the account.*
@@ -2600,6 +2657,5 @@ It is not on by default because other states that share the role, and submit a d
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
-
 
 <!-- END details -->
