@@ -2042,3 +2042,448 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
+## WebFunction
+
+`WebFunction` is a serverless compute resource that lets you build and deploy low-latency web applications on AWS infrastructure. WebFunctions deploy as function endpoints spanning multiple regions, acting as global web servers — no API Gateway or CloudFront required.
+
+### Basic Usage
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const codeBucket = s3.Bucket.fromBucketName(this, 'CodeBucket', 'my-code-bucket');
+
+const webFunction = new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+});
+```
+
+### Code Bucket Requirements
+
+WebFunction reads its code from S3 at runtime, as the Lambda service principal
+(`lambda.amazonaws.com`). That puts three requirements on the code bucket:
+
+1. **Versioning enabled** — each revision pins one version of the code object.
+2. **A bucket policy** granting `lambda.amazonaws.com` `s3:GetObject` and
+   `s3:GetObjectVersion` on the code object.
+3. **If the bucket is encrypted with a KMS key, a key policy** granting
+   `lambda.amazonaws.com` `kms:Decrypt`.
+
+`WebFunctionCode.fromBucket()` meets these on a best-effort basis:
+
+- **Bucket policy**: the statement is added automatically, scoped to the code
+  object, the deploying account, and the revisions of this WebFunction.
+- **Key policy**: for a customer managed key, `kms:Decrypt` is granted
+  automatically. An AWS-managed key (`BucketEncryption.KMS_MANAGED` or
+  `BucketEncryption.DSSE_MANAGED`) cannot work, since its policy cannot be
+  modified; a bucket defined in the same app with one fails at synthesis.
+- **Versioning**: `fromBucket()` does not change the bucket's versioning
+  setting, so it is asserted instead: a bucket defined in the same app without
+  `versioned: true` fails at synthesis.
+- **Imported buckets** (like `Bucket.fromBucketName` above): none of this can be
+  applied or checked from this app. Make sure yourself that versioning is
+  enabled, that the key policy grants `kms:Decrypt` if a customer managed key is
+  used, and that the bucket carries a policy statement like:
+
+```json
+{
+  "Effect": "Allow",
+  "Principal": { "Service": "lambda.amazonaws.com" },
+  "Action": ["s3:GetObject", "s3:GetObjectVersion"],
+  "Resource": "arn:aws:s3:::my-code-bucket/app.zip",
+  "Condition": {
+    "StringEquals": { "aws:SourceAccount": "123456789012" },
+    "ArnLike": {
+      "aws:SourceArn": "arn:aws:lambda:us-east-1:123456789012:web-function/my-function/revision/*"
+    }
+  }
+}
+```
+
+### Staging Local Code
+
+`fromBucket()` expects the code to already sit in a bucket that meets the
+requirements above. To deploy code from your local filesystem, use one of the asset
+factories instead. They stage the code the usual way and then copy it into a
+destination bucket that satisfies those requirements — the CDK bootstrap bucket
+cannot be used directly, since it has no versioning and its policy does not grant
+the Lambda service principal read access.
+
+Staging does not work in an environment bootstrapped with a customer managed KMS key.
+The copy function reads the staged asset from the bootstrap bucket and is not granted
+`kms:Decrypt` on that key, so the deployment fails with `AccessDenied` on `CopyObject`.
+In that case, upload the code to a bucket yourself and use `fromBucket()`.
+
+#### Into a bucket CDK creates
+
+```ts
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromAssetToManagedBucket(path.join(__dirname, 'my-app')),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+});
+```
+
+One bucket is created per stack and shared by every WebFunction in it that uses this
+factory, configured with everything WebFunction requires: versioning, AES256 (SSE-S3)
+encryption, and a policy granting `lambda.amazonaws.com` read access. It is created
+with `RemovalPolicy.DESTROY` and `autoDeleteObjects`, so it is removed together with
+the stack that owns it.
+
+The read grant covers every object in the bucket and matches any WebFunction revision in
+the account, rather than one statement per function, so that the policy does not grow with
+the number of functions. It does not isolate the functions sharing the bucket from each
+other. That isolation comes from the service: when a revision is created, it reads the code
+object with the caller's own credentials and rejects the request if the caller cannot, so
+creating a revision requires read access to its code.
+
+#### Into a bucket you own
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const codeBucket = new s3.Bucket(this, 'CodeBucket', { versioned: true });
+
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromAssetToProvidedBucket(codeBucket, path.join(__dirname, 'my-app'), {
+    keyPrefix: 'apps/',
+  }),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+});
+```
+
+The code is written to `<keyPrefix>web-function/<unique id>/<hash>.zip` —
+`apps/web-function/…` above. CDK only ever writes and deletes objects under that
+`web-function/` segment, never elsewhere in your bucket.
+
+The bucket must meet the same requirements as for `fromBucket()` (see *Code Bucket
+Requirements* above). Since the bucket is yours, CDK makes only the changes it has to and
+leaves the rest to you:
+
+- **Bucket policy** — handled by CDK. Each WebFunction adds its own statement granting
+  `lambda.amazonaws.com` read access to its own objects, on behalf of its own revisions
+  only.
+- **Key policy** — handled by CDK for a customer managed key: `kms:Decrypt` is granted in a
+  single statement shared by all functions. An AWS-managed key
+  (`BucketEncryption.KMS_MANAGED` or `BucketEncryption.DSSE_MANAGED`) cannot work, since its
+  policy cannot be modified; for a bucket defined in the same app this fails at synthesis.
+  SSE-S3 needs nothing.
+- **Versioning** — yours to enable. It is validated at synthesis for a bucket defined in the
+  same app.
+
+For an imported bucket or key, CDK can neither change nor inspect any of this. The policy
+grants become no-ops and a warning is emitted, a bucket without versioning is rejected at
+deployment, and an AWS-managed key surfaces as a read failure at runtime.
+
+Because the bucket-policy statements accumulate, the 20 KB policy limit fits roughly 40–45
+WebFunctions per bucket, fewer if the policy already carries statements of your own. To
+serve more, you can:
+
+- spread them across several buckets;
+- use `fromAssetToManagedBucket()`, whose bucket policy does not grow with the number of
+  functions; or
+- import the bucket (for example with `s3.Bucket.fromBucketName`) and grant
+  `lambda.amazonaws.com` read access yourself with a single statement covering all your
+  functions. Note that a single statement no longer confines each function to its own code
+  object.
+
+
+#### Configuring the copy step
+
+Both asset factories move the staged code into the destination bucket with a
+CloudFormation custom resource: a small Lambda function that CloudFormation invokes
+during deployment to copy the object. It returns the S3 version ID of the object it
+wrote, and the WebFunction revision refers to exactly that version.
+
+Each deployment of new code writes a new object, and the copy that wrote the previous
+one is replaced. The previous revision keeps serving from its own object while the
+deployment is in progress, and if the deployment rolls back, the new object is removed and
+traffic returns to it. Once the deployment succeeds, the previous object is deleted. The
+same happens when the destination or `copyOptions` change, and when a WebFunction is removed
+from the stack its object is deleted as well.
+
+One copy function is created per stack and shared by all WebFunctions in it. Pass
+`copyOptions` if your organization requires it to run inside a VPC, or to give it an
+execution role, security groups or log group of your own:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.IVpc;
+
+lambda.WebFunctionCode.fromAssetToManagedBucket(path.join(__dirname, 'my-app'), {
+  copyOptions: {
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+  },
+});
+```
+
+WebFunctions that pass different `copyOptions` get separate copy functions, since one
+Lambda function cannot carry two configurations.
+
+Without `logGroup`, CDK creates a log group for the copy function in the stack, with the
+default retention. Pass a log group of your own to control its retention or encryption.
+
+### Authentication
+
+`authType` is required with no default — you must choose explicitly:
+
+- `WebFunctionAuthType.IAM_AUTH` — Lambda authorizes requests using SigV4/IAM.
+- `WebFunctionAuthType.APPLICATION_MANAGED` — The endpoint is public; your handler code must validate every request.
+
+### Multi-Region Deployment
+
+Deploy globally with latency-based routing:
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+new lambda.WebFunction(this, 'GlobalApi', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  endpointType: lambda.WebFunctionEndpointType.MULTI_REGION,
+  replicaRegions: lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
+});
+```
+
+Use predefined region groups or pass explicit arrays. The stack's own region always serves
+traffic, whether or not it is listed. `of()` takes the regions to include, and optionally a
+second list of regions to exclude from them:
+
+```ts
+// All default regions except the EU group
+lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.ALL_DEFAULT_REGIONS, lambda.WebFunctionRegions.EU)
+
+// Explicit regions
+lambda.WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1', 'ap-northeast-1'])
+```
+
+The groups in `WebFunctionRegions` list the regions known to the installed version of
+`aws-cdk-lib`, and are expanded at synthesis. A region launched later only appears in a
+group, including one you exclude from, once you upgrade `aws-cdk-lib`; nothing reports it
+in the meantime. Explicitly listed regions are unaffected.
+
+For a separate regional endpoint per region (instead of managed latency-based
+routing), use `WebFunctionEndpointType.PER_REGION`. Like `MULTI_REGION`, it requires
+`replicaRegions`:
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+new lambda.WebFunction(this, 'PerRegionApi', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  endpointType: lambda.WebFunctionEndpointType.PER_REGION,
+  replicaRegions: lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
+});
+```
+
+### Changing an endpoint
+
+`endpointName`, `endpointType` and `replicaRegions` are create-only on the
+underlying endpoint resource. Changing any of them replaces the endpoint, and the
+replacement gets a new `domainName`, so every client that uses the old hostname
+breaks. Adding a replica region later therefore means a new URL; decide the
+region set up front where you can. Changing `webFunctionName` replaces the whole
+WebFunction, with the same effect.
+
+CloudFormation cannot replace a resource that keeps the same name. When you leave
+`endpointName` unset, the name is derived from `endpointType` and `replicaRegions`
+(`prod` for a home-Region endpoint), so changing them renames the endpoint too and the
+replacement goes through. If you set `endpointName`, change it together with them, or the
+deployment fails. The same applies to a `replicaRegions` list that is only known at
+deployment, such as a `CfnParameter`, since its value cannot feed the name.
+
+Renaming the construct id has the same effect as changing `webFunctionName`: the
+generated name derives from the construct's path, so CloudFormation creates a new
+WebFunction with a new URL and deletes the old one. With a fixed `webFunctionName` the
+rename fails instead, because the old function still holds that name. Keep the construct
+id stable once an endpoint is in use.
+
+Changes to the revision (code, runtime, environment variables, `kmsKey`,
+`timeout`, `role`, logging) create a new revision and repoint the existing
+endpoint to it in place, and `authType` is updated in place. `domainName` does
+not change in either case.
+
+The new revision receives all traffic as soon as the endpoint is repointed, and the
+previous revision is deleted when the deployment completes. Creating a revision does
+not check that its code starts, so code that fails at startup still deploys
+successfully and only fails once requests arrive. To roll back automatically, deploy
+with CloudFormation [rollback triggers](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-rollback-triggers.html):
+a CloudWatch alarm and a monitoring period. CloudFormation keeps the previous revision
+until the monitoring period ends, so an alarm in that window returns traffic to it.
+
+### Environment Variables and Logging
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  environment: {
+    TABLE_NAME: 'my-table',
+  },
+  applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+  systemLogLevel: lambda.SystemLogLevel.WARN,
+});
+```
+
+By default the runtime executes `index.js` at the root of the deployment
+package. Use `entryPoint` to point it at a different file (surfaced to the
+runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable):
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  entryPoint: 'src/server.js',
+});
+```
+
+### VPC Access with a Network Connector
+
+A WebFunction reaches resources in a VPC through a `NetworkConnector`: a Lambda resource
+that holds the network configuration and owns the network interfaces in your VPC. The
+interfaces are provisioned when the connector is created, so creating or updating the
+function does not wait on them.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.Vpc;
+declare const code: lambda.WebFunctionCode;
+
+const securityGroup = new ec2.SecurityGroup(this, 'EgressSecurityGroup', { vpc });
+
+const connector = new lambda.NetworkConnector(this, 'Egress', {
+  configuration: lambda.NetworkConnectorConfiguration.vpcEgress({
+    computeType: lambda.NetworkConnectorComputeType.WEB_FUNCTION,
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    securityGroups: [securityGroup],
+  }),
+});
+
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code,
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  egressNetworkConnector: connector,
+});
+```
+
+A connector serves one compute type, so a WebFunction needs one created for
+`NetworkConnectorComputeType.WEB_FUNCTION`. The connector only initiates connections; the
+security groups' outbound rules decide what the function can reach.
+
+The Lambda service manages the network interfaces through the connector's `operatorRole`.
+By default a role with the AWS managed policy `AWSLambdaNetworkConnectorOperatorPolicy` is
+created. If you pass your own role, that policy is attached to it when the role is defined in
+the same app; a role imported by ARN or name cannot be modified, so a warning is emitted and
+it must already carry the policy or equivalent permissions.
+
+Use a role dedicated to the connector. The service assumes it without presenting a source
+account or ARN, so its trust policy cannot be conditioned, and whatever else uses the role
+gains the permissions to manage network interfaces in the VPC. A function's execution role,
+for example, already trusts `lambda.amazonaws.com`, so passing it as the operator role would
+give that function's code those permissions.
+
+#### Connector versions and how the function follows them
+
+Every update to a connector produces a new, immutable version, and a WebFunction revision
+pins to exactly one version. There are two ways to reference a connector, and they differ
+in who decides when the function moves to a new version.
+
+**A connector in the same stack** — as above — pins the revision to the connector's latest
+version at deployment time. When you later update the connector, the same deployment
+replaces the revision and shifts traffic to it, so the function moves to the new version
+as part of that change, with CloudFormation's usual rollback if it fails. Nothing changes
+outside of a deployment.
+
+**A fixed version, imported by its ARN** — pins the function until you change the ARN in
+your code. Updates to the connector do not touch the function.
+
+```ts
+declare const code: lambda.WebFunctionCode;
+
+const connector = lambda.NetworkConnector.fromNetworkConnectorVersionArn(
+  this, 'Egress', 'arn:aws:lambda:us-west-2:123456789012:network-connector:nc-0123abcd:3',
+);
+
+new lambda.WebFunction(this, 'MyWebFunction', {
+  code,
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  egressNetworkConnector: connector,
+});
+```
+
+This is also the only way to use a connector that lives in another stack. A connector's
+latest version ARN changes on every update, and CloudFormation does not let a stack change
+an exported value while another stack imports it, so referencing a connector *defined* in
+another stack is rejected at synthesis.
+
+`NetworkConnector.fromNetworkConnectorArn()` imports a connector by its unqualified ARN,
+which names the connector as a whole rather than a version. Use it for IAM policies; a
+WebFunction cannot pin to it and refuses it.
+
+#### Removing a subnet or security group
+
+Earlier connector versions keep their network interfaces, and an update does not delete
+them. A subnet or security group you remove from the connector is therefore still in use by
+the previous version, and cannot be deleted in the same deployment.
+
+### Importing an Existing WebFunction
+
+```ts
+const imported = lambda.WebFunction.fromWebFunctionArn(
+  this, 'Imported', 'arn:aws:lambda:us-west-2:123456789012:web-function/my-function',
+);
+```
+
+### Escape Hatches
+
+The construct exposes its underlying L1 resources for advanced configuration:
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+const wf = new lambda.WebFunction(this, 'MyWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+});
+
+wf.resource.addOverride('Properties.SomeField', 'value');
+wf.resourceRevision.addOverride('Properties.SomeField', 'value');
+wf.resourceEndpoint.addOverride('Properties.SomeField', 'value');
+```
+
+For configurations the construct does not model, such as splitting traffic across multiple
+revisions, use the L1 constructs (`CfnWebFunction`, `CfnWebFunctionRevision` and
+`CfnWebFunctionEndpoint`) directly.
+
+Metrics are not modeled yet. The endpoint publishes them in the `AWS/Lambda/Web` namespace with
+the `FunctionName` and `EndpointName` dimensions; use `cloudwatch.Metric` to reference them.

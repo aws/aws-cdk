@@ -1,0 +1,1248 @@
+{
+ "Resources": {
+  "AutomaticServiceRole73715D6D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticCodeCopyaea738b411903B2E": {
+   "Type": "Custom::S3ObjectCopy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085",
+      "Arn"
+     ]
+    },
+    "SourceBucketName": {
+     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+    },
+    "SourceObjectKey": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a.zip",
+    "DestinationBucketName": {
+     "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
+    },
+    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AutomaticLogGroupC4AD0641": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStageetStackAutomaticA68429D7",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AutomaticFunctionB47C23F8": {
+   "Type": "AWS::Lambda::WebFunction",
+   "Properties": {
+    "FunctionName": "WebFunctionStageetStackAutomaticA68429D7"
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticRevision65EF45A7": {
+   "Type": "AWS::Lambda::WebFunctionRevision",
+   "Properties": {
+    "BuildConfig": {
+     "CodeConfig": {
+      "S3Object": {
+       "Bucket": {
+        "Fn::GetAtt": [
+         "AutomaticCodeCopyaea738b411903B2E",
+         "Bucket"
+        ]
+       },
+       "Key": {
+        "Fn::GetAtt": [
+         "AutomaticCodeCopyaea738b411903B2E",
+         "Key"
+        ]
+       },
+       "VersionId": {
+        "Fn::GetAtt": [
+         "AutomaticCodeCopyaea738b411903B2E",
+         "VersionId"
+        ]
+       }
+      }
+     },
+     "RuntimeConfig": {
+      "Runtime": "nodejs24.x"
+     }
+    },
+    "FunctionName": {
+     "Ref": "AutomaticFunctionB47C23F8"
+    },
+    "ServiceConfig": {
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "AutomaticServiceRole73715D6D",
+       "Arn"
+      ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "AutomaticLogGroupC4AD0641"
+       }
+      }
+     },
+     "TimeoutSeconds": 30
+    }
+   },
+   "DependsOn": [
+    "AutomaticFunctionB47C23F8",
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticEndpointC59D3C8A": {
+   "Type": "AWS::Lambda::WebFunctionEndpoint",
+   "Properties": {
+    "AuthType": "IamAuth",
+    "EndpointName": "prod",
+    "EndpointType": "HomeRegion",
+    "FunctionName": {
+     "Ref": "AutomaticFunctionB47C23F8"
+    },
+    "RevisionWeights": [
+     {
+      "RevisionId": {
+       "Fn::GetAtt": [
+        "AutomaticRevision65EF45A7",
+        "RevisionId"
+       ]
+      },
+      "Weight": 100
+     }
+    ]
+   },
+   "DependsOn": [
+    "AutomaticFunctionB47C23F8",
+    "AutomaticRevision65EF45A7",
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AWSCDKWebFunctionAssetBucket5B596593": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AWSCDKWebFunctionAssetBucketPolicy406CF5E7": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AWSCDKWebFunctionAssetBucket5B596593",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AWSCDKWebFunctionAssetBucket5B596593",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "AWSCDKWebFunctionAssetBucket5B596593",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "AWSCDKWebFunctionAssetBucket5B596593",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":web-function/*/revision/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AWSCDKWebFunctionAssetBucket5B596593",
+            "Arn"
+           ]
+          },
+          "/web-function/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "AWSCDKWebFunctionAssetBucketAutoDeleteObjectsCustomResource7C95046A": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
+    }
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "AWSCDKWebFunctionAssetBucket5B596593",
+            "Arn"
+           ]
+          },
+          "/web-function/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:ListBucketVersions",
+       "Condition": {
+        "StringLike": {
+         "s3:prefix": "web-function/*"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AWSCDKWebFunctionAssetBucket5B596593",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207",
+    "Roles": [
+     {
+      "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
+    },
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207",
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
+   ]
+  },
+  "AutomaticSecondServiceRoleCA7814FD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticSecondCodeCopyaea738b4D7DB0431": {
+   "Type": "Custom::S3ObjectCopy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085",
+      "Arn"
+     ]
+    },
+    "SourceBucketName": {
+     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+    },
+    "SourceObjectKey": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a.zip",
+    "DestinationBucketName": {
+     "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
+    },
+    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AutomaticSecondLogGroup7FE94734": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStagekAutomaticSecondB3C75A59",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AutomaticSecondFunctionAB53D7F9": {
+   "Type": "AWS::Lambda::WebFunction",
+   "Properties": {
+    "FunctionName": "WebFunctionStagekAutomaticSecondB3C75A59"
+   },
+   "DependsOn": [
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticSecondRevision59068325": {
+   "Type": "AWS::Lambda::WebFunctionRevision",
+   "Properties": {
+    "BuildConfig": {
+     "CodeConfig": {
+      "S3Object": {
+       "Bucket": {
+        "Fn::GetAtt": [
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "Bucket"
+        ]
+       },
+       "Key": {
+        "Fn::GetAtt": [
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "Key"
+        ]
+       },
+       "VersionId": {
+        "Fn::GetAtt": [
+         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "VersionId"
+        ]
+       }
+      }
+     },
+     "RuntimeConfig": {
+      "Runtime": "nodejs24.x"
+     }
+    },
+    "FunctionName": {
+     "Ref": "AutomaticSecondFunctionAB53D7F9"
+    },
+    "ServiceConfig": {
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "AutomaticSecondServiceRoleCA7814FD",
+       "Arn"
+      ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "AutomaticSecondLogGroup7FE94734"
+       }
+      }
+     },
+     "TimeoutSeconds": 30
+    }
+   },
+   "DependsOn": [
+    "AutomaticSecondFunctionAB53D7F9",
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "AutomaticSecondEndpointA57E8247": {
+   "Type": "AWS::Lambda::WebFunctionEndpoint",
+   "Properties": {
+    "AuthType": "IamAuth",
+    "EndpointName": "prod",
+    "EndpointType": "HomeRegion",
+    "FunctionName": {
+     "Ref": "AutomaticSecondFunctionAB53D7F9"
+    },
+    "RevisionWeights": [
+     {
+      "RevisionId": {
+       "Fn::GetAtt": [
+        "AutomaticSecondRevision59068325",
+        "RevisionId"
+       ]
+      },
+      "Weight": 100
+     }
+    ]
+   },
+   "DependsOn": [
+    "AutomaticSecondFunctionAB53D7F9",
+    "AutomaticSecondRevision59068325",
+    "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+   ]
+  },
+  "CallerCodeBucketFB907A2B": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CallerCodeBucketPolicy2C433922": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "CallerCodeBucketFB907A2B"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CallerCodeBucketFB907A2B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CallerCodeBucketFB907A2B",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":web-function/WebFunctionStagesetStackSpecificD983D53C/revision/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CallerCodeBucketFB907A2B",
+            "Arn"
+           ]
+          },
+          "/webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CallerCodeBucketAutoDeleteObjectsCustomResource7C6FC143": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "CallerCodeBucketFB907A2B"
+    }
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SpecificServiceRole381077C9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ]
+  },
+  "SpecificCodeCopy35d4cb7aAB40810E": {
+   "Type": "Custom::S3ObjectCopy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f8D1137DB",
+      "Arn"
+     ]
+    },
+    "SourceBucketName": {
+     "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+    },
+    "SourceObjectKey": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a.zip",
+    "DestinationBucketName": {
+     "Ref": "CallerCodeBucketFB907A2B"
+    },
+    "DestinationObjectKey": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/35d4cb7add5fb1554e6068dd6d1ba03e.zip"
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SpecificLogGroup92FAE761": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/web/WebFunctionStagesetStackSpecificD983D53C",
+    "RetentionInDays": 731
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "SpecificFunction2B9945D8": {
+   "Type": "AWS::Lambda::WebFunction",
+   "Properties": {
+    "FunctionName": "WebFunctionStagesetStackSpecificD983D53C"
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922"
+   ]
+  },
+  "SpecificRevisionF768306C": {
+   "Type": "AWS::Lambda::WebFunctionRevision",
+   "Properties": {
+    "BuildConfig": {
+     "CodeConfig": {
+      "S3Object": {
+       "Bucket": {
+        "Fn::GetAtt": [
+         "SpecificCodeCopy35d4cb7aAB40810E",
+         "Bucket"
+        ]
+       },
+       "Key": {
+        "Fn::GetAtt": [
+         "SpecificCodeCopy35d4cb7aAB40810E",
+         "Key"
+        ]
+       },
+       "VersionId": {
+        "Fn::GetAtt": [
+         "SpecificCodeCopy35d4cb7aAB40810E",
+         "VersionId"
+        ]
+       }
+      }
+     },
+     "RuntimeConfig": {
+      "Runtime": "nodejs24.x"
+     }
+    },
+    "FunctionName": {
+     "Ref": "SpecificFunction2B9945D8"
+    },
+    "ServiceConfig": {
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "SpecificServiceRole381077C9",
+       "Arn"
+      ]
+     },
+     "TelemetryConfig": {
+      "LoggingConfig": {
+       "LogGroup": {
+        "Ref": "SpecificLogGroup92FAE761"
+       }
+      }
+     },
+     "TimeoutSeconds": 30
+    }
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922",
+    "SpecificFunction2B9945D8"
+   ]
+  },
+  "SpecificEndpoint6806C68C": {
+   "Type": "AWS::Lambda::WebFunctionEndpoint",
+   "Properties": {
+    "AuthType": "IamAuth",
+    "EndpointName": "prod",
+    "EndpointType": "HomeRegion",
+    "FunctionName": {
+     "Ref": "SpecificFunction2B9945D8"
+    },
+    "RevisionWeights": [
+     {
+      "RevisionId": {
+       "Fn::GetAtt": [
+        "SpecificRevisionF768306C",
+        "RevisionId"
+       ]
+      },
+      "Weight": 100
+     }
+    ]
+   },
+   "DependsOn": [
+    "CallerCodeBucketPolicy2C433922",
+    "SpecificFunction2B9945D8",
+    "SpecificRevisionF768306C"
+   ]
+  },
+  "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f0A314486": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CallerCodeBucketFB907A2B",
+            "Arn"
+           ]
+          },
+          "/webfunctions/web-function/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:ListBucketVersions",
+       "Condition": {
+        "StringLike": {
+         "s3:prefix": "webfunctions/web-function/*"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "CallerCodeBucketFB907A2B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154",
+    "Roles": [
+     {
+      "Ref": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289"
+     }
+    ]
+   }
+  },
+  "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f8D1137DB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
+    },
+    "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565f0A314486"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRoleDefaultPolicyCCD65154",
+    "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71destb0df12e147489a5bf23e813b8a44565fServiceRole0A9D2289"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttAutomaticEndpointC59D3C8ADomainName500D3673": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AutomaticEndpointC59D3C8A",
+     "DomainName"
+    ]
+   },
+   "Export": {
+    "Name": "WebFunctionStagedAssetStack:ExportsOutputFnGetAttAutomaticEndpointC59D3C8ADomainName500D3673"
+   }
+  },
+  "ExportsOutputFnGetAttAutomaticSecondEndpointA57E8247DomainName2FE58DFC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AutomaticSecondEndpointA57E8247",
+     "DomainName"
+    ]
+   },
+   "Export": {
+    "Name": "WebFunctionStagedAssetStack:ExportsOutputFnGetAttAutomaticSecondEndpointA57E8247DomainName2FE58DFC"
+   }
+  },
+  "ExportsOutputFnGetAttSpecificEndpoint6806C68CDomainNameB4A7615B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SpecificEndpoint6806C68C",
+     "DomainName"
+    ]
+   },
+   "Export": {
+    "Name": "WebFunctionStagedAssetStack:ExportsOutputFnGetAttSpecificEndpoint6806C68CDomainNameB4A7615B"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

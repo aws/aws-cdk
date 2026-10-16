@@ -21,6 +21,7 @@ This package contains the following custom resource handlers:
 - aws-s3/auto-delete-objects-handler
 - aws-s3/notifications-resource-handler
 - aws-s3-deployment/bucket-deployment-handler
+- aws-s3-deployment/s3-object-copy-handler
 - aws-ses/drop-spam-handler
 - aws-stepfunctions-tasks/cross-region-aws-sdk-handler
 - aws-stepfunctions-tasks/eval-nodejs-handler
