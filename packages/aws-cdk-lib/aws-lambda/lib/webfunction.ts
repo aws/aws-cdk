@@ -19,7 +19,7 @@ import type * as kms from '../../aws-kms';
 import { KeyGrants } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import type { Duration, IResource } from '../../core';
-import { Annotations, ArnFormat, Names, PhysicalName, Reference, Resource, Stack, Token } from '../../core';
+import { Annotations, Arn, ArnFormat, Names, PhysicalName, Reference, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { md5hash, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -517,6 +517,13 @@ export interface IWebFunction extends IResource, IWebFunctionRef, IWebFunctionEn
   readonly webFunctionArn: string;
 
   /**
+   * The name of the WebFunction.
+   *
+   * @attribute
+   */
+  readonly webFunctionName: string;
+
+  /**
    * The ARN of the WebFunction endpoint.
    *
    * For an imported WebFunction this is only available if `endpointName` was passed to
@@ -571,6 +578,9 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   /** The ARN of the WebFunction. */
   public abstract readonly webFunctionArn: string;
 
+  /** The name of the WebFunction. */
+  public abstract readonly webFunctionName: string;
+
   /** The ARN of the WebFunction endpoint. */
   public abstract readonly endpointArn: string;
 
@@ -594,7 +604,7 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   }
 
   public get webFunctionRef(): WebFunctionReference {
-    return { functionArn: this.webFunctionArn };
+    return { functionArn: this.webFunctionArn, functionName: this.webFunctionName };
   }
 
   public get webFunctionEndpointRef(): WebFunctionEndpointReference {
@@ -637,8 +647,12 @@ export class WebFunction extends WebFunctionBase {
     const arn = attrs.webFunctionArn;
     const endpointName = attrs.endpointName;
 
+    // The ARN is `arn:<partition>:lambda:<region>:<account>:web-function/<name>`.
+    const name = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
     class Import extends WebFunctionBase {
       public readonly webFunctionArn = arn;
+      public readonly webFunctionName = name;
       public get endpointArn(): string {
         if (endpointName === undefined) {
           throw new ValidationError(lit`WebFunctionImportedWithoutEndpoint`,

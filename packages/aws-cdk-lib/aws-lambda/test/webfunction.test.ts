@@ -1135,6 +1135,13 @@ describe('WebFunction import', () => {
     expect(imported.webFunctionRef.functionArn).toEqual(arn);
   });
 
+  test('an imported WebFunction takes its name from the ARN', () => {
+    const imported = WebFunction.fromWebFunctionArn(stack, 'Imported', arn);
+
+    expect(imported.webFunctionName).toEqual('my-function');
+    expect(imported.webFunctionRef.functionName).toEqual('my-function');
+  });
+
   test('fromWebFunctionAttributes round-trips the ARN', () => {
     const imported = WebFunction.fromWebFunctionAttributes(stack, 'Imported', {
       webFunctionArn: arn,
