@@ -701,6 +701,30 @@ describe('WebFunctionCode', () => {
       expect(deleteGrantKeyPatterns(stack)).toEqual(['/web-function/*']);
     });
 
+    test.each(['/apps/', 'apps/*', 'app?/', 'apps/${aws:username}/'])('rejects keyPrefix %p', (keyPrefix) => {
+      // The prefix scopes the copy function's grants on the caller's bucket, where these would widen them.
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+
+      expect(() => new WebFunction(stack, 'TestFunction', {
+        code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH, { keyPrefix }),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        authType: WebFunctionAuthType.IAM_AUTH,
+      })).toThrow(/keyPrefix .* must not start with '\/' or contain/);
+    });
+
+    test('warns on a keyPrefix that cannot be checked', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      new WebFunction(stack, 'TestFunction', {
+        code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH, {
+          keyPrefix: new cdk.CfnParameter(stack, 'Prefix').valueAsString,
+        }),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        authType: WebFunctionAuthType.IAM_AUTH,
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/TestFunction', Match.stringLikeRegexp('keyPrefix is a deploy-time value'));
+    });
+
     test('applies keyPrefix to the destination key', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
       new WebFunction(stack, 'TestFunction', {

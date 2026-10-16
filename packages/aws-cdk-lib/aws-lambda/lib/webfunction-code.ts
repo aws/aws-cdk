@@ -308,6 +308,10 @@ export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetO
    * The object is written at `<keyPrefix>web-function/<unique id>/<hash>.zip`. The prefix is
    * used as given, so include a trailing `/` to place the object under a folder-like prefix.
    *
+   * The prefix also scopes the copy function's write and delete permissions on your bucket, so
+   * it must not start with `/` or contain `*`, `?` or `${`, which IAM would read as a wildcard
+   * or a policy variable.
+   *
    * @default - objects are written under `web-function/` at the root of the bucket
    */
   readonly keyPrefix?: string;
@@ -445,6 +449,7 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
   }
 
   protected destinationBucket(scope: Construct): s3.IBucket {
+    validateKeyPrefix(this.providedOptions.keyPrefix, scope);
     scope.node.addValidation({
       validate: () => [
         ...validateBucketVersioned(this.bucket, 'fromAssetToProvidedBucket'),
@@ -653,6 +658,33 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
  *
  * @param factory the `WebFunctionCode` factory to name in the error message
  */
+/**
+ * Reject a key prefix that would widen the copy function's grants on the caller's bucket.
+ *
+ * The prefix is used verbatim in the IAM resource ARNs and the `s3:prefix` condition that scope
+ * the copy function's writes, deletes and version listing. There, `*` and `?` are wildcards and
+ * `${` starts a policy variable, so any of them reaches beyond `web-function/`. A leading `/`
+ * gives keys that start with an empty path segment, which is never intended.
+ *
+ * A token cannot be checked, so it only gets a warning.
+ */
+function validateKeyPrefix(keyPrefix: string | undefined, scope: Construct): void {
+  if (keyPrefix === undefined) {
+    return;
+  }
+  if (cdk.Token.isUnresolved(keyPrefix)) {
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda:webFunctionKeyPrefixUnresolved',
+      'keyPrefix is a deploy-time value and cannot be checked. It scopes the copy function\'s permissions ' +
+      'on your bucket, so make sure it does not start with \'/\' or contain \'*\', \'?\' or \'${\'.');
+    return;
+  }
+  if (keyPrefix.startsWith('/') || /[*?]|\$\{/.test(keyPrefix)) {
+    throw new ValidationError(lit`WebFunctionKeyPrefixInvalid`,
+      `keyPrefix '${keyPrefix}' must not start with '/' or contain '*', '?' or '\${'. It scopes the copy ` +
+      'function\'s permissions on your bucket, where these would widen them.', scope);
+  }
+}
+
 /**
  * Whether a bucket's KMS key id names the AWS-managed `aws/s3` key by its alias, either as
  * `alias/aws/s3` or as an alias ARN.
