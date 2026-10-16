@@ -432,8 +432,11 @@ export interface BaseServiceOptions {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default - When creating the service, default is 1; when updating the service, default uses
-   * the current task number.
+   * If specified, this value is applied on every deployment that updates the service.
+   * Leave it unset if the task count is managed by auto scaling (`autoScaleTaskCount`).
+   *
+   * @default - DesiredCount is not set in the template. ECS uses 1 when the service is created,
+   * and keeps the current desired count when the service is updated.
    */
   readonly desiredCount?: number;
 
@@ -1724,13 +1727,23 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`AutoScalingTaskCountAlready`, 'AutoScaling of task count already enabled for this service', this);
     }
 
-    return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
+    const scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
       serviceNamespace: appscaling.ServiceNamespace.ECS,
       resourceId: `service/${this.cluster.clusterName}/${this.serviceName}`,
       dimension: 'ecs:service:DesiredCount',
       role: this.makeAutoScalingRole(),
       ...props,
     });
+
+    // A declared DesiredCount is applied on every deployment that updates the service,
+    // which overrides the task count set by a scaling policy or a scheduled action.
+    scalableTaskCount._onScalingConfigured = () => {
+      if (this.resource.desiredCount !== undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:desiredCountWithAutoScaling', 'desiredCount has been configured on a service that uses task count auto scaling. Be aware this will reset the number of tasks to desiredCount on every deployment that updates the service. Remove desiredCount and use minCapacity instead. See https://github.com/aws/aws-cdk/issues/39129');
+      }
+    };
+
+    return this.scalableTaskCount = scalableTaskCount;
   }
 
   /**
