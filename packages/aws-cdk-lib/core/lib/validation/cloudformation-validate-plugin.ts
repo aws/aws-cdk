@@ -248,18 +248,21 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
 
-        const existing = violations.find(
-          v => v.ruleName === diagnostic.ruleId && v.severity === severity,
-        );
-
         const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, '')}: ` : '';
+        const description = `${propertyPathPefix}${diagnostic.message}`;
+
+        // Only diagnostics with the same description share a violation, so each
+        // violating resource is reported with its own message.
+        const existing = violations.find(
+          v => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description,
+        );
 
         if (existing) {
           existing.violatingResources.push(violatingResource);
         } else {
           violations.push({
             ruleName: diagnostic.ruleId,
-            description: `${propertyPathPefix}${diagnostic.message}`,
+            description,
             severity,
             fix: diagnostic.suggestedFix,
             violatingResources: [violatingResource],
