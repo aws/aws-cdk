@@ -452,7 +452,12 @@ HTTPS. `BucketDeployment` does not create an S3 VPC endpoint. Use either private
 subnets with a route through a NAT gateway or an S3 gateway endpoint associated with
 the selected subnet route tables. An S3 gateway endpoint allows access to buckets in
 the same AWS Region without a NAT gateway. Its endpoint policy must permit access
-to both the source asset bucket and the destination bucket.
+to the source asset bucket, the destination bucket, and CloudFormation's regional
+custom-resource response bucket. The deployment function sends its result to the
+presigned S3 `ResponseURL` supplied by CloudFormation; blocking that response causes
+the stack operation to time out. See the
+[CloudFormation VPC endpoint considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/vpc-interface-endpoints.html#vpc-interface-endpoints-considerations)
+for the required response bucket access.
 
 For a VPC without NAT gateways, add an endpoint and select isolated subnets:
 
