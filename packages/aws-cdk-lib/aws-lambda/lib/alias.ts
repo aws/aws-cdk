@@ -12,12 +12,13 @@ import type { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-
 import * as appscaling from '../../aws-applicationautoscaling';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Token } from '../../core';
+import { ArnFormat, FeatureFlags, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 export interface IAlias extends IFunction, IAliasRef {
   /**
@@ -114,6 +115,19 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
+
+      public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
+        if (!FeatureFlags.of(this).isEnabled(cxapi.LAMBDA_IMPORTED_ALIAS_METRICS)) {
+          return super.metric(metricName, props);
+        }
+        return super.metric(metricName, {
+          ...props,
+          dimensionsMap: props.dimensionsMap ?? props.dimensions ?? {
+            FunctionName: this.lambda.functionName,
+            Resource: `${this.lambda.functionName}:${this.aliasName}`,
+          },
+        });
+      }
 
       public get aliasRef(): AliasReference {
         return {
