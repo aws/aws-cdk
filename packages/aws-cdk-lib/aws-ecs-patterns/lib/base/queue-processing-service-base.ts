@@ -61,6 +61,16 @@ export interface QueueProcessingServiceBaseProps {
   readonly command?: string[];
 
   /**
+   * Time to wait before forcibly stopping the container after sending SIGTERM.
+   *
+   * Applies to the container created by this pattern. When supplying a task definition,
+   * configure the timeout on its container instead.
+   *
+   * @default - the default timeout of the underlying container definition
+   */
+  readonly stopTimeout?: Duration;
+
+  /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default - The minScalingCapacity is 1 for all new services and uses the existing services desired count
