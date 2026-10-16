@@ -1,6 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as mediapackagev2 from '../lib';
 
 const app = new cdk.App();
@@ -33,6 +33,30 @@ origin.addToResourcePolicy(new PolicyStatement({
     },
   },
 }));
+
+// Standalone policy created with the OriginEndpointPolicy construct
+const namedOrigin = new mediapackagev2.OriginEndpoint(stack, 'myNamedEndpoint', {
+  channel,
+  segment: mediapackagev2.Segment.cmaf(),
+  manifests: [
+    mediapackagev2.Manifest.hls({
+      manifestName: 'index',
+    }),
+  ],
+});
+new mediapackagev2.OriginEndpointPolicy(stack, 'myNamedEndpointPolicy', {
+  originEndpoint: namedOrigin,
+  policyDocument: new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        effect: Effect.ALLOW,
+        actions: ['mediapackagev2:GetObject'],
+        resources: [namedOrigin.originEndpointArn],
+      }),
+    ],
+  }),
+});
 
 new IntegTest(app, 'cdk-integ-mediapackage-endpoint-policy', {
   testCases: [stack],
