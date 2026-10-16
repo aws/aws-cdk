@@ -247,6 +247,11 @@ export interface BundlingOptions extends DockerRunOptions {
    * This usually is not required unless you are using new experimental features that
    * are only supported by typescript's `tsc` compiler.
    * One example of such feature is `emitDecoratorMetadata`.
+   * If imported TypeScript modules are compiled again by esbuild and lose metadata,
+   * use `esbuildArgs` to set `--resolve-extensions` to `.js`, provided the imported
+   * modules have JavaScript output available.
+   *
+   * @see https://esbuild.github.io/api/#resolve-extensions
    *
    * @default false
    */
