@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ServerlessClusterRetainInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-serverless-cluster-retain"
+      ],
+      "assertionStack": "ServerlessClusterRetainInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerlessClusterRetainIntegDefaultTestDeployAssertE0461231"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

@@ -6410,10 +6410,11 @@ describe('cluster', () => {
 });
 
 test.each([
-  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
-])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain', 'Retain', 'Retain', true],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'Retain', 'RetainExceptOnCreate', 'Retain', 'Retain', true],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Snapshot', 'Delete', 'Delete', Match.absent(), Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', 'Delete', 'Delete', Match.absent(), Match.absent()],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterDeletionPolicy, clusterUpdateReplacePolicy, instanceDeletionPolicy, instanceUpdateReplacePolicy, subnetValue, deletionProtectionValue) => {
   const stack = new cdk.Stack();
 
   // WHEN
@@ -6428,48 +6429,18 @@ test.each([
   });
 
   // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+    DeletionProtection: deletionProtectionValue,
+  });
+
   Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
-    DeletionPolicy: clusterValue,
-    UpdateReplacePolicy: clusterValue,
+    DeletionPolicy: clusterDeletionPolicy,
+    UpdateReplacePolicy: clusterUpdateReplacePolicy,
   });
 
   Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
-    DeletionPolicy: instanceValue,
-    UpdateReplacePolicy: instanceValue,
-  });
-
-  Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
-    DeletionPolicy: subnetValue,
-  });
-});
-
-test.each([
-  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
-])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
-  const stack = new cdk.Stack();
-
-  // WHEN
-  new DatabaseCluster(stack, 'Cluster', {
-    credentials: { username: 'admin' },
-    engine: DatabaseClusterEngine.AURORA_MYSQL,
-    instanceProps: {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
-      vpc: new ec2.Vpc(stack, 'Vpc'),
-    },
-    removalPolicy: clusterRemovalPolicy,
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
-    DeletionPolicy: clusterValue,
-    UpdateReplacePolicy: clusterValue,
-  });
-
-  Template.fromStack(stack).hasResource('AWS::RDS::DBInstance', {
-    DeletionPolicy: instanceValue,
-    UpdateReplacePolicy: instanceValue,
+    DeletionPolicy: instanceDeletionPolicy,
+    UpdateReplacePolicy: instanceUpdateReplacePolicy,
   });
 
   Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
