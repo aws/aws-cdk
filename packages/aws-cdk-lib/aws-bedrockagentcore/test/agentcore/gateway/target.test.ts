@@ -12,6 +12,7 @@
  */
 
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template, Match } from '../../../../assertions';
 import * as apigateway from '../../../../aws-apigateway';
 import * as iam from '../../../../aws-iam';
@@ -412,6 +413,208 @@ describe('GatewayTarget Tests', () => {
         Name: 'lambda-target',
         MetadataConfiguration: Match.absent(),
       });
+    });
+  });
+
+  describe('Metadata configuration on all target types', () => {
+    test('Should set metadata configuration on Lambda target via target props', () => {
+      const fn = new lambda.Function(stack, 'TestFunction', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      });
+
+      const toolSchema = ToolSchema.fromInline([
+        {
+          name: 'test_tool',
+          description: 'Test tool',
+          inputSchema: {
+            type: SchemaDefinitionType.OBJECT,
+            properties: {},
+          },
+        },
+      ]);
+
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'lambda-target',
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+        metadataConfiguration: {
+          allowedQueryParameters: ['id'],
+          allowedRequestHeaders: ['Authorization'],
+          allowedResponseHeaders: ['X-Custom-Header'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'lambda-target',
+        MetadataConfiguration: {
+          AllowedQueryParameters: ['id'],
+          AllowedRequestHeaders: ['Authorization'],
+          AllowedResponseHeaders: ['X-Custom-Header'],
+        },
+      });
+    });
+
+    test('Should set metadata configuration on OpenAPI target via target props', () => {
+      const apiSchema = ApiSchema.fromInline(JSON.stringify({
+        openapi: '3.0.0',
+        info: { title: 'Test', version: '1.0' },
+        paths: {},
+      }));
+
+      GatewayTarget.forOpenApi(stack, 'OpenApiTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'openapi-target',
+        apiSchema,
+        validateOpenApiSchema: false,
+        metadataConfiguration: {
+          allowedRequestHeaders: ['Authorization'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'openapi-target',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['Authorization'],
+        },
+      });
+    });
+
+    test('Should set metadata configuration on Smithy target via target props', () => {
+      GatewayTarget.forSmithy(stack, 'SmithyTarget', {
+        gateway,
+        gatewayTargetName: 'smithy-target',
+        smithyModel: ApiSchema.fromInline('{}'),
+        metadataConfiguration: {
+          allowedRequestHeaders: ['Authorization'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'smithy-target',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['Authorization'],
+        },
+      });
+    });
+
+    test('Should set metadata configuration on MCP Server target via target props', () => {
+      GatewayTarget.forMcpServer(stack, 'McpServerTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'mcp-server-target',
+        endpoint: 'https://example.com/mcp',
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+        metadataConfiguration: {
+          allowedQueryParameters: ['session'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-server-target',
+        MetadataConfiguration: {
+          AllowedQueryParameters: ['session'],
+        },
+      });
+    });
+
+    testDeprecated('Should prefer top-level metadataConfiguration over target configuration metadataConfiguration', () => {
+      // Conflicting values and a legacy-only header verify that the top-level
+      // configuration replaces the deprecated configuration rather than merging it.
+      new GatewayTarget(stack, 'ApiGwTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'apigw-target-precedence',
+        targetConfiguration: ApiGatewayTargetConfiguration.create({
+          restApi: restApi,
+          stage: 'prod',
+          apiGatewayToolConfiguration: {
+            toolFilters: [
+              {
+                filterPath: '/test',
+                methods: [ApiGatewayHttpMethod.GET],
+              },
+            ],
+          },
+          metadataConfiguration: {
+            allowedQueryParameters: ['legacy'],
+            allowedRequestHeaders: ['X-Legacy'],
+          },
+        }),
+        metadataConfiguration: {
+          allowedQueryParameters: ['top-level-only'],
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'apigw-target-precedence',
+        MetadataConfiguration: {
+          AllowedQueryParameters: ['top-level-only'],
+          AllowedRequestHeaders: Match.absent(),
+        },
+      });
+    });
+
+    testDeprecated('Should fall back to ApiGatewayTargetConfiguration.metadataConfiguration when top-level not set', () => {
+      // Backward compatibility path: only the deprecated location is set, and the rendered template
+      // should still contain the metadata configuration.
+      const target = new GatewayTarget(stack, 'ApiGwTargetLegacy', {
+        gateway: gateway,
+        gatewayTargetName: 'apigw-target-legacy',
+        targetConfiguration: ApiGatewayTargetConfiguration.create({
+          restApi: restApi,
+          stage: 'prod',
+          apiGatewayToolConfiguration: {
+            toolFilters: [
+              {
+                filterPath: '/test',
+                methods: [ApiGatewayHttpMethod.GET],
+              },
+            ],
+          },
+          metadataConfiguration: {
+            allowedQueryParameters: ['legacy'],
+          },
+        }),
+      });
+
+      expect(target).toBeDefined();
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'apigw-target-legacy',
+        MetadataConfiguration: {
+          AllowedQueryParameters: ['legacy'],
+        },
+      });
+    });
+
+    test('Should validate metadata configuration provided via target props', () => {
+      const fn = new lambda.Function(stack, 'TestFunction', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      });
+
+      const toolSchema = ToolSchema.fromInline([
+        {
+          name: 'test_tool',
+          description: 'Test tool',
+          inputSchema: {
+            type: SchemaDefinitionType.OBJECT,
+            properties: {},
+          },
+        },
+      ]);
+
+      expect(() => GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'lambda-target-bad-metadata',
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+        metadataConfiguration: {
+          // Empty array — must contain at least 1 item
+          allowedQueryParameters: [],
+        },
+      })).toThrow(/cannot be an empty array/);
     });
   });
 
