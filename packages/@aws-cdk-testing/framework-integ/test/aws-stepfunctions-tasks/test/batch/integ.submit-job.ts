@@ -36,11 +36,7 @@ class RunBatchStack extends cdk.Stack {
       ],
     });
 
-    // A plain job definition name (accepted by SubmitJob) lets the scoped
-    // policy from STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY be exercised at runtime.
-    const jobDefinitionName = 'submit-job-definition';
-    new batch.EcsJobDefinition(this, 'JobDefinition', {
-      jobDefinitionName,
+    const batchJobDefinition = new batch.EcsJobDefinition(this, 'JobDefinition', {
       container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
         image: ecs.ContainerImage.fromAsset(
           path.resolve(__dirname, 'batchjob-image'),
@@ -51,7 +47,7 @@ class RunBatchStack extends cdk.Stack {
     });
 
     const submitJob = new BatchSubmitJob(this, 'Submit Job', {
-      jobDefinitionArn: jobDefinitionName,
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
       jobQueueArn: batchQueue.jobQueueArn,
       jobName: 'MyJob',
       containerOverrides: {
@@ -93,7 +89,7 @@ const app = new cdk.App({
 });
 const stack = new RunBatchStack(app, 'aws-stepfunctions-integ-submit-job');
 
-const integTest = new integ.IntegTest(app, 'aws-stepfunctions-integ-submit-job', {
+const integTest = new integ.IntegTest(app, 'SubmitJobIntegTest', {
   testCases: [stack],
 });
 
