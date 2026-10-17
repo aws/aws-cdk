@@ -72,6 +72,10 @@ const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
 // Grant invoke permissions - this will include sub-resource wildcard in IAM policy
 runtime.grantInvoke(testFunction);
 
+// Grant WebSocket stream invoke permissions
+runtime.grantInvokeWithWebSocketStream(testFunction);
+runtime.grantInvokeWithWebSocketStreamForUser(testFunction);
+
 // Output runtime and endpoint information for verification
 new cdk.CfnOutput(stack, 'RuntimeId', {
   value: runtime.agentRuntimeId,
