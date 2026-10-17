@@ -115,6 +115,8 @@ export interface TableProps extends DatabaseOptions {
   /**
    * The name of the table.
    *
+   * May be schema-qualified.
+   *
    * @default - a name is generated
    */
   readonly tableName?: string;
@@ -198,6 +200,8 @@ export interface ITable extends IConstruct {
 export interface TableAttributes {
   /**
    * Name of the table.
+   *
+   * May be schema-qualified.
    */
   readonly tableName: string;
 
@@ -252,6 +256,10 @@ export class Table extends TableBase {
 
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
+
+    if (props.tableName !== undefined && !cdk.Token.isUnresolved(props.tableName) && props.tableName.split('.').includes('')) {
+      throw new cdk.ValidationError(lit`EmptyTableNameComponent`, `table name ${JSON.stringify(props.tableName)} must not contain empty components`, this);
+    }
 
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {

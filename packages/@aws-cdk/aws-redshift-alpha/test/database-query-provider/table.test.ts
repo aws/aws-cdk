@@ -1,7 +1,11 @@
 
+import type { ExecuteStatementCommandInput } from '@aws-sdk/client-redshift-data';
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type * as AWSLambda from 'aws-lambda';
 
-const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+const mockExecuteStatement = jest.fn(async (_input: ExecuteStatementCommandInput) => ({ Id: 'statementId' }));
 jest.mock('@aws-sdk/client-redshift-data', () => ({
   RedshiftData: class {
     executeStatement = mockExecuteStatement;
@@ -10,7 +14,9 @@ jest.mock('@aws-sdk/client-redshift-data', () => ({
 }));
 
 import type { Column } from '../../lib';
+import * as redshift from '../../lib';
 import { ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
+import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 import type { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
@@ -38,6 +44,9 @@ const resourceProperties: ResourcePropertiesType = {
   ServiceToken: '',
 };
 const requestId = 'requestId';
+// Whichever test first synthesizes a stack pays the one-off setup of aws-cdk-lib's synthesis-time template
+// validation, which can exceed Jest's default 5 s budget on a loaded machine.
+const synthesisTimeout = 60_000;
 const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceProperties: resourceProperties,
   ServiceToken: '',
@@ -944,5 +953,448 @@ describe('special-character handling', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `DROP TABLE "my table${stackIdTruncated}"`,
     }));
+  });
+});
+
+describe.each(['literal', 'lazy'])('qualified %s table creation', (kind) => {
+  test.each([
+    ['analytics.orders', 'analytics.orders'],
+    ['dev.analytics.orders', 'dev.analytics.orders'],
+    ['public.orders', 'public.orders'],
+    ['sales team.order log', '"sales team"."order log"'],
+    ['sales"team.order"log', '"sales""team"."order""log"'],
+  ])('creates, comments and grants on the same table for %j', async (name, relation) => {
+    const stack = new cdk.Stack();
+    const cluster = new redshift.Cluster(stack, 'Cluster', {
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      masterUser: { masterUsername: 'admin' },
+    });
+    const table = new redshift.Table(stack, 'Table', {
+      cluster,
+      databaseName,
+      tableName: kind === 'lazy' ? cdk.Lazy.string({ produce: () => name }) : name,
+      tableColumns: [{ name: 'item.id', dataType: 'int', comment: 'item count' }],
+      tableComment: 'daily orders',
+    });
+    const user = redshift.User.fromUserAttributes(stack, 'User', {
+      cluster,
+      databaseName,
+      username: 'alice',
+      password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+    });
+    table.grant(user, redshift.TableAction.SELECT);
+    const resources = Object.values(Template.fromStack(stack).findResources('Custom::RedshiftDatabaseQuery'))
+      .map(resource => resource.Properties);
+    const connection = { clusterName, databaseName, adminUserArn };
+    const tableProps = { ...resources.find(props => props.handler === 'table'), ...connection };
+    const privilegeProps = { ...resources.find(props => props.handler === 'user-table-privileges'), ...connection };
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = { ...genericEvent, RequestType: 'Create' };
+
+    await manageTable(tableProps, event);
+    await managePrivileges(privilegeProps, event);
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([
+      `CREATE TABLE ${relation} ("item.id" int)`,
+      `COMMENT ON COLUMN ${relation}."item.id" IS 'item count'`,
+      `COMMENT ON TABLE ${relation} IS 'daily orders'`,
+      `GRANT SELECT ON ${relation} TO alice`,
+    ]);
+  }, synthesisTimeout);
+});
+
+describe('qualified table lifecycle', () => {
+  const properties: ResourcePropertiesType = {
+    ...resourceProperties,
+    tableName: { prefix: 'analytics.orders', generateSuffix: 'false' },
+    tableColumns: [
+      { id: 'id', name: 'id', dataType: 'int' },
+      { id: 'region', name: 'region', dataType: 'int' },
+    ],
+    distStyle: TableDistStyle.AUTO,
+  };
+  const tableId = 'clusterName:databaseName:analytics.orders:111111111111';
+  const updateEvent: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+    ...genericEvent,
+    RequestType: 'Update',
+    OldResourceProperties: properties,
+    PhysicalResourceId: tableId,
+  };
+
+  test.each<[string, Partial<TableAndClusterProps>, Partial<TableAndClusterProps>, string[]]>([
+    ['columns and comments', {}, {
+      tableColumns: [
+        { id: 'id', name: 'id', dataType: 'int', encoding: ColumnEncoding.ZSTD, comment: "o'brien" },
+        { id: 'total', name: 'order total', dataType: 'int' },
+      ],
+      tableComment: 'daily orders',
+    }, [
+      'ALTER TABLE analytics.orders DROP COLUMN region',
+      'ALTER TABLE analytics.orders ADD "order total" int',
+      'ALTER TABLE analytics.orders ALTER COLUMN id ENCODE ZSTD',
+      "COMMENT ON COLUMN analytics.orders.id IS 'o''brien'",
+      "COMMENT ON TABLE analytics.orders IS 'daily orders'",
+    ]],
+    ['column rename', {}, {
+      tableColumns: [
+        { id: 'id', name: 'item.id', dataType: 'int' },
+        { id: 'region', name: 'region', dataType: 'int' },
+      ],
+    }, ['ALTER TABLE analytics.orders RENAME COLUMN id TO "item.id"']],
+    ['distribution style', {}, { distStyle: TableDistStyle.EVEN }, [
+      'ALTER TABLE analytics.orders ALTER DISTSTYLE EVEN',
+    ]],
+    ['distribution key', {}, {
+      tableColumns: [{ id: 'id', name: 'id', dataType: 'int', distKey: true }, properties.tableColumns[1]!],
+    }, ['ALTER TABLE analytics.orders ALTER DISTSTYLE KEY DISTKEY id']],
+    ['compound sort key', {}, {
+      sortStyle: TableSortStyle.COMPOUND,
+      tableColumns: [{ id: 'id', name: 'id', dataType: 'int', sortKey: true }, properties.tableColumns[1]!],
+    }, ['ALTER TABLE analytics.orders ALTER COMPOUND SORTKEY(id)']],
+    ['automatic sort key', {
+      sortStyle: TableSortStyle.COMPOUND,
+      tableColumns: [{ id: 'id', name: 'id', dataType: 'int', sortKey: true }, properties.tableColumns[1]!],
+    }, {}, ['ALTER TABLE analytics.orders ALTER SORTKEY AUTO']],
+  ])('updates %s on the qualified table', async (_label, oldChanges, newChanges, statements) => {
+    await expect(manageTable({ ...properties, ...newChanges }, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, ...oldChanges },
+    })).resolves.toEqual({ PhysicalResourceId: tableId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual(statements);
+  });
+
+  test.each([
+    ['orders', 'orders_next', 'ALTER TABLE orders RENAME TO orders_next'],
+    ['analytics.orders', 'analytics.orders_next', 'ALTER TABLE analytics.orders RENAME TO orders_next'],
+    ['sales team.order log', 'sales team.order "next', 'ALTER TABLE "sales team"."order log" RENAME TO "order ""next"'],
+  ])('renames %j using a leaf target', async (oldName, newName, statement) => {
+    await expect(manageTable({
+      ...properties,
+      tableName: { prefix: newName, generateSuffix: 'false' },
+    }, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, tableName: { prefix: oldName, generateSuffix: 'false' } },
+    })).resolves.toEqual({ PhysicalResourceId: tableId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([statement]);
+  });
+
+  test.each<[string, Partial<TableAndClusterProps>]>([
+    ['comment', { tableComment: 'changed' }],
+    ['column', { tableColumns: [...properties.tableColumns, { name: 'total', dataType: 'int' }] }],
+    ['cluster replacement', { clusterName: 'anotherCluster' }],
+    ['database replacement', { databaseName: 'anotherDatabase' }],
+    ['distribution replacement', { distStyle: undefined }],
+    ['sort replacement', {
+      sortStyle: TableSortStyle.INTERLEAVED,
+      tableColumns: [{ id: 'id', name: 'id', dataType: 'int', sortKey: true }, properties.tableColumns[1]!],
+    }],
+  ])('fails a qualifier change before a %s update writes SQL', async (_label, changes) => {
+    await expect(manageTable({
+      ...properties,
+      ...changes,
+      tableName: { prefix: 'archive.orders', generateSuffix: 'false' },
+    }, updateEvent)).rejects.toThrow('changing the table qualifier is not supported');
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['orders', 'public.orders'],
+    ['public.orders', 'orders'],
+  ])('fails changing qualifier spelling from %j to %j before SQL', async (oldName, newName) => {
+    await expect(manageTable({
+      ...properties,
+      tableName: { prefix: newName, generateSuffix: 'false' },
+    }, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, tableName: { prefix: oldName, generateSuffix: 'false' } },
+    })).rejects.toThrow('changing the table qualifier is not supported');
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each([undefined, 'changed'])('fails adding an empty qualifier with comment %j before SQL', async (tableComment) => {
+    await expect(manageTable({
+      ...properties,
+      tableName: { prefix: '.orders_next', generateSuffix: 'false' },
+      tableComment,
+    }, {
+      ...updateEvent,
+      PhysicalResourceId: 'clusterName:databaseName:orders:111111111111',
+      OldResourceProperties: { ...properties, tableName: { prefix: 'orders', generateSuffix: 'false' } },
+    })).rejects.toThrow('table name ".orders_next" must not contain empty components');
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each<[string, Partial<TableAndClusterProps>, Partial<TableAndClusterProps>]>([
+    ['the rollback of a rejected update from "archive.orders" as a no-op', {}, { tableName: { prefix: 'archive.orders', generateSuffix: 'false' }, tableComment: 'changed' }],
+    ['the rollback of a rejected update from ".orders_next" as a no-op', {}, { tableName: { prefix: '.orders_next', generateSuffix: 'false' }, tableComment: 'changed' }],
+    ['the rollback of a rejected update from "analytics." as a no-op', {}, { tableName: { prefix: 'analytics.', generateSuffix: 'false' }, tableComment: 'changed' }],
+    ['the rollback of a rejected update after an earlier leaf rename as a no-op', { tableName: { prefix: 'analytics.orders_a', generateSuffix: 'false' } }, {
+      tableName: { prefix: 'archive.orders_a', generateSuffix: 'false' }, tableComment: 'changed',
+    }],
+    ['the rollback of a rejected update that also changed the cluster name as a no-op', {}, {
+      tableName: { prefix: 'archive.orders', generateSuffix: 'false' }, clusterName: 'anotherCluster',
+    }],
+    ['the rollback of a rejected update after an earlier cluster change as a no-op', { clusterName: 'anotherCluster' }, {
+      tableName: { prefix: 'archive.orders', generateSuffix: 'false' }, clusterName: 'anotherCluster',
+    }],
+    // Earlier releases renamed "analytics.orders" to "archive.orders" as one identifier.
+    ['an update from a name an earlier release renamed across qualifiers as a rollback', { tableComment: 'changed' }, {
+      tableName: { prefix: 'archive.orders', generateSuffix: 'false' },
+    }],
+  ])('treats %s', async (_description, changes, oldChanges) => {
+    await expect(manageTable({ ...properties, ...changes }, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, ...oldChanges },
+    })).resolves.toEqual({ PhysicalResourceId: tableId });
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('renames back on the rollback of a leaf rename', async () => {
+    await expect(manageTable(properties, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, tableName: { prefix: 'analytics.orders_next', generateSuffix: 'false' } },
+    })).resolves.toEqual({ PhysicalResourceId: tableId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual(['ALTER TABLE analytics.orders_next RENAME TO orders']);
+  });
+
+  // The colon cases pick new names with the qualifier that the physical ID's created name would be misread with.
+  test.each<[string, Partial<TableAndClusterProps>, string, string, string]>([
+    ['when the cluster name contains a colon', { clusterName: 'cluster:a' }, 'cluster:a:databaseName:analytics.orders:111111111111', 'analytics.orders', 'databaseName:analytics.orders'],
+    ['when the database name contains a colon', { databaseName: 'database:a' }, 'clusterName:database:a:analytics.orders:111111111111', 'analytics.orders', 'a:analytics.orders'],
+    ['when the physical ID records a database name containing a colon', {}, 'clusterName:database:a:analytics.orders:111111111111', 'analytics.orders', 'a:analytics.orders'],
+    // Earlier releases accepted empty components and renames that changed the qualifier.
+    ['for a table created with an empty name component', {}, 'clusterName:databaseName:orders.:111111111111', 'archive.orders', 'orders.next'],
+  ])('fails a qualifier change %s', async (_description, names, physicalId, oldName, newName) => {
+    await expect(manageTable({ ...properties, ...names, tableName: { prefix: newName, generateSuffix: 'false' } }, {
+      ...updateEvent,
+      OldResourceProperties: { ...properties, ...names, tableName: { prefix: oldName, generateSuffix: 'false' } },
+      PhysicalResourceId: physicalId,
+    })).rejects.toThrow('changing the table qualifier is not supported');
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('keeps V1 rename disabled', async () => {
+    await expect(manageTable({
+      ...properties,
+      tableName: { prefix: 'analytics.orders_next', generateSuffix: 'false' },
+    }, {
+      ...updateEvent,
+      PhysicalResourceId: 'analytics.orders',
+    })).resolves.toEqual({ PhysicalResourceId: 'analytics.orders' });
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['V1', 'analytics.orders', 'analytics.orders', 'false', 'analytics.orders'],
+    ['V2', tableId, tableId, 'false', 'analytics.orders'],
+    ['generated', 'clusterName:databaseName:analytics.orders111111111111:111111111111', 'clusterName:databaseName:analytics.orders111111111111:111111111111', 'true', 'analytics.orders111111111111'],
+    ['quoted components', 'clusterName:databaseName:sales team.order log:111111111111', 'sales team.order log', 'false', '"sales team"."order log"'],
+  ])('revokes and drops the same %s table', async (kind, physicalId, grantName, generateSuffix, relation) => {
+    const tableName = kind === 'quoted components' ? 'sales team.order log' : 'analytics.orders';
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      ...genericEvent,
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalId,
+    };
+
+    await managePrivileges({
+      clusterName,
+      databaseName,
+      adminUserArn,
+      username: 'alice',
+      tablePrivileges: [{ tableId: 'Table', tableName: grantName, actions: ['SELECT'] }],
+    }, event);
+    await manageTable({ ...properties, tableName: { prefix: tableName, generateSuffix } }, event);
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([
+      `REVOKE SELECT ON ${relation} FROM alice`,
+      `DROP TABLE ${relation}`,
+    ]);
+  });
+});
+
+describe('qualified table name comparison', () => {
+  const propertiesFor = (name: string): ResourcePropertiesType => ({
+    ...resourceProperties,
+    tableName: { prefix: name, generateSuffix: 'false' },
+  });
+  const eventFor = (name: string): AWSLambda.CloudFormationCustomResourceUpdateEvent => ({
+    ...genericEvent,
+    RequestType: 'Update',
+    OldResourceProperties: propertiesFor(name),
+    PhysicalResourceId: `clusterName:databaseName:${name}:111111111111`,
+  });
+
+  test.each([
+    ['Schema.orders', 'schema.orders_next', 'ALTER TABLE Schema.orders RENAME TO orders_next'],
+    ['DEV.Schema.orders', 'dev.schema.orders_next', 'ALTER TABLE DEV.Schema.orders RENAME TO orders_next'],
+    ['_Schema$.orders', '_schema$.orders_next', 'ALTER TABLE _Schema$.orders RENAME TO orders_next'],
+    ['Sales-Team.Orders-Log', 'Sales-Team.orders-log', 'ALTER TABLE "Sales-Team"."Orders-Log" RENAME TO "orders-log"'],
+  ])('renames %j to %j within the same qualifier', async (oldName, newName, statement) => {
+    const event = eventFor(oldName);
+
+    await expect(manageTable(propertiesFor(newName), event))
+      .resolves.toEqual({ PhysicalResourceId: event.PhysicalResourceId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([statement]);
+  });
+
+  test.each([
+    ['Schema.Orders', 'schema.orders'],
+    ['public.orders', 'PUBLIC.orders'],
+    ['Orders', 'orders'],
+  ])('preserves %j without a redundant rename to %j', async (oldName, newName) => {
+    const event = eventFor(oldName);
+
+    await expect(manageTable(propertiesFor(newName), event))
+      .resolves.toEqual({ PhysicalResourceId: event.PhysicalResourceId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
+  });
+
+  test('updates a comment without renaming an equivalent whole name', async () => {
+    const event = eventFor('Schema.Orders');
+
+    await expect(manageTable({ ...propertiesFor('schema.orders'), tableComment: 'updated' }, event))
+      .resolves.toEqual({ PhysicalResourceId: event.PhysicalResourceId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([
+      "COMMENT ON TABLE Schema.Orders IS 'updated'",
+    ]);
+  });
+
+  test.each([
+    ['Sales-Team.orders', 'sales-team.orders_next'],
+    ['Ä.orders', 'ä.orders_next'],
+  ])('fails changing distinct qualifiers from %j to %j before SQL', async (oldName, newName) => {
+    await expect(manageTable({ ...propertiesFor(newName), tableComment: 'updated' }, eventFor(oldName)))
+      .rejects.toThrow('changing the table qualifier is not supported');
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
+  });
+
+  test('treats the rollback of a rejected quoted qualifier case change as a no-op', async () => {
+    const event = { ...eventFor('Sales-Team.orders'), OldResourceProperties: propertiesFor('sales-team.orders_next') };
+
+    await expect(manageTable(propertiesFor('Sales-Team.orders'), event))
+      .resolves.toEqual({ PhysicalResourceId: event.PhysicalResourceId });
+
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+});
+
+describe('resolved table name components', () => {
+  test.each([
+    ['', 'false'],
+    ['.orders', 'false'],
+    ['dev..orders', 'true'],
+    ['analytics.', 'false'],
+  ])('fails Create for empty components in %j with suffix %s before SQL', async (name, generateSuffix) => {
+    await expect(manageTable({
+      ...resourceProperties,
+      tableName: { prefix: name, generateSuffix },
+      tableComment: 'daily orders',
+    }, { ...genericEvent, RequestType: 'Create' })).rejects.toThrow('must not contain empty components');
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
+  });
+
+  test.each([
+    ['orders', ''],
+    ['dev.analytics.orders', 'dev..orders'],
+    ['analytics.orders', 'analytics.'],
+  ])('fails Update from %j to %j before a comment writes SQL', async (oldName, newName) => {
+    await expect(manageTable({
+      ...resourceProperties,
+      tableName: { prefix: newName, generateSuffix: 'false' },
+      tableComment: 'updated',
+    }, {
+      ...genericEvent,
+      RequestType: 'Update',
+      PhysicalResourceId: `clusterName:databaseName:${oldName}:111111111111`,
+      OldResourceProperties: {
+        ...resourceProperties,
+        tableName: { prefix: oldName, generateSuffix: 'false' },
+      },
+    })).rejects.toThrow(`table name ${JSON.stringify(newName)} must not contain empty components`);
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
+  });
+
+  test('fails a resolved empty component at runtime after accepting the token at construction', async () => {
+    const stack = new cdk.Stack();
+    const cluster = new redshift.Cluster(stack, 'Cluster', {
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      masterUser: { masterUsername: 'admin' },
+    });
+    new redshift.Table(stack, 'Table', {
+      cluster,
+      databaseName,
+      tableName: cdk.Lazy.string({ produce: () => 'analytics.' }),
+      tableColumns,
+    });
+    const [resource] = Object.values(Template.fromStack(stack).findResources('Custom::RedshiftDatabaseQuery'));
+    const props = { ...resource.Properties, clusterName, databaseName, adminUserArn };
+
+    await expect(manageTable(props, { ...genericEvent, RequestType: 'Create' }))
+      .rejects.toThrow('table name "analytics." must not contain empty components');
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
+  }, synthesisTimeout);
+
+  test.each([
+    ['', 'CREATE TABLE "111111111111" (col1 varchar(1))', 'clusterName:databaseName:111111111111:111111111111'],
+    ['analytics.', 'CREATE TABLE analytics."111111111111" (col1 varchar(1))', 'clusterName:databaseName:analytics.111111111111:111111111111'],
+  ])('creates a nonempty resolved name from prefix %j and a generated suffix', async (prefix, statement, physicalId) => {
+    await expect(manageTable({
+      ...resourceProperties,
+      tableName: { prefix, generateSuffix: 'true' },
+    }, { ...genericEvent, RequestType: 'Create' })).resolves.toEqual({ PhysicalResourceId: physicalId });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([statement]);
+  });
+
+  test('renames to a nonempty leaf supplied by the generated suffix', async () => {
+    await expect(manageTable({
+      ...resourceProperties,
+      tableName: { prefix: 'analytics.', generateSuffix: 'true' },
+    }, {
+      ...genericEvent,
+      RequestType: 'Update',
+      PhysicalResourceId: 'clusterName:databaseName:analytics.orders:111111111111',
+      OldResourceProperties: {
+        ...resourceProperties,
+        tableName: { prefix: 'analytics.orders', generateSuffix: 'false' },
+      },
+    })).resolves.toEqual({ PhysicalResourceId: 'clusterName:databaseName:analytics.orders:111111111111' });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([
+      'ALTER TABLE analytics.orders RENAME TO "111111111111"',
+    ]);
+  });
+
+  test('preserves an equivalent whole name resolved from different suffix settings', async () => {
+    await expect(manageTable({
+      ...resourceProperties,
+      tableName: { prefix: 'schema.orders111111111111', generateSuffix: 'false' },
+    }, {
+      ...genericEvent,
+      RequestType: 'Update',
+      PhysicalResourceId: 'clusterName:databaseName:Schema.Orders111111111111:111111111111',
+      OldResourceProperties: {
+        ...resourceProperties,
+        tableName: { prefix: 'Schema.Orders', generateSuffix: 'true' },
+      },
+    })).resolves.toEqual({ PhysicalResourceId: 'clusterName:databaseName:Schema.Orders111111111111:111111111111' });
+
+    expect(mockExecuteStatement.mock.calls.map(([input]) => input.Sql)).toEqual([]);
   });
 });
