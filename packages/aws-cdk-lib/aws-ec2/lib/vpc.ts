@@ -27,6 +27,7 @@ import type {
   RequestedSubnet,
 } from './ip-addresses';
 import {
+  Cidr,
   IpAddresses,
   Ipv6Addresses,
 } from './ip-addresses';
@@ -1619,6 +1620,10 @@ export class Vpc extends VpcBase {
     }
 
     this.ipAddresses = props.ipAddresses ?? IpAddresses.cidr(cidrBlock);
+
+    if (this.ipAddresses instanceof Cidr && FeatureFlags.of(this).isEnabled(cxapi.EC2_VALIDATE_VPC_CIDR_ALIGNMENT)) {
+      this.ipAddresses.validateAlignment(this);
+    }
 
     this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
