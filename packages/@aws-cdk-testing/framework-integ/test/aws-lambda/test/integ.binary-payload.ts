@@ -10,7 +10,7 @@ const app = new App({
 const stack = new Stack(app, 'IntegBinaryPayload');
 
 const fn = new Function(stack, 'fn', {
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: Code.fromInline(`
     exports.handler = async (event) => {

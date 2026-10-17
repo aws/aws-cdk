@@ -1,13 +1,14 @@
 import { CustomResource, CfnOutput } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ExpectedResult, ActualResult } from './common';
+import type { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';
-import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
+import type { AssertionRequest, ProviderOptions } from './providers';
+import { AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
 /**
  * Options for an EqualsAssertion
  */
-export interface EqualsAssertionProps {
+export interface EqualsAssertionProps extends ProviderOptions {
   /**
    * The actual results to compare
    */
@@ -43,7 +44,9 @@ export class EqualsAssertion extends Construct {
   constructor(scope: Construct, id: string, props: EqualsAssertionProps) {
     super(scope, id);
 
-    const assertionProvider = new AssertionsProvider(this, 'AssertionProvider');
+    const assertionProvider = new AssertionsProvider(this, 'AssertionProvider', {
+      providerLogLevel: props.providerLogLevel,
+    });
     const properties: AssertionRequest = {
       actual: props.actual.result,
       expected: props.expected.result,

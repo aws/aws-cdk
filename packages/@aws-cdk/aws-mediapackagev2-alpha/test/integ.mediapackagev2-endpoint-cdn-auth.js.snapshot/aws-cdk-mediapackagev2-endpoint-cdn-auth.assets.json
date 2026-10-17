@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "63b273eef2d62c96b8375b685e77148e4f54edc094fd568793234fe803b7a17f": {
+      "displayName": "aws-cdk-mediapackagev2-endpoint-cdn-auth Template",
+      "source": {
+        "path": "aws-cdk-mediapackagev2-endpoint-cdn-auth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dbdea659": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "63b273eef2d62c96b8375b685e77148e4f54edc094fd568793234fe803b7a17f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

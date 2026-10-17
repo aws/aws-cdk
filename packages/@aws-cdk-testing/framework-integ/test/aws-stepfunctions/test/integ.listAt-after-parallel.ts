@@ -27,7 +27,7 @@ const joinPass = new sfn.Pass(stack, 'JP', {
 const chain = sfn.Chain.start(parallel).next(joinPass);
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

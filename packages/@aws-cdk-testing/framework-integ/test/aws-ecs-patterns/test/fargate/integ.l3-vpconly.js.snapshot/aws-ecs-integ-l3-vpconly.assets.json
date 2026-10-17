@@ -1,15 +1,16 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "files": {
-    "bd951d3fe844c1673fa6ece656a1904c1d26039eba34d4640f0fef95f315f122": {
+    "c5bddae606a23e860d42272ce6a22f597a543444e53c5d09922559d4be0237f9": {
+      "displayName": "aws-ecs-integ-l3-vpconly Template",
       "source": {
         "path": "aws-ecs-integ-l3-vpconly.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b9204191": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bd951d3fe844c1673fa6ece656a1904c1d26039eba34d4640f0fef95f315f122.json",
+          "objectKey": "c5bddae606a23e860d42272ce6a22f597a543444e53c5d09922559d4be0237f9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

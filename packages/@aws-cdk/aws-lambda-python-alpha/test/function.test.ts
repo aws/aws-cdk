@@ -1,11 +1,13 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as path from 'path';
-import { Template } from 'aws-cdk-lib/assertions';
-import { Code, Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import type { Code } from 'aws-cdk-lib/aws-lambda';
+import { Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { PythonFunction } from '../lib';
-import { Bundling, BundlingProps } from '../lib/bundling';
+import type { BundlingProps } from '../lib/bundling';
+import { Bundling } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {

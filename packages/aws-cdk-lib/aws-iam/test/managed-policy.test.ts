@@ -1,6 +1,9 @@
 import { Template } from '../../assertions';
+import * as lambda from '../../aws-lambda';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
+import type { AddToPrincipalPolicyResult, IResourceWithPolicy } from '../lib';
+import { Grant, Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -44,7 +47,7 @@ describe('managed policy', () => {
   test('managed policy with statements', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy', { managedPolicyName: 'MyManagedPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
@@ -58,7 +61,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',
@@ -117,7 +120,7 @@ describe('managed policy', () => {
           Resource: '*',
         }],
       }),
-      statements: [new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] })],
+      statements: [new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] })],
     });
 
     Template.fromStack(stack).templateMatches({
@@ -129,7 +132,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',
@@ -143,7 +146,7 @@ describe('managed policy', () => {
   test('policy name can be omitted, in which case the logical id will be used', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
@@ -156,7 +159,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',
@@ -670,7 +673,7 @@ describe('managed policy', () => {
     });
   });
 
-  test('Policies can be granted principal permissions', () => {
+  test('ManagedPolicy can be granted principal permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -689,7 +692,32 @@ describe('managed policy', () => {
     });
   });
 
-  test('addPrincipalOrResource() correctly grants Policies permissions', () => {
+  test('ManagedPolicy can be granted via lambda.Function.grantInvoke()', () => {
+    const func = new lambda.Function(stack, 'Function', { code: lambda.Code.fromInline('export const handler = () => {}'), runtime: lambda.Runtime.NODEJS_LATEST, handler: 'index.handler' });
+    const mp = new ManagedPolicy(stack, 'Policy', {
+      managedPolicyName: 'MyManagedPolicyName',
+    });
+    func.grantInvoke(mp);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+      ManagedPolicyName: 'MyManagedPolicyName',
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'lambda:InvokeFunction',
+            Resource: [
+              { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':*']] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('addPrincipalOrResource() correctly grants ManagedPolicy permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
@@ -715,38 +743,30 @@ describe('managed policy', () => {
     });
   });
 
-  test('Policies cannot be granted principal permissions across accounts', () => {
+  test('ManagedPolicy cannot be granted principal permissions across accounts', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
+    const crossAccountStack = new cdk.Stack(app, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(crossAccountStack, 'CrossAccountBucket', {
+      bucketName: 'cross-account-bucket',
+    });
+    bucket.grantRead(mp);
 
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    }
-    const resource = new DummyResource(stack, 'Dummy', { account: '5678' });
-
-    expect(() => {
-      Grant.addToPrincipalOrResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
+    expect(() => app.synth()).toThrow('This grant operation needs to add a resource policy so needs access to a principal.');
   });
 
-  test('Policies cannot be granted resource permissions', () => {
+  test('ManagedPolicy cannot be granted resource permissions', () => {
     const mp = new ManagedPolicy(stack, 'Policy', {
       managedPolicyName: 'MyManagedPolicyName',
     });
+    const crossAccountStack = new cdk.Stack(app, 'CrossAccountStack', { env: { account: '5678' } });
+    const bucket = new s3.Bucket(crossAccountStack, 'CrossAccountBucket', {
+      bucketName: 'cross-account-bucket',
+    });
+    Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource: bucket });
 
-    class DummyResource extends cdk.Resource implements IResourceWithPolicy {
-      addToResourcePolicy(_statement: PolicyStatement): AddToPrincipalPolicyResult {
-        throw new Error('should not be called.');
-      }
-    }
-    const resource = new DummyResource(stack, 'Dummy');
-
-    expect(() => {
-      Grant.addToPrincipalAndResource({ actions: ['dummy:Action'], grantee: mp, resourceArns: ['*'], resource });
-    }).toThrow(/Cannot use a ManagedPolicy 'MyStack\/Policy'/);
+    expect(() => app.synth()).toThrow('This grant operation needs to add a resource policy so needs access to a principal.');
   });
 
   test('prevent creation when customizeRoles is configured', () => {

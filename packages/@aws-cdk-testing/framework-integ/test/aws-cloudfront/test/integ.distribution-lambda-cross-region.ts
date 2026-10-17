@@ -1,4 +1,9 @@
 /// !cdk-integ *
+/**
+ * This test uses cross-region Lambda@Edge (eu-west-1 main stack + us-east-1 edge stacks).
+ * Lambda@Edge replicas cannot be immediately deleted during stack teardown.
+ * See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
+ */
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { TestOrigin } from './test-origin';
@@ -8,6 +13,8 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
+// Hardcoded region is intentional — this test validates cross-region EdgeFunction
+// behavior (main stack in eu-west-1, edge lambdas auto-created in us-east-1).
 const region = 'eu-west-1';
 const stack = new cdk.Stack(app, 'integ-distribution-lambda-cross-region', { env: { region: region } });
 
@@ -47,4 +54,11 @@ new cloudfront.Distribution(stack, 'Dist', {
 new integ.IntegTest(app, 'cdk-integ-distribution-lambda-cross-region', {
   testCases: [stack],
   diffAssets: true,
+  regions: ['eu-west-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Lambda@Edge replicas cannot be immediately deleted; expect destroy to fail
+      expectError: true,
+    },
+  },
 });

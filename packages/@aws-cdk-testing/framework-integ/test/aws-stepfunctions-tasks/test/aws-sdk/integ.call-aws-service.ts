@@ -51,7 +51,7 @@ class TestStack extends cdk.Stack {
     });
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: putObject.next(getObject).next(deleteObject),
+      definitionBody: sfn.DefinitionBody.fromChainable(putObject.next(getObject).next(deleteObject)),
     });
 
     new cdk.CfnOutput(this, 'StateMachineArn', {

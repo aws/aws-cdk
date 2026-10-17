@@ -37,7 +37,6 @@ const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bu
 unmanagedBucket.addObjectCreatedNotification(new s3n.LambdaDestination(fn), { prefix: 'TEST1/', suffix: '.png' });
 unmanagedBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn), { prefix: 'TEST2/' });
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback(null, event);

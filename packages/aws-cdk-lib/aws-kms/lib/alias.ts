@@ -1,10 +1,14 @@
-import { Construct } from 'constructs';
-import { IKey } from './key';
+import type { Construct } from 'constructs';
+import type { IKey } from './key';
+import type { AliasReference, IAliasRef, KeyReference } from './kms.generated';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 
@@ -15,7 +19,7 @@ const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
  * A KMS Key alias.
  * An alias can be used in all places that expect a key.
  */
-export interface IAlias extends IKey {
+export interface IAlias extends IKey, IAliasRef {
   /**
    * The name of the alias.
    *
@@ -62,6 +66,22 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public abstract readonly aliasTargetKey: IKey;
 
+  public get aliasRef(): AliasReference {
+    return {
+      aliasName: this.aliasName,
+    };
+  }
+
+  public get keyRef(): KeyReference {
+    // Not actually referering to the key: `IKeyRef` here is being used as a
+    // hypothetical `IKeyLikeRef`, and we need to return the Alias values using
+    // the Key interface.
+    return {
+      keyArn: this.aliasArn,
+      keyId: this.keyId,
+    };
+  }
+
   /**
    * The ARN of the alias.
    *
@@ -101,38 +121,65 @@ abstract class AliasBase extends Resource implements IAlias {
     return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return this.aliasTargetKey.grant(grantee, ...actions);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncryptDecrypt(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSign(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantSignVerify(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantGenerateMac(grantee);
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantVerifyMac(grantee);
   }
@@ -203,10 +250,17 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
-      public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
+      public get aliasTargetKey(): IKey { throw new ValidationError(lit`CannotAccessAliasTargetKey`, 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
+      public addAlias(_alias: string): Alias { throw new ValidationError(lit`CannotAddAliasToImported`, 'Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
+      }
+
+      public get keyRef(): KeyReference {
+        return {
+          keyArn: this.keyArn,
+          keyId: this.keyId,
+        };
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -227,6 +281,12 @@ export class Alias extends AliasBase {
             },
           },
         });
+      }
+
+      public get aliasRef(): AliasReference {
+        return {
+          aliasName: this.aliasName,
+        };
       }
 
       public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
@@ -265,8 +325,18 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
+  private readonly resource: CfnAlias;
+
   public readonly aliasTargetKey: IKey;
+
+  @memoizedGetter
+  public get aliasName(): string {
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      return this.getResourceNameAttribute(this.resource.ref);
+    } else {
+      return this.getResourceNameAttribute(this.resource.aliasName);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
@@ -277,15 +347,15 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
+        throw new ValidationError(lit`AliasIncludeValueAfter`, `Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        throw new ValidationError(lit`AliasCannotStart`, `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        throw new ValidationError(lit`AliasNameCharacters`, 'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
       const valueInToken = Tokenization.reverseString(aliasName).firstValue;
@@ -295,11 +365,11 @@ export class Alias extends AliasBase {
       }
 
       if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        throw new ValidationError(lit`AliasCannotStart`, `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        throw new ValidationError(lit`AliasNameCharacters`, 'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     }
 
@@ -311,19 +381,13 @@ export class Alias extends AliasBase {
 
     this.aliasTargetKey = props.targetKey;
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
-      this.aliasName = this.getResourceNameAttribute(resource.ref);
-    } else {
-      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
-    }
-
     if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
+      this.resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
 

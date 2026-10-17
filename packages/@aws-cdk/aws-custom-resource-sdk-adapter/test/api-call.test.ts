@@ -1,4 +1,5 @@
-import { ApiCall, InvokeOptions, coerceSdkv3Response, flatten } from '../lib';
+import type { InvokeOptions } from '../lib';
+import { ApiCall, coerceSdkv3Response, flatten } from '../lib';
 
 test('can map service name to SDK v3 client name', () => {
   expect(new ApiCall('S3', 'Bla').v3PackageName).toBe('@aws-sdk/client-s3');

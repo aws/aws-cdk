@@ -1,4 +1,4 @@
-import { CfnFunction } from './lambda.generated';
+import type { CfnFunction } from './lambda.generated';
 
 export abstract class SnapStartConf {
   // Enable SnapStart on published lambda versions, this is the only available option available

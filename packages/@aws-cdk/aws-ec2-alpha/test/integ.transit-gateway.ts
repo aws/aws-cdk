@@ -1,9 +1,9 @@
-import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { TransitGateway } from '../lib/transit-gateway';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { IpCidr, SubnetV2 } from '../lib';
+import { TransitGateway } from '../lib/transit-gateway';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 
@@ -20,7 +20,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'SubnetTest', {
 
 const subnet = new SubnetV2(stack, 'testSubnet1', {
   vpc,
-  availabilityZone: 'us-east-1a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.0.0/20'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });

@@ -1,11 +1,12 @@
-// Read priveleges
+// Table Bucket
+// Read privileges
 export const TABLE_BUCKET_READ_ACCESS = [
   's3tables:Get*',
-  's3tables:ListNamespace',
+  's3tables:ListNamespaces',
   's3tables:ListTables',
 ];
 
-// Write priveleges
+// Write privileges
 export const TABLE_BUCKET_WRITE_ACCESS = [
   's3tables:PutTableData',
   's3tables:UpdateTableMetadataLocation',
@@ -19,6 +20,22 @@ export const TABLE_BUCKET_WRITE_ACCESS = [
 export const TABLE_BUCKET_READ_WRITE_ACCESS = [...new Set([
   ...TABLE_BUCKET_READ_ACCESS,
   ...TABLE_BUCKET_WRITE_ACCESS,
+])];
+
+// Table
+// Read privileges
+export const TABLE_READ_ACCESS = [
+  's3tables:Get*',
+];
+// Write privileges
+export const TABLE_WRITE_ACCESS = [
+  's3tables:PutTableData',
+  's3tables:UpdateTableMetadataLocation',
+  's3tables:RenameTable',
+];
+export const TABLE_READ_WRITE_ACCESS = [...new Set([
+  ...TABLE_READ_ACCESS,
+  ...TABLE_WRITE_ACCESS,
 ])];
 
 // Permissions for user defined KMS Keys

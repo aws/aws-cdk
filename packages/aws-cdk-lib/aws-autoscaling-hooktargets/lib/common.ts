@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/order
-import * as constructs from 'constructs';
+
+import type * as constructs from 'constructs';
 import * as iam from '../../aws-iam';
 
 export function createRole(scope: constructs.Construct, _role?: iam.IRole) {

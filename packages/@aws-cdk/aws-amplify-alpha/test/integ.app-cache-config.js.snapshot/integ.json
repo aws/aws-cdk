@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "36.0.5",
+  "version": "45.0.0",
   "testCases": {
     "amplify-app-cache-cofig-integ/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "amplify-app-cache-cofig-integ/DefaultTest/DeployAssert",
       "assertionStackName": "amplifyappcachecofigintegDefaultTestDeployAssert14075C62"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.1"
 }

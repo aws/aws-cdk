@@ -12,6 +12,10 @@ if [[ "${S3_BUILD_CACHE:-}" = "" ]]; then
     exit 0
 fi
 
+echo "🧳 Attaching cache provenance"
+"$(dirname "$0")/build-info.sh" $cachedir/build-info.json
+cat "$cachedir/build-info.json"
+
 echo "🧳 Storing build cache at: ${S3_BUILD_CACHE}"
 
 if ! (cd $cachedir && tar czv . | aws s3 cp - ${S3_BUILD_CACHE}); then

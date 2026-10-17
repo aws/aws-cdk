@@ -1,0 +1,220 @@
+{
+ "Resources": {
+  "EventBus": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "LogConfig": {
+     "IncludeDetail": "NONE",
+     "Level": "ERROR"
+    },
+    "Name": "vended-logs-mixin-event-bus"
+   }
+  },
+  "DeliveryLogGroupADF10FC60": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeliveryLogGroupAPolicyResourcePolicy871A75CE": {
+   "Type": "AWS::Logs::ResourcePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\"},\"ArnLike\":{\"aws:SourceArn\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "DeliveryLogGroupADF10FC60",
+         "Arn"
+        ]
+       },
+       "\"}],\"Version\":\"2012-10-17\"}"
+      ]
+     ]
+    },
+    "PolicyName": "VendedLogsMultiplesTestDeliveryLogGroupAPolicy297F462A"
+   }
+  },
+  "DeliveryLogGroupBD2E5EF85": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeliveryLogGroupBPolicyResourcePolicyB050EB19": {
+   "Type": "AWS::Logs::ResourcePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\"},\"ArnLike\":{\"aws:SourceArn\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "DeliveryLogGroupBD2E5EF85",
+         "Arn"
+        ]
+       },
+       "\"}],\"Version\":\"2012-10-17\"}"
+      ]
+     ]
+    },
+    "PolicyName": "VendedLogsMultiplesTestDeliveryLogGroupBPolicy81174AC2"
+   }
+  },
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB": {
+   "Type": "AWS::Logs::DeliveryDestination",
+   "Properties": {
+    "DeliveryDestinationType": "CWL",
+    "DestinationResourceArn": {
+     "Fn::GetAtt": [
+      "DeliveryLogGroupADF10FC60",
+      "Arn"
+     ]
+    },
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMuoupA5ACD97D50A7DAB0A"
+   },
+   "DependsOn": [
+    "DeliveryLogGroupAPolicyResourcePolicy871A75CE"
+   ]
+  },
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Delivery1DAA8855": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": {
+     "Fn::GetAtt": [
+      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB",
+      "Arn"
+     ]
+    },
+    "DeliverySourceName": {
+     "Ref": "CDKSourceERRORLOGSVendedLogsMultiplesTest"
+    }
+   },
+   "DependsOn": [
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB",
+    "CDKSourceERRORLOGSVendedLogsMultiplesTest"
+   ]
+  },
+  "CDKSourceERRORLOGSVendedLogsMultiplesTest": {
+   "Type": "AWS::Logs::DeliverySource",
+   "Properties": {
+    "LogType": "ERROR_LOGS",
+    "Name": "cdk-errorlogs-source-VendedLogsMultiplesTest",
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "EventBus",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B": {
+   "Type": "AWS::Logs::DeliveryDestination",
+   "Properties": {
+    "DeliveryDestinationType": "CWL",
+    "DestinationResourceArn": {
+     "Fn::GetAtt": [
+      "DeliveryLogGroupBD2E5EF85",
+      "Arn"
+     ]
+    },
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMuoupB352246CF12923CAA"
+   },
+   "DependsOn": [
+    "DeliveryLogGroupBPolicyResourcePolicyB050EB19"
+   ]
+  },
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDelivery7BD7F2BF": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": {
+     "Fn::GetAtt": [
+      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B",
+      "Arn"
+     ]
+    },
+    "DeliverySourceName": {
+     "Ref": "CDKSourceERRORLOGSVendedLogsMultiplesTest"
+    }
+   },
+   "DependsOn": [
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Delivery1DAA8855",
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B",
+    "CDKSourceERRORLOGSVendedLogsMultiplesTest"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

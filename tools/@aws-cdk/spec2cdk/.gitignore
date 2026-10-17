@@ -14,5 +14,5 @@ nyc.config.js
 junit.xml
 
 # Keep configs
-!.eslintrc.js
+!eslint.config.mjs
 !jest.config.js

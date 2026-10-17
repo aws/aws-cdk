@@ -1,0 +1,67 @@
+{
+  "/aws-cdk-mediapackagev2-key-rotation/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/SpekeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/SpekeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SpekeRoleE39491EA"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-key-rotation/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ]
+}

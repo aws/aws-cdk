@@ -1,6 +1,6 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
 
 /**
  * SageMaker target properties.

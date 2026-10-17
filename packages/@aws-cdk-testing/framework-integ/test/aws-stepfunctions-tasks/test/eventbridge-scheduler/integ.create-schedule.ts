@@ -66,7 +66,7 @@ const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
 const stateMachine = new sfn.StateMachine(stack, 'stateMachine', {
-  definition: sfn.Chain.start(startTask).next(createScheduleTask1).next(createScheduleTask2).next(endTask),
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(createScheduleTask1).next(createScheduleTask2).next(endTask)),
 });
 
 const testCase = new IntegTest(app, 'PutEvents', {

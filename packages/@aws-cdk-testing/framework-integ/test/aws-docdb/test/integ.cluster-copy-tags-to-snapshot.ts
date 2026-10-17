@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
+import { DOCDB_ENGINE_VERSION } from './docdb-integ-test-constraints';
 
 const app = new cdk.App();
 
@@ -10,7 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-docdb-integ');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotDisabled', {
-  engineVersion: '3.6.0',
+  engineVersion: DOCDB_ENGINE_VERSION,
   masterUser: {
     username: 'docdb',
   },
@@ -21,7 +22,7 @@ new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotDisabled', {
 });
 
 new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotEnabled', {
-  engineVersion: '3.6.0',
+  engineVersion: DOCDB_ENGINE_VERSION,
   masterUser: {
     username: 'docdb',
   },

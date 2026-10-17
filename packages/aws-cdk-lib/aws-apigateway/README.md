@@ -16,6 +16,8 @@ running on AWS Lambda, or any web application.
   - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
   - [AWS StepFunctions backed APIs](#aws-stepfunctions-backed-apis)
   - [Integration Targets](#integration-targets)
+    - [Response Streaming](#response-streaming)
+    - [Lambda Integration Permissions](#lambda-integration-permissions)
   - [Usage Plan \& API Keys](#usage-plan--api-keys)
     - [Adding an API Key to an imported RestApi](#adding-an-api-key-to-an-imported-restapi)
     - [⚠️ Multiple API Keys](#️-multiple-api-keys)
@@ -333,6 +335,45 @@ const getMessageIntegration = new apigateway.AwsIntegration({
   region: 'eu-west-1'
 });
 ```
+
+### Response Streaming
+
+Integrations support response streaming, which allows responses to be streamed back to clients.
+This is useful for large payloads or when you want to start sending data before the entire response is ready.
+
+To enable response streaming, set `ResponseTransferMode.STREAM` to the `responseTransferMode` option:
+
+```ts
+declare const handler: lambda.Function;
+new apigateway.LambdaIntegration(handler, {
+  responseTransferMode: apigateway.ResponseTransferMode.STREAM,
+});
+```
+
+### Lambda Integration Permissions
+
+By default, creating a `LambdaIntegration` will add a permission for API Gateway to invoke your AWS Lambda function, scoped to the specific method which uses the integration.
+
+If you reuse the same AWS Lambda function for many integrations, the AWS Lambda permission policy size can be exceeded by adding a separate policy statement for each method which invokes the AWS Lambda function. To avoid this, you can opt to scope permissions to any method on the API by setting `scopePermissionToMethod` to `false`, and this will ensure only a single policy statement is added to the AWS Lambda permission policy.
+
+```ts
+declare const book: apigateway.Resource;
+declare const backend: lambda.Function;
+
+const getBookIntegration = new apigateway.LambdaIntegration(backend, {
+  scopePermissionToMethod: false,
+});
+const createBookIntegration = new apigateway.LambdaIntegration(backend, {
+  scopePermissionToMethod: false,
+});
+
+book.addMethod('GET', getBookIntegration);
+book.addMethod('POST', createBookIntegration);
+```
+
+In the above example, a single permission is added, shared by both `getBookIntegration` and `createBookIntegration`.
+
+Note that setting `scopePermissionToMethod` to `false` will always allow test invocations, no matter the value specified for `allowTestInvoke`.
 
 ## Usage Plan & API Keys
 
@@ -1149,6 +1190,36 @@ new apigateway.DomainName(this, 'custom-domain', {
 });
 ```
 
+API Gateway supports both legacy security policies (TLS 1.0, TLS 1.2) and enhanced security policies.
+Enhanced security policies (those starting with `SecurityPolicy_`) support TLS 1.3 and provide additional options
+such as post-quantum cryptography. Use enhanced security policies for regulated workloads, advanced governance, or to use post-quantum cryptography.
+For more details, see the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html).
+
+When using enhanced security policies, you must specify `endpointAccessMode`. `STRICT` is recommended for production workloads, but `BASIC` may be needed during migration or for certain application architectures:
+
+```ts
+declare const acmCertificateForExampleCom: any;
+
+// For regional or private APIs with enhanced security policy
+new apigateway.DomainName(this, 'custom-domain-tls13', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09, // TLS 1.3
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT, // Recommended for production
+});
+
+// For edge-optimized APIs with enhanced security policy
+new apigateway.DomainName(this, 'custom-domain-edge-tls13', {
+  domainName: 'example.com',
+  certificate: acmCertificateForExampleCom,
+  endpointType: apigateway.EndpointType.EDGE,
+  securityPolicy: apigateway.SecurityPolicy.TLS13_2025_EDGE, // Enhanced security policy for edge
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT, // Recommended for production
+});
+```
+
+> **Note:** Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy.
+
 Once you have a domain, you can map base paths of the domain to APIs.
 The following example will map the URL <https://example.com/go-to-api1>
 to the `api1` API and <https://example.com/boom> to the `api2` API.
@@ -1241,7 +1312,7 @@ Additional requirements for creating multi-level path mappings for RestApis:
 
 (both are defaults)
 
-- Must use `SecurityPolicy.TLS_1_2`
+- Must use `SecurityPolicy.TLS_1_2` or higher (TLS 1.0 is not supported for multi-level paths)
 - DomainNames must be `EndpointType.REGIONAL`
 
 ```ts
@@ -1649,6 +1720,15 @@ Generally, it's preferred to use API Gateway's OpenAPI extensions to model these
 const api = new apigateway.SpecRestApi(this, 'books-api', {
   apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
   mode: apigateway.RestApiMode.MERGE
+});
+```
+
+`SpecRestApi` also supports binary media types, similar to `RestApi`:
+
+```ts
+const api = new apigateway.SpecRestApi(this, 'books-api', {
+  apiDefinition: apigateway.ApiDefinition.fromAsset('path-to-file.json'),
+  binaryMediaTypes: ['image/png', 'application/pdf']
 });
 ```
 

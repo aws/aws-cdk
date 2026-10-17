@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import { IHostedZone } from './hosted-zone-ref';
+import type { Construct } from 'constructs';
+import type { GrantDelegationOptions, IHostedZone, INamedHostedZoneRef } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { Stack, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Validates a zone name is valid by Route53 specific naming rules,
@@ -13,19 +14,13 @@ import { Stack } from '../../core';
  */
 export function validateZoneName(zoneName: string) {
   if (zoneName.length > 255) {
-    throw new ValidationError('zone name cannot be more than 255 bytes long');
+    throw new UnscopedValidationError(lit`ZoneNameTooLong`, 'zone name cannot be more than 255 bytes long');
   }
   if (zoneName.split('.').find(label => label.length > 63)) {
-    throw new ValidationError('zone name labels cannot be more than 63 bytes long');
+    throw new UnscopedValidationError(lit`ZoneLabelTooLong`, 'zone name labels cannot be more than 63 bytes long');
   }
   if (!zoneName.match(/^[a-z0-9!"#$%&'()*+,/:;<=>?@[\\\]^_`{|}~.-]+$/i)) {
-    throw new ValidationError('zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
-  }
-}
-
-class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
+    throw new UnscopedValidationError(lit`InvalidZoneNameCharacters`, 'zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
   }
 }
 
@@ -49,9 +44,7 @@ export function determineFullyQualifiedDomainName(providedName: string, hostedZo
     return providedName;
   }
 
-  const hostedZoneName = hostedZone.zoneName.endsWith('.')
-    ? hostedZone.zoneName.substring(0, hostedZone.zoneName.length - 1)
-    : hostedZone.zoneName;
+  const hostedZoneName = stripTrailingDot(hostedZone.zoneName);
 
   const suffix = `.${hostedZoneName}`;
   if (providedName.endsWith(suffix) || providedName === hostedZoneName) {
@@ -71,15 +64,86 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
   });
 }
 
-export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string): iam.Grant {
+function stripTrailingDot(zoneName: string) {
+  return zoneName.endsWith('.') ? zoneName.substring(0, zoneName.length - 1) : zoneName;
+}
+
+const octalConversionIgnoreRegex = /[a-z0-9-_\\.]/;
+
+// Required to octal encode characters other than a–z, 0–9, - (hyphen), _ (underscore), and . (period) for IAM conditions
+// https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-conditions-route53.html#route53_rrset_conditionkeys_normalization
+function octalEncodeDelegatedZoneName(delegatedZoneName: string): string {
+  if (Token.isUnresolved(delegatedZoneName)) {
+    return delegatedZoneName;
+  }
+
+  return delegatedZoneName.split('')
+    .map(c => {
+      if (octalConversionIgnoreRegex.test(c)) {
+        return c;
+      }
+      return '\\' + c.charCodeAt(0).toString(8).padStart(3, '0');
+    }).join('');
+}
+
+function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: string) {
+  if (delegatedZoneName.endsWith('.')) {
+    throw new UnscopedValidationError(
+      lit`DelegatedZoneNameTrailingPeriod`,
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot have a trailing period`,
+    );
+  }
+
+  if (Token.isUnresolved(delegatedZoneName)) {
+    return;
+  }
+
+  validateZoneName(delegatedZoneName);
+
+  if (delegatedZoneName.toLowerCase() !== delegatedZoneName) {
+    throw new UnscopedValidationError(
+      lit`DelegatedZoneNameUppercase`,
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
+    );
+  }
+
+  if (Token.isUnresolved(parentZoneName)) {
+    return;
+  }
+
+  const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
+
+  if (!delegatedZoneName.endsWith(parentZoneNameNoTrailingDot)) {
+    throw new UnscopedValidationError(
+      lit`DelegatedZoneNameNotSuffixed`,
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
+    );
+  }
+
+  if (delegatedZoneName === parentZoneNameNoTrailingDot) {
+    throw new UnscopedValidationError(
+      lit`DelegatedZoneNameSameAsParent`,
+      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
+    );
+  }
+}
+
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZone: INamedHostedZoneRef, delegationOptions?: GrantDelegationOptions): iam.Grant {
+  const delegatedZoneNames = delegationOptions?.delegatedZoneNames?.map(delegatedZoneName => {
+    validateDelegatedZoneName(hostedZone.name, delegatedZoneName);
+    return octalEncodeDelegatedZoneName(delegatedZoneName);
+  });
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],
-    resourceArns: [hostedZoneArn],
+    resourceArns: [makeHostedZoneArn(hostedZone, hostedZone.hostedZoneRef.hostedZoneId)],
     conditions: {
       'ForAllValues:StringEquals': {
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
         'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+        ...(delegationOptions?.delegatedZoneNames ? {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': delegatedZoneNames,
+        } : {}),
       },
     },
   });

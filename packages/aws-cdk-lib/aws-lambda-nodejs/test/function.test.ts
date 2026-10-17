@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-import * as child_process from 'child_process';
+
+import child_process from 'child_process';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
-import { Code, CodeConfig, Runtime } from '../../aws-lambda';
+import type { CodeConfig } from '../../aws-lambda';
+import { Code, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 import { NodejsFunction } from '../lib';
@@ -34,36 +35,37 @@ jest.mock('../lib/util', () => ({
 }));
 
 let stack: Stack;
+let bockPath: ReturnType<typeof bockfs.workingDirectory>;
 beforeEach(() => {
+  // We MUST use a fake file system here.
+  // Using the real filesystem causes the tests to be flaky and fail at random.
+  // This way we are guaranteed to have the fake files setup on each test run.
+  bockfs({
+    '/home/project/package.json': '{}',
+    '/home/project/package-lock.json': '{}',
+    '/home/project/handler.tsx': '// nothing',
+    '/home/project/function.test.handler1.ts': '// nothing',
+    '/home/project/function.test.handler2.js': '// nothing',
+    '/home/project/function.test.handler3.mjs': '// nothing',
+    '/home/project/function.test.handler4.mts': '// nothing',
+    '/home/project/function.test.handler5.cts': '// nothing',
+    '/home/project/function.test.handler6.cjs': '// nothing',
+    '/home/project/function.test.handler7.zip': '// nothing',
+    '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
+  });
+  bockPath = bockfs.workingDirectory('/home/project');
+
   stack = new Stack();
   jest.clearAllMocks();
+  // pretend the calling file is in a fake file path
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => bockPath.translate`function.test.ts` },
+  ]);
 });
 
-// We MUST use a fake file system here.
-// Using the real filesystem causes the tests to be flaky and fail at random.
-// This way we are guaranteed to have the fake files setup on each test run.
-bockfs({
-  '/home/project/package.json': '{}',
-  '/home/project/package-lock.json': '{}',
-  '/home/project/handler.tsx': '// nothing',
-  '/home/project/function.test.handler1.ts': '// nothing',
-  '/home/project/function.test.handler2.js': '// nothing',
-  '/home/project/function.test.handler3.mjs': '// nothing',
-  '/home/project/function.test.handler4.mts': '// nothing',
-  '/home/project/function.test.handler5.cts': '// nothing',
-  '/home/project/function.test.handler6.cjs': '// nothing',
-  '/home/project/function.test.handler7.zip': '// nothing',
-  '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
-});
-const bockPath = bockfs.workingDirectory('/home/project');
-
-// pretend the calling file is in a fake file path
-mockCallsites.mockImplementation(() => [
-  { getFunctionName: () => 'NodejsFunction' },
-  { getFileName: () => bockPath`function.test.ts` },
-]);
-
-afterAll(() => {
+afterEach(() => {
+  bockPath[Symbol.dispose]();
   bockfs.restore();
 });
 
@@ -114,14 +116,14 @@ describe('lambda.Code.fromCustomCommand', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
       handler: 'Random.Name',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'Random.Name',
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs20.x',
     });
   });
 });
@@ -231,8 +233,25 @@ test('throws when entry is not js/ts', () => {
   })).toThrow(/Only JavaScript or TypeScript entry files are supported/);
 });
 
+test('NodejsFunction with .js handler in an ESM package', () => {
+  // pretend the calling file is in a fake file path
+  // In ESM, callsites are prepended with 'file://'
+  mockCallsites.mockImplementation(() => [
+    { getFunctionName: () => 'NodejsFunction' },
+    { getFileName: () => `file://${bockPath.translate`function.test.ts`}` },
+  ]);
+
+  // WHEN
+  new NodejsFunction(stack, 'handler2');
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
+  }));
+});
+
 test('accepts tsx', () => {
-  const entry = bockPath`handler.tsx`;
+  const entry = bockPath.translate`handler.tsx`;
 
   expect(() => new NodejsFunction(stack, 'Fn', {
     entry,
@@ -273,7 +292,7 @@ test('resolves depsLockFilePath to an absolute path', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    depsLockFilePath: bockPath`/home/project/package.json`,
+    depsLockFilePath: bockPath.translate`/home/project/package.json`,
   }));
 });
 
@@ -284,7 +303,7 @@ test('resolves entry to an absolute path', () => {
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
-    entry: bockPath`/home/project/aws-lambda-nodejs/lib/index.ts`,
+    entry: bockPath.translate`/home/project/aws-lambda-nodejs/lib/index.ts`,
   }));
 });
 
@@ -366,14 +385,14 @@ describe('Node 18+ runtimes', () => {
     new NodejsFunction(stackFF, 'handler1');
 
     Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs24.x',
     });
   });
 
   test('connection reuse for aws sdk v2 not set by default', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
     });
 
     // THEN
@@ -385,7 +404,7 @@ describe('Node 18+ runtimes', () => {
   test('connection reuse for aws sdk v2 can be explicitly not set', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: false,
     });
 
@@ -398,7 +417,7 @@ describe('Node 18+ runtimes', () => {
   test('setting connection reuse for aws sdk v2 has warning', () => {
     // WHEN
     new NodejsFunction(stack, 'handler1', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       awsSdkConnectionReuse: true,
     });
 

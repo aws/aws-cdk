@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRoute } from './route';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi, IWebSocketApiRef } from './api';
+import type { IWebSocketRoute } from './route';
+import type { IntegrationReference } from '.././index';
 import { CfnIntegration } from '.././index';
-import { IRole } from '../../../aws-iam';
-import { Duration, Resource } from '../../../core';
+import type { IRole } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IIntegration } from '../common';
+import type { IIntegration } from '../common';
 
 /**
  * Represents an Integration for an WebSocket API.
@@ -81,7 +84,7 @@ export interface WebSocketIntegrationProps {
   /**
    * The WebSocket API to which this integration should be bound.
    */
-  readonly webSocketApi: IWebSocketApi;
+  readonly webSocketApi: IWebSocketApiRef;
 
   /**
    * Integration type
@@ -172,7 +175,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.WebSocketIntegration';
   public readonly integrationId: string;
-  public readonly webSocketApi: IWebSocketApi;
+  private readonly _webSocketApi: IWebSocketApiRef;
 
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
@@ -180,11 +183,11 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     addConstructMetadata(this, props);
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
+      throw new ValidationError(lit`IntegrationTimeoutMillisecondsSeconds`, 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.webSocketApi.apiId,
+      apiId: props.webSocketApi.apiRef.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.integrationMethod,
@@ -197,7 +200,22 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       timeoutInMillis: props.timeout?.toMilliseconds(),
     });
     this.integrationId = integ.ref;
-    this.webSocketApi = props.webSocketApi;
+    this._webSocketApi = props.webSocketApi;
+  }
+
+  public get webSocketApi(): IWebSocketApi {
+    const ret = this._webSocketApi as IWebSocketApi;
+    if (!!ret.apiEndpoint && !!ret.apiRef) {
+      return ret;
+    }
+    throw new ValidationError(lit`Input`, `Input API ${ret.constructor.name} does not implement IWebSocketApi`, this);
+  }
+
+  public get integrationRef(): IntegrationReference {
+    return {
+      apiId: this.webSocketApi.apiRef.apiId,
+      integrationId: this.integrationId,
+    };
   }
 }
 
@@ -236,12 +254,18 @@ export abstract class WebSocketRouteIntegration {
    */
   public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
-      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
+      throw new ValidationError(lit`SingleIntegrationCannotAssociatedMultiple`, 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
-    if (!this.integration) {
-      const config = this.bind(options);
+    // `bind()` is called for every route this integration is bound to, so that
+    // per-route side effects (such as the Lambda invoke permission created by
+    // `WebSocketLambdaIntegration`) are added for each route. When a single
+    // integration instance is reused across multiple routes, the underlying
+    // `WebSocketIntegration` (and its `AWS::ApiGatewayV2::Integration` resource)
+    // is still created only once and shared across those routes.
+    const config = this.bind(options);
 
+    if (!this.integration) {
       this.integration = new WebSocketIntegration(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
         integrationType: config.type,

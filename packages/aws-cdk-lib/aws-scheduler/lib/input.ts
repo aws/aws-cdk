@@ -1,5 +1,6 @@
-import { ISchedule } from './schedule';
-import { DefaultTokenResolver, IResolveContext, Stack, StringConcat, Token, Tokenization } from '../../core';
+import type { ISchedule } from './schedule';
+import type { IResolveContext } from '../../core';
+import { DefaultTokenResolver, Stack, StringConcat, Token, Tokenization } from '../../core';
 
 /**
  * The text or well-formed JSON input passed to the target of the schedule.

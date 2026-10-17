@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.mwaaserverless"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.MWAAServerless"
+    },
+    "python": {
+      "module": "aws_cdk.aws_mwaaserverless"
+    }
+  }
+}

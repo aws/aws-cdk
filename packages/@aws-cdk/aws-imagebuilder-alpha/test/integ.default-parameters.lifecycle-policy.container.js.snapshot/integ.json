@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LifecyclePolicyTest-AMI-DefaultParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-lifecycle-policy-ami-default-parameters"
+      ],
+      "assertionStack": "LifecyclePolicyTest-AMI-DefaultParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "LifecyclePolicyTestAMIDefaultParametersDefaultTestDeployAssert4E1D8B63"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

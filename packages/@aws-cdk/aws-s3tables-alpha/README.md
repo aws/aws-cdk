@@ -29,8 +29,8 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 ```ts
 // Build a Table bucket
 const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
-    tableBucketName: 'example-bucket-1',
     // optional fields:
+    tableBucketName: 'example-bucket-1', // if omitted, CDK generates a unique name that satisfies the S3 Tables naming rules
     unreferencedFileRemoval: {
         status: UnreferencedFileRemovalStatus.ENABLED,
         noncurrentDays: 20,
@@ -39,7 +39,143 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 });
 ```
 
+When `tableBucketName` is omitted, CDK derives the name from the stack name and the
+construct path. Because the path is part of the input, the generated name is **not
+stable across stack or construct renames** — renaming or moving the construct will
+produce a different name and replace the bucket. If you need a fixed, predictable
+name (for example, to reference the bucket from outside CDK or across separate
+deployments), pass `tableBucketName` explicitly.
+
+### Define an S3 Tables Namespace
+
+```ts
+// Build a namespace
+const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
+    namespaceName: 'example-namespace-1',
+    tableBucket: tableBucket,
+});
+```
+
+### Define an S3 Table
+
+```ts
+// Build a table
+const sampleTable = new Table(scope, 'ExampleTable', {
+    tableName: 'example_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+});
+
+// Build a table with an Iceberg Schema
+const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
+    tableName: 'example_table_with_schema',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+            {
+                name: 'id',
+                type: 'int',
+                required: true,
+            },
+            {
+                name: 'name',
+                type: 'string',
+            },
+            ],
+        },
+    },
+    compaction: {
+        status: Status.ENABLED,
+        targetFileSizeMb: 128,
+    },
+    snapshotManagement: {
+        status: Status.ENABLED,
+        maxSnapshotAgeHours: 48,
+        minSnapshotsToKeep: 5,
+    },
+});
+```
+
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
+
+### Advanced Iceberg Table Configuration
+
+You can configure partition specifications, sort orders, and table properties for optimized query performance.
+
+The simplest way to add partitioning to your table:
+
+```ts
+// Build a table with partition spec (minimal configuration)
+const partitionedTable = new Table(scope, 'PartitionedTable', {
+    tableName: 'partitioned_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                { name: 'event_date', type: 'date', required: true },
+                { name: 'event_name', type: 'string' },
+            ],
+        },
+        icebergPartitionSpec: {
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
+                },
+            ],
+        },
+    },
+});
+```
+
+For full control, you can also configure sort orders and table properties:
+
+```ts
+// Build a table with partition spec, sort order, and table properties
+const advancedTable = new Table(scope, 'AdvancedTable', {
+    tableName: 'advanced_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                { id: 1, name: 'event_date', type: 'date', required: true },
+                { id: 2, name: 'user_id', type: 'string', required: true },
+            ],
+        },
+        icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
+                    fieldId: 1000,
+                },
+            ],
+        },
+        icebergSortOrder: {
+            orderId: 1,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_LAST,
+                },
+            ],
+        },
+        tableProperties: [
+            { key: 'write.format.default', value: 'parquet' },
+        ],
+    },
+});
+```
 
 ### Controlling Table Bucket Permissions
 
@@ -106,9 +242,94 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Enabling CloudWatch Request Metrics
+
+You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
+
+For more information about S3 Tables CloudWatch metrics, see the [S3 Tables CloudWatch Metrics documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-cloudwatch-metrics.html).
+
+```ts
+// Enable CloudWatch request metrics for the table bucket
+const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', {
+    tableBucketName: 'metrics-enabled-bucket',
+    requestMetricsStatus: RequestMetricsStatus.ENABLED,
+});
+```
+
+### Configuring Storage Class
+
+You can configure the storage class for your table bucket and tables. Storage class determines how data is stored and billed, allowing you to optimize for different access patterns.
+
+```ts
+// Create a table bucket with INTELLIGENT_TIERING storage class
+const tableBucketWithStorageClass = new TableBucket(scope, 'TableBucketWithStorageClass', {
+    tableBucketName: 'storage-class-bucket',
+    storageClass: StorageClass.INTELLIGENT_TIERING,
+});
+```
+
+Tables inherit the storage class from their parent bucket by default. You can also override the storage class at the table level:
+
+```ts
+// Create a table with explicit storage class (overrides bucket default)
+const tableWithStorageClass = new Table(scope, 'TableWithStorageClass', {
+    tableName: 'storage_class_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+    storageClass: StorageClass.STANDARD,
+});
+```
+
+Available storage classes:
+
+- `StorageClass.STANDARD` - For frequently accessed data
+- `StorageClass.INTELLIGENT_TIERING` - Automatically moves data between access tiers based on usage patterns
+
+Note: Table storage class is a create-only property and cannot be changed after the table is created.
+
+### Controlling Table Permissions
+
+```ts
+// Grant the principal read permissions to the table
+const accountId = '123456789012'
+table.grantRead(new iam.AccountPrincipal(accountId));
+
+// Grant the role write permissions to the table
+const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('sample') });
+table.grantWrite(role);
+
+// Grant the user read and write permissions to the table 
+table.grantReadWrite(new iam.User(stack, 'MyUser'));
+
+// Grant an account permissions to the table
+table.grantReadWrite(new iam.AccountPrincipal(accountId));
+
+// Add custom resource policy statements
+const permissions = new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    actions: ['s3tables:*'],
+    principals: [ new iam.ServicePrincipal('example.aws.internal') ],
+    resources: ['*']
+});
+
+table.addToResourcePolicy(permissions);
+```
+
+### Tagging
+
+Both `TableBucket` and `Table` support tagging through CDK's standard tagging mechanism:
+
+```ts
+Tags.of(tableBucket).add('Environment', 'Production');
+Tags.of(table).add('Team', 'DataEngineering');
+
+// Stack-level tags propagate to all resources
+Tags.of(stack).add('Project', 'DataLake');
+```
+
 ## Coming Soon
 
 L2 Construct support for:
 
-- Namespaces
-- Tables
+- KMS encryption support for Tables

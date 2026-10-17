@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "54.0.0",
   "testCases": {
     "DistributionPolicies/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "DistributionPolicies/DefaultTest/DeployAssert",
       "assertionStackName": "DistributionPoliciesDefaultTestDeployAssert1B8724D9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }

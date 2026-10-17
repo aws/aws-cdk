@@ -1,7 +1,7 @@
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { ClientAuthentication, Cluster, KafkaVersion } from '../lib';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { ClientAuthentication, Cluster, KafkaVersion } from '../lib';
 
 const app = new App({
   postCliContext: {

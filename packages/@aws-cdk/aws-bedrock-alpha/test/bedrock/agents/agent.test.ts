@@ -1,9 +1,9 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
 
 describe('Agent', () => {
@@ -163,7 +163,7 @@ describe('Agent', () => {
   describe('custom orchestration', () => {
     test('sets custom orchestration and grants necessary permissions', () => {
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -293,16 +293,27 @@ describe('Agent', () => {
 
       const rule = agent.onEvent('TestRule', {
         description: 'Custom rule description',
+        ruleName: 'MyCustomEventRuleName',
+        eventPattern: {
+          account: ['123456789012'],
+          region: ['us-east-1'],
+          detail: {
+            test: 'value',
+          },
+        },
       });
 
       expect(rule).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         Description: 'Custom rule description',
+        Name: 'MyCustomEventRuleName',
         EventPattern: {
           source: ['aws.bedrock'],
           detail: {
             'agent-id': [{ 'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentId'] }],
           },
+          account: ['123456789012'],
+          region: ['us-east-1'],
         },
       });
     });
@@ -380,13 +391,13 @@ describe('Agent', () => {
       });
 
       const fn1 = new lambda.Function(stack, 'TestFunction1', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
 
       const fn2 = new lambda.Function(stack, 'TestFunction2', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -417,7 +428,7 @@ describe('Agent', () => {
       });
 
       const fn = new lambda.Function(stack, 'TestFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {};'),
       });
@@ -483,6 +494,175 @@ describe('Agent', () => {
             MaxRecentSessions: 20,
           },
         },
+      });
+    });
+  });
+
+  describe('agent collaborators', () => {
+    test('agent with collaborators via AgentCollaboration constructor renders correctly in CFN template', () => {
+      const collaboratorAlias = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias', {
+        aliasId: 'test-alias-id',
+        aliasName: 'TestAlias',
+        agentVersion: '1',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role',
+        }),
+      });
+
+      const collaborator = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias,
+        collaborationInstruction: 'Help with data analysis tasks',
+        collaboratorName: 'DataAnalyst',
+        relayConversationHistory: true,
+      });
+
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator],
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
+
+      // Verify that the agent has the correct collaboration configuration in the CFN template
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        AgentCollaboration: 'SUPERVISOR',
+        AgentCollaborators: [
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with data analysis tasks',
+            CollaboratorName: 'DataAnalyst',
+            RelayConversationHistory: 'TO_COLLABORATOR',
+          },
+        ],
+      });
+    });
+
+    test('agent with multiple collaborators via AgentCollaboration constructor', () => {
+      const collaboratorAlias1 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias1', {
+        aliasId: 'test-alias-id-1',
+        aliasName: 'TestAlias1',
+        agentVersion: '1',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent1', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-1',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-1',
+        }),
+      });
+
+      const collaboratorAlias2 = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias2', {
+        aliasId: 'test-alias-id-2',
+        aliasName: 'TestAlias2',
+        agentVersion: '2',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent2', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id-2',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role-2',
+        }),
+      });
+
+      const collaborator1 = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias1,
+        collaborationInstruction: 'Help with data analysis tasks',
+        collaboratorName: 'DataAnalyst',
+        relayConversationHistory: true,
+      });
+
+      const collaborator2 = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias2,
+        collaborationInstruction: 'Help with code generation tasks',
+        collaboratorName: 'CodeGenerator',
+        relayConversationHistory: false,
+      });
+
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator1, collaborator2],
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
+
+      // Verify that the agent has multiple collaborators in the CFN template
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        AgentCollaboration: 'SUPERVISOR',
+        AgentCollaborators: [
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with data analysis tasks',
+            CollaboratorName: 'DataAnalyst',
+            RelayConversationHistory: 'TO_COLLABORATOR',
+          },
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with code generation tasks',
+            CollaboratorName: 'CodeGenerator',
+            RelayConversationHistory: 'DISABLED',
+          },
+        ],
+      });
+    });
+
+    test('collaborators from AgentCollaboration props are rendered correctly', () => {
+      const collaboratorAlias = bedrock.AgentAlias.fromAttributes(stack, 'CollaboratorAlias', {
+        aliasId: 'test-alias-id',
+        aliasName: 'TestAlias',
+        agentVersion: '1',
+        agent: bedrock.Agent.fromAgentAttributes(stack, 'CollaboratorAgent', {
+          agentArn: 'arn:aws:bedrock:us-east-1:123456789012:agent/collaborator-agent-id',
+          roleArn: 'arn:aws:iam::123456789012:role/collaborator-role',
+        }),
+      });
+
+      const collaborator = new bedrock.AgentCollaborator({
+        agentAlias: collaboratorAlias,
+        collaborationInstruction: 'Help with data analysis tasks',
+        collaboratorName: 'DataAnalyst',
+        relayConversationHistory: true,
+      });
+
+      const agentCollaboration = new bedrock.AgentCollaboration({
+        type: bedrock.AgentCollaboratorType.SUPERVISOR,
+        collaborators: [collaborator],
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        agentCollaboration,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        AgentCollaboration: 'SUPERVISOR',
+        AgentCollaborators: [
+          {
+            AgentDescriptor: {
+              AliasArn: Match.objectLike({
+                'Fn::Join': Match.anyValue(),
+              }),
+            },
+            CollaborationInstruction: 'Help with data analysis tasks',
+            CollaboratorName: 'DataAnalyst',
+            RelayConversationHistory: 'TO_COLLABORATOR',
+          },
+        ],
       });
     });
   });
@@ -597,6 +777,102 @@ describe('Agent', () => {
             RelayConversationHistory: 'TO_COLLABORATOR',
           },
         ],
+      });
+    });
+
+    test('applies dependency for existing role', () => {
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      });
+
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+        existingRole,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('ExistingRoleDefaultPolicy.*')],
+      });
+    });
+
+    test('applies dependency for role created by Agent', () => {
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('AgentRoleDefaultPolicy.*')],
+      });
+    });
+
+    test('creates agent with guardrail', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        description: 'Test guardrail for agent',
+        blockedInputMessaging: 'Input blocked by guardrail',
+        blockedOutputsMessaging: 'Output blocked by guardrail',
+      });
+
+      guardrail.addContentFilter({
+        type: bedrock.ContentFilterType.HATE,
+        inputStrength: bedrock.ContentFilterStrength.HIGH,
+        outputStrength: bedrock.ContentFilterStrength.HIGH,
+        inputAction: bedrock.GuardrailAction.BLOCK,
+        outputAction: bedrock.GuardrailAction.BLOCK,
+      });
+
+      new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+        guardrail,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        GuardrailConfiguration: {
+          GuardrailIdentifier: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'GuardrailId'],
+          },
+          GuardrailVersion: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'Version'],
+          },
+        },
+      });
+    });
+
+    test('adds guardrail to existing agent', () => {
+      const guardrail = new bedrock.Guardrail(stack, 'TestGuardrail', {
+        guardrailName: 'TestGuardrail',
+        description: 'Test guardrail for agent',
+      });
+
+      guardrail.addContentFilter({
+        type: bedrock.ContentFilterType.HATE,
+        inputStrength: bedrock.ContentFilterStrength.HIGH,
+        outputStrength: bedrock.ContentFilterStrength.HIGH,
+        inputAction: bedrock.GuardrailAction.BLOCK,
+        outputAction: bedrock.GuardrailAction.BLOCK,
+      });
+
+      const agent = new bedrock.Agent(stack, 'TestAgent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel,
+      });
+
+      agent.addGuardrail(guardrail);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Agent', {
+        GuardrailConfiguration: {
+          GuardrailIdentifier: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'GuardrailId'],
+          },
+          GuardrailVersion: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('TestGuardrail.*'), 'Version'],
+          },
+        },
       });
     });
   });

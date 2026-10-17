@@ -4,6 +4,7 @@ export * from './input';
 export * from './types';
 export * from './condition';
 export * from './state-machine';
+export * from './state-machine-grants';
 export * from './state-machine-fragment';
 export * from './state-transition-metrics';
 export * from './chain';

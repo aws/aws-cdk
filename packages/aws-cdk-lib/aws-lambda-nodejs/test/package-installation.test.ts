@@ -1,13 +1,13 @@
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import { PackageInstallation } from '../lib/package-installation';
 import * as util from '../lib/util';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const version = require('esbuild/package.json').version;
 
 test('detects local version', () => {
   expect(PackageInstallation.detect('esbuild')).toEqual({
-    isLocal: true,
+    isWorkspacePackage: true,
     version,
   });
 });
@@ -24,7 +24,7 @@ test('checks global version if local detection fails', () => {
   });
 
   expect(PackageInstallation.detect('esbuild')).toEqual({
-    isLocal: false,
+    isWorkspacePackage: false,
     version: 'global-version',
   });
 

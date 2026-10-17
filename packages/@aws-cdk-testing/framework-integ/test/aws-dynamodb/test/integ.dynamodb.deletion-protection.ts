@@ -1,6 +1,7 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 
 export class TestStack extends Stack {
@@ -12,20 +13,14 @@ export class TestStack extends Stack {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       deletionProtection: true,
       removalPolicy: RemovalPolicy.DESTROY,
-      tableName: 'deletion-protection-test',
     });
   }
 }
 
 const app = new App();
-const stack = new TestStack(app, 'deletion-protection-stack', {
-  env: {
-    region: 'us-east-1',
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-  },
-});
+const stack = new TestStack(app, 'deletion-protection-stack');
 
-new IntegTest(app, 'deletion-protection-integ-test', {
+const integ = new IntegTest(app, 'deletion-protection-integ-test', {
   testCases: [stack],
   regions: ['us-east-1'],
   cdkCommandOptions: {
@@ -35,11 +30,12 @@ new IntegTest(app, 'deletion-protection-integ-test', {
       },
     },
   },
-  hooks: {
-    postDeploy: [
-      'aws dynamodb update-table --no-cli-pager --region us-east-1 --table-name deletion-protection-test --no-deletion-protection-enabled',
-    ],
-  },
+});
+
+// Disable deletion protection after deploy so the table can be cleaned up on destroy
+integ.assertions.awsApiCall('DynamoDB', 'updateTable', {
+  TableName: stack.table.tableName,
+  DeletionProtectionEnabled: false,
 });
 
 app.synth();

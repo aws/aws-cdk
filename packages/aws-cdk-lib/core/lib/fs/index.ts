@@ -3,7 +3,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
-import { CopyOptions, FingerprintOptions } from './options';
+import type { CopyOptions, FingerprintOptions } from './options';
+import { profileObj } from '../private/perf';
 
 export * from './ignore';
 export * from './options';
@@ -11,6 +12,7 @@ export * from './options';
 /**
  * File system utilities.
  */
+@profileObj('FileSystem', { telemetry: true })
 export class FileSystem {
   /**
    * Copies an entire directory structure.
@@ -18,7 +20,6 @@ export class FileSystem {
    * @param destDir Destination directory
    * @param options options
    * @param rootDir Root directory to calculate exclusions from
-   * @param scope The construct that the function is called from, used to get feature flags
    */
   public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
     return copyDirectory(srcDir, destDir, options, rootDir);
@@ -68,6 +69,13 @@ export class FileSystem {
    */
   public static mkdtemp(prefix: string): string {
     return fs.mkdtempSync(path.join(FileSystem.tmpdir, prefix));
+  }
+
+  /**
+   * Deletes a directory
+   */
+  public static rmrf(dirname: string) {
+    fs.rmSync(dirname, { force: true, recursive: true });
   }
 
   private static _tmpdir?: string;

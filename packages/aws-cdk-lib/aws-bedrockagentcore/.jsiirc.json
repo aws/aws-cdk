@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.bedrockagentcore"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.BedrockAgentCore"
+    },
+    "python": {
+      "module": "aws_cdk.aws_bedrockagentcore"
+    }
+  }
+}

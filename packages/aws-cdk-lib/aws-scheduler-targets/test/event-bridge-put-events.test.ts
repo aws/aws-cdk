@@ -4,7 +4,8 @@ import { AccountRootPrincipal, Role } from '../../aws-iam';
 import { ScheduleGroup, Schedule, ScheduleExpression, ScheduleTargetInput } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
 import { App, Duration, Stack } from '../../core';
-import { EventBridgePutEvents, EventBridgePutEventsEntry } from '../lib';
+import type { EventBridgePutEventsEntry } from '../lib';
+import { EventBridgePutEvents } from '../lib';
 
 describe('eventBridge put events', () => {
   let app: App;

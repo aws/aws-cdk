@@ -1,12 +1,17 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IRestApiRef } from './apigateway.generated';
 import { CfnDeployment } from './apigateway.generated';
-import { Method } from './method';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
-import { Lazy, RemovalPolicy, Resource, CfnResource } from '../../core';
+import type { Method } from './method';
+import type { IRestApi } from './restapi';
+import { RestApi, SpecRestApi, RestApiBase } from './restapi';
+import type { CfnResource } from '../../core';
+import { Lazy, RemovalPolicy, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { md5hash } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface DeploymentProps {
@@ -153,25 +158,26 @@ export class Deployment extends Resource {
 
 interface LatestDeploymentResourceProps {
   readonly description?: string;
-  readonly restApi: IRestApi;
+  readonly restApi: IRestApiRef;
   readonly stageName?: string;
 }
 
 class LatestDeploymentResource extends CfnDeployment {
-  private readonly hashComponents = new Array<any>();
+  private readonly hashComponents: IArrayBox<any> = Box.fromArray([], { omitEmpty: false });
   private readonly originalLogicalId: string;
-  private readonly api: IRestApi;
+  private readonly api: IRestApiRef;
 
   constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
-      restApiId: props.restApi.restApiId,
+      restApiId: props.restApi.restApiRef.restApiId,
       stageName: props.stageName,
     });
 
     this.api = props.restApi;
     this.originalLogicalId = this.stack.getLogicalId(this);
-    this.overrideLogicalId(Lazy.uncachedString({ produce: () => this.calculateLogicalId() }));
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    this.overrideLogicalId(Token.asString(this.hashComponents.derive(comps => this.calculateLogicalId(comps))));
   }
 
   /**
@@ -182,14 +188,14 @@ class LatestDeploymentResource extends CfnDeployment {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
     if (this.node.locked) {
-      throw new ValidationError('Cannot modify the logical ID when the construct is locked', this);
+      throw new ValidationError(lit`CannotModifyLogicalConstructLocked`, 'Cannot modify the logical ID when the construct is locked', this);
     }
 
     this.hashComponents.push(data);
   }
 
-  private calculateLogicalId() {
-    const hash = [...this.hashComponents];
+  private calculateLogicalId(hashComponents: readonly any[]) {
+    const hash = [...hashComponents];
 
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
       // Add CfnRestApi to the logical id so a new deployment is triggered when any of its properties change.

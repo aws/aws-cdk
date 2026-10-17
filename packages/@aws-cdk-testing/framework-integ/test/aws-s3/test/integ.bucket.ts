@@ -11,6 +11,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-s3');
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   encryption: s3.BucketEncryption.KMS,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  abacStatus: true,
 });
 
 bucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
@@ -18,6 +19,7 @@ bucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 const otherwiseEncryptedBucket = new s3.Bucket(stack, 'MyOtherBucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  abacStatus: false,
 });
 
 const user = new iam.User(stack, 'MyUser');

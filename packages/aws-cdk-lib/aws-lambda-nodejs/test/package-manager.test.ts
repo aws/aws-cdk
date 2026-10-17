@@ -1,4 +1,4 @@
-import * as os from 'os';
+import os from 'os';
 import { LogLevel } from '../lib';
 import { LockFile, PackageManager } from '../lib/package-manager';
 
@@ -9,7 +9,7 @@ test('from a package-lock.json', () => {
   expect(packageManager.installCommand).toEqual(['npm', 'ci']);
   expect(packageManager.runCommand).toEqual(['npx', '--no-install']);
 
-  expect(packageManager.runBinCommand('my-bin')).toBe('npx --no-install my-bin');
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['npx', '--no-install', 'my-bin']);
 });
 
 test('from a package-lock.json with LogLevel.ERROR', () => {
@@ -25,7 +25,7 @@ test('from a yarn.lock', () => {
   expect(packageManager.installCommand).toEqual(['yarn', 'install', '--no-immutable']);
   expect(packageManager.runCommand).toEqual(['yarn', 'run']);
 
-  expect(packageManager.runBinCommand('my-bin')).toBe('yarn run my-bin');
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['yarn', 'run', 'my-bin']);
 });
 
 test('from a yarn.lock with LogLevel.ERROR', () => {
@@ -40,7 +40,7 @@ test('from a pnpm-lock.yaml', () => {
   expect(packageManager.installCommand).toEqual(['pnpm', 'install', '--config.node-linker=hoisted', '--config.package-import-method=clone-or-copy', '--no-prefer-frozen-lockfile']);
   expect(packageManager.runCommand).toEqual(['pnpm', 'exec']);
 
-  expect(packageManager.runBinCommand('my-bin')).toBe('pnpm exec -- my-bin');
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['pnpm', 'exec', '--', 'my-bin']);
 });
 
 test('from a pnpm-lock.yaml with LogLevel.ERROR', () => {
@@ -55,11 +55,26 @@ test('from a bun.lockb', () => {
   expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile']);
   expect(packageManager.runCommand).toEqual(['bun', 'run']);
 
-  expect(packageManager.runBinCommand('my-bin')).toBe('bun run my-bin');
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['bun', 'run', 'my-bin']);
+});
+
+test('from a bun.lock', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lock');
+  expect(packageManager.lockFile).toEqual(LockFile.BUN_LOCK);
+  expect(packageManager.argsSeparator).toBeUndefined();
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile']);
+  expect(packageManager.runCommand).toEqual(['bun', 'run']);
+
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['bun', 'run', 'my-bin']);
 });
 
 test('from a bun.lockb with LogLevel.ERROR', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/bun.lockb', LogLevel.ERROR);
+  expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile', '--silent']);
+});
+
+test('from a bun.lock with LogLevel.ERROR', () => {
+  const packageManager = PackageManager.fromLockFile('/path/to/bun.lock', LogLevel.ERROR);
   expect(packageManager.installCommand).toEqual(['bun', 'install', '--backend', 'copyfile', '--silent']);
 });
 
@@ -72,7 +87,7 @@ test('Windows', () => {
   const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
 
   const packageManager = PackageManager.fromLockFile('/path/to/whatever');
-  expect(packageManager.runBinCommand('my-bin')).toEqual('npx.cmd --no-install my-bin');
+  expect(packageManager.runBinCommand('my-bin')).toEqual(['npx.cmd', '--no-install', 'my-bin']);
 
   osPlatformMock.mockRestore();
 });

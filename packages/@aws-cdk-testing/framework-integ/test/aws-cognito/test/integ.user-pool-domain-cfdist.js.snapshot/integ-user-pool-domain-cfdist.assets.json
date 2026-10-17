@@ -1,30 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
-    "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a": {
-      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
-      "source": {
-        "path": "asset.2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "5dd340baff24c8ba04f668a808efb1a1f680bb76c315e753cb4a02d97e40e18c": {
+    "b445d43b15fb3128ddbf9a22602433e08d03e3bffa4ee1f559e10e99c8bee20f": {
       "displayName": "integ-user-pool-domain-cfdist Template",
       "source": {
         "path": "integ-user-pool-domain-cfdist.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-325bb858": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5dd340baff24c8ba04f668a808efb1a1f680bb76c315e753cb4a02d97e40e18c.json",
+          "objectKey": "b445d43b15fb3128ddbf9a22602433e08d03e3bffa4ee1f559e10e99c8bee20f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

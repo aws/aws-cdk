@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import * as parser from 'conventional-commits-parser';
 
 export function breakingModules(title: string, body: string): string[] {

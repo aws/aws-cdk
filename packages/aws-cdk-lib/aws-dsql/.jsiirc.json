@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.dsql"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.DSQL"
+      "namespace": "Amazon.CDK.AWS.DSQL"
     },
     "python": {
       "module": "aws_cdk.aws_dsql"

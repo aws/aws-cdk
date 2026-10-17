@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as glue from '../lib';
 
 describe('Job', () => {
   let stack: cdk.Stack;
@@ -15,6 +15,10 @@ describe('Job', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E1155',
+      reason: 'Syntactically incorrect log group name',
+    });
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
@@ -151,8 +155,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PySparkStreamingJob',
-        workerType: glue.WorkerType.G_2X,
-        numberOfWorkers: 2,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
       });
     });
 
@@ -211,8 +214,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PySparkStreamingJob',
-        workerType: glue.WorkerType.G_4X,
-        numberOfWorkers: 4,
+        workerConfiguration: { workerType: glue.WorkerType.G_4X, numberOfWorkers: 4 },
       });
     });
 
@@ -261,8 +263,7 @@ describe('Job', () => {
         role,
         script,
         jobName: 'PySparkStreamingJob',
-        workerType: glue.WorkerType.G_8X,
-        numberOfWorkers: 8,
+        workerConfiguration: { workerType: glue.WorkerType.G_8X, numberOfWorkers: 8 },
       });
     });
 
@@ -369,8 +370,7 @@ describe('Job', () => {
             bucket: sparkUIBucket,
             prefix: 'prefix',
           },
-          numberOfWorkers: 8,
-          workerType: glue.WorkerType.G_8X,
+          workerConfiguration: { workerType: glue.WorkerType.G_8X, numberOfWorkers: 8 },
           continuousLogging: { enabled: false },
         });
       }).toThrow('Invalid prefix format (value: prefix)');
@@ -454,7 +454,7 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V3_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -464,7 +464,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
       });
     });
@@ -577,7 +576,7 @@ describe('Job', () => {
         script,
         glueVersion: glue.GlueVersion.V3_0,
         continuousLogging: { enabled: false },
-        workerType: glue.WorkerType.G_2X,
+        workerConfiguration: { workerType: glue.WorkerType.G_2X, numberOfWorkers: 2 },
         maxConcurrentRuns: 100,
         timeout: cdk.Duration.hours(2),
         connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
@@ -587,7 +586,6 @@ describe('Job', () => {
           SecondTagName: 'SecondTagValue',
           XTagName: 'XTagValue',
         },
-        numberOfWorkers: 2,
         maxRetries: 2,
         jobRunQueuingEnabled: true,
       });

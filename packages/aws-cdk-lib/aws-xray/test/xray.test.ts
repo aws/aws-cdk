@@ -1,10 +1,6 @@
-import { Match, Template } from '../../assertions';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { CfnParameter, Duration, Stack, App, Token, Tags } from '../../core';
+import { Template } from '../../assertions';
+import { Stack, Tags } from '../../core';
 import * as xray from '../lib';
-
-/* eslint-disable quote-props */
 
 test('able to add tags to XRay CfnGroup', () => {
   const stack = new Stack();

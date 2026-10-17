@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.apptest"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.AppTest"
+      "namespace": "Amazon.CDK.AWS.AppTest"
     },
     "python": {
       "module": "aws_cdk.aws_apptest"

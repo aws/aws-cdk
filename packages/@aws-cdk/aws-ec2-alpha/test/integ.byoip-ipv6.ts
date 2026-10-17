@@ -7,11 +7,11 @@
  * Replace the ipv6PoolId and ipv6CidrBlock for VPC with the one that is owned by your account.
  */
 
-import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { IpCidr, SubnetV2 } from '../lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { IpCidr, SubnetV2 } from '../lib';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 

@@ -3,7 +3,7 @@
  * Create a mock object for Octokit
  */
 export function createOctomock() {
-  return  {
+  return {
     pulls: {
       get: jest.fn(),
       listFiles: jest.fn(),
@@ -23,11 +23,11 @@ export function createOctomock() {
     search: {
       issuesAndPullRequests: jest.fn(),
     },
-    repos: {
-      listCommitStatusesForRef: jest.fn(),
-    },
     checks: {
       listForRef: jest.fn(),
+    },
+    actions: {
+      listWorkflowRuns: jest.fn(),
     },
     paginate: async (method: any, args: any) => { return (await method(args)).data; },
   };

@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import * as cdk from '../../../aws-cdk-lib';
+import * as cdk from '../../core';
 import { TagType } from '../lib/cfn-resource';
 import { TagManager } from '../lib/tag-manager';
 
@@ -239,6 +239,29 @@ describe('tag manager', () => {
     // Assert that isTaggable returns false (not undefined) for a non-taggable construct
     expect(TagManager.isTaggable(nonTaggableConstruct)).not.toEqual(undefined);
     expect(TagManager.isTaggable(nonTaggableConstruct)).toEqual(false);
+  });
+  describe('whole-property intrinsic Tags (e.g. Fn::If)', () => {
+    test('STANDARD: a single resolvable Tags property is returned verbatim when no literal tags exist', () => {
+      const intrinsic = cdk.Fn.conditionIf('cond', [{ key: 'k', value: 'v' }], cdk.Aws.NO_VALUE);
+      const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type', intrinsic);
+
+      expect(mgr.renderTags()).toEqual(intrinsic);
+    });
+
+    test('AUTOSCALING_GROUP: a single resolvable Tags property is returned verbatim when no literal tags exist', () => {
+      const intrinsic = cdk.Fn.conditionIf('cond', [{ key: 'k', value: 'v', propagateAtLaunch: true }], cdk.Aws.NO_VALUE);
+      const mgr = new TagManager(TagType.AUTOSCALING_GROUP, 'AWS::Resource::Type', intrinsic);
+
+      expect(mgr.renderTags()).toEqual(intrinsic);
+    });
+
+    test('throws when a single resolvable Tags property coexists with literal tags', () => {
+      const intrinsic = cdk.Fn.conditionIf('cond', [{ key: 'k', value: 'v' }], cdk.Aws.NO_VALUE);
+      const mgr = new TagManager(TagType.STANDARD, 'AWS::Resource::Type', intrinsic);
+      mgr.setTag('literalKey', 'literalValue');
+
+      expect(() => mgr.renderTags()).toThrow(/Cannot combine literal tags/);
+    });
   });
 });
 

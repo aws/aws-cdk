@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "d7f89a50e12b4615891c18cf964b8a6c2a2c37cac11d465a5cc75dbc24271d54": {
+      "displayName": "aws-cdk-aws-apigatewayv2-websocket-usage-plan Template",
+      "source": {
+        "path": "aws-cdk-aws-apigatewayv2-websocket-usage-plan.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5a308dc4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d7f89a50e12b4615891c18cf964b8a6c2a2c37cac11d465a5cc75dbc24271d54.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

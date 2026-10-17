@@ -173,7 +173,7 @@ describe('basic pipeline', () => {
         BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
-              commands: Match.arrayWith([`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`]),
+              commands: Match.arrayWith([`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`]),
             },
           },
         })),
@@ -296,13 +296,13 @@ describe('basic pipeline', () => {
       pipeline.addStage(new FileAssetApp(app, 'App1'));
       pipeline.addStage(new FileAssetApp(app, 'App2', {
         env: {
-          account: '0123456789012',
+          account: '012345678901',
           region: 'eu-west-1',
         },
       }));
 
       Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy',
-        expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::0123456789012:role/cdk-hnb659fds-file-publishing-role-0123456789012-eu-west-1'],
+        expectedAssetRolePolicy([FILE_PUBLISHING_ROLE, 'arn:${AWS::Partition}:iam::012345678901:role/cdk-hnb659fds-file-publishing-role-012345678901-eu-west-1'],
           'CdkAssetsFileRole6BE17A07'));
     },
     );
@@ -505,7 +505,7 @@ test('adding environment variable to assets job adds SecretsManager permissions'
             'Fn::Join': ['', [
               'arn:',
               { Ref: 'AWS::Partition' },
-              ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+              ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
             ]],
           },
         }),
@@ -569,7 +569,7 @@ describe('pipeline with single asset publisher', () => {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':secretsmanager:us-pipeline:123pipeline:secret:FoobarSecret-??????',
+                ':secretsmanager:us-pipeline:123456789012:secret:FoobarSecret-??????',
               ],
             ],
           },
@@ -611,8 +611,8 @@ describe('pipeline with single asset publisher', () => {
     const actualFileName = buildSpecName.asString();
 
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, actualFileName), { encoding: 'utf-8' }));
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region-8b0ef02d"`);
   });
 });
 
@@ -658,8 +658,8 @@ describe('pipeline with custom asset publisher BuildSpec', () => {
 
     const assembly = synthesize(pipelineStack);
     const buildSpec = JSON.parse(fs.readFileSync(path.join(assembly.directory, buildSpecName.asString())).toString());
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region"`);
-    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH}:current_account-current_region-3d50c90e"`);
+    expect(buildSpec.phases.build.commands).toContain(`cdk-assets --path "assembly-FileAssetApp/FileAssetAppStackEADD68C5.assets.json" --verbose publish "${FILE_ASSET_SOURCE_HASH2}:current_account-current_region-8b0ef02d"`);
     expect(buildSpec.phases.pre_install.commands).toContain('preinstall');
     expect(buildSpec.cache.paths).toContain('node_modules');
   });

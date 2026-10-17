@@ -1,5 +1,6 @@
 import { InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, Ec2TaskDefinition } from 'aws-cdk-lib/aws-ecs';
+import type { CfnResource } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
@@ -9,8 +10,6 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: false,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });
@@ -32,7 +31,7 @@ taskDefinition.addContainer('web', {
 });
 
 // One load balancer with one listener and two target groups.
-new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
+const service = new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   cluster,
   taskDefinition,
   enableExecuteCommand: true,
@@ -46,6 +45,14 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
       priority: 10,
     },
   ],
+});
+
+// Suppress security guardian rule for ALB default behavior (open: true)
+service.loadBalancer.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
 });
 
 new integ.IntegTest(app, 'applicationMultipleTargetGroupsEc2ServiceTest', {

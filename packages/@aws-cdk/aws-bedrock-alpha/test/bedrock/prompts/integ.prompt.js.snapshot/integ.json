@@ -1,0 +1,28 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "BedrockPrompt/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-prompt-1"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "assertionStack": "BedrockPrompt/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockPromptDefaultTestDeployAssertAB476087"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}

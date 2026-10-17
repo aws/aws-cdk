@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AuthorizerHandlerServiceRole5F40A014"
@@ -259,6 +259,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
@@ -352,7 +381,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::http:invoke\",\"Parameters\":{\"ApiEndpoint\":\"https://",
+       ":states:::http:invoke\",\"Parameters\":{\"ApiEndpoint.$\":\"States.Format('{}/{}', 'https://",
        {
         "Ref": "IntegRestApiF8B59B0D"
        },
@@ -368,7 +397,7 @@
        {
         "Ref": "IntegRestApiDeploymentStageprod29E2686A"
        },
-       "///test\",\"Authentication\":{\"ConnectionArn\":\"",
+       "/', '/test')\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "Connection07624BCD",

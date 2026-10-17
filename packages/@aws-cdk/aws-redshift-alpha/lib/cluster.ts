@@ -1,20 +1,25 @@
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib/core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
-import { DatabaseSecret } from './database-secret';
-import { Endpoint } from './endpoint';
-import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
-import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import type { IResource, SecretValue } from 'aws-cdk-lib/core';
+import { Annotations, ArnFormat, AspectPriority, Aspects, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, lit, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
+import type { Construct, IDependable } from 'constructs';
+import { DatabaseSecret } from './database-secret';
+import { Endpoint } from './endpoint';
+import type { IClusterParameterGroup } from './parameter-group';
+import { ClusterParameterGroup } from './parameter-group';
+import type { IClusterSubnetGroup } from './subnet-group';
+import { ClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
@@ -110,6 +115,155 @@ export enum ResourceAction {
 }
 
 /**
+ * The type of logs to export.
+ */
+export enum LogExport {
+  /**
+   * Connection log - logs authentication attempts and connections/disconnections.
+   */
+  CONNECTION_LOG = 'connectionlog',
+
+  /**
+   * User activity log - logs each query before it's run.
+   */
+  USER_ACTIVITY_LOG = 'useractivitylog',
+
+  /**
+   * User log - logs user account changes.
+   */
+  USER_LOG = 'userlog',
+}
+
+/**
+ * Options for S3 logging.
+ */
+export interface S3LoggingOptions {
+  /**
+   * The S3 bucket where the log files are stored.
+   */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * The prefix applied to the log file names.
+   *
+   * @default - No prefix
+   */
+  readonly keyPrefix?: string;
+}
+
+/**
+ * Options for CloudWatch logging.
+ */
+export interface CloudWatchLoggingOptions {
+  /**
+   * The types of logs to export.
+   *
+   * @default - [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG]
+   */
+  readonly logExports?: LogExport[];
+}
+
+enum LogDestinationType {
+  S3 = 's3',
+  CLOUDWATCH = 'cloudwatch',
+}
+
+interface ClusterLoggingConfig {
+  readonly loggingProperties: CfnCluster.LoggingPropertiesProperty;
+  readonly policyDependable?: IDependable;
+}
+
+/**
+ * The logging configuration for a Redshift cluster.
+ */
+export abstract class ClusterLogging {
+  /**
+   * Send logs to S3.
+   */
+  public static s3(options: S3LoggingOptions): ClusterLogging {
+    return new S3ClusterLogging(options);
+  }
+
+  /**
+   * Send logs to CloudWatch.
+   */
+  public static cloudWatch(options?: CloudWatchLoggingOptions): ClusterLogging {
+    return new CloudWatchClusterLogging(options ?? {});
+  }
+
+  /**
+   * Render the logging properties for CloudFormation and apply any destination-specific side effects.
+   * @internal
+   */
+  public abstract _bind(scope: Construct): ClusterLoggingConfig;
+}
+
+class S3ClusterLogging extends ClusterLogging {
+  constructor(private readonly options: S3LoggingOptions) {
+    super();
+  }
+
+  public _bind(scope: Construct): ClusterLoggingConfig {
+    const bucket = this.options.bucket;
+    const statement = new iam.PolicyStatement({
+      actions: [
+        's3:GetBucketAcl',
+        's3:PutObject',
+      ],
+      resources: [
+        bucket.arnForObjects('*'),
+        bucket.bucketArn,
+      ],
+      principals: [
+        new iam.ServicePrincipal('redshift.amazonaws.com'),
+      ],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': Stack.of(scope).account,
+        },
+      },
+    });
+    const result = bucket.addToResourcePolicy(statement);
+    if (!result.statementAdded) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-redshift-alpha:clusterLoggingBucketPolicyNotAdded',
+        `Could not add bucket policy for Redshift logging. If you are using an imported bucket, ensure that your bucket policy contains the following permissions: \n${JSON.stringify(statement.toJSON(), null, 2)}`);
+    }
+
+    return {
+      loggingProperties: {
+        logDestinationType: LogDestinationType.S3,
+        bucketName: bucket.bucketName,
+        s3KeyPrefix: this.options.keyPrefix,
+      },
+      policyDependable: result.policyDependable,
+    };
+  }
+}
+
+class CloudWatchClusterLogging extends ClusterLogging {
+  constructor(private readonly options: CloudWatchLoggingOptions) {
+    super();
+  }
+
+  public _bind(scope: Construct): ClusterLoggingConfig {
+    const logExports = this.options.logExports
+      ?? [LogExport.CONNECTION_LOG, LogExport.USER_LOG, LogExport.USER_ACTIVITY_LOG];
+    if (logExports.length === 0) {
+      throw new ValidationError(lit`EmptyLogExports`, 'logExports must not be empty', scope);
+    }
+    if (new Set(logExports).size !== logExports.length) {
+      throw new ValidationError(lit`DuplicateLogExports`, `logExports must not contain duplicates, got ${JSON.stringify(logExports)}`, scope);
+    }
+    return {
+      loggingProperties: {
+        logDestinationType: LogDestinationType.CLOUDWATCH,
+        logExports,
+      },
+    };
+  }
+}
+
+/**
  * Username and password combination
  */
 export interface Login {
@@ -140,22 +294,6 @@ export interface Login {
    * @default '"@/\\\ \''
    */
   readonly excludeCharacters?: string;
-}
-
-/**
- * Logging bucket and S3 prefix combination
- */
-export interface LoggingProperties {
-  /**
-   * Bucket to send logs to.
-   * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
-   */
-  readonly loggingBucket: s3.IBucket;
-
-  /**
-   * Prefix used for logging.
-   */
-  readonly loggingKeyPrefix: string;
 }
 
 /**
@@ -283,7 +421,7 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default `NodeType.DC2_LARGE`
+   * @default `NodeType.RA3_LARGE`
    */
   readonly nodeType?: NodeType;
 
@@ -313,7 +451,7 @@ export interface ClusterProps {
    *
    * @default - AWS-managed key, if encryption at rest is enabled
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKeyRef;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -381,11 +519,11 @@ export interface ClusterProps {
   readonly defaultDatabaseName?: string;
 
   /**
-   * Bucket details for log files to be sent to, including prefix.
+   * Logging configuration for the cluster.
    *
-   * @default - No logging bucket is used
+   * @default - no logging
    */
-  readonly loggingProperties?: LoggingProperties;
+  readonly logging?: ClusterLogging;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -508,6 +646,7 @@ abstract class ClusterBase extends Resource implements ICluster {
  * @resource AWS::Redshift::Cluster
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Cluster extends ClusterBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-redshift-alpha.Cluster';
@@ -576,7 +715,7 @@ export class Cluster extends ClusterBase {
    *
    * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
    */
-  private readonly roles: iam.IRole[];
+  private readonly roles: IArrayBox<iam.IRole>;
 
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
@@ -588,7 +727,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
-    this.roles = props?.roles ? [...props.roles] : [];
+    this.roles = Box.fromArray(props?.roles ? [...props.roles] : []);
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -619,53 +758,51 @@ export class Cluster extends ClusterBase {
     const nodeCount = this.validateNodeCount(clusterType, props.numberOfNodes);
 
     if (props.encrypted === false && props.encryptionKey !== undefined) {
-      throw new Error('Cannot set property encryptionKey without enabling encryption!');
+      throw new ValidationError(lit`EncryptionKeyWithoutEncryption`, 'Cannot set property encryptionKey without enabling encryption!', this);
     }
 
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
-    let loggingProperties;
-    if (props.loggingProperties) {
-      loggingProperties = {
-        bucketName: props.loggingProperties.loggingBucket.bucketName,
-        s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
-      };
-      props.loggingProperties.loggingBucket.addToResourcePolicy(
-        new iam.PolicyStatement(
-          {
-            actions: [
-              's3:GetBucketAcl',
-              's3:PutObject',
-            ],
-            resources: [
-              props.loggingProperties.loggingBucket.arnForObjects('*'),
-              props.loggingProperties.loggingBucket.bucketArn,
-            ],
-            principals: [
-              new iam.ServicePrincipal('redshift.amazonaws.com'),
-            ],
-          },
-        ),
-      );
+    const logging = props.logging?._bind(this);
+    const { logDestinationType, logExports } = logging?.loggingProperties ?? {};
+    // S3 turns on all three logs together; CloudWatch exports only the listed types.
+    if (logDestinationType === LogDestinationType.S3 || logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
+      Aspects.of(this).add({
+        visit: (node) => {
+          if (node !== this) {
+            return;
+          }
+          const pg = this.parameterGroup;
+          const isEnabled = pg instanceof ClusterParameterGroup && pg.parameters.enable_user_activity_logging === 'true';
+          if (!isEnabled) {
+            Annotations.of(this).addWarningV2(
+              '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
+              'To capture user activity logs, the "enable_user_activity_logging" database parameter must be "true". ' +
+              'For a parameter group created by CDK, use cluster.addToParameterGroup(\'enable_user_activity_logging\', \'true\'); ' +
+              'for an imported parameter group, set the parameter on the group itself.',
+            );
+          }
+        },
+      }, { priority: AspectPriority.READONLY });
     }
 
-    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+    const nodeType = props.nodeType || NodeType.RA3_LARGE;
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
-        throw new Error(`Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`);
+        throw new ValidationError(lit`MultiAzUnsupportedNodeType`, `Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`, this);
       }
       if (clusterType === ClusterType.SINGLE_NODE) {
-        throw new Error('Multi-AZ cluster is not supported for `clusterType` single-node');
+        throw new ValidationError(lit`MultiAzUnsupportedClusterType`, 'Multi-AZ cluster is not supported for `clusterType` single-node', this);
       }
     }
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
-      throw new Error('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.');
+      throw new ValidationError(lit`FailoverRequiresMultiAz`, 'ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.', this);
     }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
-      throw new Error(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`);
+      throw new ValidationError(lit`AvailabilityZoneRelocationUnsupportedNodeType`, `Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`, this);
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
@@ -687,12 +824,12 @@ export class Cluster extends ClusterBase {
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType,
       numberOfNodes: nodeCount,
-      loggingProperties,
-      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
+      loggingProperties: logging?.loggingProperties,
+      iamRoles: Token.asList(this.roles.map(role => role.roleArn)),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
-      kmsKeyId: props.encryptionKey?.keyId,
+      kmsKeyId: props.encryptionKey?.keyRef.keyId,
       encrypted: props.encrypted ?? true,
       classic: props.classicResizing,
       elasticIp: props.elasticIp,
@@ -701,6 +838,10 @@ export class Cluster extends ClusterBase {
       resourceAction: props.resourceAction,
       availabilityZoneRelocation: props.availabilityZoneRelocation,
     });
+
+    if (logging?.policyDependable) {
+      this.cluster.node.addDependency(logging.policyDependable);
+    }
 
     this.cluster.applyRemovalPolicy(removalPolicy, {
       applyToUpdateReplacePolicy: true,
@@ -726,7 +867,7 @@ export class Cluster extends ClusterBase {
       if (props.roles?.some(x => x === props.defaultRole)) {
         this.addDefaultIamRole(props.defaultRole);
       } else {
-        throw new Error('Default role must be included in role list.');
+        throw new ValidationError(lit`DefaultRoleNotInRolesList`, 'Default role must be included in role list.', this);
       }
     }
   }
@@ -740,13 +881,13 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
+      throw new ValidationError(lit`NoSecretForRotation`, 'Cannot add single user rotation for a cluster without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+      throw new ValidationError(lit`SingleUserRotationAlreadyExists`, 'A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -765,7 +906,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add multi user rotation for a cluster without secret.');
+      throw new ValidationError(lit`NoSecretForMultiUserRotation`, 'Cannot add multi user rotation for a cluster without secret.', this);
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,
@@ -782,7 +923,7 @@ export class Cluster extends ClusterBase {
     if (clusterType === ClusterType.SINGLE_NODE) {
       // This property must not be set for single-node clusters; be generous and treat a value of 1 node as undefined.
       if (numberOfNodes !== undefined && numberOfNodes !== 1) {
-        throw new Error('Number of nodes must be not be supplied or be 1 for cluster type single-node');
+        throw new ValidationError(lit`InvalidNodeCountForSingleNode`, 'Number of nodes must be not be supplied or be 1 for cluster type single-node', this);
       }
       return undefined;
     } else {
@@ -791,7 +932,7 @@ export class Cluster extends ClusterBase {
       }
       const nodeCount = numberOfNodes ?? 2;
       if (nodeCount < 2 || nodeCount > 100) {
-        throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');
+        throw new ValidationError(lit`InvalidNodeCountForMultiNode`, 'Number of nodes for cluster type multi-node must be at least 2 and no more than 100', this);
       }
       return nodeCount;
     }
@@ -816,7 +957,7 @@ export class Cluster extends ClusterBase {
     } else if (this.parameterGroup instanceof ClusterParameterGroup) {
       this.parameterGroup.addParameter(name, value);
     } else {
-      throw new Error('Cannot add a parameter to an imported parameter group.');
+      throw new ValidationError(lit`CannotAddParameterToImportedGroup`, 'Cannot add a parameter to an imported parameter group.', this);
     }
   }
 
@@ -861,7 +1002,7 @@ export class Cluster extends ClusterBase {
         ParameterGroupName: Lazy.string({
           produce: () => {
             if (!this.parameterGroup) {
-              throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+              throw new ValidationError(lit`NoParameterGroupForReboot`, 'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
             }
             return this.parameterGroup.clusterParameterGroupName;
           },
@@ -869,7 +1010,7 @@ export class Cluster extends ClusterBase {
         ParametersString: Lazy.string({
           produce: () => {
             if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
-              throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+              throw new ValidationError(lit`ImportedParameterGroupForReboot`, 'Cannot enable reboot for parameter changes when using an imported parameter group.', this);
             }
             return JSON.stringify(this.parameterGroup.parameters);
           },
@@ -879,7 +1020,7 @@ export class Cluster extends ClusterBase {
     Lazy.any({
       produce: () => {
         if (!this.parameterGroup) {
-          throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+          throw new ValidationError(lit`NoParameterGroupForRebootDependency`, 'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
         }
         customResource.node.addDependency(this, this.parameterGroup);
       },
@@ -893,19 +1034,9 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
-    // Get list of IAM roles attached to cluster
-    const clusterRoleList = this.roles ?? [];
-
     // Check to see if default role is included in list of cluster IAM roles
-    var roleAlreadyOnCluster = false;
-    for (var i = 0; i < clusterRoleList.length; i++) {
-      if (clusterRoleList[i] === defaultIamRole) {
-        roleAlreadyOnCluster = true;
-        break;
-      }
-    }
-    if (!roleAlreadyOnCluster) {
-      throw new Error('Default role must be associated to the Redshift cluster to be set as the default role.');
+    if (!this.roles.includes(defaultIamRole)) {
+      throw new ValidationError(lit`DefaultRoleNotAssociated`, 'Default role must be associated to the Redshift cluster to be set as the default role.', this);
     }
 
     // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
@@ -948,12 +1079,10 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addIamRole(role: iam.IRole): void {
-    const clusterRoleList = this.roles;
-
-    if (clusterRoleList.includes(role)) {
-      throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
+    if (this.roles.includes(role)) {
+      throw new ValidationError(lit`RoleAlreadyAttached`, `Role '${role.roleArn}' is already attached to the cluster`, this);
     }
 
-    clusterRoleList.push(role);
+    this.roles.push(role);
   }
 }

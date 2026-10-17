@@ -1,5 +1,5 @@
-import { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
-import * as sqs from '../../aws-sqs';
+import type { DlqDestinationConfig, IEventSourceDlq, IEventSourceMapping, IFunction } from '../../aws-lambda';
+import type * as sqs from '../../aws-sqs';
 
 /**
  * An SQS dead letter queue destination configuration for a Lambda event source

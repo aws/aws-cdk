@@ -1,6 +1,6 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ITopic } from 'aws-cdk-lib/aws-sns';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { ITopic } from 'aws-cdk-lib/aws-sns';
 
 /**
  * SNS target properties.

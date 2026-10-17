@@ -1,10 +1,12 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { CfnNotificationRule } from './codestarnotifications.generated';
-import { INotificationRuleSource } from './notification-rule-source';
-import { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
-import { IResource, Resource, Names } from '../../core';
+import type { INotificationRuleSource } from './notification-rule-source';
+import type { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
+import type { IResource } from '../../core';
+import { Resource, Names } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { INotificationRuleRef, NotificationRuleReference } from '../../interfaces/generated/aws-codestarnotifications-interfaces.generated';
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -88,7 +90,7 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
 /**
  * Represents a notification rule
  */
-export interface INotificationRule extends IResource {
+export interface INotificationRule extends IResource, INotificationRuleRef {
 
   /**
    * The ARN of the notification rule (i.e. arn:aws:codestar-notifications:::notificationrule/01234abcde)
@@ -126,6 +128,12 @@ export class NotificationRule extends Resource implements INotificationRule {
     class Import extends Resource implements INotificationRule {
       readonly notificationRuleArn = notificationRuleArn;
 
+      public get notificationRuleRef(): NotificationRuleReference {
+        return {
+          notificationRuleArn: this.notificationRuleArn,
+        };
+      }
+
       public addTarget(_target: INotificationRuleTarget): boolean {
         return false;
       }
@@ -140,6 +148,12 @@ export class NotificationRule extends Resource implements INotificationRule {
    * @attribute
    */
   public readonly notificationRuleArn: string;
+
+  public get notificationRuleRef(): NotificationRuleReference {
+    return {
+      notificationRuleArn: this.notificationRuleArn,
+    };
+  }
 
   private readonly targets: NotificationRuleTargetConfig[] = [];
 

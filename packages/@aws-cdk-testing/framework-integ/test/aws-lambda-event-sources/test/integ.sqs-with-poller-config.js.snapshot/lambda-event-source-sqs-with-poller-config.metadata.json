@@ -1,0 +1,296 @@
+{
+  "/lambda-event-source-sqs-with-poller-config/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function1904AA941"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function28EA0674A"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function352E0E03B"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92C92D3DE2"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E26\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E2668F6AD2C"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5B9457333"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function1ServiceRole16CD7E62"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function1LogGroupD7829A21"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function2ServiceRole9DE00C3A"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function2LogGroup2BD3C205"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E26"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function3ServiceRole3F9F4A04"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function3LogGroup82547872"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function1ServiceRoleDefaultPolicyE89885AD"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function2ServiceRoleDefaultPolicy21B9B325"
+    }
+  ],
+  "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function3ServiceRoleDefaultPolicyED03E2F0"
+    }
+  ]
+}

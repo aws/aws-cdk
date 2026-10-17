@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 /* IPv6 workaround found here: https://github.com/aws/aws-cdk/issues/894 */
@@ -108,12 +108,12 @@ listener.addAction('action1', {
   action: elbv2.ListenerAction.fixedResponse(200, { messageBody: 'success' }),
 });
 
-group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
+group1.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
   threshold: 5,
   evaluationPeriods: 2,
 });
 
-group2.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
+group2.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   threshold: 5,
   evaluationPeriods: 2,
 });

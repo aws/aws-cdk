@@ -627,10 +627,10 @@ test('mountTargetOrderInsensitiveLogicalId flag is true with imported subnet', (
     vpcSubnets: {
       subnets: [
         ec2.Subnet.fromSubnetAttributes(customStack, 'my-subnet-id', {
-          subnetId: 'my-subnet-id',
+          subnetId: 'subnet-0123456789abcdef0',
         }),
         ec2.Subnet.fromSubnetAttributes(customStack, 'my-other-subnet-id', {
-          subnetId: 'my-other-subnet-id',
+          subnetId: 'subnet-0123456789abcdef1',
         }),
       ],
     },
@@ -641,13 +641,13 @@ test('mountTargetOrderInsensitiveLogicalId flag is true with imported subnet', (
     Resources: {
       VPCEfsFileSystemEfsMountTargetmyothersubnetidA1DA462D: {
         Properties: {
-          SubnetId: 'my-other-subnet-id',
+          SubnetId: 'subnet-0123456789abcdef1',
         },
         Type: 'AWS::EFS::MountTarget',
       },
       VPCEfsFileSystemEfsMountTargetmysubnetidED4A4CD9: {
         Properties: {
-          SubnetId: 'my-subnet-id',
+          SubnetId: 'subnet-0123456789abcdef0',
         },
         Type: 'AWS::EFS::MountTarget',
       },

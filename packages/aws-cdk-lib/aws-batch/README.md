@@ -65,53 +65,87 @@ For stateful or otherwise non-interruption-tolerant workflows, omit `spot` or se
 
 #### Choosing Your Instance Types
 
-Batch allows you to choose the instance types or classes that will run your workload.
-This example configures your `ComputeEnvironment` to use only the `M5AD.large` instance:
+There are several ways to configure instance types for your compute environment:
+
+##### Using Default Instance Classes (Recommended)
+
+AWS Batch provides default instance classes that automatically select cost-effective, up-to-date instances based on your region.
+This is the recommended approach for new projects:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'VPC');
+const vpc = new ec2.Vpc(this, 'Vpc');
 
-new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+// Use ARM64 instances (e.g., m6g, c6g, r6g, c7g families)
+new batch.ManagedEc2EcsComputeEnvironment(this, 'Arm64Ec2ComputeEnv', {
   vpc,
+  defaultInstanceClasses: [batch.DefaultInstanceClass.ARM64],
+});
+
+// Use x86_64 instances (e.g., m6i, c6i, r6i, c7i families)
+new batch.ManagedEc2EcsComputeEnvironment(this, 'X86_64Ec2ComputeEnv', {
+  vpc,
+  defaultInstanceClasses: [batch.DefaultInstanceClass.X86_64],
+});
+```
+
+The `default_x86_64` and `default_arm64` categories are dynamically updated by AWS as new instance families become available in your region.
+
+##### Using Specific Instance Types Only
+
+To use only specific instance types without any automatic defaults, set `useOptimalInstanceClasses: false`:
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+
+// Use only R4 instance class (Batch chooses the size)
+new batch.ManagedEc2EcsComputeEnvironment(this, 'R4Ec2ComputeEnv', {
+  vpc,
+  useOptimalInstanceClasses: false,
+  instanceClasses: [ec2.InstanceClass.R4],
+});
+
+// Use only a specific instance type
+new batch.ManagedEc2EcsComputeEnvironment(this, 'M5AdLargeEc2ComputeEnv', {
+  vpc,
+  useOptimalInstanceClasses: false,
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
 });
 ```
 
-Batch allows you to specify only the instance class and to let it choose the size, which you can do like this:
+##### Using Optimal Instance Classes
 
-```ts
-const vpc = new ec2.Vpc(this, 'VPC');
+By default, `useOptimalInstanceClasses` is `true`, which adds the `optimal` instance type.
 
-declare const computeEnv: batch.IManagedEc2EcsComputeEnvironment
-computeEnv.addInstanceClass(ec2.InstanceClass.M5AD);
-// Or, specify it on the constructor:
-new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
-  vpc,
-  instanceClasses: [ec2.InstanceClass.R4],
-});
-```
+**Note**: Since November 2025, `optimal` behaves the same as `default_x86_64` and is dynamically updated as AWS introduces new instance families. Both options automatically select cost-effective x86_64 instance types (from the m6i, c6i, r6i, and c7i families) based on your region.
 
-Unless you explicitly specify `useOptimalInstanceClasses: false`, this compute environment will use `'optimal'` instances,
-which tells Batch to pick an instance from the C4, M4, and R4 instance families.
-*Note*: Batch does not allow specifying instance types or classes with different architectures.
-For example, `InstanceClass.A1` cannot be specified alongside `'optimal'`,
-because `A1` uses ARM and `'optimal'` uses x86_64.
-You can specify both `'optimal'` alongside several different instance types in the same compute environment:
+You can combine this with additional instance types:
 
 ```ts
 declare const vpc: ec2.IVpc;
 
-const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
-  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
-  useOptimalInstanceClasses: true, // default
+const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'Ec2ComputeEnv', {
   vpc,
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
+  // useOptimalInstanceClasses: true (default)
 });
-// Note: this is equivalent to specifying
-computeEnv.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE));
-computeEnv.addInstanceClass(ec2.InstanceClass.C4);
-computeEnv.addInstanceClass(ec2.InstanceClass.M4);
-computeEnv.addInstanceClass(ec2.InstanceClass.R4);
+// Result: ['m5ad.large', 'optimal']
 ```
+
+##### Instance Type Configuration Reference
+
+| Goal | Configuration |
+|------|---------------|
+| Use latest x86_64 instances | `defaultInstanceClasses: [DefaultInstanceClass.X86_64]` or no configuration (default) |
+| Use latest ARM64 instances | `defaultInstanceClasses: [DefaultInstanceClass.ARM64]` |
+| Use only specific instance classes | `useOptimalInstanceClasses: false` + `instanceClasses: [...]` |
+| Use only specific instance types | `useOptimalInstanceClasses: false` + `instanceTypes: [...]` |
+| Use optimal + additional instances | `instanceClasses: [...]` or `instanceTypes: [...]` |
+
+**Note**: Batch does not allow specifying instance types or classes with different architectures.
+For example, `InstanceClass.A1` (ARM) cannot be specified alongside `optimal` (x86_64).
+When using ARM-based instances (e.g., Graviton), use `defaultInstanceClasses: [DefaultInstanceClass.ARM64]`, or set `useOptimalInstanceClasses: false` and explicitly specify ARM instance classes/types.
+
+**Note**: `useOptimalInstanceClasses` and `defaultInstanceClasses` cannot be used together.
 
 #### Configure AMIs
 
@@ -125,6 +159,21 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   images: [
     {
       imageType: batch.EcsMachineImageType.ECS_AL2023,
+    },
+  ],
+});
+```
+
+If your image needs GPU resources, specify `ECS_AL2023_NVIDIA`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myGpuComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023_NVIDIA,
     },
   ],
 });
@@ -532,6 +581,40 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Enable Execute Command (ECS Exec)
+
+You can enable [ECS Exec](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for interactive debugging and troubleshooting by setting `enableExecuteCommand` to `true`.
+When enabled, you'll be able to execute commands interactively in running containers.
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'Ec2Container', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    enableExecuteCommand: true, // Enable ECS Exec
+  }),
+});
+```
+
+The same functionality is available for Fargate containers:
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsFargateContainerDefinition(this, 'FargateContainer', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    enableExecuteCommand: true, // Enable ECS Exec for Fargate
+  }),
+});
+```
+
+When `enableExecuteCommand` is set to `true`:
+
+- If no `jobRole` is provided, a new IAM role will be automatically created with the required SSM permissions
+- If a `jobRole` is already provided, the necessary SSM permissions will be added to the existing role
+
 ### Secrets
 
 You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
@@ -660,6 +743,27 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Job Definition Version Management
+
+By default, when you update a Job Definition, AWS Batch automatically deregisters the previous revision.
+This means any jobs that were submitted using the old revision may fail if they haven't started yet.
+
+You can preserve previous revisions by setting `skipDeregisterOnUpdate` to `true`:
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+  skipDeregisterOnUpdate: true,  // Keep previous revisions active
+});
+```
+
+* This applies to all Job Definition types: ECS (EC2 and Fargate), EKS, and MultiNode
+* Default behavior (when not specified) follows AWS Batch defaults: previous revisions are deregistered
+
 ### Understanding Progressive Allocation Strategies
 
 AWS Batch uses an [allocation strategy](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) to determine what compute resource will efficiently handle incoming job requests. By default, **BEST_FIT** will pick an available compute instance based on vCPU requirements. If none exist, the job will wait until resources become available. However, with this strategy, you may have jobs waiting in the queue unnecessarily despite having more powerful instances available. Below is an example of how that situation might look like:
@@ -713,4 +817,78 @@ const queue = new batch.JobQueue(this, 'JobQueue', {
 
 const user = new iam.User(this, 'MyUser');
 ecsJob.grantSubmitJob(user, queue);
+```
+
+### Managing Consumable Resources
+
+Consumable resources are finite resources that are consumed by jobs, such as third-party software licenses or API rate limits. AWS Batch tracks the usage of these resources and ensures that jobs only run when the required resources are available.
+
+There are two types of consumable resources:
+
+* **REPLENISHABLE**: Resources that can be re-used after a job completes (e.g., software licenses)
+* **NON_REPLENISHABLE**: Resources that cannot be re-used after a job completes (e.g., API rate limits)
+
+#### Creating Consumable Resources
+
+You can create consumable resources to track and manage finite resources in your Batch workflows:
+
+```ts
+// Create a replenishable consumable resource (e.g., software licenses)
+const licenseResource = new batch.ConsumableResource(this, 'LicenseResource', {
+  consumableResourceName: 'my-software-license',
+  resourceType: batch.ConsumableResourceType.REPLENISHABLE,
+  totalQuantity: 100,
+});
+
+// Create a non-replenishable consumable resource (e.g., API rate limits)
+const apiRateLimitResource = new batch.ConsumableResource(this, 'ApiRateLimitResource', {
+  consumableResourceName: 'api-rate-limit',
+  resourceType: batch.ConsumableResourceType.NON_REPLENISHABLE,
+  totalQuantity: 1000,
+});
+```
+
+`resourceType` defaults to `REPLENISHABLE`, matching the AWS Batch API, and `totalQuantity` must be
+a non-negative integer. Both `consumableResourceName` and `resourceType` replace the resource when
+changed, so changing the type of a resource that has an explicit name also requires a new name.
+
+Tags can be passed directly to the resource:
+
+```ts
+const taggedResource = new batch.ConsumableResource(this, 'TaggedResource', {
+  totalQuantity: 100,
+  tags: {
+    Team: 'batch',
+  },
+});
+```
+
+#### Granting Access to Consumable Resources
+
+Use the `grants` property to give an identity permission to inspect or update a consumable resource:
+
+```ts
+const licenseResource = new batch.ConsumableResource(this, 'LicenseResource', {
+  totalQuantity: 100,
+});
+
+const user = new iam.User(this, 'MyUser');
+
+// Describe the resource and list the jobs that use it
+licenseResource.grants.read(user);
+
+// Change the total quantity, e.g. to replenish a NON_REPLENISHABLE pool
+licenseResource.grants.update(user);
+```
+
+#### Importing Existing Consumable Resources
+
+You can import existing consumable resources by their ARN:
+
+```ts
+const importedResource = batch.ConsumableResource.fromConsumableResourceArn(
+  this,
+  'ImportedResource',
+  'arn:aws:batch:us-east-1:123456789012:consumable-resource/my-resource'
+);
 ```

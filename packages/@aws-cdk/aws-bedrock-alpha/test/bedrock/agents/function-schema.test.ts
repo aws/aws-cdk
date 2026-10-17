@@ -1,5 +1,5 @@
+import { UnscopedValidationError as ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { FunctionParameter, Function, FunctionSchema, ParameterType, RequireConfirmation } from '../../../bedrock/agents/function-schema';
-import { ValidationError } from '../../../bedrock/agents/validation-helpers';
 
 describe('FunctionParameter', () => {
   test('constructs with minimal properties', () => {

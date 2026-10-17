@@ -10,7 +10,7 @@ describe('ApiEventSource', () => {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -34,7 +34,7 @@ describe('ApiEventSource', () => {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -69,7 +69,7 @@ describe('ApiEventSource', () => {
     const handler = new lambda.Function(stack, 'MyFunc', {
       code: lambda.Code.fromInline('boom'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN

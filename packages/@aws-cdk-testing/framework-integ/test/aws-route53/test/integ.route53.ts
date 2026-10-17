@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { ARecord, CaaAmazonRecord, CnameRecord, Continent, GeoLocation, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from 'aws-cdk-lib/aws-route53';
+import { Alpn, ARecord, CaaAmazonRecord, CnameRecord, Continent, GeoLocation, HttpsRecord, HttpsRecordValue, PrivateHostedZone, PublicHostedZone, RecordTarget, SvcbRecord, SvcbRecordValue, TxtRecord } from 'aws-cdk-lib/aws-route53';
 
 const app = new cdk.App();
 
@@ -90,6 +90,56 @@ new TxtRecord(stack, 'TXT', {
   values: [
     'this is a very long string'.repeat(10),
   ],
+});
+
+new SvcbRecord(stack, 'SVCB-AliasMode', {
+  zone: publicZone,
+  recordName: '_8080._svcb-alias',
+  values: [SvcbRecordValue.alias('service.example.com')],
+});
+new SvcbRecord(stack, 'SVCB-ServiceMode', {
+  zone: publicZone,
+  recordName: '_8080._svcb-service',
+  values: [SvcbRecordValue.service({ alpn: [Alpn.H3, Alpn.H2] })],
+});
+new SvcbRecord(stack, 'SVCB-ServiceMode-FullParams', {
+  zone: publicZone,
+  recordName: '_8080._svcb-service-fullparams',
+  values: [SvcbRecordValue.service({
+    priority: 2,
+    targetName: 'service.example.com',
+    mandatory: ['alpn'],
+    alpn: [Alpn.H3, Alpn.H2, Alpn.HTTP1_1, Alpn.of('h3-29')],
+    noDefaultAlpn: true,
+    port: 8443,
+    ipv4hint: ['127.0.0.1'],
+    ipv6hint: ['::1'],
+  })],
+});
+
+new HttpsRecord(stack, 'HTTPS-AliasMode', {
+  zone: publicZone,
+  recordName: 'https-alias',
+  values: [HttpsRecordValue.alias('service.example.com')],
+});
+new HttpsRecord(stack, 'HTTPS-ServiceMode', {
+  zone: publicZone,
+  recordName: 'https-service',
+  values: [HttpsRecordValue.service({ alpn: [Alpn.H3, Alpn.H2] })],
+});
+new HttpsRecord(stack, 'HTTPS-ServiceMode-FullParams', {
+  zone: publicZone,
+  recordName: 'https-service-fullparams',
+  values: [HttpsRecordValue.service({
+    priority: 2,
+    targetName: 'service.example.com',
+    mandatory: ['alpn'],
+    alpn: [Alpn.H3, Alpn.H2, Alpn.HTTP1_1, Alpn.of('h3-29')],
+    noDefaultAlpn: true,
+    port: 8443,
+    ipv4hint: ['127.0.0.1'],
+    ipv6hint: ['::1'],
+  })],
 });
 
 new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });

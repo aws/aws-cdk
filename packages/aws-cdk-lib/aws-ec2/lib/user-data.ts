@@ -1,6 +1,8 @@
 import { OperatingSystemType } from './machine-image';
-import { IBucket } from '../../aws-s3';
-import { Fn, Resource, Stack, CfnResource, UnscopedValidationError } from '../../core';
+import type { IBucketRef } from '../../aws-s3';
+import type { Resource, CfnResource } from '../../core';
+import { Fn, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options when constructing UserData for Linux
@@ -40,7 +42,7 @@ export interface S3DownloadOptions {
   /**
    * Name of the S3 bucket to download from
    */
-  readonly bucket: IBucket;
+  readonly bucket: IBucketRef;
 
   /**
    * The key of the file to download
@@ -113,7 +115,7 @@ export abstract class UserData {
     switch (os) {
       case OperatingSystemType.LINUX: return UserData.forLinux();
       case OperatingSystemType.WINDOWS: return UserData.forWindows();
-      case OperatingSystemType.UNKNOWN: throw new UnscopedValidationError('Cannot determine UserData for unknown operating system type');
+      case OperatingSystemType.UNKNOWN: throw new UnscopedValidationError(lit`CannotDetermineUserData`, 'Cannot determine UserData for unknown operating system type');
     }
   }
 
@@ -175,7 +177,7 @@ class LinuxUserData extends UserData {
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
-    const s3Path = `s3://${params.bucket.bucketName}/${params.bucketKey}`;
+    const s3Path = `s3://${params.bucket.bucketRef.bucketName}/${params.bucketKey}`;
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
@@ -238,7 +240,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }
@@ -280,7 +282,7 @@ class CustomUserData extends UserData {
   }
 
   public addOnExitCommands(): void {
-    throw new UnscopedValidationError('CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError(lit`CustomUserDataDoesNotSupportAddOnExitCommands`, 'CustomUserData does not support addOnExitCommands, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public render(): string {
@@ -288,15 +290,15 @@ class CustomUserData extends UserData {
   }
 
   public addS3DownloadCommand(): string {
-    throw new UnscopedValidationError('CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError(lit`CustomUserDataDoesNotSupportAddS3DownloadCommand`, 'CustomUserData does not support addS3DownloadCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addExecuteFileCommand(): void {
-    throw new UnscopedValidationError('CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError(lit`CustomUserDataDoesNotSupportAddExecuteFileCommand`, 'CustomUserData does not support addExecuteFileCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 
   public addSignalOnExitCommand(): void {
-    throw new UnscopedValidationError('CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+    throw new UnscopedValidationError(lit`CustomUserDataDoesNotSupportAddSignalOnExitCommand`, 'CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
   }
 }
 
@@ -476,7 +478,7 @@ export class MultipartUserData extends UserData {
     // Validate separator
     if (opts?.partsSeparator != null) {
       if (new RegExp(MultipartUserData.BOUNDRY_PATTERN).test(opts!.partsSeparator)) {
-        throw new UnscopedValidationError(`Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
+        throw new UnscopedValidationError(lit`InvalidCharactersInSeparator`, `Invalid characters in separator. Separator has to match pattern ${MultipartUserData.BOUNDRY_PATTERN}`);
       } else {
         partsSeparator = opts!.partsSeparator;
       }
@@ -555,7 +557,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       return this.defaultUserData.addS3DownloadCommand(params);
     } else {
-      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(lit`MultipartUserDataRequiresDefaultUserData`, MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -563,7 +565,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addExecuteFileCommand(params);
     } else {
-      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(lit`MultipartUserDataRequiresDefaultUserData`, MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -571,7 +573,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addSignalOnExitCommand(resource);
     } else {
-      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(lit`MultipartUserDataRequiresDefaultUserData`, MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -579,7 +581,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addCommands(...commands);
     } else {
-      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(lit`MultipartUserDataRequiresDefaultUserData`, MultipartUserData.USE_PART_ERROR);
     }
   }
 
@@ -587,7 +589,7 @@ export class MultipartUserData extends UserData {
     if (this.defaultUserData) {
       this.defaultUserData.addOnExitCommands(...commands);
     } else {
-      throw new UnscopedValidationError(MultipartUserData.USE_PART_ERROR);
+      throw new UnscopedValidationError(lit`MultipartUserDataRequiresDefaultUserData`, MultipartUserData.USE_PART_ERROR);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderApple } from 'aws-cdk-lib/aws-cognito';
 
 /*
@@ -18,7 +18,7 @@ new UserPoolIdentityProviderApple(stack, 'apple', {
   clientId: 'com.amzn.cdk',
   teamId: 'CDKTEAMCDK',
   keyId: 'CDKKEYCDK1',
-  privateKey: 'PRIV_KEY_CDK',
+  privateKeyValue: SecretValue.unsafePlainText(''),
   scopes: ['email', 'name'],
   attributeMapping: {
     familyName: ProviderAttribute.APPLE_LAST_NAME,

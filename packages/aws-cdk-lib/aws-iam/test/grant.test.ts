@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template, Match } from '../../assertions';
 import { CfnResource, Resource, Stack } from '../../core';
 import * as iam from '../lib';

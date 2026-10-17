@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
-import { EncryptionConfiguration } from './encryption-configuration';
+import type { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Names, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ActivityReference, IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for defining a new Step Functions Activity
@@ -46,6 +49,11 @@ export class Activity extends Resource implements IActivity {
       public get activityName() {
         return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
+      public get activityRef(): ActivityReference {
+        return {
+          activityArn: this.activityArn,
+        };
+      }
     }
 
     return new Imported(scope, id);
@@ -66,17 +74,30 @@ export class Activity extends Resource implements IActivity {
   /**
    * @attribute
    */
-  public readonly activityArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly activityName: string;
-
-  /**
-   * @attribute
-   */
   public readonly encryptionConfiguration?: EncryptionConfiguration;
+
+  private readonly resource: CfnActivity;
+
+  @memoizedGetter
+  public get activityArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'states',
+      resource: 'activity',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  @memoizedGetter
+  public get activityName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  public get activityRef(): ActivityReference {
+    return {
+      activityArn: this.activityArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ActivityProps = {}) {
     super(scope, id, {
@@ -111,17 +132,13 @@ export class Activity extends Resource implements IActivity {
       encryptionConfiguration: buildEncryptionConfiguration(props.encryptionConfiguration),
     });
 
-    this.activityArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'states',
-      resource: 'activity',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    this.activityName = this.getResourceNameAttribute(resource.attrName);
+    this.resource = resource;
   }
 
   /**
    * Grant the given identity permissions on this Activity
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @param actions The list of desired actions
@@ -263,7 +280,7 @@ export class Activity extends Resource implements IActivity {
  * Represents a Step Functions Activity
  * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-activities.html
  */
-export interface IActivity extends IResource {
+export interface IActivity extends IResource, IActivityRef {
   /**
    * The ARN of the activity
    *

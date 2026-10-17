@@ -1,5 +1,5 @@
-import { BootstrapOptions, ICluster } from './cluster';
-import * as autoscaling from '../../aws-autoscaling';
+import type { BootstrapOptions, ICluster } from './cluster';
+import type * as autoscaling from '../../aws-autoscaling';
 import { Stack } from '../../core';
 
 // eslint-disable-next-line max-len

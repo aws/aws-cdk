@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Interface to represent Matchmaking RuleSet schema

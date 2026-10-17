@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
@@ -268,7 +269,7 @@ describe('attribute based compute', () => {
     codebuild.FleetComputeType.LARGE,
     codebuild.FleetComputeType.X_LARGE,
     codebuild.FleetComputeType.X2_LARGE,
-  ])('throw error for set compute configuration with non-attribute based compute type %s', (computeType) => {
+  ])('throw error for set compute configuration with non-attribute-based, non-custom-instance-type compute type %s', (computeType) => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -285,7 +286,7 @@ describe('attribute based compute', () => {
           machineType: codebuild.MachineType.GENERAL,
         },
       });
-    }).toThrow(`'computeConfiguration' can only be specified if 'computeType' is 'ATTRIBUTE_BASED', got: ${computeType}`);
+    }).toThrow(`computeConfiguration can only be specified if computeType is ATTRIBUTE_BASED or CUSTOM_INSTANCE_TYPE, got: ${computeType}`);
   });
 
   test('throw error for invalid disk size', () => {
@@ -350,6 +351,355 @@ describe('attribute based compute', () => {
         computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       });
-    }).toThrow('At least one compute configuration criteria must be specified if computeType is "ATTRIBUTE_BASED"');
+    }).toThrow('At least one compute configuration criteria must be specified if computeType is ATTRIBUTE_BASED');
+  });
+});
+
+describe('custom instance type compute', () => {
+  test('specify compute configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      computeConfiguration: {
+        disk: cdk.Size.gibibytes(10),
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'CUSTOM_INSTANCE_TYPE',
+      EnvironmentType: 'LINUX_CONTAINER',
+      ComputeConfiguration: {
+        disk: 10,
+        instanceType: 't3.medium',
+      },
+    });
+  });
+
+  test('throws error if missing instanceType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        computeConfiguration: {},
+      });
+    }).toThrow('instanceType must be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE');
+  });
+
+  test('throws error for invalid disk size', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        computeConfiguration: {
+          disk: cdk.Size.gibibytes(1.5),
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+        },
+      });
+    }).toThrow('disk size must be a positive integer, got: 1.5');
+  });
+
+  test.each([
+    { machineType: codebuild.MachineType.GENERAL },
+    { memory: cdk.Size.gibibytes(8) },
+    { vCpu: 2 },
+  ])('throws error for any other computeConfiguration fields: %s', (config) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        computeConfiguration: {
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+          ...config,
+        },
+      });
+    }).toThrow('computeConfiguration attributes can only be used if computeType is ATTRIBUTE_BASED');
+  });
+});
+
+describe('vpc', () => {
+  test('specify vpc only', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      FleetVpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['FleetSecurityGroup97A0FCFD', 'GroupId'] }],
+        Subnets: [
+          { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+          { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+        ],
+        VpcId: { Ref: 'Vpc8378EB38' },
+      },
+      FleetServiceRole: {
+        'Fn::GetAtt': ['FleetRole427BC000', 'Arn'],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'codebuild.amazonaws.com' },
+        }],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'ec2:CreateNetworkInterfacePermission',
+          Condition: {
+            ArnEquals: {
+              'ec2:Subnet': [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ec2:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':subnet/',
+                    { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ec2:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':subnet/',
+                    { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+                  ]],
+                },
+              ],
+            },
+          },
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ec2:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':network-interface/*',
+            ]],
+          },
+        })]),
+      },
+    });
+  });
+
+  test('specify vpc with subnetSelection and securityGroups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnets: [vpc.privateSubnets[0]] },
+      securityGroups: [securityGroup],
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      FleetVpcConfig: {
+        SecurityGroupIds: [{ 'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'] }],
+        Subnets: [
+          { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+        ],
+        VpcId: { Ref: 'Vpc8378EB38' },
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'codebuild.amazonaws.com' },
+        }],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'ec2:CreateNetworkInterfacePermission',
+          Condition: {
+            ArnEquals: {
+              'ec2:Subnet': [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ec2:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':subnet/',
+                    { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                  ]],
+                },
+              ],
+            },
+          },
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':ec2:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':network-interface/*',
+            ]],
+          },
+        })]),
+      },
+    });
+  });
+
+  test('throws error for securityGroups without vpc', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        securityGroups: [securityGroup],
+      });
+    }).toThrow('Cannot configure securityGroups without configuring a VPC');
+  });
+
+  test('throws error for subnetSelection without vpc', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        subnetSelection: { subnets: [vpc.privateSubnets[0]] },
+      });
+    }).toThrow('Cannot configure subnetSelection without configuring a VPC');
+  });
+});
+
+describe('overflowBehavior', () => {
+  test('can set overflow behavior to QUEUE', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      overflowBehavior: codebuild.FleetOverflowBehavior.QUEUE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      OverflowBehavior: 'QUEUE',
+    });
+  });
+
+  test('can set overflow behavior to ON_DEMAND', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      overflowBehavior: codebuild.FleetOverflowBehavior.ON_DEMAND,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+      OverflowBehavior: 'ON_DEMAND',
+    });
+  });
+
+  test('overflow behavior is optional', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_SMALL',
+      EnvironmentType: 'LINUX_CONTAINER',
+    });
   });
 });

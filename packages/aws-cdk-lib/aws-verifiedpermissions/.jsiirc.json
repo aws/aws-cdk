@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.verifiedpermissions"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.VerifiedPermissions"
+      "namespace": "Amazon.CDK.AWS.VerifiedPermissions"
     },
     "python": {
       "module": "aws_cdk.aws_verifiedpermissions"

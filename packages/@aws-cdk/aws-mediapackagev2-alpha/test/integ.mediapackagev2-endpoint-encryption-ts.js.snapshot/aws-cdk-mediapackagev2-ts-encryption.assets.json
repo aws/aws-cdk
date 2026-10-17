@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f9cb46d25353222ae4a1b475da1072c6afa7720eb87881b12ff7c2da86e3012f": {
+      "displayName": "aws-cdk-mediapackagev2-ts-encryption Template",
+      "source": {
+        "path": "aws-cdk-mediapackagev2-ts-encryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-348830c4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f9cb46d25353222ae4a1b475da1072c6afa7720eb87881b12ff7c2da86e3012f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

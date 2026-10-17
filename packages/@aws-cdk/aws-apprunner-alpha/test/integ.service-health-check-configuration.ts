@@ -1,6 +1,7 @@
-import * as cdk from 'aws-cdk-lib';
-import { HealthCheck, Service, Source } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
+import { HealthCheck, Service, Source } from '../lib';
 
 const app = new cdk.App();
 
@@ -24,4 +25,5 @@ new Service(stack, 'Service', {
 
 new IntegTest(app, 'cdk-integ-dashboard-and-widget-with-start-and-end', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });

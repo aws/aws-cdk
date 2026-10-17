@@ -56,10 +56,10 @@ class TestStack extends cdk.Stack {
               path.join(tmpDir, 'testConfigFile2'),
             ),
             ec2.InitCommand.argvCommand([
-              'useradd', '-u', '1001', '-g', '1001', 'eguser',
+              'useradd', '-u', '1001', 'eguser',
             ]),
             ec2.InitCommand.argvCommand([
-              'useradd', '-a', '-u', '1001', '-g', '1001', 'eguser',
+              'usermod', '-a', '-G', 'eguser', 'eguser',
             ]),
           ]),
         },

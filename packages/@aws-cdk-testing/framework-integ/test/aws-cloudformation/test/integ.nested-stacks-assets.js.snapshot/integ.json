@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "testCases": {
     "integ.nested-stacks-assets": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1106.1"
 }

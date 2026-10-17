@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { BaseDeploymentConfig, BaseDeploymentConfigOptions, ComputePlatform, IBaseDeploymentConfig } from '../base-deployment-config';
+import type { BaseDeploymentConfigOptions, IBaseDeploymentConfig } from '../base-deployment-config';
+import { BaseDeploymentConfig, ComputePlatform } from '../base-deployment-config';
 import { deploymentConfig } from '../private/utils';
 import { TrafficRouting } from '../traffic-routing-config';
 

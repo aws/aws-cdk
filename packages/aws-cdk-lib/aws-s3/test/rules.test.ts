@@ -1,5 +1,5 @@
 import { Template } from '../../assertions';
-import { App, Duration, Stack } from '../../core';
+import { Duration, Stack } from '../../core';
 import { Bucket, StorageClass } from '../lib';
 
 describe('rules', () => {

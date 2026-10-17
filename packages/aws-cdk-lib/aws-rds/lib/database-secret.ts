@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';

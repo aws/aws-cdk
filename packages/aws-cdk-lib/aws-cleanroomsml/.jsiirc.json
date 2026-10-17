@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.cleanroomsml"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.CleanRoomsML"
+      "namespace": "Amazon.CDK.AWS.CleanRoomsML"
     },
     "python": {
       "module": "aws_cdk.aws_cleanroomsml"

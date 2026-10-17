@@ -1,15 +1,16 @@
 {
-  "version": "31.0.0",
+  "version": "52.0.0",
   "files": {
-    "b4a5559af4ad6c38f2ee9f74b53b1b86efd673d82a598a085654e2c921d8edda": {
+    "f923f29010facf14b7a0c4309b97230727b0a0ea8d5892f79beffaf3eae097c9": {
+      "displayName": "aws-cdk-rds-proxy-sql-server Template",
       "source": {
         "path": "aws-cdk-rds-proxy-sql-server.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-e3036598": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b4a5559af4ad6c38f2ee9f74b53b1b86efd673d82a598a085654e2c921d8edda.json",
+          "objectKey": "f923f29010facf14b7a0c4309b97230727b0a0ea8d5892f79beffaf3eae097c9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

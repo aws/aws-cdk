@@ -3,12 +3,6 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "pk",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "pk",
@@ -16,14 +10,29 @@
      }
     ],
     "DeletionProtectionEnabled": true,
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     }
+    ],
     "ProvisionedThroughput": {
      "ReadCapacityUnits": 5,
      "WriteCapacityUnits": 5
-    },
-    "TableName": "deletion-protection-test"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefTableCD117FA1D18A8047": {
+   "Value": {
+    "Ref": "TableCD117FA1"
+   },
+   "Export": {
+    "Name": "deletion-protection-stack:ExportsOutputRefTableCD117FA1D18A8047"
+   }
   }
  },
  "Parameters": {

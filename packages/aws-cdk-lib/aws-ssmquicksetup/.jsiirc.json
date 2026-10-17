@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.ssmquicksetup"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.SSMQuickSetup"
+      "namespace": "Amazon.CDK.AWS.SSMQuickSetup"
     },
     "python": {
       "module": "aws_cdk.aws_ssmquicksetup"

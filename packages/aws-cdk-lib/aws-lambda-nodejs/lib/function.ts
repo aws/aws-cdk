@@ -1,14 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
-import { BundlingOptions } from './types';
+import type { BundlingOptions } from './types';
 import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -18,10 +19,33 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
-   * @default - Derived from the name of the defining file and the construct's id.
-   * If the `NodejsFunction` is defined in `stack.ts` with `my-handler` as id
-   * (`new NodejsFunction(this, 'my-handler')`), the construct will look at `stack.my-handler.ts`
-   * and `stack.my-handler.js`.
+   * If this is a relative path, it will be evaluated with respect to the
+   * JavaScript/TypeScript source file that instantiates the `NodejsFunction`
+   * construct. If the current project is not a Node project, relative paths are
+   * not reliable and absolute paths should be used.
+   *
+   * This file should be located underneath the `projectRoot` directory (by default,
+   * the directory containing the package manager's lock file).
+   *
+   * If omitted, the entry file will be derived from the TypeScript/JavaScript file
+   * that instantiates the `NodejsFunction` construct, and the construct identifier
+   * of the `NodejsFunction` construct, in the following way:
+   *
+   * ```
+   * <filename>.<construct-id>.(ts|js)
+   *
+   * // Example, if stack.ts contains the following:
+   * new NodejsFunction(this, 'my-handler', { ... });
+   *
+   * // Then the implicit entry point(s) will be
+   * stack.my-handler.ts
+   * stack.my-handler.js
+   * ```
+   *
+   * Again: if the current project is not a Node project this is not reliable,
+   * and instead explicit, absolute paths should be used.
+   *
+   * @default - (Realible in Node projects only) derived from the defining file's name and construct ID as described in the documentation.
    */
   readonly entry?: string;
 
@@ -68,7 +92,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly awsSdkConnectionReuse?: boolean;
 
   /**
-   * The path to the dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` or `package-lock.json`).
+   * The path to the dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`, `bun.lock` or `package-lock.json`).
    *
    * This will be used as the source for the volume mounted in the Docker
    * container.
@@ -77,7 +101,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * installer (`yarn`, `pnpm`, `bun` or `npm`) along with this lock file.
    *
    * @default - the path is found by walking up parent directories searching for
-   *   a `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb` or `package-lock.json` file
+   *   a `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`, `bun.lock` or `package-lock.json` file
    */
   readonly depsLockFilePath?: string;
 
@@ -113,14 +137,14 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 export class NodejsFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
-      throw new ValidationError('Only `NODEJS` runtimes are supported.', scope);
+      throw new ValidationError(lit`OnlyRuntimesSupported`, 'Only `NODEJS` runtimes are supported.', scope);
     }
 
     const runtime = getRuntime(scope, props);
 
     if (props.code !== undefined) {
       if (props.handler === undefined) {
-        throw new ValidationError(
+        throw new ValidationError(lit`HandlerRequiredWhenCodeSpecified`,
           'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
           + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
           + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
@@ -138,7 +162,7 @@ export class NodejsFunction extends lambda.Function {
       const entry = path.resolve(findEntry(scope, id, props.entry));
       const architecture = props.architecture ?? Architecture.X86_64;
       const depsLockFilePath = findLockFile(scope, props.depsLockFilePath);
-      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+      const projectRoot = path.resolve(props.projectRoot ?? path.dirname(depsLockFilePath));
       const handler = props.handler ?? 'handler';
 
       super(scope, id, {
@@ -189,11 +213,11 @@ function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtim
 function findLockFile(scope: Construct, depsLockFilePath?: string): string {
   if (depsLockFilePath) {
     if (!fs.existsSync(depsLockFilePath)) {
-      throw new ValidationError(`Lock file at ${depsLockFilePath} doesn't exist`, scope);
+      throw new ValidationError(lit`LockFileDoesnTExist`, `Lock file at ${depsLockFilePath} doesn't exist`, scope);
     }
 
     if (!fs.statSync(depsLockFilePath).isFile()) {
-      throw new ValidationError('`depsLockFilePath` should point to a file', scope);
+      throw new ValidationError(lit`ShouldPointFile`, '`depsLockFilePath` should point to a file', scope);
     }
 
     return path.resolve(depsLockFilePath);
@@ -202,15 +226,16 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
   const lockFiles = findUpMultiple([
     LockFile.PNPM,
     LockFile.YARN,
+    LockFile.BUN_LOCK,
     LockFile.BUN,
     LockFile.NPM,
   ]);
 
   if (lockFiles.length === 0) {
-    throw new ValidationError('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb` or `package-lock.json`). Please specify it with `depsLockFilePath`.', scope);
+    throw new ValidationError(lit`CannotFindPackageLockFile`, 'Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock` or `package-lock.json`). Please specify it with `depsLockFilePath`.', scope);
   }
   if (lockFiles.length > 1) {
-    throw new ValidationError(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`, scope);
+    throw new ValidationError(lit`MultipleLockFilesFound`, `Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`, scope);
   }
 
   return lockFiles[0];
@@ -229,10 +254,10 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
 function findEntry(scope: Construct, id: string, entry?: string): string {
   if (entry) {
     if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
-      throw new ValidationError('Only JavaScript or TypeScript entry files are supported.', scope);
+      throw new ValidationError(lit`OnlyJavaScriptTypeScriptEntrySupported`, 'Only JavaScript or TypeScript entry files are supported.', scope);
     }
     if (!fs.existsSync(entry)) {
-      throw new ValidationError(`Cannot find entry file at ${entry}`, scope);
+      throw new ValidationError(lit`CannotFindEntryFile`, `Cannot find entry file at ${entry}`, scope);
     }
     return entry;
   }
@@ -270,7 +295,7 @@ function findEntry(scope: Construct, id: string, entry?: string): string {
     return cjsHandlerFile;
   }
 
-  throw new ValidationError(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`, scope);
+  throw new ValidationError(lit`CannotFindHandlerFile`, `Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`, scope);
 }
 
 /**
@@ -288,8 +313,11 @@ function findDefiningFile(scope: Construct): string {
   }
 
   if (!definingIndex || !sites[definingIndex]) {
-    throw new ValidationError('Cannot find defining file.', scope);
+    throw new ValidationError(lit`CannotFindDefiningFile`, 'Cannot find defining file.', scope);
   }
 
-  return sites[definingIndex].getFileName();
+  // Fixes issue #21630.
+  // ESM modules return a 'file://' prefix to the filenames, this should be removed for
+  // compatibility with the NodeJS filesystem functions.
+  return sites[definingIndex].getFileName().replace(/^file:\/\//, '');
 }

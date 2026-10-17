@@ -1,0 +1,47 @@
+{
+ "Resources": {
+  "Component0EED0119": {
+   "Type": "AWS::ImageBuilder::Component",
+   "Properties": {
+    "Data": "name: test-component\nschemaVersion: \"1.0\"\nphases:\n  - name: build\n    steps:\n      - name: hello-world-build\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo \"Hello build!\"\n",
+    "Name": "aws-cdk-imagebuilder-component-default-parameters-component-08a15319",
+    "Platform": "Linux",
+    "Version": "1.0.0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

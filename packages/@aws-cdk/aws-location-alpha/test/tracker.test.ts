@@ -1,9 +1,9 @@
+import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Stack } from 'aws-cdk-lib';
-import { PositionFiltering, Tracker } from '../lib/tracker';
 import { GeofenceCollection } from '../lib';
+import { PositionFiltering, Tracker } from '../lib/tracker';
 
 let stack: Stack;
 beforeEach(() => {

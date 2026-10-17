@@ -13,7 +13,9 @@
       "Value": "aws-cdk-rds-proxy-mariadb/vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1Subnet2E65531E": {
    "Type": "AWS::EC2::Subnet",
@@ -45,7 +47,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1RouteTable48A2DF9B": {
    "Type": "AWS::EC2::RouteTable",
@@ -59,7 +63,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -70,7 +76,9 @@
     "SubnetId": {
      "Ref": "vpcPublicSubnet1Subnet2E65531E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1DefaultRoute10708846": {
    "Type": "AWS::EC2::Route",
@@ -85,7 +93,9 @@
    },
    "DependsOn": [
     "vpcVPCGW7984C166"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1EIPDA49DCBE": {
    "Type": "AWS::EC2::EIP",
@@ -97,7 +107,9 @@
       "Value": "aws-cdk-rds-proxy-mariadb/vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet1NATGateway9C16659E": {
    "Type": "AWS::EC2::NatGateway",
@@ -121,7 +133,9 @@
    "DependsOn": [
     "vpcPublicSubnet1DefaultRoute10708846",
     "vpcPublicSubnet1RouteTableAssociation5D3F4579"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
@@ -153,7 +167,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2RouteTableEB40D4CB": {
    "Type": "AWS::EC2::RouteTable",
@@ -167,7 +183,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2RouteTableAssociation21F81B59": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -178,7 +196,9 @@
     "SubnetId": {
      "Ref": "vpcPublicSubnet2Subnet009B674F"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2DefaultRouteA1EC0F60": {
    "Type": "AWS::EC2::Route",
@@ -193,7 +213,9 @@
    },
    "DependsOn": [
     "vpcVPCGW7984C166"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2EIP9B3743B1": {
    "Type": "AWS::EC2::EIP",
@@ -205,7 +227,9 @@
       "Value": "aws-cdk-rds-proxy-mariadb/vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPublicSubnet2NATGateway9B8AE11A": {
    "Type": "AWS::EC2::NatGateway",
@@ -229,7 +253,9 @@
    "DependsOn": [
     "vpcPublicSubnet2DefaultRouteA1EC0F60",
     "vpcPublicSubnet2RouteTableAssociation21F81B59"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
@@ -261,7 +287,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet1RouteTableB41A48CC": {
    "Type": "AWS::EC2::RouteTable",
@@ -275,7 +303,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet1RouteTableAssociation67945127": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -286,7 +316,9 @@
     "SubnetId": {
      "Ref": "vpcPrivateSubnet1Subnet934893E8"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
    "Type": "AWS::EC2::Route",
@@ -298,7 +330,9 @@
     "RouteTableId": {
      "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet2Subnet7031C2BA": {
    "Type": "AWS::EC2::Subnet",
@@ -330,7 +364,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet2RouteTable7280F23E": {
    "Type": "AWS::EC2::RouteTable",
@@ -344,7 +380,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -355,7 +393,9 @@
     "SubnetId": {
      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcPrivateSubnet2DefaultRouteB0E07F99": {
    "Type": "AWS::EC2::Route",
@@ -367,7 +407,9 @@
     "RouteTableId": {
      "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcIGWE57CBDCA": {
    "Type": "AWS::EC2::InternetGateway",
@@ -378,7 +420,9 @@
       "Value": "aws-cdk-rds-proxy-mariadb/vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "vpcVPCGW7984C166": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -389,7 +433,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SecretEncryptionKey40C82244": {
    "Type": "AWS::KMS::Key",
@@ -498,8 +544,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBInstanceSubnetGroupA17E5651": {
    "Type": "AWS::RDS::DBSubnetGroup",
@@ -513,7 +559,9 @@
       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBInstanceSecurityGroup1C05EFED": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -529,7 +577,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBInstanceSecurityGroupfromawscdkrdsproxymariadbmariaDBProxyProxySecurityGroup4F55583FIndirectPort44A97795": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -560,7 +610,9 @@
       "Endpoint.Port"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBInstanceSecretED322D85": {
    "Type": "AWS::SecretsManager::Secret",
@@ -602,7 +654,9 @@
      "Ref": "mariaDBInstance7DFDB9B1"
     },
     "TargetType": "AWS::RDS::DBInstance"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBInstance7DFDB9B1": {
    "Type": "AWS::RDS::DBInstance",
@@ -614,7 +668,7 @@
      "Ref": "mariaDBInstanceSubnetGroupA17E5651"
     },
     "Engine": "mariadb",
-    "EngineVersion": "10.6.16",
+    "EngineVersion": "11.8.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -667,7 +721,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBProxyIAMRoleDefaultPolicyF4BE519B": {
    "Type": "AWS::IAM::Policy",
@@ -703,7 +759,9 @@
       "Ref": "mariaDBProxyIAMRoleB91DE271"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBProxyProxySecurityGroupFD730755": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -719,7 +777,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBProxy23E8B2BB": {
    "Type": "AWS::RDS::DBProxy",
@@ -727,6 +787,7 @@
     "Auth": [
      {
       "AuthScheme": "SECRETS",
+      "ClientPasswordAuthType": "MYSQL_NATIVE_PASSWORD",
       "IAMAuth": "DISABLED",
       "SecretArn": {
        "Ref": "mariaDBInstanceSecretAttachment900E3C52"
@@ -758,7 +819,9 @@
       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "mariaDBProxyProxyTargetGroup960ACB39": {
    "Type": "AWS::RDS::DBProxyTargetGroup",
@@ -776,7 +839,9 @@
      "Ref": "mariaDBProxy23E8B2BB"
     },
     "TargetGroupName": "default"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

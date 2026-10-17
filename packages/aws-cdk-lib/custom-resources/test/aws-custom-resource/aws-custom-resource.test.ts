@@ -7,7 +7,7 @@ import { App, Stack } from '../../../core';
 import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from '../../../cx-api';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('aws sdk js custom resource with onCreate and onDelete', () => {
   // GIVEN
@@ -1126,7 +1126,7 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
   // WHEN
   new AwsCustomResource(stack, 'AwsSdk', {
     onCreate: {
-      assumedRoleArn: 'roleArn',
+      assumedRoleArn: 'arn:aws:iam::111111111111:role/Role',
       service: 'service',
       action: 'action',
       physicalResourceId: PhysicalResourceId.of('id'),
@@ -1142,7 +1142,7 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
         {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Resource: 'roleArn',
+          Resource: 'arn:aws:iam::111111111111:role/Role',
         },
       ],
       Version: '2012-10-17',

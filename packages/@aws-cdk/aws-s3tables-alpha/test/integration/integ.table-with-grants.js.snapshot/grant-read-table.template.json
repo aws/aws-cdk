@@ -1,0 +1,135 @@
+{
+ "Resources": {
+  "TableBucket0BF18B0D": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "grant-read-table-bucket",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "NamespaceADFEA57E": {
+   "Type": "AWS::S3Tables::Namespace",
+   "Properties": {
+    "Namespace": "test_namespace",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "TableBucket0BF18B0D",
+      "TableBucketARN"
+     ]
+    }
+   }
+  },
+  "Table4C2D914F": {
+   "Type": "AWS::S3Tables::Table",
+   "Properties": {
+    "Namespace": "test_namespace",
+    "OpenTableFormat": "ICEBERG",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "TableBucket0BF18B0D",
+      "TableBucketARN"
+     ]
+    },
+    "TableName": "grant_read_table",
+    "WithoutMetadata": "Yes"
+   },
+   "DependsOn": [
+    "NamespaceADFEA57E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TableDefaultPolicyEF0B76BE": {
+   "Type": "AWS::S3Tables::TablePolicy",
+   "Properties": {
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": "s3tables:Get*",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Table4C2D914F",
+         "TableARN"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "TableARN": {
+     "Fn::GetAtt": [
+      "Table4C2D914F",
+      "TableARN"
+     ]
+    }
+   },
+   "DependsOn": [
+    "NamespaceADFEA57E"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttTable4C2D914FTableARNF246ED5E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Table4C2D914F",
+     "TableARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-read-table:ExportsOutputFnGetAttTable4C2D914FTableARNF246ED5E"
+   }
+  },
+  "ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TableBucket0BF18B0D",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "grant-read-table:ExportsOutputFnGetAttTableBucket0BF18B0DTableBucketARN92D70B40"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

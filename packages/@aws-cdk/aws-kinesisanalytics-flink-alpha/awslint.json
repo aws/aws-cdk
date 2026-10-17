@@ -1,5 +1,15 @@
 {
   "exclude": [
-    "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink-alpha.PropertyGroups"
+    "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink-alpha.PropertyGroups",
+    "prefer-ref-interface:@aws-cdk/aws-kinesisanalytics-flink-alpha.ApplicationAttributes.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-kinesisanalytics-flink-alpha.ApplicationProps.logGroup",
+    "prefer-ref-interface:@aws-cdk/aws-kinesisanalytics-flink-alpha.ApplicationProps.role",
+    "prefer-ref-interface:@aws-cdk/aws-kinesisanalytics-flink-alpha.ApplicationProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-kinesisanalytics-flink-alpha.ApplicationProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "interface-extends-ref:@aws-cdk/aws-kinesisanalytics-flink-alpha.IApplication"
   ]
 }

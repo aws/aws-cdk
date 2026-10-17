@@ -1,5 +1,5 @@
-import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
-import { ITopicRule } from './topic-rule';
+import type { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
+import type { ITopicRule } from './topic-rule';
 
 /**
  * An abstract action for TopicRule.

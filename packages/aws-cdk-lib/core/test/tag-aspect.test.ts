@@ -1,8 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import type {
+  CfnResourceProps,
+  ITaggable,
+  ITaggableV2,
+} from '../lib';
 import {
   CfnResource,
-  CfnResourceProps,
   RemoveTag,
   Stack,
   Tag,
@@ -10,9 +14,8 @@ import {
   TagType,
   Aspects,
   Tags,
-  ITaggable,
-  ITaggableV2,
   AspectPriority,
+  UnscopedValidationError,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 
@@ -330,5 +333,15 @@ describe('tag aspect', () => {
         });
       }).toThrow();
     });
+  });
+
+  test('if tag value is undefined, it raises with appropriate content', () => {
+    expect(() => {
+      new Tag('test-key', undefined as any);
+    }).toThrow(UnscopedValidationError);
+
+    expect(() => {
+      new Tag('test-key', undefined as any);
+    }).toThrow("Tag 'test-key' must have a value");
   });
 });

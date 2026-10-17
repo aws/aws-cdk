@@ -30,3 +30,10 @@ const describe = testCase.assertions.awsApiCall('EC2', 'describeInstanceAttribut
 describe.expect(ExpectedResult.objectLike({
   DisableApiTermination: { Value: true },
 }));
+
+// Disable termination protection so the stack can be cleaned up
+const disableProtection = testCase.assertions.awsApiCall('EC2', 'modifyInstanceAttribute', {
+  InstanceId: instance.instanceId,
+  DisableApiTermination: { Value: false },
+});
+disableProtection.node.addDependency(describe);

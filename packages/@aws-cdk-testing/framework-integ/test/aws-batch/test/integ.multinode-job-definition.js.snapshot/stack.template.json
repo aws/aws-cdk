@@ -97,6 +97,9 @@
      "EC2"
     ],
     "PropagateTags": true,
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "multinode"
@@ -224,6 +227,9 @@
     "PlatformCapabilities": [
      "EC2"
     ],
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "multinode"

@@ -1,4 +1,4 @@
-import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
+import type { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 import { invokeFunction } from '../../lib/provider-framework/runtime/outbound';
 
 const mockInvoke = jest.fn();

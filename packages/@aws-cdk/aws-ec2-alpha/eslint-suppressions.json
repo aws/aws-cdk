@@ -1,0 +1,27 @@
+{
+  "lib/ipam.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/transit-gateway-vpc-attachment.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/util.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/vpc-v2-base.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 8
+    }
+  },
+  "lib/vpc-v2.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

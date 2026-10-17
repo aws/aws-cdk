@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { GitHubRepository, RepositoryVisibility } from '../lib';
 
 describe('GitHub Repository', () => {
@@ -8,6 +8,11 @@ describe('GitHub Repository', () => {
 
   beforeEach(() => {
     const app = new cdk.App();
+    cdk.Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::E3710',
+      reason: 'Service is shutdown',
+    });
+
     stack = new cdk.Stack(app, 'GitHubDemo');
   });
 

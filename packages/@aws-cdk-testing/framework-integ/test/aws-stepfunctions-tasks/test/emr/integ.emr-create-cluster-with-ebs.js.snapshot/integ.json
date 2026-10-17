@@ -1,0 +1,22 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "emr-create-cluster-ebs-integ/DefaultTest": {
+      "stacks": [
+        "emr-create-cluster-ebs"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          },
+          "expectError": true
+        }
+      },
+      "assertionStack": "emr-create-cluster-ebs-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "emrcreateclusterebsintegDefaultTestDeployAssert7DC4C06C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

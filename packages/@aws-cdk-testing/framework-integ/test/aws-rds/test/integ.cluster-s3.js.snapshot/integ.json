@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "52.0.0",
   "testCases": {
     "test-rds-cluster-s3/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "test-rds-cluster-s3/DefaultTest/DeployAssert",
       "assertionStackName": "testrdsclusters3DefaultTestDeployAssert4BF11861"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

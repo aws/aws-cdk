@@ -1,19 +1,22 @@
-import { Construct } from 'constructs';
-import { IConfigurationSet } from './configuration-set';
+import type { Construct } from 'constructs';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
-import { Grant, IGrantable } from '../../aws-iam';
-import { IPublicHostedZone } from '../../aws-route53';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An email identity
  */
-export interface IEmailIdentity extends IResource {
+export interface IEmailIdentity extends IResource, IEmailIdentityRef {
   /**
    * The name of the email identity
    *
@@ -60,7 +63,7 @@ export interface EmailIdentityProps {
    *
    * @default - do not use a specific configuration set
    */
-  readonly configurationSet?: IConfigurationSet;
+  readonly configurationSet?: IConfigurationSetRef;
 
   /**
    * Whether the messages that are sent from the identity are signed using DKIM
@@ -246,29 +249,27 @@ class EasyDkim extends DkimIdentity {
 
   public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
-      // Use CfnRecordSet instead of CnameRecord to avoid current bad handling of
-      // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-route53/lib/util.ts
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken1', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),
+        name: emailIdentity.dkimDnsTokenName1,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue1 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue1],
         ttl: '1800',
       });
 
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken2', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName2 }),
+        name: emailIdentity.dkimDnsTokenName2,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue2 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue2],
         ttl: '1800',
       });
 
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken3', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName3 }),
+        name: emailIdentity.dkimDnsTokenName3,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue3 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue3],
         ttl: '1800',
       });
     }
@@ -353,8 +354,16 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    */
   public abstract readonly emailIdentityArn: string;
 
+  public get emailIdentityRef(): EmailIdentityReference {
+    return {
+      emailIdentity: this.emailIdentityName,
+    };
+  }
+
   /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow
@@ -365,7 +374,6 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
       grantee,
       actions,
       resourceArns,
-      scope: this,
     });
   }
 
@@ -373,6 +381,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    * Permits an IAM principal the send email action.
    *
    * Actions: SendEmail, SendRawEmail.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -416,7 +426,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
+      throw new ValidationError(lit`InvalidEmailIdentity`, `Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;
@@ -495,12 +505,11 @@ export class EmailIdentity extends EmailIdentityBase {
     const identity = new CfnEmailIdentity(this, 'Resource', {
       emailIdentity: props.identity.value,
       configurationSetAttributes: undefinedIfNoKeys({
-        configurationSetName: props.configurationSet?.configurationSetName,
+        configurationSetName: props.configurationSet?.configurationSetRef.configurationSetName,
       }),
       dkimAttributes: undefinedIfNoKeys({
         signingEnabled: props.dkimSigning,
       }),
-      dkimSigningAttributes: dkimIdentity.bind(this, props.identity.hostedZone),
       feedbackAttributes: undefinedIfNoKeys({
         emailForwardingEnabled: props.feedbackForwarding,
       }),
@@ -509,6 +518,15 @@ export class EmailIdentity extends EmailIdentityBase {
         behaviorOnMxFailure: props.mailFromBehaviorOnMxFailure,
       }),
     });
+
+    this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
+    this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
+    this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
+    this.dkimDnsTokenValue1 = identity.attrDkimDnsTokenValue1;
+    this.dkimDnsTokenValue2 = identity.attrDkimDnsTokenValue2;
+    this.dkimDnsTokenValue3 = identity.attrDkimDnsTokenValue3;
+
+    identity.dkimSigningAttributes = dkimIdentity.bind(this, props.identity.hostedZone);
 
     if (props.mailFromDomain && props.identity.hostedZone) {
       new route53.MxRecord(this, 'MailFromMxRecord', {
@@ -534,13 +552,6 @@ export class EmailIdentity extends EmailIdentityBase {
       resource: 'identity',
       resourceName: this.emailIdentityName,
     });
-
-    this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
-    this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
-    this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
-    this.dkimDnsTokenValue1 = identity.attrDkimDnsTokenValue1;
-    this.dkimDnsTokenValue2 = identity.attrDkimDnsTokenValue2;
-    this.dkimDnsTokenValue3 = identity.attrDkimDnsTokenValue3;
 
     this.dkimRecords = [
       { name: this.dkimDnsTokenName1, value: this.dkimDnsTokenValue1 },

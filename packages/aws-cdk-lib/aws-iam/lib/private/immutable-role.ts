@@ -1,13 +1,15 @@
-import { Construct, Dependable, DependencyGroup } from 'constructs';
+import type { Construct } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
 import { Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { Grant } from '../grant';
-import { IManagedPolicy } from '../managed-policy';
-import { Policy } from '../policy';
-import { PolicyStatement } from '../policy-statement';
-import { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
-import { IRole } from '../role';
+import type { Grant } from '../grant';
+import type { RoleReference } from '../iam.generated';
+import type { IManagedPolicy } from '../managed-policy';
+import type { Policy } from '../policy';
+import type { PolicyStatement } from '../policy-statement';
+import type { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
+import type { IRole } from '../role';
 
 /**
  * An immutable wrapper around an IRole
@@ -26,19 +28,28 @@ import { IRole } from '../role';
 export class ImmutableRole extends Resource implements IRole {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ImmutableRole';
-  public readonly assumeRoleAction = this.role.assumeRoleAction;
-  public readonly policyFragment = this.role.policyFragment;
-  public readonly grantPrincipal = this;
-  public readonly principalAccount = this.role.principalAccount;
-  public readonly roleArn = this.role.roleArn;
-  public readonly roleName = this.role.roleName;
-  public readonly stack = this.role.stack;
+  public readonly assumeRoleAction: string;
+  public readonly policyFragment: any;
+  public readonly grantPrincipal: IPrincipal;
+  public readonly principalAccount: string | undefined;
+  public readonly roleArn: string;
+  public readonly roleName: string;
+  private readonly _stack: IRole['stack'];
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {
       account: role.env.account,
       region: role.env.region,
     });
+
+    this.assumeRoleAction = this.role.assumeRoleAction;
+    this.policyFragment = this.role.policyFragment;
+    this.grantPrincipal = this;
+    this.principalAccount = this.role.principalAccount;
+    this.roleArn = this.role.roleArn;
+    this.roleName = this.role.roleName;
+    this._stack = this.role.stack;
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, role);
 
@@ -47,6 +58,17 @@ export class ImmutableRole extends Resource implements IRole {
       dependencyRoots: [role],
     });
     this.node.defaultChild = role.node.defaultChild;
+  }
+
+  public get stack() {
+    return this._stack;
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleName: this.roleName,
+      roleArn: this.roleArn,
+    };
   }
 
   @MethodMetadata()

@@ -1,15 +1,15 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * InvalidCidrRangeError is thrown when attempting to perform operations on a CIDR
  * range that is either not valid, or outside of the VPC size limits.
+ *
+ * @internal
  */
-export class InvalidCidrRangeError extends Error {
+export class InvalidCidrRangeError extends UnscopedValidationError {
   constructor(cidr: string) {
-    super(
-      cidr +
-        ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.',
-    );
+    super(lit`InvalidCidrRange`, cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.');
     // The following line is required for type checking of custom errors, and must be called right after super()
     // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
     Object.setPrototypeOf(this, InvalidCidrRangeError.prototype);
@@ -18,6 +18,8 @@ export class InvalidCidrRangeError extends Error {
 
 /**
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
+ *
+ * @internal
  */
 export class NetworkUtils {
   /**
@@ -25,17 +27,15 @@ export class NetworkUtils {
    *
    * returns true of the string contains 4 numbers between 0-255 delimited by
    * a `.` character
+   * @internal
    */
   public static validIp(ipAddress: string): boolean {
     const octets = ipAddress.split('.');
     if (octets.length !== 4) {
       return false;
     }
-    return (
-      octets
-        .map((octet: string) => parseInt(octet, 10))
-        .filter((octet: number) => octet >= 0 && octet <= 255).length === 4
-    );
+    return octets.map((octet: string) => parseInt(octet, 10)).
+      filter((octet: number) => octet >= 0 && octet <= 255).length === 4;
   }
 
   /**
@@ -50,17 +50,17 @@ export class NetworkUtils {
    *
    * @param  {string} the IP address (e.g. 174.66.173.168)
    * @returns {number} the integer value of the IP address (e.g 2923605416)
+   * @internal
    */
   public static ipToNum(ipAddress: string): number {
     if (!this.validIp(ipAddress)) {
-      throw new UnscopedValidationError(`${ipAddress} is not valid`);
+      throw new UnscopedValidationError(lit`InvalidIpAddress`, `${ipAddress} is not valid`);
     }
 
     return ipAddress
       .split('.')
       .reduce(
-        (p: number, c: string, i: number) =>
-          p + parseInt(c, 10) * 256 ** (3 - i),
+        (p: number, c: string, i: number) => p + parseInt(c, 10) * 256 ** (3 - i),
         0,
       );
   }
@@ -73,6 +73,7 @@ export class NetworkUtils {
    *
    * @param  {number} the integer value of the IP address (e.g 2923605416)
    * @returns {string} the IPv4 address (e.g. 174.66.173.168)
+   * @internal
    */
   public static numToIp(ipNum: number): string {
     // this all because bitwise math is signed
@@ -87,21 +88,76 @@ export class NetworkUtils {
       }
     }
     const ipAddress: string = address.join('.');
-    if (!this.validIp(ipAddress)) {
-      throw new UnscopedValidationError(
-        `${ipAddress} is not a valid IP Address`,
-      );
+    if ( !this.validIp(ipAddress) ) {
+      throw new UnscopedValidationError(lit`InvalidIpAddressFormat`, `${ipAddress} is not a valid IP Address`);
     }
     return ipAddress;
+  }
+
+  /**
+   * Validates if any CIDR blocks in two arrays overlap
+   *
+   * @param cidrBlocks1 First array of CIDR blocks
+   * @param cidrBlocks2 Second array of CIDR blocks
+   * @returns Tuple with overlap status, and the overlapping CIDR blocks if found
+   * @internal
+   */
+  public static validateCidrBlocksOverlap(cidrBlocks1: string[], cidrBlocks2: string[]): [boolean, string, string] {
+    for (const cidr1 of cidrBlocks1) {
+      for (const cidr2 of cidrBlocks2) {
+        const overlap = this.validateCidrPairOverlap(cidr1, cidr2);
+        if (overlap) {
+          return [true, cidr1, cidr2];
+        }
+      }
+    }
+
+    return [false, '', ''];
+  }
+
+  /**
+   * Validates if two CIDR blocks overlap
+   *
+   * @param cidr1 First CIDR block
+   * @param cidr2 Second CIDR block
+   * @returns True if the CIDR blocks overlap
+   * @internal
+   */
+  public static validateCidrPairOverlap(cidr1: string, cidr2: string): boolean {
+    const cidr1Range = new CidrBlock(cidr1);
+    const cidr1IpRange: [string, string] = [cidr1Range.minIp(), cidr1Range.maxIp()];
+
+    const cidr2Range = new CidrBlock(cidr2);
+    const cidr2IpRange: [string, string] = [cidr2Range.minIp(), cidr2Range.maxIp()];
+
+    return this.rangesOverlap(cidr1IpRange, cidr2IpRange);
+  }
+
+  /**
+   * Checks if two IP address ranges overlap
+   *
+   * @param range1 First IP range as [start, end]
+   * @param range2 Second IP range as [start, end]
+   * @returns True if the ranges overlap
+   */
+  private static rangesOverlap(range1: [string, string], range2: [string, string]): boolean {
+    const [start1, end1] = range1;
+    const [start2, end2] = range2;
+
+    // Check if ranges overlap
+    return start1 <= end2 && start2 <= end1;
   }
 }
 
 /**
  * Creates a network based on a CIDR Block to build contained subnets
+ *
+ * @internal
  */
 export class NetworkBuilder {
   /**
    * The CIDR range used when creating the network
+   * @internal
    */
   public readonly networkCidr: CidrBlock;
 
@@ -130,6 +186,7 @@ export class NetworkBuilder {
 
   /**
    * Add a subnet to the network and update the maxIpConsumed
+   * @internal
    */
   public addSubnet(mask: number): string {
     return this.addSubnets(mask, 1)[0];
@@ -137,48 +194,41 @@ export class NetworkBuilder {
 
   /**
    * Add {count} number of subnets to the network and update the maxIpConsumed
+   * @internal
    */
   public addSubnets(mask: number, count: number = 1): string[] {
-    if (mask < 16 || mask > 28) {
+    if (mask < 16 || mask > 28 ) {
       throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
     }
-    const maxIp =
-      this.nextAvailableIp + CidrBlock.calculateNetsize(mask) * count;
+    const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);
     if (this.networkCidr.maxAddress() < maxIp - 1) {
-      throw new UnscopedValidationError(
-        `${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`,
-      );
+      throw new UnscopedValidationError(lit`SubnetCountExceedsRemainingSpace`, `${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
     }
     const subnets: CidrBlock[] = [];
-    for (let i = 0; i < count; i++) {
-      const blockSize = CidrBlock.calculateNetsize(mask);
-      let base = this.nextAvailableIp;
-      const rem = base % blockSize;
-      if (rem !== 0) {
-        base += blockSize - rem;
-      }
-      const subnet = new CidrBlock(base, mask);
+    for (let i = 0; i < count; i ++) {
+      const subnet: CidrBlock = new CidrBlock(this.nextAvailableIp, mask);
       this.nextAvailableIp = subnet.nextBlock().minAddress();
       this.subnetCidrs.push(subnet);
       subnets.push(subnet);
     }
-    return subnets.map((subnet) => subnet.cidr);
+    return subnets.map((subnet) => (subnet.cidr));
   }
 
   /**
    * return the CIDR notation strings for all subnets in the network
+   * @internal
    */
   public get cidrStrings(): string[] {
-    return this.subnetCidrs.map((subnet) => subnet.cidr);
+    return this.subnetCidrs.map((subnet) => (subnet.cidr));
   }
 
   /**
    * Calculates the largest subnet to create of the given count from the
    * remaining IP space
+   * @internal
    */
   public maskForRemainingSubnets(subnetCount: number): number {
-    const remaining: number =
-      this.networkCidr.maxAddress() - this.nextAvailableIp + 1;
+    const remaining: number = this.networkCidr.maxAddress() - this.nextAvailableIp + 1;
     const ipsPerSubnet: number = Math.floor(remaining / subnetCount);
     return 32 - Math.floor(Math.log2(ipsPerSubnet));
   }
@@ -186,6 +236,8 @@ export class NetworkBuilder {
 
 /**
  * A block of IP address space with a given bit prefix
+ *
+ * @internal
  */
 export class CidrBlock {
   /**
@@ -193,6 +245,7 @@ export class CidrBlock {
    *
    * For example:
    * CidrBlock.calculateNetmask(24) returns '255.255.255.0'
+   * @internal
    */
   public static calculateNetmask(mask: number): string {
     return NetworkUtils.numToIp(2 ** 32 - 2 ** (32 - mask));
@@ -203,23 +256,27 @@ export class CidrBlock {
    *
    * For example:
    * CidrBlock.calculateNetsize(24) returns 256
+   * @internal
    */
   public static calculateNetsize(mask: number): number {
     return 2 ** (32 - mask);
   }
 
-  /*
+  /**
    * The CIDR Block represented as a string e.g. '10.0.0.0/21'
+   * @internal
    */
   public readonly cidr: string;
 
-  /*
+  /**
    * The CIDR mask e.g. for CIDR '10.0.0.0/21' returns 21
+   * @internal
    */
   public readonly mask: number;
 
-  /*
+  /**
    * The total number of IP addresses in the CIDR
+   * @internal
    */
   public readonly networkSize: number;
 
@@ -240,86 +297,76 @@ export class CidrBlock {
    * then the next available block will be returned. For example, if
    * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
    */
-  /**
-   * @throws UnscopedValidationError if the base address is not aligned on a (2^(32-mask))-address boundary.
-   */
   constructor(cidr: string);
   constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
-    let ipNum: number;
-    let prefix: number;
-
     if (typeof ipAddressOrCidr === 'string') {
-      // Parse the user‐provided CIDR string
-      const [ipPart, prefixPart] = ipAddressOrCidr.split('/');
-      prefix = parseInt(prefixPart, 10);
-      ipNum = NetworkUtils.ipToNum(ipPart);
-
-      // Validate alignment — throw if misaligned for VPC‐sized masks only (/16–/28)
-      if (prefix >= 16 && prefix <= 28) {
-        const blockSize = CidrBlock.calculateNetsize(prefix);
-        if (ipNum % blockSize !== 0) {
-          throw new UnscopedValidationError(
-            `The base address ${NetworkUtils.numToIp(ipNum)}/${prefix} ` +
-              `is not aligned on a ${blockSize}-address boundary`,
-          );
-        }
-      }
+      this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
+      this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
+        CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
-      // Internal numeric form — preserve existing “rounding” logic
-      ipNum = ipAddressOrCidr;
-      prefix = typeof mask === 'number' ? mask : 16;
-
-      // Validate alignment — throw if misaligned for VPC‐sized masks only (/16–/28)
-      if (prefix >= 16 && prefix <= 28) {
-        const blockSize = CidrBlock.calculateNetsize(prefix);
-        if (ipNum % blockSize !== 0) {
-          throw new UnscopedValidationError(
-            `The base address ${NetworkUtils.numToIp(ipNum)}/${prefix} ` +
-              `is not aligned on a ${blockSize}-address boundary`,
-          );
-        }
+      if (typeof mask === 'number') {
+        this.mask = mask;
+      } else {
+        // this should be impossible
+        this.mask = 16;
       }
+      this.networkAddress = ipAddressOrCidr + CidrBlock.calculateNetsize(this.mask) - 1;
+      this.networkSize = 2 ** (32 - this.mask);
     }
-
-    // Common initialization
-    this.mask = prefix;
-    this.networkSize = CidrBlock.calculateNetsize(prefix);
-    this.networkAddress = ipNum + this.networkSize - 1;
+    this.networkSize = 2 ** (32 - this.mask);
     this.cidr = `${this.minIp()}/${this.mask}`;
   }
 
-  /** Return the first IP in the block, as a string */
+  /**
+   * The maximum IP in the CIDR Block e.g. '10.0.8.255'
+   * @internal
+   */
+  public maxIp(): string {
+    // min + (2^(32-mask)) - 1 [zero needs to count]
+    return NetworkUtils.numToIp(this.maxAddress());
+  }
+
+  /**
+   * The minimum IP in the CIDR Block e.g. '10.0.0.0'
+   * @internal
+   */
   public minIp(): string {
     return NetworkUtils.numToIp(this.minAddress());
   }
 
-  /** Return the first IP in the block, as a number */
+  /**
+   * Returns the number representation for the minimum IPv4 address
+   * @internal
+   */
   public minAddress(): number {
-    const offset = this.networkAddress % this.networkSize;
-    return this.networkAddress - offset;
+    const div = this.networkAddress % this.networkSize;
+    return this.networkAddress - div;
   }
 
-  /** Return the last IP in the block, as a string */
-  public maxIp(): string {
-    return NetworkUtils.numToIp(this.maxAddress());
-  }
-
-  /** Return the last IP in the block, as a number */
+  /**
+   * Returns the number representation for the maximum IPv4 address
+   * @internal
+   */
   public maxAddress(): number {
+    // min + (2^(32-mask)) - 1 [zero needs to count]
     return this.minAddress() + this.networkSize - 1;
   }
 
-  /** Return a new CidrBlock representing the next adjacent block of the same size */
+  /**
+   * Returns the next CIDR Block of the same mask size
+   * @internal
+   */
   public nextBlock(): CidrBlock {
     return new CidrBlock(this.maxAddress() + 1, this.mask);
   }
 
-  /** True if this block fully contains the other */
+  /**
+   * Returns true if this CidrBlock fully contains the provided CidrBlock
+   * @internal
+   */
   public containsCidr(other: CidrBlock): boolean {
-    return (
-      this.maxAddress() >= other.maxAddress() &&
-      this.minAddress() <= other.minAddress()
-    );
+    return (this.maxAddress() >= other.maxAddress()) &&
+      (this.minAddress() <= other.minAddress());
   }
 }

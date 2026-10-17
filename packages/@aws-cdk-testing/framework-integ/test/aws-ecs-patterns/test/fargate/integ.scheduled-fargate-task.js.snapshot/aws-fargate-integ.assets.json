@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "45.0.0",
   "files": {
     "de04b9df3a372c29acbe87af39fce37afa9e36fe30c2dc3a3cf1c3e49ff319bb": {
+      "displayName": "aws-fargate-integ Template",
       "source": {
         "path": "aws-fargate-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-41fb2666": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "de04b9df3a372c29acbe87af39fce37afa9e36fe30c2dc3a3cf1c3e49ff319bb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -17,11 +18,12 @@
   },
   "dockerImages": {
     "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14": {
+      "displayName": "ScheduledFargateTask/ScheduledTaskDef/ScheduledContainer/AssetImage",
       "source": {
         "directory": "asset.0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-94541639": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
           "imageTag": "0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"

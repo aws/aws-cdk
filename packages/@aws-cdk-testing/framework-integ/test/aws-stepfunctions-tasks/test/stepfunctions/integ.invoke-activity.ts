@@ -62,7 +62,7 @@ class InvokeActivityStack extends cdk.Stack {
         .otherwise(waitX));
 
     const sm = new sfn.StateMachine(this, 'StateMachine', {
-      definition: chain,
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
       timeout: cdk.Duration.seconds(300),
     });
 

@@ -1,5 +1,5 @@
-import { CidrBlock, CidrBlockIpv6, NetworkUtils, defaultSubnetName } from '../lib/util';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { CidrBlock, CidrBlockIpv6, NetworkUtils, defaultSubnetName } from '../lib/util';
 
 describe('Tests for the CidrBlock.rangesOverlap method to check if IPv4 ranges overlap', () =>{
   test('Should return false for non-overlapping IP ranges', () => {

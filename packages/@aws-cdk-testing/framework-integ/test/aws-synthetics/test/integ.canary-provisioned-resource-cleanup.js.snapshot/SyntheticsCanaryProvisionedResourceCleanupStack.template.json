@@ -177,7 +177,7 @@
     },
     "Code": {
      "Handler": "index.handler",
-     "Script": "\n          exports.handler = async () => {\n            console.log('hello world');\n          };"
+     "Script": "\n          exports.handler = async () => {\n            console.log(\\'hello world\\');\n          };"
     },
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
@@ -191,22 +191,12 @@
      "MemoryInMB": 2048,
      "TimeoutInSeconds": 240
     },
-    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
+    "RuntimeVersion": "syn-nodejs-puppeteer-9.1",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true
-   }
-  }
- },
- "Outputs": {
-  "ExportsOutputRefCleanupCanary598BDB03C4F8A825": {
-   "Value": {
-    "Ref": "CleanupCanary598BDB03"
-   },
-   "Export": {
-    "Name": "SyntheticsCanaryProvisionedResourceCleanupStack:ExportsOutputRefCleanupCanary598BDB03C4F8A825"
    }
   }
  },

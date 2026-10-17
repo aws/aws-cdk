@@ -87,6 +87,12 @@ fi
 # Check that the yarn.lock is consistent
 node ./scripts/check-yarn-lock.js
 
+# Check the skills under skills/, including their links to headings in the docs.
+# Only GitHub builds set PR_BUILD, so release pipelines skip this check.
+if [ "${PR_BUILD:-}" == "true" ]; then
+  node ./scripts/check-skills.js
+fi
+
 # Prepare for build with references
 /bin/bash scripts/generate-aggregate-tsconfig.sh > tsconfig.json
 
@@ -100,8 +106,8 @@ fi
 if [[ "$concurrency" == "" ]]; then
     # Auto-limit top-level concurrency to:
     # - available CPUs - 1 to limit CPU load
-    # - total memory / 4GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
-    mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-4_000_000_000}
+    # - total memory / 6GB  (N.B: constant here may need to be tweaked, configurable with $CDKBUILD_MEM_PER_PROCESS)
+    mem_per_process=${CDKBUILD_MEM_PER_PROCESS:-6_000_000_000}
     concurrency=$(node -p "Math.max(1, Math.min(require('os').cpus().length - 1, Math.round(require('os').totalmem() / $mem_per_process)))")
     echo "Concurrency: $concurrency"
 fi

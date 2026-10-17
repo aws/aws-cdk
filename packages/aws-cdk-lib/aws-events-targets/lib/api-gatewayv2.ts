@@ -1,9 +1,10 @@
-import { ApiGatewayProps } from './api-gateway';
+import type { ApiGatewayProps } from './api-gateway';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Use an API Gateway V2 HTTP APIs as a target for Amazon EventBridge rules.
@@ -23,7 +24,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
    * Returns the target IHttpApi
    */
   public get iHttpApi(): apigwv2.IHttpApi {
-    return this._httpApi;
+    return apigwv2.toIHttpApi(this._httpApi);
   }
 
   /**
@@ -32,14 +33,14 @@ export class ApiGatewayV2 implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-use-resource-based.html#eb-api-gateway-permissions
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig { // FIXABLE
     if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
+      throw new ValidationError(lit`NumberOfWildcardsInPathDoesNotMatchPathParameterValues`, 'The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const httpApiArn = this._httpApi.arnForExecuteApi(

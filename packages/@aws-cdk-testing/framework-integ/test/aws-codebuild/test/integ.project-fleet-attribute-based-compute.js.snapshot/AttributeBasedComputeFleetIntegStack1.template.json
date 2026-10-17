@@ -150,6 +150,14 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "MyFleet1E628396",
+        "Arn"
+       ]
+      }
+     },
      "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
@@ -169,17 +177,6 @@
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA": {
-   "Value": {
-    "Fn::GetAtt": [
-     "MyFleet1E628396",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "AttributeBasedComputeFleetIntegStack1:ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
-   }
-  },
   "ExportsOutputRefMyProject39F7B0AE1CE3CA42": {
    "Value": {
     "Ref": "MyProject39F7B0AE"

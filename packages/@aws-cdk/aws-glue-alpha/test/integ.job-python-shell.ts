@@ -1,8 +1,8 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as glue from '../lib';
 
 /**
  * To verify the ability to run jobs created in this test
@@ -38,8 +38,16 @@ new glue.PythonShellJob(stack, 'BasicShellJob39', {
 new glue.PythonShellJob(stack, 'BasicShellJob', {
   script: script,
   role: iam_role,
-  pythonVersion: glue.PythonVersion.THREE,
+  pythonVersion: glue.PythonVersion.THREE_NINE,
   glueVersion: glue.GlueVersion.V1_0,
+});
+
+new glue.PythonShellJob(stack, 'ShellJobWithExtraPyFiles', {
+  script: script,
+  role: iam_role,
+  extraPythonFiles: [
+    glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
+  ],
 });
 
 new glue.PythonShellJob(stack, 'DetailedShellJob39', {

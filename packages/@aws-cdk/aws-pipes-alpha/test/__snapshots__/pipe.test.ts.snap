@@ -11,6 +11,9 @@ exports[`Pipe is present with props 1`] = `
   },
   "Resources": {
     "TestPipe330D553D": {
+      "DependsOn": [
+        "TestPipeRole0FD00B2B",
+      ],
       "Properties": {
         "Description": "test description",
         "DesiredState": "RUNNING",

@@ -1,0 +1,79 @@
+{
+  "/aws-cdk-mediapackagev2-ts-encryption/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/SpekeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/TsSampleAes": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/TsAes128": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/SpekeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SpekeRoleE39491EA"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/TsSampleAes/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TsSampleAes3ED795FE"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-ts-encryption/TsAes128/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TsAes12822141EB8"
+    }
+  ]
+}

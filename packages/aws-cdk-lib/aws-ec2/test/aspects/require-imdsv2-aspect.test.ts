@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as cdk from '../../../core';
+import type { CfnLaunchTemplate } from '../../lib';
 import {
-  CfnLaunchTemplate,
   Instance,
   InstanceRequireImdsv2Aspect,
   InstanceType,
@@ -176,9 +176,9 @@ describe('RequireImdsv2Aspect', () => {
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
       cfnLaunchTemplate.launchTemplateData = {
         metadataOptions: cdk.Token.asAny({
-          httpEndpoint: 'http://bla',
-        } as CfnLaunchTemplate.MetadataOptionsProperty),
-      } as CfnLaunchTemplate.LaunchTemplateDataProperty;
+          httpEndpoint: 'enabled',
+        } satisfies CfnLaunchTemplate.MetadataOptionsProperty),
+      } satisfies CfnLaunchTemplate.LaunchTemplateDataProperty;
       const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN

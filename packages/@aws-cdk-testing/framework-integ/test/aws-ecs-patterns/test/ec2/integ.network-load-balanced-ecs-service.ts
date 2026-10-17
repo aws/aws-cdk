@@ -1,6 +1,7 @@
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
+import type { CfnResource } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
@@ -8,8 +9,6 @@ import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
@@ -21,6 +20,12 @@ const securityGroup = new SecurityGroup(stack, 'SecurityGroup', {
 });
 securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
 
+// Suppress security guardian rule for intentional test setup
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
+
 const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'FirstAutoScalingGroup', {
     vpc,
@@ -28,7 +33,6 @@ const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'first-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider1);
 
@@ -39,12 +43,11 @@ const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'second-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider2);
 
 // one service with multi capacity provider strategies
-new NetworkLoadBalancedEc2Service(stack, 'myService', {
+const myService = new NetworkLoadBalancedEc2Service(stack, 'myService', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
@@ -64,9 +67,18 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
   ],
   ipAddressType: IpAddressType.IPV4,
 });
+const nlbSg = new SecurityGroup(stack, 'NlbSecurityGroup', { vpc, allowAllOutbound: false });
+nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+myService.loadBalancer.connections.addSecurityGroup(nlbSg);
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

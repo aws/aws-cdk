@@ -13,7 +13,7 @@ const stack = new cdk.Stack(app, 'integ-cloudtrail-data-events');
 
 const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

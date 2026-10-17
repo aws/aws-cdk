@@ -1,17 +1,18 @@
 {
-  "version": "21.0.0",
+  "version": "48.0.0",
   "files": {
-    "cfac1423efb7c99cadc3f40367c753fe5b1527d9a6950c096ba326fabac4c89f": {
+    "d614cb38321ab96882d1aed0a138d6b2dc528628f62f49cc35ae47a2e9733a57": {
+      "displayName": "StackUnderTest Template",
       "source": {
         "path": "StackUnderTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456-us-east-2": {
-          "bucketName": "cdk-hnb659fds-assets-123456-us-east-2",
-          "objectKey": "cfac1423efb7c99cadc3f40367c753fe5b1527d9a6950c096ba326fabac4c89f.json",
-          "region": "us-east-2",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456:role/cdk-hnb659fds-file-publishing-role-123456-us-east-2"
+        "123456789012-us-east-1-516d22ad": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "d614cb38321ab96882d1aed0a138d6b2dc528628f62f49cc35ae47a2e9733a57.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
         }
       }
     }

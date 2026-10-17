@@ -11,7 +11,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 });
 
 const originGroup = new origins.OriginGroup({
-  primaryOrigin: new origins.S3Origin(bucket),
+  primaryOrigin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
   fallbackOrigin: new origins.HttpOrigin('www.example.com'),
 });
 

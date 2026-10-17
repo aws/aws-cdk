@@ -1,6 +1,6 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { DatabaseCluster, InstanceType } from '../lib';
 import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
 
@@ -20,7 +20,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
-  family: ParameterGroupFamily.NEPTUNE_1_2,
+  family: ParameterGroupFamily.NEPTUNE_1_4,
   parameters: {
     neptune_enable_audit_log: '1',
     neptune_query_timeout: '100000',

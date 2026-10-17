@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "44.0.0",
   "files": {
     "810add6e3357a035537eaa8699e651d4beaefe0e40808bc7afca5751de03ea88": {
       "displayName": "aws-cdk-bedrock-agent-collaborator-1 Template",

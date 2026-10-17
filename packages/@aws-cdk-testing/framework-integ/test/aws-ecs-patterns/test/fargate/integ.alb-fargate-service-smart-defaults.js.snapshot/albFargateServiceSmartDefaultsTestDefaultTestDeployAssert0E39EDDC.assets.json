@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db": {
+      "source": {
+        "path": "asset.7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-99e46378": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7131a84a4415494610e808e07b00bedc7d2578a973f5069309ad6a8a74cf00db.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8ead77ec6dbe499722830779925b00ed64ad0870001400698f00cfaea142049c": {
+      "displayName": "albFargateServiceSmartDefaultsTestDefaultTestDeployAssert0E39EDDC Template",
+      "source": {
+        "path": "albFargateServiceSmartDefaultsTestDefaultTestDeployAssert0E39EDDC.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-217a0afd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ead77ec6dbe499722830779925b00ed64ad0870001400698f00cfaea142049c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

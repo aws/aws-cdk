@@ -1,0 +1,13 @@
+{
+  "resources": {
+    "EventBus": {
+      "grants": {
+        "allPutEvents": {
+          "actions": ["events:PutEvents"],
+          "arnFormat": "*",
+          "docSummary": "Permits an IAM Principal to send custom events to EventBridge\nso that they can be matched to rules."
+        }
+      }
+    }
+  }
+}

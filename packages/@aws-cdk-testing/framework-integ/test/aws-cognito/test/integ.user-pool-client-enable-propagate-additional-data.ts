@@ -1,6 +1,6 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
 class TestStack extends Stack {

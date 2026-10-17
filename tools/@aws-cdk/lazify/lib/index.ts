@@ -47,17 +47,19 @@ export function transformFileContents(filename: string, contents: string, progre
   progress?.(`${topLevelAssignments.length} declarations`, '... ');
 
   const topLevelRequires = topLevelAssignments
-    .flatMap(([stmt, a]) => a.initializer && ts.isCallExpression(a.initializer)
-      && ts.isIdentifier(a.initializer.expression) && a.initializer.expression.text === 'require'
-      && ts.isStringLiteral(a.initializer.arguments[0])
-      && ts.isIdentifier(a.name)
-      ? [[stmt, a.name, a.initializer.arguments[0].text] as const] : []);
+    .flatMap(([stmt, a]) => {
+      if (!a.initializer || !ts.isIdentifier(a.name)) {
+        return [];
+      }
+      const required = unwrapRequireLike(a.initializer);
+      return required ? [[stmt, a.name, required.moduleName, required.wrapper] as const] : [];
+    });
 
   progress?.(`${topLevelRequires.length} requires`, '... ');
 
   let file = sourceFile;
 
-  for (const [stmt, binding, moduleName] of topLevelRequires) {
+  for (const [stmt, binding, moduleName, wrapper] of topLevelRequires) {
     const result = ts.transform(file, [(ctx: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
       const factory = ctx.factory;
       const gen = new ExpressionGenerator(factory);
@@ -80,8 +82,8 @@ export function transformFileContents(filename: string, contents: string, progre
           return createVariable(factory, binding,
             factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
               factory.createBlock([
-                // tmp = require(...)
-                createVariable(factory, 'tmp', factory.createCallExpression(factory.createIdentifier('require'), [], [factory.createStringLiteral(moduleName)])),
+                // tmp = require(...) (optionally wrapped in an esModuleInterop helper)
+                createVariable(factory, 'tmp', requireExpression(factory, moduleName, wrapper)),
 
                 // <this_fn> = () => tmp
                 gen.assignmentStatement(binding.text,
@@ -160,6 +162,7 @@ export function transformFileContents(filename: string, contents: string, progre
 
         const file = require.resolve(requiredModule, { paths: [path.dirname(filename)] });
         // FIXME: Should probably do this in a subprocess
+        // FIXME: Maybe we should use the cjs-lexer
         const module = require(file);
         const entries = Object.keys(module);
 
@@ -176,15 +179,17 @@ export function transformFileContents(filename: string, contents: string, progre
         && ts.isPropertyAccessExpression(node.expression.left)
         && ts.isIdentifier(node.expression.left.expression)
         && node.expression.left.expression.text === 'exports'
-        && ts.isCallExpression(node.expression.right)
-        && ts.isIdentifier(node.expression.right.expression)
-        && node.expression.right.expression.text === 'require'
-        && ts.isStringLiteral(node.expression.right.arguments[0])) {
+        && ts.isCallExpression(node.expression.right)) {
         // exports.module = require('./module');
+        // (or, with esModuleInterop, exports.module = __importStar(require('./module')); )
 
-        const exportName = node.expression.left.name.text;
-        const moduleName = node.expression.right.arguments[0].text;
-        return gen.moduleGetterOnce(exportName, moduleName, (x) => x);
+        const required = unwrapRequireLike(node.expression.right);
+        if (required) {
+          const exportName = node.expression.left.name.text;
+          const { moduleName, wrapper } = required;
+          return gen.moduleGetterOnce(exportName, moduleName, (x) =>
+            wrapper ? factory.createCallExpression(factory.createIdentifier(wrapper), undefined, [x]) : x);
+        }
       }
 
       return ts.visitEachChild(node, child => visit(child), ctx);
@@ -208,6 +213,42 @@ function createVariable(factory: ts.NodeFactory, name: string | ts.BindingName, 
     ]));
 }
 
+/**
+ * Recognize `require("x")` and the esModuleInterop-wrapped forms
+ * `__importStar(require("x"))` / `__importDefault(require("x"))`.
+ *
+ * With `esModuleInterop: true`, TypeScript compiles `import * as x from 'x'` and
+ * `import x from 'x'` to `const x = __importStar(require("x"))` /
+ * `__importDefault(require("x"))`. We must still recognize these so the require is
+ * made lazy; the wrapper is returned so it can be re-applied around the deferred
+ * require (keeping the interop shape identical).
+ */
+function unwrapRequireLike(expr: ts.Expression): { moduleName: string; wrapper?: string } | undefined {
+  if (!ts.isCallExpression(expr) || !ts.isIdentifier(expr.expression)) {
+    return undefined;
+  }
+  if (expr.expression.text === 'require'
+    && expr.arguments.length === 1 && ts.isStringLiteral(expr.arguments[0])) {
+    return { moduleName: expr.arguments[0].text };
+  }
+  if ((expr.expression.text === '__importStar' || expr.expression.text === '__importDefault')
+    && expr.arguments.length === 1) {
+    const inner = unwrapRequireLike(expr.arguments[0]);
+    if (inner && !inner.wrapper) {
+      return { moduleName: inner.moduleName, wrapper: expr.expression.text };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Build `require("moduleName")`, optionally wrapped in an esModuleInterop helper.
+ */
+function requireExpression(factory: ts.NodeFactory, moduleName: string, wrapper?: string): ts.Expression {
+  const req = factory.createCallExpression(factory.createIdentifier('require'), [], [factory.createStringLiteral(moduleName)]);
+  return wrapper ? factory.createCallExpression(factory.createIdentifier(wrapper), [], [req]) : req;
+}
+
 class ExpressionGenerator {
   private alreadyEmittedExports = new Set<string>();
   private emittedNoFold = false;
@@ -217,6 +258,9 @@ class ExpressionGenerator {
 
   /**
    * Create an lazy getter for a particular value at the module level
+   *
+   * The name, and the lexer
+   * -----------------------
    *
    * Since Node statically analyzes CommonJS modules to determine its exports
    * (using the `cjs-module-lexer` module), we need to trick it into recognizing
@@ -240,7 +284,7 @@ class ExpressionGenerator {
    *
    * ```
    * exports.myExport = void 0;
-   * Object.defineProperty(exports', 'm' + 'yExport', { ... });
+   * Object.defineProperty(exports, 'm' + 'yExport', { ... });
    * ```
    *
    * Then the code passes the lexer: it detects `myExport` as an export, and it
@@ -258,11 +302,33 @@ class ExpressionGenerator {
    * ```
    * let _noFold;
    * exports.myExport = void 0;
-   * Object.defineProperty(exports', _noFold = 'myExport', { ... });
+   * Object.defineProperty(exports, _noFold = 'myExport', { ... });
    * ```
    *
    * This takes advantage of the fact that the return value of an `<x> = <y>` expression
    * returns `<y>`, but has a side effect so cannot be safely optimized away.
+   *
+   * The returned value
+   * ------------------
+   *
+   * If we only generate a getter:
+   *
+   * ```
+   * Object.defineProperty(exports, _noFold = 'myExport', { get: () => require('./file').myExport });
+   * ```
+   *
+   * If the same member is requested more than once, the same getter will be
+   * executed multiple times.  What we'll do instead is reify the lazy value on
+   * the `exports` object, so that the getter is only executed on the first access,
+   * and subsequent accesses and read the value directly.
+   *
+   * ```
+   * Object.defineProperty(exports, _noFold = 'myExport', { get: () => {
+   *   const value = require('./file').myExport;
+   *   Object.defineProperty(exports, _noFold = 'myExport', { value });
+   *   return value;
+   * });
+   * ```
    */
   public moduleGetter(
     exportName: string,
@@ -273,11 +339,7 @@ class ExpressionGenerator {
 
     const ret = [];
     if (!this.emittedNoFold) {
-      ret.push(
-        factory.createVariableStatement([],
-          factory.createVariableDeclarationList([
-            factory.createVariableDeclaration('_noFold'),
-          ])));
+      ret.push(this.createVariables(factory.createVariableDeclaration('_noFold')));
 
       this.emittedNoFold = true;
     }
@@ -291,7 +353,31 @@ class ExpressionGenerator {
         ts.SyntaxKind.EqualsToken,
         factory.createVoidZero())),
       // Object.defineProperty(exports, _noFold = "<name>", { get: () => ... });
-      factory.createExpressionStatement(factory.createCallExpression(
+      this.createDefinePropertyStatement(exportName, [
+        factory.createPropertyAssignment('get',
+          factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
+            factory.createBlock([
+              this.createVariables(factory.createVariableDeclaration('value', undefined, undefined,
+                moduleFormatter(
+                  factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
+              this.createDefinePropertyStatement(exportName, [factory.createShorthandPropertyAssignment(factory.createIdentifier('value'))]),
+              factory.createReturnStatement(factory.createIdentifier('value')),
+            ]),
+          ),
+        ),
+      ]),
+    );
+    return ret;
+  }
+
+  private createVariables(...vars: ts.VariableDeclaration[]) {
+    return this.factory.createVariableStatement([], this.factory.createVariableDeclarationList(vars));
+  }
+
+  private createDefinePropertyStatement(exportName: string, members: ts.ObjectLiteralElementLike[]) {
+    const factory = this.factory;
+
+    return factory.createExpressionStatement(factory.createCallExpression(
         factory.createPropertyAccessExpression(factory.createIdentifier('Object'), factory.createIdentifier('defineProperty')),
         undefined,
         [
@@ -300,15 +386,10 @@ class ExpressionGenerator {
           factory.createObjectLiteralExpression([
             factory.createPropertyAssignment('enumerable', factory.createTrue()),
             factory.createPropertyAssignment('configurable', factory.createTrue()),
-            factory.createPropertyAssignment('get',
-              factory.createArrowFunction(undefined, undefined, [], undefined, undefined,
-                moduleFormatter(
-                  factory.createCallExpression(factory.createIdentifier('require'), undefined, [factory.createStringLiteral(moduleName)])))),
+            ...members,
           ]),
         ]
-      )
-    ));
-    return ret;
+      ));
   }
 
   /**

@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
-import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
-import { DnsServiceProps, Service } from './service';
+import type { Construct } from 'constructs';
+import type { BaseNamespaceProps, INamespace } from './namespace';
+import { NamespaceType } from './namespace';
+import type { DnsServiceProps } from './service';
+import { Service } from './service';
 import { CfnPublicDnsNamespace } from './servicediscovery.generated';
 import { Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IPublicDnsNamespaceRef, PublicDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface PublicDnsNamespaceProps extends BaseNamespaceProps {}
-export interface IPublicDnsNamespace extends INamespace { }
+export interface IPublicDnsNamespace extends INamespace, IPublicDnsNamespaceRef { }
 export interface PublicDnsNamespaceAttributes {
   /**
    * A name for the Namespace.
@@ -39,6 +42,12 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
       public namespaceId = attrs.namespaceId;
       public namespaceArn = attrs.namespaceArn;
       public type = NamespaceType.DNS_PUBLIC;
+      public get publicDnsNamespaceRef(): PublicDnsNamespaceReference {
+        return {
+          publicDnsNamespaceId: attrs.namespaceId,
+          publicDnsNamespaceArn: attrs.namespaceArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -93,6 +102,13 @@ export class PublicDnsNamespace extends Resource implements IPublicDnsNamespace 
 
   /** @attribute */
   public get publicDnsNamespaceId() { return this.namespaceId; }
+
+  public get publicDnsNamespaceRef(): PublicDnsNamespaceReference {
+    return {
+      publicDnsNamespaceId: this.namespaceId,
+      publicDnsNamespaceArn: this.namespaceArn,
+    };
+  }
 
   /**
    * Creates a service within the namespace

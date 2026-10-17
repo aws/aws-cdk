@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-ism-encryption/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-ism-encryption"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-ism-encryption/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackageismencryptionDefaultTestDeployAssert4D2CA678"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

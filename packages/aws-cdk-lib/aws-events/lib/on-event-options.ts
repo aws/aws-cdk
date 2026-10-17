@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { EventPattern } from './event-pattern';
-import { IRuleTarget } from './target';
+import type { Construct } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IRuleTarget } from './target';
 
 /**
  * Common options for Events.

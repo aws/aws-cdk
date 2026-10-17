@@ -129,4 +129,11 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithIMDSv2', {
   vpc,
 });
 
+new autoscaling.AutoScalingGroup(stack, 'AsgFromMigrationToLT', {
+  vpc,
+  launchTemplate: lt,
+  migrateToLaunchTemplate: true,
+  updatePolicy: autoscaling.UpdatePolicy.rollingUpdate(),
+});
+
 app.synth();

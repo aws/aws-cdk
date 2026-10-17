@@ -1,4 +1,4 @@
-import { CfnFunction } from './lambda.generated';
+import type { CfnFunction } from './lambda.generated';
 
 /**
  * Specify the runtime update mode.

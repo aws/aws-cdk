@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "04bdc478f90a9bf6114c0a08b2ebd5d537530e78cea849c22611535c6fdc37dc": {
+      "displayName": "aws-cdk-rds-instance-lookup Template",
+      "source": {
+        "path": "aws-cdk-rds-instance-lookup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region-5de001cf": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "04bdc478f90a9bf6114c0a08b2ebd5d537530e78cea849c22611535c6fdc37dc.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

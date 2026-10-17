@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { Annotations, Template, Match } from '../../assertions';
+import type { Construct } from 'constructs';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, FieldIndexPolicy } from '../lib';
+import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
+import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -99,6 +100,7 @@ describe('log group', () => {
   test('unresolved retention', () => {
     // GIVEN
     const stack = new Stack();
+
     const parameter = new CfnParameter(stack, 'RetentionInDays', { default: 30, type: 'Number' });
 
     // WHEN
@@ -146,6 +148,128 @@ describe('log group', () => {
     });
   });
 
+  describe('DELIVERY log group class', () => {
+    test('sets the class and does not apply the default retention', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        RetentionInDays: Match.absent(),
+      });
+    });
+
+    test('fails when RetentionDays.INFINITE is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN - retention is not supported for DELIVERY, including INFINITE
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        retention: RetentionDays.INFINITE,
+      })).toThrow(/retention is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('allows an encryption key (KMS is supported for DELIVERY)', () => {
+      // GIVEN
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        encryptionKey: key,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        KmsKeyId: stack.resolve(key.keyArn),
+        RetentionInDays: Match.absent(),
+      });
+    });
+
+    test('allows deletion protection (supported for DELIVERY)', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        deletionProtectionEnabled: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'DELIVERY',
+        DeletionProtectionEnabled: true,
+      });
+    });
+
+    test('fails when retention is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        retention: RetentionDays.ONE_WEEK,
+      })).toThrow(/retention is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('fails when dataProtectionPolicy is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+      const dataProtectionPolicy = new DataProtectionPolicy({
+        name: 'test-policy-name',
+        description: 'test description',
+        identifiers: [DataIdentifier.EMAILADDRESS],
+      });
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        dataProtectionPolicy,
+      })).toThrow(/dataProtectionPolicy is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('fails when fieldIndexPolicies is set together with DELIVERY', () => {
+      // GIVEN
+      const stack = new Stack();
+      const fieldIndexPolicy = new FieldIndexPolicy({
+        fields: ['RequestId'],
+      });
+
+      // THEN
+      expect(() => new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.DELIVERY,
+        fieldIndexPolicies: [fieldIndexPolicy],
+      })).toThrow(/fieldIndexPolicies is not supported for a log group with logGroupClass DELIVERY/);
+    });
+
+    test('STANDARD class still applies the default retention (backwards compatible)', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new LogGroup(stack, 'LogGroup', {
+        logGroupClass: LogGroupClass.STANDARD,
+      });
+
+      // THEN - the default TWO_YEARS (731 days) retention is unchanged for non-DELIVERY classes
+      Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+        LogGroupClass: 'STANDARD',
+        RetentionInDays: 731,
+      });
+    });
+  });
+
   // when LogGroupClass is not specified, leave it to CFN and/or backend to default to STANDARD
   test('with default log group class', () => {
     // GIVEN
@@ -162,24 +286,6 @@ describe('log group', () => {
     Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
       LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
     }, 0);
-  });
-
-  test('with log group class in a non-supported region', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'TestStack', {
-      env: {
-        region: 'us-isob-east-1',
-      },
-    });
-
-    // WHEN
-    new LogGroup(stack, 'LogGroup', {
-      logGroupClass: LogGroupClass.STANDARD,
-    });
-
-    // THEN
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
   });
 
   test('will delete log group if asked to', () => {
@@ -455,6 +561,36 @@ describe('log group', () => {
         ],
       },
       PolicyName: 'LogGroupPolicy643B329C',
+    });
+  });
+
+  test('grant write to service principal for CfnLogGroup', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cfnLogGroup = new CfnLogGroup(stack, 'CfnLogGroup');
+    const sp = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    // WHEN
+    LogGroupGrants.fromLogGroup(cfnLogGroup).write(sp);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'CfnLogGroup',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
     });
   });
 
@@ -1001,6 +1137,98 @@ describe('subscription filter', () => {
       LogGroupName: { Ref: 'LogGroupF5B46931' },
       FilterName: 'CustomSubscriptionFilterName',
     });
+  });
+});
+
+test('encrypting log group with referenced alias', () => {
+  const stack = new Stack();
+
+  const alias = kms.Alias.fromAliasName(stack, 'KmsAlias', 'alias/some-alias');
+
+  new LogGroup(stack, 'LogGroup', {
+    encryptionKey: alias,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    KmsKeyId: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':kms:',
+          { Ref: 'AWS::Region' },
+          ':',
+          { Ref: 'AWS::AccountId' },
+          ':alias/some-alias',
+        ],
+      ],
+    },
+  });
+});
+
+test('create a Add Key transformer against a log group', () => {
+  // GIVEN
+  const stack = new Stack();
+  const logGroup = new LogGroup(stack, 'aws_cdk_test_log_group');
+
+  const jsonParser = new ParserProcessor({
+    type: ParserProcessorType.JSON,
+  });
+
+  const addKeysProcesor = new JsonMutatorProcessor({
+    type: JsonMutatorType.ADD_KEYS,
+    addKeysOptions: {
+      entries: [
+        { key: 'test_key1', value: 'test_value1', overwriteIfExists: true },
+        { key: 'test_key2', value: 'test_value2' },
+        { key: 'test_key3', value: 'test_value3', overwriteIfExists: false },
+      ],
+    },
+  });
+
+  // WHEN
+
+  logGroup.addTransformer(
+    'Transformer',
+    {
+      transformerName: 'MyTransformer',
+      transformerConfig: [jsonParser, addKeysProcesor],
+    },
+  );
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::Transformer', {
+    LogGroupIdentifier: { Ref: 'awscdktestloggroup30AE39AB' },
+    TransformerConfig: [
+      {
+        ParseJSON: { Source: '@message' },
+      },
+      {
+        AddKeys: {
+          Entries: [
+            { Key: 'test_key1', Value: 'test_value1', OverwriteIfExists: true },
+            { Key: 'test_key2', Value: 'test_value2', OverwriteIfExists: false },
+            { Key: 'test_key3', Value: 'test_value3', OverwriteIfExists: false },
+          ],
+        },
+      },
+    ],
+  });
+});
+
+test('enable deletion protection', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new LogGroup(stack, 'LogGroup', {
+    deletionProtectionEnabled: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    DeletionProtectionEnabled: true,
   });
 });
 

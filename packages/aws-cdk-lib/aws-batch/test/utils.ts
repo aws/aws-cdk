@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Stack } from '../../core';
 
 /**

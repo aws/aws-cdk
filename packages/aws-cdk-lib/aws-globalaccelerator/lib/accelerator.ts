@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
-import { Listener, ListenerOptions } from './listener';
+import type { ListenerOptions } from './listener';
+import { Listener } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * The interface of the Accelerator
  */
-export interface IAccelerator extends cdk.IResource {
+export interface IAccelerator extends cdk.IResource, IAcceleratorRef {
   /**
    * The ARN of the accelerator.
    *
@@ -162,6 +165,12 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
       public readonly dualStackDnsName = attrs.dualStackDnsName;
       public readonly ipv4Addresses = attrs.ipv4Addresses;
       public readonly ipv6Addresses = attrs.ipv6Addresses;
+
+      public get acceleratorRef(): ga.AcceleratorReference {
+        return {
+          acceleratorArn: this.acceleratorArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -191,6 +200,12 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    * The array of IPv6 addresses in the IP address set
    */
   public readonly ipv6Addresses?: string[];
+
+  public get acceleratorRef(): ga.AcceleratorReference {
+    return {
+      acceleratorArn: this.acceleratorArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
@@ -230,13 +245,13 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   private validateAcceleratorName(name?: string) {
     if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
-      throw new cdk.ValidationError(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`, this);
+      throw new cdk.ValidationError(lit`InvalidAcceleratorNameLength`, `Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`, this);
     }
   }
 
   private validateIpAddresses(ipAddresses?: string[]) {
     if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
-      throw new cdk.ValidationError(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
+      throw new cdk.ValidationError(lit`InvalidIpAddressesLength`, `Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
     }
   }
 }

@@ -7,6 +7,15 @@
     "ProtocolType": "WEBSOCKET",
     "RouteSelectionExpression": "$request.body.action"
    }
+  },
+  "WebSocketApiWithProps9DA8D44F": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "DisableSchemaValidation": true,
+    "Name": "WebSocketApiWithProps",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
   }
  },
  "Parameters": {

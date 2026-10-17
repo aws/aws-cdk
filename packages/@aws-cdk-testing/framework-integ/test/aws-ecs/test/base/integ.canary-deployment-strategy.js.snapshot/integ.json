@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-ecs-canary/DefaultTest": {
+      "stacks": [
+        "aws-ecs-canary-deployment"
+      ],
+      "assertionStack": "aws-ecs-canary/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecscanaryDefaultTestDeployAssertB491C907"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { ValidationError } from '../../lib/errors';
-import { validateAllProps, ValidationRule } from '../../lib/helpers-internal/validate-all-props';
+import type { ValidationRule } from '../../lib/helpers-internal/validate-all-props';
+import { validateAllProps } from '../../lib/helpers-internal/validate-all-props';
 
 class TestConstruct extends Construct {
   constructor() {

@@ -591,7 +591,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -682,7 +682,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -773,7 +773,7 @@
     "ImageId": {
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -803,9 +803,10 @@
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "DataType": "aws:ec2:image",
-    "Name": "IntegTestAmi",
     "Type": "String",
-    "Value": "ami-06ca3ca175f37dd66"
+    "Value": {
+     "Ref": "LatestAl2023Ami"
+    }
    }
   },
   "ssmresolveinstanceInstanceSecurityGroupEACCDB27": {
@@ -890,7 +891,7 @@
       ]
      ]
     },
-    "InstanceType": "t3.nano",
+    "InstanceType": "t3.micro",
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -932,7 +933,7 @@
        ]
       ]
      },
-     "InstanceType": "t3.nano",
+     "InstanceType": "t3.micro",
      "TagSpecifications": [
       {
        "ResourceType": "instance",
@@ -1018,6 +1019,10 @@
   "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-6.1-x86_64"
+  },
+  "LatestAl2023Ami": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

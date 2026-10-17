@@ -7,7 +7,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 new sfn.StateMachine(stack, 'StateMachine', {
   comment: 'a super cool state machine',
-  definition: new sfn.Pass(stack, 'StartState'),
+  definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'StartState')),
   tracingEnabled: false,
 });
 

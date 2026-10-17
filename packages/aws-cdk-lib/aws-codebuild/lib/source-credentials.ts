@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSourceCredential } from './codebuild.generated';
-import { Resource, SecretValue } from '../../core';
+import type { SecretValue } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

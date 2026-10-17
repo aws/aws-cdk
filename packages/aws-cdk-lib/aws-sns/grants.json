@@ -1,0 +1,18 @@
+{
+  "resources": {
+    "Topic": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "publish": {
+          "actions": ["sns:Publish"],
+          "keyActions": ["kms:Decrypt", "kms:GenerateDataKey*"],
+          "docSummary": "Grant topic publishing permissions to the given identity"
+        },
+        "subscribe": {
+          "actions": ["sns:Subscribe"],
+          "docSummary": "Grant topic subscribing permissions to the given identity"
+        }
+      }
+    }
+  }
+}

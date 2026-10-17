@@ -140,6 +140,24 @@ describe('FunctionUrl', () => {
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 
+  test('throws when configured with multi-tenant function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    // WHEN
+    expect(() => {
+      new lambda.FunctionUrl(stack, 'FunctionUrl', {
+        function: fn,
+      });
+    }).toThrow(/FunctionUrl is not supported for functions with tenant isolation mode/);
+  });
+
   test('throws when CORS maxAge is greater than 86400 secs', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -160,7 +178,7 @@ describe('FunctionUrl', () => {
     }).toThrow(/FunctionUrl CORS maxAge should be less than or equal to 86400 secs/);
   });
 
-  test('grantInvokeUrl: adds appropriate permissions', () => {
+  test('DUAL AUTH: grantInvokeUrl: adds appropriate permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -193,8 +211,120 @@ describe('FunctionUrl', () => {
               ],
             },
           },
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyLambdaCCE802FB',
+                'Arn',
+              ],
+            },
+            Condition: {
+              Bool: {
+                'lambda:InvokedViaFunctionUrl': true,
+              },
+            },
+          },
         ],
       },
+    });
+  });
+
+  test('DUAL AUTH: auth type None should add approprate resource policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: fn,
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+      Principal: '*',
+      FunctionUrlAuthType: 'NONE',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+      Principal: '*',
+      InvokedViaFunctionUrl: true,
+    });
+  });
+
+  test('DUAL AUTH: auth type IAM with reference princial should add approprate resource policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    // WHEN
+    const fnurl = new lambda.FunctionUrl(stack, 'FunctionUrl', {
+      function: fn,
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    const testRole = iam.Role.fromRoleArn(stack, 'arn-test', 'arn:aws:iam::1234:role/Test', {
+      mutable: false,
+    });
+
+    fnurl.grantInvokeUrl(testRole);
+    fn.grantInvoke(testRole);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+      Principal: 'arn:aws:iam::1234:role/Test',
+      FunctionUrlAuthType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+      Principal: 'arn:aws:iam::1234:role/Test',
+      InvokedViaFunctionUrl: true,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': [
+          'MyLambdaCCE802FB',
+          'Arn',
+        ],
+      },
+      Principal: 'arn:aws:iam::1234:role/Test',
     });
   });
 
@@ -204,7 +334,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN
@@ -227,7 +357,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "SyntheticsGroupIntegTest/DefaultTest": {
+      "stacks": [
+        "synthetics-group"
+      ],
+      "assertionStack": "SyntheticsGroupIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsGroupIntegTestDefaultTestDeployAssertCCD825E7"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

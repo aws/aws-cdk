@@ -2,7 +2,7 @@ import { InputTransformation, Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Stack, Resource } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import type { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
 import { TestSource } from './test-classes';
 import { SageMakerTarget } from '../lib';
 
@@ -31,7 +31,7 @@ describe('SageMaker', () => {
 
     // ASSERT
     template.hasResourceProperties('AWS::Pipes::Pipe', {
-      Target: pipeline.pipelineName,
+      Target: pipeline.pipelineArn,
       TargetParameters: {},
     });
   });
@@ -120,7 +120,7 @@ class FakePipeline extends Resource implements IPipeline {
   public readonly pipelineName;
   constructor(scope: Stack, id: string, props: FakePipelineProps) {
     super(scope, id);
-    this.pipelineArn = props.pipelineName;
+    this.pipelineArn = `arn:aws:sagemaker:us-east-1:111111111111:pipeline/${props.pipelineName}`;
     this.pipelineName = props.pipelineName;
   }
 
@@ -130,5 +130,9 @@ class FakePipeline extends Resource implements IPipeline {
       actions: ['sagemaker:StartPipelineExecution'],
       resourceArns: [this.pipelineArn],
     });
+  }
+
+  public get pipelineRef(): PipelineReference {
+    return { pipelineName: this.pipelineName };
   }
 }

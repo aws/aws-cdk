@@ -6,8 +6,6 @@ import * as cdk from '../../core';
 import { Cluster, KubernetesManifest, KubernetesVersion, AuthenticationMode } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
 
-/* eslint-disable max-len */
-
 const CLUSTER_VERSION = KubernetesVersion.V1_16;
 
 describe('aws auth', () => {

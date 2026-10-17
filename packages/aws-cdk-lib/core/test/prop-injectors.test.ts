@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
+
+import type { Construct } from 'constructs';
 import { Annotations, Resource, Stack, Stage } from '../lib';
 import { App } from '../lib/app';
 import { propertyInjectable } from '../lib/prop-injectable';
-import { InjectionContext, IPropertyInjector, PropertyInjectors } from '../lib/prop-injectors';
+import type { InjectionContext, IPropertyInjector } from '../lib/prop-injectors';
+import { PropertyInjectors } from '../lib/prop-injectors';
 import { applyInjectors, findInjectorFromConstruct } from '../lib/prop-injectors-helpers';
 
 // Define Injectors for our testing
@@ -28,7 +30,7 @@ interface TestConstructProps {
 class TestConstruct extends Resource {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.core.TestConstruct';
 
-  constructor(scope: Construct, id: string, props: TestConstructProps = {}) {
+  constructor(scope: Construct, id: string, _props: TestConstructProps = {}) {
     super(scope, id);
   }
 }
@@ -37,7 +39,7 @@ class TestConstruct extends Resource {
 class TestConstruct2 extends Resource {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.core.TestConstruct2';
 
-  constructor(scope: Construct, id: string, props: TestConstructProps = {}) {
+  constructor(scope: Construct, id: string, _props: TestConstructProps = {}) {
     super(scope, id);
   }
 }
@@ -86,7 +88,7 @@ class ErrorPropsInjector implements IPropertyInjector {
     this.constructUniqueId = TestConstruct.PROPERTY_INJECTION_ID;
   }
 
-  inject(originalProps: any, context: InjectionContext): any {
+  inject(originalProps: any, _context: InjectionContext): any {
     if (originalProps.prop1 === 'veryBadValue') {
       throw new Error('prop1 has veryBadValue');
     }
@@ -388,7 +390,7 @@ describe('TestConstruct Injector', () => {
       ],
     });
     const stack = new Stack(app, 'MyStack', {});
-    const mock = jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
+    jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
 
     expect(() => {
       // WHEN
@@ -425,7 +427,7 @@ describe('Test Warning', () => {
       ],
     });
     const stack = new Stack(app, 'MyStack', {});
-    const mock = jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
+    jest.spyOn(Annotations.prototype, 'addWarningV2').mockImplementation();
 
     expect(() => {
       // WHEN

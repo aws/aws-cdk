@@ -50,7 +50,7 @@ beforeEach(() => {
 
 test('appsync supports merged API', () => {
   // WHEN
-  const mergedApi = new appsync.GraphqlApi(stack, 'merged-api', {
+  new appsync.GraphqlApi(stack, 'merged-api', {
     name: 'api',
     definition: appsync.Definition.fromSourceApis({
       sourceApis: [
@@ -72,7 +72,7 @@ test('appsync supports merged API', () => {
 
 test('appsync supports merged API - ARN identifier flag enabled', () => {
   // WHEN
-  const mergedApi = new appsync.GraphqlApi(stackWithFlag, 'merged-api', {
+  new appsync.GraphqlApi(stackWithFlag, 'merged-api', {
     name: 'api',
     definition: appsync.Definition.fromSourceApis({
       sourceApis: [

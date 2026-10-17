@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
+import type { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 
 /**
  * Properties for adding a set of certificates to a listener
@@ -10,7 +10,7 @@ export interface NetworkListenerCertificateProps {
   /**
    * The listener to attach the rule to
    */
-  readonly listener: INetworkListener;
+  readonly listener: elbv2.IListenerRef;
 
   /**
    * Certificates to attach
@@ -32,7 +32,7 @@ export class NetworkListenerCertificate extends Construct {
     ];
 
     new CfnListenerCertificate(this, 'Resource', {
-      listenerArn: props.listener.listenerArn,
+      listenerArn: props.listener.listenerRef.listenerArn,
       certificates,
     });
   }

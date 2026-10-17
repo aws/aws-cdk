@@ -1,29 +1,58 @@
 import { Construct } from 'constructs';
-import { ICachePolicy } from './cache-policy';
-import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
-import { FunctionAssociation } from './function';
-import { GeoRestriction } from './geo-restriction';
-import { IKeyGroup } from './key-group';
-import { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
-import { IOriginRequestPolicy } from './origin-request-policy';
+import { DistributionGrants } from './cloudfront-grants.generated';
+import type {
+  DistributionReference,
+  ICachePolicyRef,
+  IDistributionRef,
+  IKeyGroupRef,
+  IOriginRequestPolicyRef,
+  IRealtimeLogConfigRef,
+  IResponseHeadersPolicyRef,
+} from './cloudfront.generated';
+import {
+  CfnDistribution,
+  CfnMonitoringSubscription,
+} from './cloudfront.generated';
+import type { FunctionAssociation } from './function';
+import type { GeoRestriction } from './geo-restriction';
+import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import { IRealtimeLogConfig } from './realtime-log-config';
-import { IResponseHeadersPolicy } from './response-headers-policy';
-import * as acm from '../../aws-certificatemanager';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as iam from '../../aws-iam';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags, Annotations, ValidationError } from '../../core';
+import type {
+  Duration,
+  IResource,
+} from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  FeatureFlags,
+  Lazy,
+  Names,
+  Resource,
+  Stack,
+  Token,
+  ValidationError,
+} from '../../core';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import {
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021,
+  CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS,
+} from '../../cx-api';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface for CloudFront distributions
  */
-export interface IDistribution extends IResource {
+export interface IDistribution extends IResource, IDistributionRef {
   /**
    * The domain name of the Distribution, such as d111111abcdef8.cloudfront.net.
    *
@@ -115,7 +144,7 @@ export interface DistributionProps {
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: acm.ICertificate;
+  readonly certificate?: ICertificateRef;
 
   /**
    * Any comments you want to include about the distribution.
@@ -179,9 +208,10 @@ export interface DistributionProps {
   readonly geoRestriction?: GeoRestriction;
 
   /**
-   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   * The HTTP version(s) to enable on the distribution.
    *
-   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support Server Name Indication (SNI).
+   * For viewers and CloudFront to use HTTP/3, viewers must support TLS 1.3 and Server Name Indication (SNI).
    *
    * @default HttpVersion.HTTP2
    */
@@ -283,6 +313,7 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Distribution extends Resource implements IDistribution {
   /**
    * Uniquely identifies this class.
@@ -297,6 +328,9 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionRef = {
+        distributionId: attrs.distributionId,
+      };
 
       constructor() {
         super(scope, id);
@@ -308,11 +342,22 @@ export class Distribution extends Resource implements IDistribution {
       public get distributionArn(): string {
         return formatDistributionArn(this);
       }
+
+      /**
+       * [disable-awslint:no-grants]
+       */
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
         return grant(this, grantee, ...actions);
       }
+
+      /**
+       *
+       * The use of this method is discouraged. Please use `grants.createInvalidation()` instead.
+       *
+       * [disable-awslint:no-grants]
+       */
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, 'cloudfront:CreateInvalidation');
+        return DistributionGrants.fromDistribution(this).createInvalidation(grantee);
       }
     }();
   }
@@ -320,17 +365,23 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly distributionRef: DistributionReference;
+
+  /**
+   * Collection of grant methods for a Distribution
+   */
+  public readonly grants = DistributionGrants.fromDistribution(this);
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
-  private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly boundOrigins: BoundOrigin[] = [];
-  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
+  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
+  private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
+  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: acm.ICertificate;
+  private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
-  private webAclId?: string;
+  private readonly _webAclId: IBox<string | undefined>;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -338,9 +389,9 @@ export class Distribution extends Resource implements IDistribution {
     addConstructMetadata(this, props);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new ValidationError(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
+        throw new ValidationError(lit`DistributionCertificateMustBeInUsEast1`, `Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
 
       if ((props.domainNames ?? []).length === 0) {
@@ -348,20 +399,38 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    if (props.minimumProtocolVersion && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:minimumProtocolVersionWithoutCertificate',
+        "Ignoring 'minimumProtocolVersion': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, whose security policy is fixed at TLSv1.",
+      );
+    }
+
+    if (props.sslSupportMethod && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:sslSupportMethodWithoutCertificate',
+        "Ignoring 'sslSupportMethod': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, which is served to all viewers.",
+      );
+    }
+
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
-    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
+    this.defaultBehavior = new CacheBehavior(originId, {
+      pathPattern: '*',
+      ...props.defaultBehavior,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy),
+    });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
       });
     }
 
+    this._webAclId = Box.fromValue(props.webAclId);
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
-      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -377,11 +446,15 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.any({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        origins: this.renderOrigins(),
+        originGroups: this.originGroups.derive(og =>
+          og.length === 0 ? undefined : { items: og, quantity: og.length },
+        ),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: this.additionalBehaviors.derive(ab =>
+          ab.length === 0 ? undefined : ab.map(b => b._renderBehavior()),
+        ),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -392,10 +465,12 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+        webAclId: Token.asString(this._webAclId),
       },
     });
 
+    this.distributionRef = distribution.distributionRef;
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
@@ -502,7 +577,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`OriginLatencyMetricRequiresPublishAdditionalMetrics`, 'Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('OriginLatency', props);
   }
@@ -519,7 +594,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`CacheHitRateMetricRequiresPublishAdditionalMetrics`, 'Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('CacheHitRate', props);
   }
@@ -534,7 +609,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('401ErrorRate', props);
   }
@@ -549,7 +624,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('403ErrorRate', props);
   }
@@ -564,7 +639,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('404ErrorRate', props);
   }
@@ -579,7 +654,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('502ErrorRate', props);
   }
@@ -594,7 +669,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('503ErrorRate', props);
   }
@@ -609,7 +684,7 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new ValidationError('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
+      throw new ValidationError(lit`ErrorRateMetricRequiresPublishAdditionalMetrics`, '504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'', this);
     }
     return this.metric('504ErrorRate', props);
   }
@@ -624,16 +699,21 @@ export class Distribution extends Resource implements IDistribution {
   @MethodMetadata()
   public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
     if (pathPattern === '*') {
-      throw new ValidationError('Only the default behavior can have a path pattern of \'*\'', this);
+      throw new ValidationError(lit`DefaultBehaviorCannotHavePathPattern`, 'Only the default behavior can have a path pattern of \'*\'', this);
     }
     this.validateGrpc(behaviorOptions);
     const originId = this.addOrigin(origin);
-    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+    this.additionalBehaviors.push(new CacheBehavior(originId, {
+      pathPattern,
+      ...behaviorOptions,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy),
+    }));
   }
 
   /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @param actions The set of actions to allow (i.e. "cloudfront:ListInvalidations")
@@ -645,12 +725,13 @@ export class Distribution extends Resource implements IDistribution {
 
   /**
    * Grant to create invalidations for this bucket to an IAM principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
   @MethodMetadata()
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity, 'cloudfront:CreateInvalidation');
+    return this.grants.createInvalidation(identity);
   }
 
   /**
@@ -662,11 +743,11 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public attachWebAclId(webAclId: string) {
-    if (this.webAclId) {
-      throw new ValidationError('A WebACL has already been attached to this distribution', this);
+    if (this._webAclId.get()) {
+      throw new ValidationError(lit`WebAclAlreadyAttachedToDistribution`, 'A WebACL has already been attached to this distribution', this);
     }
     this.validateWebAclId(webAclId);
-    this.webAclId = webAclId;
+    this._webAclId.set(webAclId);
   }
 
   private validateWebAclId(webAclId: string) {
@@ -677,7 +758,7 @@ export class Distribution extends Resource implements IDistribution {
     if (webAclId.startsWith('arn:')) {
       const webAclRegion = Stack.of(this).splitArn(webAclId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(webAclRegion) && webAclRegion !== 'us-east-1') {
-        throw new ValidationError(`WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`, this);
+        throw new ValidationError(lit`WebAclMustBeInUsEast1ForCloudFront`, `WebACL for CloudFront distributions must be created in the us-east-1 region; received ${webAclRegion}`, this);
       }
     }
   }
@@ -697,13 +778,13 @@ export class Distribution extends Resource implements IDistribution {
       const originId = originBindConfig.originProperty?.id ?? generatedId;
       const duplicateId = this.boundOrigins.find(boundOrigin => boundOrigin.originProperty?.id === originBindConfig.originProperty?.id);
       if (duplicateId) {
-        throw new ValidationError(`Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`, this);
+        throw new ValidationError(lit`OriginIdAlreadyExists`, `Origin with id ${duplicateId.originProperty?.id} already exists. OriginIds must be unique within a distribution`, this);
       }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
-          throw new ValidationError('An Origin cannot use an Origin with its own failover configuration as its fallback origin!', this);
+          throw new ValidationError(lit`OriginCannotUseOriginWithFailoverAsFailover`, 'An Origin cannot use an Origin with its own failover configuration as its fallback origin!', this);
         }
         const groupIndex = this.originGroups.length + 1;
         const originGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
@@ -732,7 +813,7 @@ export class Distribution extends Resource implements IDistribution {
   ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
-      throw new ValidationError('fallbackStatusCodes cannot be empty', this);
+      throw new ValidationError(lit`FallbackStatusCodesCannotBeEmpty`, 'fallbackStatusCodes cannot be empty', this);
     }
     this.originGroups.push({
       failoverCriteria: {
@@ -753,28 +834,12 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private renderOrigins(): CfnDistribution.OriginProperty[] {
-    const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
-      if (boundOrigin.originProperty) {
-        renderedOrigins.push(boundOrigin.originProperty);
-      }
-    });
-    return renderedOrigins;
-  }
-
-  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
-    return this.originGroups.length === 0
-      ? undefined
-      : {
-        items: this.originGroups,
-        quantity: this.originGroups.length,
-      };
-  }
-
-  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+  private renderOrigins(): IReadableBox<Array<CfnDistribution.OriginProperty>> {
+    return this.boundOrigins
+      .map(origin => origin.originProperty)
+      .derive(origins => origins.filter(Boolean))
+      // only defined values remaining
+      .derive(origins => origins as CfnDistribution.OriginProperty[]);
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
@@ -782,7 +847,7 @@ export class Distribution extends Resource implements IDistribution {
 
     return this.errorResponses.map(errorConfig => {
       if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
-        throw new ValidationError('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.', this);
+        throw new ValidationError(lit`CustomErrorResponseRequiresAtLeastOneProperty`, 'A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.', this);
       }
 
       return {
@@ -799,7 +864,7 @@ export class Distribution extends Resource implements IDistribution {
   private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
     if (!props.enableLogging && !props.logBucket) { return undefined; }
     if (props.enableLogging === false && props.logBucket) {
-      throw new ValidationError('Explicitly disabled logging but provided a logging bucket.', this);
+      throw new ValidationError(lit`ExplicitlyDisabledLoggingButProvidedBucket`, 'Explicitly disabled logging but provided a logging bucket.', this);
     }
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
@@ -823,7 +888,7 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate,
+  private renderViewerCertificate(certificate: ICertificateRef,
     minimumProtocolVersionProp?: SecurityPolicyProtocol, sslSupportMethodProp?: SSLMethod): CfnDistribution.ViewerCertificateProperty {
     const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
       ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
@@ -831,10 +896,16 @@ export class Distribution extends Resource implements IDistribution {
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
-      acmCertificateArn: certificate.certificateArn,
+      acmCertificateArn: certificate.certificateRef.certificateArn,
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
+  }
+
+  private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
+    const defaultPolicy = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
+      ? ViewerProtocolPolicy.REDIRECT_TO_HTTPS : ViewerProtocolPolicy.ALLOW_ALL;
+    return viewerProtocolPolicyProp ?? defaultPolicy;
   }
 
   private validateGrpc(behaviorOptions: AddBehaviorOptions) {
@@ -843,20 +914,26 @@ export class Distribution extends Resource implements IDistribution {
     }
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
-      throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+      throw new ValidationError(lit`HttpVersionMustSupportHttp2ForGrpc`, `'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
     }
   }
 }
 
-/** Maximum HTTP version to support */
+/**
+ * The HTTP version(s) to enable on the distribution.
+ *
+ * Note: Setting `HTTP3` enables HTTP 3 only (not HTTP 2). To support both HTTP 2 and HTTP 3, use `HTTP2_AND_3`.
+ *
+ * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdateDistribution.html#cloudfront-UpdateDistribution-request-HttpVersion
+ */
 export enum HttpVersion {
-  /** HTTP 1.1 */
+  /** HTTP 1.1 only */
   HTTP1_1 = 'http1.1',
-  /** HTTP 2 */
+  /** HTTP 2 only */
   HTTP2 = 'http2',
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
-  /** HTTP 3 */
+  /** HTTP 3 only (does not include HTTP 2) */
   HTTP3 = 'http3',
 }
 
@@ -867,7 +944,7 @@ export enum HttpVersion {
 export enum PriceClass {
   /** USA, Canada, Europe, & Israel */
   PRICE_CLASS_100 = 'PriceClass_100',
-  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
+  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, Philippines, India, Indonesia, Thailand, Malaysia, Vietnam, Nigeria, Egypt, & Türkiye */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
@@ -931,6 +1008,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
   TLS_V1_2_2021 = 'TLSv1.2_2021',
+  TLS_V1_2_2025 = 'TLSv1.2_2025',
+  TLS_V1_3_2025 = 'TLSv1.3_2025',
 }
 
 /**
@@ -1073,7 +1152,7 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    * @default CachePolicy.CACHING_OPTIMIZED
    */
-  readonly cachePolicy?: ICachePolicy;
+  readonly cachePolicy?: ICachePolicyRef;
 
   /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
@@ -1090,21 +1169,21 @@ export interface AddBehaviorOptions {
    *
    * @default - none
    */
-  readonly originRequestPolicy?: IOriginRequestPolicy;
+  readonly originRequestPolicy?: IOriginRequestPolicyRef;
 
   /**
    * The real-time log configuration to be attached to this cache behavior.
    *
    * @default - none
    */
-  readonly realtimeLogConfig?: IRealtimeLogConfig;
+  readonly realtimeLogConfig?: IRealtimeLogConfigRef;
 
   /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
    *
    * @default - none
    */
-  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
+  readonly responseHeadersPolicy?: IResponseHeadersPolicyRef;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
@@ -1116,7 +1195,9 @@ export interface AddBehaviorOptions {
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default ViewerProtocolPolicy.ALLOW_ALL
+   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if the
+   * `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag is enabled,
+   * otherwise ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
@@ -1141,7 +1222,7 @@ export interface AddBehaviorOptions {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroup[];
+  readonly trustedKeyGroups?: IKeyGroupRef[];
 
   /**
    * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.

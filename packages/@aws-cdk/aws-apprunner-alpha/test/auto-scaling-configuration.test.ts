@@ -1,5 +1,5 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AutoScalingConfiguration } from '../lib';
 
 let stack: cdk.Stack;

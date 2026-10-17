@@ -20,6 +20,9 @@ describe('OidcProvider resource', () => {
     expect(stack.resolve(provider.oidcProviderArn)).toStrictEqual({
       Ref: 'MyProvider730BA1C8',
     });
+    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual({
+      Ref: 'MyProvider730BA1C8',
+    });
   });
 
   test('static fromOidcProviderArn can be used to import a provider', () => {
@@ -35,6 +38,9 @@ describe('OidcProvider resource', () => {
 
     // THEN
     expect(stack.resolve(provider.oidcProviderArn)).toStrictEqual(
+      arnOfProvider,
+    );
+    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual(
       arnOfProvider,
     );
   });
@@ -77,6 +83,12 @@ describe('OIDC issuer', () => {
         { 'Fn::Split': [':oidc-provider/', { Ref: 'MyProvider730BA1C8' }] },
       ],
     });
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual({
+      'Fn::Select': [
+        1,
+        { 'Fn::Split': [':oidc-provider/', { Ref: 'MyProvider730BA1C8' }] },
+      ],
+    });
   });
 
   test('extract issuer properly in a literal imported provider', () => {
@@ -94,6 +106,9 @@ describe('OIDC issuer', () => {
     expect(stack.resolve(provider.oidcProviderIssuer)).toStrictEqual(
       'oidc.eks.us-east-1.amazonaws.com/id/someid',
     );
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual(
+      'oidc.eks.us-east-1.amazonaws.com/id/someid',
+    );
   });
 
   test('extract issuer properly in a Token imported provider', () => {
@@ -109,6 +124,9 @@ describe('OIDC issuer', () => {
 
     // THEN
     expect(stack.resolve(provider.oidcProviderIssuer)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'ARN' }] }],
+    });
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual({
       'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'ARN' }] }],
     });
   });

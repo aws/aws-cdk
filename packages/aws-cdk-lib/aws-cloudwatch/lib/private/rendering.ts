@@ -3,7 +3,8 @@ import { accountIfDifferentFromStack, regionIfDifferentFromStack } from './env-t
 import { dispatchMetric, metricKey } from './metric-util';
 import { dropUndefined } from './object';
 import { UnscopedValidationError } from '../../../core';
-import { IMetric } from '../metric-types';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IMetric, MetricExpressionConfig } from '../metric-types';
 
 /**
  * Return the JSON structure which represents these metrics in a graph.
@@ -28,6 +29,20 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   // Render all metrics from the set.
   return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
+
+// The options for both search expression and math expression are same. Thus, can be handled by a common function.
+const applyExpressionOptions = (options: any, exprConfig: MetricExpressionConfig) => {
+  options.expression = exprConfig.expression;
+  if (exprConfig.searchAccount) {
+    options.accountId = accountIfDifferentFromStack(exprConfig.searchAccount);
+  }
+  if (exprConfig.searchRegion) {
+    options.region = regionIfDifferentFromStack(exprConfig.searchRegion);
+  }
+  if (exprConfig.period && exprConfig.period !== 300) {
+    options.period = exprConfig.period;
+  }
+};
 
 function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
@@ -62,11 +77,11 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },
 
-    withExpression(expr) {
-      options.expression = expr.expression;
-      if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
-      if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
-      if (expr.period && expr.period !== 300) { options.period = expr.period; }
+    withMathExpression(mathExpr) {
+      applyExpressionOptions(options, mathExpr);
+    },
+    withSearchExpression(searchExpr) {
+      applyExpressionOptions(options, searchExpr);
     },
   });
 
@@ -168,7 +183,7 @@ export class MetricSet<A> {
     if (id) {
       existingEntry = this.metricById.get(id);
       if (existingEntry && metricKey(existingEntry.metric) !== key) {
-        throw new UnscopedValidationError(`Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
+        throw new UnscopedValidationError(lit`CannotShareSameIdForDifferentMetrics`, `Cannot have two different metrics share the same id ('${id}') in one Alarm or Graph. Rename one of them.`);
       }
     }
 

@@ -1,0 +1,13 @@
+{
+  "version": "44.0.0",
+  "testCases": {
+    "SyntheticsCanaryResourcesToReplicateTags/DefaultTest": {
+      "stacks": [
+        "SyntheticsCanaryResourcesToReplicateTagsStack"
+      ],
+      "assertionStack": "SyntheticsCanaryResourcesToReplicateTags/DefaultTest/DeployAssert",
+      "assertionStackName": "SyntheticsCanaryResourcesToReplicateTagsDefaultTestDeployAssertF883002A"
+    }
+  },
+  "minimumCliVersion": "2.1018.0"
+}

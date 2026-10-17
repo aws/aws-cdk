@@ -29,6 +29,15 @@
   "redirectRedirectBucketAA44E2FE": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
      "BlockPublicPolicy": true,
@@ -45,7 +54,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "redirectRedirectDistributionCFDistribution1A4C48E3": {
+  "redirectRedirectDistribution5423F951": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
     "DistributionConfig": {
@@ -54,22 +63,9 @@
      ],
      "Comment": "Redirect to aws.amazon.com from integ-same-region.example.com",
      "DefaultCacheBehavior": {
-      "AllowedMethods": [
-       "GET",
-       "HEAD"
-      ],
-      "CachedMethods": [
-       "GET",
-       "HEAD"
-      ],
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "ForwardedValues": {
-       "Cookies": {
-        "Forward": "none"
-       },
-       "QueryString": false
-      },
-      "TargetOriginId": "origin1",
+      "TargetOriginId": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4",
       "ViewerProtocolPolicy": "redirect-to-https"
      },
      "DefaultRootObject": "",
@@ -78,14 +74,8 @@
      "IPV6Enabled": true,
      "Origins": [
       {
-       "ConnectionAttempts": 3,
-       "ConnectionTimeout": 10,
        "CustomOriginConfig": {
-        "HTTPPort": 80,
-        "HTTPSPort": 443,
-        "OriginKeepaliveTimeout": 5,
         "OriginProtocolPolicy": "http-only",
-        "OriginReadTimeout": 30,
         "OriginSSLProtocols": [
          "TLSv1.2"
         ]
@@ -106,7 +96,7 @@
          }
         ]
        },
-       "Id": "origin1"
+       "Id": "integhttpsredirectsameregionredirectRedirectDistributionOrigin1609D30F4"
       }
      ],
      "PriceClass": "PriceClass_All",
@@ -114,6 +104,7 @@
       "AcmCertificateArn": {
        "Ref": "redirectRedirectCertificateD6C59F7F"
       },
+      "MinimumProtocolVersion": "TLSv1.2_2021",
       "SslSupportMethod": "sni-only"
      }
     }
@@ -122,12 +113,10 @@
   "redirectRedirectAliasRecorde7728a9F2A656C": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ-same-region.example.com.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "redirectRedirectDistribution5423F951",
        "DomainName"
       ]
      },
@@ -141,18 +130,18 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ-same-region.example.com.",
+    "Type": "A"
    }
   },
   "redirectRedirectAliasRecordSixe7728a9391F03E": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ-same-region.example.com.",
-    "Type": "AAAA",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
-       "redirectRedirectDistributionCFDistribution1A4C48E3",
+       "redirectRedirectDistribution5423F951",
        "DomainName"
       ]
      },
@@ -166,7 +155,9 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "integ-same-region.example.com.",
+    "Type": "AAAA"
    }
   }
  },

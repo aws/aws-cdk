@@ -1,5 +1,6 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { Attribute, AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import type { Attribute } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // CDK parameters
@@ -24,12 +25,16 @@ const table = new Table(stack, TABLE, {
 });
 
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: true,
+  contributorInsightsSpecification: {
+    enabled: true,
+  },
   indexName: GSI_TEST_CASE_1,
   partitionKey: GSI_PARTITION_KEY,
 });
 table.addGlobalSecondaryIndex({
-  contributorInsightsEnabled: false,
+  contributorInsightsSpecification: {
+    enabled: false,
+  },
   indexName: GSI_TEST_CASE_2,
   partitionKey: GSI_PARTITION_KEY,
 });

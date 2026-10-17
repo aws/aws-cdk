@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import * as codepipeline from '../../../aws-codepipeline';
-import * as events from '../../../aws-events';
-import { CodeStarConnectionsSourceAction, CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
+import type { Construct } from 'constructs';
+import type * as codepipeline from '../../../aws-codepipeline';
+import type * as events from '../../../aws-events';
+import type { CodeStarConnectionsSourceActionProps } from '../codestar-connections/source-action';
+import { CodeStarConnectionsSourceAction } from '../codestar-connections/source-action';
 
 /**
  * Construction properties for `BitBucketSourceAction`.

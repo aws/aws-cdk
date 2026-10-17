@@ -1,6 +1,7 @@
 import { Match } from './match';
 import { Matcher } from './matcher';
-import { Stack, Stage } from '../../core';
+import type { Stack } from '../../core';
+import { Stage } from '../../core';
 import { AssertionError } from './private/error';
 
 type ManifestTags = { [key: string]: string };

@@ -1,4 +1,3 @@
-import { UnscopedValidationError } from '../../core';
 import {
   CidrBlock,
   InvalidCidrRangeError,
@@ -41,10 +40,10 @@ describe('network utils', () => {
     });
   });
   describe('CidrBlock', () => {
-    test('throws on misaligned offset IP (numeric form)', () => {
+    test('should return the next valid subnet from offset IP', () => {
       const num = NetworkUtils.ipToNum('10.0.1.255');
-      expect(() => new CidrBlock(num, 24))
-        .toThrow(UnscopedValidationError);
+      const newBlock = new CidrBlock(num, 24);
+      expect(newBlock.cidr).toEqual('10.0.2.0/24');
     });
     test('nextBlock() returns the next higher CIDR space', () => {
       const testValues = [
@@ -56,13 +55,15 @@ describe('network utils', () => {
         expect(block.nextBlock().cidr).toEqual(value[1]);
       }
     });
-    test('maxIp() should return the last usable IP from an aligned CidrBlock', () => {
+    test('maxIp() should return the last usable IP from the CidrBlock', () => {
       const testValues = [
         ['10.0.3.0/28', '10.0.3.15'],
+        ['10.0.3.1/28', '10.0.3.31'],
+        ['10.0.2.254/28', '10.0.3.15'],
       ];
-      for (const [cidr, expected] of testValues) {
-        const block = new CidrBlock(cidr);
-        expect(block.maxIp()).toEqual(expected);
+      for (const value of testValues) {
+        const block = new CidrBlock(value[0]);
+        expect(block.maxIp()).toEqual(value[1]);
       }
     });
     test('minIp() should return the first usable IP from the CidrBlock', () => {
@@ -88,29 +89,6 @@ describe('network utils', () => {
     test('calculateNetmask returns the ip string mask', () => {
       const netmask = CidrBlock.calculateNetmask(27);
       expect(netmask).toEqual('255.255.255.224');
-    });
-  });
-  describe('CidrBlock alignment validation', () => {
-    it('throws when you give a misaligned CIDR (string form)', () => {
-      expect(() => new CidrBlock('10.0.40.1/19'))
-        .toThrow(UnscopedValidationError);
-    });
-
-    it('throws when you give a misaligned CIDR (numeric form)', () => {
-      const num = NetworkUtils.ipToNum('10.0.40.0');
-      expect(() => new CidrBlock(num, 19))
-        .toThrow(UnscopedValidationError);
-    });
-
-    it('accepts a correctly aligned CIDR (string form)', () => {
-      expect(new CidrBlock('10.0.32.0/19').cidr)
-        .toBe('10.0.32.0/19');
-    });
-
-    it('accepts a correctly aligned CIDR (numeric form)', () => {
-      const num = NetworkUtils.ipToNum('10.0.32.0');
-      const block = new CidrBlock(num, 19);
-      expect(block.cidr).toBe('10.0.32.0/19');
     });
   });
   describe('NetworkBuilder', () => {
@@ -189,6 +167,22 @@ describe('network utils', () => {
       builder5.addSubnets(26, 3);
       builder5.addSubnets(27, 3);
       expect(18).toEqual(builder5.maskForRemainingSubnets(3));
+    });
+  });
+  describe('CIDR overlap validation', () => {
+    test('validateCidrPairOverlap detects overlapping CIDR blocks', () => {
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.0.0/24', '10.0.0.128/25')).toBe(true);
+      expect(NetworkUtils.validateCidrPairOverlap('10.0.0.0/16', '10.0.1.0/24')).toBe(true);
+      expect(NetworkUtils.validateCidrPairOverlap('192.168.1.0/24', '192.168.2.0/24')).toBe(false);
+    });
+    test('validateCidrBlocksOverlap detects overlaps in arrays', () => {
+      const [hasOverlap, cidr1, cidr2] = NetworkUtils.validateCidrBlocksOverlap(
+        ['10.0.0.0/24', '10.0.1.0/24'],
+        ['10.0.0.128/25', '10.0.2.0/24'],
+      );
+      expect(hasOverlap).toBe(true);
+      expect(cidr1).toBe('10.0.0.0/24');
+      expect(cidr2).toBe('10.0.0.128/25');
     });
   });
 });

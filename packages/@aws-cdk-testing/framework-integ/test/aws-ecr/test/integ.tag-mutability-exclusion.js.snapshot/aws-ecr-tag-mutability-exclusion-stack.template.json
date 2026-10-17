@@ -1,0 +1,76 @@
+{
+ "Resources": {
+  "ImmutableRepoWithExclusions905B5191": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true,
+    "ImageTagMutability": "IMMUTABLE_WITH_EXCLUSION",
+    "ImageTagMutabilityExclusionFilters": [
+     {
+      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
+      "ImageTagMutabilityExclusionFilterValue": "dev-*"
+     },
+     {
+      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
+      "ImageTagMutabilityExclusionFilterValue": "test-*"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MutableRepoWithExclusions16D45AB8": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true,
+    "ImageTagMutability": "MUTABLE_WITH_EXCLUSION",
+    "ImageTagMutabilityExclusionFilters": [
+     {
+      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
+      "ImageTagMutabilityExclusionFilterValue": "prod-*"
+     },
+     {
+      "ImageTagMutabilityExclusionFilterType": "WILDCARD",
+      "ImageTagMutabilityExclusionFilterValue": "release-v*"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

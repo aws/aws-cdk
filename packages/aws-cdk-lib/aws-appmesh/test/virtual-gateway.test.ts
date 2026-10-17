@@ -3,6 +3,7 @@ import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as appmesh from '../lib';
+import { VirtualGatewayGrants } from '../lib/appmesh-grants.generated';
 
 describe('virtual gateway', () => {
   describe('When creating a VirtualGateway', () => {
@@ -946,6 +947,37 @@ describe('virtual gateway', () => {
             Resource: {
               Ref: 'testGatewayF09EC349',
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Can grant an identity StreamAggregatedResources for a given CfnVirtualGateway', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.CfnVirtualGateway(stack, 'testGateway', {
+      meshName: mesh.meshName,
+      spec: {
+        listeners: [],
+      },
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    VirtualGatewayGrants.fromVirtualGateway(gateway).streamAggregatedResources(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
+            Effect: 'Allow',
+            Resource: { Ref: 'testGateway' },
           },
         ],
       },

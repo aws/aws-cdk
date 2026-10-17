@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "4301d59c38b42bc3aaa1fc617b587fa5ac2a48d5684074c10a3e85940ec46bdf": {
+      "displayName": "aws-cdk-mediapackagev2-cmaf-cenc Template",
+      "source": {
+        "path": "aws-cdk-mediapackagev2-cmaf-cenc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-402da507": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4301d59c38b42bc3aaa1fc617b587fa5ac2a48d5684074c10a3e85940ec46bdf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -14,7 +14,6 @@
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-        "BucketName": "cdk-integ-cfn-include-bucket2",
         "Tags": [
           {
             "Fn::If": [

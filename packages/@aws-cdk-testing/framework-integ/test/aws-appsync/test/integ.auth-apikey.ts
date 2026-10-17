@@ -23,7 +23,9 @@ const stack = new Stack(app, 'aws-appsync-integ');
 
 const api = new GraphqlApi(stack, 'Api', {
   name: 'Integ_Test_APIKey',
-  schema: SchemaFile.fromAsset(join(__dirname, 'appsync.auth.graphql')),
+  definition: {
+    schema: SchemaFile.fromAsset(join(__dirname, 'appsync.auth.graphql')),
+  },
   authorizationConfig: {
     defaultAuthorization: {
       authorizationType: AuthorizationType.API_KEY,

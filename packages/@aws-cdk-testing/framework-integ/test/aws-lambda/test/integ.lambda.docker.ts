@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
-import { DockerImageCode, DockerImageFunction, Function } from 'aws-cdk-lib/aws-lambda';
+import type { Function } from 'aws-cdk-lib/aws-lambda';
+import { DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
 
 class TestStack extends Stack {
   public fn: Function;

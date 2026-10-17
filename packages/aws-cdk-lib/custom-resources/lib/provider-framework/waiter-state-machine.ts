@@ -1,9 +1,12 @@
 import { Construct } from 'constructs';
-import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
-import { ILogGroup, LogGroup } from '../../../aws-logs';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
+import type { IFunction } from '../../../aws-lambda';
+import type { ILogGroupRef } from '../../../aws-logs';
+import { LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import type { Duration } from '../../../core';
+import { Stack } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**
@@ -15,7 +18,7 @@ export interface LogOptions {
    *
    * @default - a new log group will be created
    */
-  readonly destination?: ILogGroup;
+  readonly destination?: ILogGroupRef;
 
   /**
    * Determines whether execution data is included in your log.
@@ -145,6 +148,8 @@ export class WaiterStateMachine extends Construct {
 
   /**
    * Grant the given identity permissions on StartExecution of the state machine.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: IGrantable) {
     return Grant.addToPrincipal({
@@ -198,7 +203,7 @@ export class WaiterStateMachine extends Construct {
     return {
       destinations: [{
         cloudWatchLogsLogGroup: {
-          logGroupArn: logGroup.logGroupArn,
+          logGroupArn: logGroup.logGroupRef.logGroupArn,
         },
       }],
       includeExecutionData: logOptions?.includeExecutionData ?? false,

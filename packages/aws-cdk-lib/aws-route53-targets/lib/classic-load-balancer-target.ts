@@ -1,6 +1,6 @@
-import { IAliasRecordTargetProps } from './shared';
-import * as elb from '../../aws-elasticloadbalancing';
-import * as route53 from '../../aws-route53';
+import type { IAliasRecordTargetProps } from './shared';
+import type * as elb from '../../aws-elasticloadbalancing';
+import type * as route53 from '../../aws-route53';
 
 /**
  * Use a classic ELB as an alias record target

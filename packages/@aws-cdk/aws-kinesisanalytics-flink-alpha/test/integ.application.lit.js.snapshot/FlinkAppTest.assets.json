@@ -1,28 +1,30 @@
 {
-  "version": "36.0.5",
+  "version": "53.0.0",
   "files": {
     "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577": {
+      "displayName": "App-FLINK-1_15/Code",
       "source": {
         "path": "asset.8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-0e0f98fa": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "539ea479a53381b85109d0220f8067dd583db122c2272078f2e00d541ee3738d": {
+    "ecc30790c5e7d1f33e2b32cb36a8b226ac2b53c69bf304fea3c13f5784af1b87": {
+      "displayName": "FlinkAppTest Template",
       "source": {
         "path": "FlinkAppTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-15d6118f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "539ea479a53381b85109d0220f8067dd583db122c2272078f2e00d541ee3738d.json",
+          "objectKey": "ecc30790c5e7d1f33e2b32cb36a8b226ac2b53c69bf304fea3c13f5784af1b87.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "albFargateServiceSmartDefaultsTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fg-smart-defaults"
+      ],
+      "assertionStack": "albFargateServiceSmartDefaultsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "albFargateServiceSmartDefaultsTestDefaultTestDeployAssert0E39EDDC"
+    }
+  },
+  "minimumCliVersion": "2.1025.0"
+}

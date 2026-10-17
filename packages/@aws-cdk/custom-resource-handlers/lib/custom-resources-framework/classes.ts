@@ -1,30 +1,32 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import type {
+  PropertySpec,
+  InterfaceSpec,
+  Expression,
+  ClassSpec,
+  Statement,
+} from '@cdklabs/typewriter';
 import {
   ClassType,
   stmt,
   expr,
   Type,
   Splat,
-  PropertySpec,
-  InterfaceSpec,
   InterfaceType,
   ObjectLiteral,
   MemberVisibility,
   SuperInitializer,
-  Expression,
-  ClassSpec,
   $T,
-  Statement,
 } from '@cdklabs/typewriter';
+import type { Runtime } from './config';
 import {
   CUSTOM_RESOURCE_PROVIDER,
   CUSTOM_RESOURCE_RUNTIME_FAMILY,
   CUSTOM_RESOURCE_SINGLETON,
   CUSTOM_RESOURCE_SINGLETON_LOG_GROUP,
   CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION,
-  Runtime,
 } from './config';
-import { HandlerFrameworkModule } from './framework';
+import type { HandlerFrameworkModule } from './framework';
 import {
   PATH_MODULE,
   CONSTRUCTS_MODULE,
@@ -59,11 +61,11 @@ interface ConstructorBuildProps {
   readonly optionalConstructorProps?: boolean;
 
   /**
-   * Visbility for the constructor.
+   * Visibility for the constructor.
    *
-   * @default MemberVisbility.Public
+   * @default MemberVisibility.Public
    */
-  readonly constructorVisbility?: MemberVisibility;
+  readonly constructorVisibility?: MemberVisibility;
 
   /**
    * These statements are added to the constructor body in the order they appear in this property.
@@ -98,6 +100,22 @@ export interface HandlerFrameworkClassProps {
    * @default - the latest Lambda runtime available in the region.
    */
   readonly runtime?: Runtime;
+
+  /**
+   * Visibility for the constructor.
+   *
+   * @default MemberVisibility.Public
+   */
+  readonly constructorVisibility?: MemberVisibility;
+
+  /**
+   * Deterministic content hash of the bundled handler code. When supplied,
+   * the generated class emits this hash as the asset hash so the S3 object
+   * key for the Lambda code remains stable unless the code actually changes.
+   *
+   * @default - asset hash is computed at synth time from the bundled directory
+   */
+  readonly sourceHash?: string;
 }
 
 interface BuildRuntimePropertyOptions {
@@ -125,22 +143,26 @@ export abstract class HandlerFrameworkClass extends ClassType {
           scope.registerImport(LAMBDA_MODULE);
         }
 
+        const fromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          fromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...fromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
         const metadataStatements: Statement[] = [
-          expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+          stmt.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
         ];
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
           superProps,
           optionalConstructorProps: true,
-          constructorVisbility: MemberVisibility.Public,
+          constructorVisibility: MemberVisibility.Public,
           statements: metadataStatements,
         });
       }
@@ -217,25 +239,29 @@ export abstract class HandlerFrameworkClass extends ClassType {
           },
         });
 
+        const singletonFromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          singletonFromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...singletonFromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
         const metadataStatements: Statement[] = [
-          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
-          expr.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
-          expr.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
+          stmt.directCode(`this.addMetadata('${CUSTOM_RESOURCE_SINGLETON}', true)`),
+          stmt.directCode(`this.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
+          stmt.directCode(`if (props?.logGroup) { this.logGroup.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_GROUP}', true) }`),
           // We need to access the private `_logRetention` custom resource, the only public property - `logGroup` - provides an ARN reference to the resource, instead of the resource itself.
-          expr.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
+          stmt.directCode(`if (props?.logRetention) { ((this as any).lambdaFunction as lambda.Function)._logRetention?.node.addMetadata('${CUSTOM_RESOURCE_SINGLETON_LOG_RETENTION}', true) }`),
         ];
         this.buildConstructor({
           constructorPropsType: _interface.type,
           superProps,
-          constructorVisbility: MemberVisibility.Public,
+          constructorVisibility: MemberVisibility.Public,
           statements: metadataStatements,
         });
       }
@@ -337,11 +363,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
             isCustomResourceProvider: true,
           })],
         ]);
-        const metadataStatements: Statement[] = [expr.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`)];
+        const metadataStatements: Statement[] = [stmt.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_PROVIDER}', true)`)];
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
-          constructorVisbility: MemberVisibility.Private,
+          constructorVisibility: props.constructorVisibility ?? MemberVisibility.Private,
           optionalConstructorProps: true,
           statements: metadataStatements,
         });
@@ -370,7 +396,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
   private buildConstructor(props: ConstructorBuildProps) {
     const init = this.addInitializer({
-      visibility: props.constructorVisbility,
+      visibility: props.constructorVisibility,
     });
     const scope = init.addParameter({
       name: 'scope',

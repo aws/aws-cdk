@@ -1,15 +1,16 @@
 {
-  "version": "32.0.0",
+  "version": "52.0.0",
   "files": {
-    "2d99c86b451354d15c576c59505ff89003cb23ed1c48a33b0b57bf3eee545c16": {
+    "308205bda6fe1eb9013de282502ed289788c9927cd65a3ab5a0ca1bc70c56d27": {
+      "displayName": "aws-cdk-neptune-serverless-integ Template",
       "source": {
         "path": "aws-cdk-neptune-serverless-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4a4293d6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2d99c86b451354d15c576c59505ff89003cb23ed1c48a33b0b57bf3eee545c16.json",
+          "objectKey": "308205bda6fe1eb9013de282502ed289788c9927cd65a3ab5a0ca1bc70c56d27.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

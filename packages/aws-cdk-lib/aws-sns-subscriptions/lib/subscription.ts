@@ -1,5 +1,5 @@
-import * as sns from '../../aws-sns';
-import { IQueue } from '../../aws-sqs';
+import type * as sns from '../../aws-sns';
+import type { IQueue } from '../../aws-sqs';
 
 /**
  * Options to subscribing to an SNS topic

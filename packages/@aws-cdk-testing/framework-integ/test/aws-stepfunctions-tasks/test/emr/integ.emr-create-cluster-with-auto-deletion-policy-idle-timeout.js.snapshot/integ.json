@@ -1,12 +1,22 @@
 {
-  "version": "36.0.5",
+  "version": "54.0.0",
   "testCases": {
     "EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest": {
       "stacks": [
         "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          },
+          "expectError": true
+        }
+      },
       "assertionStack": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeout/DefaultTest/DeployAssert",
       "assertionStackName": "EmrCreateClusterTestAutoDeletionPolicyIdleTimeoutDefaultTestDeployAssert01F5278A"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

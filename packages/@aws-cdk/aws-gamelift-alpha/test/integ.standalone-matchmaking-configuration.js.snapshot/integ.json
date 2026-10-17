@@ -1,12 +1,22 @@
 {
-  "version": "22.0.0",
+  "version": "48.0.0",
   "testCases": {
     "StandaloneMatchmakingConfiguration/DefaultTest": {
       "stacks": [
         "aws-gamelift-standalone-matchmaking-configuration"
       ],
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "eu-west-1",
+        "eu-central-1",
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-southeast-2"
+      ],
       "assertionStack": "StandaloneMatchmakingConfiguration/DefaultTest/DeployAssert",
       "assertionStackName": "StandaloneMatchmakingConfigurationDefaultTestDeployAssertAA4E73AF"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

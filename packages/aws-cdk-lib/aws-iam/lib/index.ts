@@ -17,6 +17,7 @@ export * from './saml-provider';
 export * from './access-key';
 export * from './utils';
 export * from './instance-profile';
+export * from './role-grants';
 
 // AWS::IAM CloudFormation Resources:
 export * from './iam.generated';

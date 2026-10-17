@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
@@ -21,9 +21,11 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 
     new appsync.GraphqlApi(this, 'api1', {
       name: 'api1',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(
+          path.join(__dirname, 'appsync.test.graphql'),
+        ),
+      },
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
@@ -36,9 +38,11 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 
     new appsync.GraphqlApi(this, 'api2', {
       name: 'api2',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(
+          path.join(__dirname, 'appsync.test.graphql'),
+        ),
+      },
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,

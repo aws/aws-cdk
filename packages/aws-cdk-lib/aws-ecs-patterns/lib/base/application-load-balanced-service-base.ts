@@ -1,20 +1,28 @@
 import { Construct } from 'constructs';
-import { Certificate, CertificateValidation, ICertificate } from '../../../aws-certificatemanager';
-import { IVpc } from '../../../aws-ec2';
-import {
-  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+import type { ICertificate } from '../../../aws-certificatemanager';
+import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
+import type { IVpc } from '../../../aws-ec2';
+import type {
+  BaseService, CloudMapOptions, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret, CapacityProviderStrategy,
 } from '../../../aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  AwsLogDriver, Cluster,
+} from '../../../aws-ecs';
+import type {
+  ApplicationListener, ApplicationProtocolVersion, ApplicationTargetGroup,
+  IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
-import { IRole } from '../../../aws-iam';
-import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
+import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
+import type { IRole } from '../../../aws-iam';
+import type { IHostedZone } from '../../../aws-route53';
+import { ARecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, Stack, Token, ValidationError } from '../../../core';
+import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
 /**
  * Describes the type of DNS record the service should create
@@ -422,7 +430,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): ApplicationLoadBalancer {
     if (!this._applicationLoadBalancer) {
-      throw new ValidationError('.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
+      throw new ValidationError(lit`LoadBalancerAccessedClassConstructed`, '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
     }
     return this._applicationLoadBalancer;
   }
@@ -461,12 +469,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError(lit`SpecifyVpcClusterAlternativelyLeave`, 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.desiredCount !== undefined && !Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
-      throw new ValidationError('You must specify a desiredCount greater than 0', this);
+      throw new ValidationError(lit`SpecifyDesiredCountGreater`, 'You must specify a desiredCount greater than 0', this);
     }
 
     this.desiredCount = props.desiredCount || 1;
@@ -477,7 +485,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
       if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
-        throw new ValidationError('Load balancer idle timeout must be between 1 and 4000 seconds.', this);
+        throw new ValidationError(lit`LoadBalancerIdleTimeoutSeconds`, 'Load balancer idle timeout must be between 1 and 4000 seconds.', this);
       }
     }
 
@@ -492,12 +500,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
-      throw new ValidationError('The HTTPS protocol must be used when a certificate is given', this);
+      throw new ValidationError(lit`ProtocolCertificateGiven`, 'The HTTPS protocol must be used when a certificate is given', this);
     }
     const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
-      throw new ValidationError('The HTTPS protocol must be used when redirecting HTTP traffic', this);
+      throw new ValidationError(lit`ProtocolRedirectingTraffic`, 'The HTTPS protocol must be used when redirecting HTTP traffic', this);
     }
 
     const targetProps: AddApplicationTargetsProps = {
@@ -505,20 +513,38 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       protocolVersion: props.protocolVersion,
     };
 
+    // When feature flag is enabled and a custom load balancer is provided
+    // (indicating the user has configured their own security groups), default to false for security.
+    // Otherwise, maintain backward compatibility with true.
+    const featureFlagEnabled = FeatureFlags.of(this).isEnabled(ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER);
+    const hasCustomLoadBalancer = featureFlagEnabled && props.loadBalancer !== undefined;
+    const defaultOpenListener = hasCustomLoadBalancer ? false : true;
+
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
-      open: props.openListener ?? true,
+      open: props.openListener ?? defaultOpenListener,
       sslPolicy: props.sslPolicy,
     });
-    this.targetGroup = this.listener.addTargets('ECS', targetProps);
+
+    // Generate unique target group ID to prevent conflicts during load balancer replacement
+    let targetGroupId: string;
+    if (FeatureFlags.of(this).isEnabled(ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID)) {
+      // Include both internetFacing and loadBalancerName in target group ID
+      targetGroupId = `ECS${props.loadBalancerName ?? ''}${internetFacing ? '' : 'Private'}`;
+    } else {
+      // Legacy behavior
+      targetGroupId = 'ECS';
+    }
+
+    this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
         if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-          throw new ValidationError('A domain name and zone is required when using the HTTPS protocol', this);
+          throw new ValidationError(lit`DomainNameZoneRequiredProtocol`, 'A domain name and zone is required when using the HTTPS protocol', this);
         }
 
         this.certificate = new Certificate(this, 'Certificate', {
@@ -534,7 +560,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       this.redirectListener = loadBalancer.addListener('PublicRedirectListener', {
         protocol: ApplicationProtocol.HTTP,
         port: 80,
-        open: props.openListener ?? true,
+        open: props.openListener ?? defaultOpenListener,
         defaultAction: ListenerAction.redirect({
           port: props.listenerPort?.toString() || '443',
           protocol: ApplicationProtocol.HTTPS,
@@ -549,7 +575,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
+        throw new ValidationError(lit`RouteHostedDomainZoneName`, 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {

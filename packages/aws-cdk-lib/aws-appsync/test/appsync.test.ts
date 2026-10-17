@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
@@ -93,6 +93,24 @@ test('appsync should configure resolver as unit when pipelineConfig is empty arr
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
+  });
+});
+
+test.each([
+  [appsync.ResolverMetricsConfig.ENABLED, 'ENABLED'],
+  [appsync.ResolverMetricsConfig.DISABLED, 'DISABLED'],
+  [undefined, Match.absent()],
+])('appsync resolver has MetricConfig set to %s', (metricsConfig, expected) => {
+  // WHEN
+  api.createResolver('Resolver', {
+    typeName: 'test',
+    fieldName: 'test2',
+    metricsConfig: metricsConfig,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
+    MetricsConfig: expected,
   });
 });
 
@@ -335,7 +353,7 @@ test('when query limits are set, they should be used on API', () => {
 test('when query depth limit is out of range, it throws an error', () => {
   const errorString = 'You must specify a query depth limit between 0 and 75.';
 
-  const buildWithLimit = (name, queryDepthLimit) => {
+  const buildWithLimit = (name: string, queryDepthLimit: number) => {
     new appsync.GraphqlApi(stack, name, {
       authorizationConfig: {},
       name: 'query-limits',
@@ -353,7 +371,7 @@ test('when query depth limit is out of range, it throws an error', () => {
 test('when resolver limit is out of range, it throws an error', () => {
   const errorString = 'You must specify a resolver count limit between 0 and 10000.';
 
-  const buildWithLimit = (name, resolverCountLimit) => {
+  const buildWithLimit = (name: string, resolverCountLimit: number) => {
     new appsync.GraphqlApi(stack, name, {
       authorizationConfig: {},
       name: 'query-limits',
@@ -416,4 +434,48 @@ test('when owner contact exceeds 256 characters, it throws an error', () => {
   };
 
   expect(() => buildWithOwnerContact()).toThrow('You must specify `ownerContact` as a string of 256 characters or less.');
+});
+
+test('GraphqlApi with attach enhanced metrics', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'minimal-enhanced-metrics', {
+    name: 'enhanced-metrics',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    enhancedMetricsConfig: {
+      dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+      operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.DISABLED,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    EnhancedMetricsConfig: {
+      DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+      OperationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.DISABLED,
+      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
+    },
+  });
+});
+
+test('GraphqlApi with attach enhanced metrics to all data sources', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'full-enhanced-metrics', {
+    name: 'enhanced-metrics',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    enhancedMetricsConfig: {
+      dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+      operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    EnhancedMetricsConfig: {
+      DataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+      OperationLevelMetricsConfig: 'ENABLED',
+      ResolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
+    },
+  });
 });

@@ -3,7 +3,7 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 interface MockActionProps extends codepipeline.ActionProperties {

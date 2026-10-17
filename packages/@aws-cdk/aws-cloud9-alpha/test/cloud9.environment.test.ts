@@ -1,8 +1,8 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
 import * as cloud9 from '../lib';
 import { ConnectionType, ImageId, Owner } from '../lib';
 
@@ -11,6 +11,10 @@ let vpc: ec2.IVpc;
 
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3697',
+    reason: 'Maintenance mode',
+  });
   vpc = new ec2.Vpc(stack, 'VPC');
 });
 

@@ -3,10 +3,11 @@ import * as codepipeline from '../../../aws-codepipeline';
 import * as lambda from '../../../aws-lambda';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
-import { App, Aws, Lazy, SecretValue, Stack, Token } from '../../../core';
+import type { App } from '../../../core';
+import { Aws, Lazy, SecretValue, Stack, Token } from '../../../core';
 import * as cpactions from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('', () => {
   describe('Lambda invoke Action', () => {

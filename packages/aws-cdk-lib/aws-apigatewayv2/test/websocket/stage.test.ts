@@ -1,14 +1,18 @@
 import { Match, Template } from '../../../assertions';
+import { AccessLogField, AccessLogFormat } from '../../../aws-apigateway';
 import { User } from '../../../aws-iam';
-import { Stack } from '../../../core';
-import { WebSocketApi, WebSocketStage } from '../../lib';
+import { LogGroup } from '../../../aws-logs';
+import { Lazy, Stack } from '../../../core';
+import { LogGroupLogDestination, WebSocketApi, WebSocketStage } from '../../lib';
 
 let stack: Stack;
 let api: WebSocketApi;
+let logGroup: LogGroup;
 
 beforeEach(() => {
   stack = new Stack();
   api = new WebSocketApi(stack, 'Api');
+  logGroup = new LogGroup(stack, 'LogGroup');
 });
 
 describe('WebSocketStage', () => {
@@ -200,6 +204,162 @@ describe('WebSocketStage', () => {
         env: 'dev',
         timeout: '600',
       },
+    });
+  });
+
+  test('if only the custom log destination log group is set', () => {
+    // WHEN
+    new WebSocketStage(stack, 'my-stage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(logGroup),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      AccessLogSettings: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn',
+          ],
+        },
+        Format: '$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] "$context.eventType $context.routeKey $context.connectionId" $context.status $context.requestId',
+      },
+    });
+  });
+
+  test('if the custom log destination log group and format is set', () => {
+    // WHEN
+    const testFormat = AccessLogFormat.custom(JSON.stringify({
+      requestId: AccessLogField.contextRequestId(),
+      ip: AccessLogField.contextIdentitySourceIp(),
+      user: AccessLogField.contextIdentityUser(),
+    }));
+
+    new WebSocketStage(stack, 'my-stage', {
+      webSocketApi: api,
+      stageName: 'dev',
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(logGroup),
+        format: testFormat,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Stage', {
+      AccessLogSettings: {
+        DestinationArn: {
+          'Fn::GetAtt': [
+            'LogGroupF5B46931',
+            'Arn',
+          ],
+        },
+        Format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","user":"$context.identity.user"}',
+      },
+    });
+  });
+
+  describe('access log check', () => {
+    test('fails when access log format does not contain `contextRequestId()` or `contextExtendedRequestId()', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom('');
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('succeeds when access log format contains `contextRequestId()`', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom(JSON.stringify({
+        requestId: AccessLogField.contextRequestId(),
+      }));
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains `contextExtendedRequestId()`', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom(JSON.stringify({
+        extendedRequestId: AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('succeeds when access log format contains both `contextRequestId()` and `contextExtendedRequestId`', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom(JSON.stringify({
+        requestId: AccessLogField.contextRequestId(),
+        extendedRequestId: AccessLogField.contextExtendedRequestId(),
+      }));
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
+    });
+
+    test('fails when access log format contains `contextRequestIdXxx`', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom(JSON.stringify({
+        requestIdXxx: '$context.requestIdXxx',
+      }));
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).toThrow('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`');
+    });
+
+    test('does not fail when access log format is a token', () => {
+      // WHEN
+      const testFormat = AccessLogFormat.custom(Lazy.string({ produce: () => 'test' }));
+
+      // THEN
+      expect(() => new WebSocketStage(stack, 'my-stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+        accessLogSettings: {
+          destination: new LogGroupLogDestination(logGroup),
+          format: testFormat,
+        },
+      })).not.toThrow();
     });
   });
 });

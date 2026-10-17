@@ -1,5 +1,17 @@
 {
   "exclude": [
-    "attribute-tag:@aws-cdk/aws-s3objectlambda-alpha.AccessPoint.accessPointName"
+    "attribute-tag:@aws-cdk/aws-s3objectlambda-alpha.AccessPoint.accessPointName",
+    "prefer-ref-interface:@aws-cdk/aws-s3objectlambda-alpha.AccessPointProps.handler",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSource.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.EventSourceMappingOptions.filterEncryption",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.targetHandler",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.targetHandler",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IDestination.bind.fn",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IFunction.grantInvokeVersion.version",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IVersion.grantInvokeVersion.version",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version",
+    "interface-extends-ref:@aws-cdk/aws-s3objectlambda-alpha.IAccessPoint"
   ]
 }

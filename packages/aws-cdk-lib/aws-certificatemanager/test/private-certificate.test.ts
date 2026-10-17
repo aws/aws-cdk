@@ -146,3 +146,51 @@ describe('Key Algorithm', () => {
     });
   });
 });
+
+describe('Certificate export setting', () => {
+  test('leaves certificate export setting untouched by default', () => {
+    const stack = new Stack();
+
+    new PrivateCertificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    });
+
+    const certificateNodes = Template.fromStack(stack).findResources('AWS::CertificateManager::Certificate');
+    expect(certificateNodes.Certificate4E7ABB08).toBeDefined();
+    expect(certificateNodes.Certificate4E7ABB08.CertificateTransparencyLoggingPreference).toBeUndefined();
+  });
+
+  test('can enable certificate export', () => {
+    const stack = new Stack();
+
+    new PrivateCertificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      allowExport: true,
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateExport: 'ENABLED',
+    });
+  });
+
+  test('can disable certificate export', () => {
+    const stack = new Stack();
+
+    new PrivateCertificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      allowExport: false,
+      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'test.example.com',
+      CertificateExport: Match.absent(),
+    });
+  });
+});

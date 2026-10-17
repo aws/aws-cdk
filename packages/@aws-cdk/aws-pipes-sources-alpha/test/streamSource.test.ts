@@ -1,11 +1,14 @@
-import { IPipe, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Duration, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AttributeType, ITableV2, StreamViewType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
+import type { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, StreamViewType, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { TestTarget } from './test-classes';
-import { DynamoDBSourceParameters, DynamoDBStartingPosition } from '../lib';
+import type { DynamoDBSourceParameters } from '../lib';
+import { DynamoDBStartingPosition } from '../lib';
 import { StreamSource } from '../lib/streamSource';
 
 describe('stream source validations', () => {

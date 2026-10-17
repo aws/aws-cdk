@@ -1,7 +1,7 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { AccessPoint } from '../lib';
 
 let stack: cdk.Stack;
@@ -346,4 +346,52 @@ test('Validates the access point name', () => {
     handler,
     accessPointName: 'aaa.aaa',
   })).toThrow(/name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods/);
+});
+
+test('Multiple access points with different configurations on the same bucket', () => {
+  const handler2 = new lambda.Function(stack, 'MyFunction2', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    handler: 'index.handler',
+    code: new lambda.InlineCode('foo'),
+  });
+
+  new AccessPoint(stack, 'MyObjectLambda1', {
+    bucket,
+    handler,
+    cloudWatchMetricsEnabled: true,
+    supportsGetObjectPartNumber: true,
+  });
+
+  new AccessPoint(stack, 'MyObjectLambda2', {
+    bucket,
+    handler: handler2,
+    supportsGetObjectRange: true,
+    payload: { foo: 10 },
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::S3ObjectLambda::AccessPoint', {
+    ObjectLambdaConfiguration: {
+      AllowedFeatures: ['GetObject-PartNumber'],
+      CloudWatchMetricsEnabled: true,
+    },
+  });
+
+  template.hasResourceProperties('AWS::S3ObjectLambda::AccessPoint', {
+    ObjectLambdaConfiguration: {
+      AllowedFeatures: ['GetObject-Range'],
+      TransformationConfigurations: [{
+        Actions: ['GetObject'],
+        ContentTransformation: {
+          AwsLambda: {
+            FunctionPayload: '{"foo":10}',
+          },
+        },
+      }],
+    },
+  });
+
+  template.resourceCountIs('AWS::S3ObjectLambda::AccessPoint', 2);
+  template.resourceCountIs('AWS::S3::AccessPoint', 2);
 });

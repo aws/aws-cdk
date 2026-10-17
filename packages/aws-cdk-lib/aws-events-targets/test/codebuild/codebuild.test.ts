@@ -3,7 +3,8 @@ import * as codebuild from '../../../aws-codebuild';
 import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
-import { CfnElement, Duration, Stack } from '../../../core';
+import type { CfnElement } from '../../../core';
+import { Duration, Stack } from '../../../core';
 import * as targets from '../../lib';
 
 describe('CodeBuild event target', () => {

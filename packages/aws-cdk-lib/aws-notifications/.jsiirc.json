@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.notifications"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Notifications"
+      "namespace": "Amazon.CDK.AWS.Notifications"
     },
     "python": {
       "module": "aws_cdk.aws_notifications"

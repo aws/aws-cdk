@@ -1,46 +1,52 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'rds-cluster-with-availability-zone');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-availability-zone');
 
-const vpc = new ec2.Vpc(stack, 'VPC', { natGateways: 0, restrictDefaultSecurityGroup: false });
-const [azForWriter, azForReader] = vpc.availabilityZones;
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-new rds.DatabaseCluster(stack, 'Cluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_1 }),
-  credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  writer: rds.ClusterInstance.provisioned('Writer', {
-    instanceIdentifier: 'writer-instance',
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MEDIUM),
-    availabilityZone: azForWriter,
+const cluster = new rds.DatabaseCluster(stack, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
+  vpc,
+  writer: rds.ClusterInstance.provisioned('writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+    availabilityZone: vpc.availabilityZones[0],
   }),
   readers: [
-    rds.ClusterInstance.serverlessV2('Reader', {
-      instanceIdentifier: 'reader-instance',
-      availabilityZone: azForReader,
+    rds.ClusterInstance.serverlessV2('reader', {
       scaleWithWriter: true,
+      availabilityZone: vpc.availabilityZones[1],
     }),
   ],
-  vpc,
-  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const integ = new IntegTest(app, 'cluster-with-availability-zone-integ', {
+const integ = new IntegTest(app, 'cluster-availability-zone-integ-test', {
   testCases: [stack],
 });
 
-integ.assertions.awsApiCall('rds', 'describeDbInstances', {
-  DBInstanceIdentifier: 'writer-instance',
+// Verify writer is in the correct AZ
+integ.assertions.awsApiCall('RDS', 'describeDBInstances', {
+  DBInstanceIdentifier: cluster.instanceIdentifiers[0],
 }).expect(ExpectedResult.objectLike({
-  DBInstances: [{ AvailabilityZone: azForWriter }],
+  DBInstances: [
+    {
+      AvailabilityZone: vpc.availabilityZones[0],
+    },
+  ],
 }));
 
-integ.assertions.awsApiCall('rds', 'describeDbInstances', {
-  DBInstanceIdentifier: 'reader-instance',
+// Verify reader is in the correct AZ
+integ.assertions.awsApiCall('RDS', 'describeDBInstances', {
+  DBInstanceIdentifier: cluster.instanceIdentifiers[1],
 }).expect(ExpectedResult.objectLike({
-  DBInstances: [{ AvailabilityZone: azForReader }],
+  DBInstances: [
+    {
+      AvailabilityZone: vpc.availabilityZones[1],
+    },
+  ],
 }));

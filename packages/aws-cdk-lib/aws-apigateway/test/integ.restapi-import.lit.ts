@@ -1,6 +1,8 @@
-import { Construct } from 'constructs';
-import { App, CfnOutput, NestedStack, NestedStackProps, Stack } from '../../core';
-import { Deployment, Method, MockIntegration, PassthroughBehavior, RestApi, Stage } from '../lib';
+import type { Construct } from 'constructs';
+import type { NestedStackProps } from '../../core';
+import { App, CfnOutput, NestedStack, Stack } from '../../core';
+import type { Method } from '../lib';
+import { Deployment, MockIntegration, PassthroughBehavior, RestApi, Stage } from '../lib';
 
 /**
  * This file showcases how to split up a RestApi's Resources and Methods across nested stacks.

@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 
 import { Stack, Token } from '../../core';
 import { arnForParameterName } from '../lib/util';

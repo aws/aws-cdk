@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Names, Stack } from '../../core';
-import { FunctionUrlOriginAccessControl, S3OriginAccessControl, SigningBehavior, SigningProtocol, OriginAccessControlOriginType, Signing } from '../lib';
+import { FunctionUrlOriginAccessControl, MediaPackageV2OriginAccessControl, S3OriginAccessControl, SigningBehavior, SigningProtocol, OriginAccessControlOriginType, Signing } from '../lib';
 
 describe('S3OriginAccessControl', () => {
   let stack: Stack;
@@ -60,6 +60,33 @@ describe('S3OriginAccessControl', () => {
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
   });
 
+  test('creates an S3OriginAccessControl with the sigv4a signing protocol', () => {
+    new S3OriginAccessControl(stack, 'Sigv4aS3OriginAccessControl', {
+      signing: Signing.SIGV4A_ALWAYS,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: SigningBehavior.ALWAYS,
+        SigningProtocol: SigningProtocol.SIGV4A,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.S3,
+      },
+    });
+  });
+
+  test('creates an S3OriginAccessControl with the sigv4a signing protocol and a custom signing behavior', () => {
+    new S3OriginAccessControl(stack, 'Sigv4aNoOverrideS3OriginAccessControl', {
+      signing: new Signing(SigningProtocol.SIGV4A, SigningBehavior.NO_OVERRIDE),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: SigningBehavior.NO_OVERRIDE,
+        SigningProtocol: SigningProtocol.SIGV4A,
+      },
+    });
+  });
+
   test('creates a FunctionUrlOriginAccessControl with default properties', () => {
     const oac = new FunctionUrlOriginAccessControl(stack, 'DefaultFunctionUrlOriginAccessControl');
 
@@ -103,11 +130,82 @@ describe('S3OriginAccessControl', () => {
     });
   });
 
+  test('creates a FunctionUrlOriginAccessControl with the always-amz-auth signing behavior', () => {
+    new FunctionUrlOriginAccessControl(stack, 'WebFunctionOriginAccessControl', {
+      signing: Signing.SIGV4_ALWAYS_AMZ_AUTH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: 'always-amz-auth',
+        SigningProtocol: SigningProtocol.SIGV4,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.LAMBDA,
+      },
+    });
+  });
+
   test('imports a FunctionUrlOriginAccessControl from ID', () => {
     const originAccessControlId = 'XYZ789XYZ789XY';
 
     const imported = FunctionUrlOriginAccessControl.fromOriginAccessControlId(stack, 'ImportedFunctionUrlOriginAccessControl', originAccessControlId);
 
     expect(imported.originAccessControlId).toEqual(originAccessControlId);
+  });
+});
+
+describe('MediaPackageV2OriginAccessControl', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('creates with default properties', () => {
+    new MediaPackageV2OriginAccessControl(stack, 'OAC');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        Name: Names.uniqueResourceName(new MediaPackageV2OriginAccessControl(new Stack(), 'OAC'), { maxLength: 64 }),
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+        OriginAccessControlOriginType: 'mediapackagev2',
+      },
+    });
+  });
+
+  test('creates with custom description and name', () => {
+    new MediaPackageV2OriginAccessControl(stack, 'OAC', {
+      description: 'My MediaPackage OAC',
+      originAccessControlName: 'custom-mp-oac',
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        Name: 'custom-mp-oac',
+        Description: 'My MediaPackage OAC',
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+        OriginAccessControlOriginType: 'mediapackagev2',
+      },
+    });
+  });
+
+  test('always uses sigv4 always signing', () => {
+    new MediaPackageV2OriginAccessControl(stack, 'OAC');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+      },
+    });
+  });
+
+  test('imports from ID', () => {
+    const imported = MediaPackageV2OriginAccessControl.fromOriginAccessControlId(stack, 'Imported', 'EABC123');
+    expect(imported.originAccessControlId).toEqual('EABC123');
   });
 });

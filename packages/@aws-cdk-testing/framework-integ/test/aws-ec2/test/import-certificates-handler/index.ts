@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ACM } from '@aws-sdk/client-acm'; // eslint-disable-line import/no-extraneous-dependencies
+import { ACM } from '@aws-sdk/client-acm';
 
 const acm = new ACM();
 

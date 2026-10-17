@@ -1,4 +1,5 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 
 class SNSFifoInteg extends Stack {
