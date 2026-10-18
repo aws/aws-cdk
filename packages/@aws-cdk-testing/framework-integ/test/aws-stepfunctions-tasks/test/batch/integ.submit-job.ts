@@ -87,7 +87,7 @@ const app = new cdk.App({
     [STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY]: true,
   },
 });
-const stack = new RunBatchStack(app, 'aws-stepfunctions-integ-submit-job');
+const stack = new RunBatchStack(app, 'aws-stepfunctions-integ');
 
 const integTest = new integ.IntegTest(app, 'SubmitJobIntegTest', {
   testCases: [stack],
