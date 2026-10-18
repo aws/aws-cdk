@@ -32,6 +32,7 @@ Principles:
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
 | Lint with auto-fix | `yarn lint --fix` | repo root |
+| Check skills | `node scripts/check-skills.js` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
@@ -53,6 +54,7 @@ Principles:
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Review skills | [`skills/cdk-review/`](./skills/cdk-review/README.md) | Skills for reviewing changes to AWS CDK code, locally or on a pull request, with any agent |
 
 ## Architecture — The Layer Model
 
