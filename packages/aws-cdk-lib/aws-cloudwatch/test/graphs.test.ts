@@ -186,7 +186,6 @@ describe('Graphs', () => {
     // WHEN
     const widget = new SingleValueWidget({
       metrics: [metric],
-      accountId: '123456789012',
       liveData: true,
     });
 
