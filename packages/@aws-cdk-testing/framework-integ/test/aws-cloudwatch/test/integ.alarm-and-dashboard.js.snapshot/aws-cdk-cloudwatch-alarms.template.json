@@ -124,7 +124,7 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":68,\"properties\":{\"view\":\"singleValue\",\"title\":\"Live data of sent message size \",\"region\":\"",
+       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":68,\"properties\":{\"view\":\"singleValue\",\"title\":\"Live data of sent message size\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },

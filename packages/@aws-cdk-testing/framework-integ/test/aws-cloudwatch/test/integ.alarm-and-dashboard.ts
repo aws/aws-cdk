@@ -117,7 +117,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   fullPrecision: true,
 }));
 dashboard.addWidgets(new cloudwatch.SingleValueWidget({
-  title: 'Live data of sent message size ',
+  title: 'Live data of sent message size',
   metrics: [sentMessageSizeMetric],
   liveData: true,
 }));

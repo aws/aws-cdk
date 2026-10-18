@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "aws-cdk-cloudwatch-alarms.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ec5cb4c76d5ba26a9c55940032a4fa2aeb3514b771e5377482837b52df14ef09.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fbaced1ebeb069ca34b521c9ebd4711223457243da2b1031a347c6b99b62165d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,284 +33,7 @@
       "dependencies": [
         "aws-cdk-cloudwatch-alarms.assets"
       ],
-      "metadata": {
-        "/aws-cdk-cloudwatch-alarms/queue": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "queue"
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/Alarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*",
-                "warningsV2": "*"
-              },
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
-              "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "toAnnotation": []
-            }
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/Alarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm7103F465"
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/Dash": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "dashboardName": "*",
-              "start": "*",
-              "end": "*",
-              "periodOverride": "inherit"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                },
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addWidgets": [
-                {
-                  "width": "*",
-                  "height": "*",
-                  "warnings": "*",
-                  "warningsV2": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/Dash/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DashCCD7F836"
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-cloudwatch-alarms/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-cloudwatch-alarms.metadata.json",
       "displayName": "aws-cdk-cloudwatch-alarms"
     },
     "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407.assets": {
@@ -345,20 +68,7 @@
       "dependencies": [
         "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407.assets"
       ],
-      "metadata": {
-        "/cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407.metadata.json",
       "displayName": "cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -659,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -856,12 +567,58 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "weak",
+            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+          },
+          "@aws-cdk/core:validateAgainstDefaultRules": {
+            "recommendedValue": true,
+            "explanation": "Treat CloudFormation Validate findings as errors"
+          },
+          "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
+            "recommendedValue": true,
+            "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1131.0"
 }
