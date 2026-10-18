@@ -903,7 +903,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   readonly end?: string;
 
   /**
-   * Whether the graph should show live data
+   * Whether the widget should show live data, which is data published within the last minute that has not been fully aggregated
    *
    * @default false
    */
