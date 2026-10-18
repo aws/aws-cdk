@@ -919,7 +919,7 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 ```
 
-Show live data without refreshing dashboard:
+The widget can show live data published within the last minute that has not been fully aggregated.
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
