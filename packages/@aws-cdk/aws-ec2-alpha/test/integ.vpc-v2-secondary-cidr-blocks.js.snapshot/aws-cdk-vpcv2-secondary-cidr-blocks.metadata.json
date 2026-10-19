@@ -227,28 +227,28 @@
       "data": "SubnetInSecondary172RouteTableAssociation9D476A66"
     }
   ],
-  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"VpcWithPublicSecondaryBF5A0D37\",\"VpcId\"]}": [
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Exports/Output{\"Fn::GetAtt\":[\"VpcWithPublicSecondaryBF5A0D37\",\"VpcId\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685"
+      "data": "ExportsOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdDA1568F4"
     }
   ],
-  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"VpcWithCarrierGradeNat25F9C610\",\"VpcId\"]}": [
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Exports/Output{\"Fn::GetAtt\":[\"VpcWithCarrierGradeNat25F9C610\",\"VpcId\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F"
+      "data": "ExportsOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcId3C32B2F4"
     }
   ],
-  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"Vpc192WithPublicSecondary78CAABEE\",\"VpcId\"]}": [
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Exports/Output{\"Fn::GetAtt\":[\"Vpc192WithPublicSecondary78CAABEE\",\"VpcId\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67"
+      "data": "ExportsOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcIdA460859A"
     }
   ],
-  "/aws-cdk-vpcv2-secondary-cidr-blocks/Publish/Output{\"Fn::GetAtt\":[\"Vpc172WithPublicSecondary2C1AA5BA\",\"VpcId\"]}": [
+  "/aws-cdk-vpcv2-secondary-cidr-blocks/Exports/Output{\"Fn::GetAtt\":[\"Vpc172WithPublicSecondary2C1AA5BA\",\"VpcId\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E"
+      "data": "ExportsOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcId11A59E59"
     }
   ],
   "/aws-cdk-vpcv2-secondary-cidr-blocks/VpcWithPublicSecondary/PublicSecondary/PublicSecondary": [

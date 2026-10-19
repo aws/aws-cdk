@@ -464,36 +464,48 @@
   }
  },
  "Outputs": {
-  "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685": {
+  "ExportsOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdDA1568F4": {
    "Value": {
     "Fn::GetAtt": [
      "VpcWithPublicSecondaryBF5A0D37",
      "VpcId"
     ]
+   },
+   "Export": {
+    "Name": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdDA1568F4"
    }
   },
-  "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F": {
+  "ExportsOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcId3C32B2F4": {
    "Value": {
     "Fn::GetAtt": [
      "VpcWithCarrierGradeNat25F9C610",
      "VpcId"
     ]
+   },
+   "Export": {
+    "Name": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcId3C32B2F4"
    }
   },
-  "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67": {
+  "ExportsOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcIdA460859A": {
    "Value": {
     "Fn::GetAtt": [
      "Vpc192WithPublicSecondary78CAABEE",
      "VpcId"
     ]
+   },
+   "Export": {
+    "Name": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcIdA460859A"
    }
   },
-  "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E": {
+  "ExportsOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcId11A59E59": {
    "Value": {
     "Fn::GetAtt": [
      "Vpc172WithPublicSecondary2C1AA5BA",
      "VpcId"
     ]
+   },
+   "Export": {
+    "Name": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcId11A59E59"
    }
   }
  },

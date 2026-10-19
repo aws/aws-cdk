@@ -19,13 +19,7 @@
        [
         "[\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdC2660685"
-         }
+         "Fn::ImportValue": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpcWithPublicSecondaryBF5A0D37VpcIdDA1568F4"
         },
         "\"]"
        ]
@@ -33,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1791562700335"
+    "salt": "1792424118645"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -149,13 +143,7 @@
        [
         "[\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcIdE1A7721F"
-         }
+         "Fn::ImportValue": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpcWithCarrierGradeNat25F9C610VpcId3C32B2F4"
         },
         "\"]"
        ]
@@ -163,7 +151,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1791562700338"
+    "salt": "1792424118652"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -187,13 +175,7 @@
        [
         "[\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcId83871F67"
-         }
+         "Fn::ImportValue": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpc192WithPublicSecondary78CAABEEVpcIdA460859A"
         },
         "\"]"
        ]
@@ -201,7 +183,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1791562700339"
+    "salt": "1792424118653"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -225,13 +207,7 @@
        [
         "[\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "aws-cdk-vpcv2-secondary-cidr-blocks",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcIdD7260B3E"
-         }
+         "Fn::ImportValue": "aws-cdk-vpcv2-secondary-cidr-blocks:ExportsOutputFnGetAttVpc172WithPublicSecondary2C1AA5BAVpcId11A59E59"
         },
         "\"]"
        ]
@@ -239,7 +215,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1791562700339"
+    "salt": "1792424118654"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
