@@ -8,7 +8,7 @@ import * as ssm from '../../aws-ssm';
 import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
-import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkProtocol } from '../lib/network-connector';
+import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
 import { WebFunction, WebFunctionAuthType, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction';
 import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
@@ -1191,7 +1191,7 @@ describe('WebFunction egress network connector', () => {
         vpc,
         vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
         securityGroups: [new ec2.SecurityGroup(scope, `${id}Sg`, { vpc })],
-        networkProtocol: NetworkProtocol.IPV4,
+        networkProtocol: NetworkConnectorProtocol.IPV4,
       }),
     });
   }

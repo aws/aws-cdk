@@ -7,7 +7,7 @@ import {
   NetworkConnector,
   NetworkConnectorComputeType,
   NetworkConnectorConfiguration,
-  NetworkProtocol,
+  NetworkConnectorProtocol,
 } from '../lib/network-connector';
 
 const CONNECTOR_ARN = 'arn:aws:lambda:us-west-2:123456789012:network-connector:nc-0123abcd';
@@ -127,7 +127,7 @@ describe('NetworkConnector', () => {
       new NetworkConnector(stack, 'Connector', {
         configuration: vpcEgress({
           computeType: NetworkConnectorComputeType.MICRO_VM,
-          networkProtocol: NetworkProtocol.DUAL_STACK,
+          networkProtocol: NetworkConnectorProtocol.DUAL_STACK,
         }),
         networkConnectorName: 'prod-egress',
       });

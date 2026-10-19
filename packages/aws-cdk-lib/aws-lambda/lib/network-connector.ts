@@ -56,7 +56,7 @@ export enum NetworkConnectorComputeType {
 /**
  * The IP protocol the connector's network interfaces use.
  */
-export enum NetworkProtocol {
+export enum NetworkConnectorProtocol {
   /** IPv4 only. */
   IPV4 = 'IPv4',
 
@@ -104,9 +104,9 @@ export interface VpcEgressConfiguration {
    *
    * The protocol cannot be changed after the connector is created.
    *
-   * @default NetworkProtocol.IPV4
+   * @default NetworkConnectorProtocol.IPV4
    */
-  readonly networkProtocol?: NetworkProtocol;
+  readonly networkProtocol?: NetworkConnectorProtocol;
 }
 
 /**
@@ -156,7 +156,7 @@ class VpcEgressNetworkConnectorConfiguration extends NetworkConnectorConfigurati
       vpcEgressConfiguration: {
         subnetIds,
         securityGroupIds: securityGroups.map((group) => group.securityGroupRef.securityGroupId),
-        networkProtocol: this.config.networkProtocol ?? NetworkProtocol.IPV4,
+        networkProtocol: this.config.networkProtocol ?? NetworkConnectorProtocol.IPV4,
         associatedComputeResourceTypes: [this.config.computeType],
       },
     };
