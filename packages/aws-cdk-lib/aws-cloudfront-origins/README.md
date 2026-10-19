@@ -1010,6 +1010,8 @@ const cachePolicy = new cloudfront.CachePolicy(this, 'WebFunctionCachePolicy', {
   ),
   cookieBehavior: cloudfront.CacheCookieBehavior.all(),
   queryStringBehavior: cloudfront.CacheQueryStringBehavior.all(),
+  enableAcceptEncodingGzip: true,
+  enableAcceptEncodingBrotli: true,
 });
 ```
 
