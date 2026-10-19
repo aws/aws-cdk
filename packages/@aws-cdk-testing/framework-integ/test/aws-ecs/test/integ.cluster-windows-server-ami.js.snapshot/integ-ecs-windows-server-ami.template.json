@@ -538,7 +538,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\nInitialize-ECSAgent -Cluster '",
+         "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
          {
           "Ref": "ClusterEB0386A7"
          },
@@ -938,6 +938,7 @@
     },
     "EnableECSManagedTags": false,
     "LaunchType": "EC2",
+    "LoadBalancers": [],
     "SchedulingStrategy": "REPLICA",
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
@@ -957,6 +958,13 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "PublishOutputRefClusterEB0386A7D87642F6": {
+   "Value": {
+    "Ref": "ClusterEB0386A7"
+   }
   }
  },
  "Rules": {
