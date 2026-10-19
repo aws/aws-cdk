@@ -190,6 +190,25 @@ describe('WebFunction validation', () => {
         new WebFunction(stack, 'Test', minimalProps({ timeout: Duration.seconds(900) }));
       }).not.toThrow(/Timeout must be/);
     });
+
+    test('passes a deploy-time value in seconds through unchecked', () => {
+      const seconds = new CfnParameter(stack, 'Timeout', { type: 'Number' });
+      new WebFunction(stack, 'Test', minimalProps({ timeout: Duration.seconds(seconds.valueAsNumber) }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+        ServiceConfig: { TimeoutSeconds: { Ref: 'Timeout' } },
+      });
+    });
+
+    // TimeoutSeconds is a number of seconds and CloudFormation has no arithmetic, so a
+    // deploy-time value in another unit cannot be converted. Duration rejects it and names the fix.
+    test('rejects a deploy-time value in another unit', () => {
+      const minutes = new CfnParameter(stack, 'Timeout', { type: 'Number' });
+
+      expect(() => {
+        new WebFunction(stack, 'Test', minimalProps({ timeout: Duration.minutes(minutes.valueAsNumber) }));
+      }).toThrow(/Duration must be specified as 'Duration.seconds\(\)'/);
+    });
   });
 
   describe('maxConcurrencyPerEnvironment', () => {
