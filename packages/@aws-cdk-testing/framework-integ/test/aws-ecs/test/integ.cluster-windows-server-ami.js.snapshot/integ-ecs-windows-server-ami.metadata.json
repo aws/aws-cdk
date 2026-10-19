@@ -488,10 +488,10 @@
       "data": "EC2Service5392EF94"
     }
   ],
-  "/integ-ecs-windows-server-ami/Publish/Output{\"Ref\":\"ClusterEB0386A7\"}": [
+  "/integ-ecs-windows-server-ami/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputRefClusterEB0386A7D87642F6"
+      "data": "ExportsOutputRefClusterEB0386A796A0E3FE"
     }
   ],
   "/integ-ecs-windows-server-ami/Vpc/PublicSubnet1/Subnet": [

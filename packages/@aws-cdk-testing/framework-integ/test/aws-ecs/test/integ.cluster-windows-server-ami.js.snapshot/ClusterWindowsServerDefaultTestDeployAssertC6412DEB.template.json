@@ -23,13 +23,7 @@
        [
         "\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "integ-ecs-windows-server-ami",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputRefClusterEB0386A7D87642F6"
-         }
+         "Fn::ImportValue": "integ-ecs-windows-server-ami:ExportsOutputRefClusterEB0386A796A0E3FE"
         },
         "\""
        ]
@@ -41,7 +35,7 @@
     "outputPaths": [
      "containerInstanceArns.0"
     ],
-    "salt": "1792412722056"
+    "salt": "1792423875424"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3624115e2d3ec706a2c86545b5d06534783bf5e5498253613a639744e2f81cc1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cbf09c10ce92d55d05d8c67a8ff3258bb2aaccd01cc11ebb7dc1281872606553.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcf9f83b47c1b9ad5342338d1ff6919a34c0702ff61cf5f307f791dc5e1f67fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1de573379abc2eeed88b460f6886d76f4da0533608119a0dc6db4b95d5722f51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -595,17 +595,14 @@
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           },
           "@aws-cdk/aws-eks:defaultToAL2023": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
           },
           "@aws-cdk/core:annotationsInValidationReport": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
-            "userValue": "weak",
             "recommendedValue": "weak",
             "explanation": "Controls whether cross-stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
@@ -613,12 +610,10 @@
             }
           },
           "@aws-cdk/core:validateAgainstDefaultRules": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Treat CloudFormation Validate findings as errors"
           },
           "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
           },

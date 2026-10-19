@@ -938,7 +938,6 @@
     },
     "EnableECSManagedTags": false,
     "LaunchType": "EC2",
-    "LoadBalancers": [],
     "SchedulingStrategy": "REPLICA",
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
@@ -961,9 +960,12 @@
   }
  },
  "Outputs": {
-  "PublishOutputRefClusterEB0386A7D87642F6": {
+  "ExportsOutputRefClusterEB0386A796A0E3FE": {
    "Value": {
     "Ref": "ClusterEB0386A7"
+   },
+   "Export": {
+    "Name": "integ-ecs-windows-server-ami:ExportsOutputRefClusterEB0386A796A0E3FE"
    }
   }
  },
