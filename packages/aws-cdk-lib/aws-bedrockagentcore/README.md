@@ -1346,6 +1346,30 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 ```
 
+`MCPProtocolVersion` provides the following versions:
+
+- `MCP_2026_07_28`: MCP version 2026-07-28 (latest)
+- `MCP_2025_11_25`: MCP version 2025-11-25
+- `MCP_2025_06_18`: MCP version 2025-06-18
+- `MCP_2025_03_26`: MCP version 2025-03-26 (used by the default protocol configuration)
+
+Use `MCPProtocolVersion.of()` for a version that is not yet defined in the class.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    supportedVersions: [
+      agentcore.MCPProtocolVersion.MCP_2025_11_25,
+      agentcore.MCPProtocolVersion.MCP_2026_07_28,
+    ],
+  }),
+});
+```
+
+The service fixes the supported versions when you create the gateway, unless your account is enabled for MCP version updates.
+For more information, see [MCP servers targets](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html).
+
 ### Inbound authorization
 
 Before you create your gateway, you must set up inbound authorization. Inbound authorization validates users who attempt to access targets through
@@ -1639,7 +1663,7 @@ discovers and indexes available tools from MCP servers through synchronization.
 - Requires explicit authentication configuration (OAuth2 recommended, empty array for NoAuth)
 - Ideal for connecting to external MCP-compliant servers
 - The endpoint must use HTTPS protocol
-- Supported MCP protocol versions: 2025-06-18, 2025-03-26
+- Supported MCP protocol versions: 2026-07-28, 2025-11-25, 2025-06-18, 2025-03-26
 - Automatic tool discovery through synchronization
 
 **Synchronization Behavior:**

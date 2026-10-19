@@ -1309,6 +1309,41 @@ describe('MCPProtocolVersion.of() escape hatch', () => {
   });
 });
 
+describe('MCPProtocolVersion constants', () => {
+  test('renders versions 2025-11-25 and 2026-07-28 in the template', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-new-versions',
+      protocolConfiguration: GatewayProtocol.mcp({
+        supportedVersions: [MCPProtocolVersion.MCP_2025_11_25, MCPProtocolVersion.MCP_2026_07_28],
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SupportedVersions: ['2025-11-25', '2026-07-28'],
+        }),
+      }),
+    });
+  });
+
+  test('default protocol configuration keeps version 2025-03-26', () => {
+    const stack = new cdk.Stack();
+    new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-default-version',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      ProtocolConfiguration: Match.objectLike({
+        Mcp: Match.objectLike({
+          SupportedVersions: ['2025-03-26'],
+        }),
+      }),
+    });
+  });
+});
+
 describe('McpGatewaySearchType.of() escape hatch', () => {
   test('renders custom search type in the template', () => {
     const stack = new cdk.Stack();

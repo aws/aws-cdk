@@ -61,6 +61,10 @@ export class MCPProtocolVersion {
   /**
    * The latest version of the MCP protocol.
    */
+  public static readonly MCP_2026_07_28 = new MCPProtocolVersion('2026-07-28');
+  /** MCP version 2025-11-25 */
+  public static readonly MCP_2025_11_25 = new MCPProtocolVersion('2025-11-25');
+  /** MCP version 2025-06-18 */
   public static readonly MCP_2025_06_18 = new MCPProtocolVersion('2025-06-18');
   /** MCP version 2025-03-26 */
   public static readonly MCP_2025_03_26 = new MCPProtocolVersion('2025-03-26');
