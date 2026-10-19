@@ -34,7 +34,7 @@ new sfn.StateMachine(stack, 'StateMachineWithJsonPathCredentials', {
 });
 
 new sfn.StateMachine(stack, 'StateMachineWithJSONataCredentials', {
-  definition: new FakeTaskJsonata(stack, 'FakeTaskWithJSONataCredentials', { credentials: { role: sfn.TaskRole.fromRoleArnJsonata('{% $states.input.RoleArn %}') } }),
+  definitionBody: sfn.DefinitionBody.fromChainable(new FakeTaskJsonata(stack, 'FakeTaskWithJSONataCredentials', { credentials: { role: sfn.TaskRole.fromRoleArnJsonata('{% $states.input.RoleArn %}') } })),
   queryLanguage: sfn.QueryLanguage.JSONATA,
   timeout: cdk.Duration.seconds(30),
 });
