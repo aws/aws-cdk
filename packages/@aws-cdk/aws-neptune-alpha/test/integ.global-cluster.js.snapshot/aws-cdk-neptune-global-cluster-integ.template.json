@@ -478,7 +478,9 @@
       ]
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ExportsWriteruseast2828FA26B86FBEFA7": {
    "Type": "Custom::CrossRegionExportWriter",

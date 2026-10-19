@@ -1,4 +1,20 @@
 {
+  "/aws-cdk-neptune-global-cluster-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at availabilityZones (/workspaces/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workspaces/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workspaces/aws-cdk/packages/@aws-cdk/aws-neptune-alpha/test/integ.global-cluster.js:56:20)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-neptune-global-cluster-integ/PrimaryVpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -75,6 +91,7 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
+          "*",
           "*"
         ]
       }
@@ -111,6 +128,7 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
+          "*",
           "*"
         ]
       }
