@@ -310,7 +310,8 @@ export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetO
    *
    * The prefix also scopes the copy function's write and delete permissions on your bucket, so
    * it must not start with `/` or contain `*`, `?` or `${`, which IAM would read as a wildcard
-   * or a policy variable.
+   * or a policy variable. For the same reason it must be a literal string: a deploy-time value
+   * cannot be checked, and is rejected.
    *
    * @default - objects are written under `web-function/` at the root of the bucket
    */
@@ -655,17 +656,6 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
 }
 
 /**
- * Validate that a code bucket defined in this app is not encrypted with an AWS-managed KMS key.
- *
- * The service reads the code object as `lambda.amazonaws.com`, which can only be authorized
- * on the key policy — and the policy of an AWS-managed key (`aws/s3`) cannot be modified.
- * `bucket.encryptionKey` is undefined both for SSE-S3 and for an AWS-managed key, so the two
- * are told apart on the L1 instead: an AWS-managed key means a KMS algorithm with no key id.
- * Imported buckets expose no encryption settings and are skipped.
- *
- * @param factory the `WebFunctionCode` factory to name in the error message
- */
-/**
  * Reject a key prefix that would widen the copy function's grants on the caller's bucket.
  *
  * The prefix is used verbatim in the IAM resource ARNs and the `s3:prefix` condition that scope
@@ -673,17 +663,19 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
  * `${` starts a policy variable, so any of them reaches beyond `web-function/`. A leading `/`
  * gives keys that start with an empty path segment, which is never intended.
  *
- * A token cannot be checked, so it only gets a warning.
+ * A token is rejected as well. Its value is only known at deployment, when the grants are
+ * already in the template, and nothing at that point can check it: CloudFormation Rules apply
+ * only to parameters and cannot inspect characters, and IAM wildcard escapes need the value at
+ * synthesis.
  */
 function validateKeyPrefix(keyPrefix: string | undefined, scope: Construct): void {
   if (keyPrefix === undefined) {
     return;
   }
   if (cdk.Token.isUnresolved(keyPrefix)) {
-    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda:webFunctionKeyPrefixUnresolved',
-      'keyPrefix is a deploy-time value and cannot be checked. It scopes the copy function\'s permissions ' +
-      'on your bucket, so make sure it does not start with \'/\' or contain \'*\', \'?\' or \'${\'.');
-    return;
+    throw new ValidationError(lit`WebFunctionKeyPrefixUnresolved`,
+      'keyPrefix must be a literal string, not a deploy-time value. It scopes the copy function\'s ' +
+      'permissions on your bucket, and a value that cannot be checked at synthesis could widen them.', scope);
   }
   if (keyPrefix.startsWith('/') || /[*?]|\$\{/.test(keyPrefix)) {
     throw new ValidationError(lit`WebFunctionKeyPrefixInvalid`,

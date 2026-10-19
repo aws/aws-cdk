@@ -712,17 +712,16 @@ describe('WebFunctionCode', () => {
       })).toThrow(/keyPrefix .* must not start with '\/' or contain/);
     });
 
-    test('warns on a keyPrefix that cannot be checked', () => {
+    test('rejects a keyPrefix that cannot be checked', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
-      new WebFunction(stack, 'TestFunction', {
+
+      expect(() => new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH, {
           keyPrefix: new cdk.CfnParameter(stack, 'Prefix').valueAsString,
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
         authType: WebFunctionAuthType.IAM_AUTH,
-      });
-
-      Annotations.fromStack(stack).hasWarning('/Default/TestFunction', Match.stringLikeRegexp('keyPrefix is a deploy-time value'));
+      })).toThrow(/keyPrefix must be a literal string, not a deploy-time value/);
     });
 
     test('applies keyPrefix to the destination key', () => {
