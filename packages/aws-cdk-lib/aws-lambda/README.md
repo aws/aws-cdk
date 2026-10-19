@@ -2319,10 +2319,34 @@ not change in either case.
 The new revision receives all traffic as soon as the endpoint is repointed, and the
 previous revision is deleted when the deployment completes. Creating a revision does
 not check that its code starts, so code that fails at startup still deploys
-successfully and only fails once requests arrive. To roll back automatically, deploy
-with CloudFormation [rollback triggers](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-rollback-triggers.html):
-a CloudWatch alarm and a monitoring period. CloudFormation keeps the previous revision
-until the monitoring period ends, so an alarm in that window returns traffic to it.
+successfully and only fails once requests arrive.
+
+### Rolling back
+
+The construct keeps one revision. Once a deployment completes, the previous revision
+is deleted, and so is the code object it read, so there is no earlier revision left to
+point the endpoint back at. How to go back depends on when:
+
+- **During the deployment.** If any resource in the stack fails, CloudFormation rolls
+  back: the endpoint returns to the previous revision, which is untouched, as is its code.
+- **Shortly after it.** Deploy with CloudFormation
+  [rollback triggers](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-rollback-triggers.html):
+  a CloudWatch alarm and a monitoring period. CloudFormation keeps the previous revision
+  until the monitoring period ends, so an alarm in that window rolls the stack back and
+  returns traffic to it.
+- **Later.** Deploy the previous code again, for example by reverting the change and
+  running `cdk deploy`. This creates a new revision from that code rather than restoring
+  the old one.
+
+Repointing the endpoint outside CloudFormation, for example in the console, is not a
+supported way back: the previous revision no longer exists, and the next deployment would
+overwrite the change.
+
+The construct does not model more than one live revision or weighted traffic between
+revisions. `resourceRevision` and `resourceEndpoint` are for overriding properties of the
+resources the construct creates; they do not add revisions. To keep several revisions
+addressable or split traffic between them, use the L1 constructs directly (see
+[Escape Hatches](#escape-hatches)).
 
 ### Environment Variables and Logging
 
