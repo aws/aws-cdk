@@ -161,6 +161,14 @@ describe('NetworkConnector', () => {
         },
       });
     });
+
+    test('the tags prop tags the connector', () => {
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress(), tags: { env: 'prod' } });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::NetworkConnector', {
+        Tags: [{ Key: 'env', Value: 'prod' }],
+      });
+    });
   });
 
   describe('operator role', () => {

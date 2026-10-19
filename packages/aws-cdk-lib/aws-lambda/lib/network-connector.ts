@@ -215,6 +215,13 @@ export interface NetworkConnectorProps {
    * @default - a role is created with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy
    */
   readonly operatorRole?: iam.IRoleRef;
+
+  /**
+   * Tags to apply to the connector.
+   *
+   * @default - No tags.
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 abstract class NetworkConnectorBase extends Resource implements INetworkConnector {
@@ -383,6 +390,9 @@ export class NetworkConnector extends NetworkConnectorBase {
       name: this.physicalName,
       configuration: props.configuration._render(this),
       operatorRole: this.operatorRole.roleRef.roleArn,
+      tags: props.tags
+        ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
+        : undefined,
     });
   }
 
