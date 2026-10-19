@@ -101,6 +101,13 @@
       }
     ]
   },
+  "aws-appfabric": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppFabric"
+      }
+    ]
+  },
   "aws-appflow": {
     "scopes": [
       {
@@ -852,6 +859,13 @@
       }
     ]
   },
+  "aws-eventsv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::EventsV2"
+      }
+    ]
+  },
   "aws-evidently": {
     "scopes": [
       {
@@ -968,6 +982,13 @@
     "scopes": [
       {
         "namespace": "AWS::GuardDuty"
+      }
+    ]
+  },
+  "aws-healthagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::HealthAgent"
       }
     ]
   },
@@ -1240,6 +1261,13 @@
       }
     ]
   },
+  "aws-licensemanagerlinuxsubscriptions": {
+    "scopes": [
+      {
+        "namespace": "AWS::LicenseManagerLinuxSubscriptions"
+      }
+    ]
+  },
   "aws-lightsail": {
     "scopes": [
       {
@@ -1429,6 +1457,20 @@
       }
     ]
   },
+  "aws-networkmonitor": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkMonitor"
+      }
+    ]
+  },
+  "aws-networksecuritymanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkSecurityManager"
+      }
+    ]
+  },
   "aws-nimblestudio": {
     "scopes": [
       {
@@ -1580,6 +1622,13 @@
     "scopes": [
       {
         "namespace": "AWS::Personalize"
+      }
+    ]
+  },
+  "aws-pi": {
+    "scopes": [
+      {
+        "namespace": "AWS::PI"
       }
     ]
   },

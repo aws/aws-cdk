@@ -6,7 +6,10 @@ import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
-jest.spyOn(DockerImage, 'fromBuild');
+// Stub `DockerImage.fromBuild` so these unit tests never run a real `docker build`.
+// (The `child_process` mock below is bypassed intermittently in CI.) The spy still
+// records calls, so the argument/call-count assertions below are unaffected.
+jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
