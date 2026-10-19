@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "MyParameter",
     "Type": "String",
-    "Value": "\ud83c\udf27\ufe0f"
+    "Value": "🌧️"
    }
   },
   "StateMachineRoleB840431D": {
@@ -15,6 +15,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
@@ -57,7 +86,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"\ud83c\udf08\",\"Type\":\"String\",\"Overwrite\":true}}}}"
+       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"🌈\",\"Type\":\"String\",\"Overwrite\":true}}}}"
       ]
      ]
     },
@@ -231,7 +260,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -401,7 +430,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
     },
     "Environment": {
      "Variables": {
@@ -414,6 +443,7 @@
       "Ref": "BucketDeploymentAwsCliLayerB018DCE1"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -421,8 +451,7 @@
      ]
     },
     "Runtime": "python3.13",
-    "Timeout": 900,
-    "MemorySize": 1024
+    "Timeout": 900
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
