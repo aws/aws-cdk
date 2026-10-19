@@ -765,7 +765,7 @@
               "Fn::Split": [
                "/",
                {
-                "Fn::Split": [
+                "Fn::Select": [
                  5,
                  {
                   "Fn::Split": [
