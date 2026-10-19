@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as glue from '../lib';
 
 test('unpartitioned JSON table', () => {
@@ -17,7 +18,19 @@ test('unpartitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
+  expect(table.bucket?.encryptionKey).toEqual(undefined);
+
+  Template.fromStack(tableStack).hasResourceProperties('AWS::S3::Bucket', {
+    BucketEncryption: {
+      ServerSideEncryptionConfiguration: [
+        {
+          ServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'AES256',
+          },
+        },
+      ],
+    },
+  });
 
   Template.fromStack(tableStack).hasResource('AWS::S3::Bucket', {
     Type: 'AWS::S3::Bucket',
@@ -89,8 +102,6 @@ test('partitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket).not.toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
@@ -159,7 +170,6 @@ test('compressed table', () => {
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
   });
-  expect(table.encryptionKey).toEqual(undefined);
   expect(table.bucket?.encryptionKey).toEqual(undefined);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
@@ -500,6 +510,40 @@ describe('parition indexes', () => {
       );
       expect(createStatements).toHaveLength(2);
     });
+
+    test('grants the catalog encryption key to the handler roles when the catalog is encrypted', () => {
+      const stack = new cdk.Stack();
+      const key = new kms.Key(stack, 'Key');
+      // Encryption is fixed at construction, so the account catalog must be
+      // encrypted before the database (which uses it by default) is created.
+      glue.Catalog.encryptAccount(stack, {
+        encryptionAtRest: glue.DataCatalogEncryptionAtRest.kms(key),
+      });
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [{ name: 'year', type: glue.Schema.SMALL_INT }],
+        dataFormat: glue.DataFormat.JSON,
+      });
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+
+      const template = Template.fromStack(stack);
+
+      // Both handler roles (onEvent and isComplete) must be able to decrypt the
+      // catalog metadata they read. Only kms:Decrypt is granted - the index
+      // write happens asynchronously on the Glue backend, not under the
+      // handler's identity, so no write actions are needed.
+      const policies = template.findResources('AWS::IAM::Policy');
+      const kmsStatements = Object.values(policies).flatMap((policy: any) =>
+        policy.Properties.PolicyDocument.Statement.filter((s: any) => {
+          const actions = Array.isArray(s.Action) ? s.Action : [s.Action];
+          return actions.includes('kms:Decrypt');
+        }),
+      );
+      expect(kmsStatements).toHaveLength(2);
+    });
   });
 });
 
@@ -793,8 +837,7 @@ describe('Partition Projection', () => {
           min: '2020-01-01',
           max: '2023-12-31',
           format: 'yyyy-MM-dd',
-          interval: 1,
-          intervalUnit: glue.DateIntervalUnit.DAYS,
+          step: { interval: 1, intervalUnit: glue.DateIntervalUnit.DAYS },
         }),
       },
     });

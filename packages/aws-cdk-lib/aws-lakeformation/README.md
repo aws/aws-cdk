@@ -30,7 +30,7 @@ Here is an example of creating a glue table and putting lakeformation tags on it
 
 ```ts
 import * as cdk from 'aws-cdk-lib';
-import { S3Table, Database, DataFormat, Schema } from '@aws-cdk/aws-glue-alpha';
+import { S3Table, Database, DataFormat, Schema } from 'aws-cdk-lib/aws-glue';
 import { CfnDataLakeSettings, CfnTag, CfnTagAssociation } from 'aws-cdk-lib/aws-lakeformation';
 
 declare const stack: cdk.Stack;

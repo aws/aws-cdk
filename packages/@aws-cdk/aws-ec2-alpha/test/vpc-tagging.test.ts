@@ -1,21 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType, VpnConnectionType } from 'aws-cdk-lib/aws-ec2';
 import { AddressFamily, Ipam } from '../lib';
+import { testStack } from './test-stack';
 import { InternetGateway, NatGateway, RouteTable, VPCPeeringConnection, VPNGatewayV2 } from '../lib/route';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
 import * as vpc from '../lib/vpc-v2';
 
-describe('Vpc V2 with full control', () => {
-  let stack: cdk.Stack;
+let stack: Stack;
 
+describe('Vpc V2 with full control', () => {
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-    stack = new cdk.Stack(app);
+    stack = testStack();
   });
   // Test VPC tagging
   test('VPC has correct tags', () => {

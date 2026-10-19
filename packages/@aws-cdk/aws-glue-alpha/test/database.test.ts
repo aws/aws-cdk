@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as glue from '../lib';
 
@@ -86,11 +86,11 @@ test('fromDatabase', () => {
   // THEN
   expect(database.databaseArn).toEqual('arn:aws:glue:us-east-1:123456789012:database/db1');
   expect(database.databaseName).toEqual('db1');
-  expect(stack.resolve(database.catalogArn)).toEqual({
+  expect(stack.resolve(database.catalog.catalogArn)).toEqual({
     'Fn::Join': ['',
       ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog']],
   });
-  expect(stack.resolve(database.catalogId)).toEqual({ Ref: 'AWS::AccountId' });
+  expect(stack.resolve(database.catalog.catalogId)).toEqual({ Ref: 'AWS::AccountId' });
 });
 
 test('locationUri length must be >= 1', () => {
@@ -125,5 +125,25 @@ test('can specify a physical name', () => {
     DatabaseInput: {
       Name: 'my_database',
     },
+  });
+});
+
+test('is retained by default', () => {
+  new glue.Database(stack, 'Database');
+
+  Template.fromStack(stack).hasResource('AWS::Glue::Database', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  });
+});
+
+test('removalPolicy can be overridden to DESTROY', () => {
+  new glue.Database(stack, 'Database', {
+    removalPolicy: RemovalPolicy.DESTROY,
+  });
+
+  Template.fromStack(stack).hasResource('AWS::Glue::Database', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
   });
 });

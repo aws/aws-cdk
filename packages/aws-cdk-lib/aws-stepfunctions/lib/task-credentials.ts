@@ -2,6 +2,7 @@ import { JsonPath } from './fields';
 import { isValidJsonataExpression } from './private/jsonata';
 import type * as iam from '../../aws-iam';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Specifies a target role assumed by the State Machine's execution role for invoking the task's resource.
@@ -87,7 +88,7 @@ class JsonataExpressionTaskRole extends TaskRole {
   constructor(expression: string) {
     super();
     if (!isValidJsonataExpression(expression)) {
-      throw new UnscopedValidationError(`JSONata expression must be start with '{%' and end with '%}', got '${expression}'`);
+      throw new UnscopedValidationError(lit`InvalidJsonataExpression`, `JSONata expression must be start with '{%' and end with '%}', got '${expression}'`);
     }
     this.roleArn = expression;
     this.resource = '*';
