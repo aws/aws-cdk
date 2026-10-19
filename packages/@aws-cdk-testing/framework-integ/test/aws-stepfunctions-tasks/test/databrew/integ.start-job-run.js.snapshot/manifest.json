@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-databrew-start-job-run-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/812722886a647f160a62ffd4bd7a5661d1514133cb7955f3182c756578f061d2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c7afcf55864f8ef701f86ea3b6af89a380ed72caf5fac65b9359258aa0b0fd8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,192 +33,7 @@
       "dependencies": [
         "aws-stepfunctions-tasks-databrew-start-job-run-integ.assets"
       ],
-      "metadata": {
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/JobOutputBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/JobOutputBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "JobOutputBucketACE3BC7B"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ],
-              "path": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*"
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DataBrewRole7E60F80D"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Recipe": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DataBrewRecipe"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Dataset": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DataBrewDataset"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Project": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DataBrewProject"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/DataBrew Job": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DataBrewJob"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definition": {
-                "id": "*",
-                "startState": "*",
-                "endStates": "*"
-              },
-              "timeout": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/StateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/stateMachineArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "stateMachineArn"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-stepfunctions-tasks-databrew-start-job-run-integ/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-stepfunctions-tasks-databrew-start-job-run-integ.metadata.json",
       "displayName": "aws-stepfunctions-tasks-databrew-start-job-run-integ"
     },
     "Tree": {
@@ -519,6 +334,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -720,16 +536,54 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "weak",
+            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+          },
+          "@aws-cdk/core:validateAgainstDefaultRules": {
+            "recommendedValue": true,
+            "explanation": "Treat CloudFormation Validate findings as errors"
+          },
+          "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
+            "recommendedValue": true,
+            "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1131.0"
 }

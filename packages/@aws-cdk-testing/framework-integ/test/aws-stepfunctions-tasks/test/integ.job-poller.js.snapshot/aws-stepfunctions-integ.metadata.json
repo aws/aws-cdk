@@ -14,10 +14,7 @@
   "/aws-stepfunctions-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "definitionBody": "*",
-        "timeout": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-integ/BootstrapVersion": [
@@ -47,12 +44,7 @@
   "/aws-stepfunctions-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     }
   ],
   "/aws-stepfunctions-integ/StateMachine/Resource": [
