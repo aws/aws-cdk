@@ -1,0 +1,114 @@
+{
+  "/aws-cdk-glue-crawler/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-crawler/Glue crawlwer Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-crawler/Database": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Database"
+    }
+  ],
+  "/aws-cdk-glue-crawler/Crawler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Crawler"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-crawler/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-glue-crawler/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-glue-crawler/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/aws-cdk-glue-crawler/Glue crawlwer Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GluecrawlwerRole4E24839F"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine81935E76"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRole543B9670"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-crawler/State Machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDA5F7DA8"
+    }
+  ]
+}

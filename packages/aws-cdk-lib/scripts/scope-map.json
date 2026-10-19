@@ -101,6 +101,13 @@
       }
     ]
   },
+  "aws-appfabric": {
+    "scopes": [
+      {
+        "namespace": "AWS::AppFabric"
+      }
+    ]
+  },
   "aws-appflow": {
     "scopes": [
       {
@@ -1254,6 +1261,13 @@
       }
     ]
   },
+  "aws-licensemanagerlinuxsubscriptions": {
+    "scopes": [
+      {
+        "namespace": "AWS::LicenseManagerLinuxSubscriptions"
+      }
+    ]
+  },
   "aws-lightsail": {
     "scopes": [
       {
@@ -1447,6 +1461,13 @@
     "scopes": [
       {
         "namespace": "AWS::NetworkMonitor"
+      }
+    ]
+  },
+  "aws-networksecuritymanager": {
+    "scopes": [
+      {
+        "namespace": "AWS::NetworkSecurityManager"
       }
     ]
   },
