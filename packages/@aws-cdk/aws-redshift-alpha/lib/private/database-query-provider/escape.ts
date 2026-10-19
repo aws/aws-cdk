@@ -14,7 +14,11 @@ export function quoteQualifiedIdentifier(qualified: string): string {
   return qualified.split('.').map(quoteIdentifier).join('.');
 }
 
-/** Quotes a SQL string literal, doubling any embedded single quote. */
+/**
+ * Quotes a SQL string literal, doubling any embedded backslash and then any embedded single quote.
+ *
+ * Redshift processes backslash escape sequences in string literals, so a backslash is doubled to be read as written.
+ */
 export function quoteLiteral(literal: string): string {
-  return `'${literal.replace(/'/g, "''")}'`;
+  return `'${literal.replace(/\\/g, '\\\\').replace(/'/g, "''")}'`;
 }

@@ -50,6 +50,17 @@ describe('quoteLiteral', () => {
   test('wraps an empty value in single quotes', () => {
     expect(quoteLiteral('')).toEqual("''");
   });
+
+  test.each([
+    ['a\\b', "'a\\\\b'"],
+    ["a\\'b", "'a\\\\''b'"],
+    ['a\\', "'a\\\\'"],
+    ['\\\\', "'\\\\\\\\'"],
+    ['a\\nb', "'a\\\\nb'"],
+    ["x\\\\'y", "'x\\\\\\\\''y'"],
+  ])('escapes backslashes and single quotes in %j', (literal, expected) => {
+    expect(quoteLiteral(literal)).toEqual(expected);
+  });
 });
 
 describe('quoteQualifiedIdentifier', () => {

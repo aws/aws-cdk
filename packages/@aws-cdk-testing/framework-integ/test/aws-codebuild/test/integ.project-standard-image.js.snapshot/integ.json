@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ-project-standard-images/DefaultTest": {
       "stacks": [
@@ -9,10 +9,12 @@
         "Standard4",
         "Standard5",
         "Standard6",
-        "Standard7"
+        "Standard7",
+        "Standard8"
       ],
       "assertionStack": "integ-project-standard-images/DefaultTest/DeployAssert",
       "assertionStackName": "integprojectstandardimagesDefaultTestDeployAssertFEF871A7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1108.0"
 }

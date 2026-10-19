@@ -551,7 +551,7 @@
      "Ref": "ClusterSubnetsDCFA5CB7"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "18.4",
+    "EngineVersion": "18.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
