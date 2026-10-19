@@ -93,6 +93,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = '@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
@@ -158,6 +159,8 @@ export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
+export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1929,6 +1932,74 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.262.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_REMOVE_EMPTY_LOAD_BALANCERS]: {
+    type: FlagType.BugFix,
+    summary: 'Render an empty `LoadBalancers` array on an ECS service that has no target groups',
+    detailsMd: `
+      CloudFormation distinguishes between an absent \`LoadBalancers\` property, which leaves the live
+      service configuration untouched, and an empty array, which removes the existing load balancer
+      registrations. Without this flag the CDK omits the property when a service has no target groups,
+      so removing the last target group from a service never reaches the deployed service: it keeps
+      serving traffic from the target groups it was registered in, and a later deployment can fail with
+      \`The target group with targetGroupArn ... does not have an associated load balancer\`.
+
+      When this flag is enabled, a service with no target groups renders \`LoadBalancers: []\` and
+      CloudFormation removes the registrations.
+
+      Enabling this adds \`LoadBalancers: []\` to every ECS service that has no target groups, including
+      services that never had any. Amazon ECS starts a new deployment when a load balancer configuration
+      is added, updated or removed, so expect a one-time deployment of those services.`,
+    introducedIn: { v2: '2.269.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS',
+    detailsMd: `
+      When enabled, cache behaviors on a \`Distribution\` that do not specify an explicit
+      \`viewerProtocolPolicy\` default to \`ViewerProtocolPolicy.REDIRECT_TO_HTTPS\` instead of
+      \`ViewerProtocolPolicy.ALLOW_ALL\`, so viewers are redirected from HTTP to HTTPS rather
+      than being served over plaintext HTTP.
+
+      This applies to the default behavior, to \`additionalBehaviors\`, and to behaviors added
+      later with \`addBehavior()\`. An explicitly specified \`viewerProtocolPolicy\` always wins,
+      regardless of this flag.
+
+      Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
+      viewer then follows with a second request. That additional request is billable.`,
+    introducedIn: { v2: '2.273.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+    type: FlagType.BugFix,
+    summary: 'Render the API Gateway access log destination ARN without the trailing `:*`',
+    detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
   },
 };
 

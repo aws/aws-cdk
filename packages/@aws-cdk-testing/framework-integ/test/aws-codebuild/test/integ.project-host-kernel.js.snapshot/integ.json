@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "codebuild-project-host-kernel-integ/DefaultTest": {
+      "stacks": [
+        "codebuild-project-host-kernel"
+      ],
+      "assertionStack": "codebuild-project-host-kernel-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuildprojecthostkernelintegDefaultTestDeployAssertC63D338B"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

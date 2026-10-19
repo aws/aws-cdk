@@ -86,7 +86,6 @@
   "DataQualityRulesetBB177ADB": {
    "Type": "AWS::Glue::DataQualityRuleset",
    "Properties": {
-    "ClientToken": "client_token",
     "Description": "my description",
     "Name": "my_ruleset",
     "Ruleset": "Rules = [RowCount > 10]",

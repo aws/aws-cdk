@@ -15,6 +15,7 @@ import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as cognito from '../../../aws-cognito';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
+import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
@@ -224,6 +225,74 @@ export interface AddApiGatewayTargetOptions {
 }
 
 /**
+ * The enforcement mode for a policy engine associated with a gateway.
+ *
+ */
+export class PolicyEngineMode {
+  /**
+   * Evaluates actions and adds traces but does not enforce decisions.
+   * Use this mode for testing and validation before enabling enforcement.
+   */
+  public static readonly LOG_ONLY = new PolicyEngineMode('LOG_ONLY');
+
+  /**
+   * Enforces decisions by allowing or denying agent operations based on Cedar policies.
+   */
+  public static readonly ENFORCE = new PolicyEngineMode('ENFORCE');
+
+  /**
+   * A policy engine mode that this version of the CDK does not model.
+   *
+   * Prefer the static members above. Use this when the service has added a mode
+   * that the CDK has no member for yet: the CloudFormation registry schemas that
+   * validate the synthesized template ship with `aws-cdk-lib` and refresh on
+   * release, while the members above are added by hand, so a released CDK can
+   * accept a mode before it models one.
+   *
+   * @param value the raw mode value to pass to CloudFormation
+   */
+  public static of(value: string): PolicyEngineMode {
+    return new PolicyEngineMode(value);
+  }
+
+  /**
+   * The string value of the policy engine mode.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
+ * Configuration for associating a policy engine with a gateway.
+ *
+ * When configured, the policy engine intercepts all agent requests through this
+ * gateway and evaluates them against the defined Cedar policies.
+ * [disable-awslint:prefer-ref-interface]
+ */
+export interface GatewayPolicyEngineConfig {
+  /**
+   * The policy engine to associate with this gateway.
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly policyEngine: IPolicyEngine;
+
+  /**
+   * The enforcement mode for the policy engine.
+   *
+   * - `ENFORCE`: Actively allows or denies requests based on Cedar policy evaluation.
+   * - `LOG_ONLY`: Evaluates and logs decisions without enforcing them. Every tool call
+   *   succeeds regardless of any `forbid` policy, so this is intended for testing a policy
+   *   against real traffic and is not recommended for production.
+   *
+   * @default PolicyEngineMode.ENFORCE
+   */
+  readonly mode?: PolicyEngineMode;
+}
+
+/**
  * Properties for defining a Gateway
  */
 export interface GatewayProps {
@@ -297,6 +366,17 @@ export interface GatewayProps {
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
    */
   readonly interceptorConfigurations?: IInterceptor[];
+
+  /**
+   * The policy engine configuration for this gateway.
+   *
+   * When provided, the specified policy engine will be associated with this gateway.
+   * All agent requests through this gateway will be evaluated against the Cedar policies
+   * defined in the policy engine.
+   *
+   * @default - No policy engine (requests are not subject to Cedar policy authorization)
+   */
+  readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
 }
 
 /**
@@ -486,6 +566,11 @@ export class Gateway extends GatewayBase {
   private responseInterceptorConfig?: InterceptorBindConfig;
 
   /**
+   * The policy engine configuration associated with this gateway.
+   */
+  public readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
+
+  /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
   public userPoolDomain?: cognito.IUserPoolDomain;
@@ -570,6 +655,8 @@ export class Gateway extends GatewayBase {
       this.validateAndInitializeInterceptors(props.interceptorConfigurations);
     }
 
+    this.policyEngineConfiguration = props.policyEngineConfiguration;
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -581,6 +668,12 @@ export class Gateway extends GatewayBase {
       interceptorConfigurations: Lazy.any({ produce: () => this.renderInterceptorConfigurations() }),
       kmsKeyArn: this.kmsKey?.keyArn,
       name: this.gatewayName,
+      policyEngineConfiguration: this.policyEngineConfiguration
+        ? {
+          arn: this.policyEngineConfiguration.policyEngine.policyEngineArn,
+          mode: (this.policyEngineConfiguration.mode ?? PolicyEngineMode.ENFORCE).value,
+        }
+        : undefined,
       protocolConfiguration: this.protocolConfiguration._render(),
       protocolType: this.protocolConfiguration.protocolType,
       roleArn: this.role?.roleArn,
@@ -594,6 +687,11 @@ export class Gateway extends GatewayBase {
     this.createdAt = _resource.attrCreatedAt;
     this.updatedAt = _resource.attrUpdatedAt;
     this.statusReason = _resource.attrStatusReasons;
+
+    if (this.policyEngineConfiguration) {
+      this.policyEngineConfiguration.policyEngine.grantEvaluateForGateway(this.role, this);
+      _resource.node.addDependency(this.role);
+    }
   }
 
   /**

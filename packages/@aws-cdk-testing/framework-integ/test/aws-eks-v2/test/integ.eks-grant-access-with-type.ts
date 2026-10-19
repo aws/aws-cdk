@@ -19,8 +19,9 @@ import * as eks from 'aws-cdk-lib/aws-eks-v2';
  * - HYPERPOD_LINUX: Requires SageMaker HyperPod cluster
  *
  * Important AWS EKS API Constraint:
- * - Access entries with type EC2, HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
- * - Only STANDARD type access entries support access policies
+ * - Access entries with type HYBRID_LINUX or HYPERPOD_LINUX cannot have access policies attached
+ * - EC2 type access entries do support access policies (covered by the aws-eks integ test,
+ *   which creates an EC2 type entry with AmazonEKSAutoNodePolicy)
  */
 class EksGrantAccessWithType extends Stack {
   constructor(scope: App, id: string) {

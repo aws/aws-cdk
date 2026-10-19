@@ -43,7 +43,10 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import {
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021,
+  CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS,
+} from '../../cx-api';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
@@ -207,7 +210,8 @@ export interface DistributionProps {
   /**
    * The HTTP version(s) to enable on the distribution.
    *
-   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support Server Name Indication (SNI).
+   * For viewers and CloudFront to use HTTP/3, viewers must support TLS 1.3 and Server Name Indication (SNI).
    *
    * @default HttpVersion.HTTP2
    */
@@ -412,8 +416,12 @@ export class Distribution extends Resource implements IDistribution {
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 
-    const originId = this._addOrigin(props.defaultBehavior.origin);
-    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
+    const originId = this.addOrigin(props.defaultBehavior.origin);
+    this.defaultBehavior = new CacheBehavior(originId, {
+      pathPattern: '*',
+      ...props.defaultBehavior,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy),
+    });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
@@ -707,8 +715,12 @@ export class Distribution extends Resource implements IDistribution {
       throw new ValidationError(lit`DefaultBehaviorCannotHavePathPattern`, 'Only the default behavior can have a path pattern of \'*\'', this);
     }
     this.validateGrpc(behaviorOptions);
-    const originId = this._addOrigin(origin);
-    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+    const originId = this.addOrigin(origin);
+    this.additionalBehaviors.push(new CacheBehavior(originId, {
+      pathPattern,
+      ...behaviorOptions,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy),
+    }));
   }
 
   /**
@@ -903,6 +915,12 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
+  private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
+    const defaultPolicy = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
+      ? ViewerProtocolPolicy.REDIRECT_TO_HTTPS : ViewerProtocolPolicy.ALLOW_ALL;
+    return viewerProtocolPolicyProp ?? defaultPolicy;
+  }
+
   private validateGrpc(behaviorOptions: AddBehaviorOptions) {
     if (!behaviorOptions.enableGrpc) {
       return;
@@ -922,9 +940,9 @@ export class Distribution extends Resource implements IDistribution {
  * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdateDistribution.html#cloudfront-UpdateDistribution-request-HttpVersion
  */
 export enum HttpVersion {
-  /** HTTP 1.1 */
+  /** HTTP 1.1 only */
   HTTP1_1 = 'http1.1',
-  /** HTTP 2 */
+  /** HTTP 2 only */
   HTTP2 = 'http2',
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
@@ -1190,7 +1208,9 @@ export interface AddBehaviorOptions {
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default ViewerProtocolPolicy.ALLOW_ALL
+   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if the
+   * `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag is enabled,
+   * otherwise ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
