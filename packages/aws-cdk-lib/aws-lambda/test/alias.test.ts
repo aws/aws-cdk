@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { CfnParameter, Lazy, Stack } from '../../core';
+import { App, CfnParameter, Lazy, Stack } from '../../core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
@@ -718,5 +718,34 @@ describe('alias', () => {
       version,
       provisionedConcurrentExecutions: 10,
     })).toThrow('Provisioned Concurrency is not supported for functions with tenant isolation mode');
+  });
+});
+
+describe('imported alias metric dimensions', () => {
+  test.each([undefined, false, true])('preserves defaults with flag %s', (flag) => {
+    const app = new App({ context: flag === undefined ? {} : { '@aws-cdk/aws-lambda:importedAliasMetrics': flag } });
+    const stack = new Stack(app, 'Stack');
+    const version = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:worker:42');
+    const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'live', aliasVersion: version });
+    expect(alias.metricInvocations().dimensions).toEqual(flag ? {
+      FunctionName: 'worker', Resource: 'worker:live',
+    } : { FunctionName: 'worker:live' });
+    expect(alias.metricErrors({ dimensionsMap: { Custom: 'value' } }).dimensions).toEqual({ Custom: 'value' });
+    expect(alias.metricErrors({ dimensionsMap: { Preferred: 'map' }, dimensions: { Legacy: 'value' } }).dimensions).toEqual({ Preferred: 'map' });
+    expect(alias.metricErrors({ dimensions: { Legacy: 'value' } }).dimensions).toEqual(flag ? { Legacy: 'value' } : { FunctionName: 'worker:live' });
+  });
+
+  test('matches a created alias, including unresolved function names', () => {
+    const app = new App({ context: { '@aws-cdk/aws-lambda:importedAliasMetrics': true } });
+    const stack = new Stack(app, 'Stack');
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+    const version = fn.currentVersion;
+    const created = new lambda.Alias(stack, 'Created', { aliasName: 'live', version });
+    const imported = lambda.Alias.fromAliasAttributes(stack, 'Imported', { aliasName: 'live', aliasVersion: version });
+    expect(stack.resolve(imported.metricInvocations().dimensions)).toEqual(stack.resolve(created.metricInvocations().dimensions));
   });
 });
