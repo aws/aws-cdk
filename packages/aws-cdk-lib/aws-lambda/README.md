@@ -2367,6 +2367,16 @@ new lambda.WebFunction(this, 'MyWebFunction', {
 });
 ```
 
+Logs go to the log group passed in `logGroup`. Without one, the construct creates a log
+group, named by CloudFormation and retained when the stack is deleted. The `logGroup`
+attribute returns whichever is used, for example to output its name:
+
+```ts
+declare const fn: lambda.WebFunction;
+
+new CfnOutput(this, 'LogGroupName', { value: fn.logGroup.logGroupRef.logGroupName });
+```
+
 By default the runtime executes `index.js` at the root of the deployment
 package. Use `entryPoint` to point it at a different file (surfaced to the
 runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable):

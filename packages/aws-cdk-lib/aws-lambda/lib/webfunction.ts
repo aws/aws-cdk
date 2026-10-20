@@ -382,7 +382,8 @@ export interface WebFunctionProps {
   /**
    * The CloudWatch log group to send logs to.
    *
-   * @default - A log group named `/aws/lambda/web/<function name>` is created.
+   * @default - A log group is created, named by CloudFormation and retained when the stack is
+   * deleted. Read its name from the `logGroup` attribute.
    */
   readonly logGroup?: logs.ILogGroupRef;
 
@@ -702,6 +703,12 @@ export class WebFunction extends WebFunctionBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * The log group the WebFunction sends its logs to: the one passed in `logGroup`, or the one
+   * created for it.
+   */
+  public readonly logGroup: logs.ILogGroupRef;
+
+  /**
    * The domain name of the WebFunction endpoint — the host clients send
    * requests to.
    *
@@ -919,9 +926,8 @@ export class WebFunction extends WebFunctionBase {
       );
     }
 
-    const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup', {
-      logGroupName: `/aws/lambda/web/${functionName}`,
-    });
+    const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');
+    this.logGroup = logGroup;
 
     // Create the CloudFormation resource
     this.resource = new CfnWebFunction(this, 'Function', {

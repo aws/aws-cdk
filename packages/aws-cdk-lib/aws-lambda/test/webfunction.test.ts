@@ -1081,13 +1081,14 @@ describe('WebFunction template', () => {
   });
 
   test('creates a log group when none is given', () => {
-    new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func' }));
+    const fn = new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func' }));
     const template = Template.fromStack(stack);
 
     template.resourceCountIs('AWS::Logs::LogGroup', 1);
     template.hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: '/aws/lambda/web/my-func',
+      LogGroupName: Match.absent(),
     });
+    template.hasResource('AWS::Logs::LogGroup', { DeletionPolicy: 'Retain' });
     const logGroupId = Object.keys(template.findResources('AWS::Logs::LogGroup'))[0];
     template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       ServiceConfig: {
@@ -1096,13 +1097,15 @@ describe('WebFunction template', () => {
         },
       },
     });
+    expect(stack.resolve(fn.logGroup.logGroupRef.logGroupName)).toEqual({ Ref: logGroupId });
   });
 
   test('uses the given log group instead of creating one', () => {
     const logGroup = new LogGroup(stack, 'MyLogs', { logGroupName: 'my-logs' });
-    new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func', logGroup }));
+    const fn = new WebFunction(stack, 'Test', minimalProps({ webFunctionName: 'my-func', logGroup }));
     const template = Template.fromStack(stack);
 
+    expect(fn.logGroup).toBe(logGroup);
     template.resourceCountIs('AWS::Logs::LogGroup', 1);
     template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       ServiceConfig: {
