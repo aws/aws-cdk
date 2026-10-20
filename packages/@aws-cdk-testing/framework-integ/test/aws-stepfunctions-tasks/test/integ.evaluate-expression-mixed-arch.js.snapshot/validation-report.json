@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.7.0",
+      "pluginVersion": "1.12.1",
       "conclusion": "success",
       "violations": [
         {
@@ -17,14 +17,14 @@
           "violatingConstructs": [
             {
               "constructPath": "EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0"
             }
           ]
         },
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation was disabled on '2027-02-01' and update on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"
@@ -32,8 +32,8 @@
           "violatingConstructs": [
             {
               "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/Eval105f0693c0824e9b83f39007507676f0/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
                 "logicalId": "Eval105f0693c0824e9b83f39007507676f0117865DA",
@@ -44,8 +44,8 @@
             },
             {
               "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/Eval9757c2676d7c45c2af7737a30d93d2c6/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.6.0",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
                 "logicalId": "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",

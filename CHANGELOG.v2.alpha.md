@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.273.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.272.0-alpha.0...v2.273.0-alpha.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **redshift-alpha:** PUBLIC in any ASCII letter case is rejected as the name of a created user, or of an imported user that is granted table privileges. Existing PUBLIC grants are not removed, but narrowing one is rejected. Migrating to an ordinary name still works.
+* **redshift-alpha:** The `loggingProperties` prop on `ClusterProps` (and the `LoggingProperties` interface) has been removed from `@aws-cdk/aws-redshift-alpha`. Use the new `logging` prop with `ClusterLogging.s3({ bucket, keyPrefix })` or `ClusterLogging.cloudWatch({ logExports })` instead.
+
+### Features
+
+* **redshift-alpha:** audit logging to cloudwatch ([#36410](https://github.com/aws/aws-cdk/issues/36410)) ([f2bf5d3](https://github.com/aws/aws-cdk/commit/f2bf5d31af8aa4da1863ebc08b1a98182d525eb7)), closes [#25755](https://github.com/aws/aws-cdk/issues/25755)
+
+
+### Bug Fixes
+
+* **redshift-alpha:** reject PUBLIC user names ([#38935](https://github.com/aws/aws-cdk/issues/38935)) ([3335407](https://github.com/aws/aws-cdk/commit/3335407fa794c9b7183ccc2667a1c815429cb9c6))
+
+## [2.272.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.271.0-alpha.0...v2.272.0-alpha.0) (2026-09-30)
+
+## [2.271.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.270.0-alpha.0...v2.271.0-alpha.0) (2026-09-25)
+
+## [2.270.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.269.0-alpha.0...v2.270.0-alpha.0) (2026-09-17)
+
 ## [2.269.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.268.0-alpha.0...v2.269.0-alpha.0) (2026-09-10)
 
 
