@@ -48,7 +48,7 @@ import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
+import { LAMBDA_DENY_LOG_GROUP_CREATION, LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -1020,9 +1020,34 @@ export class Function extends FunctionBase {
       managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
     }
 
+    // Lambda delivers logs a few seconds after an invocation ends. If the log group is in the app,
+    // it can be deleted with the stack before they arrive, and the delivery would then create it
+    // again outside the stack. The deny is an inline policy of the role, not a separate policy
+    // resource, so it lasts as long as the role. It names only the function's own log group, so
+    // other log groups the role may create, such as Lambda Insights', are unaffected.
+    const protectedLogGroupName = FeatureFlags.of(this).isEnabled(LAMBDA_DENY_LOG_GROUP_CREATION)
+      ? this.logGroupNameInApp(props)
+      : undefined;
+
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies,
+      inlinePolicies: protectedLogGroupName !== undefined ? {
+        DenyLogGroupCreation: new iam.PolicyDocument({
+          statements: [new iam.PolicyStatement({
+            effect: iam.Effect.DENY,
+            actions: ['logs:CreateLogGroup'],
+            // Lambda's log delivery is authorized against the `:*` form of the log group ARN, which
+            // the bare form does not match.
+            resources: [protectedLogGroupName, `${protectedLogGroupName}:*`].map(resourceName => Stack.of(this).formatArn({
+              service: 'logs',
+              resource: 'log-group',
+              resourceName,
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            })),
+          })],
+        }),
+      } : undefined,
     });
     this.grantPrincipal = this.role;
     this.tenancyConfig = props.tenancyConfig;
@@ -1459,6 +1484,24 @@ export class Function extends FunctionBase {
   @MethodMetadata()
   public addAlias(aliasName: string, options?: AliasOptions): Alias {
     return addAlias(this, this.currentVersion, aliasName, options);
+  }
+
+  /**
+   * The name of the function's log group when it is defined in the app, so its role can be denied
+   * creating it. Lambda may need to create log groups defined elsewhere, so those return undefined.
+   */
+  private logGroupNameInApp(props: FunctionProps): string | undefined {
+    if (props.logGroup !== undefined) {
+      return props.logGroup instanceof logs.LogGroup ? props.logGroup.logGroupName : undefined;
+    }
+    if (props.logRetention !== undefined || !FeatureFlags.of(this).isEnabled(USE_CDK_MANAGED_LAMBDA_LOGGROUP)) {
+      return undefined;
+    }
+    // Without a literal name, the managed log group is named after a reference to the function,
+    // which the function's role cannot reference without a cycle.
+    return props.functionName !== undefined && !Token.isUnresolved(props.functionName)
+      ? `/aws/lambda/${props.functionName}`
+      : '/aws/lambda/*';
   }
 
   /**

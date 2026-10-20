@@ -5428,6 +5428,141 @@ describe('tag propagation to logGroup on FF USE_CDK_MANAGED_LAMBDA_LOGGROUP enab
   });
 });
 
+describe('LAMBDA_DENY_LOG_GROUP_CREATION', () => {
+  function logGroupArn(logGroupName: unknown, suffix: string) {
+    return {
+      'Fn::Join': ['', [
+        'arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' },
+        ...(typeof logGroupName === 'string' ? [`:log-group:${logGroupName}${suffix}`] : [':log-group:', logGroupName, ...(suffix ? [suffix] : [])]),
+      ]],
+    };
+  }
+
+  function denyLogGroupCreation(logGroupName: unknown) {
+    return {
+      PolicyName: 'DenyLogGroupCreation',
+      PolicyDocument: {
+        Statement: [{
+          Action: 'logs:CreateLogGroup',
+          Effect: 'Deny',
+          Resource: [logGroupArn(logGroupName, ''), logGroupArn(logGroupName, ':*')],
+        }],
+        Version: '2012-10-17',
+      },
+    };
+  }
+
+  function newStack(context: Record<string, boolean>) {
+    const app = new cdk.App({ context });
+    return new cdk.Stack(app, 'Stack');
+  }
+
+  function newFunction(stack: cdk.Stack, props: Partial<lambda.FunctionProps> = {}) {
+    return new lambda.Function(stack, 'Function', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      ...props,
+    });
+  }
+
+  function inlinePoliciesOfRole(stack: cdk.Stack, role: iam.IRole) {
+    const roleId = stack.resolve((role.node.defaultChild as cdk.CfnResource).logicalId);
+    return Template.fromStack(stack).toJSON().Resources[roleId].Properties.Policies;
+  }
+
+  const bothFlags = { [cxapi.LAMBDA_DENY_LOG_GROUP_CREATION]: true, [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true };
+
+  test('denies creating the managed log group of a named function', () => {
+    // GIVEN
+    const stack = newStack(bothFlags);
+
+    // WHEN
+    const fn = newFunction(stack, { functionName: 'my-function' });
+
+    // THEN
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toEqual([denyLogGroupCreation('/aws/lambda/my-function')]);
+  });
+
+  test('denies creating any /aws/lambda/ log group when the managed log group is named after a reference', () => {
+    // GIVEN
+    const stack = newStack(bothFlags);
+
+    // WHEN
+    const fn = newFunction(stack);
+
+    // THEN
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toEqual([denyLogGroupCreation('/aws/lambda/*')]);
+  });
+
+  test('denies creating a log group passed as logGroup', () => {
+    // GIVEN
+    const stack = newStack({ [cxapi.LAMBDA_DENY_LOG_GROUP_CREATION]: true });
+    const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    const fn = newFunction(stack, { logGroup });
+
+    // THEN
+    const logGroupId = stack.resolve((logGroup.node.defaultChild as cdk.CfnResource).logicalId);
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toEqual([denyLogGroupCreation({ Ref: logGroupId })]);
+  });
+
+  test('leaves Lambda Insights able to create its log group', () => {
+    // GIVEN
+    const stack = newStack(bothFlags);
+
+    // WHEN
+    const fn = newFunction(stack, { functionName: 'my-function', insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_229_0 });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      ManagedPolicyArns: Match.arrayWith([{
+        'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy']],
+      }]),
+    });
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toEqual([denyLogGroupCreation('/aws/lambda/my-function')]);
+  });
+
+  test.each([
+    ['the flag is disabled', { [cxapi.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: true }, {}],
+    ['Lambda creates the log group', { [cxapi.LAMBDA_DENY_LOG_GROUP_CREATION]: true }, {}],
+    ['logRetention creates the log group', bothFlags, { logRetention: logs.RetentionDays.ONE_WEEK }],
+  ])('does not deny log group creation when %s', (_case, context, props) => {
+    // GIVEN
+    const stack = newStack(context);
+
+    // WHEN
+    const fn = newFunction(stack, props);
+
+    // THEN
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toBeUndefined();
+  });
+
+  test('does not deny log group creation for an imported log group', () => {
+    // GIVEN
+    const stack = newStack({ [cxapi.LAMBDA_DENY_LOG_GROUP_CREATION]: true });
+
+    // WHEN
+    const fn = newFunction(stack, { logGroup: logs.LogGroup.fromLogGroupName(stack, 'LogGroup', 'existing') });
+
+    // THEN
+    expect(inlinePoliciesOfRole(stack, fn.role!)).toBeUndefined();
+  });
+
+  test('does not change a role passed as role', () => {
+    // GIVEN
+    const stack = newStack(bothFlags);
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+
+    // WHEN
+    newFunction(stack, { role });
+
+    // THEN
+    expect(inlinePoliciesOfRole(stack, role)).toBeUndefined();
+  });
+});
+
 describe('USE_CDK_MANAGED_LAMBDA_LOGGROUP defaults to false when not specified', () => {
   it('does not create a managed log group when context flag is not specified', () => {
     // GIVEN
