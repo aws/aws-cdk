@@ -4,7 +4,7 @@ import { CfnServerlessCache } from 'aws-cdk-lib/aws-elasticache';
 import type * as events from 'aws-cdk-lib/aws-events';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Size } from 'aws-cdk-lib/core';
-import { ArnFormat, Stack, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
+import { Annotations, ArnFormat, Stack, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -41,6 +41,58 @@ const REQUEST_RATE_MIN_ECPU = 1000;
  * Maximum request rate limit in ECPUs per second for ServerlessCache
  */
 const REQUEST_RATE_MAX_ECPU = 15000000;
+/**
+ * Minimum Valkey major version that supports public endpoints
+ */
+const PUBLIC_CONNECTION_MIN_VALKEY_VERSION = 9;
+/**
+ * System-managed user group whose users all authenticate with IAM, used by default for public caches
+ */
+const DEFAULT_IAM_USER_GROUP_ID = 'default.iam-user-group';
+
+/**
+ * How clients connect to a ServerlessCache.
+ *
+ * To target a connection type that is not yet represented by a named instance,
+ * use `ConnectionType.of(value)`.
+ */
+export class ConnectionType {
+  /**
+   * The cache is reachable only from within a VPC, through the subnets and security groups it is placed in.
+   */
+  public static readonly VPC = ConnectionType.of('vpc');
+
+  /**
+   * The cache is reachable through a public endpoint, without a VPC.
+   */
+  public static readonly PUBLIC = ConnectionType.of('public');
+
+  /**
+   * Create a new `ConnectionType` with an arbitrary value.
+   *
+   * @param value the connection type (for example, `'vpc'` or `'public'`)
+   */
+  public static of(value: string): ConnectionType {
+    return new ConnectionType(value);
+  }
+
+  /**
+   * The connection type, for example `'vpc'` or `'public'`.
+   * Maps directly to the `ConnectionType` property of `AWS::ElastiCache::ServerlessCache`.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the connection type as a string (for example, `'public'`).
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
 
 /**
  * Usage limits configuration for ServerlessCache
@@ -145,11 +197,29 @@ export interface ServerlessCacheProps {
    */
   readonly kmsKey?: kms.IKey;
   /**
-   * The VPC to place the cache in
+   * How clients connect to the cache
+   *
+   * `ConnectionType.PUBLIC` makes the cache reachable over the internet without a VPC.
+   * Public caches require Valkey 9 or later, and every user in the user group must use IAM authentication.
+   *
+   * The connection type cannot be changed after the cache is created.
+   *
+   * @see https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/serverless-public-endpoints-chapter.html
+   * @default ConnectionType.VPC
    */
-  readonly vpc: ec2.IVpc;
+  readonly connectionType?: ConnectionType;
+  /**
+   * The VPC to place the cache in
+   *
+   * Required when `connectionType` is `ConnectionType.VPC`. Must not be set when `connectionType` is `ConnectionType.PUBLIC`.
+   *
+   * @default - No VPC. Only valid when `connectionType` is `ConnectionType.PUBLIC`
+   */
+  readonly vpc?: ec2.IVpc;
   /**
    * Which subnets to place the cache in
+   *
+   * Must not be set when `connectionType` is `ConnectionType.PUBLIC`.
    *
    * @default - Private subnets with egress
    */
@@ -157,13 +227,15 @@ export interface ServerlessCacheProps {
   /**
    * Security groups for the cache
    *
-   * @default - A new security group is created
+   * Must not be set when `connectionType` is `ConnectionType.PUBLIC`.
+   *
+   * @default - A new security group is created. No security group is used when `connectionType` is `ConnectionType.PUBLIC`
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
   /**
    * User group for access control
    *
-   * @default - No user group
+   * @default - No user group. When `connectionType` is `ConnectionType.PUBLIC`, the system-managed `default.iam-user-group` is used
    */
   readonly userGroup?: IUserGroup;
 }
@@ -410,7 +482,7 @@ export class ServerlessCache extends ServerlessCacheBase {
    */
   public readonly connections: ec2.Connections;
 
-  constructor(scope: Construct, id: string, props: ServerlessCacheProps) {
+  constructor(scope: Construct, id: string, props: ServerlessCacheProps = {}) {
     super(scope, id, {});
 
     // Enhanced CDK Analytics Telemetry
@@ -430,13 +502,26 @@ export class ServerlessCache extends ServerlessCacheBase {
     this.validateBackupSettings(props.backup);
     this.validateUserGroupCompatibility(this.engine, this.userGroup);
 
-    const subnetConfig = this.configureSubnets(props);
-    const subnetIds = subnetConfig.subnetIds;
-    this.subnets = subnetConfig.subnets;
+    let subnetIds: string[] | undefined;
+    let securityGroupIds: string[] | undefined;
+    const isPublic = props.connectionType?.value === ConnectionType.PUBLIC.value;
+    if (isPublic) {
+      this.validatePublicConnection(props, this.engine);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-elasticache-alpha:publicServerlessCache',
+        'This serverless cache uses a public endpoint and is reachable from the internet. Access is controlled by IAM authentication only.');
+    } else {
+      if (!props.vpc) {
+        throw new ValidationError(lit`VpcRequired`, 'vpc is required when connectionType is not ConnectionType.PUBLIC', this);
+      }
 
-    const securityGroupConfig = this.configureSecurityGroups(props);
-    const securityGroupIds = securityGroupConfig.securityGroupIds;
-    this.securityGroups = securityGroupConfig.securityGroups;
+      const subnetConfig = this.configureSubnets(props.vpc, props.vpcSubnets);
+      subnetIds = subnetConfig.subnetIds;
+      this.subnets = subnetConfig.subnets;
+
+      const securityGroupConfig = this.configureSecurityGroups(props.vpc, props.securityGroups);
+      securityGroupIds = securityGroupConfig.securityGroupIds;
+      this.securityGroups = securityGroupConfig.securityGroups;
+    }
 
     const resource = new CfnServerlessCache(this, 'Resource', {
       engine: this.engine.engineType,
@@ -451,7 +536,8 @@ export class ServerlessCache extends ServerlessCacheBase {
       kmsKeyId: props.kmsKey?.keyId,
       subnetIds: subnetIds,
       securityGroupIds: securityGroupIds,
-      userGroupId: props.userGroup?.userGroupName,
+      userGroupId: props.userGroup?.userGroupName ?? (isPublic ? DEFAULT_IAM_USER_GROUP_ID : undefined),
+      connectionType: props.connectionType?.value,
     });
 
     if (props.userGroup) {
@@ -593,6 +679,28 @@ export class ServerlessCache extends ServerlessCacheBase {
   }
 
   /**
+   * Validate that a public cache has no VPC configuration and uses a supported engine
+   *
+   * @param props The ServerlessCache properties
+   * @param engine The cache engine
+   */
+  private validatePublicConnection(props: ServerlessCacheProps, engine: CacheEngine): void {
+    if (props.vpc !== undefined || props.vpcSubnets !== undefined || props.securityGroups !== undefined) {
+      throw new ValidationError(lit`PublicCacheVpcConfiguration`, 'vpc, vpcSubnets and securityGroups must not be set when connectionType is ConnectionType.PUBLIC, remove them or use ConnectionType.VPC', this);
+    }
+
+    if (engine.engineType !== 'valkey') {
+      throw new ValidationError(lit`PublicCacheUnsupportedEngine`, `ConnectionType.PUBLIC requires the valkey engine, got ${JSON.stringify(engine.engineType)}`, this);
+    }
+
+    const majorEngineVersion = engine.majorEngineVersion;
+    if (majorEngineVersion !== undefined && !Token.isUnresolved(majorEngineVersion) &&
+      Number(majorEngineVersion) < PUBLIC_CONNECTION_MIN_VALKEY_VERSION) {
+      throw new ValidationError(lit`PublicCacheUnsupportedEngineVersion`, `ConnectionType.PUBLIC requires valkey ${PUBLIC_CONNECTION_MIN_VALKEY_VERSION} or later, got ${JSON.stringify(majorEngineVersion)}`, this);
+    }
+  }
+
+  /**
    * Render cache usage limits for CloudFormation
    *
    * @param limits The usage limits to render
@@ -624,15 +732,16 @@ export class ServerlessCache extends ServerlessCacheBase {
   /**
    * Configure subnets for the cache
    *
-   * @param props The ServerlessCache properties
+   * @param vpc The VPC to place the cache in
+   * @param vpcSubnets Which subnets to place the cache in
    * @returns Object containing subnet IDs and subnet objects
    */
-  private configureSubnets(props: ServerlessCacheProps): { subnetIds: string[] | undefined; subnets: ec2.ISubnet[] | undefined } {
+  private configureSubnets(vpc: ec2.IVpc, vpcSubnets?: ec2.SubnetSelection): { subnetIds: string[] | undefined; subnets: ec2.ISubnet[] | undefined } {
     let selectedSubnets;
-    if (props.vpcSubnets) {
-      selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
+    if (vpcSubnets) {
+      selectedSubnets = vpc.selectSubnets(vpcSubnets);
     } else {
-      selectedSubnets = props.vpc.selectSubnets({
+      selectedSubnets = vpc.selectSubnets({
         subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
       });
     }
@@ -646,19 +755,23 @@ export class ServerlessCache extends ServerlessCacheBase {
   /**
    * Configure security groups for the cache
    *
-   * @param props The ServerlessCache properties
+   * @param vpc The VPC to create a security group in, when none are given
+   * @param securityGroups Security groups for the cache
    * @returns Object containing security group IDs and security group objects
    */
-  private configureSecurityGroups(props: ServerlessCacheProps): { securityGroupIds: string[]; securityGroups: ec2.ISecurityGroup[] } {
-    if (props.securityGroups && props.securityGroups.length > 0) {
+  private configureSecurityGroups(
+    vpc: ec2.IVpc,
+    securityGroups?: ec2.ISecurityGroup[],
+  ): { securityGroupIds: string[]; securityGroups: ec2.ISecurityGroup[] } {
+    if (securityGroups && securityGroups.length > 0) {
       return {
-        securityGroupIds: props.securityGroups.map(sg => sg.securityGroupId),
-        securityGroups: props.securityGroups,
+        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+        securityGroups: securityGroups,
       };
     } else {
       const newSecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: `Security group for ${this.node.id} cache.`,
-        vpc: props.vpc,
+        vpc: vpc,
       });
       return {
         securityGroupIds: [newSecurityGroup.securityGroupId],
