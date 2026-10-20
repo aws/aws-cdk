@@ -794,3 +794,9 @@ _cdk.json_
   }
 }
 ```
+
+
+* `@aws-cdk/aws-lambda:versionMetrics`
+
+Version metric Resource dimensions use the qualified function name. This is disabled for existing applications.
+Enable it explicitly after reviewing affected alarms and dashboards.

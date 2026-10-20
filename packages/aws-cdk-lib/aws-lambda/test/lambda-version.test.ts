@@ -434,3 +434,25 @@ describe('lambda version', () => {
     });
   });
 });
+
+describe('version metric Resource dimension', () => {
+  test.each([undefined, false, true])('uses the compatible dimensions with flag %s', (flag) => {
+    const app = new cdk.App({ context: flag === undefined ? {} : { '@aws-cdk/aws-lambda:versionMetrics': flag } });
+    const stack = new cdk.Stack(app, 'Stack');
+    const fn = new lambda.Function(stack, 'Function', {
+      functionName: 'worker',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+    });
+    const version = fn.currentVersion;
+    const dimensions = stack.resolve(version.metricInvocations().dimensions);
+    expect(dimensions).toEqual(flag ? {
+      FunctionName: stack.resolve(fn.functionName),
+      Resource: stack.resolve(`${fn.functionName}:${version.version}`),
+    } : { FunctionName: stack.resolve(`${fn.functionName}:${version.version}`) });
+    expect(version.metric('Errors', { dimensionsMap: { Custom: 'value' } }).dimensions).toEqual({ Custom: 'value' });
+    expect(stack.resolve(version.metric('Errors', { dimensions: { Legacy: 'value' } }).dimensions)).toEqual(flag ? { Legacy: 'value' } : { FunctionName: stack.resolve(`${fn.functionName}:${version.version}`) });
+    expect(version.metric('Errors', { dimensionsMap: { Preferred: 'map' }, dimensions: { Legacy: 'value' } }).dimensions).toEqual({ Preferred: 'map' });
+  });
+});
