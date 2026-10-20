@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.274.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.273.0-alpha.0...v2.274.0-alpha.0) (2026-10-20)
+
+
+### Features
+
+* **bedrock-alpha:** add VectorKnowledgeBase L2 construct for bedrock knowledge bases ([#38883](https://github.com/aws/aws-cdk/issues/38883)) ([5041639](https://github.com/aws/aws-cdk/commit/5041639479aaa5204ff2ff1068f1bae40b32164d)), closes [aws/aws-cdk-rfcs#686](https://github.com/aws/aws-cdk-rfcs/issues/686)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** allow valid secondary CIDR blocks outside RFC 1918 ([#36873](https://github.com/aws/aws-cdk/issues/36873)) ([8f48c90](https://github.com/aws/aws-cdk/commit/8f48c9024329100068d8376a8f309912e7fb2b13)), closes [#36111](https://github.com/aws/aws-cdk/issues/36111)
+* **redshift-alpha:** backslashes in user passwords and comments are not preserved ([#39306](https://github.com/aws/aws-cdk/issues/39306)) ([1f752b6](https://github.com/aws/aws-cdk/commit/1f752b67bfdd52181273e9ffb17ae9005c16b9f9))
+
 ## [2.273.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.272.0-alpha.0...v2.273.0-alpha.0) (2026-10-08)
 
 
