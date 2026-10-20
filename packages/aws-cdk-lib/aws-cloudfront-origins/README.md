@@ -970,7 +970,6 @@ new cloudfront.Distribution(this, 'MyDistribution', {
     origin: new origins.HttpOrigin(regionalEndpointDomainName, {
       originAccessControlId: oac.originAccessControlId,
     }),
-    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
   },
 });
 ```
@@ -989,33 +988,13 @@ new cloudfront.Distribution(this, 'MyGlobalDistribution', {
     origin: new origins.HttpOrigin(globalEndpointDomainName, {
       originAccessControlId: oac.originAccessControlId,
     }),
-    originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
   },
 });
 ```
 
-If you use a different origin request policy, choose one that doesn't forward the viewer's `Host` header.
+If you add an origin request policy, choose one that doesn't forward the viewer's `Host` header, such as `OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER`.
 
-CloudFront removes the viewer's `Authorization` header from GET and HEAD requests unless it's in the cache key. If your function reads it, add it to the cache policy. This policy works like `CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS` with `Authorization` in place of `Host`, and caches only the responses that your function marks as cacheable with `Cache-Control`:
-
-```ts
-const cachePolicy = new cloudfront.CachePolicy(this, 'WebFunctionCachePolicy', {
-  defaultTtl: Duration.seconds(0),
-  headerBehavior: cloudfront.CacheHeaderBehavior.allowList(
-    'Authorization',
-    'Origin',
-    'X-HTTP-Method',
-    'X-HTTP-Method-Override',
-    'X-Method-Override',
-  ),
-  cookieBehavior: cloudfront.CacheCookieBehavior.all(),
-  queryStringBehavior: cloudfront.CacheQueryStringBehavior.all(),
-  enableAcceptEncodingGzip: true,
-  enableAcceptEncodingBrotli: true,
-});
-```
-
-Set it as the `cachePolicy` of the behavior in either example above.
+CloudFront forwards the viewer's `Authorization` header on GET and HEAD requests only when it's in the cache policy. If your function reads it, include it in the cache policy. See [Restrict access to an AWS Lambda Web Function origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html).
 
 ### Web Function permissions
 
