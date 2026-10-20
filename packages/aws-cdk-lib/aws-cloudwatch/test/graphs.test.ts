@@ -200,7 +200,6 @@ describe('Graphs', () => {
         metrics: [
           ['CDK', 'Test'],
         ],
-        accountId: '123456789012',
         liveData: true,
       },
     }]);
