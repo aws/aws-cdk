@@ -931,7 +931,6 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 ```
 
-
 ### Text widget
 
 A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
