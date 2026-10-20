@@ -1996,7 +1996,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.274.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',

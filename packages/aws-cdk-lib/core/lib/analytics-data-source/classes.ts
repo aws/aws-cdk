@@ -25996,6 +25996,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'KnowledgeBase': {
+      'type': '*',
+      'knowledgeBaseName': '*',
+      'description': '*',
+      'role': '*',
+      'tags': '*'
+    },
     'Prompt': {
       'promptName': '*',
       'description': '*',
