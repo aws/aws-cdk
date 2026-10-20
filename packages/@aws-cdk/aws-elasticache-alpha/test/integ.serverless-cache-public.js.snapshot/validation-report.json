@@ -1,0 +1,35 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "ConnectionType: Additional properties are not allowed ('ConnectionType' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-serverless-cache-public/Cache/Resource",
+              "constructFqn": "aws-cdk-lib.aws_elasticache.CfnServerlessCache",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-serverless-cache-public.template.json",
+                "logicalId": "Cache18F6EE16",
+                "propertyPaths": [
+                  "Properties.ConnectionType"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
