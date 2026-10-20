@@ -2525,11 +2525,13 @@
     ],
     "SigningBehavior": [
       "always",
+      "always-amz-auth",
       "never",
       "no-override"
     ],
     "SigningProtocol": [
-      "sigv4"
+      "sigv4",
+      "sigv4a"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts": {
