@@ -121,6 +121,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | V2NEXT | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy](#aws-cdkaws-stepfunctions-tasksfixbatchsubmitjobpolicy) | When enabled, BatchSubmitJob grants batch:SubmitJob on its job definition instead of every job definition in the account. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -204,6 +205,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
     "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
+    "@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy": true,
     "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
     "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
     "@aws-cdk/core:annotationsInValidationReport": true,
@@ -2637,6 +2639,25 @@ When disabled, the destination ARN keeps using the log group `Arn` attribute.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
+
+
+### @aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy
+
+*When enabled, BatchSubmitJob grants batch:SubmitJob on its job definition instead of every job definition in the account.*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the policy grants `job-definition/<name>` and `job-definition/<name>:*` instead of `job-definition/*`.
+A JsonPath or JSONata job definition keeps `job-definition/*`, and a JsonPath or JSONata queue keeps `*`.
+A token must resolve to a job definition ARN, as `jobDefinition.jobDefinitionArn` does.
+
+It is not on by default because other states that share the role, and submit a different job definition, would get AccessDenied.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

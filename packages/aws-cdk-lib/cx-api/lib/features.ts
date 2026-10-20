@@ -161,6 +161,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY = '@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2000,6 +2001,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, BatchSubmitJob grants batch:SubmitJob on its job definition instead of every job definition in the account.',
+    detailsMd: `
+      When enabled, the policy grants \`job-definition/<name>\` and \`job-definition/<name>:*\` instead of \`job-definition/*\`.
+      A JsonPath or JSONata job definition keeps \`job-definition/*\`, and a JsonPath or JSONata queue keeps \`*\`.
+      A token must resolve to a job definition ARN, as \`jobDefinition.jobDefinitionArn\` does.
+
+      It is not on by default because other states that share the role, and submit a different job definition, would get AccessDenied.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 

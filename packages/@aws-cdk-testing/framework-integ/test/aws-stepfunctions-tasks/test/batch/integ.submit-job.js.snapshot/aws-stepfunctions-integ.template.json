@@ -713,7 +713,74 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":job-definition/*"
+           ":job-definition/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "JobDefinition24FFE3ED"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":batch:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":job-definition/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "JobDefinition24FFE3ED"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
           ]
          ]
         }
@@ -811,6 +878,14 @@
   "StateMachineArn": {
    "Value": {
     "Ref": "StateMachine2E01A3A5"
+   }
+  },
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  },
