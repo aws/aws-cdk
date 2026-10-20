@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "origin-access-control-sigv4a/DefaultTest": {
+      "stacks": [
+        "cloudfront-origin-access-control-sigv4a"
+      ],
+      "assertionStack": "origin-access-control-sigv4a/DefaultTest/DeployAssert",
+      "assertionStackName": "originaccesscontrolsigv4aDefaultTestDeployAssert674A8032"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

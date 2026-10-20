@@ -106,6 +106,38 @@ describe('Runtime default tests', () => {
   test('Should have policy for execution role with correct permissions', () => {
     template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
   });
+
+  test('Should have acknowledgeable annotation regarding container URI validation', () => {
+    const appCUri = new cdk.App();
+    const stackCUri = new cdk.Stack(appCUri, 'ack-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const repositoryCUri = new ecr.Repository(stackCUri, 'TestRepository');
+    const runtimeCUri = new Runtime(stackCUri, 'test-runtime-container-uri', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repositoryCUri, 'v1.0.0'),
+    });
+
+    cdk.Annotations.of(runtimeCUri).acknowledgeInfo('aws-cdk-lib.aws-bedrockagentcore:containerUriValidationSkipped');
+
+    Annotations.fromStack(stackCUri).hasNoInfo('*', Match.stringLikeRegexp('Container URI validation'));
+  });
+
+  test('Should have acknowledgeable annotation regarding cross-account IAM role usage', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
+
+    new Runtime(stack, 'test-runtime-cross-account', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+      executionRole: crossAccountRole,
+    });
+
+    cdk.Validations.of(stack).acknowledge({
+      id: 'aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount',
+      reason: 'The cross-account role is intended.',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('IAM role is from a different account'));
+  });
 });
 
 describe('Runtime with custom execution role tests', () => {
@@ -2425,7 +2457,7 @@ describe('Runtime role validation tests', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
-    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured. [ack: aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount]');
   });
 });
 
