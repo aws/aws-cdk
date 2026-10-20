@@ -34,12 +34,13 @@ export function* iterateDfsPreorder(root: IConstruct) {
  * calls and accumulates into an array, both of which are much slower
  * than this solution.
  */
-export function* iterateStackCfnResources(root: IConstruct): IterableIterator<CfnResource> {
+export function* iterateTemplateCfnResources(root: IConstruct): IterableIterator<CfnResource> {
   const stack: IConstruct[] = [root];
 
   let next = stack.pop();
   while (next) {
     if (NESTED_STACK_TYPE.isMarked(next)) {
+      // Only the nested stack resource but nothing else
       if (next.nestedStackResource) {
         yield next.nestedStackResource;
       }
