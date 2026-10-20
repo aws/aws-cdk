@@ -1,0 +1,106 @@
+{
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkserverlesscachepublicintegDefaultTestDeployAssert2A341934.template.json"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98cWaitForRole444EFCD9"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98cWaitFor8F498BF5"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98cWaitForIsCompleteProviderInvoke84CFB9A0"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert/AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98c/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallElastiCachedescribeServerlessCaches2fbda47f0e31cbc9555132a37801a98cWaitForTimeoutProviderInvokeCD93E489"
+    }
+  ]
+}

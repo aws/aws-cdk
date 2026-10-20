@@ -1,0 +1,21 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "56b780a50874b7f7901888f369b22a5dbc9e05c0305103566a36d8665ed20cf0": {
+      "displayName": "aws-cdk-serverless-cache-public Template",
+      "source": {
+        "path": "aws-cdk-serverless-cache-public.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-f2c7baa0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "56b780a50874b7f7901888f369b22a5dbc9e05c0305103566a36d8665ed20cf0.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
