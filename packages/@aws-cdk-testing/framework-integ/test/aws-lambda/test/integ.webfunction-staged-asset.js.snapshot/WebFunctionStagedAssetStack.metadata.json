@@ -164,9 +164,7 @@
   "/WebFunctionStagedAssetStack/Automatic/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/WebFunctionStagedAssetStack/Automatic/Function": [
@@ -352,9 +350,7 @@
   "/WebFunctionStagedAssetStack/AutomaticSecond/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/WebFunctionStagedAssetStack/AutomaticSecond/Function": [
@@ -420,9 +416,7 @@
   "/WebFunctionStagedAssetStack/Specific/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/WebFunctionStagedAssetStack/Specific/Function": [

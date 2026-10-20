@@ -633,7 +633,6 @@
   "FunctionLogGroup55B80E27": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/web/WebFunctionNetwotorStackFunction4CFB0255",
     "RetentionInDays": 731
    },
    "DependsOn": [

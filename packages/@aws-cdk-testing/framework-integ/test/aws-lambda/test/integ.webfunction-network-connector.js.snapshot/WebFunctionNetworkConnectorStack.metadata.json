@@ -83,7 +83,7 @@
       "trace": [
         "Annotations.addMessage (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:647:47)",
+        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:651:47)",
         "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:88:21)",
         "Module._compile (node:internal/modules/cjs/loader:1706:14)",
@@ -336,9 +336,7 @@
   "/WebFunctionNetworkConnectorStack/Function/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/WebFunctionNetworkConnectorStack/Function/Function": [

@@ -23,7 +23,17 @@
                 "templatePath": "WebFunctionMinimalStack.template.json",
                 "logicalId": "MinimalBucketFunction70777F34"
               }
-            },
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionRevision'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
             {
               "constructPath": "WebFunctionMinimalStack/MinimalBucket/Revision",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionRevision",
@@ -32,7 +42,17 @@
                 "templatePath": "WebFunctionMinimalStack.template.json",
                 "logicalId": "MinimalBucketRevision0400274F"
               }
-            },
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::WebFunctionEndpoint'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
             {
               "constructPath": "WebFunctionMinimalStack/MinimalBucket/Endpoint",
               "constructFqn": "aws-cdk-lib.aws_lambda.CfnWebFunctionEndpoint",

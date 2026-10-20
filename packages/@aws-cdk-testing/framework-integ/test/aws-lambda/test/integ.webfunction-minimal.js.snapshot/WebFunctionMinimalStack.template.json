@@ -479,7 +479,6 @@
   "MinimalBucketLogGroup04559959": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/web/WebFunctionMinimackMinimalBucket31833657",
     "RetentionInDays": 731,
     "Tags": [
      {

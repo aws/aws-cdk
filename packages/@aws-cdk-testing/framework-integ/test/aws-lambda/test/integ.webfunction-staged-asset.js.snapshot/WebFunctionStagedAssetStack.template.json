@@ -61,7 +61,6 @@
   "AutomaticLogGroupC4AD0641": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/web/WebFunctionStageetStackAutomaticA68429D7",
     "RetentionInDays": 731
    },
    "DependsOn": [
@@ -617,7 +616,6 @@
   "AutomaticSecondLogGroup7FE94734": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/web/WebFunctionStagekAutomaticSecondB3C75A59",
     "RetentionInDays": 731
    },
    "DependsOn": [
@@ -927,7 +925,6 @@
   "SpecificLogGroup92FAE761": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/lambda/web/WebFunctionStagesetStackSpecificD983D53C",
     "RetentionInDays": 731
    },
    "DependsOn": [

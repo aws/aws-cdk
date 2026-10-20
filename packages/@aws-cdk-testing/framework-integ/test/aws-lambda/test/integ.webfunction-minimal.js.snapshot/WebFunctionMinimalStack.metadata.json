@@ -1,4 +1,10 @@
 {
+  "/WebFunctionMinimalStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionMinimalStack.template.json"
+    }
+  ],
   "/WebFunctionMinimalStack/CodeBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -265,9 +271,7 @@
   "/WebFunctionMinimalStack/MinimalBucket/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/WebFunctionMinimalStack/MinimalBucket/Function": [
