@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "files": {
-    "b25ec56c93c22da112a78ccbb884c6f12c5b9d3a7464a344942d892c8059ab28": {
+    "249e21fc15847557d6a15042c13a84d7c9c75e1b70e817b53423057b281bf169": {
       "displayName": "EventBusGrantsTestStackWithFlag Template",
       "source": {
         "path": "EventBusGrantsTestStackWithFlag.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-db054d07": {
+        "current_account-current_region-8c1fbc5a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b25ec56c93c22da112a78ccbb884c6f12c5b9d3a7464a344942d892c8059ab28.json",
+          "objectKey": "249e21fc15847557d6a15042c13a84d7c9c75e1b70e817b53423057b281bf169.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
