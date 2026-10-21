@@ -406,12 +406,28 @@ export class Bundling implements cdk.BundlingOptions {
         const esbuild = Bundling.esbuildInstallation!;
         const tsc = Bundling.tscInstallation;
 
+        const esbuildRunner = this.props.esbuildBinaryPath
+          ? [this.props.esbuildBinaryPath]
+          : esbuild.binPath
+            ? [process.execPath, esbuild.binPath]
+            : esbuild.isWorkspacePackage
+              ? this.packageManager.runBinCommand('esbuild')
+              : ['esbuild'];
+
+        const tscRunner = tsc && (
+          tsc.binPath
+            ? [process.execPath, tsc.binPath]
+            : tsc.isWorkspacePackage
+              ? this.packageManager.runBinCommand('tsc')
+              : ['tsc']
+        );
+
         const steps = this.createBundlingSteps(scope, {
           inputDir: cwd,
           outputDir,
           pathJoin: (...args: string[]) => path.join(...args),
-          esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
-          tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
+          esbuildRunner,
+          tscRunner,
           createFileOps: (deps) => this.localFileOps(outputDir, deps),
         });
 
@@ -523,8 +539,9 @@ export class Bundling implements cdk.BundlingOptions {
           // On Windows, spawnSync fails with EINVAL when invoking .cmd shims
           // (e.g. npx.cmd, npx.bat) directly. We need to route through a shell.
           // Powershell.exe instead of cmd.exe because the quoting rules are saner.
+          // Direct executables (such as node.exe or standalone .exe) can be spawned directly.
           // See https://github.com/aws/aws-cdk/issues/37387
-          if (isWindows) {
+          if (isWindows && needsWindowsShell(step.command[0])) {
             exec('powershell.exe', ['-NoProfile', '-Command', powershellCommandLine(step.command)], {
               ...execOptions,
               cwd: step.cwd ?? cwd,
@@ -698,6 +715,22 @@ function powershellCommandLine(command: string[]): string {
   const [executable, ...args] = command;
   const resolved = `(Get-Command ${powershellEscape(executable)} -CommandType Application)[0].Source`;
   return ['&', resolved, ...args.map(powershellEscape)].join(' ');
+}
+
+/**
+ * Checks whether an executable on Windows needs to be routed through a shell
+ * (e.g. .cmd or .bat shims). Native .exe binaries and the current node runtime
+ * can be spawned directly by spawnSync without shell overhead.
+ */
+function needsWindowsShell(executable: string): boolean {
+  const lower = executable.toLowerCase();
+  if (lower.endsWith('.cmd') || lower.endsWith('.bat')) {
+    return true;
+  }
+  if (lower.endsWith('.exe') || executable === process.execPath) {
+    return false;
+  }
+  return true;
 }
 
 /**
