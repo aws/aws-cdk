@@ -1262,6 +1262,57 @@ describe('cluster', () => {
       )).toEqual(true);
     });
 
+    test.each([
+      ['m7g.large', 'amazon-linux-2-arm64/'],
+      ['r7g.large', 'amazon-linux-2-arm64/'],
+      ['c7gn.large', 'amazon-linux-2-arm64/'],
+      ['m8g.large', 'amazon-linux-2-arm64/'],
+      ['c8g.large', 'amazon-linux-2-arm64/'],
+      ['x2gd.large', 'amazon-linux-2-arm64/'],
+      ['a1.large', 'amazon-linux-2-arm64/'],
+      ['m5.large', 'amazon-linux-2/'],
+      ['c7i.large', 'amazon-linux-2/'],
+    ])('addAutoScalingGroupCapacity with %s selects the %s AMI', (instanceType, amiPath) => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType(instanceType),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      const amiParameters = Object.entries(parameters)
+        .filter(([k]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami'))
+        .map(([, v]) => (v as any).Default);
+      expect(amiParameters).toEqual([expect.stringContaining(`/${amiPath}recommended/image_id`)]);
+    });
+
+    test('addAutoScalingGroupCapacity with an unresolved instance type keeps the x86_64 AMI', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+      const instanceTypeParam = new cdk.CfnParameter(stack, 'NodeInstanceType', { default: 'm7g.large' });
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType(instanceTypeParam.valueAsString),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2/'),
+      )).toEqual(true);
+    });
+
     test('addNodegroupCapacity with C7g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
