@@ -807,6 +807,86 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
+test('esbuild local bundling uses resolved binPath directly with node', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  detectPackageInstallationMock.mockReturnValueOnce({
+    isWorkspacePackage: true,
+    version: '0.8.8',
+    binPath: '/project/node_modules/esbuild/bin/esbuild',
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    process.execPath,
+    expect.arrayContaining([
+      '/project/node_modules/esbuild/bin/esbuild',
+      '--bundle', entry,
+      `--target=${STANDARD_TARGET}`,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+    ]),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
+test('esbuild local bundling uses custom esbuildBinaryPath', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildBinaryPath: '/custom/bin/esbuild',
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    '/custom/bin/esbuild',
+    expect.arrayContaining([
+      '--bundle', entry,
+      `--target=${STANDARD_TARGET}`,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+    ]),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isWorkspacePackage: true,

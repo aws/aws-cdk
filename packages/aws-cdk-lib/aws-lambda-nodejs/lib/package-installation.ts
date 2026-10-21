@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { tryGetModuleVersionFromRequire } from './util';
+import { tryGetModuleDetailsFromRequire } from './util';
 
 /**
  * Package installation
@@ -8,11 +8,12 @@ export abstract class PackageInstallation {
   public static detect(module: string): PackageInstallation | undefined {
     try {
       // Check local version first
-      const version = tryGetModuleVersionFromRequire(module);
-      if (version) {
+      const details = tryGetModuleDetailsFromRequire(module);
+      if (details) {
         return {
           isWorkspacePackage: true,
-          version,
+          version: details.version,
+          binPath: details.binPath,
         };
       }
 
@@ -32,4 +33,5 @@ export abstract class PackageInstallation {
 
   public abstract readonly isWorkspacePackage: boolean;
   public abstract readonly version: string;
+  public abstract readonly binPath?: string;
 }
