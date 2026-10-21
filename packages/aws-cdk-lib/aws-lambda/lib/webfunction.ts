@@ -182,9 +182,13 @@ export class WebFunctionReplicaRegions {
   ) {}
 
   /**
-   * Resolves the final, de-duplicated list of replica regions (included minus excluded).
+   * The final, de-duplicated list of replica regions (included minus excluded).
+   *
+   * Not named `resolve`: CDK treats any object with a `resolve` method as a token.
+   *
+   * @internal
    */
-  public resolve(): string[] {
+  public _toRegionList(): string[] {
     if (this.excluded.length === 0) {
       return Token.isUnresolved(this.included) ? this.included : [...new Set(this.included)];
     }
@@ -1081,7 +1085,7 @@ export class WebFunction extends WebFunctionBase {
     if (!replicaRegions) {
       return undefined;
     }
-    return replicaRegions.resolve();
+    return replicaRegions._toRegionList();
   }
 
   /**

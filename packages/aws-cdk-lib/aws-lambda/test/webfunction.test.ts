@@ -5,7 +5,7 @@ import { Alias, Key } from '../../aws-kms';
 import { LogGroup } from '../../aws-logs';
 import { Bucket } from '../../aws-s3';
 import * as ssm from '../../aws-ssm';
-import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
+import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
@@ -402,63 +402,67 @@ describe('WebFunction validation', () => {
 });
 
 describe('WebFunctionReplicaRegions', () => {
+  test('is not treated as a token', () => {
+    expect(Tokenization.isResolvable(WebFunctionReplicaRegions.of(WebFunctionRegions.US))).toBe(false);
+  });
+
   test('includes individual regions', () => {
-    expect(WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1']).resolve()).toEqual(['us-east-1', 'eu-west-1']);
+    expect(WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1'])._toRegionList()).toEqual(['us-east-1', 'eu-west-1']);
   });
 
   test('includes a region group', () => {
-    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US).resolve()).toEqual(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']);
+    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US)._toRegionList()).toEqual(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']);
   });
 
   test('combines strings and groups via spread', () => {
-    expect(WebFunctionReplicaRegions.of(['sa-east-1', ...WebFunctionRegions.CA]).resolve()).toEqual(['sa-east-1', 'ca-central-1']);
+    expect(WebFunctionReplicaRegions.of(['sa-east-1', ...WebFunctionRegions.CA])._toRegionList()).toEqual(['sa-east-1', 'ca-central-1']);
   });
 
   test('excludes individual regions', () => {
-    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US, ['us-west-1']).resolve()).toEqual(['us-east-1', 'us-east-2', 'us-west-2']);
+    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US, ['us-west-1'])._toRegionList()).toEqual(['us-east-1', 'us-east-2', 'us-west-2']);
   });
 
   test('passes a deploy-time list through unchanged when nothing is excluded', () => {
     const stack = new Stack();
     const list = Fn.split(',', new CfnParameter(stack, 'Regions').valueAsString);
-    expect(WebFunctionReplicaRegions.of(list).resolve()).toBe(list);
+    expect(WebFunctionReplicaRegions.of(list)._toRegionList()).toBe(list);
   });
 
   test('rejects exclusion when the included list is a deploy-time value', () => {
     const stack = new Stack();
     const list = Fn.split(',', new CfnParameter(stack, 'Regions').valueAsString);
-    expect(() => WebFunctionReplicaRegions.of(list, ['eu-west-1']).resolve())
+    expect(() => WebFunctionReplicaRegions.of(list, ['eu-west-1'])._toRegionList())
       .toThrow(/concrete region strings/);
   });
 
   test('rejects exclusion when the excluded list is a deploy-time value', () => {
     const stack = new Stack();
     const list = Fn.split(',', new CfnParameter(stack, 'Excluded').valueAsString);
-    expect(() => WebFunctionReplicaRegions.of(WebFunctionRegions.US, list).resolve())
+    expect(() => WebFunctionReplicaRegions.of(WebFunctionRegions.US, list)._toRegionList())
       .toThrow(/concrete region strings/);
   });
 
   test('rejects exclusion when a single region is a deploy-time value', () => {
     const stack = new Stack();
     const region = new CfnParameter(stack, 'Region').valueAsString;
-    expect(() => WebFunctionReplicaRegions.of(['us-east-1', region], ['eu-west-1']).resolve())
+    expect(() => WebFunctionReplicaRegions.of(['us-east-1', region], ['eu-west-1'])._toRegionList())
       .toThrow(/concrete region strings/);
   });
 
   test('excludes a region group', () => {
-    const regions = WebFunctionReplicaRegions.of(WebFunctionRegions.ALL_DEFAULT_REGIONS, WebFunctionRegions.EU).resolve();
+    const regions = WebFunctionReplicaRegions.of(WebFunctionRegions.ALL_DEFAULT_REGIONS, WebFunctionRegions.EU)._toRegionList();
     expect(regions).not.toContain('eu-west-1');
     expect(regions).not.toContain('eu-central-1');
     expect(regions).toContain('us-east-1');
   });
 
   test('deduplicates regions', () => {
-    const regions = WebFunctionReplicaRegions.of(['us-east-1', 'us-east-1', ...WebFunctionRegions.US]).resolve();
+    const regions = WebFunctionReplicaRegions.of(['us-east-1', 'us-east-1', ...WebFunctionRegions.US])._toRegionList();
     expect(regions.length).toBe(new Set(regions).size);
   });
 
   test('returns empty array when all included regions are excluded', () => {
-    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US).resolve()).toEqual([]);
+    expect(WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)._toRegionList()).toEqual([]);
   });
 });
 
