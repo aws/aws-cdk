@@ -807,6 +807,41 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
+test('Local bundling runs esbuild from the directory where it is installed', () => {
+  // esbuild is installed in a workspace and not hoisted to the project root
+  detectPackageInstallationMock.mockReturnValueOnce({
+    isWorkspacePackage: true,
+    version: '0.8.8',
+    cwd: '/project/packages/my-app',
+  });
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  expect(detectPackageInstallationMock).toHaveBeenCalledWith('esbuild', process.cwd());
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'yarn',
+    expect.arrayContaining(['run', 'esbuild', '--bundle', entry, '--outfile=/outdir/index.js']),
+    expect.objectContaining({ cwd: '/project/packages/my-app' }),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isWorkspacePackage: true,
