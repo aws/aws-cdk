@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.274.0](https://github.com/aws/aws-cdk/compare/v2.273.0...v2.274.0) (2026-10-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-cloudwatch: AWS::CloudWatch::AnomalyDetector: Id attribute removed.  
+aws-glue: AWS::Glue::Table: Id attribute removed.  
+aws-glue: AWS::Glue::Table: IcebergInput.MetadataOperation type narrowed from json to string.  
+aws-glue: AWS::Glue::Table: IcebergTableInput.Properties type narrowed from json to Map<string, string>.  
+aws-iot: AWS::IoT::PolicyPrincipalAttachment: Id attribute removed.  
+aws-quicksight: AWS::QuickSight::Analysis: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).  
+aws-quicksight: AWS::QuickSight::Dashboard: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).  
+aws-quicksight: AWS::QuickSight::Template: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#39139](https://github.com/aws/aws-cdk/issues/39139)) ([8a10135](https://github.com/aws/aws-cdk/commit/8a101356261fc0b8da85e369d983ff7b5e9dc1a3))
+* **cloudfront:** add always-amz-auth signing behavior for origin access control ([#39196](https://github.com/aws/aws-cdk/issues/39196)) ([7cf79a1](https://github.com/aws/aws-cdk/commit/7cf79a17d70c7874e1f4e0029fcede323be06a49)), closes [#39195](https://github.com/aws/aws-cdk/issues/39195) [#38629](https://github.com/aws/aws-cdk/issues/38629)
+* **cloudfront:** add sigv4a signing protocol for origin access control ([#38629](https://github.com/aws/aws-cdk/issues/38629)) ([805bfbe](https://github.com/aws/aws-cdk/commit/805bfbe57b00a6fa6ad3a5a07ccd96d2d892f420)), closes [#38627](https://github.com/aws/aws-cdk/issues/38627) [#38627](https://github.com/aws/aws-cdk/issues/38627)
+* **codebuild:** add STANDARD_8_0, AMAZON_LINUX_2023_6 and AMAZON_LINUX_2023_STANDARD_4_0 images ([#37588](https://github.com/aws/aws-cdk/issues/37588)) ([3beecb3](https://github.com/aws/aws-cdk/commit/3beecb31a38da1b86ba0c6a52a4a9e3ed4f4282f)), closes [#37586](https://github.com/aws/aws-cdk/issues/37586)
+
+
+### Bug Fixes
+
+* **apigateway:** log group destination ARN causes permanent Stage drift ([#38816](https://github.com/aws/aws-cdk/issues/38816)) ([65c6aa0](https://github.com/aws/aws-cdk/commit/65c6aa07c4e389fc818ebafa91b1229acba06bd7)), closes [#38796](https://github.com/aws/aws-cdk/issues/38796)
+* **bedrockagentcore:** `Runtime` annotations cannot be acknowledged ([#38770](https://github.com/aws/aws-cdk/issues/38770)) ([165bf8b](https://github.com/aws/aws-cdk/commit/165bf8b49633251d9b25745a5f150a8db8b5ff39)), closes [#38741](https://github.com/aws/aws-cdk/issues/38741)
+* **core:** can't trace construct to template for nested stacks ([#39141](https://github.com/aws/aws-cdk/issues/39141)) ([173a2ff](https://github.com/aws/aws-cdk/commit/173a2ff9551d7c92c050bd33f775c1e4a1eb9ad8))
+* **core:** preserve unresolved Tags property tokens ([#37759](https://github.com/aws/aws-cdk/issues/37759)) ([644489c](https://github.com/aws/aws-cdk/commit/644489c24c8339a1af5e640237ff44f10f5bf207)), closes [#37734](https://github.com/aws/aws-cdk/issues/37734)
+* **core:** validations with different messages are confusingly combined ([#39132](https://github.com/aws/aws-cdk/issues/39132)) ([54fb0ea](https://github.com/aws/aws-cdk/commit/54fb0eabbf26e53a4861be664256b987d4dc96e9)), closes [#38982](https://github.com/aws/aws-cdk/issues/38982)
+* **stepfunctions:** default `StateMachine` IAM role  missing confused deputy protection best practices ([#37688](https://github.com/aws/aws-cdk/issues/37688)) ([638a681](https://github.com/aws/aws-cdk/commit/638a6819aca172d1df572ea587861cf2f6295cfa)), closes [#37567](https://github.com/aws/aws-cdk/issues/37567) [#37567](https://github.com/aws/aws-cdk/issues/37567) [#37567](https://github.com/aws/aws-cdk/issues/37567)
+
 ## [2.273.0](https://github.com/aws/aws-cdk/compare/v2.272.0...v2.273.0) (2026-10-08)
 
 
