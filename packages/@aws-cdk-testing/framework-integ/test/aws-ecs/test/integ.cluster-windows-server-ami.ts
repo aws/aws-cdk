@@ -40,11 +40,13 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   enableManagedTerminationProtection: false,
 });
 
-cluster.addAsgCapacityProvider(cp);
+cluster.addAsgCapacityProvider(cp, {
+  enableTaskIamRole: true,
+});
 
 // The task definition gets a task role by default, so the service can only
 // place tasks on hosts that registered with the task-iam-role capability,
-// which Windows hosts do only when started with -EnableTaskIAMRole.
+// which Windows hosts do only when enableTaskIamRole is set.
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
 
 taskDefinition.addContainer('main', {

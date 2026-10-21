@@ -993,15 +993,79 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\nInitialize-ECSAgent -Cluster '",
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "' -EnableTaskIAMRole</powershell>",
+              "'</powershell>",
             ],
           ],
         },
       },
+    });
+  });
+
+  describe('enableTaskIamRole on Windows container instances', () => {
+    function windowsUserData(options: Partial<ecs.AddCapacityOptions>): string {
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const asg = new autoscaling.AutoScalingGroup(stack, 'WindowsAsg', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+      });
+      cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', { autoScalingGroup: asg }), options);
+      return asg.userData.render();
+    }
+
+    test.each([
+      ['omitted', {}],
+      ['false', { enableTaskIamRole: false }],
+    ])('does not enable task IAM roles when %s', (_, options) => {
+      const userData = windowsUserData(options);
+
+      expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
+      expect(userData).not.toContain('-EnableTaskIAMRole');
+      expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}'<\/powershell>$/);
+    });
+
+    test('sets ECS_ENABLE_TASK_IAM_ROLE and -EnableTaskIAMRole when true', () => {
+      const userData = windowsUserData({ enableTaskIamRole: true });
+
+      expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")\nInitialize-ECSAgent -Cluster ');
+      expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}' -EnableTaskIAMRole<\/powershell>$/);
+    });
+
+    test('does not change Linux or Bottlerocket user data when true', () => {
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const linuxAsg = new autoscaling.AutoScalingGroup(stack, 'LinuxAsg', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
+      const bottlerocketAsg = new autoscaling.AutoScalingGroup(stack, 'BottlerocketAsg', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ecs.BottleRocketImage(),
+      });
+
+      cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'LinuxProvider', {
+        autoScalingGroup: linuxAsg,
+      }), { enableTaskIamRole: true });
+      cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'BottlerocketProvider', {
+        autoScalingGroup: bottlerocketAsg,
+        machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+      }), { enableTaskIamRole: true });
+
+      for (const userData of [linuxAsg.userData.render(), bottlerocketAsg.userData.render()]) {
+        expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
+        expect(userData).not.toContain('EnableTaskIAMRole');
+      }
     });
   });
 

@@ -863,8 +863,12 @@ export class Cluster extends Resource implements ICluster {
     }
 
     // enable task iam role
-    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
-    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
+    const enableTaskIamRole = options.enableTaskIamRole ?? false;
+    if (enableTaskIamRole) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
+    }
+
+    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'${enableTaskIamRole ? ' -EnableTaskIAMRole' : ''}`);
   }
 
   /**
@@ -1175,6 +1179,18 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default false
    */
   readonly spotInstanceDraining?: boolean;
+
+  /**
+   * Whether to enable IAM roles for tasks on Windows container instances.
+   *
+   * When enabled, the ECS credential proxy reserves host port 80 on the instance,
+   * so containers can't use host port 80 in their port mappings.
+   * Only applies to Windows container instances.
+   * For more information, see [Additional configuration for Windows IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html).
+   *
+   * @default false
+   */
+  readonly enableTaskIamRole?: boolean;
 
   /**
    * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
