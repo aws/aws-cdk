@@ -63,7 +63,7 @@ class StackSetStackTemplate extends StackSetTemplate {
 
 /**
  * The type of StackSet account filter
- * 
+ *
  * @internal
  */
 enum AccountFilterType {
@@ -394,7 +394,7 @@ export interface SelfManagedOptions {
 
 /**
  * The permission model for a StackSet
- * 
+ *
  * @internal
  */
 enum PermissionModel {
@@ -577,7 +577,7 @@ export interface StackSetProps {
 /**
  * Indicates whether a service managed stackset is deployed from the
  * AWS Organizations management account or the delegated admin account
- * 
+ *
  * @internal
  */
 enum CallAs {
@@ -697,6 +697,7 @@ export interface IStackSet extends IResource, IStackSetRef {
  */
 @propertyInjectable
 export class StackSet extends Resource implements IStackSet {
+  /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
 
   private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];

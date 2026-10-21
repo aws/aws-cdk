@@ -16,11 +16,10 @@ import {
   Stage,
   Validations,
 } from '../../core';
-import type { IPropertyInjector, InjectionContext, StackSynthesizer } from '../../core';
+import type { StackSynthesizer } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import type { StackSetProps, StackSetStackProps } from '../lib';
-import * as cloudformation from '../lib';
+import type { StackSetStackProps } from '../lib';
 import {
   DeploymentType,
   RegionConcurrencyType,
