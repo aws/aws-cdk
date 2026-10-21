@@ -1006,7 +1006,7 @@ describe('cluster', () => {
   });
 
   describe('enableTaskIamRole on Windows container instances', () => {
-    function windowsUserData(options: Partial<ecs.AddCapacityOptions>): string {
+    function windowsUserData(options: Partial<ecs.AddCapacityOptions>): { stack: cdk.Stack; userData: string } {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1017,14 +1017,14 @@ describe('cluster', () => {
         machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
       });
       cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', { autoScalingGroup: asg }), options);
-      return asg.userData.render();
+      return { stack, userData: asg.userData.render() };
     }
 
     test.each([
       ['omitted', {}],
       ['false', { enableTaskIamRole: false }],
     ])('does not enable task IAM roles when %s', (_, options) => {
-      const userData = windowsUserData(options);
+      const { userData } = windowsUserData(options);
 
       expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
       expect(userData).not.toContain('-EnableTaskIAMRole');
@@ -1032,13 +1032,14 @@ describe('cluster', () => {
     });
 
     test('sets ECS_ENABLE_TASK_IAM_ROLE and -EnableTaskIAMRole when true', () => {
-      const userData = windowsUserData({ enableTaskIamRole: true });
+      const { stack, userData } = windowsUserData({ enableTaskIamRole: true });
 
       expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")\nInitialize-ECSAgent -Cluster ');
       expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}' -EnableTaskIAMRole<\/powershell>$/);
+      Annotations.fromStack(stack).hasNoWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
     });
 
-    test('does not change Linux or Bottlerocket user data when true', () => {
+    test('does not change Linux or Bottlerocket user data when true, and warns', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1066,6 +1067,19 @@ describe('cluster', () => {
         expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
         expect(userData).not.toContain('EnableTaskIAMRole');
       }
+      Annotations.fromStack(stack).hasWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
+    });
+
+    test('does not warn on Linux when omitted', () => {
+      const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('LinuxCapacity', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
     });
   });
 

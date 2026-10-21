@@ -711,6 +711,11 @@ export class Cluster extends Resource implements ICluster {
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, optionsClone);
     } else {
+      if (optionsClone.enableTaskIamRole) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:enableTaskIamRoleWindowsOnly',
+          'enableTaskIamRole only applies to Windows container instances and is ignored for this Auto Scaling group.');
+      }
+
       // Tie instances to cluster
       switch (optionsClone.machineImageType) {
         // Bottlerocket AMI
@@ -1183,9 +1188,11 @@ export interface AddAutoScalingGroupCapacityOptions {
   /**
    * Whether to enable IAM roles for tasks on Windows container instances.
    *
+   * Only applies to Windows container instances. It is ignored, with a warning,
+   * for Linux and Bottlerocket container instances.
+   *
    * When enabled, the ECS credential proxy reserves host port 80 on the instance,
    * so containers can't use host port 80 in their port mappings.
-   * Only applies to Windows container instances.
    * For more information, see [Additional configuration for Windows IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html).
    *
    * @default false
