@@ -1,0 +1,82 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9012",
+          "description": "Invalid pseudo-parameter override(s): AWS::AccountId override '12345678' is not a 12-digit AWS account ID",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stack-set-support",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            },
+            {
+              "constructPath": "integ-stackset-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-test/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F3031",
+          "description": "StackInstancesGroup.0.DeploymentTargets.Accounts.0: '12345678' does not match pattern '^[0-9]{12}$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stackset-asset-test/StackSet/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-stackset-asset-test.template.json",
+                "logicalId": "StackSet6E6355CF",
+                "propertyPaths": [
+                  "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
+                ]
+              }
+            },
+            {
+              "constructPath": "integ-stackset-test/StackSet/Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-stackset-test.template.json",
+                "logicalId": "StackSet6E6355CF",
+                "propertyPaths": [
+                  "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

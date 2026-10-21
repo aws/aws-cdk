@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
 import type { IBucket } from '../../aws-s3';
 import { Bucket } from '../../aws-s3';
 import { BucketDeployment, Source } from '../../aws-s3-deployment';
@@ -9,13 +10,13 @@ import {
   Stack,
   StackSynthesizer,
   Names,
-  Lazy,
   FileAssetPackaging,
   Resource,
   Annotations,
   Fn,
   Aws,
   Token,
+  ValidationError,
 } from '../../core';
 import type {
   FileAssetSource,
@@ -24,8 +25,10 @@ import type {
   DockerImageAssetSource,
   ISynthesisSession,
 } from '../../core';
-
-export const fileAssetResourceNames: string[] = [];
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 
 interface AssetBucketDeploymentProperties {
   assetBucket: IBucket;
@@ -37,7 +40,7 @@ interface AssetBucketDeploymentProperties {
  *
  * Interoperates with the StackSynthesizer of the parent stack.
  */
-export class StackSetStackSynthesizer extends StackSynthesizer {
+class StackSetStackSynthesizer extends StackSynthesizer {
   /**
    * An array of Buckets can be passed to store assets, enabling StackSetStack Asset support
    *
@@ -57,6 +60,7 @@ export class StackSetStackSynthesizer extends StackSynthesizer {
   readonly assetBucketPrefix?: string;
   private bucketDeployments: { [key: string]: AssetBucketDeploymentProperties };
   private parentAssetBucket?: IBucket;
+  private readonly assetDeployments = new DependencyGroup();
 
   /**
    * Creates a new StackSetStackSynthesizer.
@@ -74,17 +78,29 @@ export class StackSetStackSynthesizer extends StackSynthesizer {
     }
   }
 
+  /**
+   * The bucket deployments that copy this stack's file assets to the asset buckets.
+   *
+   * Resolved when dependencies are rendered, so it includes assets added after a
+   * StackSet takes a dependency on it.
+   *
+   * @internal
+   */
+  public get _assetDeployments(): IDependable {
+    return this.assetDeployments;
+  }
+
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     if (!this.assetBuckets) {
-      throw new Error('An Asset Bucket must be provided to use File Assets');
+      throw new ValidationError(lit`AssetBucketRequired`, 'an asset bucket must be provided to use file assets, set \'assetBuckets\' in the StackSetStack props', this.boundStack);
     }
 
     if (!this.assetBucketPrefix) {
-      throw new Error('An Asset Bucket Prefix must be provided to use File Assets');
+      throw new ValidationError(lit`AssetBucketPrefixRequired`, 'an asset bucket prefix must be provided to use file assets, set \'assetBucketPrefix\' in the StackSetStack props', this.boundStack);
     }
 
     if (!asset.fileName) {
-      throw new Error('Asset filename is undefined');
+      throw new ValidationError(lit`AssetFileNameRequired`, 'asset filename is undefined', this.boundStack);
     }
 
     const parentStack = (this.boundStack as StackSetStack)._getParentStack();
@@ -110,13 +126,12 @@ export class StackSetStackSynthesizer extends StackSynthesizer {
 
       if (!assetDeployment.bucketDeployment) {
         if (!Resource.isOwnedResource(assetDeployment.assetBucket)) {
-          Annotations.of(parentStack).addWarning('[WARNING] Bucket Policy Permissions cannot be added to' +
+          Annotations.of(parentStack).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
+            'Bucket Policy Permissions cannot be added to' +
               ' referenced Bucket. Please make sure your bucket has the correct permissions');
         }
 
         const bucketDeploymentConstructName = `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${index}`;
-
-        fileAssetResourceNames.push(bucketDeploymentConstructName);
 
         const bucketDeployment = new BucketDeployment(
           parentStack,
@@ -130,6 +145,7 @@ export class StackSetStackSynthesizer extends StackSynthesizer {
         );
 
         assetDeployment.bucketDeployment = bucketDeployment;
+        this.assetDeployments.add(bucketDeployment);
       } else {
         assetDeployment.bucketDeployment.addSource(source);
       }
@@ -148,7 +164,7 @@ export class StackSetStackSynthesizer extends StackSynthesizer {
   }
 
   public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    throw new Error('StackSets cannot use Docker Image Assets');
+    throw new ValidationError(lit`DockerAssetsNotSupported`, 'docker image assets are not supported in StackSet stacks', this.boundStack);
   }
 
   public synthesize(session: ISynthesisSession): void {
@@ -167,6 +183,9 @@ export interface StackSetStackProps {
    *
    * One Bucket is required per target region. The name must be `${assetBucketPrefix}-<region>`, where
    * `<region>` is the region targeted by the StackSet.
+   *
+   * The full bucket interface is required because the assets are copied with a
+   * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
    *
    * @default - No Buckets provided and Assets will not be supported.
    */
@@ -189,9 +208,10 @@ export interface StackSetStackProps {
  * artifact (won't be listed in "cdk list" or deployable through "cdk deploy"),
  * but rather only synthesized as a template and uploaded as an asset to S3.
  */
+@noBoxStackTraces
 export class StackSetStack extends Stack {
   public readonly templateFile: string;
-  private _templateUrl?: string;
+  private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
   private _parentStack: Stack;
 
   /**
@@ -217,7 +237,7 @@ export class StackSetStack extends Stack {
    * @internal
    */
   public _getTemplateUrl(): string {
-    return Lazy.uncachedString({ produce: () => this._templateUrl });
+    return Token.asString(this._templateUrl);
   }
 
   /**
@@ -227,6 +247,15 @@ export class StackSetStack extends Stack {
    */
   public _getParentStack(): Stack {
     return this._parentStack;
+  }
+
+  /**
+   * Fetch the bucket deployments that copy this stack's file assets.
+   *
+   * @internal
+   */
+  public _getAssetDeployments(): IDependable {
+    return (this.synthesizer as StackSetStackSynthesizer)._assetDeployments;
   }
 
   /**
@@ -241,11 +270,11 @@ export class StackSetStack extends Stack {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
-    this._templateUrl = this._parentStack.synthesizer.addFileAsset({
+    this._templateUrl.set(this._parentStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
-    }).httpUrl;
+    }).httpUrl);
 
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
   }
@@ -258,7 +287,7 @@ function findParentStack(scope: Construct): Stack {
   try {
     const parentStack = Stack.of(scope);
     return parentStack as Stack;
-  } catch (e) {
-    throw new Error('StackSet stacks must be defined within scope of another non-stackset stack');
+  } catch {
+    throw new ValidationError(lit`StackSetStackMustBeDefinedWithinStack`, 'a StackSetStack must be defined within the scope of another non-stackset stack', scope);
   }
 }

@@ -5,7 +5,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## StackSets
 
-The `StackSetStack` and `StackSet` constructs allows you to define [AWS CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html).
+The `StackSetStack` and `StackSet` constructs allow you to define [AWS CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html).
 
 ```ts
 const stack = new Stack();
@@ -28,7 +28,7 @@ new StackSet(stack, 'StackSet', {
 StackSets allow you to deploy a single CloudFormation template across multiple AWS accounts and regions.
 Typically when creating a CDK Stack that will be deployed across multiple environments, the CDK will
 synthesize separate Stack templates for each environment (account/region combination). Because of the
-way that StackSets work, StackSet Stacks behave differently. For Stacks that will be deployed via StackSets
+way that StackSets work, StackSet Stacks behave differently. For Stacks that will be deployed via StackSets,
 a single Stack is defined and synthesized. Any environmental differences must be encoded using Parameters.
 
 A special class was created to handle the uniqueness of the StackSet Stack.
@@ -77,8 +77,8 @@ you can define AWS Organizations organizational units.
 
 #### Deploying to individual accounts
 
-Deploying to individual accounts requires you to specify the account ids. If you want to later deploy to additional accounts,
-or remove the stackset from accounts, this has to be done by adding/removing the account id from the list.
+Deploying to individual accounts requires you to specify the account IDs. If you later want to deploy to additional accounts,
+or remove the StackSet from accounts, add or remove the account ID in the list.
 
 ```ts
 const stack = new Stack();
@@ -204,6 +204,38 @@ When you specify `serviceManaged` deployment type, automatic deployments are ena
 Automatic deployments allow the StackSet to be automatically deployed to or deleted from
 AWS accounts when they are added or removed from the specified organizational units.
 
+##### Self Managed
+
+When a StackSet is self managed (the default), you create the IAM roles StackSets uses. The
+administration role is assumed by CloudFormation in the account the StackSet is deployed from,
+and it assumes an execution role that must already exist in each target account.
+
+If you don't pass an `adminRole`, the StackSet creates one. Its trust policy only allows
+CloudFormation to assume it on behalf of StackSets in the same account, using the
+`aws:SourceAccount` and `aws:SourceArn` condition keys to protect against the
+[confused deputy problem](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html).
+If you pass in your own `adminRole`, the CDK does not add these conditions to its existing trust
+policy, so you need to add them. The StackSet still grants the role permission to assume the execution
+role. If the role is defined in your app and the StackSet targets opt-in regions, the StackSet also
+adds a statement to its trust policy that allows the CloudFormation service principal of each opt-in
+region to assume it, with the same conditions.
+
+```ts
+const stack = new Stack();
+const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+
+new StackSet(stack, 'StackSet', {
+  target: StackSetTarget.fromAccounts({
+    regions: ['us-east-1'],
+    accounts: ['11111111111'],
+  }),
+  deploymentType: DeploymentType.selfManaged({
+    executionRoleName: 'MyStackSetExecutionRole',
+  }),
+  template: StackSetTemplate.fromStackSetStack(stackSetStack),
+});
+```
+
 #### Using File Assets
 
 You can use the StackSet's parent stack to facilitate file assets. Behind the scenes,
@@ -216,7 +248,7 @@ As a basic example, if using a `serviceManaged` deployment, you just need to giv
 access to the Organization. You can create the asset bucket in the parent stack, or another
 stack in the same app and pass the object as a prop. Or, import an existing bucket as needed.
 
-If creating in the parent or sibling stack you could create and export similar to this:
+If you create the bucket in the parent or a sibling stack, you could define it similar to this:
 
 ```ts
 const bucket = new s3.Bucket(this, "Assets", {
@@ -243,24 +275,29 @@ const stackSetStack = new StackSetStack(stack, 'MyStackSet', {
 });
 ```
 
-To faciliate multi region deployments, there is an assetBucketPrefix property. This 
-gets added to the region the Stack Set is deployed to. The stack synthesis for 
-the Stack Set would look for a bucket named `prefix-{Region}` in the example 
-above. `{Region}` is whatever region you are deploying the Stack Set to as 
-defined in your target property of the StackSet. You will need to ensure the 
+To facilitate multi-region deployments, there is an `assetBucketPrefix` property. This
+gets added to the region the StackSet is deployed to. The stack synthesis for
+the StackSet would look for a bucket named `prefix-{Region}` in the example
+above. `{Region}` is whatever region you are deploying the StackSet to as
+defined in the `target` property of the StackSet. You will need to ensure the
 bucket name is correct based on what was previously created and then passed in.
 
-You can use self-managed StackSet deployments with file assets too but will
-need to ensure all target accounts roles will have access to the central asset
+You can use self-managed StackSet deployments with file assets too, but you will
+need to ensure the roles in all target accounts have access to the central asset
 bucket you pass as the property.
+
+The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
+If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning.
+Once you have granted access yourself, acknowledge it with
+`Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
 
 ### Deploying StackSets using CDK Pipelines
 
-You can also deploy StackSets using [CDK Pipelines](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.pipelines-readme.html)
+You can also deploy StackSets using [CDK Pipelines](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.pipelines-readme.html).
 
 Below is an example of a Pipeline that deploys from a central account. It also
 defines separate stages for each "environment" so that you can first test out
-the stackset in pre-prod environments.
+the StackSet in pre-prod environments.
 
 This would be an automated way of deploying the bootstrap stack described in
 [this blog
@@ -284,7 +321,7 @@ class BootstrapStage extends Stage {
     const stackSet = new StackSet(stack, 'StackSet', {
       template: StackSetTemplate.fromStackSetStack(bootstrap),
       target: props.initialBootstrapTarget,
-      capabilities: [Capability.NAMED_IAM],
+      capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,
       stackSetName: props.stacksetName,
       deploymentType: DeploymentType.serviceManaged({

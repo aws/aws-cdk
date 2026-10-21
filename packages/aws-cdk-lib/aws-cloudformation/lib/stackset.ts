@@ -1,15 +1,22 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
 import type { StackSetStack } from './stackset-stack';
-import { fileAssetResourceNames } from './stackset-stack';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import {
+  ArnFormat,
+  CfnCapabilities,
   Lazy,
   Names,
   Resource,
   Stack,
+  UnscopedValidationError,
+  ValidationError,
 } from '../../core';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IStackSetRef, StackSetReference } from '../../interfaces/generated/aws-cloudformation-interfaces.generated';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -23,17 +30,41 @@ export abstract class StackSetTemplate {
    * @returns StackSetTemplate
    */
   public static fromStackSetStack(stack: StackSetStack): StackSetTemplate {
-    return { templateUrl: stack._getTemplateUrl() };
+    return new StackSetStackTemplate(stack);
   }
 
   /**
    * The S3 URL of the StackSet template
    */
   public abstract readonly templateUrl: string;
+
+  /**
+   * Resources that must be deployed before a StackSet that uses this template
+   *
+   * @internal
+   */
+  public _dependencies(): IDependable[] {
+    return [];
+  }
+}
+
+class StackSetStackTemplate extends StackSetTemplate {
+  public readonly templateUrl: string;
+
+  constructor(private readonly stack: StackSetStack) {
+    super();
+    this.templateUrl = stack._getTemplateUrl();
+  }
+
+  public _dependencies(): IDependable[] {
+    return [this.stack._getAssetDeployments()];
+  }
 }
 
 /**
  * The type of StackSet account filter
+ * 
+ * @internal
  */
 enum AccountFilterType {
   /**
@@ -59,11 +90,6 @@ enum AccountFilterType {
 }
 
 /**
- * CloudFormation stack parameters
- */
-export type StackSetParameter = { [key: string]: string };
-
-/**
  * Common options for deploying a StackSet to a target
  */
 export interface TargetOptions {
@@ -81,7 +107,7 @@ export interface TargetOptions {
    *
    * @default - use parameter overrides specified in {@link StackSetProps.parameterOverrides}
    */
-  readonly parameterOverrides?: StackSetParameter;
+  readonly parameterOverrides?: { [key: string]: string };
 }
 
 /**
@@ -218,7 +244,7 @@ export abstract class StackSetTarget {
   /**
    * @internal
    */
-  protected _renderParameters(parameters?: StackSetParameter): Parameter[] | undefined {
+  protected _renderParameters(parameters?: { [key: string]: string }): Parameter[] | undefined {
     if (!parameters) return undefined;
     const overrides: Parameter[] = [];
     for (const [key, value] of Object.entries(parameters ?? {})) {
@@ -243,7 +269,7 @@ class AccountsTarget extends StackSetTarget {
     super();
 
     if (!this.options.accounts || this.options.accounts.length === 0) {
-      throw new Error('fromAccounts requires at least one account');
+      throw new UnscopedValidationError(lit`StackSetAccountsRequired`, 'fromAccounts requires at least one account');
     }
   }
 
@@ -277,7 +303,7 @@ class OrganizationsTarget extends StackSetTarget {
       this.intersectionAccounts,
     ].filter(Boolean).length;
     if (specified > 1) {
-      throw new Error("specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'");
+      throw new UnscopedValidationError(lit`StackSetAccountFiltersMutuallyExclusive`, "specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'");
     }
   }
 
@@ -366,6 +392,11 @@ export interface SelfManagedOptions {
   readonly adminRole?: iam.IRole;
 }
 
+/**
+ * The permission model for a StackSet
+ * 
+ * @internal
+ */
 enum PermissionModel {
   SERVICE_MANAGED = 'SERVICE_MANAGED',
   SELF_MANAGED = 'SELF_MANAGED',
@@ -382,6 +413,9 @@ interface DeploymentTypeConfig {
 
 interface DeploymentTypeOptions {}
 
+/**
+ * The permission model a StackSet uses to deploy stack instances
+ */
 export abstract class DeploymentType {
   /**
    * StackSets deployed using service managed permissions allow you to deploy
@@ -425,10 +459,10 @@ class ManagedDeploymentType extends DeploymentType {
     super();
   }
 
-  public _bind(_scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
+  public _bind(scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
     const autoDeployEnabled = this.options?.autoDeployEnabled ?? true;
     if (!autoDeployEnabled && this.options?.autoDeployRetainStacks !== undefined) {
-      throw new Error('autoDeployRetainStacks only applies if autoDeploy is enabled');
+      throw new ValidationError(lit`StackSetAutoDeployRetainStacksRequiresAutoDeploy`, 'autoDeployRetainStacks only applies if autoDeploy is enabled', scope);
     }
     return {
       permissionsModel: PermissionModel.SERVICE_MANAGED,
@@ -454,6 +488,9 @@ class SelfDeploymentType extends DeploymentType {
   }
 }
 
+/**
+ * Properties for a StackSet
+ */
 export interface StackSetProps {
   /**
    * Which accounts/OUs and regions to deploy the StackSet to
@@ -470,7 +507,7 @@ export interface StackSetProps {
   /**
    * The name of the stack set
    *
-   * @default - CloudFormation generated name
+   * @default - a name generated from the construct path
    */
   readonly stackSetName?: string;
 
@@ -511,18 +548,22 @@ export interface StackSetProps {
    *
    * This allows you to control how the StackSet is deployed
    * across the target accounts and regions.
+   *
+   * @default - the CloudFormation default operation preferences
    */
   readonly operationPreferences?: OperationPreferences;
 
   /**
    * The input parameters for the stack set template.
+   *
+   * @default - no parameters
    */
-  readonly parameters?: StackSetParameter;
+  readonly parameters?: { [key: string]: string };
 
   /**
    * Specify a list of capabilities required by your stackset.
    *
-   * StackSets that contains certain functionality require an explicit acknowledgement
+   * StackSets that contain certain functionality require an explicit acknowledgement
    * that the stack contains these capabilities.
    *
    * If you deploy a stack that requires certain capabilities and they are
@@ -530,12 +571,14 @@ export interface StackSetProps {
    *
    * @default - no specific capabilities
    */
-  readonly capabilities?: Capability[];
+  readonly capabilities?: CfnCapabilities[];
 }
 
 /**
  * Indicates whether a service managed stackset is deployed from the
  * AWS Organizations management account or the delegated admin account
+ * 
+ * @internal
  */
 enum CallAs {
   /**
@@ -552,59 +595,45 @@ enum CallAs {
 }
 
 /**
- * StackSets that contains certain functionality require an explicit acknowledgement
- * that the stack contains these capabilities.
- */
-export enum Capability {
-  /**
-   * Required if the stack contains IAM resources with custom names
-   */
-  NAMED_IAM = 'CAPABILITY_NAMED_IAM',
-
-  /**
-   * Required if the stack contains IAM resources. If the IAM resources
-   * also have custom names then specify {@link Capability.NAMED_IAM} instead.
-   */
-  IAM = 'CAPABILITY_IAM',
-
-  /**
-   * Required if the stack contains macros. Not supported if deploying
-   * a service managed stackset.
-   */
-  AUTO_EXPAND = 'CAPABILITY_AUTO_EXPAND',
-}
-
-/**
- * CloudFormation operation preferences.
+ * Preferences for how CloudFormation performs a StackSet operation across accounts and regions.
  *
- * This maps to `aws_cloudformation.CfnStackSet.OperationPreferencesProperty`.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_StackSetOperationPreferences.html
  */
 export interface OperationPreferences {
   /**
    * The number of stack instances that can fail before the operation is considered failed.
+   *
+   * @default - the CloudFormation default failure tolerance
    */
   readonly failureToleranceCount?: number;
   /**
    * The percentage of stack instances that can fail before the operation is considered failed.
+   *
+   * @default - the CloudFormation default failure tolerance
    */
   readonly failureTolerancePercentage?: number;
   /**
    * The maximum number of stack instances that can be created or updated concurrently.
+   *
+   * @default - the CloudFormation default concurrency
    */
   readonly maxConcurrentCount?: number;
   /**
    * The maximum percentage of stack instances that can be created or updated concurrently.
+   *
+   * @default - the CloudFormation default concurrency
    */
   readonly maxConcurrentPercentage?: number;
   /**
    * Whether to deploy multiple regions sequentially or in parallel.
    *
-   * @enum {RegionConcurrencyType}
    * @default RegionConcurrencyType.SEQUENTIAL
    */
   readonly regionConcurrencyType?: RegionConcurrencyType;
   /**
    * The order in which to deploy the stack instances to the regions.
+   *
+   * @default - CloudFormation chooses the region order
    */
   readonly regionOrder?: string[];
 }
@@ -612,25 +641,39 @@ export interface OperationPreferences {
 /**
  * The type of concurrency to use when deploying the StackSet to regions.
  */
-export enum RegionConcurrencyType {
+export class RegionConcurrencyType {
   /**
    * Deploy the StackSet to regions sequentially in the order specified in
-   * {@link StackSetProps.operationPreferences.regionOrder}.
+   * {@link OperationPreferences.regionOrder}.
    *
    * This is the default behavior.
    */
-  SEQUENTIAL = 'SEQUENTIAL',
+  public static readonly SEQUENTIAL = new RegionConcurrencyType('SEQUENTIAL');
 
   /**
    * Deploy the StackSet to all regions in parallel.
    */
-  PARALLEL = 'PARALLEL',
+  public static readonly PARALLEL = new RegionConcurrencyType('PARALLEL');
+
+  /**
+   * Use a custom region concurrency type
+   *
+   * @param value the CloudFormation value of the region concurrency type
+   */
+  public static of(value: string): RegionConcurrencyType {
+    return new RegionConcurrencyType(value);
+  }
+
+  /**
+   * @param value the CloudFormation value of the region concurrency type
+   */
+  private constructor(public readonly value: string) { }
 }
 
 /**
  * Represents a CloudFormation StackSet
  */
-export interface IStackSet extends IResource {
+export interface IStackSet extends IResource, IStackSetRef {
   /**
    * Only available on self managed stacksets.
    *
@@ -647,11 +690,20 @@ export interface IStackSet extends IResource {
   readonly role?: iam.IRole;
 }
 
+/**
+ * A CloudFormation StackSet, which deploys a template to multiple AWS accounts and regions
+ *
+ * @resource AWS::CloudFormation::StackSet
+ */
+@propertyInjectable
 export class StackSet extends Resource implements IStackSet {
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
+
   private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];
 
   private readonly _role?: iam.IRole;
   private readonly permissionModel: PermissionModel;
+  private readonly resource: CfnStackSet;
 
   /**
    * Creates a new StackSet.
@@ -665,10 +717,14 @@ export class StackSet extends Resource implements IStackSet {
       physicalName: props.stackSetName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
     });
 
+    addConstructMetadata(this, props);
+
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
-      this._role = deploymentTypeConfig.adminRole ?? new iam.Role(scope, 'AdminRole', {
-        assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+      this._role = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
+        assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com', {
+          conditions: this.adminRoleTrustConditions(),
+        }),
       });
 
       this._role.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -686,8 +742,8 @@ export class StackSet extends Resource implements IStackSet {
       }));
     }
 
-    if (props.capabilities?.includes(Capability.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
-      throw new Error('service managed stacksets do not current support the "AUTO_EXPAND" capability');
+    if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
+      throw new ValidationError(lit`StackSetAutoExpandNotSupported`, 'service managed stacksets do not currently support the "AUTO_EXPAND" capability', this);
     }
 
     this.permissionModel = deploymentTypeConfig.permissionsModel;
@@ -706,7 +762,14 @@ export class StackSet extends Resource implements IStackSet {
       managedExecution: {
         Active: props.managedExecution ?? true,
       },
-      operationPreferences: props.operationPreferences ? undefinedIfNoKeys(props.operationPreferences) : undefined,
+      operationPreferences: props.operationPreferences ? undefinedIfNoKeys({
+        failureToleranceCount: props.operationPreferences.failureToleranceCount,
+        failureTolerancePercentage: props.operationPreferences.failureTolerancePercentage,
+        maxConcurrentCount: props.operationPreferences.maxConcurrentCount,
+        maxConcurrentPercentage: props.operationPreferences.maxConcurrentPercentage,
+        regionConcurrencyType: props.operationPreferences.regionConcurrencyType?.value,
+        regionOrder: props.operationPreferences.regionOrder,
+      }) : undefined,
       stackSetName: this.physicalName,
       capabilities: props.capabilities,
       permissionModel: deploymentTypeConfig.permissionsModel,
@@ -726,21 +789,23 @@ export class StackSet extends Resource implements IStackSet {
         }),
       } : {}),
     });
+    this.resource = stackSet;
 
     if (this._role) {
       stackSet.node.addDependency(this._role);
     }
 
     // the file asset bucket deployment needs to complete before the stackset can deploy
-    for (const fileAssetResourceName of fileAssetResourceNames) {
-      const fileAssetResource = scope.node.tryFindChild(fileAssetResourceName);
-      fileAssetResource && stackSet.node.addDependency(fileAssetResource);
-    }
+    stackSet.node.addDependency(...props.template._dependencies());
+  }
+
+  public get stackSetRef(): StackSetReference {
+    return this.resource.stackSetRef;
   }
 
   public get role(): iam.IRole | undefined {
     if (!this._role) {
-      throw new Error('service managed StackSets do not have an associated role');
+      throw new ValidationError(lit`StackSetServiceManagedNoRole`, 'service managed StackSets do not have an associated role', this);
     }
     return this._role;
   }
@@ -750,10 +815,11 @@ export class StackSet extends Resource implements IStackSet {
    *
    * @param target the target to add to the StackSet
    */
+  @MethodMetadata()
   public addTarget(target: StackSetTarget) {
     const targetConfig = target._bind(this);
 
-    if (this._role && this._role instanceof iam.Role) {
+    if (this._role && iam.Role.isRole(this._role)) {
       const disabledPrincipals: iam.IPrincipal[] = [];
       targetConfig.regions.forEach(region => {
         if (RegionInfo.get(region).isOptInRegion) {
@@ -765,6 +831,7 @@ export class StackSet extends Resource implements IStackSet {
           effect: iam.Effect.ALLOW,
           actions: ['sts:AssumeRole'],
           principals: disabledPrincipals,
+          conditions: this.adminRoleTrustConditions(),
         }));
       }
     }
@@ -779,6 +846,28 @@ export class StackSet extends Resource implements IStackSet {
         organizationalUnitIds: targetConfig.organizationalUnits,
       },
     });
+  }
+
+  /**
+   * Confused deputy protection: CloudFormation may only assume the admin role on behalf of
+   * StackSets in this account.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html
+   */
+  private adminRoleTrustConditions(): iam.Conditions {
+    const stack = Stack.of(this);
+    return {
+      StringEquals: { 'aws:SourceAccount': stack.account },
+      ArnLike: {
+        'aws:SourceArn': stack.formatArn({
+          service: 'cloudformation',
+          region: '*',
+          resource: 'stackset',
+          resourceName: '*',
+          arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        }),
+      },
+    };
   }
 }
 
