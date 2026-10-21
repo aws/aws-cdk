@@ -91,12 +91,46 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Returns a module version by requiring its package.json file
+ * Module details including version and resolved binary path
  */
-export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
+export interface ModuleDetails {
+  readonly version: string;
+  readonly binPath?: string;
+}
+
+/**
+ * Returns module details (version and resolved binary path) by requiring its package.json file
+ */
+export function tryGetModuleDetailsFromRequire(mod: string): ModuleDetails | undefined {
   try {
+    const pkgPath = require.resolve(`${mod}/package.json`);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require(`${mod}/package.json`).version;
+    const pkgJson = require(pkgPath);
+    const version = pkgJson.version;
+    if (!version) {
+      return undefined;
+    }
+
+    let binPath: string | undefined;
+    const bin = pkgJson.bin;
+    const pkgDir = path.dirname(pkgPath);
+    if (typeof bin === 'string') {
+      const candidate = path.resolve(pkgDir, bin);
+      if (fs.existsSync(candidate)) {
+        binPath = candidate;
+      }
+    } else if (typeof bin === 'object' && bin !== null) {
+      const binKey = mod === 'typescript' ? 'tsc' : mod;
+      const binRel = bin[binKey] ?? Object.values(bin)[0];
+      if (typeof binRel === 'string') {
+        const candidate = path.resolve(pkgDir, binRel);
+        if (fs.existsSync(candidate)) {
+          binPath = candidate;
+        }
+      }
+    }
+
+    return { version, binPath };
   } catch (err) {
     return undefined;
   }
@@ -114,6 +148,13 @@ export function tryGetModuleVersionFromRequire(mod: string): string | undefined 
 export function tscRequiresIgnoreConfig(version: string): boolean {
   const match = version.match(/(\d+)\.\d+/);
   return match !== null && parseInt(match[1], 10) >= 6;
+}
+
+/**
+ * Returns a module version by requiring its package.json file
+ */
+export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
+  return tryGetModuleDetailsFromRequire(mod)?.version;
 }
 
 /**
