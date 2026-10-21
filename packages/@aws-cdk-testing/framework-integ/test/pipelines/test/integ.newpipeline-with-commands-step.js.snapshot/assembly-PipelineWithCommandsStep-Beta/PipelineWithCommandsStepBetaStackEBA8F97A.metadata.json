@@ -2,7 +2,9 @@
   "/PipelineWithCommandsStep/Beta/Stack/Queue": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
     }
   ],
   "/PipelineWithCommandsStep/Beta/Stack/BootstrapVersion": [

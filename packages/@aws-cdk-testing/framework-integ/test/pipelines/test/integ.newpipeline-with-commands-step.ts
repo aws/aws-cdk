@@ -14,7 +14,7 @@ class AppStage extends Stage {
     super(scope, id, props);
 
     const stack = new Stack(this, 'Stack');
-    new sqs.Queue(stack, 'Queue');
+    new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
   }
 }
 
