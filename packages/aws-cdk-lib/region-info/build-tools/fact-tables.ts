@@ -34,7 +34,6 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'me-central-1': 'Z06143092I8HRXZRUZROF',
   'me-south-1': 'Z1MPMWCPA7YB62',
   'sa-east-1': 'Z7KQH4QJS55SO',
-  'sa-west-1': 'Z04355912AQ46IP1VCBB1',
   'us-east-1': 'Z3AQBSTGFYJSTF',
   'us-east-2': 'Z2O1EMRO9K5GLX',
   'us-gov-east-1': 'Z2NIFVYYW2VKV1',
