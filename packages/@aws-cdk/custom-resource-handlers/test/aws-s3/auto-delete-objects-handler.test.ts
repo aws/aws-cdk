@@ -30,6 +30,8 @@ beforeEach(() => {
 });
 
 const BUCKET_DENY_POLICY = '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]},{"Principal":"*","Effect":"Deny","Action":["s3:PutObject"],"Resource":["arn:aws:s3:::MyBucket/*"]}]}';
+const SERVICE_TOKEN_ARN = 'arn:aws:lambda:us-east-1:123456789012:function:my-fn';
+const CN_SERVICE_TOKEN_ARN = 'arn:aws-cn:lambda:cn-north-1:123456789012:function:my-fn';
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -206,6 +208,7 @@ test('deletes no objects on delete event when bucket has no objects', async () =
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -237,6 +240,7 @@ test('deletes all objects on delete event', async () => {
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -265,6 +269,30 @@ test('deletes all objects on delete event', async () => {
   });
 });
 
+test('deny policy ARN uses the partition from the ServiceToken (aws-cn)', async () => {
+  // GIVEN
+  mockS3Client.listObjectVersions.mockResolvedValue({ Versions: [] });
+
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ServiceToken: CN_SERVICE_TOKEN_ARN,
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+  await invokeHandler(event);
+
+  // THEN
+  const cnDenyPolicy = '{"Version":"2012-10-17","Statement":[{"Principal":"arn:iam:stackowner","Effect":"Allow","Action":["s3:PutBucketPolicy","s3:GetBucket*","s3:List*","s3:DeleteObject*"],"Resource":["arn:aws:s3:::MyBucket/*"]},{"Principal":"*","Effect":"Deny","Action":["s3:PutObject"],"Resource":["arn:aws-cn:s3:::MyBucket/*"]}]}';
+  expect(mockS3Client.putBucketPolicy).toHaveBeenCalledTimes(1);
+  expect(mockS3Client.putBucketPolicy).toHaveBeenCalledWith({
+    Bucket: 'MyBucket',
+    Policy: cnDenyPolicy,
+  });
+});
+
 test('deletes all objects on delete event when bucket has no existing policy', async () => {
   // GIVEN
   mockS3Client.getBucketPolicy.mockClear();
@@ -279,6 +307,7 @@ test('deletes all objects on delete event when bucket has no existing policy', a
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -328,6 +357,7 @@ test('deletes all objects on delete event even when deny policy assignment fails
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -373,6 +403,7 @@ test('deletes all objects on delete event even when bucket policy cannot be read
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -410,6 +441,7 @@ test('does not empty bucket if it is not tagged', async () => {
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -442,6 +474,7 @@ test('delete event where bucket has many objects does recurse appropriately', as
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
@@ -492,6 +525,7 @@ test('does nothing when the bucket does not exist', async () => {
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
     RequestType: 'Delete',
+    ServiceToken: SERVICE_TOKEN_ARN,
     ResourceProperties: {
       ServiceToken: 'Foo',
       BucketName: 'MyBucket',
