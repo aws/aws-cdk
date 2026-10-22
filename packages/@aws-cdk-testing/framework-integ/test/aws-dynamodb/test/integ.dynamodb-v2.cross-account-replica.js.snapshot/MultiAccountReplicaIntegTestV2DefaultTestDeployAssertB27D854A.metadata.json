@@ -1,0 +1,62 @@
+{
+  "/MultiAccountReplicaIntegTestV2/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:37:38)",
+        "new IntegTestCase (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb-v2.cross-account-replica.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MultiAccountReplicaIntegTestV2/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:186:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:149:92)",
+        "process.<anonymous> (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MultiAccountReplicaIntegTestV2/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:149:92)",
+        "process.<anonymous> (/Users/lhnng/Documents/OpenSourceContributions/cdk-git-july-2025/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
