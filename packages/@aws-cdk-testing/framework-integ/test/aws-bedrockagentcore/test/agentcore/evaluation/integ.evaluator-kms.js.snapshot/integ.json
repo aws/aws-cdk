@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "BedrockAgentCoreEvaluatorKms/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-evaluator-kms"
+      ],
+      "assertionStack": "BedrockAgentCoreEvaluatorKms/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreEvaluatorKmsDefaultTestDeployAssertFEA13DC8"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
