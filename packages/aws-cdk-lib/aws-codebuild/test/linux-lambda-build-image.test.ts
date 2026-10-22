@@ -115,6 +115,10 @@ describe('Linux Lambda build image', () => {
     }).toThrow(/Invalid CodeBuild environment: Cannot specify timeout for Lambda compute/);
   });
 
+  test('AMAZON_LINUX_2023_NODE_24 has correct image id', () => {
+    expect(codebuild.LinuxLambdaBuildImage.AMAZON_LINUX_2023_NODE_24.imageId).toEqual('aws/codebuild/amazonlinux-x86_64-lambda-standard:nodejs24');
+  });
+
   test('cannot be used in conjunction with privileged property', () => {
     const stack = new cdk.Stack();
 
@@ -127,6 +131,20 @@ describe('Linux Lambda build image', () => {
         },
       });
     }).toThrow(/Invalid CodeBuild environment: Lambda compute type does not support privileged mode/);
+  });
+
+  test('cannot be used in conjunction with hostKernel property', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          hostKernel: codebuild.HostKernel.LINUX_KERNEL_6,
+          computeType: codebuild.ComputeType.LAMBDA_1GB,
+          buildImage: codebuild.LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18,
+        },
+      });
+    }).toThrow(/Invalid CodeBuild environment: Lambda images do not support host kernel selection/);
   });
 
   test('cannot be used in conjunction with queuedTimeout property', () => {

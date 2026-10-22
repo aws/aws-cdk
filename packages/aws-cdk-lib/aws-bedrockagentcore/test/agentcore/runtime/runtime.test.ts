@@ -19,6 +19,7 @@ import { LoggingDestination, LogType } from '../../../lib/runtime/observability'
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
+  PlatformVersion,
   ProtocolType,
 } from '../../../lib/runtime/types';
 
@@ -104,6 +105,38 @@ describe('Runtime default tests', () => {
 
   test('Should have policy for execution role with correct permissions', () => {
     template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
+
+  test('Should have acknowledgeable annotation regarding container URI validation', () => {
+    const appCUri = new cdk.App();
+    const stackCUri = new cdk.Stack(appCUri, 'ack-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const repositoryCUri = new ecr.Repository(stackCUri, 'TestRepository');
+    const runtimeCUri = new Runtime(stackCUri, 'test-runtime-container-uri', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repositoryCUri, 'v1.0.0'),
+    });
+
+    cdk.Annotations.of(runtimeCUri).acknowledgeInfo('aws-cdk-lib.aws-bedrockagentcore:containerUriValidationSkipped');
+
+    Annotations.fromStack(stackCUri).hasNoInfo('*', Match.stringLikeRegexp('Container URI validation'));
+  });
+
+  test('Should have acknowledgeable annotation regarding cross-account IAM role usage', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
+
+    new Runtime(stack, 'test-runtime-cross-account', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+      executionRole: crossAccountRole,
+    });
+
+    cdk.Validations.of(stack).acknowledge({
+      id: 'aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount',
+      reason: 'The cross-account role is intended.',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('IAM role is from a different account'));
   });
 });
 
@@ -2424,7 +2457,7 @@ describe('Runtime role validation tests', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
-    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured. [ack: aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount]');
   });
 });
 
@@ -3477,6 +3510,121 @@ describe('Runtime observability tests', () => {
       ],
     });
   });
+
+  test('Should not create X-Ray resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoXRayPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    // X-Ray resource policy should NOT be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+  });
+
+  test('Should not create CloudWatch Logs resource policy when manageDeliveryResourcePolicy is false', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoCwlPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedLogGroupArn = stack.resolve(logGroup.logGroupArn);
+
+    // Delivery source, destination, and delivery should still be created
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: resolvedLogGroupArn,
+    });
+
+    // CloudWatch Logs resource policy should NOT be created
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
+  });
+
+  test('Should not create any delivery resource policies when manageDeliveryResourcePolicy is false with both tracing and logging', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoPoliciesStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    new Runtime(stack, 'FullObservabilityRuntime', {
+      runtimeName: 'full_observability_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+      manageDeliveryResourcePolicy: false,
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Neither X-Ray nor CloudWatch Logs resource policies should be created
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
+    template.resourceCountIs('AWS::Logs::ResourcePolicy', 0);
+  });
 });
 
 describe('Runtime applicationLogGroup tests', () => {
@@ -3597,6 +3745,57 @@ describe('Runtime applicationLogGroup tests', () => {
         ],
       ],
     });
+  });
+});
+
+describe('Runtime platformVersion tests', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should set PlatformVersion on the CFN resource when provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      platformVersion: PlatformVersion.V2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      PlatformVersion: 'V2',
+    });
+  });
+
+  test('Should set PlatformVersion when V1 is provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      platformVersion: PlatformVersion.V1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      PlatformVersion: 'V1',
+    });
+  });
+
+  test('Should omit PlatformVersion when not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    const resources = Template.fromStack(stack).findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0] as any;
+    expect(runtimeResource.Properties.PlatformVersion).toBeUndefined();
   });
 });
 
