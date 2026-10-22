@@ -2,9 +2,9 @@ import type { Construct } from 'constructs';
 import type { CidrSplit } from './cidr-splits';
 import { calculateCidrSplits } from './cidr-splits';
 import { CfnVPCCidrBlock } from './ec2.generated';
-import { NetworkBuilder } from './network-util';
+import { NetworkBuilder, NetworkUtils } from './network-util';
 import type { SubnetConfiguration } from './vpc';
-import { Fn, Token, UnscopedValidationError } from '../../core';
+import { Fn, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -360,12 +360,13 @@ export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
  *
  * ```ts
  *  new ec2.Vpc(stack, 'TheVPC', {
- *   ipAddresses: ec2.IpAddresses.cidr('10.0.1.0/20')
+ *   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/20')
  * });
  * ```
  *
+ * @internal
  */
-class Cidr implements IIpAddresses {
+export class Cidr implements IIpAddresses {
   private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
@@ -374,6 +375,21 @@ class Cidr implements IIpAddresses {
     }
 
     this.networkBuilder = new NetworkBuilder(this.cidrBlock);
+  }
+
+  /**
+   * Throws if the base address of the CIDR block is not aligned to its prefix length,
+   * instead of letting it be rounded up to the next aligned block.
+   *
+   * @internal
+   */
+  public validateAlignment(scope: Construct): void {
+    const networkCidr = this.networkBuilder.networkCidr;
+    const baseAddress = NetworkUtils.ipToNum(this.cidrBlock.split('/')[0]);
+    if (baseAddress !== networkCidr.minAddress()) {
+      const alignedBelow = NetworkUtils.numToIp(baseAddress - (baseAddress % networkCidr.networkSize));
+      throw new ValidationError(lit`VpcCidrNotAligned`, `VPC CIDR block '${this.cidrBlock}' is not aligned to its /${networkCidr.mask} prefix length. Use '${alignedBelow}/${networkCidr.mask}' or '${networkCidr.cidr}' instead.`, scope);
+    }
   }
 
   /**

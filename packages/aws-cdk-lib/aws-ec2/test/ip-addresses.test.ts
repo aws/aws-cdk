@@ -1,6 +1,7 @@
 
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
+import { EC2_VALIDATE_VPC_CIDR_ALIGNMENT } from '../../cx-api';
 import { IpAddresses, SubnetType, Vpc, cidrSplitToCfnExpression } from '../lib';
 import type { CidrSplit } from '../lib/cidr-splits';
 
@@ -239,6 +240,58 @@ describe('IpAddresses.cidr Vpc Integration', () => {
     });
     template.hasResourceProperties('AWS::EC2::Subnet', {
       CidrBlock: '10.0.192.0/18',
+    });
+  });
+});
+
+describe('IpAddresses.cidr Vpc alignment validation', () => {
+  test('misaligned CIDR is rounded up to the next aligned block when the feature flag is disabled', () => {
+    const stack = new Stack();
+
+    new Vpc(stack, 'VpcNetwork', { ipAddresses: IpAddresses.cidr('10.0.40.0/19') });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: '10.0.64.0/19',
+    });
+  });
+
+  test('misaligned CIDR throws when the feature flag is enabled', () => {
+    const stack = new Stack();
+    stack.node.setContext(EC2_VALIDATE_VPC_CIDR_ALIGNMENT, true);
+
+    expect(() => {
+      new Vpc(stack, 'VpcNetwork', { ipAddresses: IpAddresses.cidr('10.0.40.0/19') });
+    }).toThrow("VPC CIDR block '10.0.40.0/19' is not aligned to its /19 prefix length. Use '10.0.32.0/19' or '10.0.64.0/19' instead.");
+  });
+
+  test('misaligned deprecated cidr property throws when the feature flag is enabled', () => {
+    const stack = new Stack();
+    stack.node.setContext(EC2_VALIDATE_VPC_CIDR_ALIGNMENT, true);
+
+    expect(() => {
+      new Vpc(stack, 'VpcNetwork', { cidr: '10.0.1.0/20' });
+    }).toThrow("VPC CIDR block '10.0.1.0/20' is not aligned to its /20 prefix length. Use '10.0.0.0/20' or '10.0.16.0/20' instead.");
+  });
+
+  test('aligned CIDR is accepted when the feature flag is enabled', () => {
+    const stack = new Stack();
+    stack.node.setContext(EC2_VALIDATE_VPC_CIDR_ALIGNMENT, true);
+
+    new Vpc(stack, 'VpcNetwork', { ipAddresses: IpAddresses.cidr('10.0.32.0/19') });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: '10.0.32.0/19',
+    });
+  });
+
+  test('default CIDR is accepted when the feature flag is enabled', () => {
+    const stack = new Stack();
+    stack.node.setContext(EC2_VALIDATE_VPC_CIDR_ALIGNMENT, true);
+
+    new Vpc(stack, 'VpcNetwork');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
+      CidrBlock: Vpc.DEFAULT_CIDR_RANGE,
     });
   });
 });
