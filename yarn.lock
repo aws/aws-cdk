@@ -9990,7 +9990,26 @@ jsii-rosetta@~5.9.71:
     workerpool "^6.5.1"
     yargs "^17.7.3"
 
-jsii@~5.9.1, jsii@~5.9.56:
+jsii-rosetta@~6.0.20:
+  version "6.0.20"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-6.0.20.tgz#e3388dded6dd8f723c76d3e1b4d7d130bb87be65"
+  integrity sha512-vQOPnY6trR2WB8a4R0Eet4io3Aa7VQYlZ/oVdOM57zsLxKZ/cffzGs/mep0hd1w4WZbis+juf28XSJsyYV5i2g==
+  dependencies:
+    "@jsii/check-node" "^1.141.0"
+    "@jsii/spec" "^1.141.0"
+    "@xmldom/xmldom" "^0.9.12"
+    chalk "^4"
+    commonmark "^0.31.2"
+    fast-glob "^3.3.3"
+    jsii "~6.0.0"
+    semver "^7.8.5"
+    semver-intersect "^1.5.0"
+    stream-json "^3.7.0"
+    typescript "~6.0"
+    workerpool "^6.5.1"
+    yargs "^17.7.3"
+
+jsii@~5.9.1:
   version "5.9.56"
   resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.56.tgz#4d099940ad1dd935704d6b429643bb7a0e975f5c"
   integrity sha512-RxV9cmp1qsI03GzTvDbsevWiQakW4/APWO/8uh9kEIZsZ/vaO/HMJ4HcMB/ZbzuSjQdQ6H0vtfWW7Xoe73MtEA==
@@ -10006,6 +10025,24 @@ jsii@~5.9.1, jsii@~5.9.56:
     sort-json "^2.0.1"
     spdx-license-list "^6.12.0"
     typescript "~5.9"
+    yargs "^17.7.3"
+
+jsii@~6.0.0, jsii@~6.0.18:
+  version "6.0.18"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-6.0.18.tgz#3a9f64f5dbfffe5257e091fec0d4e8c0ef7ea788"
+  integrity sha512-RCi/jMs+omXP62jfJUOBGkwxZDwqNUXIgicVz0OV7WjcWgg7nCa+qYMF4eaDPkuTdOa9xuqDN/KORkS8ssavrA==
+  dependencies:
+    "@jsii/check-node" "1.141.0"
+    "@jsii/spec" "1.141.0"
+    case "^1.6.3"
+    chalk "^4"
+    fast-deep-equal "^3.1.3"
+    log4js "^6.9.1"
+    semver "^7.8.5"
+    semver-intersect "^1.5.0"
+    sort-json "^2.0.1"
+    spdx-license-list "^6.12.0"
+    typescript "~6.0"
     yargs "^17.7.3"
 
 json-buffer@3.0.1:
@@ -13837,6 +13874,11 @@ typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"
   resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+
+typescript@~6.0, typescript@~6.0.3:
+  version "6.0.3"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz#90251dc007916e972786cb94d74d15b185577d21"
+  integrity sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"

@@ -24,7 +24,9 @@ function toPosixPath(p) {
 }
 
 function tempDir() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'check-skills-'));
+  // The canonical path, so fixtures behave the same where the temp directory is
+  // reached through a symlink (macOS: /var -> /private/var).
+  const dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'check-skills-')));
   tempDirs.push(dir);
   return dir;
 }
@@ -140,11 +142,11 @@ describe('check-skills frontmatter and names', () => {
 
   /** A repository whose first skill is renamed, folder included. */
   function renamedSkill(name) {
-    const root = repo({
-      [`${GROUP}/README.md`]: readme([name, 'cdk-beta-principles']),
-      [`${GROUP}/${name}/SKILL.md`]: skillMd({ name }),
-    });
+    const root = repo({ [`${GROUP}/README.md`]: readme([name, 'cdk-beta-principles']) });
+    // Remove the original folder before writing the renamed one: on a case-insensitive
+    // file system a name differing only in case is the same folder.
     fs.rmSync(path.join(root, GROUP, SKILL), { recursive: true });
+    writeFiles(root, { [`${GROUP}/${name}/SKILL.md`]: skillMd({ name }) });
     return { root, skillPath: `${GROUP}/${name}/SKILL.md` };
   }
 
