@@ -144,8 +144,10 @@
     "@aws-cdk/lazify": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/spec2cdk": "0.0.0",
+    "@aws-cdk/toolkit-lib": "^1.44.1",
     "@aws-sdk/client-account": "3.632.0",
     "@aws-sdk/client-acm": "3.632.0",
+    "@aws-sdk/client-cloudfront": "3.632.0",
     "@aws-sdk/client-cloudwatch-logs": "3.632.0",
     "@aws-sdk/client-codepipeline": "3.632.0",
     "@aws-sdk/client-dynamodb": "3.632.0",
@@ -160,6 +162,7 @@
     "@aws-sdk/client-ssm": "3.632.0",
     "@aws-sdk/client-sts": "3.632.0",
     "@aws-sdk/credential-providers": "3.632.0",
+    "@aws-sdk/s3-request-presigner": "3.632.0",
     "@smithy/node-http-handler": "3.3.3",
     "@smithy/types": "3.7.2",
     "@smithy/util-stream": "3.3.4",
@@ -168,6 +171,7 @@
     "@types/lodash": "^4.17.26",
     "@types/mime-types": "^2.1.4",
     "@types/punycode": "^2.1.4",
+    "@types/yazl": "^2.4.5",
     "aws-cdk": "^2.1145.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
@@ -186,7 +190,8 @@
     "ts-mock-imports": "^1.3.19",
     "ts-node": "^10.9.2",
     "typescript": "~6.0.3",
-    "typescript-json-schema": "^0.68.0"
+    "typescript-json-schema": "^0.68.0",
+    "yazl": "^3.3.1"
   },
   "peerDependencies": {
     "constructs": "^10.5.0"
