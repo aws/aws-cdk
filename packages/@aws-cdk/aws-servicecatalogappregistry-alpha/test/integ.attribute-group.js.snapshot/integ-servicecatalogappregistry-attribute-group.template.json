@@ -44,6 +44,14 @@
    }
   }
  },
+ "Outputs": {
+  "CreatedAttributeGroupAttributes": {
+   "Value": "{\"stage\":\"alpha\",\"teamMembers\":[\"markI\",\"markII\",\"markIII\"],\"plannedRoadMap\":{\"alpha\":\"time1\",\"beta\":\"time2\"}}"
+  },
+  "ImportedAttributeGroupAttributes": {
+   "Value": "{\"stage\":\"beta\",\"owner\":\"platform\"}"
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
