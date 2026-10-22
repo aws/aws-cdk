@@ -105,5 +105,5 @@ const testCase = new integ.IntegTest(app, 'WebFunctionAllFieldsTest', {
 // TLS, and enforcing auth — i.e. the resources are wired correctly, not merely
 // deployed.
 testCase.assertions
-  .httpApiCall(`https://${webFunction.domainName}/`)
+  .httpApiCall(`https://${webFunction.endpoint.domainName}/`)
   .expect(integ.ExpectedResult.objectLike({ status: 403 }));

@@ -4,12 +4,12 @@ import * as iam from '../../aws-iam';
 /**
  * Collection of grant methods for a WebFunction endpoint.
  */
-export class WebFunctionGrants {
+export class WebFunctionEndpointGrants {
   /**
    * Creates grants for a WebFunction endpoint.
    */
-  public static fromWebFunctionEndpoint(endpoint: IWebFunctionEndpointRef): WebFunctionGrants {
-    return new WebFunctionGrants(endpoint);
+  public static fromWebFunctionEndpoint(endpoint: IWebFunctionEndpointRef): WebFunctionEndpointGrants {
+    return new WebFunctionEndpointGrants(endpoint);
   }
 
   private constructor(private readonly endpoint: IWebFunctionEndpointRef) {}

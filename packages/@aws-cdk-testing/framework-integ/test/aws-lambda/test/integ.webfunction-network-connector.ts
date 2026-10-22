@@ -99,7 +99,7 @@ testCase.assertions
   })
   .next(
     testCase.assertions
-      .httpApiCall(`https://${webFunction.domainName}/`)
+      .httpApiCall(`https://${webFunction.endpoint.domainName}/`)
       .expect(integ.ExpectedResult.objectLike({
         status: 200,
         body: { object: EGRESS_OBJECT_BODY },

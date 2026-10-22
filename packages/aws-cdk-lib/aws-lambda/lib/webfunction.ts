@@ -4,13 +4,14 @@ import {
   CfnNetworkConnector,
   CfnWebFunction,
   CfnWebFunctionRevision,
-  CfnWebFunctionEndpoint,
 } from './lambda.generated';
-import type { IWebFunctionEndpointRef, IWebFunctionRef, WebFunctionEndpointReference, WebFunctionReference } from './lambda.generated';
+import type { IWebFunctionRef, WebFunctionReference } from './lambda.generated';
 import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
+import { DEFAULT_ENDPOINT, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
-import { WebFunctionGrants } from './webfunction-grants';
+import { WebFunctionEndpoint, WebFunctionEndpointType } from './webfunction-endpoint';
+import type { WebFunctionEndpointOptions } from './webfunction-endpoint';
 import type {
   WebFunctionRuntime,
 } from './webfunction-runtime';
@@ -20,188 +21,12 @@ import { KeyGrants } from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import type { Duration, IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Names, PhysicalName, Reference, Resource, Stack, Token } from '../../core';
-import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { md5hash, memoizedGetter } from '../../core/lib/helpers-internal';
+import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { findTokens } from '../../core/lib/private/resolve';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-
-/**
- * The endpoint type for a WebFunction endpoint.
- */
-export enum WebFunctionEndpointType {
-  /**
-   * Single-region endpoint deployed in the stack's region only.
-   * The function is accessible from a URL in this region.
-   */
-  HOME_REGION = 'HomeRegion',
-  /**
-   * Multi-region endpoint with managed latency-based routing.
-   * The function is replicated to the specified replica regions
-   * and users are routed to the nearest region.
-   * Requires `replicaRegions` to be specified.
-   */
-  MULTI_REGION = 'MultiRegion',
-  /**
-   * Per-region endpoint: a separate regional endpoint is exposed for each
-   * replica region (no managed cross-region routing).
-   * Requires `replicaRegions` to be specified.
-   */
-  PER_REGION = 'PerRegion',
-}
-/**
- * Authentication type for WebFunction domain configuration
- */
-export enum WebFunctionAuthType {
-  /**
-   * Authentication is managed by the application itself.
-   * The Lambda service will not enforce authentication; ensure your handler code validates every request.
-   */
-  APPLICATION_MANAGED = 'ApplicationManaged',
-  /** Authentication using AWS IAM */
-  IAM_AUTH = 'IamAuth',
-}
-
-/**
- * Predefined region groups for use with WebFunctionReplicaRegions
- *
- * Group membership is fixed by the installed version of `aws-cdk-lib`. A region launched
- * after that version only appears in a group once you upgrade `aws-cdk-lib`, and nothing
- * reports it in the meantime. The same applies when you exclude regions from a group: "all
- * regions except X" built that way does not include a newly launched region either. To cover
- * one, upgrade `aws-cdk-lib` or list the regions explicitly; explicit lists are unaffected.
- */
-export class WebFunctionRegions {
-  /** US regions */
-  static readonly US: string[] = Object.freeze(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']) as string[];
-
-  /** European regions */
-  static readonly EU: string[] = Object.freeze([
-    'eu-west-1',
-    'eu-west-2',
-    'eu-west-3',
-    'eu-central-1',
-    'eu-north-1',
-  ]) as string[];
-
-  /** Asia Pacific regions */
-  static readonly AP: string[] = Object.freeze([
-    'ap-south-1',
-    'ap-northeast-3',
-    'ap-northeast-2',
-    'ap-northeast-1',
-    'ap-southeast-1',
-    'ap-southeast-2',
-  ]) as string[];
-
-  /** Canada regions */
-  static readonly CA: string[] = Object.freeze(['ca-central-1']) as string[];
-
-  /** South America regions */
-  static readonly SA: string[] = Object.freeze(['sa-east-1']) as string[];
-
-  /** All regions in the groups above */
-  static readonly ALL_DEFAULT_REGIONS: string[] = Object.freeze([
-    ...WebFunctionRegions.US,
-    ...WebFunctionRegions.EU,
-    ...WebFunctionRegions.AP,
-    ...WebFunctionRegions.CA,
-    ...WebFunctionRegions.SA,
-  ]) as string[];
-
-  /**
-   * Sparse global coverage — 7 regions across North America, Europe, Asia Pacific and
-   * South America. Use when you need worldwide presence with minimal region count.
-   */
-  static readonly SPARSE_GLOBAL: string[] = Object.freeze([
-    'us-east-1',
-    'eu-west-1',
-    'ap-northeast-1',
-    'eu-central-1',
-    'ap-southeast-2',
-    'sa-east-1',
-    'ap-southeast-1',
-  ]) as string[];
-
-  /**
-   * High-traffic regions only — US, Europe, and Asia Pacific (6 regions).
-   * Use when most of your users are in these areas and you don't need
-   * South America or Oceania coverage.
-   */
-  static readonly MAJOR_REGIONS: string[] = Object.freeze([
-    'us-east-1',
-    'us-west-2',
-    'eu-west-1',
-    'eu-central-1',
-    'ap-northeast-1',
-    'ap-southeast-1',
-  ]) as string[];
-}
-
-/**
- * Represents a set of replica regions for a WebFunction.
- *
- * Build one with `WebFunctionReplicaRegions.of(included, excluded?)`, passing `WebFunctionRegions.*`
- * group constants (or explicit region arrays) for the regions to include and,
- * optionally, a set to exclude.
- *
- * @example
- * // Include all default regions except the EU group
- * lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.ALL_DEFAULT_REGIONS, lambda.WebFunctionRegions.EU)
- *
- * @example
- * // Include explicit regions
- * lambda.WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1'])
- *
- * @example
- * // Combine multiple groups by spreading them
- * lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU])
- */
-export class WebFunctionReplicaRegions {
-  /**
-   * Create a set of replica regions from an `included` list, with an optional
-   * `excluded` list removed from it. Both accept `WebFunctionRegions.*` group constants or
-   * explicit region arrays; spread multiple groups into a single array to
-   * combine them (e.g. `[...WebFunctionRegions.US, ...WebFunctionRegions.EU]`).
-   *
-   * `included` may be a deploy-time list (for example `CfnParameter.valueAsList`),
-   * in which case it is passed through unchanged. Exclusion is computed at synth
-   * time and therefore requires concrete region strings in both lists.
-   *
-   * A `WebFunctionRegions` group contributes the regions it lists in the installed version of
-   * `aws-cdk-lib`, so regions launched later are not included until you upgrade it.
-   */
-  public static of(included: string[], excluded?: string[]): WebFunctionReplicaRegions {
-    return new WebFunctionReplicaRegions(included, excluded ?? []);
-  }
-
-  private constructor(
-    private readonly included: string[],
-    private readonly excluded: string[],
-  ) {}
-
-  /**
-   * The final, de-duplicated list of replica regions (included minus excluded).
-   *
-   * Not named `resolve`: CDK treats any object with a `resolve` method as a token.
-   *
-   * @internal
-   */
-  public _toRegionList(): string[] {
-    if (this.excluded.length === 0) {
-      return Token.isUnresolved(this.included) ? this.included : [...new Set(this.included)];
-    }
-    if (hasTokens(this.included) || hasTokens(this.excluded)) {
-      throw new UnscopedValidationError(
-        lit`WebFunctionReplicaRegionsUnresolvedExclusion`,
-        'Excluding replica regions requires concrete region strings in both lists; a deploy-time value cannot be filtered at synth time',
-      );
-    }
-    const excludedSet = new Set(this.excluded);
-    return [...new Set(this.included)].filter((r) => !excludedSet.has(r));
-  }
-}
 
 /**
  * The compute types an owned connector was created for, read from its L1.
@@ -226,11 +51,6 @@ function connectorComputeTypes(connector: INetworkConnector): string[] | undefin
   return hasTokens(types) ? undefined : types;
 }
 
-/** A list token has `length === 1`, so both the list and its elements must be checked. */
-function hasTokens(list: string[]): boolean {
-  return Token.isUnresolved(list) || list.some((r) => Token.isUnresolved(r));
-}
-
 /**
  * The top-level stack a stack is nested in, or the stack itself.
  *
@@ -246,25 +66,9 @@ function topLevelStack(stack: Stack): Stack {
 }
 
 /**
- * The names the service accepts for a WebFunction and for its endpoint.
- *
- * Both are validated with the same rule: 2–64 characters of letters, numbers, hyphens and
- * underscores, starting and ending with a letter or number.
- */
-const RESOURCE_NAME_REGEX = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}[a-zA-Z0-9]$/;
-
-function validateResourceName(name: string, label: string, scope: Construct): void {
-  if (!RESOURCE_NAME_REGEX.test(name)) {
-    throw new ValidationError(lit`WebFunctionNameInvalid`,
-      `${label} '${name}' must be 2 to 64 characters of letters, numbers, hyphens or underscores, ` +
-      'starting and ending with a letter or number.', scope);
-  }
-}
-
-/**
  * Properties for defining a `WebFunction`.
  */
-export interface WebFunctionProps {
+export interface WebFunctionProps extends WebFunctionEndpointOptions {
   /**
    * The name of the WebFunction.
    *
@@ -409,111 +213,12 @@ export interface WebFunctionProps {
    * @default - the service default of 64 is applied
    */
   readonly maxConcurrencyPerEnvironment?: number;
-
-  /**
-   * The name of the WebFunction endpoint.
-   *
-   * Must be 2 to 64 characters of letters, numbers, hyphens or underscores, starting and
-   * ending with a letter or number.
-   *
-   * Changing this property replaces the endpoint, which yields a new `domainName`.
-   *
-   * `endpointType` and `replicaRegions` also replace the endpoint when they change, and
-   * CloudFormation cannot replace a resource that keeps its name. Without this property the
-   * name is derived from them, so that works. With it, change the name together with them, or
-   * the deployment fails.
-   *
-   * @default - `prod` for a `HOME_REGION` endpoint; for a regional endpoint, `prod-` followed by
-   * a hash of `endpointType` and `replicaRegions`
-   */
-  readonly endpointName?: string;
-
-  /**
-   * The endpoint type for the WebFunction.
-   *
-   * This property and `replicaRegions` are intentionally modeled as flat,
-   * independent props (rather than a factory or nested object) for consistency
-   * with the rest of the WebFunction API. Their mutual constraint is validated
-   * at synth time: the regional types (`WebFunctionEndpointType.MULTI_REGION` and
-   * `WebFunctionEndpointType.PER_REGION`) require `replicaRegions` to resolve to a non-empty
-   * set, and `WebFunctionEndpointType.HOME_REGION` (the default) must not be combined with
-   * `replicaRegions`.
-   *
-   * Changing this property replaces the endpoint, which yields a new `domainName`. If you set
-   * `endpointName`, change it at the same time.
-   *
-   * @default WebFunctionEndpointType.HOME_REGION
-   */
-  readonly endpointType?: WebFunctionEndpointType;
-
-  /**
-   * The authentication type for the WebFunction endpoint.
-   *
-   * There is no default: you must choose explicitly so an endpoint is never accidentally public or
-   * accidentally locked down. Specify `WebFunctionAuthType.IAM_AUTH` (Lambda authorizes requests with SigV4/IAM)
-   * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
-   */
-  readonly authType: WebFunctionAuthType;
-
-  /**
-   * The replica regions for a regional WebFunction deployment.
-   *
-   * Only valid with the regional endpoint types (`WebFunctionEndpointType.MULTI_REGION` and
-   * `WebFunctionEndpointType.PER_REGION`), where it is required and must resolve to a
-   * non-empty set of regions. Must be omitted for `WebFunctionEndpointType.HOME_REGION`.
-   * This constraint is validated at synth time (see `endpointType`).
-   *
-   * Changing the set of regions replaces the endpoint, which yields a new `domainName`. If you
-   * set `endpointName`, change it at the same time. A deploy-time list (for example from a
-   * `CfnParameter`) cannot feed the default name, so changing its value at deployment also
-   * needs a new `endpointName`.
-   *
-   * The stack's own region always serves traffic, whether or not it is listed here.
-   *
-   * @default - No replica regions (home region only).
-   */
-  readonly replicaRegions?: WebFunctionReplicaRegions;
-
-  /**
-   * A description of the endpoint.
-   *
-   * Up to 256 characters.
-   *
-   * @default - No description.
-   */
-  readonly endpointDescription?: string;
-
-  /**
-   * The maximum number of concurrent execution environments for the endpoint.
-   *
-   * This is an optional cap on top of your account's vCPU quota, not a reservation:
-   * it further constrains how far the endpoint scales. Must be 2 or greater.
-   *
-   * @default - Scaling is limited only by your account's vCPU quota.
-   */
-  readonly maxEnvironments?: number;
-
-  /**
-   * The maximum request rate per second for the endpoint, up to 10000.
-   *
-   * This is an optional cap on top of your account's rate limit quota. Specify 0 to
-   * reject all new requests.
-   *
-   * The service accepts only certain values: 0, 100 through 1000 in increments of 100,
-   * and 2000 through 10000 in increments of 1000. Which of those are available varies by
-   * Region, and an unsupported value is rejected at deploy time with the values that
-   * Region does accept. Only the lower bound is checked at synth, since the schema
-   * declares nothing more.
-   *
-   * @default - The request rate is limited only by your account's rate limit quota.
-   */
-  readonly rateLimit?: number;
 }
 
 /**
  * Represents a WebFunction resource, either created in this stack or imported.
  */
-export interface IWebFunction extends IResource, IWebFunctionRef, IWebFunctionEndpointRef, iam.IGrantable {
+export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable {
   /**
    * The ARN of the WebFunction.
    *
@@ -529,26 +234,11 @@ export interface IWebFunction extends IResource, IWebFunctionRef, IWebFunctionEn
   readonly webFunctionName: string;
 
   /**
-   * The ARN of the WebFunction endpoint.
-   *
-   * For an imported WebFunction this is only available if `endpointName` was passed to
-   * `WebFunction.fromWebFunctionAttributes()`; otherwise reading it throws.
-   *
-   * @attribute
-   */
-  readonly endpointArn: string;
-
-  /**
    * The execution role of the WebFunction.
    *
    * Undefined for an imported WebFunction.
    */
   readonly role?: iam.IRoleRef;
-
-  /**
-   * Grant methods for the WebFunction's endpoint.
-   */
-  readonly grants: WebFunctionGrants;
 
   /**
    * Adds a statement to the WebFunction's execution role.
@@ -565,15 +255,6 @@ export interface IWebFunction extends IResource, IWebFunctionRef, IWebFunctionEn
 export interface WebFunctionAttributes {
   /** The ARN of the WebFunction. */
   readonly webFunctionArn: string;
-
-  /**
-   * The name of the WebFunction's endpoint.
-   *
-   * Required to reference the endpoint, for example to call `grants.invoke()`.
-   *
-   * @default - the endpoint cannot be referenced
-   */
-  readonly endpointName?: string;
 }
 
 /**
@@ -586,17 +267,11 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   /** The name of the WebFunction. */
   public abstract readonly webFunctionName: string;
 
-  /** The ARN of the WebFunction endpoint. */
-  public abstract readonly endpointArn: string;
-
   /** The execution role of the WebFunction. Undefined for an imported WebFunction. */
   public abstract readonly role?: iam.IRoleRef;
 
   /** The principal to grant permissions to. */
   public abstract readonly grantPrincipal: iam.IPrincipal;
-
-  /** Grant methods for the WebFunction's endpoint. */
-  public readonly grants: WebFunctionGrants = WebFunctionGrants.fromWebFunctionEndpoint(this);
 
   /**
    * Adds a statement to the WebFunction's execution role.
@@ -610,10 +285,6 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
 
   public get webFunctionRef(): WebFunctionReference {
     return { functionArn: this.webFunctionArn, functionName: this.webFunctionName };
-  }
-
-  public get webFunctionEndpointRef(): WebFunctionEndpointReference {
-    return { endpointArn: this.endpointArn };
   }
 }
 
@@ -650,7 +321,6 @@ export class WebFunction extends WebFunctionBase {
    */
   public static fromWebFunctionAttributes(scope: Construct, id: string, attrs: WebFunctionAttributes): IWebFunction {
     const arn = attrs.webFunctionArn;
-    const endpointName = attrs.endpointName;
 
     // The ARN is `arn:<partition>:lambda:<region>:<account>:web-function/<name>`.
     const name = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
@@ -658,14 +328,6 @@ export class WebFunction extends WebFunctionBase {
     class Import extends WebFunctionBase {
       public readonly webFunctionArn = arn;
       public readonly webFunctionName = name;
-      public get endpointArn(): string {
-        if (endpointName === undefined) {
-          throw new ValidationError(lit`WebFunctionImportedWithoutEndpoint`,
-            'This WebFunction was imported without an endpoint name. Pass `endpointName` to ' +
-            '`WebFunction.fromWebFunctionAttributes()` to reference its endpoint.', this);
-        }
-        return `${arn}/endpoint/${endpointName}`;
-      }
       public readonly role = undefined;
       public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
@@ -713,19 +375,13 @@ export class WebFunction extends WebFunctionBase {
   public readonly logGroup: logs.ILogGroupRef;
 
   /**
-   * The domain name of the WebFunction endpoint — the host clients send
-   * requests to.
+   * The endpoint the WebFunction creates for itself, configured by the endpoint properties in
+   * `WebFunctionProps`.
    *
-   * @attribute
+   * Use its `domainName` to send requests, and its `grants` to allow invoking it. Add more
+   * endpoints with `addEndpoint()`.
    */
-  public readonly domainName: string;
-
-  /**
-   * The ARN of the WebFunction endpoint.
-   *
-   * @attribute
-   */
-  public readonly endpointArn: string;
+  public readonly endpoint: WebFunctionEndpoint;
 
   /**
    * The ARN of the WebFunction revision created by this construct.
@@ -741,12 +397,12 @@ export class WebFunction extends WebFunctionBase {
    */
   public readonly revisionId: string;
 
+  private readonly hasEgressNetworkConnector: boolean;
+
   /** The underlying L1 CfnWebFunction resource. Use for escape hatches. */
   public readonly resource: CfnWebFunction;
   /** The underlying L1 CfnWebFunctionRevision resource. Use for escape hatches. */
   public readonly resourceRevision: CfnWebFunctionRevision;
-  /** The underlying L1 CfnWebFunctionEndpoint resource. Use for escape hatches. */
-  public readonly resourceEndpoint: CfnWebFunctionEndpoint;
 
   constructor(scope: Construct, id: string, props: WebFunctionProps) {
     super(scope, id, {
@@ -764,9 +420,6 @@ export class WebFunction extends WebFunctionBase {
     if (props.webFunctionName !== undefined && !Token.isUnresolved(props.webFunctionName)) {
       validateResourceName(props.webFunctionName, 'Function name', this);
     }
-    if (props.endpointName !== undefined && !Token.isUnresolved(props.endpointName)) {
-      validateResourceName(props.endpointName, 'Endpoint name', this);
-    }
 
     if (
       props.revisionDescription &&
@@ -779,18 +432,6 @@ export class WebFunction extends WebFunctionBase {
           this,
         );
       }
-    }
-
-    if (
-      props.endpointDescription &&
-      !Token.isUnresolved(props.endpointDescription) &&
-      props.endpointDescription.length > 256
-    ) {
-      throw new ValidationError(
-        lit`WebFunctionEndpointDescriptionTooLong`,
-        `Endpoint description cannot be longer than 256 characters. Endpoint description currently has ${props.endpointDescription.length} characters.`,
-        this,
-      );
     }
 
     if (props.timeout !== undefined) {
@@ -820,63 +461,10 @@ export class WebFunction extends WebFunctionBase {
       );
     }
 
-    // Validate endpoint type and replica regions
-    // `endpointType` and `replicaRegions` are intentionally kept as flat,
-    // independent props (a documented deviation from DESIGN_GUIDELINES "flat"
-    // guidance) for API consistency. Their mutual constraint is enforced here
-    // at synth time rather than made unrepresentable via a factory/subtype.
-    const endpointType = props.endpointType ?? WebFunctionEndpointType.HOME_REGION;
-    // MULTI_REGION and PER_REGION are both regional endpoint types: they serve the
-    // replica regions and require `replicaRegions`. HOME_REGION must not set it.
-    const isRegional = endpointType === WebFunctionEndpointType.MULTI_REGION || endpointType === WebFunctionEndpointType.PER_REGION;
-    if (endpointType === WebFunctionEndpointType.HOME_REGION && props.replicaRegions) {
-      throw new ValidationError(
-        lit`WebFunctionHomeRegionWithReplicaRegions`,
-        'replicaRegions cannot be specified when endpointType is HOME_REGION. Use MULTI_REGION or PER_REGION for multi-region deployments',
-        this,
-      );
-    }
-    if (isRegional && !props.replicaRegions) {
-      throw new ValidationError(
-        lit`WebFunctionRegionalEndpointWithoutReplicaRegions`,
-        `replicaRegions must be specified when endpointType is ${endpointType}`,
-        this,
-      );
-    }
-    if (props.egressNetworkConnector && isRegional) {
-      throw new ValidationError(
-        lit`WebFunctionEgressConnectorRequiresHomeRegion`,
-        `egressNetworkConnector is only supported with a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${endpointType}`,
-        this,
-      );
-    }
-
-    // The schema declares a lower bound for both of these but no upper bound, so only the
-    // lower bound is enforced here. An over-large value is left to the service to reject.
-    const maxEnvironments = props.maxEnvironments;
-    if (
-      maxEnvironments !== undefined &&
-      !Token.isUnresolved(maxEnvironments) &&
-      (maxEnvironments < 2 || !Number.isInteger(maxEnvironments))
-    ) {
-      throw new ValidationError(
-        lit`WebFunctionMaxEnvironmentsOutOfRange`,
-        `maxEnvironments must be an integer of 2 or greater, got ${maxEnvironments}`,
-        this,
-      );
-    }
-
-    const rateLimit = props.rateLimit;
-    if (
-      rateLimit !== undefined &&
-      !Token.isUnresolved(rateLimit) &&
-      (rateLimit < 0 || !Number.isInteger(rateLimit))
-    ) {
-      throw new ValidationError(
-        lit`WebFunctionRateLimitOutOfRange`,
-        `rateLimit must be an integer of 0 or greater, got ${rateLimit}`,
-        this,
-      );
+    // A connector is only supported with a HOME_REGION endpoint, which every endpoint of the
+    // function must then be: see addEndpoint().
+    if (props.egressNetworkConnector) {
+      this.assertHomeRegionEndpoint(props.endpointType);
     }
 
     // Set up the execution role
@@ -917,17 +505,6 @@ export class WebFunction extends WebFunctionBase {
         );
       }
       environment.AWS_LAMBDA_NODEJS_ENTRYPOINT = props.entryPoint;
-    }
-
-    // Resolve regions configuration
-    const regions = this.resolveRegions(props.replicaRegions);
-
-    if (isRegional && regions !== undefined && !Token.isUnresolved(regions) && regions.length === 0) {
-      throw new ValidationError(
-        lit`WebFunctionRegionalEndpointEmptyRegions`,
-        `replicaRegions resolved to an empty list. A ${endpointType} endpoint requires at least one region`,
-        this,
-      );
     }
 
     const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');
@@ -976,48 +553,71 @@ export class WebFunction extends WebFunctionBase {
       this.grantServiceKeyUsage(props.kmsKey);
     }
 
-    if (props.authType === WebFunctionAuthType.APPLICATION_MANAGED) {
-      Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-lambda:webFunctionPublicEndpoint',
-        'WebFunction endpoint uses APPLICATION_MANAGED auth. The Lambda service will not enforce authentication; ensure your handler code validates every request.',
-      );
-    }
-
-    this.resourceEndpoint = new CfnWebFunctionEndpoint(this, 'Endpoint', {
-      functionName: this.resource.ref,
-      endpointName: props.endpointName ?? this.defaultEndpointName(endpointType, regions),
-      endpointType,
-      authType: props.authType,
-      revisionWeights: [
-        {
-          revisionId: this.resourceRevision.getAtt('RevisionId').toString(),
-          weight: 100,
-        },
-      ],
-      regions: regions, // note: regional (MULTI_REGION / PER_REGION) property only
-      description: props.endpointDescription,
-      // Only emit the wrapper objects when their single member is set, so that an
-      // unconfigured endpoint keeps the service defaults instead of sending empty structs.
-      scalingConfig: props.maxEnvironments !== undefined
-        ? { maxEnvironments: props.maxEnvironments }
-        : undefined,
-      throttleConfig: props.rateLimit !== undefined
-        ? { rateLimit: props.rateLimit }
-        : undefined,
-    });
-
     this.resourceRevision.addResourceDependency(this.resource);
-    this.resourceEndpoint.addResourceDependency(this.resource);
-    this.resourceEndpoint.addResourceDependency(this.resourceRevision);
+
+    this.webFunctionName = functionName;
+    this.revisionArn = this.resourceRevision.attrRevisionArn;
+    this.revisionId = this.resourceRevision.attrRevisionId;
+    this.hasEgressNetworkConnector = props.egressNetworkConnector !== undefined;
+
+    // The default endpoint is marked so it keeps the name it had before endpoints were a
+    // construct of their own.
+    const defaultEndpoint: WebFunctionEndpointOptions = {
+      authType: props.authType,
+      endpointName: props.endpointName,
+      endpointType: props.endpointType,
+      replicaRegions: props.replicaRegions,
+      endpointDescription: props.endpointDescription,
+      maxEnvironments: props.maxEnvironments,
+      rateLimit: props.rateLimit,
+    };
+    this.endpoint = this.createEndpoint('Endpoint', { ...defaultEndpoint, [DEFAULT_ENDPOINT]: true } as WebFunctionEndpointOptions);
 
     // Bind the code to the resource
     props.code.bindToResource(this.resourceRevision);
+  }
 
-    this.webFunctionName = functionName;
-    this.domainName = this.resourceEndpoint.attrDomainName;
-    this.endpointArn = this.resourceEndpoint.attrEndpointArn;
-    this.revisionArn = this.resourceRevision.attrRevisionArn;
-    this.revisionId = this.resourceRevision.attrRevisionId;
+  /**
+   * The function's reference, with its name as a `Ref` to the L1 so that resources that take
+   * it depend on the function.
+   */
+  public override get webFunctionRef(): WebFunctionReference {
+    return { functionArn: this.webFunctionArn, functionName: this.resource.ref };
+  }
+
+  /**
+   * Adds an endpoint that serves this function's revision.
+   *
+   * Use it to serve the function under a different auth type or endpoint type than `endpoint`,
+   * for example a second, `IAM_AUTH` endpoint for a CloudFront origin.
+   */
+  public addEndpoint(id: string, options: WebFunctionEndpointOptions): WebFunctionEndpoint {
+    if (this.hasEgressNetworkConnector) {
+      this.assertHomeRegionEndpoint(options.endpointType);
+    }
+    return this.createEndpoint(id, options);
+  }
+
+  private createEndpoint(id: string, options: WebFunctionEndpointOptions): WebFunctionEndpoint {
+    const endpoint = new WebFunctionEndpoint(this, id, {
+      ...options,
+      webFunction: this,
+      revisionId: this.revisionId,
+    });
+    endpoint.resource.addResourceDependency(this.resource);
+    endpoint.resource.addResourceDependency(this.resourceRevision);
+    return endpoint;
+  }
+
+  private assertHomeRegionEndpoint(endpointType: WebFunctionEndpointType | undefined): void {
+    const type = endpointType ?? WebFunctionEndpointType.HOME_REGION;
+    if (type !== WebFunctionEndpointType.HOME_REGION) {
+      throw new ValidationError(
+        lit`WebFunctionEgressConnectorRequiresHomeRegion`,
+        `egressNetworkConnector is only supported with a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${type}`,
+        this,
+      );
+    }
   }
 
   /**
@@ -1057,35 +657,6 @@ export class WebFunction extends WebFunctionBase {
         logGroup: logGroup.logGroupRef.logGroupName,
       },
     };
-  }
-
-  /**
-   * The endpoint name used when none is given.
-   *
-   * The name is create-only, and so are the endpoint type and regions, so changing either of
-   * those replaces the endpoint. CloudFormation cannot replace a resource under the same name,
-   * so the name is derived from them: whatever replaces the endpoint also renames it. The
-   * common case, a home-Region endpoint, keeps the plain `prod`.
-   */
-  private defaultEndpointName(endpointType: WebFunctionEndpointType, regions: string[] | undefined): string {
-    if (endpointType === WebFunctionEndpointType.HOME_REGION && regions === undefined) {
-      return 'prod';
-    }
-    // Order is kept: the property is a list, so reordering it replaces the endpoint too.
-    const shape = JSON.stringify([endpointType, Stack.of(this).resolve(regions) ?? null]);
-    return `prod-${md5hash(shape).slice(0, 8)}`;
-  }
-
-  /**
-   * Resolve regions configuration to a string array by applying includes and excludes.
-   */
-  private resolveRegions(
-    replicaRegions?: WebFunctionReplicaRegions,
-  ): string[] | undefined {
-    if (!replicaRegions) {
-      return undefined;
-    }
-    return replicaRegions._toRegionList();
   }
 
   /**

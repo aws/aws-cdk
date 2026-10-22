@@ -5,9 +5,10 @@ import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { WebFunctionAuthType, WebFunction } from '../lib/webfunction';
+import { WebFunction } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
 import type { WebFunctionProvidedBucketAssetOptions } from '../lib/webfunction-code';
+import { WebFunctionAuthType } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
 // Any real directory works as an asset source; the handler code itself is irrelevant here.

@@ -9,9 +9,10 @@ import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration, Tokenization
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
-import { WebFunction, WebFunctionAuthType, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction';
+import { WebFunction } from '../lib/webfunction';
 import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
+import { WebFunctionAuthType, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
 // Use a mock bucket object for minimal test props. It behaves like an
@@ -1013,7 +1014,7 @@ describe('WebFunction template', () => {
     expect(webFunction.webFunctionArn).toBeDefined();
     expect(webFunction.resource).toBeDefined();
     expect(webFunction.resourceRevision).toBeDefined();
-    expect(webFunction.resourceEndpoint).toBeDefined();
+    expect(webFunction.endpoint.resource).toBeDefined();
   });
 
   test('with bucket code', () => {
@@ -1127,7 +1128,7 @@ describe('WebFunction template', () => {
     }));
 
     Annotations.fromStack(warningStack).hasWarning(
-      '/Default/Test',
+      '/Default/Test/Endpoint',
       Match.stringLikeRegexp('.*APPLICATION_MANAGED.*'),
     );
   });
@@ -1139,7 +1140,7 @@ describe('WebFunction template', () => {
     }));
 
     Annotations.fromStack(noWarningStack).hasNoWarning(
-      '/Default/Test',
+      '*',
       Match.stringLikeRegexp('APPLICATION_MANAGED'),
     );
   });
@@ -1381,54 +1382,5 @@ describe('WebFunction grants', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('sqs:SendMessage'));
-  });
-});
-
-describe('WebFunction grants.invoke', () => {
-  let stack: Stack;
-  let caller: Role;
-  beforeEach(() => {
-    stack = new Stack();
-    caller = new Role(stack, 'Caller', { assumedBy: new ServicePrincipal('ec2.amazonaws.com') });
-  });
-
-  test('grants InvokeWebFunctionEndpoint on the endpoint', () => {
-    const fn = new WebFunction(stack, 'Fn', minimalProps());
-    fn.grants.invoke(caller);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      Roles: [{ Ref: Match.stringLikeRegexp('Caller') }],
-      PolicyDocument: {
-        Statement: [{
-          Action: 'lambda:InvokeWebFunctionEndpoint',
-          Effect: 'Allow',
-          Resource: stack.resolve(fn.endpointArn),
-        }],
-      },
-    });
-  });
-
-  test('an imported WebFunction with an endpoint name grants on that endpoint', () => {
-    const arn = 'arn:aws:lambda:us-east-1:123456789012:web-function/existing';
-    const imported = WebFunction.fromWebFunctionAttributes(stack, 'Imported', {
-      webFunctionArn: arn,
-      endpointName: 'staging',
-    });
-    imported.grants.invoke(caller);
-
-    expect(imported.endpointArn).toEqual(`${arn}/endpoint/staging`);
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [Match.objectLike({ Action: 'lambda:InvokeWebFunctionEndpoint', Resource: `${arn}/endpoint/staging` })],
-      },
-    });
-  });
-
-  test('an imported WebFunction without an endpoint name cannot be granted', () => {
-    const imported = WebFunction.fromWebFunctionArn(stack, 'Imported',
-      'arn:aws:lambda:us-east-1:123456789012:web-function/existing');
-
-    expect(() => imported.grants.invoke(caller)).toThrow(/imported without an endpoint name/);
-    expect(() => imported.endpointArn).toThrow(/imported without an endpoint name/);
   });
 });

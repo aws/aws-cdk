@@ -47,5 +47,5 @@ const testCase = new integ.IntegTest(app, 'WebFunctionMinimalTest', {
 // TLS, and enforcing auth — i.e. the three CFN resources are wired correctly,
 // not merely deployed.
 testCase.assertions
-  .httpApiCall(`https://${webFunction.domainName}/`)
+  .httpApiCall(`https://${webFunction.endpoint.domainName}/`)
   .expect(integ.ExpectedResult.objectLike({ status: 403 }));

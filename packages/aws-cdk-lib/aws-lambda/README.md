@@ -2236,6 +2236,43 @@ default retention. Pass a log group of your own to control its retention or encr
 - `WebFunctionAuthType.IAM_AUTH` — Lambda authorizes requests using SigV4/IAM.
 - `WebFunctionAuthType.APPLICATION_MANAGED` — The endpoint is public; your handler code must validate every request.
 
+### Endpoints
+
+A WebFunction creates one endpoint, configured by the endpoint properties above
+(`authType`, `endpointType`, `replicaRegions`, `endpointName`, ...). It is available as
+`endpoint`, with the domain clients send requests to and grants for invoking it:
+
+```ts
+declare const fn: lambda.WebFunction;
+declare const caller: iam.IGrantable;
+
+new CfnOutput(this, 'Url', { value: `https://${fn.endpoint.domainName}` });
+fn.endpoint.grants.invoke(caller);
+```
+
+Add more endpoints with `addEndpoint()`, for example to serve the same function under a
+different auth type or endpoint type. Each endpoint has its own domain and grants, and
+serves the function's revision:
+
+```ts
+declare const fn: lambda.WebFunction;
+
+const internal = fn.addEndpoint('Internal', {
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+});
+```
+
+To reference an endpoint defined elsewhere, import it with its ARN, domain name and type.
+The domain name is assigned by the service, so it cannot be derived from the ARN:
+
+```ts
+const endpoint = lambda.WebFunctionEndpoint.fromWebFunctionEndpointAttributes(this, 'Endpoint', {
+  endpointArn: 'arn:aws:lambda:us-west-2:123456789012:web-function/my-function/endpoint/prod',
+  domainName: 'abcd1234.lambda-web.us-west-2.on.aws',
+  endpointType: lambda.WebFunctionEndpointType.HOME_REGION,
+});
+```
+
 ### Multi-Region Deployment
 
 Deploy globally with latency-based routing:
@@ -2343,7 +2380,7 @@ supported way back: the previous revision no longer exists, and the next deploym
 overwrite the change.
 
 The construct does not model more than one live revision or weighted traffic between
-revisions. `resourceRevision` and `resourceEndpoint` are for overriding properties of the
+revisions. `resourceRevision` and `endpoint.resource` are for overriding properties of the
 resources the construct creates; they do not add revisions. To keep several revisions
 addressable or split traffic between them, use the L1 constructs directly (see
 [Escape Hatches](#escape-hatches)).
@@ -2512,7 +2549,7 @@ const wf = new lambda.WebFunction(this, 'MyWebFunction', {
 
 wf.resource.addOverride('Properties.SomeField', 'value');
 wf.resourceRevision.addOverride('Properties.SomeField', 'value');
-wf.resourceEndpoint.addOverride('Properties.SomeField', 'value');
+wf.endpoint.resource.addOverride('Properties.SomeField', 'value');
 ```
 
 For configurations the construct does not model, such as splitting traffic across multiple

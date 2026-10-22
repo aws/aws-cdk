@@ -68,6 +68,6 @@ const testCase = new integ.IntegTest(app, 'WebFunctionStagedAssetTest', {
 // the service reads the object to create each revision — a broken grant fails the deployment.
 for (const fn of [automatic, automaticSecond, specific]) {
   testCase.assertions
-    .httpApiCall(`https://${fn.domainName}/`)
+    .httpApiCall(`https://${fn.endpoint.domainName}/`)
     .expect(integ.ExpectedResult.objectLike({ status: 403 }));
 }
