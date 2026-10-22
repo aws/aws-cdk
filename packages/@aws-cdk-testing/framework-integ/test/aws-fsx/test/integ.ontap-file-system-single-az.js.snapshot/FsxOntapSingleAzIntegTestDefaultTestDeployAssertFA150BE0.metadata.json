@@ -1,0 +1,400 @@
+{
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:62:34)",
+        "new IntegTestCase (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
+        "new IntegTest (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:121:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511:2)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:576:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "synthesizeTree (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:503:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:73:3)"
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511: (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:511:2)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:576:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:572:5)",
+        "synthesizeTree (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:503:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:73:3)"
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:127:13)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:385:32)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "invokeAspectsV2 (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:346:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:50:5)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:79:18)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new AwsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:86:21)",
+        "DeployAssert.awsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:74:12)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:126:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:133:20)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new AwsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:86:21)",
+        "DeployAssert.awsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:74:12)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:126:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:79:18)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:92:31)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:133:20)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:92:31)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:79:18)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:98:29)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:133:20)",
+        "SingletonFunction.ensureFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:185:12)",
+        "new SingletonFunction (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:174:32)",
+        "new AssertionsProvider (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:260:20)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:98:29)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:127:13)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:385:32)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "recurse (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:403:35)",
+        "invokeAspectsV2 (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:346:3)",
+        "synthesize (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:50:5)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.ts:197:21)",
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new AwsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:98:28)",
+        "DeployAssert.awsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:74:12)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:126:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0WaitForRoleDFFDAD99"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:104:18)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0WaitFor6B0111E7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:156:22)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.ts:197:21)",
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new CustomResource (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new AwsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:98:28)",
+        "DeployAssert.awsApiCall (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:74:12)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:146:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01WaitForRole6677693A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:104:18)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:161:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01WaitForDCC96577"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:156:22)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:161:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0WaitForIsCompleteProviderInvokeA250FAC6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:332:5)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:167:29)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc0WaitForTimeoutProviderInvokeDC82CCEE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:332:5)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:168:21)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:140:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01WaitForIsCompleteProviderInvoke31EFDF91"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:332:5)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:167:29)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:161:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/FsxOntapSingleAzIntegTest/DefaultTest/DeployAssert/AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallFSxdescribeFileSystemsc91c3a0fb7da9e4fa41fa3d094cd5fc01WaitForTimeoutProviderInvokeBDF654B9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:332:5)",
+        "new WaiterStateMachine (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.ts:168:21)",
+        "AwsApiCall.waitForAssertions (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:148:20)",
+        "<anonymous> (/workplace/ahadjiat/OpenSource/FSxCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-fsx/test/integ.ontap-file-system-single-az.ts:161:4)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
