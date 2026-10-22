@@ -101,3 +101,48 @@ export function* iterateBfs(root: IConstruct) {
     next = queue.shift();
   }
 }
+
+/**
+ * Depth-first iterator over the construct tree, stopping at Stage boundaries
+ *
+ * A Stage is a separate deployment unit that synthesizes into its own cloud
+ * assembly, and has already been synthesized by the time we get to the
+ * enclosing Stage's synthesis. Passes that operate on a single deployment unit
+ * must not revisit its contents.
+ */
+export function* iterateDfsPreorderStopAtStage(root: IConstruct) {
+  const stack: IConstruct[] = [root];
+
+  let next = stack.pop();
+  while (next) {
+    if (next !== root && STAGE_TYPE.isMarked(next)) {
+      next = stack.pop();
+      continue;
+    }
+    stack.push(...next.node.children.reverse());
+    yield next;
+
+    next = stack.pop();
+  }
+}
+
+/**
+ * Post-order depth-first iterator over the construct tree, stopping at Stage boundaries
+ *
+ * See `iterateDfsPreorderStopAtStage`.
+ */
+export function* iterateDfsPostorderStopAtStage(root: IConstruct) {
+  type Instruction = { yield: IConstruct } | { visit: IConstruct };
+  const stack: Instruction[] = [{ visit: root }];
+
+  let next = stack.pop();
+  while (next) {
+    if ('yield' in next) {
+      yield next.yield;
+    } else if (next.visit === root || !STAGE_TYPE.isMarked(next.visit)) {
+      stack.push({ yield: next.visit });
+      stack.push(...next.visit.node.children.reverse().map((visit) => ({ visit })));
+    }
+    next = stack.pop();
+  }
+}
