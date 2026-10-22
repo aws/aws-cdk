@@ -8,7 +8,7 @@ const app = new App({
   context: { [cxapi.KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: true },
 });
 const stack = new Stack(app, 'aws-cdk-kms');
-const alias = Alias.fromAliasName(stack, 'alias', 'alias/MyKey');
+const alias = Alias.fromAliasName(stack, 'alias', 'MyKey');
 
 const role = new Role(stack, 'Role', {
   assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
