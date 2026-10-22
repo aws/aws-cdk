@@ -1,6 +1,7 @@
-import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
 import * as subnet from '../lib/subnet-v2';
 import { TransitGateway } from '../lib/transit-gateway';
 import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from '../lib/transit-gateway-route';
@@ -8,8 +9,9 @@ import { TransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
 import * as vpc from '../lib/vpc-v2';
 
+let stack: Stack;
+
 describe('Transit Gateway Route', () => {
-  let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;
   let mySubnet: subnet.SubnetV2;
@@ -17,17 +19,7 @@ describe('Transit Gateway Route', () => {
   let routeTable: TransitGatewayRouteTable;
 
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-
-    stack = new cdk.Stack(app, 'TransitGatewayRouteTableStack', {
-      env: {
-        region: 'us-east-1',
-      },
-    });
+    stack = testStack();
 
     myVpc = new vpc.VpcV2(stack, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
