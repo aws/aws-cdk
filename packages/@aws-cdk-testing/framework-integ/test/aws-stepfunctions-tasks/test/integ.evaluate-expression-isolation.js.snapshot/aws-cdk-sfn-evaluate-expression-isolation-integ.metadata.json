@@ -1,0 +1,360 @@
+{
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-sfn-evaluate-expression-isolation-integ.template.json"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ImmutableRoleEvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriteGlobal/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriterStateMachine6121E0EB"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReadGlobal/EvalFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReaderStateMachine715F784A"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/Exports/Output{\"Fn::GetAtt\":[\"WriteGlobalEvalFunctionAA712FC7\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttWriteGlobalEvalFunctionAA712FC7Arn6498AC8C"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/Exports/Output{\"Ref\":\"ReaderStateMachine715F784A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefReaderStateMachine715F784AFEF8581E"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/Exports/Output{\"Ref\":\"WriterStateMachine6121E0EB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefWriterStateMachine6121E0EBDB8668FE"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriteGlobal/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteGlobalEvalFunctionAA712FC7"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriteGlobal/EvalFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriterStateMachineRole49CD680D"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReadGlobal/EvalFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReadGlobalEvalFunctionB50D576F"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReadGlobal/EvalFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReaderStateMachineRole2626724F"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriteGlobal/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriteGlobal/EvalFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteGlobalEvalFunctionLogGroup5670EDF6"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/WriterStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriterStateMachineRoleDefaultPolicyFCA40AD5"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReadGlobal/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReadGlobal/EvalFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReadGlobalEvalFunctionLogGroupCE90F81B"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-isolation-integ/ReaderStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReaderStateMachineRoleDefaultPolicyE9C050E3"
+    }
+  ]
+}

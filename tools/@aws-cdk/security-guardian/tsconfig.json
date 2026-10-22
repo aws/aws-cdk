@@ -6,6 +6,7 @@
       "ES2022"
     ],
     "outDir": "dist",
+    "rootDir": "src",
     "isolatedModules": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
