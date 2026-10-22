@@ -2,7 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as ecr from '../../../aws-ecr';
-import { Stack, Validations } from '../../../core';
+import { Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -73,10 +73,6 @@ describe('ecr source action', () => {
 
     test('watches all tags when imageTag provided as empty string', () => {
       const stack = new Stack();
-      Validations.of(stack).acknowledge({
-        id: 'CloudFormation-Validate::E9014',
-        reason: 'This compatibility test intentionally preserves the existing empty image-tag matcher',
-      });
 
       const sourceOutput = new codepipeline.Artifact();
       const ecrSourceAction = new cpactions.EcrSourceAction({
@@ -116,7 +112,7 @@ describe('ecr source action', () => {
           'detail': {
             'result': ['SUCCESS'],
             'repository-name': ['repo'],
-            'image-tag': [],
+            'image-tag': Match.absent(),
             'action-type': ['PUSH'],
           },
         },
