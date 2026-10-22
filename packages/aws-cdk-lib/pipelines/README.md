@@ -492,6 +492,47 @@ europeWave.addStage(
 );
 ```
 
+#### Automatic retry on stage failure
+
+You can configure a CodePipeline stage to automatically retry when it fails.
+This is useful for transient failures that may succeed on a second attempt.
+
+To enable automatic retry, specify the `retryMode` option when calling
+`addStage()` or `addWave()`:
+
+```ts
+declare const pipeline: pipelines.CodePipeline;
+
+// Retry only the failed actions in the stage
+pipeline.addStage(new MyApplicationStage(this, 'Prod'), {
+  retryMode: pipelines.RetryMode.FAILED_ACTIONS,
+});
+```
+
+When deploying multiple stages in parallel via a wave, set the `retryMode`
+on the wave:
+
+```ts
+declare const pipeline: pipelines.CodePipeline;
+
+const wave = pipeline.addWave('Europe', {
+  retryMode: pipelines.RetryMode.ALL_ACTIONS,
+});
+wave.addStage(new MyApplicationStage(this, 'Ireland', {
+  env: { region: 'eu-west-1' },
+}));
+wave.addStage(new MyApplicationStage(this, 'Germany', {
+  env: { region: 'eu-central-1' },
+}));
+```
+
+The available retry modes are:
+
+- `RetryMode.FAILED_ACTIONS` - retry only the failed actions in the stage
+- `RetryMode.ALL_ACTIONS` - retry all actions in the stage from the beginning
+
+See the [AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/stage-retry.html) for more details on stage retry behavior.
+
 #### Deploying to other accounts / encrypting the Artifact Bucket
 
 CDK Pipelines can transparently deploy to other Regions and other accounts
