@@ -35,12 +35,15 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   const assemblies = getAssemblies(root, assembly);
   const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
 
+  // Missing context of nested Stages is propagated up to the root assembly
+  const hasMissingContext = (assembly.manifest.missing ?? []).length > 0;
+
   visitAssemblies(root, 'post', construct => {
     if (STAGE_TYPE.isMarked(construct)) {
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
-      const plugins = pluginsToEvaluate(root, construct);
+      const plugins = pluginsToEvaluate(root, construct, hasMissingContext);
       for (const plugin of plugins) {
         if (!stacksByPlugin.has(plugin)) {
           stacksByPlugin.set(plugin, new Set());
@@ -211,15 +214,18 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: IConstruct, stage: Stage, hasMissingContext: boolean): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
   ret.push(...stage._validationPlugins);
 
   // 2. Default validation engine (runs unless the user registered one explicitly,
-  // or disabled validation via the CDK_VALIDATION environment variable)
-  if (defaultValidationEnabled() && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  // or disabled validation via the CDK_VALIDATION environment variable).
+  // It also doesn't run if there is missing context: the templates then contain dummy placeholder values
+  // for the unresolved lookups (like `vpc-12345`) which are not valid, and can't be deployed anyway.
+  // The CLI will synthesize again once the context has been resolved, and validate the real values then.
+  if (defaultValidationEnabled() && !hasMissingContext && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 

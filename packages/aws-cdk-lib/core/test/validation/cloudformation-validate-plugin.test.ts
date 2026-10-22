@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
@@ -841,6 +842,80 @@ describe('CDK_VALIDATION environment variable', () => {
   test('unset CDK_VALIDATION keeps the default validation engine enabled', () => {
     delete process.env.CDK_VALIDATION;
     const app = appWithInvalidResource();
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+});
+
+describe('unresolved context lookups', () => {
+  const env = { account: '123456789012', region: 'us-east-1' };
+
+  // A lookup that has not been resolved yet makes the synthesized template contain dummy placeholder values
+  // (e.g. `vpc-12345`), which the validation engine cannot meaningfully validate.
+  function reportMissingContext(stack: core.Stack) {
+    stack.reportMissingContextKey({
+      key: 'missing-context-key',
+      provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+      props: env,
+    });
+  }
+
+  function newInvalidBucket(stack: core.Stack) {
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+  }
+
+  function newApp() {
+    return new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+  }
+
+  test('skips the auto-registered validation engine when the assembly has missing context', () => {
+    const app = newApp();
+    const stack = new core.Stack(app, 'TestStack', { env });
+    newInvalidBucket(stack);
+    reportMissingContext(stack);
+
+    // Would throw on BogusProperty if the default engine ran
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+    expect(consoleErrorMock).not.toHaveBeenCalled();
+  });
+
+  test('skips the auto-registered validation engine when the missing context is in a nested Stage', () => {
+    const app = newApp();
+    const stage = new core.Stage(app, 'Stage', { env });
+    const stack = new core.Stack(stage, 'TestStack');
+    newInvalidBucket(stack);
+    reportMissingContext(stack);
+
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+    expect(consoleErrorMock).not.toHaveBeenCalled();
+  });
+
+  test('does not skip explicitly registered plugins', () => {
+    const app = newApp();
+    core.Validations.of(app).addPlugins(newPlugin());
+    const stack = new core.Stack(app, 'TestStack', { env });
+    newInvalidBucket(stack);
+    reportMissingContext(stack);
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
+
+  test('validates as usual when the assembly has no missing context', () => {
+    const app = newApp();
+    const stack = new core.Stack(app, 'TestStack', { env });
+    newInvalidBucket(stack);
 
     expect(() => app.synth()).toThrow(/BogusProperty/);
   });
