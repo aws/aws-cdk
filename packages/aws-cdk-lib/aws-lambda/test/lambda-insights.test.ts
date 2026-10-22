@@ -185,6 +185,18 @@ describe('lambda-insights', () => {
     expect(() => app.synth()).not.toThrow();
   });
 
+  test('version 1.0.498.0 arm64 resolves correct ARN per region', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'ap-northeast-1' },
+    });
+    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_498_0, lambda.Architecture.ARM_64);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:38'],
+    });
+  });
+
   test('throws if arm is not available in this version', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
