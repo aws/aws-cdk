@@ -99,14 +99,14 @@ export class RegionInfo {
   }
 
   /**
-   * The hosted zone ID used by Route 53 to alias a S3 static website in this region (e.g: Z2O1EMRO9K5GLX)
+   * The hosted zone ID used by Route 53 to alias an S3 static website in this region (e.g: Z2O1EMRO9K5GLX)
    */
   public get s3StaticWebsiteHostedZoneId(): string | undefined {
     return Fact.find(this.name, FactName.S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID);
   }
 
   /**
-   * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+   * The hosted zone ID used by Route 53 to alias an EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
    */
   public get ebsEnvEndpointHostedZoneId(): string | undefined {
     return Fact.find(this.name, FactName.EBS_ENV_ENDPOINT_HOSTED_ZONE_ID);

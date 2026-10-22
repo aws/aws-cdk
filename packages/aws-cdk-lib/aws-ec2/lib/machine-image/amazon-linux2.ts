@@ -71,7 +71,7 @@ export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmP
  */
 export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
-   * Generates a SSM Parameter name for a specific amazon linux 2 AMI
+   * Generates an SSM Parameter name for a specific amazon linux 2 AMI
    *
    * Example values:
    *

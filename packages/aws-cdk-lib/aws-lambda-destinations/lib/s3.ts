@@ -3,7 +3,7 @@ import type * as lambda from '../../aws-lambda';
 import type * as s3 from '../../aws-s3';
 
 /**
- * Use a S3 bucket as a Lambda destination
+ * Use an S3 bucket as a Lambda destination
  */
 export class S3Destination implements lambda.IDestination {
   constructor(private readonly bucket: s3.IBucket) {
