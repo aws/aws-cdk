@@ -1,4 +1,10 @@
 {
+  "/EvaluateExpressionNodejs22/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionNodejs22DefaultTestDeployAssert27FE8CA6.template.json"
+    }
+  ],
   "/EvaluateExpressionNodejs22/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
