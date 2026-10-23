@@ -29,6 +29,22 @@ test('can npm install with non root user', () => {
   expect(proc.status).toEqual(0);
 });
 
+test('can npm ci with non root user', () => {
+  const proc = spawnSync(docker, [
+    'run', '-u', '500:500',
+    'esbuild',
+    'bash', '-c', [
+      'mkdir /tmp/test',
+      'cd /tmp/test',
+      'npm init --yes',
+      'npm i constructs --package-lock-only',
+      'npm ci',
+      'test -w /tmp/npm-cache/_logs',
+    ].join(' && '),
+  ]);
+  expect(proc.status).toEqual(0);
+});
+
 test('can yarn install with non root user', () => {
   const proc = spawnSync(docker, [
     'run', '-u', '500:500',
