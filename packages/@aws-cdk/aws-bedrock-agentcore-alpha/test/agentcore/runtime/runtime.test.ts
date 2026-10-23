@@ -3371,3 +3371,90 @@ describe('Runtime observability tests', () => {
     });
   });
 });
+
+describe('Runtime applicationLogGroupTags tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'AppLogGroupTagsStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+  });
+
+  test('Should pre-create log group with tags when applicationLogGroupTags is provided', () => {
+    new Runtime(stack, 'TaggedRuntime', {
+      runtimeName: 'tagged_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: {
+        DataClassification: 'PII',
+        Environment: 'prod',
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Assert LogGroupName and Tags in one call to guarantee both belong to the same resource.
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: {
+        'Fn::Join': ['', ['/aws/bedrock-agentcore/runtimes/', { 'Fn::GetAtt': [Match.anyValue(), 'AgentRuntimeId'] }, '-DEFAULT']],
+      },
+      Tags: Match.arrayWith([
+        { Key: 'DataClassification', Value: 'PII' },
+        { Key: 'Environment', Value: 'prod' },
+      ]),
+    });
+  });
+
+  test('Should not create log group when applicationLogGroupTags is not provided', () => {
+    new Runtime(stack, 'UntaggedRuntime', {
+      runtimeName: 'untagged_runtime',
+      agentRuntimeArtifact,
+    });
+
+    const logGroups = Template.fromStack(stack).findResources('AWS::Logs::LogGroup');
+    const agentcoreLogGroups = Object.values(logGroups).filter(
+      (r: any) => JSON.stringify(r?.Properties?.LogGroupName ?? '').includes('bedrock-agentcore'),
+    );
+    expect(agentcoreLogGroups).toHaveLength(0);
+  });
+
+  test('Should not create log group when applicationLogGroupTags is empty', () => {
+    new Runtime(stack, 'EmptyTagsRuntime', {
+      runtimeName: 'empty_tags_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: {},
+    });
+
+    const logGroups = Template.fromStack(stack).findResources('AWS::Logs::LogGroup');
+    const agentcoreLogGroups = Object.values(logGroups).filter(
+      (r: any) => JSON.stringify(r?.Properties?.LogGroupName ?? '').includes('bedrock-agentcore'),
+    );
+    expect(agentcoreLogGroups).toHaveLength(0);
+  });
+
+  test('Should throw when applicationLogGroupTags contains a reserved aws: prefix key', () => {
+    expect(() => new Runtime(stack, 'InvalidTagRuntime', {
+      runtimeName: 'invalid_tag_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: { 'aws:reserved': 'value' },
+    })).toThrow(/aws:/i);
+  });
+
+  test('Should retain log group when stack is destroyed', () => {
+    new Runtime(stack, 'RetainRuntime', {
+      runtimeName: 'retain_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: { Env: 'test' },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+});
