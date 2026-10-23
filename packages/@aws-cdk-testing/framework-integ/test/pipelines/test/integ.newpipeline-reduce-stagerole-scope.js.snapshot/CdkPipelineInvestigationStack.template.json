@@ -484,7 +484,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "codestar-connections:UseConnection",
+       "Action": [
+        "codeconnections:UseConnection",
+        "codestar-connections:UseConnection"
+       ],
        "Effect": "Allow",
        "Resource": "arn:aws:codeconnections:us-east-1:486673125664:connection/a3bf1dc7-eefb-4278-9f04-cc8fed8b569a"
       },
@@ -708,7 +711,10 @@
        ]
       },
       {
-       "Action": "codestar-connections:UseConnection",
+       "Action": [
+        "codeconnections:UseConnection",
+        "codestar-connections:UseConnection"
+       ],
        "Effect": "Allow",
        "Resource": "arn:aws:codeconnections:us-east-1:486673125664:connection/a3bf1dc7-eefb-4278-9f04-cc8fed8b569a"
       }
