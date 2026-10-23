@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "rds-connection-string-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-connection-string-integ"
+      ],
+      "diffAssets": true,
+      "assertionStack": "rds-connection-string-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsconnectionstringtestDefaultTestDeployAssertA2AF1A9B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
