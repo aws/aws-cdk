@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "54.0.0",
   "testCases": {
     "MskClusterAuth/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "MskClusterAuth/DefaultTest/DeployAssert",
       "assertionStackName": "MskClusterAuthDefaultTestDeployAssert1991B19C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }
