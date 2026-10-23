@@ -1,0 +1,317 @@
+{
+  "/MyTestStack/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "publishAdditionalMetrics": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metricOriginLatency": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metricCacheHitRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric401ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric403ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric404ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric502ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric503ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric504ErrorRate": []
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyTestStack/Alarm1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm6": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/Alarm8": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "evaluationPeriods": "*",
+        "threshold": "*",
+        "comparisonOperator": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MyTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MyTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MyTestStack/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    }
+  ],
+  "/MyTestStack/Dist/MonitoringSubscription": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistMonitoringSubscriptionDD7607C2"
+    }
+  ],
+  "/MyTestStack/Alarm1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm1F9009D71"
+    }
+  ],
+  "/MyTestStack/Alarm2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm2A7122E13"
+    }
+  ],
+  "/MyTestStack/Alarm3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm32341D8D9"
+    }
+  ],
+  "/MyTestStack/Alarm4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm4671832C8"
+    }
+  ],
+  "/MyTestStack/Alarm5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm548383B2F"
+    }
+  ],
+  "/MyTestStack/Alarm6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm65738D89F"
+    }
+  ],
+  "/MyTestStack/Alarm7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm77B1024B6"
+    }
+  ],
+  "/MyTestStack/Alarm8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm8AEE8034F"
+    }
+  ]
+}
