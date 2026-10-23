@@ -6,13 +6,14 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime, tscRequiresIgnoreConfig } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { profileFn, profileSpan } from '../../core/lib/private/perf';
+import { posixShellEscape } from '../../core/lib/private/shell-escape';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -299,13 +300,14 @@ export class Bundling implements cdk.BundlingOptions {
   private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
     const osCommand = new OsCommand(options.osPlatform);
+    const tscRunner = options.tscRunner;
 
     const steps = this.createBundlingSteps(scope, {
       inputDir: options.inputDir,
       outputDir: options.outputDir,
       pathJoin,
       esbuildRunner: [options.esbuildRunner],
-      tscRunner: options.tscRunner ? [options.tscRunner] : undefined,
+      createTscStep: tscRunner ? (args) => dockerTscStep(tscRunner, args) : undefined,
       createFileOps: (deps) => this.dockerFileOps(osCommand, pathJoin, options, deps),
     });
 
@@ -410,7 +412,11 @@ export class Bundling implements cdk.BundlingOptions {
           outputDir,
           pathJoin: (...args: string[]) => path.join(...args),
           esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
-          tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
+          createTscStep: tsc && ((args) => {
+            const tscRunner = tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc'];
+            const ignoreConfig = tscRequiresIgnoreConfig(tsc.version) ? ['--ignoreConfig'] : [];
+            return { type: 'spawn', command: [...tscRunner, ...args, ...ignoreConfig] };
+          }),
           createFileOps: (deps) => this.localFileOps(outputDir, deps),
         });
 
@@ -448,8 +454,8 @@ export class Bundling implements cdk.BundlingOptions {
         throw new ValidationError(lit`CannotFindTsconfigJsonPre`, 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptionsArray = getTsconfigCompilerOptionsArray(tsconfig);
-      if (options.tscRunner) {
-        steps.push({ type: 'spawn', command: [...options.tscRunner, entryPath, ...compilerOptionsArray] });
+      if (options.createTscStep) {
+        steps.push(options.createTscStep([entryPath, ...compilerOptionsArray]));
       }
       entryPath = entryPath.replace(/\.ts(x?)$/, '.js$1');
     }
@@ -524,7 +530,7 @@ export class Bundling implements cdk.BundlingOptions {
           // Powershell.exe instead of cmd.exe because the quoting rules are saner.
           // See https://github.com/aws/aws-cdk/issues/37387
           if (isWindows) {
-            exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
+            exec('powershell.exe', ['-NoProfile', '-Command', powershellCommandLine(step.command)], {
               ...execOptions,
               cwd: step.cwd ?? cwd,
             });
@@ -582,10 +588,27 @@ interface StepBuilderOptions {
   readonly pathJoin: (...parts: string[]) => string;
   /** The esbuild command as an argv array */
   readonly esbuildRunner: string[];
-  /** The tsc command as an argv array, or undefined if not available */
-  readonly tscRunner?: string[];
+  /**
+   * Produces the tsc pre-compilation step for the given tsc arguments
+   * (differs between local and Docker), or undefined if tsc is not available
+   */
+  readonly createTscStep?: (args: string[]) => BundlingStep;
   /** Produces steps for nodeModules file operations (differs between local and Docker) */
   readonly createFileOps: (deps: NodeModuleDeps) => BundlingStep[];
+}
+
+/**
+ * Produces the tsc pre-compilation step for Docker bundling.
+ *
+ * The TypeScript version in the image is only known when the command runs
+ * (the default image installs the latest release, and users can supply their own image),
+ * so `--ignoreConfig` is added by the shell when `tsc --version` reports 6 or later.
+ * See `tscRequiresIgnoreConfig()` for why the flag is version dependent.
+ */
+function dockerTscStep(tscRunner: string, args: string[]): BundlingStep {
+  const tsc = posixShellEscape(tscRunner);
+  const ignoreConfig = `$(TSC_VERSION=$(${tsc} --version); TSC_VERSION=\${TSC_VERSION##* }; [ "\${TSC_VERSION%%.*}" -ge 6 ] 2>/dev/null && echo --ignoreConfig)`;
+  return { type: 'shell', commands: [`${preparePosixShellCommand([tscRunner, ...args])} ${ignoreConfig}`] };
 }
 
 /**
@@ -673,16 +696,30 @@ function preparePosixShellCommand(argv: string[]): string {
   return argv.map(posixShellEscape).join(' ');
 }
 
-/**
- * Escapes a single argument for safe inclusion in a POSIX shell command.
- * Every argument is single-quoted unconditionally (like Python's shlex.quote).
- */
-function posixShellEscape(arg: string): string {
-  return "'" + arg.replace(/'/g, "'\\''") + "'";
-}
-
 function powershellEscape(arg: string): string {
   return "'" + arg.replace(/'/g, "''") + "'";
+}
+
+/**
+ * Build the PowerShell command line used to run a bundling spawn step on Windows.
+ *
+ * The executable is resolved with `Get-Command -CommandType Application` rather than
+ * being passed to the call operator directly. Given a bare command name such as `npm`,
+ * PowerShell's own command discovery can select the `npm.ps1` shim, and `.ps1` scripts
+ * are subject to the execution policy: under `AllSigned` (typically set at
+ * `MachinePolicy` scope via Group Policy, which overrides every other scope) the shim is
+ * refused and bundling fails. `-CommandType Application` only matches external programs
+ * such as `npm.cmd`, which the execution policy does not apply to.
+ *
+ * Arguments remain individually quoted, so this keeps the argument handling introduced
+ * to fix command injection in local bundling.
+ *
+ * See https://github.com/aws/aws-cdk/issues/38439
+ */
+function powershellCommandLine(command: string[]): string {
+  const [executable, ...args] = command;
+  const resolved = `(Get-Command ${powershellEscape(executable)} -CommandType Application)[0].Source`;
+  return ['&', resolved, ...args.map(powershellEscape)].join(' ');
 }
 
 /**

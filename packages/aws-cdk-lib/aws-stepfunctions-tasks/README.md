@@ -102,8 +102,8 @@ Learn more about input and output processing in Step Functions [here](https://do
 ## Evaluate Expression
 
 Use the `EvaluateExpression` to perform simple operations referencing state paths. The
-`expression` referenced in the task will be evaluated in a Lambda function
-(`eval()`). This allows you to not have to write Lambda code for simple operations.
+`expression` referenced in the task will be evaluated in a Node.js Lambda function.
+This allows you to not have to write Lambda code for simple operations.
 
 Example: convert a wait time from milliseconds to seconds, concat this in a message and wait:
 
@@ -138,6 +138,12 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
+Referenced state paths are only resolved where they are used as code (for example
+`$.a + $.b`, or a function argument). To embed a value inside a string, use a template
+literal interpolation as in the `Create message` example above (`${$.waitSeconds}`). A path
+written as literal text inside a plain string, or as bare text inside a template literal
+(for example `'waited $.waitSeconds seconds'`), is not resolved and is rejected at synthesis time.
+
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
@@ -152,6 +158,13 @@ const convertToSecondsArm64 = new tasks.EvaluateExpression(this, 'Convert to sec
   architecture: lambda.Architecture.ARM_64,
 });
 ```
+
+Each `EvaluateExpression` task is backed by its own Lambda function that only the state machine 
+containing the task can invoke. A stack therefore has one Lambda function per `EvaluateExpression` task.
+
+If you set the `@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction` feature flag
+to `false`, all tasks in a stack that use the same runtime and architecture share one Lambda
+function instead, including tasks in different state machines.
 
 ## API Gateway
 

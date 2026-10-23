@@ -14,6 +14,7 @@ import {
   Size,
   Stack,
   Tags,
+  Validations,
 } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { BlockDevice } from '../lib';
@@ -305,6 +306,10 @@ describe('LaunchTemplate', () => {
 
   test('Given blockDeviceMapping', () => {
     // GIVEN
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::F3014',
+      reason: 'test violates this',
+    });
     const kmsKey = new Key(stack, 'EbsKey');
     const blockDevices: BlockDevice[] = [
       {
@@ -623,6 +628,108 @@ describe('LaunchTemplate', () => {
         CreditSpecification: {
           CpuCredits: expected,
         },
+      },
+    });
+  });
+
+  test('Given cpuOptions', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        amdSevSnp: true,
+        coreCount: 4,
+        nestedVirtualization: true,
+        threadsPerCore: 1,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          AmdSevSnp: 'enabled',
+          CoreCount: 4,
+          NestedVirtualization: 'enabled',
+          ThreadsPerCore: 1,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('Given cpuOptions.nestedVirtualization %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        nestedVirtualization: given,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          NestedVirtualization: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('Given cpuOptions.amdSevSnp %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        amdSevSnp: given,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          AmdSevSnp: expected,
+        },
+      },
+    });
+  });
+
+  test('Given partial cpuOptions only renders specified fields', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        coreCount: 2,
+        threadsPerCore: 2,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          CoreCount: 2,
+          ThreadsPerCore: 2,
+          AmdSevSnp: Match.absent(),
+          NestedVirtualization: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('Given empty cpuOptions does not render CpuOptions', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: Match.absent(),
       },
     });
   });
