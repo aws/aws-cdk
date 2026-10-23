@@ -1772,6 +1772,13 @@ An explicitly registered `CloudFormationValidatePlugin` still runs the CDK
 default rules in addition to your custom rules; pass
 `includeDefaultRules: false` to opt out of the default rules entirely.
 
+If you want to disable the automatic plugin registration without registering
+your own, you can do one of the following things:
+
+- Run `cdk synth --no-validation`.
+- Set `CDK_VALIDATION=false` in your environment.
+- Do `new App({ builtinCloudFormationValidation: false })`
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
