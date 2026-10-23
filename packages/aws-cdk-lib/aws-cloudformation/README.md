@@ -291,6 +291,21 @@ If you pass an imported bucket, the CDK cannot add the bucket policy for you and
 Once you have granted access yourself, acknowledge it with
 `Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
 
+### Importing an existing StackSet
+
+You can reference a StackSet that was created outside of your app by its ID or by its ARN.
+An imported StackSet has no `role`, and neither does a service managed StackSet.
+
+```ts
+const stack = new Stack();
+
+const byId = StackSet.fromStackSetId(stack, 'ById', 'my-stackset:2f0a8b4c-1234-5678-9abc-def012345678');
+const byArn = StackSet.fromStackSetArn(stack, 'ByArn',
+  'arn:aws:cloudformation:us-east-1:111111111111:stackset/my-stackset:2f0a8b4c-1234-5678-9abc-def012345678');
+```
+
+The ID of a StackSet that you define in your app is available as `stackSetId`.
+
 ### Deploying StackSets using CDK Pipelines
 
 You can also deploy StackSets using [CDK Pipelines](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.pipelines-readme.html).

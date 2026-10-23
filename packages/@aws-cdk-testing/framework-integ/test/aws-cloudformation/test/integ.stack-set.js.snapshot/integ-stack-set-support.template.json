@@ -30,6 +30,13 @@
      }
     ],
     "RoleName": "AWSCloudFormationStackSetExecutionRole-integ-test"
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+     ]
+    }
    }
   }
  },

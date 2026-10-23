@@ -91,7 +91,7 @@
       ]
      }
     ],
-    "StackSetName": "integstacksettestStackSet7A3EC558",
+    "StackSetName": "integ-stackset-test",
     "TemplateURL": {
      "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/fc39dcfb61ca7db050a8c6cf440dde97c2c051f0965e9094eaad4bf1157e63cf.json"
     }

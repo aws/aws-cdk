@@ -28,21 +28,6 @@
           ]
         },
         {
-          "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
-          "severity": "warning",
-          "ruleMetadata": {
-            "category": "Structure"
-          },
-          "violatingConstructs": [
-            {
-              "constructPath": "integ-test/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
-            }
-          ]
-        },
-        {
           "ruleName": "F3031",
           "description": "StackInstancesGroup.0.DeploymentTargets.Accounts.0: '12345678' does not match pattern '^[0-9]{12}$'",
           "severity": "warning",

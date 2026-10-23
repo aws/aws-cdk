@@ -16,5 +16,69 @@
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668"
+    }
   ]
 }

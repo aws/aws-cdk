@@ -4,12 +4,14 @@ import type { StackSetStack } from './stackset-stack';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import {
+  Arn,
   ArnFormat,
   CfnCapabilities,
   Lazy,
   Names,
   Resource,
   Stack,
+  Token,
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
@@ -675,7 +677,14 @@ export class RegionConcurrencyType {
  */
 export interface IStackSet extends IResource, IStackSetRef {
   /**
-   * Only available on self managed stacksets.
+   * The ID of the StackSet, in the form `<stack set name>:<unique ID>`.
+   *
+   * @attribute
+   */
+  readonly stackSetId: string;
+
+  /**
+   * Only available on self managed stacksets. `undefined` for service managed and imported StackSets.
    *
    * The admin role that CloudFormation will use to perform stackset operations.
    * This role should only have permissions to be assumed by the CloudFormation service
@@ -690,6 +699,18 @@ export interface IStackSet extends IResource, IStackSetRef {
   readonly role?: iam.IRole;
 }
 
+class ImportedStackSet extends Resource implements IStackSet {
+  public readonly role?: iam.IRole = undefined;
+
+  constructor(scope: Construct, id: string, public readonly stackSetId: string, stackSetArn?: string) {
+    super(scope, id, { environmentFromArn: stackSetArn });
+  }
+
+  public get stackSetRef(): StackSetReference {
+    return { stackSetId: this.stackSetId };
+  }
+}
+
 /**
  * A CloudFormation StackSet, which deploys a template to multiple AWS accounts and regions
  *
@@ -699,6 +720,35 @@ export interface IStackSet extends IResource, IStackSetRef {
 export class StackSet extends Resource implements IStackSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
+
+  /**
+   * Import an existing StackSet from its ID.
+   *
+   * The imported StackSet has no `role`.
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name.
+   * @param stackSetId The ID of the StackSet, in the form `<stack set name>:<unique ID>`.
+   */
+  public static fromStackSetId(scope: Construct, id: string, stackSetId: string): IStackSet {
+    return new ImportedStackSet(scope, id, stackSetId);
+  }
+
+  /**
+   * Import an existing StackSet from its ARN.
+   *
+   * The account and region of the imported StackSet are taken from the ARN. The imported StackSet has no `role`.
+   *
+   * @param scope The parent creating construct.
+   * @param id The construct's name.
+   * @param stackSetArn The ARN of the StackSet, in the form
+   * `arn:<partition>:cloudformation:<region>:<account>:stackset/<stack set name>:<unique ID>`.
+   */
+  public static fromStackSetArn(scope: Construct, id: string, stackSetArn: string): IStackSet {
+    return new ImportedStackSet(scope, id, Arn.extractResourceName(stackSetArn, 'stackset'), stackSetArn);
+  }
+
+  public readonly stackSetId: string;
 
   private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];
 
@@ -791,6 +841,7 @@ export class StackSet extends Resource implements IStackSet {
       } : {}),
     });
     this.resource = stackSet;
+    this.stackSetId = stackSet.attrStackSetId;
 
     if (this._role) {
       stackSet.node.addDependency(this._role);
@@ -805,9 +856,6 @@ export class StackSet extends Resource implements IStackSet {
   }
 
   public get role(): iam.IRole | undefined {
-    if (!this._role) {
-      throw new ValidationError(lit`StackSetServiceManagedNoRole`, 'service managed StackSets do not have an associated role', this);
-    }
     return this._role;
   }
 
@@ -823,7 +871,7 @@ export class StackSet extends Resource implements IStackSet {
     if (this._role && iam.Role.isRole(this._role)) {
       const disabledPrincipals: iam.IPrincipal[] = [];
       targetConfig.regions.forEach(region => {
-        if (RegionInfo.get(region).isOptInRegion) {
+        if (!Token.isUnresolved(region) && RegionInfo.get(region).isOptInRegion) {
           disabledPrincipals.push(new iam.ServicePrincipal(`cloudformation.${region}.amazonaws.com`));
         }
       });

@@ -1,12 +1,12 @@
 import * as path from 'path';
 import type { Construct } from 'constructs';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   App,
   CfnCapabilities,
   Stack,
 } from 'aws-cdk-lib';
-import type { StackProps } from 'aws-cdk-lib';
+import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -31,6 +31,8 @@ const targetAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_TARGET_
 const targetRegion = process.env.INTEG_TARGET_REGION ?? 'us-east-1';
 const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-test';
 const adminRoleName = 'AWSCloudFormationStackSetAdministrationRole-integ-test';
+const stackSetName = 'integ-stackset-test';
+const assetStackSetName = 'integ-stackset-asset-test';
 
 const app = new App({
   postCliContext: {
@@ -53,6 +55,9 @@ export class SupportStack extends Stack {
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
       ],
+    });
+    (this.executionRole.node.defaultChild as CfnResource).addMetadata('guard', {
+      SuppressedRules: ['IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS'],
     });
   }
 }
@@ -112,6 +117,7 @@ class TestCase extends Stack {
     });
     const stackSetStack = new MyStackSet(this, 'integ-stack-set');
     new cfn.StackSet(this, 'StackSet', {
+      stackSetName,
       target: cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
@@ -137,6 +143,7 @@ class AssetTestCase extends Stack {
       assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
     });
     new cfn.StackSet(this, 'StackSet', {
+      stackSetName: assetStackSetName,
       target: cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
@@ -173,7 +180,23 @@ const assetTestCase = new AssetTestCase(app, 'integ-stackset-asset-test', {
 
 assetTestCase.addStackDependency(supportStack);
 
-new IntegTest(app, 'integ-test', {
+const integ = new IntegTest(app, 'integ-test', {
   testCases: [testCase, assetTestCase],
   enableLookups: true,
 });
+
+integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
+  StackSetName: stackSetName,
+  StackInstanceAccount: targetAccount,
+  StackInstanceRegion: targetRegion,
+}).expect(ExpectedResult.objectLike({
+  StackInstance: { Status: 'CURRENT' },
+}));
+
+integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
+  StackSetName: assetStackSetName,
+  StackInstanceAccount: targetAccount,
+  StackInstanceRegion: targetRegion,
+}).expect(ExpectedResult.objectLike({
+  StackInstance: { Status: 'CURRENT' },
+}));

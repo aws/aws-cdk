@@ -11,6 +11,7 @@ import {
   App,
   CfnCapabilities,
   CfnOutput,
+  CfnParameter,
   DefaultStackSynthesizer,
   Stack,
   Stage,
@@ -1502,6 +1503,94 @@ test('stackSetRef references the StackSet resource', () => {
   expect(stack.resolve(stackSet.stackSetRef.stackSetId)).toEqual({ Ref: 'StackSet6E6355CF' });
 });
 
+test('stackSetId is the StackSetId attribute of the StackSet resource', () => {
+  const app = new App();
+  const stack = new Stack(app);
+
+  const stackSet = new StackSet(stack, 'StackSet', {
+    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+  });
+
+  expect(stack.resolve(stackSet.stackSetId)).toEqual({ 'Fn::GetAtt': ['StackSet6E6355CF', 'StackSetId'] });
+});
+
+test('a service managed StackSet has no role', () => {
+  const app = new App();
+  const stack = new Stack(app);
+
+  const stackSet = new StackSet(stack, 'StackSet', {
+    deploymentType: DeploymentType.serviceManaged(),
+    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+  });
+
+  expect(stackSet.role).toBeUndefined();
+});
+
+test('a tokenized target region gets no opt-in region trust statement', () => {
+  const app = new App();
+  const stack = new Stack(app);
+  const region = new CfnParameter(stack, 'TargetRegion').valueAsString;
+
+  new StackSet(stack, 'StackSet', {
+    target: StackSetTarget.fromAccounts({
+      regions: [region],
+      accounts: ['11111111111'],
+    }),
+    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [Match.objectLike({ Principal: { Service: 'cloudformation.amazonaws.com' } })],
+    },
+  });
+});
+
+describe('importing a StackSet', () => {
+  const stackSetId = 'my-stackset:2f0a8b4c-1234-5678-9abc-def012345678';
+
+  test('fromStackSetId returns a StackSet with the given id and no role', () => {
+    const stack = new Stack();
+
+    const imported = StackSet.fromStackSetId(stack, 'Imported', stackSetId);
+
+    expect(imported.stackSetId).toEqual(stackSetId);
+    expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
+    expect(imported.role).toBeUndefined();
+  });
+
+  test('fromStackSetArn takes the id, account and region from the ARN', () => {
+    const stack = new Stack();
+
+    const imported = StackSet.fromStackSetArn(stack, 'Imported',
+      `arn:aws:cloudformation:us-west-2:123456789012:stackset/${stackSetId}`);
+
+    expect(imported.stackSetId).toEqual(stackSetId);
+    expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
+    expect(imported.env).toEqual({ account: '123456789012', region: 'us-west-2' });
+    expect(imported.role).toBeUndefined();
+  });
+
+  test('fromStackSetArn resolves the id of a tokenized ARN at deploy time', () => {
+    const stack = new Stack();
+    const stackSetArn = new CfnParameter(stack, 'StackSetArn').valueAsString;
+
+    const imported = StackSet.fromStackSetArn(stack, 'Imported', stackSetArn);
+
+    expect(stack.resolve(imported.stackSetId)).toEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':stackset/', { Ref: 'StackSetArn' }] }],
+    });
+  });
+
+  test('fails when fromStackSetArn gets the ARN of another resource type', () => {
+    const stack = new Stack();
+
+    expect(() => StackSet.fromStackSetArn(stack, 'Imported',
+      'arn:aws:cloudformation:us-west-2:123456789012:stack/my-stack/2f0a8b4c-1234-5678-9abc-def012345678'))
+      .toThrow(/Expected resource type 'stackset' in ARN, got 'stack'/);
+  });
+});
+
 test('fromStackSetStack returns a StackSetTemplate instance', () => {
   const app = new App();
   const stack = new Stack(app);
@@ -1560,21 +1649,6 @@ describe('StackSet validation errors', () => {
     })).toThrow(expect.objectContaining({
       name: 'StackSetAutoExpandNotSupported',
       message: 'service managed stacksets do not currently support the "AUTO_EXPAND" capability',
-      constructPath: 'Default/StackSet',
-    }));
-  });
-
-  test('fails with an error code when reading the role of a service managed StackSet', () => {
-    const app = new App();
-    const stack = new Stack(app);
-    const stackSet = new StackSet(stack, 'StackSet', {
-      deploymentType: DeploymentType.serviceManaged(),
-      template: templateIn(stack),
-    });
-
-    expect(() => stackSet.role).toThrow(expect.objectContaining({
-      name: 'StackSetServiceManagedNoRole',
-      message: 'service managed StackSets do not have an associated role',
       constructPath: 'Default/StackSet',
     }));
   });
