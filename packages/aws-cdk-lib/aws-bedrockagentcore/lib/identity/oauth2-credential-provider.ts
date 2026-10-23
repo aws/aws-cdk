@@ -1130,6 +1130,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
     };
 
     this.__resource = new CfnOAuth2CredentialProvider(this, 'Resource', cfnProps);
+    this.node.defaultChild = this.__resource;
 
     this.credentialProviderArn = this.__resource.attrCredentialProviderArn;
     this.callbackUrl = this.__resource.attrCallbackUrl;

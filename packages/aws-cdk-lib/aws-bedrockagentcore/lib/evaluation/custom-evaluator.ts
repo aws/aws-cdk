@@ -255,6 +255,7 @@ export class Evaluator extends EvaluatorBase {
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
     });
+    this.node.defaultChild = resource;
 
     // If code-based, grant the bedrock-agentcore service permission to invoke
     // the Lambda function, scoped to this specific evaluator for confused deputy prevention.
