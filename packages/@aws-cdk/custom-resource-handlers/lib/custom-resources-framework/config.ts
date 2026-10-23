@@ -382,6 +382,10 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
       },
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
+      },
     ],
     'role-policy-provider': [
       {

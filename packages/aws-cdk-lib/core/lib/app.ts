@@ -3,6 +3,7 @@ import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
 import { iterateDfsPreorder } from './private/construct-iteration';
+import { appOf, APP_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -14,7 +15,6 @@ import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
-import { appOf, APP_TYPE } from './private/core-construct-finders';
 
 /**
  * Can hold a function to globally initialize Apps.
@@ -145,6 +145,24 @@ export interface AppProps {
   readonly treeMetadata?: boolean;
 
   /**
+   * Whether to enable built-in CloudFormation template validation.
+   *
+   * CDK ships with a CloudFormation template validation plugin that
+   * is enabled by default (see `CloudFormationValidationPlugin`).
+   *
+   * To disable the built-in validation, you can do one of these things:
+   *
+   * - Set this property to `false`.
+   * - Run `cdk synth --no-validation`.
+   * - Set `CDK_VALIDATION=false` in your environment.
+   * - Register a custom configured instance of `CloudFormationValidationPlugin`
+   *   on the `app` object.
+   *
+   * @default true
+   */
+  readonly builtinCloudFormationValidation?: boolean;
+
+  /**
    * The stack synthesizer to use by default for all Stacks in the App
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -211,6 +229,13 @@ export class App extends Stage {
    */
   public readonly _treeMetadata: boolean;
 
+  /**
+   * The flag indicating whether the built-in CloudFormation validation is enabled.
+   *
+   * @internal
+   */
+  public readonly _builtinCloudFormationValidation: boolean;
+
   private readonly initMark: number;
   private readonly performanceReporting: boolean;
 
@@ -226,6 +251,7 @@ export class App extends Stage {
     });
 
     this.initMark = performance.now();
+    this._builtinCloudFormationValidation = props.builtinCloudFormationValidation ?? true;
     if (!PERF_STATE.loadTimeMeasured) {
       // Measure the load time of the application -- up until the construction of the first App
       // object is considered "Load Time" (executing all require()s).
