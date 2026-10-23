@@ -3855,7 +3855,12 @@ describe('ec2 service', () => {
       });
     });
 
-    test('throws if wrong DNS record type specified with bridge network mode', () => {
+    test.each([
+      cloudmap.DnsRecordType.A,
+      cloudmap.DnsRecordType.A_SRV,
+      cloudmap.DnsRecordType.AAAA_SRV,
+      cloudmap.DnsRecordType.A_AAAA_SRV,
+    ])('throws if dnsRecordType %s is specified with bridge network mode', (dnsRecordType) => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3881,10 +3886,56 @@ describe('ec2 service', () => {
           taskDefinition,
           cloudMapOptions: {
             name: 'myApp',
-            dnsRecordType: cloudmap.DnsRecordType.A,
+            dnsRecordType,
           },
         });
       }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
+    });
+
+    test('creates AWS Cloud Map service with SRV records and a container target with bridge network mode', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+
+      // default network mode is bridge
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+      });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          name: 'myApp',
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+        DnsConfig: Match.objectLike({
+          DnsRecords: [{ TTL: 60, Type: 'SRV' }],
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [
+          Match.objectLike({
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+          }),
+        ],
+      });
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode', () => {
