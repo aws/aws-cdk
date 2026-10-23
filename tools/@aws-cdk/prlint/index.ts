@@ -25,7 +25,10 @@ async function run() {
 
   const number = await determinePrNumber(client);
   if (!number) {
-    if (['check_suite', 'status', 'workflow_run'].includes(github.context.eventName)) {
+    const workflowRunWithoutCurrentPr = github.context.eventName === 'workflow_run'
+      && !process.env.PR_NUMBER
+      && !!process.env.PR_SHA;
+    if (['check_suite', 'status'].includes(github.context.eventName) || workflowRunWithoutCurrentPr) {
       console.error('Could not find PR belonging to event, but that\'s not unusual. Skipping.');
       return;
     }

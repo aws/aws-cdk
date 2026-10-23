@@ -117,6 +117,24 @@ test('fails when the commit lookup fails', async () => {
   expect(mockLinter).not.toHaveBeenCalled();
 });
 
+test.each([
+  { name: 'missing identifiers', number: '', commit: '' },
+  { name: 'zero PR number', number: '0', commit: sha },
+  { name: 'invalid PR number', number: 'invalid', commit: sha },
+])('fails when workflow identity is invalid: $name', async ({ number, commit }) => {
+  process.env.PR_NUMBER = number;
+  process.env.PR_SHA = commit;
+
+  await runLinter();
+
+  expect(process.exitCode).toBe(1);
+  expect(mockGetPRFromCommit).not.toHaveBeenCalled();
+  expect(mockLinter).not.toHaveBeenCalled();
+  expect(console.error).toHaveBeenCalledWith(expect.objectContaining({
+    message: expect.stringContaining('Could not determine a PR number'),
+  }));
+});
+
 test('fails when PR validation fails', async () => {
   process.env.PR_NUMBER = '37858';
   const error = new Error('Validation failed');
