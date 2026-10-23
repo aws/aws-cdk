@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cluster-iam-master-auth-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-iam-master-auth"
+      ],
+      "assertionStack": "cluster-iam-master-auth-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusteriammasterauthintegtestDefaultTestDeployAssertBF1E6EAD"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
