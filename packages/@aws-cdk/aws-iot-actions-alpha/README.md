@@ -371,19 +371,27 @@ topicRule.addAction(
 );
 ```
 
-You can enable batching to reduce costs and improve efficiency:
+You can enable batching to reduce costs and improve efficiency. When the rule's SQL
+matches multiple MQTT topics (for example, with a `+` wildcard), set
+`batchAcrossTopics` to `true` to combine messages from different topics into a single
+HTTP request — otherwise batching is scoped to each topic individually:
 
 ```ts
 import { Size } from 'aws-cdk-lib';
 
-declare const topicRule: iot.TopicRule;
+const fanInRule = new iot.TopicRule(this, 'FanInRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT * FROM 'device/+/telemetry'",
+  ),
+});
 
-topicRule.addAction(
-  new actions.HttpsAction('https://example.com/endpoint', {
+fanInRule.addAction(
+  new actions.HttpsAction('https://analytics.example.com/ingest', {
     batchConfig: {
       maxBatchOpenDuration: Duration.millis(100),
       maxBatchSize: 5,
       maxBatchSizeBytes: Size.kibibytes(1),
+      batchAcrossTopics: true,
     },
   }),
 );

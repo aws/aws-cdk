@@ -65,6 +65,7 @@
       {
        "Http": {
         "BatchConfig": {
+         "BatchAcrossTopics": true,
          "MaxBatchOpenMs": 100,
          "MaxBatchSize": 5,
          "MaxBatchSizeBytes": 1024
