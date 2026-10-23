@@ -307,6 +307,64 @@ test('resolves entry to an absolute path', () => {
   }));
 });
 
+describe('findEntry', () => {
+  beforeEach(() => {
+    bockfs({
+      '/home/project/package/handler.ts': '// nothing',
+    });
+  });
+
+  test('resolves a relative entry found relative to the current working directory', () => {
+    const originalCwd = process.cwd();
+    try {
+      process.chdir(bockPath.translate`/home/project/package`);
+
+      new NodejsFunction(stack, 'handler1', {
+        depsLockFilePath: bockPath.translate`/home/project/package-lock.json`,
+        entry: 'handler.ts',
+      });
+
+      expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
+        entry: bockPath.translate`/home/project/package/handler.ts`,
+      }));
+    } finally {
+      process.chdir(originalCwd);
+    }
+  });
+
+  test('resolves a relative entry found under projectRoot when not found relative to the current working directory', () => {
+    new NodejsFunction(stack, 'handler1', {
+      projectRoot: bockPath.translate`/home/project/package`,
+      depsLockFilePath: bockPath.translate`/home/project/package-lock.json`,
+      entry: 'handler.ts',
+    });
+
+    expect(Bundling.bundle).toHaveBeenCalledWith(stack, expect.objectContaining({
+      entry: bockPath.translate`/home/project/package/handler.ts`,
+    }));
+  });
+
+  test('throws EntryFileNotFoundAtAbsolutePath when an absolute entry does not exist', () => {
+    expect(() => new NodejsFunction(stack, 'handler1', {
+      entry: bockPath.translate`/home/project/package/does-not-exist.ts`,
+    })).toThrow(/Cannot find entry file at .*does-not-exist\.ts$/);
+  });
+
+  test('throws EntryFileNotFoundRelativeToCwdOrProjectRoot when a relative entry is found neither relative to cwd nor under projectRoot', () => {
+    expect(() => new NodejsFunction(stack, 'handler1', {
+      projectRoot: bockPath.translate`/home/project/package`,
+      depsLockFilePath: bockPath.translate`/home/project/package-lock.json`,
+      entry: 'does-not-exist.ts',
+    })).toThrow(/Cannot find entry file at does-not-exist\.ts nor at .*does-not-exist\.ts \(relative to the project root/);
+  });
+
+  // `EntryFileNotFoundRelativeToProjectRoot` (findEntry's `!projectRoot` branch, function.ts) has no test:
+  // `findEntry` is a private function only ever called from the NodejsFunction constructor, which always
+  // computes a non-empty `projectRoot` default (from an explicit prop, the CDK app entry point, or
+  // depsLockFilePath's directory) before calling it - so `projectRoot` is never falsy in practice, and
+  // this branch is unreachable via the public API.
+});
+
 test('configures connection reuse for aws sdk', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
