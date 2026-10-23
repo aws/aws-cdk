@@ -197,6 +197,47 @@ export enum GlobalTableSettingsReplicationMode {
 }
 
 /**
+ * The type of a `TableV2`: whether the resource models a replica of a global table
+ * or a standalone regional table.
+ *
+ * When not declared, CloudFormation classifies the table from its shape: a table with
+ * multiple replicas, a witness region, or a global table source is treated as a global
+ * table replica, and a single-region table is treated as a regional table.
+ *
+ * Declaring the type explicitly matters in two situations. A multi-account global table
+ * source stack models only its local replica, so its shape alone under-classifies it;
+ * declaring `GLOBAL_TABLE_REPLICA` pins the correct classification, and it must be
+ * deployed before a later update can change the type to `REGIONAL`. Changing a table
+ * that was previously a global table replica to `REGIONAL` signals CloudFormation to
+ * disassociate the stack-local replica from its global table, converting it into a
+ * standalone table without deleting its data. Removing replicas without declaring
+ * `REGIONAL` keeps the existing behavior of deleting the removed replicas.
+ */
+export enum TableType {
+  /**
+   * The table is a replica of a global table.
+   */
+  GLOBAL_TABLE_REPLICA = 'GlobalTableReplica',
+
+  /**
+   * The table is a standalone regional table.
+   *
+   * Declaring this type on a table that was previously deployed as a global table
+   * replica disassociates the stack-local replica from its global table. Disassociation
+   * is supported for multi-Region eventual consistency (MREC) global tables only, and
+   * disassociation protection must be disabled in an earlier update. The disassociation
+   * update must not change any other setting: peer replicas must be removed in the same
+   * update, `witnessRegion`, `multiRegionConsistency` and
+   * `globalTableSettingsReplicationMode` cannot be declared, and the
+   * `NEW_AND_OLD_IMAGES` stream of the global table must stay declared through
+   * `dynamoStream`.
+   *
+   * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables-disassociate.html
+   */
+  REGIONAL = 'Regional',
+}
+
+/**
  * Reference to ContributorInsightsSpecification
  */
 export interface ContributorInsightsSpecification {
