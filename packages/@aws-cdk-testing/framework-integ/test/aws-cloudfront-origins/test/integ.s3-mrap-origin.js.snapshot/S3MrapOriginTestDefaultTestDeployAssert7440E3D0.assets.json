@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "6d576acc8e90358e21448ad22cd34055a7c04dce4846c301d2e359e078de4b3d": {
+      "source": {
+        "path": "asset.6d576acc8e90358e21448ad22cd34055a7c04dce4846c301d2e359e078de4b3d.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-318c68df": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6d576acc8e90358e21448ad22cd34055a7c04dce4846c301d2e359e078de4b3d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "b556e637e86539366390d89b518da9ecb5b61c1dd35a63bad9432a7219133cf8": {
+      "displayName": "S3MrapOriginTestDefaultTestDeployAssert7440E3D0 Template",
+      "source": {
+        "path": "S3MrapOriginTestDefaultTestDeployAssert7440E3D0.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d36cc903": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b556e637e86539366390d89b518da9ecb5b61c1dd35a63bad9432a7219133cf8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
