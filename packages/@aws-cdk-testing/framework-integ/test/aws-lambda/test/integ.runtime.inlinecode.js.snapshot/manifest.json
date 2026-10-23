@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "aws-cdk-lambda-runtime-inlinecode.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d2abe4add97c04bbda250c30c2a5192da0496f74877c7b68290dd18aa4a0a29b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a829625da0fcb4aa61cc0aac0ac79d1a428a221c7e3e534f8b97b03fd20f514.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,470 +33,7 @@
       "dependencies": [
         "aws-cdk-lambda-runtime-inlinecode.assets"
       ],
-      "metadata": {
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON38ServiceRole3EA86BBE"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON38A180AE47"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON38functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON39ServiceRole53E964DF"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON39143BF976"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON39functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON310ServiceRole65985CC8"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON310431C418B"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON310functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON312ServiceRoleBEB03378"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON3127B62731D"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON312functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON313ServiceRole907582AC"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON3136F4F65AE"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON313functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON314ServiceRoleB0324A64"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON314C98D0951"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PYTHON314functionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20XServiceRole188A4E38"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20X70A25ADE"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS20XfunctionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS22XServiceRole8FE2F7A5"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS22X911196A1"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS22XfunctionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS24XServiceRoleF97C2B58"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS24X3400670E"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X-functionName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "NODEJS24XfunctionName"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-lambda-runtime-inlinecode/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-lambda-runtime-inlinecode.metadata.json",
       "displayName": "aws-cdk-lambda-runtime-inlinecode"
     },
     "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679.assets": {
@@ -531,20 +68,7 @@
       "dependencies": [
         "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679.assets"
       ],
-      "metadata": {
-        "/lambda-runtime-inlinecode/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/lambda-runtime-inlinecode/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679.metadata.json",
       "displayName": "lambda-runtime-inlinecode/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -559,6 +83,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -577,6 +102,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -842,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -873,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1029,6 +550,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1040,12 +562,67 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "weak",
+            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+          },
+          "@aws-cdk/core:validateAgainstDefaultRules": {
+            "recommendedValue": true,
+            "explanation": "Treat CloudFormation Validate findings as errors"
+          },
+          "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
+            "recommendedValue": true,
+            "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
+          },
+          "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": {
+            "recommendedValue": true,
+            "explanation": "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1131.0"
 }
