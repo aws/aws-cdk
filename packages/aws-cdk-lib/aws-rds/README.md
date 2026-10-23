@@ -1051,6 +1051,23 @@ const role = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrinc
 proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
 ```
 
+`grantConnect` grants IAM permissions only; it does not add security group rules.
+For a client such as a Lambda function configured in the proxy's VPC, allow network
+access separately through the proxy's `connections` property. For a PostgreSQL
+proxy listening on port 5432:
+
+```ts
+declare const proxy: rds.DatabaseProxy;
+declare const fn: lambda.Function;
+
+proxy.grantConnect(fn, 'app_user');
+proxy.connections.allowFrom(fn, ec2.Port.tcp(5432));
+```
+
+Use the port configured for your database. The client must have network
+connectivity to the proxy. The security group rule
+does not configure the client's VPC, subnets, or routing.
+
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
