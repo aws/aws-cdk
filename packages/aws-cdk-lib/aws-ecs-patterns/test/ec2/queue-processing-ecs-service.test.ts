@@ -593,3 +593,25 @@ test('throws if image is undefined', () => {
     });
   }).toThrow(new Error('image must be specified for EC2 queue processing service'));
 });
+
+describe('container stop timeout', () => {
+  test.each([undefined, 120])('renders the configured timeout %s', (seconds) => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const cluster = new ecs.Cluster(stack, 'Cluster', {
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      capacity: { instanceType: new ec2.InstanceType('t3.micro'), minCapacity: 0, maxCapacity: 1 },
+    });
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 512,
+      stopTimeout: seconds === undefined ? undefined : cdk.Duration.seconds(seconds),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: Match.arrayWith([Match.objectLike({
+        StopTimeout: seconds ?? Match.absent(),
+      })]),
+    });
+  });
+});
