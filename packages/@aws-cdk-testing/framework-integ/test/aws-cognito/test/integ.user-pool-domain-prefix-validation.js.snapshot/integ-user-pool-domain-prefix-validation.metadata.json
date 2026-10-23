@@ -1,0 +1,51 @@
+{
+  "/integ-user-pool-domain-prefix-validation/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/Domain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain"
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPool6BA7E5F2"
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/integ-user-pool-domain-prefix-validation/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolDomainD0EA232A"
+    }
+  ]
+}
