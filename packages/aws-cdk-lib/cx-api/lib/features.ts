@@ -161,6 +161,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const BUCKET_DEPLOYMENT_MODERN_RESOURCE = '@aws-cdk/aws-s3-deployment:modernResource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2000,6 +2001,21 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+  [BUCKET_DEPLOYMENT_MODERN_RESOURCE]: {
+    type: FlagType.BugFix,
+    summary: 'Use the new BucketDeployment resource',
+    detailsMd: `
+      When this flag is enabled, bucket deployments use the modern resource implementation.
+
+      The modern resource implementation is smaller and faster. Once it has been proven
+      in practice, the old implementation will be removed and all users will be automatically
+      switched over to the new implementation.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to use the legacy bucket deployment resource.',
   },
 };
 

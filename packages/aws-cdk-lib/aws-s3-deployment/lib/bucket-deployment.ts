@@ -19,6 +19,8 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
   BucketDeploymentSingletonFunction,
 } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import { BucketDeploymentTsSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-ts-provider.generated';
+import { BUCKET_DEPLOYMENT_MODERN_RESOURCE } from '../../cx-api/lib/features';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -387,17 +389,27 @@ export class BucketDeployment extends Construct {
       this.node.addDependency(props.vpc);
     }
 
+    // Pick between the two BucketDeployment implementations based on the feature flag.
+    let customResourceConstructor: typeof BucketDeploymentSingletonFunction | typeof BucketDeploymentTsSingletonFunction;
+    let layers: lambda.ILayerVersion[] = [];
+    const useModernBucketDeployment = cdk.FeatureFlags.of(this).isEnabled(BUCKET_DEPLOYMENT_MODERN_RESOURCE);
+    if (useModernBucketDeployment) {
+      // The modern BucketDeployment resource has no dependencies.
+      customResourceConstructor = BucketDeploymentTsSingletonFunction;
+      layers = [];
+    } else {
+      // The original BucketDeployment resource uses the AWS CLI v1 layer.
+      customResourceConstructor = BucketDeploymentSingletonFunction;
+      layers.push(new AwsCliLayer(this, 'AwsCliLayer'));
+    }
+
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
+    const handler = new customResourceConstructor(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
       // The deployment handler is CDK-managed internal code, not user code, so the architecture is
-      // fixed rather than configurable. Both the handler and the bundled AWS CLI v1 layer are
-      // architecture-independent Python: the layer's only native extension is PyYAML's optional C
-      // accelerator, which is built for a different Python ABI than this runtime and is therefore
-      // never loaded (PyYAML falls back to its pure-Python implementation). So we always run the
-      // handler on ARM_64 (Graviton), which costs less per millisecond of execution.
+      // fixed rather than configurable. We pick ARM because it's cheaper to run for customers.
       architecture: lambda.Architecture.ARM_64,
-      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      layers,
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
