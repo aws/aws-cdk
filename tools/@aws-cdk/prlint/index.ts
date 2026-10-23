@@ -25,9 +25,9 @@ async function run() {
 
   const number = await determinePrNumber(client);
   if (!number) {
-    if (['check_suite', 'status'].includes(github.context.eventName)) {
+    if (['check_suite', 'status', 'workflow_run'].includes(github.context.eventName)) {
       console.error('Could not find PR belonging to event, but that\'s not unusual. Skipping.');
-      process.exit(0);
+      return;
     }
 
     throw new Error(`Could not determine a PR number from either \$PR_NUMBER or \$PR_SHA or ${github.context.eventName}: ${JSON.stringify(github.context.payload)}`);
