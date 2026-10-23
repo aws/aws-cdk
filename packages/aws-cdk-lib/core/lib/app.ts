@@ -168,6 +168,22 @@ export interface AppProps {
    * @default - no PropertyInjectors
    */
   readonly propertyInjectors?: IPropertyInjector[];
+
+  /**
+   * Confirm that validation plugins treat the assembly directory as read-only
+   *
+   * Validation plugins should only read files in the `cdk.out` directory, and not modify or
+   * delete any.
+   *
+   * If this is set to `true`, the CDK will calculate a hash of all files in the
+   * assembly directory before running validation plugins and verify that the
+   * hashes match afterwards, to ensure no files got deleted or modified. You
+   * only need to set this if you do not trust your validation plugins to have
+   * been implemented correctly.
+   *
+   * @default false
+   */
+  readonly confirmValidationPluginsDoNotMutate?: boolean;
 }
 
 /**
@@ -211,6 +227,11 @@ export class App extends Stage {
    */
   public readonly _treeMetadata: boolean;
 
+  /**
+   * The setting of `confirmValidationPluginsDoNotMutate` from the app's initialization properties.
+   */
+  public readonly _confirmValidationPluginsDoNotMutate: boolean;
+
   private readonly initMark: number;
   private readonly performanceReporting: boolean;
 
@@ -225,6 +246,7 @@ export class App extends Stage {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
     });
 
+    this._confirmValidationPluginsDoNotMutate = props.confirmValidationPluginsDoNotMutate ?? false;
     this.initMark = performance.now();
     if (!PERF_STATE.loadTimeMeasured) {
       // Measure the load time of the application -- up until the construction of the first App
