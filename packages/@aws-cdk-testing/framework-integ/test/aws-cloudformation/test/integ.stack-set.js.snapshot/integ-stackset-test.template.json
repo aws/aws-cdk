@@ -1,0 +1,139 @@
+{
+ "Resources": {
+  "AdminRole38563C57": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:AssumeRole",
+         "Effect": "Allow",
+         "Resource": "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-test"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AssumeExecutionRole"
+     }
+    ],
+    "RoleName": "AWSCloudFormationStackSetAdministrationRole-integ-test"
+   }
+  },
+  "AdminRoleDefaultPolicy1C2AB961": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-test"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AdminRoleDefaultPolicy1C2AB961",
+    "Roles": [
+     {
+      "Ref": "AdminRole38563C57"
+     }
+    ]
+   }
+  },
+  "StackSet6E6355CF": {
+   "Type": "AWS::CloudFormation::StackSet",
+   "Properties": {
+    "AdministrationRoleARN": {
+     "Fn::GetAtt": [
+      "AdminRole38563C57",
+      "Arn"
+     ]
+    },
+    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-test",
+    "ManagedExecution": {
+     "Active": true
+    },
+    "PermissionModel": "SELF_MANAGED",
+    "StackInstancesGroup": [
+     {
+      "DeploymentTargets": {
+       "Accounts": [
+        "12345678"
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     }
+    ],
+    "StackSetName": "integ-stackset-test",
+    "TemplateURL": {
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/fc39dcfb61ca7db050a8c6cf440dde97c2c051f0965e9094eaad4bf1157e63cf.json"
+    }
+   },
+   "DependsOn": [
+    "AdminRoleDefaultPolicy1C2AB961",
+    "AdminRole38563C57"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
