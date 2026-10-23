@@ -1178,10 +1178,10 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack.dependencies.length).toEqual(1);
+      expect(pipelineStack.dependencies).toContain(buildStack);
     });
 
-    test('does not add a dependency on the Stack containing an imported action Role', () => {
+    test('adds a dependency on the Stack containing a mutable imported action Role policy', () => {
       const region = 'us-west-2';
       const pipelineAccount = '123456789012';
       const buildAccount = '901234567890';
@@ -1254,7 +1254,8 @@ describe('pipeline', () => {
         ],
       });
 
-      expect(pipelineStack.dependencies.length).toEqual(0);
+      expect(pipelineStack.dependencies).toContain(buildStack);
+      expect(() => app.synth()).not.toThrow();
     });
   });
 });
