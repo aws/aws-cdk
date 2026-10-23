@@ -460,6 +460,86 @@ describe('CloudFormationValidatePlugin', () => {
     }
   });
 
+  describe('grouping diagnostics into violations', () => {
+    let tmpDir: string;
+    let templatePath: string;
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-grouping-'));
+      templatePath = path.join(tmpDir, 'template.json');
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: {} }));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, { recursive: true });
+    });
+
+    function validateWithDiagnostics(diagnostics: any[]) {
+      const plugin = newPlugin();
+      jest.spyOn((plugin as any).engine, 'validateTemplate').mockReturnValueOnce({ diagnostics });
+      return plugin.validate({
+        templatePaths: [templatePath],
+        stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
+        appConstruct: new Construct(undefined as any, ''),
+        accountId: undefined,
+        region: undefined,
+      });
+    }
+
+    test('reports each resource with its own message when a rule fires with different messages', () => {
+      const report = validateWithDiagnostics([
+        {
+          ruleId: 'E3047',
+          severity: 'ERROR',
+          message: "Cpu '1024' is not compatible with Memory 49152 for Fargate",
+          propertyPath: 'Properties.Cpu',
+          entity: { entityType: 'Resource', logicalId: 'TaskA' },
+        },
+        {
+          ruleId: 'E3047',
+          severity: 'ERROR',
+          message: "Cpu '256' is not compatible with Memory 8192 for Fargate",
+          propertyPath: 'Properties.Cpu',
+          entity: { entityType: 'Resource', logicalId: 'TaskB' },
+        },
+      ]);
+
+      expect(report.violations).toHaveLength(2);
+      expect(report.violations).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          ruleName: 'E3047',
+          description: "Cpu: Cpu '1024' is not compatible with Memory 49152 for Fargate",
+          violatingResources: [expect.objectContaining({ resourceLogicalId: 'TaskA' })],
+        }),
+        expect.objectContaining({
+          ruleName: 'E3047',
+          description: "Cpu: Cpu '256' is not compatible with Memory 8192 for Fargate",
+          violatingResources: [expect.objectContaining({ resourceLogicalId: 'TaskB' })],
+        }),
+      ]));
+    });
+
+    test('groups resources that share a rule and an identical message into one violation', () => {
+      const report = validateWithDiagnostics([
+        {
+          ruleId: 'W3011',
+          severity: 'WARN',
+          message: 'Both UpdateReplacePolicy and DeletionPolicy are needed',
+          entity: { entityType: 'Resource', logicalId: 'BucketA' },
+        },
+        {
+          ruleId: 'W3011',
+          severity: 'WARN',
+          message: 'Both UpdateReplacePolicy and DeletionPolicy are needed',
+          entity: { entityType: 'Resource', logicalId: 'BucketB' },
+        },
+      ]);
+
+      expect(report.violations).toHaveLength(1);
+      expect(report.violations[0].violatingResources.map(r => r.resourceLogicalId)).toEqual(['BucketA', 'BucketB']);
+    });
+  });
+
   describe('_additionalSchemasDirectory', () => {
     let schemaDir: string;
 
@@ -706,7 +786,7 @@ describe('CloudFormationValidatePlugin', () => {
   });
 });
 
-describe('CDK_VALIDATION environment variable', () => {
+describe('tests that might mutate the environment', () => {
   const originalCdkValidation = process.env.CDK_VALIDATION;
 
   afterEach(() => {
@@ -717,12 +797,13 @@ describe('CDK_VALIDATION environment variable', () => {
     }
   });
 
-  function appWithInvalidResource() {
+  function appWithInvalidResource(props?: Partial<core.AppProps>) {
     const app = new core.App({
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
+      ...props,
     });
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
@@ -737,6 +818,16 @@ describe('CDK_VALIDATION environment variable', () => {
   test('CDK_VALIDATION=false disables the auto-registered validation engine', () => {
     process.env.CDK_VALIDATION = 'false';
     const app = appWithInvalidResource();
+
+    // Would throw on BogusProperty if the default engine ran
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test('{ builtinCloudFormationValidation: false } disables the auto-registered validation engine', () => {
+    const app = appWithInvalidResource({
+      builtinCloudFormationValidation: false,
+    });
 
     // Would throw on BogusProperty if the default engine ran
     expect(() => app.synth()).not.toThrow();

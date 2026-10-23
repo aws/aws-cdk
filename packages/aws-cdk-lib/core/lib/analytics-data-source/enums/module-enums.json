@@ -1365,6 +1365,15 @@
       "resume-cluster",
       "failover-primary-compute"
     ],
+    "LogExport": [
+      "connectionlog",
+      "useractivitylog",
+      "userlog"
+    ],
+    "LogDestinationType": [
+      "s3",
+      "cloudwatch"
+    ],
     "MaintenanceTrackName": [
       "current",
       "trailing"
@@ -2203,6 +2212,12 @@
       "S3_RESTORE_OBJECT_FAILED"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/consumable-resource.ts": {
+    "ConsumableResourceType": [
+      "REPLENISHABLE",
+      "NON_REPLENISHABLE"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-batch/lib/ecs-container-definition.ts": {
     "UlimitName": [
       "core",
@@ -2510,11 +2525,13 @@
     ],
     "SigningBehavior": [
       "always",
+      "always-amz-auth",
       "never",
       "no-override"
     ],
     "SigningProtocol": [
-      "sigv4"
+      "sigv4",
+      "sigv4a"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin.ts": {
@@ -5393,7 +5410,8 @@
       "3.0",
       "4.0",
       "5.0",
-      "5.1"
+      "5.1",
+      "6.0"
     ],
     "JobLanguage": [
       "scala",

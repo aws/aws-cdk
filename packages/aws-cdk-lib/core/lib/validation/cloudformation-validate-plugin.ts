@@ -248,18 +248,21 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
 
-        const existing = violations.find(
-          v => v.ruleName === diagnostic.ruleId && v.severity === severity,
-        );
-
         const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, '')}: ` : '';
+        const description = `${propertyPathPefix}${diagnostic.message}`;
+
+        // Only diagnostics with the same description share a violation, so each
+        // violating resource is reported with its own message.
+        const existing = violations.find(
+          v => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description,
+        );
 
         if (existing) {
           existing.violatingResources.push(violatingResource);
         } else {
           violations.push({
             ruleName: diagnostic.ruleId,
-            description: `${propertyPathPefix}${diagnostic.message}`,
+            description,
             severity,
             fix: diagnostic.suggestedFix,
             violatingResources: [violatingResource],
@@ -335,14 +338,6 @@ const IGNORE_RULES = new Set([
   // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
   // span accounts.
   'W9013',
-
-  // WHAT: value type tracking (parameter default should be a string)
-  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-  'E2001',
 
   // WHAT: built-in function not recognized
   // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.
