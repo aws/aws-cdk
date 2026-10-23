@@ -70,7 +70,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(tree);
   const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
 
   // Always write validation report to disk
@@ -439,7 +439,7 @@ function doInvokeValidationPlugins(
     .map(p => p[0])
     .filter(p => !isTrustedPlugin(p)));
 
-  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+  const preExistingFileHashes = untrustedPlugins.size > 0 && root._confirmValidationPluginsDoNotMutate ? snapshotFileHashes(outdir) : undefined;
 
   const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
 
