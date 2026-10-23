@@ -13,6 +13,16 @@ export interface ZipEntrySpec {
   readonly body: string | Buffer;
   /** `store` writes the bytes as-is, `deflate` compresses them. */
   readonly method?: 'store' | 'deflate';
+  /**
+   * Modification time recorded for the entry.
+   *
+   * Load-bearing: the provider's skip decision compares it against the destination
+   * object's `LastModified`.
+   *
+   * @default - 1980-01-01, the epoch of the DOS timestamp the zip format uses, which is
+   * also what a deterministic CDK asset zip carries
+   */
+  readonly mtime?: Date;
 }
 
 const LOCAL_HEADER_SIGNATURE = 0x04034b50;
@@ -45,14 +55,15 @@ export function buildZip(
     const payload = deflate ? zlib.deflateRawSync(raw) : raw;
     const method = deflate ? 8 : 0;
     const crc = crc32(raw);
+    const { date: dosDate, time: dosTime } = toDosDateTime(entry.mtime);
 
     const local = Buffer.alloc(30);
     local.writeUInt32LE(LOCAL_HEADER_SIGNATURE, 0);
     local.writeUInt16LE(20, 4); // version needed
     local.writeUInt16LE(0, 6); // flags
     local.writeUInt16LE(method, 8);
-    local.writeUInt16LE(0, 10); // mod time
-    local.writeUInt16LE(0x21, 12); // mod date (1980-01-01)
+    local.writeUInt16LE(dosTime, 10);
+    local.writeUInt16LE(dosDate, 12);
     local.writeUInt32LE(crc, 14);
     local.writeUInt32LE(payload.length, 18);
     local.writeUInt32LE(raw.length, 22);
@@ -66,8 +77,8 @@ export function buildZip(
     central.writeUInt16LE(20, 6); // version needed
     central.writeUInt16LE(0, 8); // flags
     central.writeUInt16LE(method, 10);
-    central.writeUInt16LE(0, 12);
-    central.writeUInt16LE(0x21, 14);
+    central.writeUInt16LE(dosTime, 12);
+    central.writeUInt16LE(dosDate, 14);
     central.writeUInt32LE(crc, 16);
     central.writeUInt32LE(payload.length, 20);
     central.writeUInt32LE(raw.length, 24);
@@ -122,6 +133,22 @@ export function renameEntry(zip: Buffer, from: string, to: string): Buffer {
 }
 
 /**
+ * Encode a date into the zip format's DOS date and time fields.
+ *
+ * Local-time components, because that is how a DOS timestamp is defined and how `yauzl`
+ * reads one back; using UTC here would shift every timestamp by the test machine's offset.
+ * Seconds have two-second resolution, which is a property of the format.
+ */
+function toDosDateTime(mtime: Date = new Date(1980, 0, 1)): { date: number; time: number } {
+  // Bit layouts expressed as arithmetic: date is yyyyyyym mmmddddd, time is
+  // hhhhhmmm mmmsssss with two-second resolution.
+  return {
+    date: (mtime.getFullYear() - 1980) * 512 + (mtime.getMonth() + 1) * 32 + mtime.getDate(),
+    time: mtime.getHours() * 2048 + mtime.getMinutes() * 32 + Math.floor(mtime.getSeconds() / 2),
+  };
+}
+
+/**
  * CRC-32, as the zip format records it.
  *
  * Node exposes a native implementation from v22.2. The handler's reader does not verify
@@ -158,8 +185,14 @@ export function cfnEvent(
   if (requestType !== 'Create' && !extra.omitPhysicalResourceId) {
     event.PhysicalResourceId = extra.physicalResourceId ?? 'aws.cdk.s3deployment.existing';
   }
-  if (extra.oldProperties) {
-    event.OldResourceProperties = { ServiceToken: 'arn:aws:lambda:...', ...extra.oldProperties };
+  if (requestType === 'Update') {
+    // CloudFormation always sends these on an Update, and the event type declares them
+    // non-optional, so the helper cannot build an event without them. Defaulting to the
+    // new properties models "nothing about the destination changed".
+    event.OldResourceProperties = {
+      ServiceToken: 'arn:aws:lambda:...',
+      ...(extra.oldProperties ?? properties),
+    };
   }
 
   return event;

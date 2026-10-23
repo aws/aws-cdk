@@ -1,11 +1,11 @@
 /**
- * `Exclude` / `Include` filtering (contract §2.1).
+ * `Exclude` / `Include` filtering.
  *
  * Patterns are globs, evaluated against each candidate's **key path relative to the
- * destination prefix**, and the last matching pattern wins. Because the wire protocol
- * carries two separate arrays, every `Exclude` is evaluated before every `Include`, so an
- * `Include` always beats an overlapping `Exclude` (B9 — a limitation of the protocol shape,
- * preserved here for compatibility).
+ * destination prefix**, and the last matching pattern wins. Because the request carries two
+ * separate arrays, every `Exclude` is evaluated before every `Include`, so an `Include`
+ * always beats an overlapping `Exclude` — the relative order a caller writes them in cannot
+ * be expressed.
  *
  * The same filter chain decides what gets deployed and what gets pruned, which is what
  * makes `Exclude` the supported way to protect destination-only content.

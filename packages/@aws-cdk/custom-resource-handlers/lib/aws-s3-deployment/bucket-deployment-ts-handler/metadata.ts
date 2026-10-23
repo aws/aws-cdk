@@ -1,33 +1,18 @@
 /**
- * Object metadata (contract §2.1).
+ * Object metadata.
  *
  * `UserMetadata` becomes S3 user metadata; `SystemMetadata` sets S3 system headers. Both
  * apply uniformly to every object a request deploys.
  *
- * Unlike the original implementation, `SystemMetadata` keys are validated against the
- * supported set instead of being passed through to a command line verbatim (B10): an
- * unknown key now fails with a message that names it, and a value can never be
- * reinterpreted as an option.
+ * The set of `SystemMetadata` keys is closed, and deliberately matches exactly what the
+ * `BucketDeployment` L2 can emit (its `mapSystemMetadata`). Each key is mapped explicitly
+ * below, so adding a key to the L2 without teaching this provider about it fails loudly
+ * instead of being forwarded somewhere it means nothing.
  */
 import type { ObjectCannedACL, PutObjectCommandInput, ServerSideEncryption, StorageClass } from '@aws-sdk/client-s3';
 
-/** The `SystemMetadata` keys this provider understands, with their S3 request fields. */
-const SYSTEM_METADATA_KEYS = [
-  'cache-control',
-  'content-disposition',
-  'content-encoding',
-  'content-language',
-  'content-type',
-  'expires',
-  'sse',
-  'sse-kms-key-id',
-  'storage-class',
-  'website-redirect',
-  'acl',
-] as const;
-
 /** S3 request fields derived from the metadata properties. */
-export type MetadataFields = Pick<PutObjectCommandInput,
+export type PartialPutObjectRequest = Pick<PutObjectCommandInput,
 | 'CacheControl'
 | 'ContentDisposition'
 | 'ContentEncoding'
@@ -42,64 +27,119 @@ export type MetadataFields = Pick<PutObjectCommandInput,
 | 'Metadata'
 >;
 
+/** Every `SystemMetadata` key this provider accepts, for error messages. */
+const SUPPORTED_KEYS = [
+  'acl',
+  'cache-control',
+  'content-disposition',
+  'content-encoding',
+  'content-language',
+  'content-type',
+  'expires',
+  'sse',
+  'sse-kms-key-id',
+  'storage-class',
+  'website-redirect',
+] as const;
+
 /**
  * Translate the two metadata property bags into S3 request fields.
  *
- * `Expires` is parsed from the HTTP-date string callers send; an unparseable value is
- * rejected rather than silently dropped, because silently losing a cache directive is
- * worse than failing the deployment.
+ * The SystemMetadata originally mapped to AWS CLI v1 command-line
+ * flags (`--cache-control` etc), and the contract re-exposed them
+ * literally. We parse them here under their AWS CLI v1 name and translate
+ * them into AWS SDK v3 request fields.
  */
-export function toMetadataFields(
+export function parseMetadataFields(
   userMetadata: Record<string, string>,
   systemMetadata: Record<string, string>,
-): MetadataFields {
-  // `sse-c-copy-source` names the SSE-C algorithm of a *copy source*, which has no meaning
-  // on an upload, and the protocol has no property for the matching customer key. The AWS
-  // CLI accepted the flag and then failed the transfer; saying so up front is strictly more
-  // useful. See https://github.com/aws/aws-cdk/issues/6080.
-  if (Object.keys(systemMetadata).some((key) => key.toLowerCase() === 'sse-c-copy-source')) {
-    throw new Error(
-      "SystemMetadata key 'sse-c-copy-source' cannot be applied to an upload: it describes a copy "
-      + 'source, and no customer key can be supplied through this provider (aws/aws-cdk#6080)',
-    );
+): PartialPutObjectRequest {
+  const fields: Writable<PartialPutObjectRequest> = {};
+
+  for (const [rawKey, value] of Object.entries(systemMetadata)) {
+    switch (rawKey.toLowerCase()) {
+      // A joined list of cache directives, e.g. `max-age=60, public`. The L2 builds the
+      // string from its `CacheControl` helpers, so it arrives ready to use.
+      case 'cache-control':
+        fields.CacheControl = value;
+        break;
+
+      case 'content-disposition':
+        fields.ContentDisposition = value;
+        break;
+
+      case 'content-encoding':
+        fields.ContentEncoding = value;
+        break;
+
+      case 'content-language':
+        fields.ContentLanguage = value;
+        break;
+
+      // Overrides the per-extension guess for every object in the request.
+      case 'content-type':
+        fields.ContentType = value;
+        break;
+
+      // An HTTP date. The L2 sends `Expiration.date.toUTCString()`; a direct caller can
+      // send anything `Date` understands.
+      case 'expires':
+        fields.Expires = parseHttpDate(value);
+        break;
+
+      // `AES256`, `aws:kms` or `aws:kms:dsse`.
+      case 'sse':
+        fields.ServerSideEncryption = value as ServerSideEncryption;
+        break;
+
+      case 'sse-kms-key-id':
+        fields.SSEKMSKeyId = value;
+        break;
+
+      case 'storage-class':
+        fields.StorageClass = value as StorageClass;
+        break;
+
+      case 'website-redirect':
+        fields.WebsiteRedirectLocation = value;
+        break;
+
+      // A canned ACL name, already kebab-cased by the L2.
+      case 'acl':
+        fields.ACL = value as ObjectCannedACL;
+        break;
+
+      // The L2's `serverSideEncryptionCustomerAlgorithm` lands here. It names the SSE-C
+      // algorithm of a *copy source*, which has no meaning for an upload, and the matching
+      // customer key cannot be supplied through this provider at all. The AWS CLI
+      // implementation did not honour it either. Ignoring it keeps a deployment that sets
+      // it working, which is more use than failing over a property that has never done
+      // anything.
+      case 'sse-c-copy-source':
+        console.error(
+          "ignoring SystemMetadata key 'sse-c-copy-source': it describes a copy source, which has no "
+          + 'meaning for an upload. It comes from the BucketDeployment '
+          + "'serverSideEncryptionCustomerAlgorithm' property, which has never had any effect "
+          + '(aws/aws-cdk#6080) — remove it.',
+        );
+        break;
+
+      default:
+        throw new Error(
+          `unsupported SystemMetadata key ${JSON.stringify(rawKey)}; supported keys are ${JSON.stringify([...SUPPORTED_KEYS])}`,
+        );
+    }
   }
 
-  const unknown = Object.keys(systemMetadata).filter(
-    (key) => !(SYSTEM_METADATA_KEYS as readonly string[]).includes(key.toLowerCase()),
-  );
-  if (unknown.length > 0) {
-    throw new Error(
-      `unsupported SystemMetadata key(s) ${JSON.stringify(unknown)}; supported keys are ${JSON.stringify([...SYSTEM_METADATA_KEYS])}`,
-    );
-  }
+  // S3 lowercases user-metadata keys on the wire; doing it here makes the behavior
+  // explicit and independent of the SDK.
+  const metadata = lowercaseKeys(userMetadata);
+  if (metadata) { fields.Metadata = metadata; }
 
-  const system: Record<string, string> = {};
-  for (const [key, value] of Object.entries(systemMetadata)) {
-    system[key.toLowerCase()] = value;
-  }
-
-  const fields: MetadataFields = {
-    CacheControl: system['cache-control'],
-    ContentDisposition: system['content-disposition'],
-    ContentEncoding: system['content-encoding'],
-    ContentLanguage: system['content-language'],
-    ContentType: system['content-type'],
-    Expires: system.expires !== undefined ? parseHttpDate(system.expires) : undefined,
-    ServerSideEncryption: system.sse as ServerSideEncryption | undefined,
-    SSEKMSKeyId: system['sse-kms-key-id'],
-    StorageClass: system['storage-class'] as StorageClass | undefined,
-    WebsiteRedirectLocation: system['website-redirect'],
-    ACL: system.acl as ObjectCannedACL | undefined,
-    // S3 lowercases user-metadata keys on the wire; doing it here makes the behavior
-    // explicit and independent of the SDK.
-    Metadata: lowercaseKeys(userMetadata),
-  };
-
-  // Drop absent fields so the request carries only what the caller asked for.
-  return Object.fromEntries(
-    Object.entries(fields).filter(([, value]) => value !== undefined),
-  ) as MetadataFields;
+  return fields;
 }
+
+type Writable<A> = { -readonly [K in keyof A]: A[K] };
 
 function lowercaseKeys(metadata: Record<string, string>): Record<string, string> | undefined {
   const keys = Object.keys(metadata);
@@ -119,8 +159,7 @@ function parseHttpDate(value: string): Date {
  * Content types by file extension, for objects whose type the caller did not specify.
  *
  * Covers what a static site or bundled asset is made of. Anything unlisted is left unset,
- * which S3 renders as `binary/octet-stream` — the same outcome the AWS CLI produces when
- * Python's `mimetypes` cannot guess.
+ * which S3 renders as `binary/octet-stream`.
  */
 const CONTENT_TYPES: Record<string, string> = {
   bmp: 'image/bmp',

@@ -57,6 +57,22 @@ export interface FakeObject {
   readonly websiteRedirectLocation?: string;
   readonly acl?: string;
   readonly metadata: Record<string, string>;
+  /**
+   * When the object was written.
+   *
+   * Reported by both `ListObjectsV2` and `HeadObject`, as S3 does. Modelled because the
+   * provider's skip decision compares it against the staged file's timestamp — a fake that
+   * omitted it would make every object look ancient and defeat skipping entirely.
+   */
+  readonly lastModified: Date;
+  /**
+   * Base64 SHA-256 of the body, stored only when the write asked for it.
+   *
+   * S3 records an additional checksum when `ChecksumAlgorithm` is supplied, and returns it
+   * from `HeadObject` only when `ChecksumMode: ENABLED` is requested. Both halves are
+   * modelled, because the provider relies on them to decide whether an object has changed.
+   */
+  readonly checksumSha256?: string;
 }
 
 export interface FakeBucketOptions {
@@ -65,6 +81,15 @@ export interface FakeBucketOptions {
 
   /** Bucket-level tags, as `GetBucketTagging` would report them. */
   readonly tags?: Record<string, string>;
+
+  /**
+   * Default server-side encryption, reported by `HeadObject` whatever the write asked for.
+   *
+   * Real buckets have had SSE-S3 (`AES256`) applied by default since 2023, and the default
+   * here matches that. Modelling it matters: a provider that compares a request's `sse`
+   * against the effective value will never see a match for a request that asks for none.
+   */
+  readonly defaultEncryption?: string | false;
 }
 
 interface StoredObject extends FakeObject {
@@ -76,10 +101,14 @@ class FakeBucket {
   public readonly history = new Map<string, StoredObject[]>();
   public tags: Record<string, string> | undefined;
   public readonly versioned: boolean;
+  public readonly defaultEncryption: string | undefined;
 
   constructor(public readonly name: string, options: FakeBucketOptions = {}) {
     this.versioned = options.versioned ?? false;
     this.tags = options.tags;
+    this.defaultEncryption = options.defaultEncryption === false
+      ? undefined
+      : options.defaultEncryption ?? 'AES256';
   }
 
   /** The current (non-deleted) object for a key. */
@@ -113,6 +142,18 @@ export class FakeS3 {
    * the fake departs from pure emulation, and it exists so that tests can reach the
    * provider's failure handling without reaching for call-level mocks.
    */
+  /** Keys whose last write arrived as a stream, for asserting the upload path taken. */
+  private readonly streamedKeys = new Set<string>();
+
+  /**
+   * How many times each operation has been called.
+   *
+   * Request *counts* are a property of the service, not of the caller's internals — this
+   * is here so that a test can state "a deployment costs one LIST", which is a promise the
+   * provider makes rather than an implementation detail.
+   */
+  private readonly callCounts = new Map<string, number>();
+
   public failures: {
     getBucketTagging?: { name: string; message: string };
     putObject?: (key: string) => { name: string; message: string } | undefined;
@@ -126,14 +167,30 @@ export class FakeS3 {
     this.buckets.set(name, new FakeBucket(name, options));
   }
 
+  /** How many times an operation was called, e.g. `ListObjectsV2`. */
+  public callCount(operation: string): number {
+    return this.callCounts.get(operation) ?? 0;
+  }
+
   public reset(): void {
     this.buckets.clear();
+    this.streamedKeys.clear();
+    this.callCounts.clear();
     this.failures = {};
   }
 
-  /** Put an object directly, bypassing the provider, to seed pre-existing state. */
+  /**
+   * Put an object directly, bypassing the provider, to seed pre-existing state.
+   *
+   * Pass `lastModified` to seed an object that predates what is about to be deployed.
+   */
   public seed(bucketName: string, key: string, body: string | Buffer, props: Partial<FakeObject> = {}): void {
     this.write(this.requireBucket(bucketName), key, typeof body === 'string' ? Buffer.from(body) : body, props);
+  }
+
+  /** Whether an object's body arrived as a stream rather than a buffer. */
+  public wasStreamed(bucketName: string, key: string): boolean {
+    return this.streamedKeys.has(`${bucketName}/${key}`);
   }
 
   /** Set (or clear) the bucket's tag set. */
@@ -200,6 +257,7 @@ export class FakeS3 {
   // -----------------------------------------------------------------------
 
   public async getObject(input: GetObjectCommandInput): Promise<GetObjectCommandOutput> {
+    this.count('GetObject');
     const bucket = this.requireBucket(input.Bucket!);
     const object = bucket.current(input.Key!);
     if (!object) {
@@ -217,6 +275,7 @@ export class FakeS3 {
   }
 
   public async putObject(input: PutObjectCommandInput): Promise<PutObjectCommandOutput> {
+    this.count('PutObject');
     const bucket = this.requireBucket(input.Bucket!);
 
     const failure = this.failures.putObject?.(input.Key!);
@@ -224,8 +283,33 @@ export class FakeS3 {
       s3Error(failure.name, failure.message, 403);
     }
 
-    const body = toBuffer(input.Body);
+    const body = await toBuffer(input.Body);
+
+    // S3 rejects a request whose body does not match the length it was signed with, and
+    // the provider now supplies that length explicitly for streaming uploads — so getting
+    // it wrong should fail here rather than silently truncate.
+    if (input.ContentLength !== undefined && input.ContentLength !== body.length) {
+      s3Error(
+        'IncompleteBody',
+        `The request body terminated unexpectedly: declared ${input.ContentLength} bytes, received ${body.length}`,
+      );
+    }
+
+    if (input.ChecksumAlgorithm !== undefined && input.ChecksumAlgorithm !== 'SHA256') {
+      s3Error('InvalidRequest', `FakeS3 only models the SHA256 checksum algorithm, got ${input.ChecksumAlgorithm}`);
+    }
+    const streamed = input.Body !== undefined
+      && !Buffer.isBuffer(input.Body)
+      && typeof input.Body !== 'string'
+      && !(input.Body instanceof Uint8Array);
+    if (streamed) {
+      this.streamedKeys.add(`${input.Bucket}/${input.Key}`);
+    } else {
+      this.streamedKeys.delete(`${input.Bucket}/${input.Key}`);
+    }
+
     const stored = this.write(bucket, input.Key!, body, {
+      checksumSha256: input.ChecksumAlgorithm === 'SHA256' ? sha256Base64(body) : undefined,
       contentType: input.ContentType,
       cacheControl: input.CacheControl,
       contentDisposition: input.ContentDisposition,
@@ -244,10 +328,12 @@ export class FakeS3 {
       $metadata: { httpStatusCode: 200 },
       VersionId: stored.versionId,
       ETag: `"${etagOf(body)}"`,
+      ChecksumSHA256: stored.checksumSha256,
     };
   }
 
   public async headObject(input: HeadObjectCommandInput): Promise<HeadObjectCommandOutput> {
+    this.count('HeadObject');
     const bucket = this.requireBucket(input.Bucket!);
     const object = bucket.current(input.Key!);
     if (!object) {
@@ -256,12 +342,24 @@ export class FakeS3 {
 
     return {
       $metadata: { httpStatusCode: 200 },
+      LastModified: object.lastModified,
       ContentLength: object.body.length,
-      ContentType: object.contentType,
+      // S3 applies and reports an octet-stream default when the write supplied no type.
+      ContentType: object.contentType ?? 'binary/octet-stream',
       CacheControl: object.cacheControl,
+      ContentDisposition: object.contentDisposition,
+      ContentEncoding: object.contentEncoding,
+      ContentLanguage: object.contentLanguage,
+      Expires: object.expires,
+      // The effective encryption, which is the bucket default unless the write overrode it.
+      ServerSideEncryption: object.serverSideEncryption ?? bucket.defaultEncryption,
+      SSEKMSKeyId: object.sseKmsKeyId,
+      WebsiteRedirectLocation: object.websiteRedirectLocation,
       VersionId: object.versionId,
       Metadata: object.metadata,
       StorageClass: object.storageClass as any,
+      // Only disclosed when the caller opts in, exactly as S3 does.
+      ChecksumSHA256: input.ChecksumMode === 'ENABLED' ? object.checksumSha256 : undefined,
     } as HeadObjectCommandOutput;
   }
 
@@ -270,6 +368,7 @@ export class FakeS3 {
    * caller surface here rather than only against real S3.
    */
   public async listObjectsV2(input: ListObjectsV2CommandInput): Promise<ListObjectsV2CommandOutput> {
+    this.count('ListObjectsV2');
     const bucket = this.requireBucket(input.Bucket!);
     const prefix = input.Prefix ?? '';
     const all = bucket.liveKeys().filter((key) => key.startsWith(prefix));
@@ -283,7 +382,12 @@ export class FakeS3 {
       $metadata: { httpStatusCode: 200 },
       Contents: page.map((key) => {
         const object = bucket.current(key)!;
-        return { Key: key, Size: object.body.length, ETag: `"${etagOf(object.body)}"` };
+        return {
+          Key: key,
+          Size: object.body.length,
+          ETag: `"${etagOf(object.body)}"`,
+          LastModified: object.lastModified,
+        };
       }),
       KeyCount: page.length,
       IsTruncated: next !== undefined,
@@ -294,6 +398,7 @@ export class FakeS3 {
   }
 
   public async deleteObjects(input: DeleteObjectsCommandInput): Promise<DeleteObjectsCommandOutput> {
+    this.count('DeleteObjects');
     const bucket = this.requireBucket(input.Bucket!);
     const objects = input.Delete?.Objects ?? [];
 
@@ -308,7 +413,12 @@ export class FakeS3 {
       if (bucket.versioned) {
         // A versioned delete leaves a marker and keeps the prior version readable.
         bucket.history.get(Key)?.push({
-          key: Key, body: Buffer.alloc(0), metadata: {}, deleted: true, versionId: nextVersionId(),
+          key: Key,
+          body: Buffer.alloc(0),
+          metadata: {},
+          deleted: true,
+          versionId: nextVersionId(),
+          lastModified: new Date(),
         });
       } else {
         bucket.history.delete(Key);
@@ -320,6 +430,7 @@ export class FakeS3 {
   }
 
   public async getBucketTagging(input: GetBucketTaggingCommandInput): Promise<GetBucketTaggingCommandOutput> {
+    this.count('GetBucketTagging');
     const failure = this.failures.getBucketTagging;
     if (failure) {
       s3Error(failure.name, failure.message, 403);
@@ -344,6 +455,7 @@ export class FakeS3 {
     const stored: StoredObject = {
       key,
       body,
+      lastModified: props.lastModified ?? new Date(),
       versionId: bucket.versioned ? nextVersionId() : undefined,
       metadata: props.metadata ?? {},
       contentType: props.contentType,
@@ -357,6 +469,7 @@ export class FakeS3 {
       storageClass: props.storageClass,
       websiteRedirectLocation: props.websiteRedirectLocation,
       acl: props.acl,
+      checksumSha256: props.checksumSha256,
     };
 
     const history = bucket.history.get(key);
@@ -366,6 +479,10 @@ export class FakeS3 {
       bucket.history.set(key, [stored]);
     }
     return stored;
+  }
+
+  private count(operation: string): void {
+    this.callCounts.set(operation, this.callCount(operation) + 1);
   }
 
   private requireBucket(name: string): FakeBucket {
@@ -392,10 +509,29 @@ function etagOf(body: Buffer): string {
   return createHash('sha256').update(body).digest('hex').slice(0, 32);
 }
 
-function toBuffer(body: PutObjectCommandInput['Body']): Buffer {
+function sha256Base64(body: Buffer): string {
+  return createHash('sha256').update(body).digest('base64');
+}
+
+/**
+ * Collect a request body.
+ *
+ * Streams are supported because the provider pipes a download or an archive entry straight
+ * into an upload, which is the whole point of not buffering.
+ */
+async function toBuffer(body: PutObjectCommandInput['Body']): Promise<Buffer> {
   if (body === undefined) { return Buffer.alloc(0); }
   if (Buffer.isBuffer(body)) { return body; }
   if (typeof body === 'string') { return Buffer.from(body, 'utf-8'); }
   if (body instanceof Uint8Array) { return Buffer.from(body); }
-  throw new Error(`FakeS3 does not support a ${typeof body} body; pass a Buffer, string or Uint8Array`);
+
+  if (typeof (body as any)[Symbol.asyncIterator] === 'function') {
+    const chunks: Buffer[] = [];
+    for await (const chunk of body as AsyncIterable<Buffer | string>) {
+      chunks.push(typeof chunk === 'string' ? Buffer.from(chunk, 'utf-8') : chunk);
+    }
+    return Buffer.concat(chunks);
+  }
+
+  throw new Error(`FakeS3 does not support a ${typeof body} body; pass a Buffer, string, Uint8Array or stream`);
 }

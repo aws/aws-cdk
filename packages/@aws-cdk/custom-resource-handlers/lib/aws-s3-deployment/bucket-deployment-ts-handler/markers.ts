@@ -1,19 +1,17 @@
 /**
- * Marker substitution (contract §4).
+ * Marker substitution.
  *
  * Markers let a caller inject values that are only known at deployment time into content
  * that was packaged earlier. Substitution is literal and byte-level: a marker key is
  * whatever bytes the caller supplied, with no placeholder syntax.
  *
- * Two deliberate differences from the original Python implementation, both of which fix
- * defects rather than change the contract:
+ * Two properties worth preserving:
  *
  * - Replacement is **single-pass**: all markers are matched simultaneously against the
  *   original bytes, so a value that happens to contain another marker's key is not
- *   re-substituted. The old implementation applied markers one after another, making the
- *   result depend on map ordering (B15).
+ *   re-substituted and the result does not depend on map ordering.
  * - Matching spans the **whole file** rather than one line at a time, so a marker
- *   containing a newline is found (B14).
+ *   containing a newline is found.
  */
 
 /** Per-source marker configuration, as it arrives on the wire. */
@@ -25,9 +23,7 @@ export interface MarkersConfig {
 /**
  * Encode one marker value.
  *
- * Without `jsonEscape` a string value is inserted as-is and a non-string is stringified —
- * the Python implementation raised on non-strings in this path (B18), which was an
- * inconsistency with the escaped path rather than a deliberate restriction.
+ * Without `jsonEscape` a string value is inserted as-is and a non-string is stringified.
  *
  * With `jsonEscape`, the value is JSON-encoded and the surrounding quotes stripped from a
  * string result, so quotes, backslashes and control characters survive insertion into a

@@ -1,47 +1,34 @@
 /**
- * CloudFront invalidation (contract §3.6).
+ * CloudFront invalidation.
  */
 import { createHash } from 'crypto';
-import type { CloudFrontClient } from '@aws-sdk/client-cloudfront';
-import { CreateInvalidationCommand, GetInvalidationCommand } from '@aws-sdk/client-cloudfront';
+import type { CloudFront } from '@aws-sdk/client-cloudfront';
 
 /**
  * Message for a wait that could not be completed.
- *
- * The text is load-bearing: it names the long-standing CloudFront issue that makes this
- * failure mode worth distinguishing from a generic error, and operators grep for it.
  */
 const WAIT_FAILED_MESSAGE =
   'Unable to confirm that cache invalidation was successful. This may be a CloudFront ' +
   'regression as reported in https://github.com/aws/aws-cdk/issues/15891';
 
+/** How often to ask CloudFront whether an invalidation has completed. */
+const POLL_INTERVAL_MS = 20_000;
+
 export interface InvalidationOptions {
   readonly distributionId: string;
   readonly paths: string[];
   readonly wait: boolean;
+  /** How long to wait for completion before giving up. */
+  readonly timeoutMs: number;
   /**
-   * Makes the caller reference deterministic so a CloudFormation retry of the same request
-   * is recognized as the same invalidation instead of creating another billable one (B20).
+   * Makes the caller reference deterministic, so CloudFront recognizes a retry of the same
+   * request as the same invalidation instead of creating another billable one.
    */
   readonly requestId: string;
 }
 
-export interface Waiter {
-  /** Milliseconds between polls. */
-  readonly intervalMs: number;
-  /** Give up after this long. */
-  readonly timeoutMs: number;
-}
-
-/** Roughly 13 minutes, which is what the original implementation allowed. */
-export const DEFAULT_WAITER: Waiter = { intervalMs: 20_000, timeoutMs: 13 * 60_000 };
-
 export class CloudFrontInvalidator {
-  constructor(
-    private readonly cloudfront: CloudFrontClient,
-    private readonly waiter: Waiter = DEFAULT_WAITER,
-    private readonly sleep: (ms: number) => Promise<void> = defaultSleep,
-  ) {}
+  constructor(private readonly cloudfront: CloudFront) {}
 
   /**
    * Create an invalidation and, if asked, wait for it to complete.
@@ -50,13 +37,13 @@ export class CloudFrontInvalidator {
    * flushed; when not waiting, the invalidation may still be in progress.
    */
   public async invalidate(options: InvalidationOptions): Promise<string> {
-    const response = await this.cloudfront.send(new CreateInvalidationCommand({
+    const response = await this.cloudfront.createInvalidation({
       DistributionId: options.distributionId,
       InvalidationBatch: {
         Paths: { Quantity: options.paths.length, Items: options.paths },
         CallerReference: callerReference(options.requestId, options.paths),
       },
-    }));
+    });
 
     const invalidationId = response.Invalidation?.Id;
     if (!invalidationId) {
@@ -64,7 +51,7 @@ export class CloudFrontInvalidator {
     }
 
     if (options.wait) {
-      await this.waitForCompletion(options.distributionId, invalidationId);
+      await this.waitForCompletion(options.distributionId, invalidationId, options.timeoutMs);
     }
 
     return invalidationId;
@@ -77,16 +64,16 @@ export class CloudFrontInvalidator {
    * reported as the same documented error, because from the caller's point of view they
    * are the same thing: the deployment finished but the caches may not have.
    */
-  private async waitForCompletion(distributionId: string, invalidationId: string): Promise<void> {
-    const deadline = Date.now() + this.waiter.timeoutMs;
+  private async waitForCompletion(distributionId: string, invalidationId: string, timeoutMs: number): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
 
     while (Date.now() < deadline) {
       let status: string | undefined;
       try {
-        const response = await this.cloudfront.send(new GetInvalidationCommand({
+        const response = await this.cloudfront.getInvalidation({
           DistributionId: distributionId,
           Id: invalidationId,
-        }));
+        });
         status = response.Invalidation?.Status;
       } catch (e: any) {
         throw new Error(`${WAIT_FAILED_MESSAGE} (${e.name}: ${e.message})`);
@@ -94,10 +81,10 @@ export class CloudFrontInvalidator {
 
       if (status === 'Completed') { return; }
 
-      await this.sleep(this.waiter.intervalMs);
+      await sleep(POLL_INTERVAL_MS);
     }
 
-    throw new Error(`${WAIT_FAILED_MESSAGE} (timed out after ${this.waiter.timeoutMs} ms)`);
+    throw new Error(`${WAIT_FAILED_MESSAGE} (timed out after ${timeoutMs} ms)`);
   }
 }
 
@@ -112,6 +99,6 @@ export function callerReference(requestId: string, paths: string[]): string {
   return `aws-cdk-s3deployment-${requestId}-${digest}`;
 }
 
-function defaultSleep(ms: number): Promise<void> {
+function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
