@@ -1,0 +1,51 @@
+{
+  "/aws-cdk-serverless-cache-public": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-serverless-cache-public.template.json"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public/Cache": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "This serverless cache uses a public endpoint and is reachable from the internet. Access is controlled by IAM authentication only. [ack: @aws-cdk/aws-elasticache-alpha:publicServerlessCache]",
+      "trace": [
+        "Annotations.addMessage (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new ServerlessCache (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.js:372:45)",
+        "new ServerlessCache (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-public.js:10:23)",
+        "Object.<anonymous> (/Users/jxb7210/Documents/GitHub/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-public.js:19:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-public/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-serverless-cache-public/Cache/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cache18F6EE16"
+    }
+  ]
+}

@@ -48,6 +48,37 @@ declare const instance: ec2.Instance;
 serverlessCache.connections.allowDefaultPortFrom(instance);
 ```
 
+### Public endpoint
+
+By default, a serverless cache is reachable only from within its VPC. To connect to the cache directly over the internet
+without a VPC, set `connectionType` to `ConnectionType.PUBLIC`:
+
+```ts
+declare const role: iam.Role;
+
+const cache = new elasticache.ServerlessCache(this, 'PublicCache', {
+  engine: elasticache.CacheEngine.VALKEY_9,
+  connectionType: elasticache.ConnectionType.PUBLIC,
+});
+
+// public endpoints use IAM authentication, grant the client permission to connect
+cache.grantConnect(role);
+```
+
+Public endpoints have the following requirements:
+
+* The engine must be Valkey 9 or later.
+* `vpc`, `vpcSubnets` and `securityGroups` must not be set. Public caches do not use security groups, so `cache.connections` has no effect on access.
+* All connections require IAM authentication and TLS. Every user in the cache's user group must be an IAM-enabled user.
+  When `userGroup` is not set, the system-managed `default.iam-user-group` is used.
+* The connection type cannot be changed after the cache is created. Changing it replaces the cache.
+
+A public cache is reachable from the internet and access is controlled by IAM authentication only, so the construct emits
+a warning at synthesis time.
+
+See [Public endpoints for ElastiCache Serverless](https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/serverless-public-endpoints-chapter.html)
+for more information.
+
 ### Using a custom engine version
 
 The named `CacheEngine` and `UserEngine` static members cover the versions available
