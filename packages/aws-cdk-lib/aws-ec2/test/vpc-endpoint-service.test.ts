@@ -20,6 +20,132 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
 }
 
 describe('vpc endpoint service', () => {
+  describe('fromVpcEndpointServiceId', () => {
+    test('imports an existing VPC endpoint service', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const importedService = VpcEndpointService.fromVpcEndpointServiceId(
+        stack,
+        'ImportedService',
+        'vpce-svc-123456789abcdef01',
+      );
+
+      // THEN
+      expect(importedService.vpcEndpointServiceId).toEqual('vpce-svc-123456789abcdef01');
+      expect(stack.resolve(importedService.vpcEndpointServiceName)).toEqual({
+        'Fn::Join': [
+          '.',
+          [
+            'com.amazonaws.vpce',
+            { Ref: 'AWS::Region' },
+            'vpce-svc-123456789abcdef01',
+          ],
+        ],
+      });
+    });
+
+    test('generates correct service name with specific region', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', {
+        env: {
+          region: 'us-west-2',
+        },
+      });
+
+      // WHEN
+      const importedService = VpcEndpointService.fromVpcEndpointServiceId(
+        stack,
+        'ImportedService',
+        'vpce-svc-123456789abcdef01',
+      );
+
+      // THEN
+      // The current implementation always uses Aws.REGION token even with concrete region
+      expect(stack.resolve(importedService.vpcEndpointServiceName)).toEqual({
+        'Fn::Join': [
+          '.',
+          [
+            'com.amazonaws.vpce',
+            { Ref: 'AWS::Region' },
+            'vpce-svc-123456789abcdef01',
+          ],
+        ],
+      });
+    });
+
+    test('generates correct service name for China region', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', {
+        env: {
+          region: 'cn-north-1',
+        },
+      });
+
+      // WHEN
+      const importedService = VpcEndpointService.fromVpcEndpointServiceId(
+        stack,
+        'ImportedService',
+        'vpce-svc-123456789abcdef01',
+      );
+
+      // THEN
+      // The current implementation returns a join with the China prefix
+      expect(stack.resolve(importedService.vpcEndpointServiceName)).toEqual({
+        'Fn::Join': [
+          '.',
+          [
+            'cn.com.amazonaws.vpce',
+            { Ref: 'AWS::Region' },
+            'vpce-svc-123456789abcdef01',
+          ],
+        ],
+      });
+    });
+
+    test('generates correct service name with unresolved region token', () => {
+      // GIVEN
+      const stack = new Stack(); // No specific region set
+
+      // WHEN
+      const importedService = VpcEndpointService.fromVpcEndpointServiceId(
+        stack,
+        'ImportedService',
+        'vpce-svc-123456789abcdef01',
+      );
+
+      // THEN
+      expect(stack.resolve(importedService.vpcEndpointServiceName)).toEqual({
+        'Fn::Join': [
+          '.',
+          [
+            'com.amazonaws.vpce',
+            { Ref: 'AWS::Region' },
+            'vpce-svc-123456789abcdef01',
+          ],
+        ],
+      });
+    });
+
+    test('provides correct vpcEndpointServiceRef', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const importedService = VpcEndpointService.fromVpcEndpointServiceId(
+        stack,
+        'ImportedService',
+        'vpce-svc-123456789abcdef01',
+      );
+
+      // THEN
+      expect(importedService.vpcEndpointServiceRef).toEqual({
+        serviceId: 'vpce-svc-123456789abcdef01',
+      });
+    });
+  });
+
   describe('test vpc endpoint service', () => {
     test('create endpoint service with no principals', () => {
       // GIVEN
