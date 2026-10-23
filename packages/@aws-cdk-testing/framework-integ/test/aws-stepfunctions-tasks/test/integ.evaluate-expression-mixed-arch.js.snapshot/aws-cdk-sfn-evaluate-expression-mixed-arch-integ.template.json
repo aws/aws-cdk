@@ -1,37 +1,6 @@
 {
  "Resources": {
-  "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "Eval105f0693c0824e9b83f39007507676f0117865DA": {
+  "EvalExpressionArmEvalFunction6D9BC052": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Architectures": [
@@ -46,17 +15,17 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0",
+      "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41",
       "Arn"
      ]
     },
     "Runtime": "nodejs20.x"
    },
    "DependsOn": [
-    "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0"
+    "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
    ]
   },
-  "Eval105f0693c0824e9b83f39007507676f0LogGroup0E8B881F": {
+  "EvalExpressionArmEvalFunctionLogGroup5DCCB9A3": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -65,7 +34,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "Eval105f0693c0824e9b83f39007507676f0117865DA"
+        "Ref": "EvalExpressionArmEvalFunction6D9BC052"
        }
       ]
      ]
@@ -75,7 +44,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915": {
+  "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -106,7 +75,7 @@
     ]
    }
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c64B038159": {
+  "EvalExpressionX86EvalFunction163BF1F5": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Architectures": [
@@ -121,17 +90,17 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915",
+      "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41",
       "Arn"
      ]
     },
     "Runtime": "nodejs20.x"
    },
    "DependsOn": [
-    "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915"
+    "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
    ]
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c6LogGroup3CE9BC8F": {
+  "EvalExpressionX86EvalFunctionLogGroup2D5083E3": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -140,7 +109,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "Eval9757c2676d7c45c2af7737a30d93d2c64B038159"
+        "Ref": "EvalExpressionX86EvalFunction163BF1F5"
        }
       ]
      ]
@@ -207,13 +176,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Eval105f0693c0824e9b83f39007507676f0117865DA",
+          "EvalExpressionArmEvalFunction6D9BC052",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+          "EvalExpressionX86EvalFunction163BF1F5",
           "Arn"
          ]
         },
@@ -223,7 +192,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval105f0693c0824e9b83f39007507676f0117865DA",
+             "EvalExpressionArmEvalFunction6D9BC052",
              "Arn"
             ]
            },
@@ -237,7 +206,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+             "EvalExpressionX86EvalFunction163BF1F5",
              "Arn"
             ]
            },
@@ -268,14 +237,14 @@
        "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"a\":3,\"b\":4},\"Next\":\"ParallelEval\"},\"ParallelEval\":{\"Type\":\"Parallel\",\"End\":true,\"Branches\":[{\"StartAt\":\"EvalExpressionArm\",\"States\":{\"EvalExpressionArm\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval105f0693c0824e9b83f39007507676f0117865DA",
+         "EvalExpressionArmEvalFunction6D9BC052",
          "Arn"
         ]
        },
        "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}}},{\"StartAt\":\"EvalExpressionX86\",\"States\":{\"EvalExpressionX86\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+         "EvalExpressionX86EvalFunction163BF1F5",
          "Arn"
         ]
        },

@@ -178,8 +178,8 @@ var init_matcher = __esm({
        * DEPRECATED
        * @deprecated use recordFailure()
        */
-      push(matcher, path23, message) {
-        return this.recordFailure({ matcher, path: path23, message });
+      push(matcher, path22, message) {
+        return this.recordFailure({ matcher, path: path22, message });
       }
       /**
        * Record a new failure into this result at a specific path.
@@ -289,12 +289,12 @@ var init_matcher = __esm({
           parts.push(x.replace(/\n/g, `
 ${indents.join("")}`));
         }
-        function emitFailures(r, path23, scrapSet) {
-          for (const fail of r.failuresHere.get(path23) ?? []) {
+        function emitFailures(r, path22, scrapSet) {
+          for (const fail of r.failuresHere.get(path22) ?? []) {
             emit(`!! ${fail.message}
 `);
           }
-          scrapSet?.delete(path23);
+          scrapSet?.delete(path22);
         }
         function recurse(r) {
           const remainingFailures = new Set(Array.from(r.failuresHere.keys()).filter((x) => x !== ""));
@@ -962,162 +962,6 @@ var init_runtime_info = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/private/stack-trace.ts
-function captureStackTrace(below = captureStackTrace, limit = void 0) {
-  if (!limit) {
-    return enhancedStackTrace(below, false);
-  }
-  const previousLimit = Error.stackTraceLimit;
-  try {
-    Error.stackTraceLimit = limit;
-    return enhancedStackTrace(below, false);
-  } finally {
-    Error.stackTraceLimit = previousLimit;
-  }
-}
-function enhancedStackTrace(upTo, indent = true) {
-  return withExternalTrace(renderCallStackJustMyCode(captureCallStack(upTo), indent));
-}
-function withExternalTrace(internal) {
-  const hostTrace = global[/* @__PURE__ */ Symbol.for("jsii.context.hostStackTrace")];
-  if (hostTrace != null) {
-    return internal.concat(hostTrace.slice(1).map(formatExternalFrame));
-  }
-  return internal;
-}
-function captureCallStack(upTo) {
-  const obj = {};
-  Error.captureStackTrace(obj, upTo);
-  let trace = parseErrorStack(obj.stack);
-  if (trace.length === 0) {
-    Error.captureStackTrace(obj);
-    trace = parseErrorStack(obj.stack);
-  }
-  return trace;
-}
-function formatExternalFrame(trace) {
-  const [filename, line, column, name] = trace;
-  return `${name} (${filename}:${line}${column > 0 ? ":" + column : ""})`;
-}
-function parseErrorStack(stack) {
-  const lines = stack.split("\n");
-  const framePrefix = "    at ";
-  return lines.filter((line) => line.startsWith(framePrefix)).map((line) => {
-    line = line.slice(framePrefix.length);
-    const frame = parseStackFrame(line);
-    if (frame.functionName === "Object.<anonymous>") {
-      frame.functionName = "<anonymous>";
-    }
-    return frame;
-  });
-}
-function parseStackFrame(frame) {
-  let fileName;
-  let functionName;
-  let sourceLocation;
-  const paren = frame.indexOf("(");
-  if (paren) {
-    functionName = frame.slice(0, paren - 1);
-    frame = frame.slice(paren + 1, -1);
-  } else {
-    functionName = "<entry>";
-  }
-  let asI = functionName.indexOf(" [as ");
-  if (asI > -1) {
-    const endOfAlias = functionName.indexOf("]", asI);
-    const lastPeriod = functionName.lastIndexOf(".", asI);
-    functionName = functionName.slice(0, lastPeriod + 1) + functionName.slice(asI + 5, endOfAlias);
-  }
-  const m = frame.match(/(:[0-9]+){0,2}$/);
-  fileName = m ? frame.slice(0, -m[0].length) : frame;
-  sourceLocation = m ? m[0].slice(1) : "";
-  return {
-    fileName,
-    functionName,
-    sourceLocation
-  };
-}
-function renderCallStackJustMyCode(stack, indent = true) {
-  const lines = [];
-  let skipped = new Array();
-  let sawMyCode = false;
-  let i = 0;
-  while (i < stack.length) {
-    const frame = stack[i++];
-    if (frame.fileName.match(DECORATOR_RE)) {
-      continue;
-    }
-    const pat = frame.fileName.match(MODULE_RE);
-    if (pat) {
-      while (i < stack.length && stack[i].fileName.includes(pat[0])) {
-        i++;
-      }
-      skip({ functionName: stack[i - 1].functionName, fileName: pat[3] });
-    } else if (frame.fileName.includes("node:")) {
-      skip({ fileName: "node internals" });
-      while (i < stack.length && stack[i].fileName.includes("node:")) {
-        i++;
-      }
-    } else if (isHostInternalFrame(frame)) {
-      skip({ fileName: "jsii runtime" });
-      while (i < stack.length && isHostInternalFrame(stack[i])) {
-        i++;
-      }
-    } else {
-      reportSkipped(true);
-      const prefix = indent ? "    at " : "";
-      lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
-      sawMyCode = true;
-    }
-  }
-  reportSkipped(false);
-  if (!sawMyCode) {
-    lines.push(`${indent ? "    " : ""}(no user code in ${Error.stackTraceLimit} frames, use --stack-trace-limit to capture more)`);
-  }
-  return lines;
-  function skip(what) {
-    if (!skipped.find((x) => x.fileName === what.fileName && x.functionName === what.functionName)) {
-      skipped.push(what);
-    }
-  }
-  function reportSkipped(includeFunction) {
-    if (skipped.length > 0) {
-      const rendered = skipped.map((s, j) => (
-        // Only render the function name of the last frame before user code
-        j === skipped.length - 1 && s.functionName && includeFunction ? `${s.functionName} in ${s.fileName}` : s.fileName
-      ));
-      const prefix = indent ? "    " : "";
-      lines.push(`${prefix}...${rendered.join(", ")}...`);
-    }
-    skipped = [];
-  }
-}
-function topUserFrame(stackTrace, frameFinder) {
-  for (const frame of stackTrace) {
-    if (frameFinder.isUserCodeFrame(frame)) {
-      return parseStackFrame(frame);
-    }
-  }
-  return void 0;
-}
-function isHostInternalFrame(frame) {
-  const hostDirName = global[/* @__PURE__ */ Symbol.for("jsii.context.hostDirName")];
-  return frame.fileName.includes(hostDirName);
-}
-var MODULE_RE, DECORATOR_RE, DEFAULT_STACK_FRAME_FINDER;
-var init_stack_trace = __esm({
-  "../../aws-cdk-lib/core/lib/private/stack-trace.ts"() {
-    "use strict";
-    MODULE_RE = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
-    DECORATOR_RE = /(\/|\\)(prop-injectable|no-box-stack-traces)\./;
-    DEFAULT_STACK_FRAME_FINDER = {
-      isUserCodeFrame(frame) {
-        return frame.includes(" (") && frame.endsWith(")");
-      }
-    };
-  }
-});
-
 // ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/context/vpc.js
 var require_vpc = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/context/vpc.js"(exports2) {
@@ -1405,14 +1249,14 @@ var require_assets = __commonJS({
 var require_helpers = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/jsonschema/lib/helpers.js"(exports2, module2) {
     "use strict";
-    var ValidationError2 = exports2.ValidationError = function ValidationError3(message, instance, schema, path23, name, argument) {
-      if (Array.isArray(path23)) {
-        this.path = path23;
-        this.property = path23.reduce(function(sum, item) {
+    var ValidationError2 = exports2.ValidationError = function ValidationError3(message, instance, schema, path22, name, argument) {
+      if (Array.isArray(path22)) {
+        this.path = path22;
+        this.property = path22.reduce(function(sum, item) {
           return sum + makeSuffix(item);
         }, "instance");
-      } else if (path23 !== void 0) {
-        this.property = path23;
+      } else if (path22 !== void 0) {
+        this.property = path22;
       }
       if (message) {
         this.message = message;
@@ -1505,28 +1349,28 @@ var require_helpers = __commonJS({
         name: { value: "SchemaError", enumerable: false }
       }
     );
-    var SchemaContext = exports2.SchemaContext = function SchemaContext2(schema, options, path23, base, schemas) {
+    var SchemaContext = exports2.SchemaContext = function SchemaContext2(schema, options, path22, base, schemas) {
       this.schema = schema;
       this.options = options;
-      if (Array.isArray(path23)) {
-        this.path = path23;
-        this.propertyPath = path23.reduce(function(sum, item) {
+      if (Array.isArray(path22)) {
+        this.path = path22;
+        this.propertyPath = path22.reduce(function(sum, item) {
           return sum + makeSuffix(item);
         }, "instance");
       } else {
-        this.propertyPath = path23;
+        this.propertyPath = path22;
       }
       this.base = base;
       this.schemas = schemas;
     };
-    SchemaContext.prototype.resolve = function resolve7(target) {
+    SchemaContext.prototype.resolve = function resolve6(target) {
       return (() => resolveUrl(this.base, target))();
     };
     SchemaContext.prototype.makeChild = function makeChild(schema, propertyName) {
-      var path23 = propertyName === void 0 ? this.path : this.path.concat([propertyName]);
+      var path22 = propertyName === void 0 ? this.path : this.path.concat([propertyName]);
       var id = schema.$id || schema.id;
       let base = (() => resolveUrl(this.base, id || ""))();
-      var ctx = new SchemaContext(schema, this.options, path23, base, Object.create(this.schemas));
+      var ctx = new SchemaContext(schema, this.options, path22, base, Object.create(this.schemas));
       if (id && !ctx.schemas[base]) {
         ctx.schemas[base] = schema;
       }
@@ -2624,7 +2468,7 @@ var require_validator = __commonJS({
       }
       return schema;
     };
-    Validator.prototype.resolve = function resolve7(schema, switchSchema, ctx) {
+    Validator.prototype.resolve = function resolve6(schema, switchSchema, ctx) {
       switchSchema = ctx.resolve(switchSchema);
       if (ctx.schemas[switchSchema]) {
         return { subschema: ctx.schemas[switchSchema], switchSchema };
@@ -4703,7 +4547,7 @@ var require_semver2 = __commonJS({
 // ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/cli-version.json
 var require_cli_version = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/cli-version.json"(exports2, module2) {
-    module2.exports = { version: "2.1142.0" };
+    module2.exports = { version: "2.1145.0" };
   }
 });
 
@@ -6418,6 +6262,7 @@ var require_integ_schema = __commonJS({
               enum: [
                 "any-change",
                 "broadening",
+                "destructive",
                 "never"
               ],
               type: "string"
@@ -6978,9 +6823,9 @@ var require_validation_report_schema2 = __commonJS({
 var require_version = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/schema/version.json"(exports2, module2) {
     module2.exports = {
-      schemaHash: "095859ad1d3d89d3bc4f9cbe9393d219798972dbd2389287bcc66b49f323cef1",
+      schemaHash: "b006b5c8829cee1f2287b98829ca0ed8abfbdbb2948fecc185e56398afb11a7b",
       $comment: "Do not hold back the version on additions: jsonschema validation of the manifest by the consumer will trigger errors on unexpected fields.",
-      revision: 54
+      revision: 55
     };
   }
 });
@@ -7042,7 +6887,7 @@ var require_manifest = __commonJS({
     var VALIDATION_REPORT_SCHEMA = require_validation_report_schema2();
     var SCHEMA_VERSION = require_version();
     var Manifest2 = class _Manifest {
-      static [JSII_RTTI_SYMBOL_1] = { fqn: "@aws-cdk/cloud-assembly-schema.Manifest", version: "54.24.0" };
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "@aws-cdk/cloud-assembly-schema.Manifest", version: "55.0.0" };
       /**
        * Validates and saves the cloud assembly manifest to file.
        *
@@ -7283,6 +7128,7 @@ var require_common = __commonJS({
       RequireApproval2["NEVER"] = "never";
       RequireApproval2["ANYCHANGE"] = "any-change";
       RequireApproval2["BROADENING"] = "broadening";
+      RequireApproval2["DESTRUCTIVE"] = "destructive";
     })(RequireApproval || (exports2.RequireApproval = RequireApproval = {}));
   }
 });
@@ -7413,42 +7259,29 @@ var require_metadata = __commonJS({
 var require_error = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/private/error.js"(exports2) {
     "use strict";
-    var __classPrivateFieldGet2 = exports2 && exports2.__classPrivateFieldGet || function(receiver, state, kind, f) {
-      if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-      return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-    };
-    var __classPrivateFieldSet2 = exports2 && exports2.__classPrivateFieldSet || function(receiver, state, value, kind, f) {
-      if (kind === "m") throw new TypeError("Private method is not writable");
-      if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-      return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-    };
-    var _CloudAssemblyError_time;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CloudAssemblyError = void 0;
     var ASSEMBLY_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.CloudAssemblyError");
     var CloudAssemblyError = class _CloudAssemblyError extends Error {
+      #time;
       /**
        * The time the error was thrown.
        */
       get time() {
-        return __classPrivateFieldGet2(this, _CloudAssemblyError_time, "f");
+        return this.#time;
       }
       get type() {
         return "assembly";
       }
       constructor(msg) {
         super(msg);
-        _CloudAssemblyError_time.set(this, void 0);
         Object.setPrototypeOf(this, _CloudAssemblyError.prototype);
         Object.defineProperty(this, ASSEMBLY_ERROR_SYMBOL, { value: true });
         this.name = new.target.name;
-        __classPrivateFieldSet2(this, _CloudAssemblyError_time, (/* @__PURE__ */ new Date()).toISOString(), "f");
+        this.#time = (/* @__PURE__ */ new Date()).toISOString();
       }
     };
     exports2.CloudAssemblyError = CloudAssemblyError;
-    _CloudAssemblyError_time = /* @__PURE__ */ new WeakMap();
   }
 });
 
@@ -7456,14 +7289,53 @@ var require_error = __commonJS({
 var require_cloud_artifact = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/cloud-artifact.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CloudArtifact = void 0;
-    var fs19 = require("fs");
-    var path23 = require("path");
-    var cxschema2 = require_lib2();
+    var fs19 = __importStar2(require("fs"));
+    var path22 = __importStar2(require("path"));
+    var cxschema2 = __importStar2(require_lib2());
     var metadata_1 = require_metadata();
     var error_1 = require_error();
     var CloudArtifact = class _CloudArtifact {
+      assembly;
+      id;
       /**
        * Read the metadata for the given artifact
        *
@@ -7478,7 +7350,7 @@ var require_cloud_artifact = __commonJS({
       static readMetadata(assemblyDirectory, x) {
         const ret = {};
         if (x.additionalMetadataFile) {
-          Object.assign(ret, JSON.parse(fs19.readFileSync(path23.join(assemblyDirectory, x.additionalMetadataFile), "utf-8")));
+          Object.assign(ret, JSON.parse(fs19.readFileSync(path22.join(assemblyDirectory, x.additionalMetadataFile), "utf-8")));
         }
         for (const [p, entries] of Object.entries(x.metadata ?? {})) {
           if (ret[p]) {
@@ -7501,6 +7373,23 @@ var require_cloud_artifact = __commonJS({
         void assembly, void id, void artifact;
         throw new error_1.CloudAssemblyError("Implementation not overridden yet");
       }
+      /**
+       * The artifact's manifest
+       */
+      manifest;
+      /**
+       * The set of messages extracted from the artifact's metadata.
+       */
+      messages;
+      /**
+       * IDs of all dependencies. Used when topologically sorting the artifacts within the cloud assembly.
+       * @internal
+       */
+      _dependencyIDs;
+      /**
+       * Cache of resolved dependencies.
+       */
+      _deps;
       constructor(assembly, id, manifest) {
         this.assembly = assembly;
         this.id = id;
@@ -7585,10 +7474,47 @@ var require_cloud_artifact = __commonJS({
 var require_asset_manifest_artifact = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/artifacts/asset-manifest-artifact.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.AssetManifestArtifact = void 0;
-    var fs19 = require("fs");
-    var path23 = require("path");
+    var fs19 = __importStar2(require("fs"));
+    var path22 = __importStar2(require("path"));
     var cloud_artifact_1 = require_cloud_artifact();
     var error_1 = require_error();
     var ASSET_MANIFEST_ARTIFACT_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.AssetManifestArtifact");
@@ -7613,13 +7539,28 @@ var require_asset_manifest_artifact = __commonJS({
       static isAssetManifestArtifact(art) {
         return art && typeof art === "object" && art[ASSET_MANIFEST_ARTIFACT_SYM];
       }
+      /**
+       * The file name of the asset manifest
+       */
+      file;
+      /**
+       * Version of bootstrap stack required to deploy this stack
+       */
+      requiresBootstrapStackVersion;
+      /**
+       * Name of SSM parameter with bootstrap stack version
+       *
+       * @default - Discover SSM parameter by reading stack
+       */
+      bootstrapStackVersionSsmParameter;
+      _contents;
       constructor(assembly, name, artifact) {
         super(assembly, name, artifact);
         const properties = this.manifest.properties || {};
         if (!properties.file) {
           throw new error_1.CloudAssemblyError('Invalid AssetManifestArtifact. Missing "file" property');
         }
-        this.file = path23.resolve(this.assembly.directory, properties.file);
+        this.file = path22.resolve(this.assembly.directory, properties.file);
         this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
         this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
       }
@@ -7686,11 +7627,48 @@ var require_environment = __commonJS({
 var require_cloudformation_artifact = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/artifacts/cloudformation-artifact.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CloudFormationStackArtifact = void 0;
-    var fs19 = require("fs");
-    var path23 = require("path");
-    var cxschema2 = require_lib2();
+    var fs19 = __importStar2(require("fs"));
+    var path22 = __importStar2(require("path"));
+    var cxschema2 = __importStar2(require_lib2());
     var cloud_artifact_1 = require_cloud_artifact();
     var environment_1 = require_environment();
     var error_1 = require_error();
@@ -7716,6 +7694,114 @@ var require_cloudformation_artifact = __commonJS({
       static isCloudFormationStackArtifact(art) {
         return art && typeof art === "object" && CLOUDFORMATION_STACK_ARTIFACT_SYM in art;
       }
+      /**
+       * The file name of the template.
+       */
+      templateFile;
+      /**
+       * The original name as defined in the CDK app.
+       */
+      originalName;
+      /**
+       * Any assets associated with this stack.
+       */
+      assets;
+      /**
+       * CloudFormation parameters to pass to the stack.
+       */
+      parameters;
+      /**
+       * CloudFormation tags to pass to the stack.
+       */
+      tags;
+      /**
+       * SNS Topics that will receive stack events.
+       */
+      notificationArns;
+      /**
+       * The physical name of this stack.
+       */
+      stackName;
+      /**
+       * A string that represents this stack. Should only be used in user
+       * interfaces. If the stackName has not been set explicitly, or has been set
+       * to artifactId, it will return the hierarchicalId of the stack. Otherwise,
+       * it will return something like "<hierarchicalId> (<stackName>)"
+       */
+      displayName;
+      /**
+       * The physical name of this stack.
+       * @deprecated renamed to `stackName`
+       */
+      name;
+      /**
+       * The environment into which to deploy this artifact.
+       */
+      environment;
+      /**
+       * The role that needs to be assumed to deploy the stack
+       *
+       * @default - No role is assumed (current credentials are used)
+       */
+      assumeRoleArn;
+      /**
+       * External ID to use when assuming role for cloudformation deployments
+       *
+       * @default - No external ID
+       */
+      assumeRoleExternalId;
+      /**
+       * Additional options to pass to STS when assuming the role for cloudformation deployments.
+       *
+       * - `RoleArn` should not be used. Use the dedicated `assumeRoleArn` property instead.
+       * - `ExternalId` should not be used. Use the dedicated `assumeRoleExternalId` instead.
+       * - `TransitiveTagKeys` defaults to use all keys (if any) specified in `Tags`. E.g, all tags are transitive by default.
+       *
+       * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
+       * @default - No additional options.
+       */
+      assumeRoleAdditionalOptions;
+      /**
+       * The role that is passed to CloudFormation to execute the change set
+       *
+       * @default - No role is passed (currently assumed role/credentials are used)
+       */
+      cloudFormationExecutionRoleArn;
+      /**
+       * The role to use to look up values from the target AWS account
+       *
+       * @default - No role is assumed (current credentials are used)
+       */
+      lookupRole;
+      /**
+       * If the stack template has already been included in the asset manifest, its asset URL
+       *
+       * @default - Not uploaded yet, upload just before deploying
+       */
+      stackTemplateAssetObjectUrl;
+      /**
+       * Version of bootstrap stack required to deploy this stack
+       *
+       * @default - No bootstrap stack required
+       */
+      requiresBootstrapStackVersion;
+      /**
+       * Name of SSM parameter with bootstrap stack version
+       *
+       * @default - Discover SSM parameter by reading stack
+       */
+      bootstrapStackVersionSsmParameter;
+      /**
+       * Whether termination protection is enabled for this stack.
+       */
+      terminationProtection;
+      /**
+       * Whether this stack should be validated by the CLI after synthesis
+       *
+       * @default - false
+       */
+      validateOnSynth;
+      _template;
       constructor(assembly, artifactId, artifact) {
         super(assembly, artifactId, artifact);
         const properties = this.manifest.properties || {};
@@ -7750,7 +7836,7 @@ var require_cloudformation_artifact = __commonJS({
        * Full path to the template file
        */
       get templateFullPath() {
-        return path23.join(this.assembly.directory, this.templateFile);
+        return path22.join(this.assembly.directory, this.templateFile);
       }
       /**
        * The CloudFormation template for this stack.
@@ -7775,9 +7861,46 @@ var require_cloudformation_artifact = __commonJS({
 var require_nested_cloud_assembly_artifact = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/artifacts/nested-cloud-assembly-artifact.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.NestedCloudAssemblyArtifact = void 0;
-    var path23 = require("path");
+    var path22 = __importStar2(require("path"));
     var cloud_artifact_1 = require_cloud_artifact();
     var NESTED_CLOUD_ASSEMBLY_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.NestedCloudAssemblyArtifact");
     var NestedCloudAssemblyArtifact = class extends cloud_artifact_1.CloudArtifact {
@@ -7801,6 +7924,14 @@ var require_nested_cloud_assembly_artifact = __commonJS({
       static isNestedCloudAssemblyArtifact(art) {
         return art && typeof art === "object" && NESTED_CLOUD_ASSEMBLY_SYM in art;
       }
+      /**
+       * The relative directory name of the asset manifest
+       */
+      directoryName;
+      /**
+       * Display name
+       */
+      displayName;
       constructor(assembly, name, artifact) {
         super(assembly, name, artifact);
         const properties = this.manifest.properties || {};
@@ -7811,7 +7942,7 @@ var require_nested_cloud_assembly_artifact = __commonJS({
        * Full path to the nested assembly directory
        */
       get fullPath() {
-        return path23.join(this.assembly.directory, this.directoryName);
+        return path22.join(this.assembly.directory, this.directoryName);
       }
     };
     exports2.NestedCloudAssemblyArtifact = NestedCloudAssemblyArtifact;
@@ -7853,6 +7984,7 @@ var require_tree_cloud_artifact = __commonJS({
       static isTreeCloudArtifact(art) {
         return art && typeof art === "object" && TREE_CLOUD_ARTIFACT_SYM in art;
       }
+      file;
       constructor(assembly, name, artifact) {
         super(assembly, name, artifact);
         const properties = this.manifest.properties || {};
@@ -7875,8 +8007,45 @@ var require_tree_cloud_artifact = __commonJS({
 var require_cloud_artifact_aug = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/cloud-artifact-aug.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
-    var cxschema2 = require_lib2();
+    var cxschema2 = __importStar2(require_lib2());
     var asset_manifest_artifact_1 = require_asset_manifest_artifact();
     var cloudformation_artifact_1 = require_cloudformation_artifact();
     var nested_cloud_assembly_artifact_1 = require_nested_cloud_assembly_artifact();
@@ -7933,12 +8102,49 @@ var require_toposort = __commonJS({
 var require_cloud_assembly2 = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/cloud-assembly.js"(exports2) {
     "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.CloudAssemblyBuilder = exports2.CloudAssembly = void 0;
-    var fs19 = require("fs");
-    var os4 = require("os");
-    var path23 = require("path");
-    var cxschema2 = require_lib2();
+    exports2.CloudAssemblyBuilder = exports2.CloudAssembly = exports2.MANIFEST_FILE = void 0;
+    var fs19 = __importStar2(require("fs"));
+    var os4 = __importStar2(require("os"));
+    var path22 = __importStar2(require("path"));
+    var cxschema2 = __importStar2(require_lib2());
     var cloudformation_artifact_1 = require_cloudformation_artifact();
     var nested_cloud_assembly_artifact_1 = require_nested_cloud_assembly_artifact();
     var tree_cloud_artifact_1 = require_tree_cloud_artifact();
@@ -7946,7 +8152,7 @@ var require_cloud_assembly2 = __commonJS({
     var error_1 = require_error();
     var toposort_1 = require_toposort();
     var CLOUD_ASSEMBLY_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/cx-api.CloudAssembly");
-    var MANIFEST_FILE = "manifest.json";
+    exports2.MANIFEST_FILE = "manifest.json";
     var CloudAssembly = class {
       /**
        * Return whether the given object is a CloudAssembly.
@@ -8003,13 +8209,37 @@ var require_cloud_assembly2 = __commonJS({
         TEMPORARY_ASSEMBLY_DIRS.splice(0, TEMPORARY_ASSEMBLY_DIRS.length);
       }
       /**
+       * The root directory of the cloud assembly.
+       */
+      directory;
+      /**
+       * The schema version of the assembly manifest.
+       */
+      version;
+      /**
+       * All artifacts included in this assembly.
+       */
+      artifacts;
+      /**
+       * Runtime information such as module versions used to synthesize this assembly.
+       */
+      runtime;
+      /**
+       * The raw assembly manifest.
+       */
+      manifest;
+      /**
+       * The load options used to create this assembly, propagated to nested assemblies.
+       */
+      loadOptions;
+      /**
        * Reads a cloud assembly from the specified directory.
        * @param directory - The root directory of the assembly.
        */
       constructor(directory, loadOptions) {
         this.directory = directory;
         this.loadOptions = loadOptions;
-        this.manifest = cxschema2.Manifest.loadAssemblyManifest(path23.join(directory, MANIFEST_FILE), this.loadOptions);
+        this.manifest = cxschema2.Manifest.loadAssemblyManifest(path22.join(directory, exports2.MANIFEST_FILE), this.loadOptions);
         this.version = this.manifest.version;
         this.artifacts = this.renderArtifacts(this.loadOptions?.topoSort ?? true);
         this.runtime = this.manifest.runtime || { libraries: {} };
@@ -8164,12 +8394,21 @@ var require_cloud_assembly2 = __commonJS({
     exports2.CloudAssembly = CloudAssembly;
     var CloudAssemblyBuilder3 = class _CloudAssemblyBuilder {
       /**
+       * The root directory of the resulting cloud assembly.
+       */
+      outdir;
+      /**
+       * The directory where assets of this Cloud Assembly should be stored
+       */
+      assetOutdir;
+      artifacts = {};
+      missing = new Array();
+      parentBuilder;
+      /**
        * Initializes a cloud assembly builder.
        * @param outdir - The output directory, uses temporary directory if undefined
        */
       constructor(outdir, props = {}) {
-        this.artifacts = {};
-        this.missing = new Array();
         this.outdir = determineOutputDirectory(outdir);
         this.assetOutdir = props.assetOutdir ?? this.outdir;
         this.parentBuilder = props.parentBuilder;
@@ -8205,9 +8444,9 @@ var require_cloud_assembly2 = __commonJS({
           missing: this.missing.length > 0 ? this.missing : void 0
         };
         manifest = filterUndefined2(manifest);
-        const manifestFilePath = path23.join(this.outdir, MANIFEST_FILE);
+        const manifestFilePath = path22.join(this.outdir, exports2.MANIFEST_FILE);
         cxschema2.Manifest.saveAssemblyManifest(manifest, manifestFilePath);
-        fs19.writeFileSync(path23.join(this.outdir, "cdk.out"), JSON.stringify({ version: manifest.version }));
+        fs19.writeFileSync(path22.join(this.outdir, "cdk.out"), JSON.stringify({ version: manifest.version }));
         return new CloudAssembly(this.outdir);
       }
       /**
@@ -8215,7 +8454,7 @@ var require_cloud_assembly2 = __commonJS({
        */
       createNestedAssembly(artifactId, displayName) {
         const directoryName = artifactId;
-        const innerAsmDir = path23.join(this.outdir, directoryName);
+        const innerAsmDir = path22.join(this.outdir, directoryName);
         this.addArtifact(artifactId, {
           type: cxschema2.ArtifactType.NESTED_CLOUD_ASSEMBLY,
           properties: {
@@ -8260,7 +8499,7 @@ var require_cloud_assembly2 = __commonJS({
       if (outdir) {
         return outdir;
       }
-      const tmpDir = fs19.mkdtempSync(path23.join(fs19.realpathSync(os4.tmpdir()), "cdk.out"));
+      const tmpDir = fs19.mkdtempSync(path22.join(fs19.realpathSync(os4.tmpdir()), "cdk.out"));
       TEMPORARY_ASSEMBLY_DIRS.push(tmpDir);
       return outdir ?? tmpDir;
     }
@@ -8329,6 +8568,18 @@ var require_placeholders = __commonJS({
     exports2.EnvironmentPlaceholders = void 0;
     var EnvironmentPlaceholders4 = class _EnvironmentPlaceholders {
       /**
+       * Insert this into the destination fields to be replaced with the current region
+       */
+      static CURRENT_REGION = "${AWS::Region}";
+      /**
+       * Insert this into the destination fields to be replaced with the current account
+       */
+      static CURRENT_ACCOUNT = "${AWS::AccountId}";
+      /**
+       * Insert this into the destination fields to be replaced with the current partition
+       */
+      static CURRENT_PARTITION = "${AWS::Partition}";
+      /**
        * Replace the environment placeholders in all strings found in a complex object.
        *
        * Duplicated between cdk-assets and aws-cdk CLI because we don't have a good single place to put it
@@ -8389,9 +8640,6 @@ var require_placeholders = __commonJS({
       }
     };
     exports2.EnvironmentPlaceholders = EnvironmentPlaceholders4;
-    EnvironmentPlaceholders4.CURRENT_REGION = "${AWS::Region}";
-    EnvironmentPlaceholders4.CURRENT_ACCOUNT = "${AWS::AccountId}";
-    EnvironmentPlaceholders4.CURRENT_PARTITION = "${AWS::Partition}";
     function replaceAll3(s, search, replace) {
       return s.split(search).join(replace);
     }
@@ -8405,6 +8653,1300 @@ var require_bootstrap = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.SSMPARAM_NO_INVALIDATE = void 0;
     exports2.SSMPARAM_NO_INVALIDATE = "[cdk:skip]";
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/construct-tree.js
+var require_construct_tree = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/construct-tree.js"(exports2) {
+    "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ConstructIndex = void 0;
+    exports2.buildConstructTree = buildConstructTree;
+    exports2.buildConstructTreeAsync = buildConstructTreeAsync;
+    var fs19 = __importStar2(require("fs"));
+    var path22 = __importStar2(require("path"));
+    var cloud_assembly_schema_1 = require_lib2();
+    var assets_1 = require_assets2();
+    var CDK_INTERNAL_IDS = /* @__PURE__ */ new Set(["Tree", "CDKMetadata", "BootstrapVersion", "CheckBootstrapVersion"]);
+    var ConstructIndex = class _ConstructIndex {
+      byPathMap;
+      /** Build an index from the roots of a construct tree. */
+      static fromTree(tree) {
+        const byPath = /* @__PURE__ */ new Map();
+        visit2(tree, (node) => byPath.set(node.path, node));
+        return new _ConstructIndex(byPath);
+      }
+      constructor(byPathMap) {
+        this.byPathMap = byPathMap;
+      }
+      /** The node at a given construct path, or undefined if absent. */
+      byPath(constructPath) {
+        return this.byPathMap.get(constructPath);
+      }
+      /** Number of nodes in the tree. */
+      get size() {
+        return this.byPathMap.size;
+      }
+      /** Pre-order iteration over every node in the tree. */
+      [Symbol.iterator]() {
+        return this.byPathMap.values();
+      }
+    };
+    exports2.ConstructIndex = ConstructIndex;
+    function visit2(nodes, fn) {
+      for (const node of nodes) {
+        fn(node);
+        if (node.children.length > 0)
+          visit2(node.children, fn);
+      }
+    }
+    function buildConstructTree(assembly, decorate) {
+      const roots = readRoots(assembly);
+      if (!roots)
+        return [];
+      const { rawRoots, ctx } = roots;
+      return rawRoots.map((child) => buildNodeSync(child, ctx, void 0, NO_TEMPLATE, decorate));
+    }
+    async function buildConstructTreeAsync(assembly, decorate) {
+      const roots = readRoots(assembly);
+      if (!roots)
+        return [];
+      const { rawRoots, ctx } = roots;
+      const out = [];
+      for (const child of rawRoots) {
+        out.push(await buildNodeAsync(child, ctx, void 0, NO_TEMPLATE, decorate));
+      }
+      return out;
+    }
+    function readRoots(assembly) {
+      const treeArtifact = assembly.tree();
+      if (!treeArtifact)
+        return void 0;
+      const rawTree = loadTree(path22.join(assembly.directory, treeArtifact.file));
+      if (!rawTree)
+        return void 0;
+      const ctx = {
+        stackIndex: buildStackIndex(assembly.stacksRecursively),
+        templateCache: /* @__PURE__ */ new Map()
+      };
+      const rawRoots = Object.values(rawTree.children ?? {}).filter((child) => !isCdkInternal(child.id));
+      return { rawRoots, ctx };
+    }
+    var NO_TEMPLATE = { file: void 0, template: void 0 };
+    function loadTree(treePath) {
+      if (!fs19.existsSync(treePath))
+        return void 0;
+      const content = JSON.parse(fs19.readFileSync(treePath, "utf-8"));
+      return content.tree;
+    }
+    function buildStackIndex(stacks) {
+      const index = /* @__PURE__ */ new Map();
+      for (const stack of stacks) {
+        index.set(stack.hierarchicalId, { stack, metadata: new Map(Object.entries(stack.metadata)) });
+      }
+      return index;
+    }
+    function prepareNode(raw, ctx, inheritedStack, inherited) {
+      const stackHere = ctx.stackIndex.get(raw.path);
+      const owner = stackHere ?? inheritedStack;
+      const scope = stackHere ? { file: stackHere.stack.templateFullPath, template: stackHere.stack.template } : inherited;
+      const entries = owner?.metadata.get("/" + raw.path) ?? [];
+      const logicalId = logicalIdFromEntries(entries);
+      const cfnTypeRaw = raw.attributes?.[cloud_assembly_schema_1.CFN_RESOURCE_TYPE_ATTRIBUTE];
+      const cfnType = typeof cfnTypeRaw === "string" ? cfnTypeRaw : void 0;
+      const cfnPropsRaw = raw.attributes?.[cloud_assembly_schema_1.CFN_RESOURCE_PROPS_ATTRIBUTE];
+      const cfnProperties = typeof cfnPropsRaw === "object" && cfnPropsRaw !== null ? cfnPropsRaw : void 0;
+      const childInputs = Object.values(raw.children ?? {}).filter((child) => !isCdkInternal(child.id)).map((child) => ({ raw: child, scope: nestedBoundary(child, raw, owner, scope.template, ctx) ?? scope }));
+      const nodeTemplateFile = logicalId !== void 0 ? scope.file : void 0;
+      return {
+        base: { path: raw.path, id: raw.id, type: cfnType, logicalId, templateFile: nodeTemplateFile, cfnProperties },
+        owner,
+        constructPath: raw.path,
+        childInputs
+      };
+    }
+    function buildNodeSync(raw, ctx, inheritedStack, inherited, decorate) {
+      const prepared = prepareNode(raw, ctx, inheritedStack, inherited);
+      const children = prepared.childInputs.map((ci) => buildNodeSync(ci.raw, ctx, prepared.owner, ci.scope, decorate));
+      return decorate({ ...prepared.base, children }, prepared.owner?.stack, prepared.constructPath);
+    }
+    async function buildNodeAsync(raw, ctx, inheritedStack, inherited, decorate) {
+      const prepared = prepareNode(raw, ctx, inheritedStack, inherited);
+      const children = [];
+      for (const ci of prepared.childInputs) {
+        children.push(await buildNodeAsync(ci.raw, ctx, prepared.owner, ci.scope, decorate));
+      }
+      return decorate({ ...prepared.base, children }, prepared.owner?.stack, prepared.constructPath);
+    }
+    function logicalIdFromEntries(entries) {
+      const entry = entries.find((e) => e.type === cloud_assembly_schema_1.ArtifactMetadataEntryType.LOGICAL_ID);
+      return typeof entry?.data === "string" ? entry.data : void 0;
+    }
+    function loadTemplate(absPath, cache) {
+      if (cache.has(absPath))
+        return cache.get(absPath);
+      let template;
+      try {
+        template = JSON.parse(fs19.readFileSync(absPath, "utf-8"));
+      } catch {
+        template = void 0;
+      }
+      cache.set(absPath, template);
+      return template;
+    }
+    function nestedBoundary(child, parent, owner, currentTemplate, ctx) {
+      const resourceNode = parent.children?.[`${child.id}.NestedStack`]?.children?.[`${child.id}.NestedStackResource`];
+      if (!resourceNode || !owner)
+        return void 0;
+      const logicalId = logicalIdFromEntries(owner.metadata.get("/" + resourceNode.path) ?? []);
+      const assetPath = logicalId !== void 0 ? currentTemplate?.Resources?.[logicalId]?.Metadata?.[assets_1.ASSET_RESOURCE_METADATA_PATH_KEY] : void 0;
+      if (typeof assetPath !== "string")
+        return NO_TEMPLATE;
+      const file = path22.join(path22.dirname(owner.stack.templateFullPath), assetPath);
+      const template = loadTemplate(file, ctx.templateCache);
+      return template ? { file, template } : NO_TEMPLATE;
+    }
+    function isCdkInternal(id) {
+      return CDK_INTERNAL_IDS.has(id);
+    }
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/json-source-map/index.js
+var require_json_source_map = __commonJS({
+  "../../aws-cdk-lib/node_modules/json-source-map/index.js"(exports2) {
+    "use strict";
+    var escapedChars = {
+      "b": "\b",
+      "f": "\f",
+      "n": "\n",
+      "r": "\r",
+      "t": "	",
+      '"': '"',
+      "/": "/",
+      "\\": "\\"
+    };
+    var A_CODE = "a".charCodeAt();
+    exports2.parse = function(source, _, options) {
+      var pointers = {};
+      var line = 0;
+      var column = 0;
+      var pos = 0;
+      var bigint = options && options.bigint && typeof BigInt != "undefined";
+      return {
+        data: _parse("", true),
+        pointers
+      };
+      function _parse(ptr, topLevel) {
+        whitespace();
+        var data;
+        map(ptr, "value");
+        var char = getChar();
+        switch (char) {
+          case "t":
+            read("rue");
+            data = true;
+            break;
+          case "f":
+            read("alse");
+            data = false;
+            break;
+          case "n":
+            read("ull");
+            data = null;
+            break;
+          case '"':
+            data = parseString();
+            break;
+          case "[":
+            data = parseArray(ptr);
+            break;
+          case "{":
+            data = parseObject(ptr);
+            break;
+          default:
+            backChar();
+            if ("-0123456789".indexOf(char) >= 0)
+              data = parseNumber();
+            else
+              unexpectedToken();
+        }
+        map(ptr, "valueEnd");
+        whitespace();
+        if (topLevel && pos < source.length) unexpectedToken();
+        return data;
+      }
+      function whitespace() {
+        loop:
+          while (pos < source.length) {
+            switch (source[pos]) {
+              case " ":
+                column++;
+                break;
+              case "	":
+                column += 4;
+                break;
+              case "\r":
+                column = 0;
+                break;
+              case "\n":
+                column = 0;
+                line++;
+                break;
+              default:
+                break loop;
+            }
+            pos++;
+          }
+      }
+      function parseString() {
+        var str = "";
+        var char;
+        while (true) {
+          char = getChar();
+          if (char == '"') {
+            break;
+          } else if (char == "\\") {
+            char = getChar();
+            if (char in escapedChars)
+              str += escapedChars[char];
+            else if (char == "u")
+              str += getCharCode();
+            else
+              wasUnexpectedToken();
+          } else {
+            str += char;
+          }
+        }
+        return str;
+      }
+      function parseNumber() {
+        var numStr = "";
+        var integer = true;
+        if (source[pos] == "-") numStr += getChar();
+        numStr += source[pos] == "0" ? getChar() : getDigits();
+        if (source[pos] == ".") {
+          numStr += getChar() + getDigits();
+          integer = false;
+        }
+        if (source[pos] == "e" || source[pos] == "E") {
+          numStr += getChar();
+          if (source[pos] == "+" || source[pos] == "-") numStr += getChar();
+          numStr += getDigits();
+          integer = false;
+        }
+        var result = +numStr;
+        return bigint && integer && (result > Number.MAX_SAFE_INTEGER || result < Number.MIN_SAFE_INTEGER) ? BigInt(numStr) : result;
+      }
+      function parseArray(ptr) {
+        whitespace();
+        var arr = [];
+        var i = 0;
+        if (getChar() == "]") return arr;
+        backChar();
+        while (true) {
+          var itemPtr = ptr + "/" + i;
+          arr.push(_parse(itemPtr));
+          whitespace();
+          var char = getChar();
+          if (char == "]") break;
+          if (char != ",") wasUnexpectedToken();
+          whitespace();
+          i++;
+        }
+        return arr;
+      }
+      function parseObject(ptr) {
+        whitespace();
+        var obj = {};
+        if (getChar() == "}") return obj;
+        backChar();
+        while (true) {
+          var loc = getLoc();
+          if (getChar() != '"') wasUnexpectedToken();
+          var key = parseString();
+          var propPtr = ptr + "/" + escapeJsonPointer(key);
+          mapLoc(propPtr, "key", loc);
+          map(propPtr, "keyEnd");
+          whitespace();
+          if (getChar() != ":") wasUnexpectedToken();
+          whitespace();
+          obj[key] = _parse(propPtr);
+          whitespace();
+          var char = getChar();
+          if (char == "}") break;
+          if (char != ",") wasUnexpectedToken();
+          whitespace();
+        }
+        return obj;
+      }
+      function read(str) {
+        for (var i = 0; i < str.length; i++)
+          if (getChar() !== str[i]) wasUnexpectedToken();
+      }
+      function getChar() {
+        checkUnexpectedEnd();
+        var char = source[pos];
+        pos++;
+        column++;
+        return char;
+      }
+      function backChar() {
+        pos--;
+        column--;
+      }
+      function getCharCode() {
+        var count2 = 4;
+        var code = 0;
+        while (count2--) {
+          code <<= 4;
+          var char = getChar().toLowerCase();
+          if (char >= "a" && char <= "f")
+            code += char.charCodeAt() - A_CODE + 10;
+          else if (char >= "0" && char <= "9")
+            code += +char;
+          else
+            wasUnexpectedToken();
+        }
+        return String.fromCharCode(code);
+      }
+      function getDigits() {
+        var digits = "";
+        while (source[pos] >= "0" && source[pos] <= "9")
+          digits += getChar();
+        if (digits.length) return digits;
+        checkUnexpectedEnd();
+        unexpectedToken();
+      }
+      function map(ptr, prop) {
+        mapLoc(ptr, prop, getLoc());
+      }
+      function mapLoc(ptr, prop, loc) {
+        pointers[ptr] = pointers[ptr] || {};
+        pointers[ptr][prop] = loc;
+      }
+      function getLoc() {
+        return {
+          line,
+          column,
+          pos
+        };
+      }
+      function unexpectedToken() {
+        throw new SyntaxError("Unexpected token " + source[pos] + " in JSON at position " + pos);
+      }
+      function wasUnexpectedToken() {
+        backChar();
+        unexpectedToken();
+      }
+      function checkUnexpectedEnd() {
+        if (pos >= source.length)
+          throw new SyntaxError("Unexpected end of JSON input");
+      }
+    };
+    exports2.stringify = function(data, _, options) {
+      if (!validType(data)) return;
+      var wsLine = 0;
+      var wsPos, wsColumn;
+      var whitespace = typeof options == "object" ? options.space : options;
+      switch (typeof whitespace) {
+        case "number":
+          var len = whitespace > 10 ? 10 : whitespace < 0 ? 0 : Math.floor(whitespace);
+          whitespace = len && repeat(len, " ");
+          wsPos = len;
+          wsColumn = len;
+          break;
+        case "string":
+          whitespace = whitespace.slice(0, 10);
+          wsPos = 0;
+          wsColumn = 0;
+          for (var j = 0; j < whitespace.length; j++) {
+            var char = whitespace[j];
+            switch (char) {
+              case " ":
+                wsColumn++;
+                break;
+              case "	":
+                wsColumn += 4;
+                break;
+              case "\r":
+                wsColumn = 0;
+                break;
+              case "\n":
+                wsColumn = 0;
+                wsLine++;
+                break;
+              default:
+                throw new Error("whitespace characters not allowed in JSON");
+            }
+            wsPos++;
+          }
+          break;
+        default:
+          whitespace = void 0;
+      }
+      var json = "";
+      var pointers = {};
+      var line = 0;
+      var column = 0;
+      var pos = 0;
+      var es6 = options && options.es6 && typeof Map == "function";
+      _stringify(data, 0, "");
+      return {
+        json,
+        pointers
+      };
+      function _stringify(_data, lvl, ptr) {
+        map(ptr, "value");
+        switch (typeof _data) {
+          case "number":
+          case "bigint":
+          case "boolean":
+            out("" + _data);
+            break;
+          case "string":
+            out(quoted(_data));
+            break;
+          case "object":
+            if (_data === null) {
+              out("null");
+            } else if (typeof _data.toJSON == "function") {
+              out(quoted(_data.toJSON()));
+            } else if (Array.isArray(_data)) {
+              stringifyArray();
+            } else if (es6) {
+              if (_data.constructor.BYTES_PER_ELEMENT)
+                stringifyArray();
+              else if (_data instanceof Map)
+                stringifyMapSet();
+              else if (_data instanceof Set)
+                stringifyMapSet(true);
+              else
+                stringifyObject();
+            } else {
+              stringifyObject();
+            }
+        }
+        map(ptr, "valueEnd");
+        function stringifyArray() {
+          if (_data.length) {
+            out("[");
+            var itemLvl = lvl + 1;
+            for (var i = 0; i < _data.length; i++) {
+              if (i) out(",");
+              indent(itemLvl);
+              var item = validType(_data[i]) ? _data[i] : null;
+              var itemPtr = ptr + "/" + i;
+              _stringify(item, itemLvl, itemPtr);
+            }
+            indent(lvl);
+            out("]");
+          } else {
+            out("[]");
+          }
+        }
+        function stringifyObject() {
+          var keys = Object.keys(_data);
+          if (keys.length) {
+            out("{");
+            var propLvl = lvl + 1;
+            for (var i = 0; i < keys.length; i++) {
+              var key = keys[i];
+              var value = _data[key];
+              if (validType(value)) {
+                if (i) out(",");
+                var propPtr = ptr + "/" + escapeJsonPointer(key);
+                indent(propLvl);
+                map(propPtr, "key");
+                out(quoted(key));
+                map(propPtr, "keyEnd");
+                out(":");
+                if (whitespace) out(" ");
+                _stringify(value, propLvl, propPtr);
+              }
+            }
+            indent(lvl);
+            out("}");
+          } else {
+            out("{}");
+          }
+        }
+        function stringifyMapSet(isSet) {
+          if (_data.size) {
+            out("{");
+            var propLvl = lvl + 1;
+            var first = true;
+            var entries = _data.entries();
+            var entry = entries.next();
+            while (!entry.done) {
+              var item = entry.value;
+              var key = item[0];
+              var value = isSet ? true : item[1];
+              if (validType(value)) {
+                if (!first) out(",");
+                first = false;
+                var propPtr = ptr + "/" + escapeJsonPointer(key);
+                indent(propLvl);
+                map(propPtr, "key");
+                out(quoted(key));
+                map(propPtr, "keyEnd");
+                out(":");
+                if (whitespace) out(" ");
+                _stringify(value, propLvl, propPtr);
+              }
+              entry = entries.next();
+            }
+            indent(lvl);
+            out("}");
+          } else {
+            out("{}");
+          }
+        }
+      }
+      function out(str) {
+        column += str.length;
+        pos += str.length;
+        json += str;
+      }
+      function indent(lvl) {
+        if (whitespace) {
+          json += "\n" + repeat(lvl, whitespace);
+          line++;
+          column = 0;
+          while (lvl--) {
+            if (wsLine) {
+              line += wsLine;
+              column = wsColumn;
+            } else {
+              column += wsColumn;
+            }
+            pos += wsPos;
+          }
+          pos += 1;
+        }
+      }
+      function map(ptr, prop) {
+        pointers[ptr] = pointers[ptr] || {};
+        pointers[ptr][prop] = {
+          line,
+          column,
+          pos
+        };
+      }
+      function repeat(n, str) {
+        return Array(n + 1).join(str);
+      }
+    };
+    var VALID_TYPES = ["number", "bigint", "boolean", "string", "object"];
+    function validType(data) {
+      return VALID_TYPES.indexOf(typeof data) >= 0;
+    }
+    var ESC_QUOTE = /"|\\/g;
+    var ESC_B = /[\b]/g;
+    var ESC_F = /\f/g;
+    var ESC_N = /\n/g;
+    var ESC_R = /\r/g;
+    var ESC_T = /\t/g;
+    function quoted(str) {
+      str = str.replace(ESC_QUOTE, "\\$&").replace(ESC_F, "\\f").replace(ESC_B, "\\b").replace(ESC_N, "\\n").replace(ESC_R, "\\r").replace(ESC_T, "\\t");
+      return '"' + str + '"';
+    }
+    var ESC_0 = /~/g;
+    var ESC_1 = /\//g;
+    function escapeJsonPointer(str) {
+      return str.replace(ESC_0, "~0").replace(ESC_1, "~1");
+    }
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/template-ranges.js
+var require_template_ranges = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/template-ranges.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.resolveResourceRange = resolveResourceRange;
+    exports2.resolveResourceRanges = resolveResourceRanges;
+    exports2.indexTemplateRanges = indexTemplateRanges;
+    exports2.resolveLogicalIdAtOffset = resolveLogicalIdAtOffset;
+    var json_source_map_1 = require_json_source_map();
+    function resolveResourceRange(templateText, logicalId) {
+      return indexTemplateRanges(templateText)?.block(logicalId);
+    }
+    function resolveResourceRanges(templateText, logicalId) {
+      return indexTemplateRanges(templateText)?.resource(logicalId);
+    }
+    function indexTemplateRanges(templateText) {
+      const pointers = parsePointers(templateText);
+      if (pointers === void 0) {
+        return void 0;
+      }
+      return {
+        block: (logicalId) => blockRange(pointers, escapePointerSegment(logicalId)),
+        resource: (logicalId) => {
+          const escaped = escapePointerSegment(logicalId);
+          const block = blockRange(pointers, escaped);
+          return block === void 0 ? void 0 : { block, properties: propertyRanges(pointers, escaped) };
+        }
+      };
+    }
+    function blockRange(pointers, escapedId) {
+      const mapping = pointers[`/Resources/${escapedId}`];
+      return mapping === void 0 ? void 0 : { start: mapping.value.pos, end: mapping.valueEnd.pos };
+    }
+    function propertyRanges(pointers, escapedId) {
+      const properties = {};
+      for (const [pointer, mapping] of Object.entries(pointers)) {
+        const match = /^\/Resources\/([^/]+)\/Properties\/([^/]+)$/.exec(pointer);
+        if (match === null || match[1] !== escapedId || mapping.key === void 0) {
+          continue;
+        }
+        properties[unescapePointerSegment(match[2])] = { start: mapping.key.pos, end: mapping.valueEnd.pos };
+      }
+      return properties;
+    }
+    function resolveLogicalIdAtOffset(templateText, offset) {
+      const pointers = parsePointers(templateText);
+      if (pointers === void 0) {
+        return void 0;
+      }
+      for (const [pointer, mapping] of Object.entries(pointers)) {
+        const match = /^\/Resources\/([^/]+)$/.exec(pointer);
+        if (match && offset >= mapping.value.pos && offset < mapping.valueEnd.pos) {
+          return unescapePointerSegment(match[1]);
+        }
+      }
+      return void 0;
+    }
+    function parsePointers(templateText) {
+      try {
+        return (0, json_source_map_1.parse)(templateText).pointers;
+      } catch {
+        return void 0;
+      }
+    }
+    function escapePointerSegment(segment) {
+      return segment.replace(/~/g, "~0").replace(/\//g, "~1");
+    }
+    function unescapePointerSegment(segment) {
+      return segment.replace(/~1/g, "/").replace(/~0/g, "~");
+    }
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/stack-trace.js
+var require_stack_trace = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/stack-trace.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.StackFrame = exports2.StackTrace = exports2.DEFAULT_USER_CODE_FINDER = void 0;
+    exports2.DEFAULT_USER_CODE_FINDER = {
+      isInterestingFrame(frame) {
+        return frame.includes(" (") && frame.endsWith(")");
+      }
+    };
+    var StackTrace = class _StackTrace {
+      frames;
+      static fromNewlineSeparatedString(stackTrace) {
+        return new _StackTrace(stackTrace.split("\n"));
+      }
+      constructor(frames) {
+        this.frames = frames;
+      }
+      /**
+       * Return the first user frame from a "Just My Code" call stack
+       *
+       * With all the NON-"my code" call frames redacted, the top level frame should
+       * be the last user frame that is associated with the given call stack.
+       */
+      findAndParse(finder) {
+        for (const frame of this.frames) {
+          if (finder.isInterestingFrame(frame)) {
+            return StackFrame2.parse(frame);
+          }
+        }
+        return void 0;
+      }
+    };
+    exports2.StackTrace = StackTrace;
+    var StackFrame2 = class {
+      functionName;
+      fileName;
+      sourceLocation;
+      /**
+       * Parse a single line of a stack frame into a structured object
+       *
+       * This is mostly a NodeJS-flavored string we parse here, except that in
+       * a NodeJS stack trace the line would start with `    at `.
+       *
+       * Parses all of these:
+       *
+       * ```
+       * <function> (<file>:<line>:<col>)
+       * <class>.<function> (<file>:<line>:<col>)
+       * Object.<anonymous> (<file>:<line>:<col>)
+       * <function> [as somethingElse] (<file>:<line>:<col>)
+       * new <constructor> (<file>:<line>:<col>)
+       * <file>:<line>:<col>
+       * ```
+       *
+       * See https://v8.dev/docs/stack-trace-api#appendix%3A-stack-trace-format
+       */
+      static parse(frame) {
+        let fileName;
+        let functionName;
+        let sourceLocation;
+        const paren = frame.indexOf("(");
+        if (paren) {
+          functionName = frame.slice(0, paren - 1);
+          frame = frame.slice(paren + 1, -1);
+        } else {
+          functionName = "<entry>";
+        }
+        if (functionName === "Object.<anonymous>") {
+          functionName = "<anonymous>";
+        }
+        let asI = functionName.indexOf(" [as ");
+        if (asI > -1) {
+          const endOfAlias = functionName.indexOf("]", asI);
+          const lastPeriod = functionName.lastIndexOf(".", asI);
+          functionName = functionName.slice(0, lastPeriod + 1) + functionName.slice(asI + 5, endOfAlias);
+        }
+        const m = frame.match(/(:[0-9]+){0,2}$/);
+        fileName = m ? frame.slice(0, -m[0].length) : frame;
+        sourceLocation = m ? m[0].slice(1) : "";
+        return {
+          fileName,
+          functionName,
+          sourceLocation
+        };
+      }
+      constructor(functionName, fileName, sourceLocation) {
+        this.functionName = functionName;
+        this.fileName = fileName;
+        this.sourceLocation = sourceLocation;
+      }
+    };
+    exports2.StackFrame = StackFrame2;
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/private/color.js
+var require_color = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/private/color.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Colorize = exports2.Col = void 0;
+    var Col = class {
+      static RED = "31";
+      static ORANGE = "38;5;208";
+      static YELLOW = "33";
+      static BLUE = "34";
+      static BOLD = "1";
+      static UNDERLINE = "4";
+      static GREY = "90";
+    };
+    exports2.Col = Col;
+    var Colorize = class _Colorize {
+      static red(str) {
+        return _Colorize.colorize(Col.RED, str);
+      }
+      static orange(str) {
+        return _Colorize.colorize(Col.ORANGE, str);
+      }
+      static yellow(str) {
+        return _Colorize.colorize(Col.YELLOW, str);
+      }
+      static blue(str) {
+        return _Colorize.colorize(Col.BLUE, str);
+      }
+      static grey(str) {
+        return _Colorize.colorize(Col.GREY, str);
+      }
+      static bold(str) {
+        return _Colorize.colorize(Col.BOLD, str);
+      }
+      static underline(str) {
+        return _Colorize.colorize(Col.UNDERLINE, str);
+      }
+      static colorize(col, str) {
+        if (process.env.FORCE_COLOR === "0" || process.env.NO_COLOR || !process.stdout.isTTY || !process.stderr.isTTY) {
+          return str;
+        }
+        return `\x1B[${col}m${str}\x1B[0m`;
+      }
+    };
+    exports2.Colorize = Colorize;
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/parsing.js
+var require_parsing = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/parsing.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ANNOTATION_PLUGIN_NAMESPACE = exports2.ANNOTATION_PLUGIN_NAME = void 0;
+    exports2.isSuppressibleViolation = isSuppressibleViolation2;
+    exports2.parseValidationId = parseValidationId2;
+    exports2.normalizeValidationId = normalizeValidationId2;
+    exports2.normalizeValidationIdForAnnotations = normalizeValidationIdForAnnotations2;
+    exports2.namespaceFromPluginName = namespaceFromPluginName2;
+    exports2.pluginNameFromNamespace = pluginNameFromNamespace;
+    function isSuppressibleViolation2(violation) {
+      const isFatal = violation.severity?.toLowerCase() === "fatal";
+      const isErrorAnnotation = violation.ruleMetadata?.["cdk:annotation"] && violation.severity?.toLowerCase() === "error";
+      return !isFatal && !isErrorAnnotation;
+    }
+    function parseValidationId2(id) {
+      let nsSeparator = void 0;
+      const braceStack = [];
+      for (let i = 0; i < id.length; i++) {
+        const c = id[i];
+        if (c === ":" && id[i + 1] === ":" && braceStack.length === 0) {
+          if (nsSeparator !== void 0) {
+            throw new Error(`Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
+          }
+          nsSeparator = i;
+          i += 1;
+        } else if (["]", ")", "}"].includes(c)) {
+          const lastBrace = braceStack.pop();
+          if (lastBrace === void 0) {
+            throw new Error(`Invalid validation rule ID '${id}'. Unmatched closing brace '${c}' at position ${i}.`);
+          }
+          if (lastBrace === "(" && c !== ")" || lastBrace === "[" && c !== "]" || lastBrace === "{" && c !== "}") {
+            throw new Error(`Invalid validation rule ID '${id}'. Mismatched closing brace '${c}' at position ${i}. Expected '${lastBrace === "(" ? ")" : lastBrace === "[" ? "]" : "}"}'.`);
+          }
+        } else if (["[", "(", "{"].includes(c)) {
+          braceStack.push(c);
+        }
+      }
+      if (nsSeparator === void 0) {
+        return { ruleId: id };
+      }
+      if (nsSeparator === 0) {
+        throw new Error(`Invalid validation rule ID '${id}'. Missing plugin name before '::'.`);
+      }
+      const namespace = namespaceFromString(id.substring(0, nsSeparator));
+      const ruleId = id.substring(nsSeparator + 2);
+      return { namespace, ruleId };
+    }
+    function normalizeValidationId2(id, defaultNamespace) {
+      const p = typeof id === "string" ? parseValidationId2(id) : id;
+      const parsed = {
+        namespace: p.namespace ? namespaceFromString(p.namespace[NS].replaceAll(/ /g, "-")) : void 0,
+        ruleId: p.ruleId.replaceAll(/ /g, "-")
+      };
+      if (parsed.namespace && ["annotation", "Construct-Annotations"].includes(parsed.namespace[NS])) {
+        return `${exports2.ANNOTATION_PLUGIN_NAMESPACE}::${parsed.ruleId}`;
+      }
+      return `${parsed.namespace ?? defaultNamespace[NS]}::${parsed.ruleId}`;
+    }
+    function normalizeValidationIdForAnnotations2(id) {
+      return normalizeValidationId2(id, exports2.ANNOTATION_PLUGIN_NAMESPACE);
+    }
+    var NS = /* @__PURE__ */ Symbol("namespace");
+    function namespaceFromPluginName2(pluginName) {
+      if (pluginName === exports2.ANNOTATION_PLUGIN_NAME) {
+        return exports2.ANNOTATION_PLUGIN_NAMESPACE;
+      }
+      return namespaceFromString(pluginName.replace(/ /g, "-"));
+    }
+    function namespaceFromString(namespace) {
+      return Object.assign({
+        [NS]: namespace.replace(/ /g, "-")
+      }, {
+        toString() {
+          return this[NS];
+        }
+      });
+    }
+    function pluginNameFromNamespace(namespace) {
+      return namespace[NS].replace(/-/g, " ");
+    }
+    exports2.ANNOTATION_PLUGIN_NAME = "Construct Annotations";
+    exports2.ANNOTATION_PLUGIN_NAMESPACE = namespaceFromPluginName2("Annotation");
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/formatting.js
+var require_formatting = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/formatting.js"(exports2) {
+    "use strict";
+    var __importDefault2 = exports2 && exports2.__importDefault || function(mod) {
+      return mod && mod.__esModule ? mod : { "default": mod };
+    };
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ValidationReportFormatter = void 0;
+    exports2.stripAnsi = stripAnsi2;
+    exports2.relativeFileLocationRenderer = relativeFileLocationRenderer2;
+    var path_1 = __importDefault2(require("path"));
+    var color_1 = require_color();
+    var stack_trace_1 = require_stack_trace();
+    var parsing_1 = require_parsing();
+    var ValidationReportFormatter2 = class {
+      options;
+      fileLocationRenderer;
+      constructor(options) {
+        this.options = options;
+        this.fileLocationRenderer = options.fileLocationRenderer ?? relativeFileLocationRenderer2(process.cwd());
+      }
+      formatReports(reports) {
+        const successfullyExecutedPlugins = reports.filter((r) => isPluginFailure(r) === void 0);
+        const pluginFailures = reports.map(isPluginFailure).filter((e) => e !== void 0);
+        const violations = flattenViolations(successfullyExecutedPlugins);
+        violations.sort((a, b) => {
+          const aOrder = SEVERITY_ORDER[a.severity.toLowerCase()] ?? 4;
+          const bOrder = SEVERITY_ORDER[b.severity.toLowerCase()] ?? 4;
+          return aOrder - bOrder;
+        });
+        return [
+          ...pluginFailures.map(formatPluginFailure),
+          ...violations.map((v) => this.formatViolationBlock(v))
+        ];
+      }
+      formatViolationBlock(v) {
+        const lines = [];
+        const locations = this.sourceLocations(v.construct.stackTraces);
+        const maxTraces = 5;
+        let additional = false;
+        for (const location of locations.slice(0, maxTraces)) {
+          lines.push(`${additional ? "or " : ""}${color_1.Colorize.underline(sanitize(location))}`);
+          additional = true;
+        }
+        if (locations.length > maxTraces) {
+          lines.push(color_1.Colorize.grey(`(and ${locations.length - maxTraces} more...)`));
+        }
+        const pluginNs = (0, parsing_1.namespaceFromPluginName)(v.pluginName);
+        const parsed = (0, parsing_1.parseValidationId)(v.ruleName);
+        lines.push([
+          color_1.Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
+          color_1.Colorize.bold(stripAckTag(sanitize(v.description))),
+          color_1.Colorize.grey(`(${sanitize(parsed.namespace ? (0, parsing_1.pluginNameFromNamespace)(parsed.namespace) : v.pluginName)})`)
+        ].join(" "));
+        const constructInfo = this.formatConstructInfo(v.construct);
+        lines.push(`   ${constructInfo}`);
+        if (v.suggestedFix) {
+          lines.push(`   Suggested fix: ${sanitize(v.suggestedFix).replace(/\n/g, "\n   ")}`);
+        }
+        const ackId = (0, parsing_1.normalizeValidationId)(v.ruleName, pluginNs);
+        if ((0, parsing_1.isSuppressibleViolation)(v)) {
+          lines.push(`   ${color_1.Colorize.grey(`Acknowledge with '${sanitize(ackId)}'`)}`);
+        } else {
+          lines.push(`   ${color_1.Colorize.grey(`Rule ${sanitize(ackId)}`)}`);
+        }
+        return lines.join("\n");
+      }
+      sourceLocations(stackTraces) {
+        const ret = [];
+        for (const trace of stackTraces ?? []) {
+          const frame = stack_trace_1.StackTrace.fromNewlineSeparatedString(trace).findAndParse(this.options.frameFinder ?? stack_trace_1.DEFAULT_USER_CODE_FINDER);
+          if (frame && frame.fileName) {
+            const candidate = `${this.fileLocationRenderer.renderAbsoluteFilePath(frame.fileName)}:${frame.sourceLocation}`;
+            if (!ret.includes(candidate)) {
+              ret.push(candidate);
+            }
+          }
+        }
+        return ret;
+      }
+      formatConstructInfo(construct) {
+        const parts = [];
+        const logicalId = sanitize(construct.cloudFormationResource?.logicalId);
+        if (construct.constructPath) {
+          const cPath = sanitize(construct.constructPath);
+          parts.push(logicalId ? `${color_1.Colorize.bold(cPath)} (${logicalId})` : color_1.Colorize.bold(cPath));
+        } else {
+          if (construct.cloudFormationResource?.templatePath) {
+            parts.push(this.fileLocationRenderer.renderAbsoluteFilePath(sanitize(construct.cloudFormationResource.templatePath)));
+          }
+          if (logicalId) {
+            parts.push(color_1.Colorize.bold(logicalId));
+          }
+        }
+        if (construct.constructFqn) {
+          parts.push(color_1.Colorize.grey(sanitize(construct.constructFqn)));
+        }
+        return parts.join(" ");
+      }
+    };
+    exports2.ValidationReportFormatter = ValidationReportFormatter2;
+    function flattenViolations(reports) {
+      return reports.flatMap((report) => {
+        const pluginName = report.pluginName;
+        return report.violations.flatMap((violation) => {
+          return violation.violatingConstructs.map((construct) => ({
+            severity: normalizeSeverity2(violation.severity, violation.customSeverity),
+            description: violation.description,
+            ruleName: violation.ruleName,
+            pluginName,
+            construct,
+            suggestedFix: violation.suggestedFix,
+            ruleMetadata: violation.ruleMetadata
+          }));
+        });
+      });
+    }
+    function normalizeSeverity2(severity, customSeverity) {
+      switch (severity) {
+        case "fatal":
+        case "error":
+        case "warning":
+        case "info":
+          return severity.toUpperCase();
+        case "custom":
+          return customSeverity ?? "INFO";
+      }
+    }
+    function getSeverityColor(severity) {
+      switch (severity.toLowerCase()) {
+        case "fatal":
+          return color_1.Colorize.red;
+        case "error":
+          return color_1.Colorize.orange;
+        case "warning":
+          return color_1.Colorize.yellow;
+        default:
+          return color_1.Colorize.blue;
+      }
+    }
+    function stripAckTag(description) {
+      return description.replace(/\s*\[ack:\s*[^\]]+\]\s*/g, "").trim();
+    }
+    function formatPluginFailure(f) {
+      return `${color_1.Colorize.orange("ERROR")} ${sanitize(f.error)}`;
+    }
+    var CONTROL_CHARS = /[\x00-\x08\x0B-\x1F\x7F\x9B]/g;
+    function sanitize(s) {
+      return (s ?? "").replace(CONTROL_CHARS, "\uFFFD");
+    }
+    var SEVERITY_ORDER = {
+      fatal: 0,
+      error: 1,
+      warning: 2,
+      info: 3
+    };
+    function isPluginFailure(r) {
+      if (r.conclusion === "success" || r.violations.length > 0 || !r.metadata?.error) {
+        return void 0;
+      }
+      return { error: r.metadata.error };
+    }
+    function stripAnsi2(x) {
+      const pattern = [
+        "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
+        "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))"
+      ].join("|");
+      const re = new RegExp(pattern, "g");
+      return x.replaceAll(re, "");
+    }
+    function relativeFileLocationRenderer2(root) {
+      return {
+        renderAbsoluteFilePath(absPath) {
+          const relPath = path_1.default.relative(root, absPath);
+          return relPath.length < absPath.length ? relPath : absPath;
+        }
+      };
+    }
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/loading.js
+var require_loading = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-api/lib/validation/loading.js"(exports2) {
+    "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.loadUnifiedValidationReport = loadUnifiedValidationReport;
+    var fs_1 = require("fs");
+    var path22 = __importStar2(require("path"));
+    var cloud_assembly_schema_1 = require_lib2();
+    var metadata_1 = require_metadata();
+    var parsing_1 = require_parsing();
+    var VALIDATION_REPORT_FILE2 = "validation-report.json";
+    async function loadUnifiedValidationReport(assembly, stacks) {
+      const ret = [];
+      const reportPath = path22.join(assembly.directory, VALIDATION_REPORT_FILE2);
+      if (await pathExists(reportPath)) {
+        const selectedStackIds = new Set(stacks.map((stack) => stack.hierarchicalId));
+        const report = cloud_assembly_schema_1.Manifest.loadValidationReport(reportPath);
+        const filteredReports = filterReportsByStacks(report.pluginReports, selectedStackIds);
+        ret.push(...filteredReports);
+      }
+      const alreadyHasAnnotations = ret.some((r) => r.pluginName === parsing_1.ANNOTATION_PLUGIN_NAME);
+      if (!alreadyHasAnnotations) {
+        const annotationReport = pluginReportFromAnnotations(stacks);
+        if (annotationReport.violations.length > 0 || annotationReport.conclusion === "failure") {
+          ret.push(annotationReport);
+        }
+      }
+      return ret;
+    }
+    function filterReportsByStacks(reports, selectedStackIds) {
+      const stackIds = Array.from(selectedStackIds);
+      return reports.map(filterReport);
+      function filterReport(report) {
+        const violationsWithoutConstructs = new Set(report.violations.flatMap((v, i) => v.violatingConstructs.length === 0 ? [i] : []));
+        const filteredViolations = report.violations.map((v) => ({
+          ...v,
+          violatingConstructs: v.violatingConstructs.filter(constructMatches)
+        })).filter((v, i) => v.violatingConstructs.length > 0 || violationsWithoutConstructs.has(i));
+        return {
+          ...report,
+          violations: filteredViolations,
+          conclusion: filteredViolations.length > 0 ? report.conclusion : "success"
+        };
+      }
+      function constructMatches(c) {
+        return !c.constructPath || stackIds.some((stackId) => c.constructPath === stackId || c.constructPath?.startsWith(`${stackId}/`));
+      }
+    }
+    function pluginReportFromAnnotations(stacks) {
+      const ruleMap = /* @__PURE__ */ new Map();
+      for (const stack of stacks) {
+        for (const entry of stack.messages) {
+          let severity;
+          switch (entry.level) {
+            case metadata_1.SynthesisMessageLevel.WARNING:
+              severity = "warning";
+              break;
+            case metadata_1.SynthesisMessageLevel.ERROR:
+              severity = "error";
+              break;
+            case metadata_1.SynthesisMessageLevel.INFO:
+              severity = "info";
+              break;
+          }
+          const { message, ruleName } = splitDescriptionAndId2(String(entry.entry.data));
+          const ruleKey = `${ruleName}|${severity}|${message}`;
+          let violation = ruleMap.get(ruleKey);
+          if (!violation) {
+            violation = {
+              ruleName: ruleName ?? `${severity}-annotation`,
+              description: message,
+              severity,
+              violatingConstructs: [],
+              ruleMetadata: {
+                "cdk:annotation": "true"
+              }
+            };
+            ruleMap.set(ruleKey, violation);
+          }
+          violation.violatingConstructs.push({
+            constructPath: entry.id.replace(/^\//, "")
+            // remove leading slash
+            // TODO: see if this information can be obtained from tree.json
+            // cloudFormationResource
+            // constructFqn:
+            // libraryVersion
+            // TODO: see if we can get this from metadata stack traces. We may need to re-enable them for
+            // annotations in the core library. Otherwise we should probably get a stack trace to the resource itself.
+            // stackTraces
+          });
+        }
+      }
+      const violations = Array.from(ruleMap.values());
+      const hasErrors = violations.some((v) => v.severity === "error");
+      return {
+        pluginName: parsing_1.ANNOTATION_PLUGIN_NAME,
+        conclusion: hasErrors ? "failure" : "success",
+        violations
+      };
+    }
+    function splitDescriptionAndId2(message) {
+      const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
+      if (ackMatch) {
+        return { message: message.replace(ackMatch[0], "").trim(), ruleName: ackMatch[1] };
+      }
+      const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);
+      if (idMatch) {
+        return { message: message.replace(idMatch[0], "").trim(), ruleName: idMatch[1] };
+      }
+      return { message };
+    }
+    async function pathExists(pathName) {
+      try {
+        await fs_1.promises.access(pathName);
+        return true;
+      } catch (e) {
+        if (e.code !== "ENOENT") {
+          throw e;
+        }
+        return false;
+      }
+    }
   }
 });
 
@@ -8450,6 +9992,123 @@ var require_lib3 = __commonJS({
     __exportStar2(require_placeholders(), exports2);
     __exportStar2(require_environment(), exports2);
     __exportStar2(require_bootstrap(), exports2);
+    __exportStar2(require_construct_tree(), exports2);
+    __exportStar2(require_template_ranges(), exports2);
+    __exportStar2(require_stack_trace(), exports2);
+    __exportStar2(require_formatting(), exports2);
+    __exportStar2(require_parsing(), exports2);
+    __exportStar2(require_loading(), exports2);
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/private/stack-trace.ts
+function captureStackTrace(below = captureStackTrace, limit = void 0) {
+  if (!limit) {
+    return enhancedStackTrace(below, false);
+  }
+  const previousLimit = Error.stackTraceLimit;
+  try {
+    Error.stackTraceLimit = limit;
+    return enhancedStackTrace(below, false);
+  } finally {
+    Error.stackTraceLimit = previousLimit;
+  }
+}
+function enhancedStackTrace(upTo, indent = true) {
+  return withExternalTrace(renderCallStackJustMyCode(captureCallStack(upTo), indent));
+}
+function withExternalTrace(internal) {
+  const hostTrace = global[/* @__PURE__ */ Symbol.for("jsii.context.hostStackTrace")];
+  if (hostTrace != null) {
+    return internal.concat(hostTrace.slice(1).map(formatExternalFrame));
+  }
+  return internal;
+}
+function captureCallStack(upTo) {
+  const obj = {};
+  Error.captureStackTrace(obj, upTo);
+  let trace = parseErrorStack(obj.stack);
+  if (trace.length === 0) {
+    Error.captureStackTrace(obj);
+    trace = parseErrorStack(obj.stack);
+  }
+  return trace;
+}
+function formatExternalFrame(trace) {
+  const [filename, line, column, name] = trace;
+  return `${name} (${filename}:${line}${column > 0 ? ":" + column : ""})`;
+}
+function parseErrorStack(stack) {
+  const lines = stack.split("\n");
+  const framePrefix = "    at ";
+  return lines.filter((line) => line.startsWith(framePrefix)).map((line) => import_cloud_assembly_api.StackFrame.parse(line.slice(framePrefix.length)));
+}
+function renderCallStackJustMyCode(stack, indent = true) {
+  const lines = [];
+  let skipped = new Array();
+  let sawMyCode = false;
+  let i = 0;
+  while (i < stack.length) {
+    const frame = stack[i++];
+    if (frame.fileName.match(DECORATOR_RE)) {
+      continue;
+    }
+    const pat = frame.fileName.match(MODULE_RE);
+    if (pat) {
+      while (i < stack.length && stack[i].fileName.includes(pat[0])) {
+        i++;
+      }
+      skip({ functionName: stack[i - 1].functionName, fileName: pat[3] });
+    } else if (frame.fileName.includes("node:")) {
+      skip({ fileName: "node internals" });
+      while (i < stack.length && stack[i].fileName.includes("node:")) {
+        i++;
+      }
+    } else if (isHostInternalFrame(frame)) {
+      skip({ fileName: "jsii runtime" });
+      while (i < stack.length && isHostInternalFrame(stack[i])) {
+        i++;
+      }
+    } else {
+      reportSkipped(true);
+      const prefix = indent ? "    at " : "";
+      lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
+      sawMyCode = true;
+    }
+  }
+  reportSkipped(false);
+  if (!sawMyCode) {
+    lines.push(`${indent ? "    " : ""}(no user code in ${Error.stackTraceLimit} frames, use --stack-trace-limit to capture more)`);
+  }
+  return lines;
+  function skip(what) {
+    if (!skipped.find((x) => x.fileName === what.fileName && x.functionName === what.functionName)) {
+      skipped.push(what);
+    }
+  }
+  function reportSkipped(includeFunction) {
+    if (skipped.length > 0) {
+      const rendered = skipped.map((s, j) => (
+        // Only render the function name of the last frame before user code
+        j === skipped.length - 1 && s.functionName && includeFunction ? `${s.functionName} in ${s.fileName}` : s.fileName
+      ));
+      const prefix = indent ? "    " : "";
+      lines.push(`${prefix}...${rendered.join(", ")}...`);
+    }
+    skipped = [];
+  }
+}
+function isHostInternalFrame(frame) {
+  const hostDirName = global[/* @__PURE__ */ Symbol.for("jsii.context.hostDirName")];
+  return frame.fileName.includes(hostDirName);
+}
+var import_cloud_assembly_api, MODULE_RE, DECORATOR_RE;
+var init_stack_trace = __esm({
+  "../../aws-cdk-lib/core/lib/private/stack-trace.ts"() {
+    "use strict";
+    import_cloud_assembly_api = __toESM(require_lib3());
+    MODULE_RE = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
+    DECORATOR_RE = /(\/|\\)(prop-injectable|no-box-stack-traces)\./;
   }
 });
 
@@ -8460,25 +10119,25 @@ function _convertCloudAssembly(x) {
 function _convertCloudAssemblyBuilder(x) {
   return x;
 }
-var import_cloud_assembly_api;
+var import_cloud_assembly_api2;
 var init_legacy_moved = __esm({
   "../../aws-cdk-lib/cx-api/lib/legacy-moved.ts"() {
     "use strict";
-    import_cloud_assembly_api = __toESM(require_lib3());
-    exports.CloudAssembly = import_cloud_assembly_api.CloudAssembly;
-    exports.CloudArtifact = import_cloud_assembly_api.CloudArtifact;
-    exports.CloudFormationStackArtifact = import_cloud_assembly_api.CloudFormationStackArtifact;
-    exports.AssetManifestArtifact = import_cloud_assembly_api.AssetManifestArtifact;
-    exports.NestedCloudAssemblyArtifact = import_cloud_assembly_api.NestedCloudAssemblyArtifact;
-    exports.TreeCloudArtifact = import_cloud_assembly_api.TreeCloudArtifact;
-    exports.CloudAssemblyBuilder = import_cloud_assembly_api.CloudAssemblyBuilder;
-    exports.EnvironmentPlaceholders = import_cloud_assembly_api.EnvironmentPlaceholders;
-    exports.EnvironmentUtils = import_cloud_assembly_api.EnvironmentUtils;
+    import_cloud_assembly_api2 = __toESM(require_lib3());
+    exports.CloudAssembly = import_cloud_assembly_api2.CloudAssembly;
+    exports.CloudArtifact = import_cloud_assembly_api2.CloudArtifact;
+    exports.CloudFormationStackArtifact = import_cloud_assembly_api2.CloudFormationStackArtifact;
+    exports.AssetManifestArtifact = import_cloud_assembly_api2.AssetManifestArtifact;
+    exports.NestedCloudAssemblyArtifact = import_cloud_assembly_api2.NestedCloudAssemblyArtifact;
+    exports.TreeCloudArtifact = import_cloud_assembly_api2.TreeCloudArtifact;
+    exports.CloudAssemblyBuilder = import_cloud_assembly_api2.CloudAssemblyBuilder;
+    exports.EnvironmentPlaceholders = import_cloud_assembly_api2.EnvironmentPlaceholders;
+    exports.EnvironmentUtils = import_cloud_assembly_api2.EnvironmentUtils;
   }
 });
 
 // ../../aws-cdk-lib/cx-api/lib/cxapi.ts
-var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT;
+var OUTDIR_ENV, CONTEXT_ENV, ERRORFILE_ENV, PERF_COUNTERS_FILE_ENV, CONTEXT_OVERFLOW_LOCATION_ENV, FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, VALIDATION_REPORT_FILE, VALIDATION_REPORT_JSON_CONTEXT, STRICT_CFN_VALIDATE_ERRORS, CDK_APP_MODE_ENV, CDK_APP_MODE_CONTEXT, CDK_TEMPLATE_FILE_KEY;
 var init_cxapi = __esm({
   "../../aws-cdk-lib/cx-api/lib/cxapi.ts"() {
     "use strict";
@@ -8493,6 +10152,7 @@ var init_cxapi = __esm({
     STRICT_CFN_VALIDATE_ERRORS = "@aws-cdk/core:strictCfnValidateErrors";
     CDK_APP_MODE_ENV = "CDK_APP_MODE";
     CDK_APP_MODE_CONTEXT = "@aws-cdk/core:appMode";
+    CDK_TEMPLATE_FILE_KEY = "aws:cdk:templateFile";
   }
 });
 
@@ -8511,7 +10171,7 @@ function futureFlagDefault(flag) {
   }
   return value;
 }
-var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
+var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
 var init_features = __esm({
   "../../aws-cdk-lib/cx-api/lib/features.ts"() {
     "use strict";
@@ -8560,6 +10220,7 @@ var init_features = __esm({
     ENABLE_EMR_SERVICE_POLICY_V2 = "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2";
     EC2_RESTRICT_DEFAULT_SECURITY_GROUP = "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup";
     APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = "@aws-cdk/aws-apigateway:requestValidatorUniqueId";
+    APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard";
     INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = "@aws-cdk/core:includePrefixInUniqueNameGeneration";
     KMS_ALIAS_NAME_REF = "@aws-cdk/aws-kms:aliasNameRef";
     KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal";
@@ -8626,6 +10287,8 @@ var init_features = __esm({
     DEFAULT_CROSS_STACK_REFERENCES = "@aws-cdk/core:defaultCrossStackReferences";
     VALIDATE_AGAINST_DEFAULT_RULES = "@aws-cdk/core:validateAgainstDefaultRules";
     ECS_REMOVE_EMPTY_LOAD_BALANCERS = "@aws-cdk/aws-ecs:removeEmptyLoadBalancers";
+    CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps";
+    STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction";
     FLAGS = {
       //////////////////////////////////////////////////////////////////////
       [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
@@ -10313,6 +11976,64 @@ var init_features = __esm({
         recommendedValue: true,
         unconfiguredBehavesLike: { v2: false },
         compatibilityWithOldBehaviorMd: "Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: {
+        type: 0 /* ApiDefault */,
+        summary: "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS",
+        detailsMd: `
+      When enabled, cache behaviors on a \`Distribution\` that do not specify an explicit
+      \`viewerProtocolPolicy\` default to \`ViewerProtocolPolicy.REDIRECT_TO_HTTPS\` instead of
+      \`ViewerProtocolPolicy.ALLOW_ALL\`, so viewers are redirected from HTTP to HTTPS rather
+      than being served over plaintext HTTP.
+
+      This applies to the default behavior, to \`additionalBehaviors\`, and to behaviors added
+      later with \`addBehavior()\`. An explicitly specified \`viewerProtocolPolicy\` always wins,
+      regardless of this flag.
+
+      Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
+      viewer then follows with a second request. That additional request is billable.`,
+        introducedIn: { v2: "2.273.0" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false },
+        compatibilityWithOldBehaviorMd: "Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+        type: 1 /* BugFix */,
+        summary: "Render the API Gateway access log destination ARN without the trailing `:*`",
+        detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+        introducedIn: { v2: "2.274.0" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false },
+        compatibilityWithOldBehaviorMd: "Disable this flag to keep using the log group `Arn` attribute as the destination ARN."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: {
+        type: 1 /* BugFix */,
+        summary: "When enabled, each EvaluateExpression task gets its own Lambda function",
+        detailsMd: `
+      When this feature flag is enabled, each \`EvaluateExpression\` task creates its own Lambda function.
+      When this feature flag is disabled, all \`EvaluateExpression\` tasks in a stack that use the same runtime and
+      architecture share one Lambda function, even across state machines.
+
+      Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+      running executions finish first.`,
+        introducedIn: { v2: "V2NEXT" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: true },
+        compatibilityWithOldBehaviorMd: "Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack."
       }
     };
     CURRENT_MV = "v2";
@@ -10977,19 +12698,19 @@ var init_annotations = __esm({
       /**
        * Given 'a/b/c', return ['a/b/c', 'a/b', 'a']
        */
-      searchPaths(path23) {
+      searchPaths(path22) {
         const ret = new Array();
         let start = 0;
-        while (start < path23.length) {
-          let i = path23.indexOf("/", start);
+        while (start < path22.length) {
+          let i = path22.indexOf("/", start);
           if (i !== -1) {
-            ret.push(path23.substring(0, i));
+            ret.push(path22.substring(0, i));
             start = i + 1;
           } else {
-            start = path23.length;
+            start = path22.length;
           }
         }
-        ret.push(path23);
+        ret.push(path22);
         return ret.reverse();
       }
     };
@@ -11000,14 +12721,13 @@ var init_annotations = __esm({
 var require_dependency = __commonJS({
   "../../../node_modules/constructs/lib/dependency.js"(exports2) {
     "use strict";
-    var _a7;
-    var _b;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.Dependable = exports2.DependencyGroup = void 0;
     var JSII_RTTI_SYMBOL_1 = /* @__PURE__ */ Symbol.for("jsii.rtti");
     var DependencyGroup = class {
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "constructs.DependencyGroup", version: "10.8.1" };
+      _deps = new Array();
       constructor(...deps) {
-        this._deps = new Array();
         const self2 = this;
         Dependable2.implement(this, {
           get dependencyRoots() {
@@ -11028,10 +12748,9 @@ var require_dependency = __commonJS({
       }
     };
     exports2.DependencyGroup = DependencyGroup;
-    _a7 = JSII_RTTI_SYMBOL_1;
-    DependencyGroup[_a7] = { fqn: "constructs.DependencyGroup", version: "10.6.0" };
     var DEPENDABLE_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/core.DependableTrait");
     var Dependable2 = class {
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "constructs.Dependable", version: "10.8.1" };
       /**
        * Turn any object into an IDependable.
        */
@@ -11057,13 +12776,72 @@ var require_dependency = __commonJS({
       }
     };
     exports2.Dependable = Dependable2;
-    _b = JSII_RTTI_SYMBOL_1;
-    Dependable2[_b] = { fqn: "constructs.Dependable", version: "10.6.0" };
+  }
+});
+
+// ../../../node_modules/constructs/lib/private/node-addr.js
+var require_node_addr = __commonJS({
+  "../../../node_modules/constructs/lib/private/node-addr.js"(exports2) {
+    "use strict";
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+        desc = { enumerable: true, get: function() {
+          return m[k];
+        } };
+      }
+      Object.defineProperty(o, k2, desc);
+    }) : (function(o, m, k, k2) {
+      if (k2 === void 0) k2 = k;
+      o[k2] = m[k];
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    }) : function(o, v) {
+      o["default"] = v;
+    });
+    var __importStar2 = exports2 && exports2.__importStar || /* @__PURE__ */ (function() {
+      var ownKeys2 = function(o) {
+        ownKeys2 = Object.getOwnPropertyNames || function(o2) {
+          var ar = [];
+          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
+          return ar;
+        };
+        return ownKeys2(o);
+      };
+      return function(mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) {
+          for (var k = ownKeys2(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding2(result, mod, k[i]);
+        }
+        __setModuleDefault2(result, mod);
+        return result;
+      };
+    })();
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.ADDR_SEP = void 0;
+    exports2.addressOf = addressOf;
+    var crypto13 = __importStar2(require("crypto"));
+    var HIDDEN_ID3 = "Default";
+    exports2.ADDR_SEP = "\n";
+    function addressOf(components) {
+      const hash = crypto13.createHash("sha1");
+      for (const c of components) {
+        if (c === HIDDEN_ID3) {
+          continue;
+        }
+        hash.update(c);
+        hash.update(exports2.ADDR_SEP);
+      }
+      return "c8" + hash.digest("hex");
+    }
   }
 });
 
 // ../../../node_modules/constructs/lib/private/stack-trace.js
-var require_stack_trace = __commonJS({
+var require_stack_trace2 = __commonJS({
   "../../../node_modules/constructs/lib/private/stack-trace.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -11086,43 +12864,24 @@ var require_stack_trace = __commonJS({
   }
 });
 
-// ../../../node_modules/constructs/lib/private/uniqueid.js
-var require_uniqueid = __commonJS({
-  "../../../node_modules/constructs/lib/private/uniqueid.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.addressOf = addressOf;
-    var crypto13 = require("crypto");
-    var HIDDEN_ID3 = "Default";
-    function addressOf(components) {
-      const hash = crypto13.createHash("sha1");
-      for (const c of components) {
-        if (c === HIDDEN_ID3) {
-          continue;
-        }
-        hash.update(c);
-        hash.update("\n");
-      }
-      return "c8" + hash.digest("hex");
-    }
-  }
-});
-
 // ../../../node_modules/constructs/lib/construct.js
 var require_construct = __commonJS({
   "../../../node_modules/constructs/lib/construct.js"(exports2) {
     "use strict";
-    var _a7;
-    var _b;
-    var _c;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.RootConstruct = exports2.ConstructOrder = exports2.Construct = exports2.Node = void 0;
     var JSII_RTTI_SYMBOL_1 = /* @__PURE__ */ Symbol.for("jsii.rtti");
     var dependency_1 = require_dependency();
-    var stack_trace_1 = require_stack_trace();
-    var uniqueid_1 = require_uniqueid();
+    var node_addr_1 = require_node_addr();
+    var stack_trace_1 = require_stack_trace2();
     var CONSTRUCT_SYM = /* @__PURE__ */ Symbol.for("constructs.Construct");
     var Node11 = class _Node {
+      host;
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "constructs.Node", version: "10.8.1" };
+      /**
+       * Separator used to delimit construct path components.
+       */
+      static PATH_SEP = "/";
       /**
        * Returns the node associated with a construct.
        * @param construct the construct
@@ -11132,49 +12891,93 @@ var require_construct = __commonJS({
       static of(construct) {
         return construct.node;
       }
+      /**
+       * Returns the scope in which this construct is defined.
+       *
+       * The value is `undefined` at the root of the construct scope tree.
+       */
+      scope;
+      /**
+       * The id of this construct within the current scope.
+       *
+       * This is a scope-unique id. To obtain an id that reflects the full location
+       * of this construct in the tree, use `path` or `addr`.
+       */
+      id;
+      /**
+       * The full, absolute path of this construct in the tree.
+       *
+       * Components are separated by '/'.
+       */
+      path;
+      _locked = false;
+      // if this is "true", addChild will fail
+      _children;
+      _context;
+      _metadata;
+      _dependencies;
+      _defaultChild;
+      _validations;
+      _addr;
+      // cache
+      _scopes;
       constructor(host, scope, id) {
         this.host = host;
-        this._locked = false;
         id = id ?? "";
         this.id = sanitizeId(id);
         this.scope = scope;
         if (scope && !this.id) {
           throw new Error("Only root constructs may have an empty ID");
         }
-        scope?.node.addChild(host, this.id);
-      }
-      /**
-       * The full, absolute path of this construct in the tree.
-       *
-       * Components are separated by '/'.
-       */
-      get path() {
-        const components = [];
-        for (const scope of this.scopes) {
-          if (scope.node.id) {
-            components.push(scope.node.id);
-          }
+        if (scope) {
+          scope.node.addChild(host, this.id);
+          this.path = scope.node.path ? `${scope.node.path}${_Node.PATH_SEP}${this.id}` : this.id;
+          this._scopes = [...scope.node._scopes, this.host];
+        } else {
+          this.path = this.id;
+          this._scopes = [this.host];
         }
-        return components.join(_Node.PATH_SEP);
       }
       /**
-       * Returns an opaque tree-unique address for this construct.
+       * All parent scopes of this construct.
        *
-       * Addresses are 42 characters hexadecimal strings. They begin with "c8"
-       * followed by 40 lowercase hexadecimal characters (0-9a-f).
+       * @returns a list of parent scopes. The last element in the list will always
+       * be the current construct and the first element will be the root of the
+       * tree.
+       */
+      get scopes() {
+        return [...this._scopes];
+      }
+      /**
+       * An opaque, deterministic address for this construct, derived from its path.
        *
-       * Addresses are calculated using a SHA-1 of the components of the construct
-       * path.
+       * The address is a 42 character string: the prefix "c8" followed by 40
+       * lowercase hexadecimal characters (0-9a-f). It is a SHA-1 over the ids of
+       * the constructs on the path from the root of the tree down to this
+       * construct.
        *
        * To enable refactoring of construct trees, constructs with the ID `Default`
-       * will be excluded from the calculation. In those cases constructs in the
-       * same tree may have the same address.
+       * are excluded from the calculation. Within a tree, `a/Default/b` and `a/b`
+       * have the same address.
+       *
+       * This means the address is *not* guaranteed to identify a construct uniquely:
+       *
+       * - Any construct whose path is made up of the same ids has the same address.
+       *   Two trees that are shaped alike therefore hand out the same addresses.
+       * - As described above, a construct under a `Default` scope has the same
+       *   address as its counterpart outside of that scope.
+       * - The digest is of fixed width, so even distinct paths can in principle hash
+       *   to the same address. SHA-1 in particular is no longer collision resistant.
+       *
+       * Use an address to derive stable, deterministic names from the location of a
+       * construct in the tree. Do not use it as the identity of a construct:
+       * instead, compare construct instances or use the `path`.
        *
        * @example c83a2846e506bcc5f10682b564084bca2d275709ee
        */
       get addr() {
         if (!this._addr) {
-          this._addr = (0, uniqueid_1.addressOf)(this.scopes.map((c) => c.node.id));
+          this._addr = (0, node_addr_1.addressOf)(this._scopes.map((c) => c.node.id));
         }
         return this._addr;
       }
@@ -11303,7 +13106,11 @@ var require_construct = __commonJS({
        * @returns The context object or an empty object if there is discovered context
        */
       getAllContext(defaults) {
-        return this.scopes.reverse().reduce((a, s) => ({ ...s.node._context, ...a }), { ...defaults });
+        const ret = { ...defaults };
+        for (const scope of this._scopes) {
+          Object.assign(ret, scope.node._context);
+        }
+        return ret;
       }
       /**
        * Retrieves a value from tree context.
@@ -11357,27 +13164,11 @@ var require_construct = __commonJS({
         this._metadata.push({ type, data, trace: getTrace() });
       }
       /**
-       * All parent scopes of this construct.
-       *
-       * @returns a list of parent scopes. The last element in the list will always
-       * be the current construct and the first element will be the root of the
-       * tree.
-       */
-      get scopes() {
-        const ret = new Array();
-        let curr = this.host;
-        while (curr) {
-          ret.unshift(curr);
-          curr = curr.node.scope;
-        }
-        return ret;
-      }
-      /**
        * Returns the root of the construct tree.
        * @returns The root of the construct tree.
        */
       get root() {
-        return this.scopes[0];
+        return this._scopes[0];
       }
       /**
        * Returns true if this construct or the scopes in which it is defined are
@@ -11393,9 +13184,21 @@ var require_construct = __commonJS({
         return false;
       }
       /**
-       * Add an ordering dependency on another construct.
+       * Add an ordering dependency on a Dependable (a construct or set of constructs)
        *
-       * An `IDependable`
+       * It is up to the target document language to decide what an ordering
+       * relationship means and how it should be rendered; for example, in the AWS
+       * CDK for CloudFormation it means a dependency from every resource in scope
+       * of the current construct to every resource in scope of the target set
+       * of constructs, that get realized as either stack dependencies or
+       * `DependsOn` relationships in the synthesized template.
+       *
+       * `IDependable` is a marker interface that indicates that a class has used
+       * `Dependable.implement()` to implement the `IDependable` interface. It
+       * can be used to make the target object represent more than one set of
+       * constructs at a time. For example, a `DependencyGroup` uses this
+       * interface to represent an explicit list of 0 or more constructs that should
+       * be involved in the dependency relationship.
        */
       addDependency(...deps) {
         if (!this._dependencies) {
@@ -11406,7 +13209,24 @@ var require_construct = __commonJS({
         }
       }
       /**
-       * Return all dependencies registered on this node (non-recursive).
+       * Remove an ordering dependency on a Dependenable (a construct or set of constructs)
+       *
+       * This removes any dependency added using `node.addDependency()`. It must
+       * use the exact same object that was involved in the `addDependency()` call.
+       */
+      removeDependency(...deps) {
+        if (!this._dependencies) {
+          this._dependencies = /* @__PURE__ */ new Set();
+        }
+        for (const d of deps) {
+          this._dependencies.delete(d);
+        }
+      }
+      /**
+       * Constructs that this construct depends on directly
+       *
+       * This expands the sets of `Dependables` to the set of `Constructs` that they
+       * represent.
        */
       get dependencies() {
         const result = new Array();
@@ -11512,10 +13332,8 @@ var require_construct = __commonJS({
       }
     };
     exports2.Node = Node11;
-    _a7 = JSII_RTTI_SYMBOL_1;
-    Node11[_a7] = { fqn: "constructs.Node", version: "10.6.0" };
-    Node11.PATH_SEP = "/";
     var Construct19 = class {
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "constructs.Construct", version: "10.8.1" };
       /**
        * Checks if `x` is a construct.
        *
@@ -11540,12 +13358,16 @@ var require_construct = __commonJS({
         return x && typeof x === "object" && x[CONSTRUCT_SYM];
       }
       /**
+       * The tree node.
+       */
+      node;
+      /**
        * Creates a new construct node.
        *
        * @param scope The scope in which to define this construct
        * @param id The scoped construct ID. Must be unique amongst siblings. If
-       * the ID includes a path separator (`/`), then it will be replaced by double
-       * dash `--`.
+       * the ID includes a path separator (`/`) or a newline, then it will be
+       * replaced by double dash `--`.
        */
       constructor(scope, id) {
         this.node = new Node11(this, scope, id);
@@ -11575,16 +13397,14 @@ var require_construct = __commonJS({
       }
     };
     exports2.Construct = Construct19;
-    _b = JSII_RTTI_SYMBOL_1;
-    Construct19[_b] = { fqn: "constructs.Construct", version: "10.6.0" };
     var ConstructOrder;
     (function(ConstructOrder2) {
       ConstructOrder2[ConstructOrder2["PREORDER"] = 0] = "PREORDER";
       ConstructOrder2[ConstructOrder2["POSTORDER"] = 1] = "POSTORDER";
     })(ConstructOrder || (exports2.ConstructOrder = ConstructOrder = {}));
-    var PATH_SEP_REGEX = new RegExp(`${Node11.PATH_SEP}`, "g");
+    var SEP_REGEX = new RegExp(`[${Node11.PATH_SEP}${node_addr_1.ADDR_SEP}]`, "g");
     function sanitizeId(id) {
-      return id.replace(PATH_SEP_REGEX, "--");
+      return id.replace(SEP_REGEX, "--");
     }
     Object.defineProperty(Construct19.prototype, CONSTRUCT_SYM, {
       value: true,
@@ -11592,20 +13412,19 @@ var require_construct = __commonJS({
       writable: false
     });
     var RootConstruct = class extends Construct19 {
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "constructs.RootConstruct", version: "10.8.1" };
       /**
        * Creates a new root construct node.
        *
        * @param id The scoped construct ID. Must be unique amongst siblings. If
-       * the ID includes a path separator (`/`), then it will be replaced by double
-       * dash `--`.
+       * the ID includes a path separator (`/`) or a newline, then it will be
+       * replaced by double dash `--`.
        */
       constructor(id) {
         super(void 0, id ?? "");
       }
     };
     exports2.RootConstruct = RootConstruct;
-    _c = JSII_RTTI_SYMBOL_1;
-    RootConstruct[_c] = { fqn: "constructs.RootConstruct", version: "10.6.0" };
   }
 });
 
@@ -13541,8 +15360,8 @@ var require_universalify = __commonJS({
       return Object.defineProperty(function(...args) {
         if (typeof args[args.length - 1] === "function") fn.apply(this, args);
         else {
-          return new Promise((resolve7, reject) => {
-            args.push((err, res) => err != null ? reject(err) : resolve7(res));
+          return new Promise((resolve6, reject) => {
+            args.push((err, res) => err != null ? reject(err) : resolve6(res));
             fn.apply(this, args);
           });
         }
@@ -13613,14 +15432,14 @@ var require_polyfills = __commonJS({
       fs19.fstatSync = statFixSync(fs19.fstatSync);
       fs19.lstatSync = statFixSync(fs19.lstatSync);
       if (fs19.chmod && !fs19.lchmod) {
-        fs19.lchmod = function(path23, mode, cb) {
+        fs19.lchmod = function(path22, mode, cb) {
           if (cb) process.nextTick(cb);
         };
         fs19.lchmodSync = function() {
         };
       }
       if (fs19.chown && !fs19.lchown) {
-        fs19.lchown = function(path23, uid, gid, cb) {
+        fs19.lchown = function(path22, uid, gid, cb) {
           if (cb) process.nextTick(cb);
         };
         fs19.lchownSync = function() {
@@ -13687,9 +15506,9 @@ var require_polyfills = __commonJS({
         };
       })(fs19.readSync);
       function patchLchmod(fs20) {
-        fs20.lchmod = function(path23, mode, callback) {
+        fs20.lchmod = function(path22, mode, callback) {
           fs20.open(
-            path23,
+            path22,
             constants2.O_WRONLY | constants2.O_SYMLINK,
             mode,
             function(err, fd) {
@@ -13705,8 +15524,8 @@ var require_polyfills = __commonJS({
             }
           );
         };
-        fs20.lchmodSync = function(path23, mode) {
-          var fd = fs20.openSync(path23, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
+        fs20.lchmodSync = function(path22, mode) {
+          var fd = fs20.openSync(path22, constants2.O_WRONLY | constants2.O_SYMLINK, mode);
           var threw = true;
           var ret;
           try {
@@ -13727,8 +15546,8 @@ var require_polyfills = __commonJS({
       }
       function patchLutimes(fs20) {
         if (constants2.hasOwnProperty("O_SYMLINK") && fs20.futimes) {
-          fs20.lutimes = function(path23, at, mt, cb) {
-            fs20.open(path23, constants2.O_SYMLINK, function(er, fd) {
+          fs20.lutimes = function(path22, at, mt, cb) {
+            fs20.open(path22, constants2.O_SYMLINK, function(er, fd) {
               if (er) {
                 if (cb) cb(er);
                 return;
@@ -13740,8 +15559,8 @@ var require_polyfills = __commonJS({
               });
             });
           };
-          fs20.lutimesSync = function(path23, at, mt) {
-            var fd = fs20.openSync(path23, constants2.O_SYMLINK);
+          fs20.lutimesSync = function(path22, at, mt) {
+            var fd = fs20.openSync(path22, constants2.O_SYMLINK);
             var ret;
             var threw = true;
             try {
@@ -13859,11 +15678,11 @@ var require_legacy_streams = __commonJS({
         ReadStream,
         WriteStream
       };
-      function ReadStream(path23, options) {
-        if (!(this instanceof ReadStream)) return new ReadStream(path23, options);
+      function ReadStream(path22, options) {
+        if (!(this instanceof ReadStream)) return new ReadStream(path22, options);
         Stream.call(this);
         var self2 = this;
-        this.path = path23;
+        this.path = path22;
         this.fd = null;
         this.readable = true;
         this.paused = false;
@@ -13908,10 +15727,10 @@ var require_legacy_streams = __commonJS({
           self2._read();
         });
       }
-      function WriteStream(path23, options) {
-        if (!(this instanceof WriteStream)) return new WriteStream(path23, options);
+      function WriteStream(path22, options) {
+        if (!(this instanceof WriteStream)) return new WriteStream(path22, options);
         Stream.call(this);
-        this.path = path23;
+        this.path = path22;
         this.fd = null;
         this.writable = true;
         this.flags = "w";
@@ -14054,14 +15873,14 @@ var require_graceful_fs = __commonJS({
       fs20.createWriteStream = createWriteStream;
       var fs$readFile = fs20.readFile;
       fs20.readFile = readFile;
-      function readFile(path23, options, cb) {
+      function readFile(path22, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$readFile(path23, options, cb);
-        function go$readFile(path24, options2, cb2, startTime) {
-          return fs$readFile(path24, options2, function(err) {
+        return go$readFile(path22, options, cb);
+        function go$readFile(path23, options2, cb2, startTime) {
+          return fs$readFile(path23, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$readFile, [path24, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$readFile, [path23, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14071,14 +15890,14 @@ var require_graceful_fs = __commonJS({
       }
       var fs$writeFile = fs20.writeFile;
       fs20.writeFile = writeFile;
-      function writeFile(path23, data, options, cb) {
+      function writeFile(path22, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$writeFile(path23, data, options, cb);
-        function go$writeFile(path24, data2, options2, cb2, startTime) {
-          return fs$writeFile(path24, data2, options2, function(err) {
+        return go$writeFile(path22, data, options, cb);
+        function go$writeFile(path23, data2, options2, cb2, startTime) {
+          return fs$writeFile(path23, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$writeFile, [path24, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$writeFile, [path23, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14089,14 +15908,14 @@ var require_graceful_fs = __commonJS({
       var fs$appendFile = fs20.appendFile;
       if (fs$appendFile)
         fs20.appendFile = appendFile;
-      function appendFile(path23, data, options, cb) {
+      function appendFile(path22, data, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        return go$appendFile(path23, data, options, cb);
-        function go$appendFile(path24, data2, options2, cb2, startTime) {
-          return fs$appendFile(path24, data2, options2, function(err) {
+        return go$appendFile(path22, data, options, cb);
+        function go$appendFile(path23, data2, options2, cb2, startTime) {
+          return fs$appendFile(path23, data2, options2, function(err) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$appendFile, [path24, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$appendFile, [path23, data2, options2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14127,31 +15946,31 @@ var require_graceful_fs = __commonJS({
       var fs$readdir = fs20.readdir;
       fs20.readdir = readdir;
       var noReaddirOptionVersions = /^v[0-5]\./;
-      function readdir(path23, options, cb) {
+      function readdir(path22, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
-        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path24, options2, cb2, startTime) {
-          return fs$readdir(path24, fs$readdirCallback(
-            path24,
+        var go$readdir = noReaddirOptionVersions.test(process.version) ? function go$readdir2(path23, options2, cb2, startTime) {
+          return fs$readdir(path23, fs$readdirCallback(
+            path23,
             options2,
             cb2,
             startTime
           ));
-        } : function go$readdir2(path24, options2, cb2, startTime) {
-          return fs$readdir(path24, options2, fs$readdirCallback(
-            path24,
+        } : function go$readdir2(path23, options2, cb2, startTime) {
+          return fs$readdir(path23, options2, fs$readdirCallback(
+            path23,
             options2,
             cb2,
             startTime
           ));
         };
-        return go$readdir(path23, options, cb);
-        function fs$readdirCallback(path24, options2, cb2, startTime) {
+        return go$readdir(path22, options, cb);
+        function fs$readdirCallback(path23, options2, cb2, startTime) {
           return function(err, files) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
               enqueue([
                 go$readdir,
-                [path24, options2, cb2],
+                [path23, options2, cb2],
                 err,
                 startTime || Date.now(),
                 Date.now()
@@ -14222,7 +16041,7 @@ var require_graceful_fs = __commonJS({
         enumerable: true,
         configurable: true
       });
-      function ReadStream(path23, options) {
+      function ReadStream(path22, options) {
         if (this instanceof ReadStream)
           return fs$ReadStream.apply(this, arguments), this;
         else
@@ -14242,7 +16061,7 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function WriteStream(path23, options) {
+      function WriteStream(path22, options) {
         if (this instanceof WriteStream)
           return fs$WriteStream.apply(this, arguments), this;
         else
@@ -14260,22 +16079,22 @@ var require_graceful_fs = __commonJS({
           }
         });
       }
-      function createReadStream(path23, options) {
-        return new fs20.ReadStream(path23, options);
+      function createReadStream(path22, options) {
+        return new fs20.ReadStream(path22, options);
       }
-      function createWriteStream(path23, options) {
-        return new fs20.WriteStream(path23, options);
+      function createWriteStream(path22, options) {
+        return new fs20.WriteStream(path22, options);
       }
       var fs$open = fs20.open;
       fs20.open = open;
-      function open(path23, flags, mode, cb) {
+      function open(path22, flags, mode, cb) {
         if (typeof mode === "function")
           cb = mode, mode = null;
-        return go$open(path23, flags, mode, cb);
-        function go$open(path24, flags2, mode2, cb2, startTime) {
-          return fs$open(path24, flags2, mode2, function(err, fd) {
+        return go$open(path22, flags, mode, cb);
+        function go$open(path23, flags2, mode2, cb2, startTime) {
+          return fs$open(path23, flags2, mode2, function(err, fd) {
             if (err && (err.code === "EMFILE" || err.code === "ENFILE"))
-              enqueue([go$open, [path24, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
+              enqueue([go$open, [path23, flags2, mode2, cb2], err, startTime || Date.now(), Date.now()]);
             else {
               if (typeof cb2 === "function")
                 cb2.apply(this, arguments);
@@ -14394,18 +16213,18 @@ var require_fs = __commonJS({
       if (typeof callback === "function") {
         return fs19.exists(filename, callback);
       }
-      return new Promise((resolve7) => {
-        return fs19.exists(filename, resolve7);
+      return new Promise((resolve6) => {
+        return fs19.exists(filename, resolve6);
       });
     };
     exports2.read = function(fd, buffer, offset, length, position, callback) {
       if (typeof callback === "function") {
         return fs19.read(fd, buffer, offset, length, position, callback);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.read(fd, buffer, offset, length, position, (err, bytesRead, buffer2) => {
           if (err) return reject(err);
-          resolve7({ bytesRead, buffer: buffer2 });
+          resolve6({ bytesRead, buffer: buffer2 });
         });
       });
     };
@@ -14413,10 +16232,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.write(fd, buffer, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.write(fd, buffer, ...args, (err, bytesWritten, buffer2) => {
           if (err) return reject(err);
-          resolve7({ bytesWritten, buffer: buffer2 });
+          resolve6({ bytesWritten, buffer: buffer2 });
         });
       });
     };
@@ -14424,10 +16243,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.readv(fd, buffers, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.readv(fd, buffers, ...args, (err, bytesRead, buffers2) => {
           if (err) return reject(err);
-          resolve7({ bytesRead, buffers: buffers2 });
+          resolve6({ bytesRead, buffers: buffers2 });
         });
       });
     };
@@ -14435,10 +16254,10 @@ var require_fs = __commonJS({
       if (typeof args[args.length - 1] === "function") {
         return fs19.writev(fd, buffers, ...args);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         fs19.writev(fd, buffers, ...args, (err, bytesWritten, buffers2) => {
           if (err) return reject(err);
-          resolve7({ bytesWritten, buffers: buffers2 });
+          resolve6({ bytesWritten, buffers: buffers2 });
         });
       });
     };
@@ -14458,10 +16277,10 @@ var require_fs = __commonJS({
 var require_utils = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/mkdirs/utils.js"(exports2, module2) {
     "use strict";
-    var path23 = require("path");
+    var path22 = require("path");
     module2.exports.checkPath = function checkPath(pth) {
       if (process.platform === "win32") {
-        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path23.parse(pth).root, ""));
+        const pathHasInvalidWinCharacters = /[<>:"|?*]/.test(pth.replace(path22.parse(pth).root, ""));
         if (pathHasInvalidWinCharacters) {
           const error = new Error(`Path contains invalid characters: ${pth}`);
           error.code = "EINVAL";
@@ -14525,8 +16344,8 @@ var require_path_exists = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    function pathExists(path23) {
-      return fs19.access(path23).then(() => true).catch(() => false);
+    function pathExists(path22) {
+      return fs19.access(path22).then(() => true).catch(() => false);
     }
     module2.exports = {
       pathExists: u(pathExists),
@@ -14541,8 +16360,8 @@ var require_utimes = __commonJS({
     "use strict";
     var fs19 = require_fs();
     var u = require_universalify().fromPromise;
-    async function utimesMillis(path23, atime, mtime) {
-      const fd = await fs19.open(path23, "r+");
+    async function utimesMillis(path22, atime, mtime) {
+      const fd = await fs19.open(path22, "r+");
       let error = null;
       try {
         await fs19.futimes(fd, atime, mtime);
@@ -14559,8 +16378,8 @@ var require_utimes = __commonJS({
         throw error;
       }
     }
-    function utimesMillisSync(path23, atime, mtime) {
-      const fd = fs19.openSync(path23, "r+");
+    function utimesMillisSync(path22, atime, mtime) {
+      const fd = fs19.openSync(path22, "r+");
       let error = null;
       try {
         fs19.futimesSync(fd, atime, mtime);
@@ -14589,7 +16408,7 @@ var require_stat = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/util/stat.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var u = require_universalify().fromPromise;
     function getStats(src, dest, opts) {
       const statFunc = opts.dereference ? (file) => fs19.stat(file, { bigint: true }) : (file) => fs19.lstat(file, { bigint: true });
@@ -14617,9 +16436,9 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = await getStats(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path23.basename(src);
-          const destBaseName = path23.basename(dest);
-          if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
+          const srcBaseName = path22.basename(src);
+          const destBaseName = path22.basename(dest);
+          if (funcName === "move" && srcBaseName !== destBaseName && isCosmeticRename(srcBaseName, destBaseName)) {
             return { srcStat, destStat, isChangingCase: true };
           }
           throw new Error("Source and destination must not be the same.");
@@ -14640,9 +16459,9 @@ var require_stat = __commonJS({
       const { srcStat, destStat } = getStatsSync(src, dest, opts);
       if (destStat) {
         if (areIdentical(srcStat, destStat)) {
-          const srcBaseName = path23.basename(src);
-          const destBaseName = path23.basename(dest);
-          if (funcName === "move" && srcBaseName !== destBaseName && srcBaseName.toLowerCase() === destBaseName.toLowerCase()) {
+          const srcBaseName = path22.basename(src);
+          const destBaseName = path22.basename(dest);
+          if (funcName === "move" && srcBaseName !== destBaseName && isCosmeticRename(srcBaseName, destBaseName)) {
             return { srcStat, destStat, isChangingCase: true };
           }
           throw new Error("Source and destination must not be the same.");
@@ -14659,10 +16478,13 @@ var require_stat = __commonJS({
       }
       return { srcStat, destStat };
     }
+    function isCosmeticRename(srcBaseName, destBaseName) {
+      return srcBaseName.toLowerCase().normalize("NFC") === destBaseName.toLowerCase().normalize("NFC");
+    }
     async function checkParentPaths(src, srcStat, dest, funcName) {
-      const srcParent = path23.resolve(path23.dirname(src));
-      const destParent = path23.resolve(path23.dirname(dest));
-      if (destParent === srcParent || destParent === path23.parse(destParent).root) return;
+      const srcParent = path22.resolve(path22.dirname(src));
+      const destParent = path22.resolve(path22.dirname(dest));
+      if (destParent === srcParent || destParent === path22.parse(destParent).root) return;
       let destStat;
       try {
         destStat = await fs19.stat(destParent, { bigint: true });
@@ -14676,9 +16498,9 @@ var require_stat = __commonJS({
       return checkParentPaths(src, srcStat, destParent, funcName);
     }
     function checkParentPathsSync(src, srcStat, dest, funcName) {
-      const srcParent = path23.resolve(path23.dirname(src));
-      const destParent = path23.resolve(path23.dirname(dest));
-      if (destParent === srcParent || destParent === path23.parse(destParent).root) return;
+      const srcParent = path22.resolve(path22.dirname(src));
+      const destParent = path22.resolve(path22.dirname(dest));
+      if (destParent === srcParent || destParent === path22.parse(destParent).root) return;
       let destStat;
       try {
         destStat = fs19.statSync(destParent, { bigint: true });
@@ -14695,8 +16517,8 @@ var require_stat = __commonJS({
       return destStat.ino !== void 0 && destStat.dev !== void 0 && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev;
     }
     function isSrcSubdir(src, dest) {
-      const srcArr = path23.resolve(src).split(path23.sep).filter((i) => i);
-      const destArr = path23.resolve(dest).split(path23.sep).filter((i) => i);
+      const srcArr = path22.resolve(src).split(path22.sep).filter((i) => i);
+      const destArr = path22.resolve(dest).split(path22.sep).filter((i) => i);
       return srcArr.every((cur, i) => destArr[i] === cur);
     }
     function errMsg(src, dest, funcName) {
@@ -14749,7 +16571,7 @@ var require_copy = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/copy/copy.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var { mkdirs } = require_mkdirs();
     var { pathExists } = require_path_exists();
     var { utimesMillis } = require_utimes();
@@ -14772,7 +16594,7 @@ var require_copy = __commonJS({
       await stat.checkParentPaths(src, srcStat, dest, "copy");
       const include = await runFilter(src, dest, opts);
       if (!include) return;
-      const destParent = path23.dirname(dest);
+      const destParent = path22.dirname(dest);
       const dirExists = await pathExists(destParent);
       if (!dirExists) {
         await mkdirs(destParent);
@@ -14825,8 +16647,8 @@ var require_copy = __commonJS({
         await fs19.mkdir(dest);
       }
       await asyncIteratorConcurrentProcess(await fs19.opendir(src), async (item) => {
-        const srcItem = path23.join(src, item.name);
-        const destItem = path23.join(dest, item.name);
+        const srcItem = path22.join(src, item.name);
+        const destItem = path22.join(dest, item.name);
         const include = await runFilter(srcItem, destItem, opts);
         if (include) {
           const { destStat: destStat2 } = await stat.checkPaths(srcItem, destItem, "copy", opts);
@@ -14840,7 +16662,7 @@ var require_copy = __commonJS({
     async function onLink(destStat, src, dest, opts) {
       let resolvedSrc = await fs19.readlink(src);
       if (opts.dereference) {
-        resolvedSrc = path23.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path22.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
         return fs19.symlink(resolvedSrc, dest);
@@ -14853,7 +16675,7 @@ var require_copy = __commonJS({
         throw e;
       }
       if (opts.dereference) {
-        resolvedDest = path23.resolve(process.cwd(), resolvedDest);
+        resolvedDest = path22.resolve(process.cwd(), resolvedDest);
       }
       if (resolvedSrc !== resolvedDest) {
         if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
@@ -14875,7 +16697,7 @@ var require_copy_sync = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/copy/copy-sync.js"(exports2, module2) {
     "use strict";
     var fs19 = require_graceful_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var mkdirsSync = require_mkdirs().mkdirsSync;
     var utimesMillisSync = require_utimes().utimesMillisSync;
     var stat = require_stat();
@@ -14896,13 +16718,13 @@ var require_copy_sync = __commonJS({
       const { srcStat, destStat } = stat.checkPathsSync(src, dest, "copy", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "copy");
       if (opts.filter && !opts.filter(src, dest)) return;
-      const destParent = path23.dirname(dest);
+      const destParent = path22.dirname(dest);
       if (!fs19.existsSync(destParent)) mkdirsSync(destParent);
       return getStats(destStat, src, dest, opts);
     }
     function getStats(destStat, src, dest, opts) {
-      const statSync5 = opts.dereference ? fs19.statSync : fs19.lstatSync;
-      const srcStat = statSync5(src);
+      const statSync6 = opts.dereference ? fs19.statSync : fs19.lstatSync;
+      const srcStat = statSync6(src);
       if (srcStat.isDirectory()) return onDir(srcStat, destStat, src, dest, opts);
       else if (srcStat.isFile() || srcStat.isCharacterDevice() || srcStat.isBlockDevice()) return onFile(srcStat, destStat, src, dest, opts);
       else if (srcStat.isSymbolicLink()) return onLink(destStat, src, dest, opts);
@@ -14965,8 +16787,8 @@ var require_copy_sync = __commonJS({
       }
     }
     function copyDirItem(item, src, dest, opts) {
-      const srcItem = path23.join(src, item);
-      const destItem = path23.join(dest, item);
+      const srcItem = path22.join(src, item);
+      const destItem = path22.join(dest, item);
       if (opts.filter && !opts.filter(srcItem, destItem)) return;
       const { destStat } = stat.checkPathsSync(srcItem, destItem, "copy", opts);
       return getStats(destStat, srcItem, destItem, opts);
@@ -14974,7 +16796,7 @@ var require_copy_sync = __commonJS({
     function onLink(destStat, src, dest, opts) {
       let resolvedSrc = fs19.readlinkSync(src);
       if (opts.dereference) {
-        resolvedSrc = path23.resolve(process.cwd(), resolvedSrc);
+        resolvedSrc = path22.resolve(process.cwd(), resolvedSrc);
       }
       if (!destStat) {
         return fs19.symlinkSync(resolvedSrc, dest);
@@ -14987,7 +16809,7 @@ var require_copy_sync = __commonJS({
           throw err;
         }
         if (opts.dereference) {
-          resolvedDest = path23.resolve(process.cwd(), resolvedDest);
+          resolvedDest = path22.resolve(process.cwd(), resolvedDest);
         }
         if (resolvedSrc !== resolvedDest) {
           if (stat.isSrcSubdir(resolvedSrc, resolvedDest)) {
@@ -15026,11 +16848,11 @@ var require_remove = __commonJS({
     "use strict";
     var fs19 = require_graceful_fs();
     var u = require_universalify().fromCallback;
-    function remove(path23, callback) {
-      fs19.rm(path23, { recursive: true, force: true }, callback);
+    function remove(path22, callback) {
+      fs19.rm(path22, { recursive: true, force: true }, callback);
     }
-    function removeSync2(path23) {
-      fs19.rmSync(path23, { recursive: true, force: true });
+    function removeSync2(path22) {
+      fs19.rmSync(path22, { recursive: true, force: true });
     }
     module2.exports = {
       remove: u(remove),
@@ -15045,27 +16867,29 @@ var require_empty = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var mkdir = require_mkdirs();
     var remove = require_remove();
     var emptyDir = u(async function emptyDir2(dir) {
       let items;
       try {
         items = await fs19.readdir(dir);
-      } catch {
+      } catch (err) {
+        if (err.code !== "ENOENT") throw err;
         return mkdir.mkdirs(dir);
       }
-      return Promise.all(items.map((item) => remove.remove(path23.join(dir, item))));
+      return Promise.all(items.map((item) => remove.remove(path22.join(dir, item))));
     });
     function emptyDirSync(dir) {
       let items;
       try {
         items = fs19.readdirSync(dir);
-      } catch {
+      } catch (err) {
+        if (err.code !== "ENOENT") throw err;
         return mkdir.mkdirsSync(dir);
       }
       items.forEach((item) => {
-        item = path23.join(dir, item);
+        item = path22.join(dir, item);
         remove.removeSync(item);
       });
     }
@@ -15083,7 +16907,7 @@ var require_file = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/file.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path23 = require("path");
+    var path22 = require("path");
     var fs19 = require_fs();
     var mkdir = require_mkdirs();
     async function createFile(file) {
@@ -15093,7 +16917,7 @@ var require_file = __commonJS({
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path23.dirname(file);
+      const dir = path22.dirname(file);
       let dirStats = null;
       try {
         dirStats = await fs19.stat(dir);
@@ -15119,7 +16943,7 @@ var require_file = __commonJS({
       } catch {
       }
       if (stats && stats.isFile()) return;
-      const dir = path23.dirname(file);
+      const dir = path22.dirname(file);
       try {
         if (!fs19.statSync(dir).isDirectory()) {
           fs19.readdirSync(dir);
@@ -15142,7 +16966,7 @@ var require_link = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/link.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path23 = require("path");
+    var path22 = require("path");
     var fs19 = require_fs();
     var mkdir = require_mkdirs();
     var { pathExists } = require_path_exists();
@@ -15161,7 +16985,7 @@ var require_link = __commonJS({
         throw err;
       }
       if (dstStat && areIdentical(srcStat, dstStat)) return;
-      const dir = path23.dirname(dstpath);
+      const dir = path22.dirname(dstpath);
       const dirExists = await pathExists(dir);
       if (!dirExists) {
         await mkdir.mkdirs(dir);
@@ -15181,7 +17005,7 @@ var require_link = __commonJS({
         err.message = err.message.replace("lstat", "ensureLink");
         throw err;
       }
-      const dir = path23.dirname(dstpath);
+      const dir = path22.dirname(dstpath);
       const dirExists = fs19.existsSync(dir);
       if (dirExists) return fs19.linkSync(srcpath, dstpath);
       mkdir.mkdirsSync(dir);
@@ -15198,12 +17022,12 @@ var require_link = __commonJS({
 var require_symlink_paths = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/symlink-paths.js"(exports2, module2) {
     "use strict";
-    var path23 = require("path");
+    var path22 = require("path");
     var fs19 = require_fs();
     var { pathExists } = require_path_exists();
     var u = require_universalify().fromPromise;
     async function symlinkPaths(srcpath, dstpath) {
-      if (path23.isAbsolute(srcpath)) {
+      if (path22.isAbsolute(srcpath)) {
         try {
           await fs19.lstat(srcpath);
         } catch (err) {
@@ -15215,8 +17039,8 @@ var require_symlink_paths = __commonJS({
           toDst: srcpath
         };
       }
-      const dstdir = path23.dirname(dstpath);
-      const relativeToDst = path23.join(dstdir, srcpath);
+      const dstdir = path22.dirname(dstpath);
+      const relativeToDst = path22.join(dstdir, srcpath);
       const exists = await pathExists(relativeToDst);
       if (exists) {
         return {
@@ -15232,11 +17056,11 @@ var require_symlink_paths = __commonJS({
       }
       return {
         toCwd: srcpath,
-        toDst: path23.relative(dstdir, srcpath)
+        toDst: path22.relative(dstdir, srcpath)
       };
     }
     function symlinkPathsSync(srcpath, dstpath) {
-      if (path23.isAbsolute(srcpath)) {
+      if (path22.isAbsolute(srcpath)) {
         const exists2 = fs19.existsSync(srcpath);
         if (!exists2) throw new Error("absolute srcpath does not exist");
         return {
@@ -15244,8 +17068,8 @@ var require_symlink_paths = __commonJS({
           toDst: srcpath
         };
       }
-      const dstdir = path23.dirname(dstpath);
-      const relativeToDst = path23.join(dstdir, srcpath);
+      const dstdir = path22.dirname(dstpath);
+      const relativeToDst = path22.join(dstdir, srcpath);
       const exists = fs19.existsSync(relativeToDst);
       if (exists) {
         return {
@@ -15257,7 +17081,7 @@ var require_symlink_paths = __commonJS({
       if (!srcExists) throw new Error("relative srcpath does not exist");
       return {
         toCwd: srcpath,
-        toDst: path23.relative(dstdir, srcpath)
+        toDst: path22.relative(dstdir, srcpath)
       };
     }
     module2.exports = {
@@ -15305,7 +17129,7 @@ var require_symlink = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/ensure/symlink.js"(exports2, module2) {
     "use strict";
     var u = require_universalify().fromPromise;
-    var path23 = require("path");
+    var path22 = require("path");
     var fs19 = require_fs();
     var { mkdirs, mkdirsSync } = require_mkdirs();
     var { symlinkPaths, symlinkPathsSync } = require_symlink_paths();
@@ -15320,24 +17144,29 @@ var require_symlink = __commonJS({
       }
       if (stats && stats.isSymbolicLink()) {
         let srcStat;
-        if (path23.isAbsolute(srcpath)) {
+        if (path22.isAbsolute(srcpath)) {
           srcStat = await fs19.stat(srcpath, { bigint: true });
         } else {
-          const dstdir = path23.dirname(dstpath);
-          const relativeToDst = path23.join(dstdir, srcpath);
+          const dstdir = path22.dirname(dstpath);
+          const relativeToDst = path22.join(dstdir, srcpath);
           try {
             srcStat = await fs19.stat(relativeToDst, { bigint: true });
           } catch {
             srcStat = await fs19.stat(srcpath, { bigint: true });
           }
         }
-        const dstStat = await fs19.stat(dstpath, { bigint: true });
-        if (areIdentical(srcStat, dstStat)) return;
+        let dstStat;
+        try {
+          dstStat = await fs19.stat(dstpath, { bigint: true });
+        } catch (err) {
+          if (err.code !== "ENOENT") throw err;
+        }
+        if (dstStat && areIdentical(srcStat, dstStat)) return;
       }
-      const relative6 = await symlinkPaths(srcpath, dstpath);
-      srcpath = relative6.toDst;
-      const toType = await symlinkType(relative6.toCwd, type);
-      const dir = path23.dirname(dstpath);
+      const relative7 = await symlinkPaths(srcpath, dstpath);
+      srcpath = relative7.toDst;
+      const toType = await symlinkType(relative7.toCwd, type);
+      const dir = path22.dirname(dstpath);
       if (!await pathExists(dir)) {
         await mkdirs(dir);
       }
@@ -15351,24 +17180,29 @@ var require_symlink = __commonJS({
       }
       if (stats && stats.isSymbolicLink()) {
         let srcStat;
-        if (path23.isAbsolute(srcpath)) {
+        if (path22.isAbsolute(srcpath)) {
           srcStat = fs19.statSync(srcpath, { bigint: true });
         } else {
-          const dstdir = path23.dirname(dstpath);
-          const relativeToDst = path23.join(dstdir, srcpath);
+          const dstdir = path22.dirname(dstpath);
+          const relativeToDst = path22.join(dstdir, srcpath);
           try {
             srcStat = fs19.statSync(relativeToDst, { bigint: true });
           } catch {
             srcStat = fs19.statSync(srcpath, { bigint: true });
           }
         }
-        const dstStat = fs19.statSync(dstpath, { bigint: true });
-        if (areIdentical(srcStat, dstStat)) return;
+        let dstStat;
+        try {
+          dstStat = fs19.statSync(dstpath, { bigint: true });
+        } catch (err) {
+          if (err.code !== "ENOENT") throw err;
+        }
+        if (dstStat && areIdentical(srcStat, dstStat)) return;
       }
-      const relative6 = symlinkPathsSync(srcpath, dstpath);
-      srcpath = relative6.toDst;
-      type = symlinkTypeSync(relative6.toCwd, type);
-      const dir = path23.dirname(dstpath);
+      const relative7 = symlinkPathsSync(srcpath, dstpath);
+      srcpath = relative7.toDst;
+      type = symlinkTypeSync(relative7.toCwd, type);
+      const dir = path22.dirname(dstpath);
       const exists = fs19.existsSync(dir);
       if (exists) return fs19.symlinkSync(srcpath, dstpath, type);
       mkdirsSync(dir);
@@ -15520,18 +17354,18 @@ var require_output_file = __commonJS({
     "use strict";
     var u = require_universalify().fromPromise;
     var fs19 = require_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var mkdir = require_mkdirs();
     var pathExists = require_path_exists().pathExists;
     async function outputFile(file, data, encoding = "utf-8") {
-      const dir = path23.dirname(file);
+      const dir = path22.dirname(file);
       if (!await pathExists(dir)) {
         await mkdir.mkdirs(dir);
       }
       return fs19.writeFile(file, data, encoding);
     }
     function outputFileSync(file, ...args) {
-      const dir = path23.dirname(file);
+      const dir = path22.dirname(file);
       if (!fs19.existsSync(dir)) {
         mkdir.mkdirsSync(dir);
       }
@@ -15595,7 +17429,7 @@ var require_move = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/move/move.js"(exports2, module2) {
     "use strict";
     var fs19 = require_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var { copy } = require_copy2();
     var { remove } = require_remove();
     var { mkdirp } = require_mkdirs();
@@ -15605,8 +17439,8 @@ var require_move = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = await stat.checkPaths(src, dest, "move", opts);
       await stat.checkParentPaths(src, srcStat, dest, "move");
-      const destParent = path23.dirname(dest);
-      const parsedParentPath = path23.parse(destParent);
+      const destParent = path22.dirname(dest);
+      const parsedParentPath = path22.parse(destParent);
       if (parsedParentPath.root !== destParent) {
         await mkdirp(destParent);
       }
@@ -15647,7 +17481,7 @@ var require_move_sync = __commonJS({
   "../../aws-cdk-lib/node_modules/fs-extra/lib/move/move-sync.js"(exports2, module2) {
     "use strict";
     var fs19 = require_graceful_fs();
-    var path23 = require("path");
+    var path22 = require("path");
     var copySync2 = require_copy2().copySync;
     var removeSync2 = require_remove().removeSync;
     var mkdirpSync = require_mkdirs().mkdirpSync;
@@ -15657,12 +17491,12 @@ var require_move_sync = __commonJS({
       const overwrite = opts.overwrite || opts.clobber || false;
       const { srcStat, isChangingCase = false } = stat.checkPathsSync(src, dest, "move", opts);
       stat.checkParentPathsSync(src, srcStat, dest, "move");
-      if (!isParentRoot(dest)) mkdirpSync(path23.dirname(dest));
+      if (!isParentRoot(dest)) mkdirpSync(path22.dirname(dest));
       return doRename(src, dest, overwrite, isChangingCase);
     }
     function isParentRoot(dest) {
-      const parent = path23.dirname(dest);
-      const parsedPath = path23.parse(parent);
+      const parent = path22.dirname(dest);
+      const parsedPath = path22.parse(parent);
       return parsedPath.root === parent;
     }
     function doRename(src, dest, overwrite, isChangingCase) {
@@ -20724,31 +22558,7 @@ var init_classes = __esm({
             }
           },
           "defaultDatabaseName": "*",
-          "loggingProperties": {
-            "loggingBucket": {
-              "bucketArn": "*",
-              "bucketName": "*",
-              "bucketWebsiteUrl": "*",
-              "bucketWebsiteDomainName": "*",
-              "bucketDomainName": "*",
-              "bucketDualStackDomainName": "*",
-              "bucketRegionalDomainName": "*",
-              "isWebsite": "boolean",
-              "encryptionKey": {
-                "keyArn": "*",
-                "keyId": "*",
-                "stack": "*",
-                "node": "*",
-                "env": {
-                  "account": "*",
-                  "region": "*"
-                }
-              },
-              "policy": "*",
-              "replicationRoleArn": "*"
-            },
-            "loggingKeyPrefix": "*"
-          },
+          "logging": "*",
           "removalPolicy": "RemovalPolicy",
           "publiclyAccessible": "boolean",
           "classicResizing": "boolean",
@@ -24990,6 +26800,12 @@ var init_classes = __esm({
         }
       },
       "aws-cdk-lib.aws-batch": {
+        "ConsumableResource": {
+          "consumableResourceName": "*",
+          "resourceType": "ConsumableResourceType",
+          "totalQuantity": "*",
+          "tags": "*"
+        },
         "EcsJobDefinition": {
           "container": {
             "image": "*",
@@ -29653,7 +31469,10 @@ var init_classes = __esm({
           "ipv6CidrBlock": "*",
           "assignIpv6AddressOnCreation": "boolean",
           "addNatGateway": [
-            "*"
+            "*",
+            {
+              "maxDrainDuration": "*"
+            }
           ]
         },
         "PrivateSubnet": {
@@ -36019,6 +37838,7 @@ var init_classes = __esm({
             "minutes": "*"
           },
           "enableAutoSoftwareUpdate": "boolean",
+          "useLatestServiceSoftwareForBlueGreen": "boolean",
           "ipAddressType": "IpAddressType",
           "suppressLogsResourcePolicy": "boolean",
           "coldStorageEnabled": "boolean",
@@ -40588,6 +42408,7 @@ var init_classes = __esm({
               "region": "*"
             }
           },
+          "environmentEncryption": "*",
           "dryRunAndUpdate": "boolean",
           "resourcesToReplicateTags": "ResourceToReplicateTags",
           "browserConfigs": "BrowserType",
@@ -41732,6 +43553,13 @@ var init_classes = __esm({
               }
             }
           ]
+        },
+        "KnowledgeBase": {
+          "type": "*",
+          "knowledgeBaseName": "*",
+          "description": "*",
+          "role": "*",
+          "tags": "*"
         },
         "Prompt": {
           "promptName": "*",
@@ -43576,6 +45404,7 @@ var init_classes = __esm({
           "networkConfiguration": "*",
           "description": "*",
           "protocolConfiguration": "*",
+          "platformVersion": "*",
           "environmentVariables": "*",
           "authorizerConfiguration": "*",
           "tags": "*",
@@ -49266,6 +51095,10 @@ var init_enums = __esm({
         "INTERNET",
         "VPC_LINK"
       ],
+      "ConsumableResourceType": [
+        "REPLENISHABLE",
+        "NON_REPLENISHABLE"
+      ],
       "ContainerDependencyCondition": [
         "START",
         "COMPLETE",
@@ -50067,7 +51900,8 @@ var init_enums = __esm({
         "3.0",
         "4.0",
         "5.0",
-        "5.1"
+        "5.1",
+        "6.0"
       ],
       "GraphWidgetView": [
         "timeSeries",
@@ -51053,6 +52887,15 @@ var init_enums = __esm({
         "bun.lockb",
         "bun.lock",
         "pnpm-lock.yaml"
+      ],
+      "LogDestinationType": [
+        "s3",
+        "cloudwatch"
+      ],
+      "LogExport": [
+        "connectionlog",
+        "useractivitylog",
+        "userlog"
       ],
       "LogFormat": [
         "Text",
@@ -52288,11 +54131,13 @@ var init_enums = __esm({
       ],
       "SigningBehavior": [
         "always",
+        "always-amz-auth",
         "never",
         "no-override"
       ],
       "SigningProtocol": [
-        "sigv4"
+        "sigv4",
+        "sigv4a"
       ],
       "SizeRoundingBehavior": [
         0,
@@ -54388,8 +56233,8 @@ function makeUniqueResourceName(components, options) {
   const maxhumanLength = maxLength - HASH_LEN;
   return human.length > maxhumanLength ? `${splitInMiddle(human, maxhumanLength)}${hash}` : `${human}${hash}`;
 }
-function pathHash(path23) {
-  const md52 = md5hash(path23.join(PATH_SEP));
+function pathHash(path22) {
+  const md52 = md5hash(path22.join(PATH_SEP));
   return md52.slice(0, HASH_LEN).toUpperCase();
 }
 function removeNonAllowedSpecialCharacters(s, _separator, allowedSpecialCharacters) {
@@ -54397,9 +56242,9 @@ function removeNonAllowedSpecialCharacters(s, _separator, allowedSpecialCharacte
   const regex = new RegExp(pattern, "g");
   return s.replace(regex, "");
 }
-function removeDupes(path23) {
+function removeDupes(path22) {
   const ret = new Array();
-  for (const component of path23) {
+  for (const component of path22) {
     if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
       ret.push(component);
     }
@@ -54445,16 +56290,16 @@ function makeUniqueId(components) {
   const human = removeDupes2(components).filter((x) => x !== HIDDEN_FROM_HUMAN_ID2).map(removeNonAlphanumeric).join("").slice(0, MAX_HUMAN_LEN);
   return human + hash;
 }
-function pathHash2(path23) {
-  const md52 = md5hash(path23.join(PATH_SEP2));
+function pathHash2(path22) {
+  const md52 = md5hash(path22.join(PATH_SEP2));
   return md52.slice(0, HASH_LEN2).toUpperCase();
 }
 function removeNonAlphanumeric(s) {
   return s.replace(/[^A-Za-z0-9]/g, "");
 }
-function removeDupes2(path23) {
+function removeDupes2(path22) {
   const ret = new Array();
-  for (const component of path23) {
+  for (const component of path22) {
     if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
       ret.push(component);
     }
@@ -55049,7 +56894,7 @@ var init_assets = __esm({
 var require_ignore = __commonJS({
   "../../aws-cdk-lib/node_modules/@balena/dockerignore/ignore.js"(exports2, module2) {
     "use strict";
-    var path23 = require("path");
+    var path22 = require("path");
     var factory = (options) => new IgnoreBase(options);
     factory.default = factory;
     module2.exports = factory;
@@ -55058,22 +56903,22 @@ var require_ignore = __commonJS({
     }
     var REGEX_TRAILING_SLASH = /(?<=.)\/$/;
     var REGEX_TRAILING_BACKSLASH = /(?<=.)\\$/;
-    var REGEX_TRAILING_PATH_SEP = path23.sep === "\\" ? REGEX_TRAILING_BACKSLASH : REGEX_TRAILING_SLASH;
+    var REGEX_TRAILING_PATH_SEP = path22.sep === "\\" ? REGEX_TRAILING_BACKSLASH : REGEX_TRAILING_SLASH;
     var KEY_IGNORE = typeof Symbol !== "undefined" ? /* @__PURE__ */ Symbol.for("dockerignore") : "dockerignore";
     function cleanPath(file) {
-      return path23.normalize(file).replace(REGEX_TRAILING_PATH_SEP, "");
+      return path22.normalize(file).replace(REGEX_TRAILING_PATH_SEP, "");
     }
     function toSlash(file) {
-      if (path23.sep === "/") {
+      if (path22.sep === "/") {
         return file;
       }
       return file.replace(/\\/g, "/");
     }
     function fromSlash(file) {
-      if (path23.sep === "/") {
+      if (path22.sep === "/") {
         return file;
       }
-      return file.replace(/\//g, path23.sep);
+      return file.replace(/\//g, path22.sep);
     }
     var IgnoreBase = class {
       constructor({
@@ -55122,13 +56967,13 @@ var require_ignore = __commonJS({
         return pattern && typeof pattern === "string" && pattern.indexOf("#") !== 0 && pattern.trim() !== "";
       }
       filter(paths) {
-        return make_array(paths).filter((path24) => this._filter(path24));
+        return make_array(paths).filter((path23) => this._filter(path23));
       }
       createFilter() {
-        return (path24) => this._filter(path24);
+        return (path23) => this._filter(path23);
       }
-      ignores(path24) {
-        return !this._filter(path24);
+      ignores(path23) {
+        return !this._filter(path23);
       }
       // https://github.com/moby/moby/blob/v19.03.8/builder/dockerignore/dockerignore.go#L41-L53
       // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L29-L55
@@ -55167,36 +57012,36 @@ var require_ignore = __commonJS({
           origin,
           pattern,
           // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L54
-          dirs: pattern.split(path23.sep),
+          dirs: pattern.split(path22.sep),
           negative
         };
       }
       // @returns `Boolean` true if the `path` is NOT ignored
-      _filter(path24) {
-        if (!path24) {
+      _filter(path23) {
+        if (!path23) {
           return false;
         }
-        if (path24 in this._cache) {
-          return this._cache[path24];
+        if (path23 in this._cache) {
+          return this._cache[path23];
         }
-        return this._cache[path24] = this._test(path24);
+        return this._cache[path23] = this._test(path23);
       }
       // @returns {Boolean} true if a file is NOT ignored
       // https://github.com/moby/moby/blob/v19.03.8/pkg/fileutils/fileutils.go#L62
       _test(file) {
         file = fromSlash(file);
-        const parentPath = cleanPath(path23.dirname(file));
-        const parentPathDirs = parentPath.split(path23.sep);
+        const parentPath = cleanPath(path22.dirname(file));
+        const parentPathDirs = parentPath.split(path22.sep);
         let matched = false;
         this._rules.forEach((rule) => {
           let match = this._match(file, rule);
           if (!match && parentPath !== ".") {
             if (rule.dirs.includes("**")) {
               for (let i = rule.dirs.filter((x) => x !== "**").length; i <= parentPathDirs.length; i++) {
-                match = match || this._match(parentPathDirs.slice(0, i).join(path23.sep), rule);
+                match = match || this._match(parentPathDirs.slice(0, i).join(path22.sep), rule);
               }
             } else if (rule.dirs.length <= parentPathDirs.length) {
-              match = this._match(parentPathDirs.slice(0, rule.dirs.length).join(path23.sep), rule);
+              match = this._match(parentPathDirs.slice(0, rule.dirs.length).join(path22.sep), rule);
             }
           }
           if (match) {
@@ -55215,13 +57060,13 @@ var require_ignore = __commonJS({
           return rule;
         }
         let regStr = "^";
-        let escapedSlash = path23.sep === "\\" ? "\\\\" : path23.sep;
+        let escapedSlash = path22.sep === "\\" ? "\\\\" : path22.sep;
         for (let i = 0; i < rule.pattern.length; i++) {
           const ch = rule.pattern[i];
           if (ch === "*") {
             if (rule.pattern[i + 1] === "*") {
               i++;
-              if (rule.pattern[i + 1] === path23.sep) {
+              if (rule.pattern[i + 1] === path22.sep) {
                 i++;
               }
               if (rule.pattern[i + 1] === void 0) {
@@ -55237,7 +57082,7 @@ var require_ignore = __commonJS({
           } else if (ch === "." || ch === "$") {
             regStr += `\\${ch}`;
           } else if (ch === "\\") {
-            if (path23.sep === "\\") {
+            if (path22.sep === "\\") {
               regStr += escapedSlash;
               continue;
             }
@@ -55489,17 +57334,17 @@ var require_ignore2 = __commonJS({
     var throwError = (message, Ctor) => {
       throw new Ctor(message);
     };
-    var checkPath = (path23, originalPath, doThrow) => {
-      if (!isString(path23)) {
+    var checkPath = (path22, originalPath, doThrow) => {
+      if (!isString(path22)) {
         return doThrow(
           `path must be a string, but got \`${originalPath}\``,
           TypeError
         );
       }
-      if (!path23) {
+      if (!path22) {
         return doThrow(`path must not be empty`, TypeError);
       }
-      if (checkPath.isNotRelative(path23)) {
+      if (checkPath.isNotRelative(path22)) {
         const r = "`path.relative()`d";
         return doThrow(
           `path should be a ${r} string, but got "${originalPath}"`,
@@ -55508,7 +57353,7 @@ var require_ignore2 = __commonJS({
       }
       return true;
     };
-    var isNotRelative = (path23) => REGEX_TEST_INVALID_PATH.test(path23);
+    var isNotRelative = (path22) => REGEX_TEST_INVALID_PATH.test(path22);
     checkPath.isNotRelative = isNotRelative;
     checkPath.convert = (p) => p;
     var Ignore = class {
@@ -55567,7 +57412,7 @@ var require_ignore2 = __commonJS({
       //   setting `checkUnignored` to `false` could reduce additional
       //   path matching.
       // @returns {TestResult} true if a file is ignored
-      _testOne(path23, checkUnignored) {
+      _testOne(path22, checkUnignored) {
         let ignored = false;
         let unignored = false;
         this._rules.forEach((rule) => {
@@ -55575,7 +57420,7 @@ var require_ignore2 = __commonJS({
           if (unignored === negative && ignored !== unignored || negative && !ignored && !unignored && !checkUnignored) {
             return;
           }
-          const matched = rule.regex.test(path23);
+          const matched = rule.regex.test(path22);
           if (matched) {
             ignored = !negative;
             unignored = negative;
@@ -55588,24 +57433,24 @@ var require_ignore2 = __commonJS({
       }
       // @returns {TestResult}
       _test(originalPath, cache, checkUnignored, slices) {
-        const path23 = originalPath && checkPath.convert(originalPath);
+        const path22 = originalPath && checkPath.convert(originalPath);
         checkPath(
-          path23,
+          path22,
           originalPath,
           this._allowRelativePaths ? RETURN_FALSE : throwError
         );
-        return this._t(path23, cache, checkUnignored, slices);
+        return this._t(path22, cache, checkUnignored, slices);
       }
-      _t(path23, cache, checkUnignored, slices) {
-        if (path23 in cache) {
-          return cache[path23];
+      _t(path22, cache, checkUnignored, slices) {
+        if (path22 in cache) {
+          return cache[path22];
         }
         if (!slices) {
-          slices = path23.split(SLASH);
+          slices = path22.split(SLASH);
         }
         slices.pop();
         if (!slices.length) {
-          return cache[path23] = this._testOne(path23, checkUnignored);
+          return cache[path22] = this._testOne(path22, checkUnignored);
         }
         const parent = this._t(
           slices.join(SLASH) + SLASH,
@@ -55613,24 +57458,24 @@ var require_ignore2 = __commonJS({
           checkUnignored,
           slices
         );
-        return cache[path23] = parent.ignored ? parent : this._testOne(path23, checkUnignored);
+        return cache[path22] = parent.ignored ? parent : this._testOne(path22, checkUnignored);
       }
-      ignores(path23) {
-        return this._test(path23, this._ignoreCache, false).ignored;
+      ignores(path22) {
+        return this._test(path22, this._ignoreCache, false).ignored;
       }
       createFilter() {
-        return (path23) => !this.ignores(path23);
+        return (path22) => !this.ignores(path22);
       }
       filter(paths) {
         return makeArray(paths).filter(this.createFilter());
       }
       // @returns {TestResult}
-      test(path23) {
-        return this._test(path23, this._testCache, true);
+      test(path22) {
+        return this._test(path22, this._testCache, true);
       }
     };
     var factory = (options) => new Ignore(options);
-    var isPathValid = (path23) => checkPath(path23 && checkPath.convert(path23), path23, RETURN_FALSE);
+    var isPathValid = (path22) => checkPath(path22 && checkPath.convert(path22), path22, RETURN_FALSE);
     factory.isPathValid = isPathValid;
     factory.default = factory;
     module2.exports = factory;
@@ -55641,7 +57486,7 @@ var require_ignore2 = __commonJS({
       const makePosix = (str) => /^\\\\\?\\/.test(str) || /["<>|\u0000-\u001F]+/u.test(str) ? str : str.replace(/\\/g, "/");
       checkPath.convert = makePosix;
       const REGIX_IS_WINDOWS_PATH_ABSOLUTE = /^[a-z]:\//i;
-      checkPath.isNotRelative = (path23) => REGIX_IS_WINDOWS_PATH_ABSOLUTE.test(path23) || isNotRelative(path23);
+      checkPath.isNotRelative = (path22) => REGIX_IS_WINDOWS_PATH_ABSOLUTE.test(path22) || isNotRelative(path22);
     }
   }
 });
@@ -55720,7 +57565,7 @@ var require_commonjs2 = __commonJS({
   "../../aws-cdk-lib/node_modules/brace-expansion/dist/commonjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
+    exports2.EXPANSION_MAX_REWRITES = exports2.EXPANSION_MAX_DEPTH = exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
     exports2.expand = expand;
     var balanced_match_1 = require_commonjs();
     var escSlash = "\0SLASH" + Math.random() + "\0";
@@ -55740,6 +57585,8 @@ var require_commonjs2 = __commonJS({
     var periodPattern = /\\\./g;
     exports2.EXPANSION_MAX = 1e5;
     exports2.EXPANSION_MAX_LENGTH = 4e6;
+    exports2.EXPANSION_MAX_DEPTH = 1e3;
+    exports2.EXPANSION_MAX_REWRITES = 1e3;
     function numeric(str) {
       return !isNaN(str) ? parseInt(str, 10) : str.charCodeAt(0);
     }
@@ -55749,36 +57596,44 @@ var require_commonjs2 = __commonJS({
     function unescapeBraces(str) {
       return str.replace(escSlashPattern, "\\").replace(escOpenPattern, "{").replace(escClosePattern, "}").replace(escCommaPattern, ",").replace(escPeriodPattern, ".");
     }
+    function pushAll(target, items) {
+      for (let i = 0; i < items.length; i++) {
+        target.push(items[i]);
+      }
+    }
     function parseCommaParts(str) {
-      if (!str) {
-        return [""];
-      }
       const parts = [];
-      const m = (0, balanced_match_1.balanced)("{", "}", str);
-      if (!m) {
-        return str.split(",");
+      let carry = "";
+      for (; ; ) {
+        const m = (0, balanced_match_1.balanced)("{", "}", str);
+        if (!m) {
+          const tail = str.split(",");
+          tail[0] = carry + tail[0];
+          pushAll(parts, tail);
+          return parts;
+        }
+        const { pre, body, post } = m;
+        const p = pre.split(",");
+        p[0] = carry + p[0];
+        p[p.length - 1] += "{" + body + "}";
+        if (!post.length) {
+          pushAll(parts, p);
+          return parts;
+        }
+        carry = p.pop();
+        pushAll(parts, p);
+        str = post;
       }
-      const { pre, body, post } = m;
-      const p = pre.split(",");
-      p[p.length - 1] += "{" + body + "}";
-      const postParts = parseCommaParts(post);
-      if (post.length) {
-        ;
-        p[p.length - 1] += postParts.shift();
-        p.push.apply(p, postParts);
-      }
-      parts.push.apply(parts, p);
-      return parts;
     }
     function expand(str, options = {}) {
       if (!str) {
         return [];
       }
-      const { max = exports2.EXPANSION_MAX, maxLength = exports2.EXPANSION_MAX_LENGTH } = options;
+      const { max = exports2.EXPANSION_MAX, maxLength = exports2.EXPANSION_MAX_LENGTH, maxDepth = exports2.EXPANSION_MAX_DEPTH, maxRewrites = exports2.EXPANSION_MAX_REWRITES } = options;
       if (str.slice(0, 2) === "{}") {
         str = "\\{\\}" + str.slice(2);
       }
-      return expand_(escapeBraces(str), max, maxLength, true).map(unescapeBraces);
+      return expand_(escapeBraces(str), max, maxLength, maxDepth, 0, maxRewrites, true).map(unescapeBraces);
     }
     function embrace(str) {
       return "{" + str + "}";
@@ -55856,8 +57711,12 @@ var require_commonjs2 = __commonJS({
       }
       return N;
     }
-    function expand_(str, max, maxLength, isTop) {
+    function expand_(str, max, maxLength, maxDepth, depth, maxRewrites, isTop) {
+      if (depth > maxDepth) {
+        return [str];
+      }
       let acc = [""];
+      let rewrites = 0;
       let dropEmpties = false;
       let firstGroup = true;
       for (; ; ) {
@@ -55879,7 +57738,8 @@ var require_commonjs2 = __commonJS({
         const isSequence = isNumericSequence || isAlphaSequence;
         const isOptions = m.body.indexOf(",") >= 0;
         if (!isSequence && !isOptions) {
-          if (m.post.match(/,(?!,).*\}/)) {
+          if (rewrites < maxRewrites && m.post.match(/,(?!,).*\}/)) {
+            rewrites++;
             str = m.pre + "{" + m.body + escClose + m.post;
             isTop = true;
             continue;
@@ -55896,7 +57756,7 @@ var require_commonjs2 = __commonJS({
         } else {
           let n = parseCommaParts(m.body);
           if (n.length === 1 && n[0] !== void 0) {
-            n = expand_(n[0], max, maxLength, false).map(embrace);
+            n = expand_(n[0], max, maxLength, maxDepth, depth + 1, maxRewrites, false).map(embrace);
             if (n.length === 1) {
               acc = combine(acc, pre + n[0], [""], max, maxLength, dropEmpties && !m.post.length);
               if (!m.post.length)
@@ -55914,7 +57774,7 @@ var require_commonjs2 = __commonJS({
           values = [];
           let valuesLength = 0;
           outer: for (let j = 0; j < n.length; j++) {
-            const expanded = expand_(n[j], max, maxLength, false);
+            const expanded = expand_(n[j], max, maxLength, maxDepth, depth + 1, maxRewrites, false);
             for (let k = 0; k < expanded.length; k++) {
               const v = expanded[k];
               if (dropsEmpties && !v)
@@ -56829,11 +58689,11 @@ var require_commonjs3 = __commonJS({
       return (f) => f.length === len && f !== "." && f !== "..";
     };
     var defaultPlatform = typeof process === "object" && process ? typeof process.env === "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
-    var path23 = {
+    var path22 = {
       win32: { sep: "\\" },
       posix: { sep: "/" }
     };
-    exports2.sep = defaultPlatform === "win32" ? path23.win32.sep : path23.posix.sep;
+    exports2.sep = defaultPlatform === "win32" ? path22.win32.sep : path22.posix.sep;
     exports2.minimatch.sep = exports2.sep;
     exports2.GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
     exports2.minimatch.GLOBSTAR = exports2.GLOBSTAR;
@@ -57786,13 +59646,13 @@ var init_ignore = __esm({
         this.completeIgnore.add(pattern);
         const negativeMatch = pattern.match(this.negativeIgnoreRegex);
         if (negativeMatch !== null) {
-          let dirname5 = negativeMatch[2];
+          let dirname6 = negativeMatch[2];
           while (true) {
-            dirname5 = path.dirname(dirname5);
-            if (dirname5 === "/" || dirname5 === ".") {
+            dirname6 = path.dirname(dirname6);
+            if (dirname6 === "/" || dirname6 === ".") {
               break;
             }
-            this.completeIgnore.add(negativeMatch[1] + dirname5);
+            this.completeIgnore.add(negativeMatch[1] + dirname6);
           }
         }
       }
@@ -57834,35 +59694,100 @@ var init_ignore = __esm({
 });
 
 // ../../aws-cdk-lib/core/lib/fs/utils.ts
-function shouldFollow(mode, sourceRoot, realPath) {
-  switch (mode) {
-    case "always" /* ALWAYS */:
-      return fs2.existsSync(realPath);
-    case "external" /* EXTERNAL */:
-      return !_isInternal() && fs2.existsSync(realPath);
-    case "internal-only" /* BLOCK_EXTERNAL */:
-      if (_isInternal()) {
-        return fs2.existsSync(realPath);
-      } else {
-        throw new UnscopedValidationError(
-          lit`BundlingFileSymlinkForbidden`,
-          `The file ${realPath} is an external symbolic link which is forbidden due to follow mode ${mode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`
-        );
-      }
-    case "never" /* NEVER */:
-      return false;
-    default:
-      throw new UnscopedValidationError(lit`UnsupportedFollowMode`, `Unsupported FollowMode: ${mode}`);
-  }
-  function _isInternal() {
-    return isInternalPath(path2.resolve(sourceRoot), path2.resolve(realPath));
-  }
-}
 function isInternalPath(rootPath, targetPath) {
   return rootPath === targetPath || targetPath.startsWith(rootPath + path2.sep);
 }
 function resolveLinkTarget(realPath, linkTarget) {
   return path2.isAbsolute(linkTarget) ? path2.resolve(linkTarget) : path2.resolve(path2.dirname(realPath), linkTarget);
+}
+function walkDirectory(directory, options, visitor) {
+  const { follow, ignoreStrategy } = options;
+  const canonicalRoot = realPathOrSelf(options.root ?? directory);
+  const ancestors = /* @__PURE__ */ new Set();
+  walk(directory, directory, realPathOrSelf(directory));
+  function walk(symbolicPath, realPath, canonicalPath) {
+    if (ancestors.has(canonicalPath)) {
+      return;
+    }
+    ancestors.add(canonicalPath);
+    const entries = fs2.readdirSync(realPath, { withFileTypes: true });
+    entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    for (const entry of entries) {
+      const childPath = path2.join(symbolicPath, entry.name);
+      const childRealPath = path2.join(realPath, entry.name);
+      if (entry.isSymbolicLink()) {
+        visitSymlink(childPath, childRealPath);
+      } else if (entry.isDirectory()) {
+        visitDirectory(childPath, childRealPath, path2.join(canonicalPath, entry.name));
+      } else if (entry.isFile()) {
+        visitFile({ path: childPath, realPath: childRealPath });
+      }
+    }
+    ancestors.delete(canonicalPath);
+  }
+  function visitDirectory(symbolicPath, realPath, canonicalPath) {
+    if (ignoreStrategy.completelyIgnores(symbolicPath)) {
+      return;
+    }
+    if (visitor.onDirectory) {
+      visitor.onDirectory({ path: symbolicPath, realPath, ignored: ignoreStrategy.ignores(symbolicPath) });
+    }
+    walk(symbolicPath, realPath, canonicalPath);
+  }
+  function visitFile(entry) {
+    if (!ignoreStrategy.ignores(entry.path)) {
+      visitor.onFile?.(entry);
+    }
+  }
+  function visitSymlink(symbolicPath, realPath) {
+    const linkTarget = fs2.readlinkSync(realPath);
+    const resolvedLinkTarget = canonicalLinkTarget(resolveLinkTarget(realPath, linkTarget));
+    const internal = isInternalPath(canonicalRoot, resolvedLinkTarget);
+    const targetStats = shouldFollow(internal) ? tryStat(resolvedLinkTarget) : void 0;
+    if (!targetStats) {
+      if (!ignoreStrategy.ignores(symbolicPath)) {
+        visitor.onSymlink?.({ path: symbolicPath, realPath, linkTarget, resolvedLinkTarget, internal });
+      }
+      return;
+    }
+    if (targetStats.isDirectory()) {
+      visitDirectory(symbolicPath, resolvedLinkTarget, realPathOrSelf(resolvedLinkTarget));
+    } else if (targetStats.isFile()) {
+      visitFile({ path: symbolicPath, realPath: resolvedLinkTarget, stats: targetStats });
+    } else if (!ignoreStrategy.ignores(symbolicPath)) {
+      visitor.onUnsupported?.({ path: symbolicPath, realPath: resolvedLinkTarget });
+    }
+  }
+  function shouldFollow(internal) {
+    switch (follow) {
+      case "always" /* ALWAYS */:
+        return true;
+      case "external" /* EXTERNAL */:
+        return !internal;
+      case "internal-only" /* BLOCK_EXTERNAL */:
+        return internal;
+      case "never" /* NEVER */:
+      default:
+        return false;
+    }
+  }
+}
+function canonicalLinkTarget(target) {
+  return path2.join(realPathOrSelf(path2.dirname(target)), path2.basename(target));
+}
+function realPathOrSelf(target) {
+  try {
+    return fs2.realpathSync(target);
+  } catch {
+    return target;
+  }
+}
+function tryStat(target) {
+  try {
+    return fs2.statSync(target, { bigint: true });
+  } catch {
+    return void 0;
+  }
 }
 var fs2, path2;
 var init_utils = __esm({
@@ -57871,52 +59796,50 @@ var init_utils = __esm({
     fs2 = __toESM(require("fs"));
     path2 = __toESM(require("path"));
     init_options();
-    init_errors();
-    init_literal_string();
   }
 });
 
 // ../../aws-cdk-lib/core/lib/fs/copy.ts
 function copyDirectory(srcDir, destDir, options = {}, rootDir) {
   const follow = options.follow ?? "external" /* EXTERNAL */;
-  rootDir = rootDir || srcDir;
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
+  const root = rootDir || srcDir;
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
   if (!fs3.statSync(srcDir).isDirectory()) {
     throw new UnscopedValidationError(lit`Directory`, `${srcDir} is not a directory`);
   }
-  const files = fs3.readdirSync(srcDir);
-  for (const file of files) {
-    const sourceFilePath = path3.join(srcDir, file);
-    if (ignoreStrategy.completelyIgnores(sourceFilePath)) {
-      continue;
-    }
-    const destFilePath = path3.join(destDir, file);
-    let stat = follow === "always" /* ALWAYS */ ? fs3.statSync(sourceFilePath) : fs3.lstatSync(sourceFilePath);
-    if (stat && stat.isSymbolicLink()) {
-      const target = fs3.readlinkSync(sourceFilePath);
-      const targetPath = path3.normalize(path3.resolve(srcDir, target));
-      if (shouldFollow(follow, rootDir, targetPath)) {
-        stat = fs3.statSync(sourceFilePath);
-      } else {
-        if (!ignoreStrategy.ignores(sourceFilePath)) {
-          fs3.mkdirSync(destDir, { recursive: true });
-          fs3.symlinkSync(target, destFilePath);
-        }
-        stat = void 0;
+  const canonicalSrcDir = fs3.realpathSync(srcDir);
+  walkDirectory(srcDir, { follow, ignoreStrategy, root }, {
+    onDirectory: (entry) => {
+      if (!entry.ignored) {
+        fs3.mkdirSync(destinationOf(entry.path), { recursive: true });
       }
-    }
-    if (stat && stat.isDirectory()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) fs3.mkdirSync(destFilePath, { recursive: true });
-      copyDirectory(sourceFilePath, destFilePath, options, rootDir);
-      stat = void 0;
-    }
-    if (stat && stat.isFile()) {
-      if (!ignoreStrategy.ignores(sourceFilePath)) {
-        fs3.mkdirSync(destDir, { recursive: true });
-        fs3.copyFileSync(sourceFilePath, destFilePath);
+    },
+    onFile: (entry) => {
+      const destination = destinationOf(entry.path);
+      fs3.mkdirSync(path3.dirname(destination), { recursive: true });
+      fs3.copyFileSync(entry.realPath, destination);
+    },
+    onSymlink: (entry) => {
+      if (follow === "internal-only" /* BLOCK_EXTERNAL */ && !entry.internal) {
+        throw new UnscopedValidationError(
+          lit`BundlingFileSymlinkForbidden`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${follow}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`
+        );
       }
-      stat = void 0;
+      const destination = destinationOf(entry.path);
+      fs3.mkdirSync(path3.dirname(destination), { recursive: true });
+      fs3.symlinkSync(linkTextFor(entry, destination), destination);
     }
+  });
+  function destinationOf(sourcePath) {
+    return path3.join(destDir, path3.relative(srcDir, sourcePath));
+  }
+  function linkTextFor(entry, destination) {
+    if (!isInternalPath(canonicalSrcDir, entry.resolvedLinkTarget)) {
+      return entry.linkTarget;
+    }
+    const copiedTarget = path3.join(destDir, path3.relative(canonicalSrcDir, entry.resolvedLinkTarget));
+    return path3.relative(path3.dirname(destination), copiedTarget) || ".";
   }
 }
 var fs3, path3;
@@ -58047,103 +59970,44 @@ function fingerprint(fileOrDirectory, options = {}) {
   _hashField(hash, "options.extra", options.extraHash || "");
   const follow = options.follow || "external" /* EXTERNAL */;
   _hashField(hash, "options.follow", follow);
-  fileOrDirectory = fs5.realpathSync(fileOrDirectory);
-  const isDir = fs5.statSync(fileOrDirectory).isDirectory();
-  const rootDirectory = isDir ? fileOrDirectory : path5.dirname(fileOrDirectory);
+  const root = fs5.realpathSync(fileOrDirectory);
+  const isDir = fs5.statSync(root).isDirectory();
+  const rootDirectory = isDir ? root : path5.dirname(root);
   const ignoreMode = options.ignoreMode || "glob" /* GLOB */;
   if (ignoreMode != "glob" /* GLOB */) {
     _hashField(hash, "options.ignoreMode", ignoreMode);
   }
   const resolvedRoot = path5.resolve(rootDirectory);
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
   const cache = new FingerprintDiskCache(resolvedRoot);
-  function _contentFingerprint(file) {
-    const stats = fs5.statSync(file, { bigint: true });
-    return contentFingerprintWithStats(file, stats, cache);
-  }
   if (isDir) {
-    _processDirectory(fileOrDirectory, fileOrDirectory);
+    walkDirectory(root, { follow, ignoreStrategy }, {
+      onFile: (entry) => hashFileContent(entry.path, entry.stats ? contentFingerprintWithStats(entry.realPath, entry.stats, cache) : contentFingerprintOf(entry.realPath)),
+      onSymlink: (entry) => hashLinkTarget(entry),
+      onUnsupported: (entry) => {
+        throw new UnscopedValidationError(
+          lit`UnableToUnableHashNeither`,
+          `Unable to hash ${entry.path}: it is neither a file nor a directory`
+        );
+      }
+    });
   } else {
-    const hashComponent = path5.relative(fileOrDirectory, fileOrDirectory).replace(/\\/g, "/");
-    _hashField(hash, `file:${hashComponent}`, _contentFingerprint(fileOrDirectory));
+    hashFileContent(root, contentFingerprintOf(root));
   }
   cache.save();
   return hash.digest("hex");
-  function _shouldFollowLink(resolvedLinkTarget) {
-    switch (follow) {
-      case "always" /* ALWAYS */:
-        return true;
-      case "external" /* EXTERNAL */:
-        return !isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case "internal-only" /* BLOCK_EXTERNAL */:
-        return isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case "never" /* NEVER */:
-        return false;
-      default:
-        return false;
-    }
+  function hashKey(symbolicPath) {
+    return path5.relative(root, symbolicPath).replace(/\\/g, "/");
   }
-  function _processDirectory(symbolicPath, realPath) {
-    const entries = fs5.readdirSync(realPath, { withFileTypes: true });
-    const sorted = entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    for (const entry of sorted) {
-      const childSymbolicPath = path5.join(symbolicPath, entry.name);
-      const childRealPath = path5.join(realPath, entry.name);
-      if (entry.isSymbolicLink()) {
-        _processSymlink(childSymbolicPath, childRealPath);
-      } else if (entry.isFile()) {
-        if (ignoreStrategy.ignores(childSymbolicPath)) {
-          continue;
-        }
-        const hashComponent = path5.relative(fileOrDirectory, childSymbolicPath).replace(/\\/g, "/");
-        _hashField(hash, `file:${hashComponent}`, _contentFingerprint(childRealPath));
-      } else if (entry.isDirectory()) {
-        if (ignoreStrategy.completelyIgnores(childSymbolicPath)) {
-          continue;
-        }
-        _processDirectory(childSymbolicPath, childRealPath);
-      }
-    }
+  function hashFileContent(symbolicPath, contentHash2) {
+    _hashField(hash, `file:${hashKey(symbolicPath)}`, contentHash2);
   }
-  function _processSymlink(symbolicPath, realPath) {
-    const linkTarget = fs5.readlinkSync(realPath);
-    const resolvedLinkTarget = resolveLinkTarget(realPath, linkTarget);
-    if (!_shouldFollowLink(resolvedLinkTarget)) {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
-    let targetStat;
-    try {
-      targetStat = fs5.statSync(resolvedLinkTarget, { bigint: true });
-    } catch {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
-    if (targetStat.isDirectory()) {
-      if (ignoreStrategy.completelyIgnores(symbolicPath)) {
-        return;
-      }
-      _processDirectory(symbolicPath, resolvedLinkTarget);
-    } else if (targetStat.isFile()) {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path5.relative(fileOrDirectory, symbolicPath).replace(/\\/g, "/");
-      _hashField(hash, `file:${hashComponent}`, contentFingerprintWithStats(resolvedLinkTarget, targetStat, cache));
-    } else {
-      throw new UnscopedValidationError(
-        lit`UnableToUnableHashNeither`,
-        `Unable to hash ${symbolicPath}: it is neither a file nor a directory`
-      );
-    }
+  function hashLinkTarget(entry) {
+    const target = entry.internal && path5.isAbsolute(entry.linkTarget) ? hashKey(entry.resolvedLinkTarget) : entry.linkTarget;
+    _hashField(hash, `link:${hashKey(entry.path)}`, target);
+  }
+  function contentFingerprintOf(file) {
+    return contentFingerprintWithStats(file, fs5.statSync(file, { bigint: true }), cache);
   }
 }
 function contentFingerprintWithStats(file, stats, cache) {
@@ -58395,8 +60259,8 @@ var init_fs = __esm({
       /**
        * Deletes a directory
        */
-      static rmrf(dirname5) {
-        fs6.rmSync(dirname5, { force: true, recursive: true });
+      static rmrf(dirname6) {
+        fs6.rmSync(dirname6, { force: true, recursive: true });
       }
       static _tmpdir;
     };
@@ -58706,8 +60570,8 @@ var init_bundling = __esm({
        *
        * @deprecated use DockerImage.fromBuild()
        */
-      static fromAsset(path23, options = {}) {
-        return DockerImage.fromBuild(path23, options);
+      static fromAsset(path22, options = {}) {
+        return DockerImage.fromBuild(path22, options);
       }
       /**
        * Provides a stable representation of this image for JSON serialization.
@@ -58774,12 +60638,12 @@ var init_bundling = __esm({
         reset(deprecated);
         this.image = image;
       }
-      static fromBuild(path23, options = {}) {
+      static fromBuild(path22, options = {}) {
         const buildArgs = options.buildArgs || {};
         if (options.file && (0, import_path.isAbsolute)(options.file)) {
           throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
         }
-        const hash = FileSystem.fingerprint(path23, { extraHash: JSON.stringify(options) });
+        const hash = FileSystem.fingerprint(path22, { extraHash: JSON.stringify(options) });
         const tag = `cdk-${hash}`;
         const usingBuildContexts = Object.keys(options.buildContexts ?? {}).length > 0;
         if (usingBuildContexts || !this.imageAlreadyExists(tag)) {
@@ -58787,7 +60651,7 @@ var init_bundling = __esm({
             "build",
             "-t",
             tag,
-            ...options.file ? ["-f", (0, import_path.join)(path23, options.file)] : [],
+            ...options.file ? ["-f", (0, import_path.join)(path22, options.file)] : [],
             ...options.platform ? ["--platform", options.platform] : [],
             ...options.network ? ["--network", options.network] : [],
             ...options.targetStage ? ["--target", options.targetStage] : [],
@@ -58796,7 +60660,7 @@ var init_bundling = __esm({
             ...options.cacheDisabled ? ["--no-cache"] : [],
             ...flatten(Object.entries(buildArgs).map(([k, v]) => ["--build-arg", `${k}=${v}`])),
             ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ["--build-context", `${k}=${v}`])),
-            path23
+            path22
           ];
           dockerExec(dockerArgs);
         }
@@ -58912,32 +60776,18 @@ function determineHashType(scope, assetHashType, customSourceFingerprint) {
   }
   return hashType;
 }
-function validateInternalSymlinks(root, scope, followMode, ignoreStrat, subRoot = root) {
-  const entries = fs7.readdirSync(subRoot, { withFileTypes: true });
-  for (const entry of entries) {
-    const childPath = path7.join(subRoot, entry.name);
-    if (entry.isDirectory()) {
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      validateInternalSymlinks(root, scope, followMode, ignoreStrat, childPath);
-    } else if (!entry.isSymbolicLink()) {
-      continue;
-    } else {
-      if (ignoreStrat.completelyIgnores(childPath)) {
-        continue;
-      }
-      const linkPath = fs7.readlinkSync(childPath);
-      const resolvedPath3 = resolveLinkTarget(childPath, linkPath);
-      if (!isInternalPath(root, resolvedPath3)) {
+function validateInternalSymlinks(root, scope, followMode, ignoreStrat) {
+  walkDirectory(root, { follow: followMode, ignoreStrategy: ignoreStrat }, {
+    onSymlink: (entry) => {
+      if (!entry.internal) {
         throw new ValidationError(
           lit`BundlingFileSymlinkForbidden`,
-          `The file ${resolvedPath3} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
           scope
         );
       }
     }
-  }
+  });
 }
 function calculateCacheKey(props) {
   return crypto6.createHash("sha256").update(JSON.stringify(sortObject(props), sanitizeHashValue)).digest("hex");
@@ -60151,9 +62001,9 @@ var init_custom_resource_provider_base = __esm({
               S3Key: asset.objectKey
             },
             codeHandler,
-            metadata: this.node.tryGetContext(import_cloud_assembly_api.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
-              [import_cloud_assembly_api.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
-              [import_cloud_assembly_api.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: "Code"
+            metadata: this.node.tryGetContext(import_cloud_assembly_api2.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT) ? {
+              [import_cloud_assembly_api2.ASSET_RESOURCE_METADATA_PATH_KEY]: assetFileName,
+              [import_cloud_assembly_api2.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: "Code"
             } : void 0
           };
         }
@@ -71252,10 +73102,10 @@ ${indent}${str}`;
         return String(this.value);
       }
     };
-    function collectionFromPath(schema, path23, value) {
+    function collectionFromPath(schema, path22, value) {
       let v = value;
-      for (let i = path23.length - 1; i >= 0; --i) {
-        const k = path23[i];
+      for (let i = path22.length - 1; i >= 0; --i) {
+        const k = path22[i];
         if (Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -71273,17 +73123,17 @@ ${indent}${str}`;
       }
       return schema.createNode(v, false);
     }
-    var isEmptyPath = (path23) => path23 == null || typeof path23 === "object" && path23[Symbol.iterator]().next().done;
+    var isEmptyPath = (path22) => path22 == null || typeof path22 === "object" && path22[Symbol.iterator]().next().done;
     var Collection2 = class _Collection extends Node11 {
       constructor(schema) {
         super();
         PlainValue._defineProperty(this, "items", []);
         this.schema = schema;
       }
-      addIn(path23, value) {
-        if (isEmptyPath(path23)) this.add(value);
+      addIn(path22, value) {
+        if (isEmptyPath(path22)) this.add(value);
         else {
-          const [key, ...rest] = path23;
+          const [key, ...rest] = path22;
           const node = this.get(key, true);
           if (node instanceof _Collection) node.addIn(rest, value);
           else if (node === void 0 && this.schema) this.set(key, collectionFromPath(this.schema, rest, value));
@@ -71836,12 +73686,12 @@ ${ctx.indent}`;
       for (const {
         format,
         test,
-        resolve: resolve7
+        resolve: resolve6
       } of tags) {
         if (test) {
           const match = str.match(test);
           if (match) {
-            let res = resolve7.apply(null, match);
+            let res = resolve6.apply(null, match);
             if (!(res instanceof Scalar2)) res = new Scalar2(res);
             if (format) res.format = format;
             return res;
@@ -73326,8 +75176,8 @@ ${pair.comment}` : item.comment;
     }
     function warnFileDeprecation(filename) {
       if (shouldWarn(true)) {
-        const path23 = filename.replace(/.*yaml[/\\]/i, "").replace(/\.js$/, "").replace(/\\/g, "/");
-        warn(`The endpoint 'yaml/${path23}' will be removed in a future release.`, "DeprecationWarning");
+        const path22 = filename.replace(/.*yaml[/\\]/i, "").replace(/\.js$/, "").replace(/\\/g, "/");
+        warn(`The endpoint 'yaml/${path22}' will be removed in a future release.`, "DeprecationWarning");
       }
     }
     var warned = {};
@@ -74237,22 +76087,22 @@ ${cbNode.commentBefore}` : cb;
         assertCollection(this.contents);
         return this.contents.add(value);
       }
-      addIn(path23, value) {
+      addIn(path22, value) {
         assertCollection(this.contents);
-        this.contents.addIn(path23, value);
+        this.contents.addIn(path22, value);
       }
       delete(key) {
         assertCollection(this.contents);
         return this.contents.delete(key);
       }
-      deleteIn(path23) {
-        if (resolveSeq.isEmptyPath(path23)) {
+      deleteIn(path22) {
+        if (resolveSeq.isEmptyPath(path22)) {
           if (this.contents == null) return false;
           this.contents = null;
           return true;
         }
         assertCollection(this.contents);
-        return this.contents.deleteIn(path23);
+        return this.contents.deleteIn(path22);
       }
       getDefaults() {
         return _Document.defaults[this.version] || _Document.defaults[this.options.version] || {};
@@ -74260,26 +76110,26 @@ ${cbNode.commentBefore}` : cb;
       get(key, keepScalar) {
         return this.contents instanceof resolveSeq.Collection ? this.contents.get(key, keepScalar) : void 0;
       }
-      getIn(path23, keepScalar) {
-        if (resolveSeq.isEmptyPath(path23)) return !keepScalar && this.contents instanceof resolveSeq.Scalar ? this.contents.value : this.contents;
-        return this.contents instanceof resolveSeq.Collection ? this.contents.getIn(path23, keepScalar) : void 0;
+      getIn(path22, keepScalar) {
+        if (resolveSeq.isEmptyPath(path22)) return !keepScalar && this.contents instanceof resolveSeq.Scalar ? this.contents.value : this.contents;
+        return this.contents instanceof resolveSeq.Collection ? this.contents.getIn(path22, keepScalar) : void 0;
       }
       has(key) {
         return this.contents instanceof resolveSeq.Collection ? this.contents.has(key) : false;
       }
-      hasIn(path23) {
-        if (resolveSeq.isEmptyPath(path23)) return this.contents !== void 0;
-        return this.contents instanceof resolveSeq.Collection ? this.contents.hasIn(path23) : false;
+      hasIn(path22) {
+        if (resolveSeq.isEmptyPath(path22)) return this.contents !== void 0;
+        return this.contents instanceof resolveSeq.Collection ? this.contents.hasIn(path22) : false;
       }
       set(key, value) {
         assertCollection(this.contents);
         this.contents.set(key, value);
       }
-      setIn(path23, value) {
-        if (resolveSeq.isEmptyPath(path23)) this.contents = value;
+      setIn(path22, value) {
+        if (resolveSeq.isEmptyPath(path22)) this.contents = value;
         else {
           assertCollection(this.contents);
-          this.contents.setIn(path23, value);
+          this.contents.setIn(path22, value);
         }
       }
       setSchema(id, customTags) {
@@ -77135,7 +78985,7 @@ function* iterateDfsPreorder(root) {
     next = stack.pop();
   }
 }
-function* iterateStackCfnResources(root) {
+function* iterateTemplateCfnResources(root) {
   const stack = [root];
   let next = stack.pop();
   while (next) {
@@ -77237,10 +79087,10 @@ function resolveReferencesInElements(elements) {
 }
 function resolveValue(consumer, reference, strengthOverride) {
   const producer = stackOf(reference.target);
-  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : import_cloud_assembly_api.UNKNOWN_ACCOUNT;
-  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : import_cloud_assembly_api.UNKNOWN_REGION;
-  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : import_cloud_assembly_api.UNKNOWN_ACCOUNT;
-  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : import_cloud_assembly_api.UNKNOWN_REGION;
+  const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : import_cloud_assembly_api2.UNKNOWN_ACCOUNT;
+  const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : import_cloud_assembly_api2.UNKNOWN_REGION;
+  const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : import_cloud_assembly_api2.UNKNOWN_ACCOUNT;
+  const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : import_cloud_assembly_api2.UNKNOWN_REGION;
   const resourceStrength = CfnResource.isCfnResource(reference.target) ? reference.target._crossStackReferenceStrengthOverride : void 0;
   const strength = strengthOverride ?? resourceStrength ?? crossStackReferenceStrength(consumer) ?? "strong";
   if (producer === consumer) {
@@ -77292,7 +79142,7 @@ function resolveValue(consumer, reference, strengthOverride) {
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". Could not find a CloudFormation execution role for the consumer stack. Use a stack synthesizer that provides a CloudFormation execution role, such as DefaultStackSynthesizer (that uses the role from the bootstrap stack), or one that you can customize, such as BootstraplessSynthesizer.`
       );
     }
-    if (producerRegion === import_cloud_assembly_api.UNKNOWN_REGION || consumerRegion === import_cloud_assembly_api.UNKNOWN_REGION) {
+    if (producerRegion === import_cloud_assembly_api2.UNKNOWN_REGION || consumerRegion === import_cloud_assembly_api2.UNKNOWN_REGION) {
       throw new UnscopedValidationError(
         lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". Cross stack/region references are only supported for stacks with an explicit region defined. `
@@ -77313,7 +79163,7 @@ function resolveValue(consumer, reference, strengthOverride) {
     });
   }
   if (producerRegion !== consumerRegion) {
-    if (producerRegion === import_cloud_assembly_api.UNKNOWN_REGION || consumerRegion === import_cloud_assembly_api.UNKNOWN_REGION) {
+    if (producerRegion === import_cloud_assembly_api2.UNKNOWN_REGION || consumerRegion === import_cloud_assembly_api2.UNKNOWN_REGION) {
       throw new UnscopedValidationError(
         lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". Cross stack/region references are only supported for stacks with an explicit region defined. `
@@ -77751,7 +79601,7 @@ function* dependingResourcesFor(construct) {
     yield construct.construct.nestedStackResource;
   }
   if (construct.type === "construct") {
-    yield* iterateStackCfnResources(construct.construct);
+    yield* iterateTemplateCfnResources(construct.construct);
   }
 }
 function dependencyContainerPath(start) {
@@ -77904,270 +79754,6 @@ var init_prepare_app = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/tree.ts
-var TreeInspector;
-var init_tree = __esm({
-  "../../aws-cdk-lib/core/lib/tree.ts"() {
-    "use strict";
-    TreeInspector = class {
-      /**
-       * Represents the bag of attributes as key-value pairs.
-       */
-      attributes = {};
-      /**
-       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
-       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
-       *
-       * @param key - key for metadata
-       * @param value - value of metadata.
-       */
-      addAttribute(key, value) {
-        this.attributes[key] = value;
-      }
-    };
-  }
-});
-
-// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
-function nodeCount(root) {
-  let count2 = 0;
-  const stack = [root];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    count2 += 1;
-    if (current.children) {
-      for (const child of Object.values(current.children)) {
-        stack.push(child);
-      }
-    }
-  }
-  return count2;
-}
-function setChild(parent, node) {
-  if (!parent.children) {
-    parent.children = {};
-  }
-  parent.children[node.id] = node;
-}
-var fs10, path13, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
-var init_tree_metadata = __esm({
-  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
-    "use strict";
-    fs10 = __toESM(require("fs"));
-    path13 = __toESM(require("path"));
-    import_constructs16 = __toESM(require_lib4());
-    init_runtime_info();
-    init_cloud_assembly_schema();
-    init_annotations();
-    init_tree();
-    init_construct_iteration();
-    init_errors();
-    init_core_construct_finders();
-    init_literal_string();
-    FILE_PATH = "tree.json";
-    TreeMetadata = class extends import_constructs16.Construct {
-      constructor(scope) {
-        super(scope, "Tree");
-      }
-      /**
-       * Create tree.json
-       * @internal
-       */
-      _synthesizeTree(session) {
-        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
-        const builder = session.assembly;
-        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
-        for (const { construct, parent } of iterateBfs(this.node.root)) {
-          const node = {
-            id: construct.node.id || "App",
-            path: construct.node.path,
-            constructInfo: constructInfoFromConstruct(construct)
-          };
-          try {
-            node.attributes = this.synthAttributes(construct);
-          } catch (e) {
-            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
-          }
-          writer.addNode(construct, parent, node);
-        }
-        const rootFilename = writer.writeForest();
-        builder.addArtifact("Tree", {
-          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
-          properties: {
-            file: rootFilename
-          }
-        });
-      }
-      synthAttributes(construct) {
-        function canInspect2(inspectable) {
-          return inspectable.inspect !== void 0;
-        }
-        const inspector = new TreeInspector();
-        if (canInspect2(construct)) {
-          construct.inspect(inspector);
-          return stackOf(construct).resolve(inspector.attributes);
-        }
-        return void 0;
-      }
-    };
-    FragmentedTreeWriter = class {
-      constructor(outdir, rootFilename, options) {
-        this.outdir = outdir;
-        this.rootFilename = rootFilename;
-        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
-      }
-      outdir;
-      rootFilename;
-      /**
-       * We only care about the identify of this object.
-       *
-       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
-       */
-      mainTreePointer = {
-        fileName: "yyy",
-        id: "id",
-        path: "path"
-      };
-      forest = new Array();
-      /**
-       * Maps a Construct to its respective Node
-       */
-      constructMap = /* @__PURE__ */ new Map();
-      /**
-       * Map a root Node to its containing Tree
-       */
-      subtreeRoots = /* @__PURE__ */ new Map();
-      /**
-       * Map a Node to its parent Node
-       */
-      parent = /* @__PURE__ */ new Map();
-      maxNodes;
-      /**
-       * Write the forest to disk, return the root file name
-       */
-      writeForest() {
-        const forestFiles = this.allocateSubTreesToForestFiles();
-        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
-        if (mainTree) {
-          const treeFile = { version: "tree-0.1", tree: mainTree.root };
-          fs10.writeFileSync(path13.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
-        }
-        for (const forestFile of forestFiles) {
-          fs10.writeFileSync(path13.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
-        }
-        return this.rootFilename;
-      }
-      /**
-       * Find all non-main tree and combine them into forest files
-       *
-       * This will mutate the pointing nodes as a side effect.
-       */
-      allocateSubTreesToForestFiles() {
-        const ret = new Array();
-        for (const tree of this.forest) {
-          if (tree.referencingNode === this.mainTreePointer) {
-            continue;
-          }
-          let targetForest;
-          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
-            targetForest = {
-              fileName: `trees-${ret.length + 1}.json`,
-              file: { version: "forest-0.1", forest: {} },
-              nodeCount: 0,
-              treeCount: 0
-            };
-            ret.push(targetForest);
-          } else {
-            targetForest = ret[ret.length - 1];
-          }
-          const treeId = `t${targetForest.treeCount++}`;
-          targetForest.file.forest[treeId] = tree.root;
-          targetForest.nodeCount += tree.nodes;
-          tree.referencingNode.fileName = targetForest.fileName;
-          tree.referencingNode.treeId = treeId;
-        }
-        return ret;
-      }
-      addNode(construct, parent, node) {
-        if (parent === void 0) {
-          if (this.forest.length > 0) {
-            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
-          }
-          this.addNewTree(node, this.mainTreePointer);
-        } else {
-          const parentNode = this.constructMap.get(parent);
-          if (!parentNode) {
-            return;
-          }
-          this.addToExistingTree(node, parentNode);
-        }
-        this.constructMap.set(construct, node);
-      }
-      /**
-       * Add a new tree with the given Node as root
-       */
-      addNewTree(root, referencingNode) {
-        const tree = {
-          root,
-          referencingNode,
-          nodes: nodeCount(root)
-        };
-        this.forest.push(tree);
-        this.subtreeRoots.set(root, tree);
-        return tree;
-      }
-      /**
-       * Add the given node to an existing tree, potentially splitting it
-       */
-      addToExistingTree(node, parent) {
-        let tree = this.treeForNode(parent);
-        if (this.isTreeFull(tree)) {
-          const grandParent = this.parent.get(parent);
-          if (!grandParent) {
-            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
-          }
-          const subtreeReference = {
-            id: parent.id,
-            path: parent.path,
-            fileName: "xxx"
-            // Will be replaced later
-          };
-          tree = this.addNewTree(parent, subtreeReference);
-          setChild(grandParent, subtreeReference);
-          this.subtreeRoots.set(parent, tree);
-        }
-        setChild(parent, node);
-        this.parent.set(node, parent);
-        tree.nodes += 1;
-      }
-      /**
-       * Whether the given tree is full
-       */
-      isTreeFull(t) {
-        return t.nodes >= this.maxNodes;
-      }
-      /**
-       * Return the Tree that contains the given Node
-       */
-      treeForNode(node) {
-        const tried = new Array();
-        let cur = node;
-        tried.push(cur.path);
-        let tree = this.subtreeRoots.get(cur);
-        while (!tree && cur) {
-          cur = this.parent.get(cur);
-          tried.push(cur?.path);
-          tree = cur && this.subtreeRoots.get(cur);
-        }
-        if (tree) {
-          return tree;
-        }
-        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
-      }
-    };
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/validation/private/validation-id.ts
 function parseValidationId(id) {
   let nsSeparator = void 0;
@@ -78222,9 +79808,6 @@ function namespaceFromPluginName(pluginName) {
   }
   return pluginName.replace(/ /g, "-");
 }
-function pluginNameFromNamespace(namespace) {
-  return namespace.replace(/-/g, " ");
-}
 var ANNOTATION_PLUGIN_NAME, ANNOTATION_PLUGIN_NAMESPACE;
 var init_validation_id = __esm({
   "../../aws-cdk-lib/core/lib/validation/private/validation-id.ts"() {
@@ -78252,7 +79835,7 @@ function collectAnnotationReport(root) {
       }
       let templatePath;
       try {
-        templatePath = path14.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
+        templatePath = path13.join(stageOf(construct)?.outdir ?? ".", stackOf(construct).templateFile);
       } catch (e) {
       }
       const resourceLogicalId = CfnResource.isCfnResource(construct) ? stackOf(construct).resolve(construct.logicalId) : void 0;
@@ -78304,11 +79887,11 @@ function splitDescriptionAndId(message) {
   }
   return { message };
 }
-var path14, AnnotationPlugin;
+var path13, AnnotationPlugin;
 var init_annotation_plugin = __esm({
   "../../aws-cdk-lib/core/lib/private/annotation-plugin.ts"() {
     "use strict";
-    path14 = __toESM(require("path"));
+    path13 = __toESM(require("path"));
     init_construct_iteration();
     init_core_construct_finders();
     init_cloud_assembly_schema();
@@ -78747,8 +80330,8 @@ var require_bindings_wasm = __commonJS({
        * @param {string} path
        * @returns {any}
        */
-      sourceLocation(path23) {
-        const ptr0 = passStringToWasm0(path23, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+      sourceLocation(path22) {
+        const ptr0 = passStringToWasm0(path22, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
         const ret = wasm.wasmsemanticmodel_sourceLocation(this.__wbg_ptr, ptr0, len0);
         if (ret[2]) {
@@ -79457,8 +81040,8 @@ var require_cloudformation_validate = __commonJS({
     var bridge = require_bindings_wasm();
     exports2.DEFAULT_TEMPLATE_NAME = "template";
     var TemplateFile2 = class {
-      constructor(path23) {
-        this.path = path23;
+      constructor(path22) {
+        this.path = path22;
       }
       readBytes() {
         return (0, fs_1.readFileSync)(this.path);
@@ -79482,8 +81065,8 @@ var require_cloudformation_validate = __commonJS({
       return template instanceof TemplateContent ? template.name : template.path;
     }
     var RuleFile = class {
-      constructor(path23) {
-        this.path = path23;
+      constructor(path22) {
+        this.path = path22;
       }
       readContent() {
         return (0, fs_1.readFileSync)(this.path, "utf8");
@@ -79491,8 +81074,8 @@ var require_cloudformation_validate = __commonJS({
     };
     exports2.RuleFile = RuleFile;
     var SchemaFile = class {
-      constructor(path23, typeName) {
-        this.path = path23;
+      constructor(path22, typeName) {
+        this.path = path22;
         this.typeName = typeName;
       }
       readContent() {
@@ -79558,8 +81141,8 @@ var require_cloudformation_validate = __commonJS({
       toDiagnosticModel() {
         return this.inner.toDiagnosticModel();
       }
-      sourceLocation(path23) {
-        return this.inner.sourceLocation(path23);
+      sourceLocation(path22) {
+        return this.inner.sourceLocation(path22);
       }
       free() {
         this.inner.free();
@@ -79650,22 +81233,22 @@ function mapSeverity(severity) {
   }
 }
 function defaultRegoRules() {
-  const rulesDir = path15.join(__dirname, "rules");
-  return fs11.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
+  const rulesDir = path14.join(__dirname, "rules");
+  return fs10.readdirSync(rulesDir).filter((f) => f.endsWith(".rego")).sort().map((f) => ({
     name: f,
-    content: fs11.readFileSync(path15.join(rulesDir, f), "utf-8")
+    content: fs10.readFileSync(path14.join(rulesDir, f), "utf-8")
   }));
 }
 function isContainedWithin(root, child) {
-  const rel = path15.relative(root, child);
-  return !rel.startsWith("..") && !path15.isAbsolute(rel);
+  const rel = path14.relative(root, child);
+  return !rel.startsWith("..") && !path14.isAbsolute(rel);
 }
 function loadSchemasFromDirectory(dir) {
   const schemas = [];
-  if (!fs11.existsSync(dir)) {
+  if (!fs10.existsSync(dir)) {
     return schemas;
   }
-  const rootReal = fs11.realpathSync(dir);
+  const rootReal = fs10.realpathSync(dir);
   function walk(currentDir, depth) {
     if (depth > MAX_SCHEMA_DIRECTORY_DEPTH) {
       throw new UnscopedValidationError(
@@ -79673,9 +81256,9 @@ function loadSchemasFromDirectory(dir) {
         `[CloudFormation Validate] Schema directory exceeds maximum depth of ${MAX_SCHEMA_DIRECTORY_DEPTH}: ${currentDir}`
       );
     }
-    const entries = fs11.readdirSync(currentDir, { withFileTypes: true });
+    const entries = fs10.readdirSync(currentDir, { withFileTypes: true });
     for (const entry of entries) {
-      const fullPath = path15.join(currentDir, entry.name);
+      const fullPath = path14.join(currentDir, entry.name);
       if (entry.isSymbolicLink()) {
         throw new UnscopedValidationError(
           lit`SchemaLoadError`,
@@ -79683,7 +81266,7 @@ function loadSchemasFromDirectory(dir) {
         );
       }
       if (entry.isDirectory()) {
-        const resolved = fs11.realpathSync(fullPath);
+        const resolved = fs10.realpathSync(fullPath);
         if (!isContainedWithin(rootReal, resolved)) {
           throw new UnscopedValidationError(
             lit`SchemaLoadError`,
@@ -79692,7 +81275,7 @@ function loadSchemasFromDirectory(dir) {
         }
         walk(fullPath, depth + 1);
       } else if (entry.isFile() && entry.name.endsWith(".json")) {
-        const content = fs11.readFileSync(fullPath, "utf-8");
+        const content = fs10.readFileSync(fullPath, "utf-8");
         let parsed;
         try {
           parsed = JSON.parse(content);
@@ -79723,12 +81306,12 @@ function loadSchemasFromDirectory(dir) {
   }
   return schemas;
 }
-var fs11, path15, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
+var fs10, path14, import_cloudformation_validate, VALIDATE_METRIC, DIAGNOSTICS_METRIC, CloudFormationValidatePlugin, IGNORE_RULES, MAX_SCHEMA_DIRECTORY_DEPTH;
 var init_cloudformation_validate_plugin = __esm({
   "../../aws-cdk-lib/core/lib/validation/cloudformation-validate-plugin.ts"() {
     "use strict";
-    fs11 = __toESM(require("fs"));
-    path15 = __toESM(require("path"));
+    fs10 = __toESM(require("fs"));
+    path14 = __toESM(require("path"));
     import_cloudformation_validate = __toESM(require_cloudformation_validate());
     init_errors();
     init_literal_string();
@@ -79875,16 +81458,17 @@ var init_cloudformation_validate_plugin = __esm({
               templatePath,
               locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : []
             };
-            const existing = violations.find(
-              (v) => v.ruleName === diagnostic.ruleId && v.severity === severity
-            );
             const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, "")}: ` : "";
+            const description = `${propertyPathPefix}${diagnostic.message}`;
+            const existing = violations.find(
+              (v) => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description
+            );
             if (existing) {
               existing.violatingResources.push(violatingResource);
             } else {
               violations.push({
                 ruleName: diagnostic.ruleId,
-                description: `${propertyPathPefix}${diagnostic.message}`,
+                description,
                 severity,
                 fix: diagnostic.suggestedFix,
                 violatingResources: [violatingResource],
@@ -79920,13 +81504,6 @@ var init_cloudformation_validate_plugin = __esm({
       // WHY: Hardcoding an account ID in ARNs is commonly done in CDK when we are setting up large applications that
       // span accounts.
       "W9013",
-      // WHAT: value type tracking (parameter default should be a string)
-      // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-      // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-      // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-      "E2001",
       // WHAT: built-in function not recognized
       // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.
       // This diagnostic is intended to protect against typos in templates, but since the intrinsics
@@ -79943,13 +81520,13 @@ function propertyAssignmentMatchesPropertyPath(meta, propertyPath) {
   return propertyPath === `Properties.${meta.data.propertyName}` || propertyPath.startsWith(`Properties.${meta.data.propertyName}.`);
 }
 function isPropertyMutationMetadataEntry(entry) {
-  return entry.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
+  return entry.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
 }
-var import_cloud_assembly_schema3, ConstructTree, STACK_TRACE_HINT;
+var import_cloud_assembly_schema2, ConstructTree, STACK_TRACE_HINT;
 var init_construct_tree = __esm({
   "../../aws-cdk-lib/core/lib/validation/private/construct-tree.ts"() {
     "use strict";
-    import_cloud_assembly_schema3 = __toESM(require_lib2());
+    import_cloud_assembly_schema2 = __toESM(require_lib2());
     init_app2();
     init_cfn_resource();
     init_construct_iteration();
@@ -80052,8 +81629,8 @@ var init_construct_tree = __esm({
           libraryVersion: constructInfo?.version
         };
       }
-      creationTraceByPath(path23) {
-        const construct = this.getConstructByPath(path23);
+      creationTraceByPath(path22) {
+        const construct = this.getConstructByPath(path22);
         if (!construct) {
           return void 0;
         }
@@ -80065,7 +81642,7 @@ var init_construct_tree = __esm({
        * Returns a stack trace if stack trace information is found, or `undefined` if not.
        */
       creationTrace(construct) {
-        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema3.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
+        return construct?.node.metadata.find((meta) => meta.type === import_cloud_assembly_schema2.ArtifactMetadataEntryType.CREATION_STACK)?.data?.join("\n");
       }
       mutationTracesByPath(constructPath, propertyPath) {
         const construct = this.getConstructByPath(constructPath);
@@ -80089,8 +81666,8 @@ var init_construct_tree = __esm({
        * @param path the node.addr of the construct
        * @returns the Construct
        */
-      getConstructByPath(path23) {
-        return this._constructByPath.get(path23);
+      getConstructByPath(path22) {
+        return this._constructByPath.get(path22);
       }
       /**
        * Get a specific Construct by the CfnResource logical ID. This will
@@ -80104,52 +81681,6 @@ var init_construct_tree = __esm({
       }
     };
     STACK_TRACE_HINT = "Run with '--debug' to include location info";
-  }
-});
-
-// ../../aws-cdk-lib/core/lib/validation/private/color.ts
-var Col, Colorize;
-var init_color = __esm({
-  "../../aws-cdk-lib/core/lib/validation/private/color.ts"() {
-    "use strict";
-    Col = class {
-      static RED = "31";
-      static ORANGE = "38;5;208";
-      static YELLOW = "33";
-      static BLUE = "34";
-      static BOLD = "1";
-      static UNDERLINE = "4";
-      static GREY = "90";
-    };
-    Colorize = class _Colorize {
-      static red(str) {
-        return _Colorize.colorize(Col.RED, str);
-      }
-      static orange(str) {
-        return _Colorize.colorize(Col.ORANGE, str);
-      }
-      static yellow(str) {
-        return _Colorize.colorize(Col.YELLOW, str);
-      }
-      static blue(str) {
-        return _Colorize.colorize(Col.BLUE, str);
-      }
-      static grey(str) {
-        return _Colorize.colorize(Col.GREY, str);
-      }
-      static bold(str) {
-        return _Colorize.colorize(Col.BOLD, str);
-      }
-      static underline(str) {
-        return _Colorize.colorize(Col.UNDERLINE, str);
-      }
-      static colorize(col, str) {
-        if (process.env.FORCE_COLOR === "0" || process.env.NO_COLOR || !process.stdout.isTTY || !process.stderr.isTTY) {
-          return str;
-        }
-        return `\x1B[${col}m${str}\x1B[0m`;
-      }
-    };
   }
 });
 
@@ -80367,174 +81898,6 @@ var init_report2 = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/validation/private/modern-formatter.ts
-function formatValidationReports(fileRoot, reports, frameFinder) {
-  const successfullyExecutedPlugins = reports.filter((r) => isPluginFailure(r) === void 0);
-  const pluginFailures = reports.map(isPluginFailure).filter((e) => e !== void 0);
-  const violations = flattenViolations(successfullyExecutedPlugins);
-  violations.sort((a, b) => {
-    const aOrder = SEVERITY_ORDER[a.severity.toLowerCase()] ?? 4;
-    const bOrder = SEVERITY_ORDER[b.severity.toLowerCase()] ?? 4;
-    return aOrder - bOrder;
-  });
-  return [
-    ...pluginFailures.map(formatPluginFailure),
-    ...violations.map((v) => formatViolationBlock(fileRoot, v, frameFinder))
-  ];
-}
-function flattenViolations(reports) {
-  return reports.flatMap((report) => {
-    const pluginName = report.pluginName;
-    return report.violations.flatMap((violation) => {
-      return violation.violatingConstructs.map((construct) => ({
-        severity: normalizeSeverity2(violation.severity),
-        description: violation.description,
-        ruleName: violation.ruleName,
-        pluginName,
-        construct,
-        suggestedFix: violation.suggestedFix,
-        ruleMetadata: violation.ruleMetadata
-      }));
-    });
-  });
-}
-function normalizeSeverity2(severity) {
-  switch (severity?.toLowerCase()) {
-    case "fatal":
-      return "FATAL";
-    case "error":
-      return "ERROR";
-    case "warning":
-      return "WARNING";
-    case "info":
-      return "INFO";
-  }
-  if (!severity) return "WARNING";
-  return sanitize(severity);
-}
-function formatViolationBlock(fileRoot, v, frameFinder) {
-  const lines = [];
-  const locations = sourceLocations(fileRoot, v.construct.stackTraces, frameFinder);
-  const maxTraces = 5;
-  let additional = false;
-  for (const location of locations.slice(0, maxTraces)) {
-    lines.push(`${additional ? "or " : ""}${Colorize.underline(sanitize(location))}`);
-    additional = true;
-  }
-  if (locations.length > maxTraces) {
-    lines.push(Colorize.grey(`(and ${locations.length - maxTraces} more...)`));
-  }
-  const pluginNs = namespaceFromPluginName(v.pluginName);
-  const parsed = parseValidationId(v.ruleName);
-  lines.push([
-    Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
-    Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(`(${sanitize(parsed.namespace ? pluginNameFromNamespace(parsed.namespace) : v.pluginName)})`)
-  ].join(" "));
-  const constructInfo = formatConstructInfo(fileRoot, v.construct);
-  lines.push(`   ${constructInfo}`);
-  if (v.suggestedFix) {
-    lines.push(`   Suggested fix: ${sanitize(v.suggestedFix).replace(/\n/g, "\n   ")}`);
-  }
-  const ackId = normalizeValidationId(v.ruleName, pluginNs);
-  if (isSuppressibleViolation(v)) {
-    lines.push(`   ${Colorize.grey(`Acknowledge with '${sanitize(ackId)}'`)}`);
-  } else {
-    lines.push(`   ${Colorize.grey(`Rule ${sanitize(ackId)}`)}`);
-  }
-  return lines.join("\n");
-}
-function getSeverityColor(severity) {
-  switch (severity.toLowerCase()) {
-    case "fatal":
-      return Colorize.red;
-    case "error":
-      return Colorize.orange;
-    case "warning":
-      return Colorize.yellow;
-    default:
-      return Colorize.blue;
-  }
-}
-function formatConstructInfo(fileRoot, construct) {
-  const parts = [];
-  const logicalId = sanitize(construct.cloudFormationResource?.logicalId);
-  if (construct.constructPath) {
-    const cPath = sanitize(construct.constructPath);
-    parts.push(logicalId ? `${Colorize.bold(cPath)} (${logicalId})` : Colorize.bold(cPath));
-  } else {
-    if (construct.cloudFormationResource?.templatePath) {
-      parts.push(humanFriendlyFilename(fileRoot, sanitize(construct.cloudFormationResource.templatePath)));
-    }
-    if (logicalId) {
-      parts.push(Colorize.bold(logicalId));
-    }
-  }
-  if (construct.constructFqn) {
-    parts.push(Colorize.grey(sanitize(construct.constructFqn)));
-  }
-  return parts.join(" ");
-}
-function stripAckTag(description) {
-  return description.replace(/\s*\[ack:\s*[^\]]+\]\s*/g, "").trim();
-}
-function sourceLocations(fileRoot, stackTraces, frameFinder) {
-  const ret = [];
-  for (const trace of stackTraces ?? []) {
-    const frame = topUserFrame(trace.split("\n"), frameFinder);
-    if (frame && frame.fileName) {
-      const candidate = `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
-      if (!ret.includes(candidate)) {
-        ret.push(candidate);
-      }
-    }
-  }
-  return ret;
-}
-function formatPluginFailure(f) {
-  return `${Colorize.orange("ERROR")} ${sanitize(f.error)}`;
-}
-function sanitize(s) {
-  return (s ?? "").replace(CONTROL_CHARS, "\uFFFD");
-}
-function humanFriendlyFilename(root, filename) {
-  const absPath = filename;
-  const relPath = import_path2.default.relative(root, filename);
-  return relPath.length < absPath.length ? relPath : absPath;
-}
-function isPluginFailure(r) {
-  if (r.conclusion === "success" || r.violations.length > 0 || !r.metadata?.error) {
-    return void 0;
-  }
-  return { error: r.metadata.error };
-}
-function stripAnsi(x) {
-  const pattern = [
-    "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
-    "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))"
-  ].join("|");
-  const re = new RegExp(pattern, "g");
-  return x.replaceAll(re, "");
-}
-var import_path2, CONTROL_CHARS, SEVERITY_ORDER;
-var init_modern_formatter = __esm({
-  "../../aws-cdk-lib/core/lib/validation/private/modern-formatter.ts"() {
-    "use strict";
-    import_path2 = __toESM(require("path"));
-    init_color();
-    init_report2();
-    init_validation_id();
-    init_stack_trace();
-    CONTROL_CHARS = /[\x00-\x08\x0B-\x1F\x7F\x9B]/g;
-    SEVERITY_ORDER = {
-      fatal: 0,
-      error: 1,
-      warning: 2,
-      info: 3
-    };
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/private/synthesis-validation.ts
 function validateTemplates(root, outdir, assembly) {
   var _stack = [];
@@ -80571,11 +81934,11 @@ function validateTemplates(root, outdir, assembly) {
     const suppressedByReport = collectSuppressions(root, reports);
     const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
     const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
-    const reportFile = path17.join(assembly.directory, VALIDATION_REPORT_FILE);
-    fs12.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
+    const reportFile = path15.join(assembly.directory, VALIDATION_REPORT_FILE);
+    fs11.writeFileSync(reportFile, JSON.stringify(reportJson, void 0, 2));
     if (getBooleanContext(root, VALIDATION_REPORT_JSON_CONTEXT, false)) {
-      fs12.writeFileSync(
-        path17.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
+      fs11.writeFileSync(
+        path15.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH),
         JSON.stringify(formatter.formatLegacyJson(reports), void 0, 2)
       );
     }
@@ -80583,8 +81946,7 @@ function validateTemplates(root, outdir, assembly) {
     const appMode = cdkAppMode(root);
     const constructLibStrictMode = getBooleanContext(root, STRICT_CFN_VALIDATE_ERRORS, false);
     const validationFails = reports.some((r) => !r.success) || constructLibStrictMode && reports.some((r) => r.violations.some((v) => v.severity === "warning"));
-    const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports, DEFAULT_STACK_FRAME_FINDER);
-    const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+    const fileLocationRenderer = private_cxapi.relativeFileLocationRenderer(process.cwd());
     let preamble = "";
     if (warningifiedAnyErrors) {
       if (constructLibStrictMode) {
@@ -80594,6 +81956,8 @@ function validateTemplates(root, outdir, assembly) {
 Set feature flag "${VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`;
       }
     }
+    const reportText = new private_cxapi.ValidationReportFormatter({ fileLocationRenderer }).formatReports(reportJson.pluginReports);
+    const reportPath = fileLocationRenderer.renderAbsoluteFilePath(reportFile);
     if (reportText.length === 0) {
       return;
     }
@@ -80607,7 +81971,7 @@ Set feature flag "${VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into 
       fullMessage.push(...reportText);
       fullMessage.push(`A copy of this report can be found in: ${reportPath}`);
       if (throwException && exceptionContainsReport) {
-        throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(fullMessage.join("\n\n")));
+        throw new UnscopedValidationError(lit`ValidationFailed`, private_cxapi.stripAnsi(fullMessage.join("\n\n")));
       } else if (throwException && !exceptionContainsReport) {
         console.error([
           ...preamble ? [preamble] : [],
@@ -80684,7 +82048,7 @@ function inferConstructPathsFromLogicalIds(reports, tree) {
       for (const resource of violation.violatingResources) {
         if (!resource.constructPath && resource.templatePath && resource.resourceLogicalId) {
           mutable(resource).constructPath = tree.getConstructByLogicalId(
-            path17.basename(resource.templatePath),
+            path15.basename(resource.templatePath),
             resource.resourceLogicalId
           )?.node.path;
         }
@@ -80807,8 +82171,8 @@ function doInvokeValidationPlugins(outdir, plugins, root) {
     const stackTemplates = stackArtifacts.map((s) => ({
       stackConstructPath: s.hierarchicalId,
       templatePath: s.templateFullPath,
-      accountId: s.environment.account !== import_cloud_assembly_api.UNKNOWN_ACCOUNT ? s.environment.account : void 0,
-      region: s.environment.region !== import_cloud_assembly_api.UNKNOWN_REGION ? s.environment.region : void 0
+      accountId: s.environment.account !== import_cloud_assembly_api2.UNKNOWN_ACCOUNT ? s.environment.account : void 0,
+      region: s.environment.region !== import_cloud_assembly_api2.UNKNOWN_REGION ? s.environment.region : void 0
     }));
     const accountId = stackTemplates.every((s) => s.accountId === stackTemplates[0].accountId) ? stackTemplates[0].accountId : void 0;
     const region = stackTemplates.every((s) => s.region === stackTemplates[0].region) ? stackTemplates[0].region : void 0;
@@ -80832,7 +82196,7 @@ function doInvokeValidationPlugins(outdir, plugins, root) {
     for (const v of report.violations) {
       for (const r of v.violatingResources) {
         if (r.templatePath) {
-          mutable(r).templatePath = path17.relative(outdir, path17.resolve(r.templatePath));
+          mutable(r).templatePath = path15.relative(outdir, path15.resolve(r.templatePath));
         }
       }
     }
@@ -80879,12 +82243,22 @@ function hasModifiedPreExistingFiles(snapshot) {
 function collectFilePaths(dir) {
   const results = [];
   function walk(current) {
-    for (const entry of fs12.readdirSync(current, { withFileTypes: true })) {
-      const full = path17.join(current, entry.name);
+    for (const entry of fs11.readdirSync(current, { withFileTypes: true })) {
+      const full = path15.join(current, entry.name);
       if (entry.isDirectory()) {
         walk(full);
-      } else if (entry.isFile() || entry.isSymbolicLink()) {
+      } else if (entry.isFile()) {
         results.push(full);
+      } else if (entry.isSymbolicLink()) {
+        let st;
+        try {
+          st = fs11.lstatSync(full);
+        } catch {
+          continue;
+        }
+        if (st.isFile() || st.isSymbolicLink()) {
+          results.push(full);
+        }
       }
     }
   }
@@ -80892,12 +82266,12 @@ function collectFilePaths(dir) {
   return results;
 }
 function hashFile(filePath) {
-  const content = fs12.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs12.readlinkSync(filePath)) : fs12.readFileSync(filePath);
+  const content = fs11.lstatSync(filePath).isSymbolicLink() ? Buffer.from(fs11.readlinkSync(filePath)) : fs11.readFileSync(filePath);
   return crypto7.createHash("sha256").update(content).digest("hex");
 }
 function fileOrSymlinkExists(p) {
   try {
-    fs12.lstatSync(p);
+    fs11.lstatSync(p);
     return true;
   } catch {
     return false;
@@ -80937,13 +82311,14 @@ function cdkAppMode(root) {
   }
   return "unknown";
 }
-var crypto7, fs12, path17, LEGACY_POLICY_VALIDATION_FILE_PATH;
+var crypto7, fs11, path15, private_cxapi, LEGACY_POLICY_VALIDATION_FILE_PATH;
 var init_synthesis_validation = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis-validation.ts"() {
     "use strict";
     crypto7 = __toESM(require("crypto"));
-    fs12 = __toESM(require("fs"));
-    path17 = __toESM(require("path"));
+    fs11 = __toESM(require("fs"));
+    path15 = __toESM(require("path"));
+    private_cxapi = __toESM(require_lib3());
     init_annotation_plugin();
     init_collect_acknowledged_rule_ids();
     init_literal_string();
@@ -80953,13 +82328,275 @@ var init_synthesis_validation = __esm({
     init_feature_flags();
     init_core_construct_finders();
     init_perf();
-    init_stack_trace();
     init_cloudformation_validate_plugin();
     init_construct_tree();
-    init_modern_formatter();
     init_report2();
     init_validation_id();
     LEGACY_POLICY_VALIDATION_FILE_PATH = "policy-validation-report.json";
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/tree.ts
+var TreeInspector;
+var init_tree = __esm({
+  "../../aws-cdk-lib/core/lib/tree.ts"() {
+    "use strict";
+    TreeInspector = class {
+      /**
+       * Represents the bag of attributes as key-value pairs.
+       */
+      attributes = {};
+      /**
+       * Adds attribute to bag. Keys should be added by convention to prevent conflicts
+       * i.e. L1 constructs will contain attributes with keys prefixed with aws:cdk:cloudformation
+       *
+       * @param key - key for metadata
+       * @param value - value of metadata.
+       */
+      addAttribute(key, value) {
+        this.attributes[key] = value;
+      }
+    };
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/private/tree-metadata.ts
+function nodeCount(root) {
+  let count2 = 0;
+  const stack = [root];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    count2 += 1;
+    if (current.children) {
+      for (const child of Object.values(current.children)) {
+        stack.push(child);
+      }
+    }
+  }
+  return count2;
+}
+function setChild(parent, node) {
+  if (!parent.children) {
+    parent.children = {};
+  }
+  parent.children[node.id] = node;
+}
+var fs12, path16, import_constructs16, FILE_PATH, TreeMetadata, FragmentedTreeWriter;
+var init_tree_metadata = __esm({
+  "../../aws-cdk-lib/core/lib/private/tree-metadata.ts"() {
+    "use strict";
+    fs12 = __toESM(require("fs"));
+    path16 = __toESM(require("path"));
+    import_constructs16 = __toESM(require_lib4());
+    init_runtime_info();
+    init_cloud_assembly_schema();
+    init_annotations();
+    init_tree();
+    init_construct_iteration();
+    init_errors();
+    init_core_construct_finders();
+    init_literal_string();
+    FILE_PATH = "tree.json";
+    TreeMetadata = class extends import_constructs16.Construct {
+      constructor(scope) {
+        super(scope, "Tree");
+      }
+      /**
+       * Create tree.json
+       * @internal
+       */
+      _synthesizeTree(session) {
+        const maxNodesPerTree = this.node.tryGetContext("@aws-cdk/core.TreeMetadata:maxNodes");
+        const builder = session.assembly;
+        const writer = new FragmentedTreeWriter(builder.outdir, FILE_PATH, { maxNodesPerTree });
+        for (const { construct, parent } of iterateBfs(this.node.root)) {
+          const node = {
+            id: construct.node.id || "App",
+            path: construct.node.path,
+            constructInfo: constructInfoFromConstruct(construct)
+          };
+          try {
+            node.attributes = this.synthAttributes(construct);
+          } catch (e) {
+            Annotations.of(this).addWarningV2(`@aws-cdk/core:failedToRenderTreeMetadata-${construct.node.id}`, `Failed to render tree metadata for node [${construct.node.id}]. Reason: ${e}`);
+          }
+          writer.addNode(construct, parent, node);
+        }
+        const rootFilename = writer.writeForest();
+        builder.addArtifact("Tree", {
+          type: cloud_assembly_schema_exports.ArtifactType.CDK_TREE,
+          properties: {
+            file: rootFilename
+          }
+        });
+      }
+      synthAttributes(construct) {
+        function canInspect2(inspectable) {
+          return inspectable.inspect !== void 0;
+        }
+        const inspector = new TreeInspector();
+        if (canInspect2(construct)) {
+          construct.inspect(inspector);
+          return stackOf(construct).resolve(inspector.attributes);
+        }
+        return void 0;
+      }
+    };
+    FragmentedTreeWriter = class {
+      constructor(outdir, rootFilename, options) {
+        this.outdir = outdir;
+        this.rootFilename = rootFilename;
+        this.maxNodes = options?.maxNodesPerTree ?? 5e5;
+      }
+      outdir;
+      rootFilename;
+      /**
+       * We only care about the identify of this object.
+       *
+       * Whatever tree in the forest is "pointed to" by this pointer is the main tree.
+       */
+      mainTreePointer = {
+        fileName: "yyy",
+        id: "id",
+        path: "path"
+      };
+      forest = new Array();
+      /**
+       * Maps a Construct to its respective Node
+       */
+      constructMap = /* @__PURE__ */ new Map();
+      /**
+       * Map a root Node to its containing Tree
+       */
+      subtreeRoots = /* @__PURE__ */ new Map();
+      /**
+       * Map a Node to its parent Node
+       */
+      parent = /* @__PURE__ */ new Map();
+      maxNodes;
+      /**
+       * Write the forest to disk, return the root file name
+       */
+      writeForest() {
+        const forestFiles = this.allocateSubTreesToForestFiles();
+        const mainTree = this.forest.find((t) => t.referencingNode === this.mainTreePointer);
+        if (mainTree) {
+          const treeFile = { version: "tree-0.1", tree: mainTree.root };
+          fs12.writeFileSync(path16.join(this.outdir, this.rootFilename), JSON.stringify(treeFile), { encoding: "utf-8" });
+        }
+        for (const forestFile of forestFiles) {
+          fs12.writeFileSync(path16.join(this.outdir, forestFile.fileName), JSON.stringify(forestFile.file), { encoding: "utf-8" });
+        }
+        return this.rootFilename;
+      }
+      /**
+       * Find all non-main tree and combine them into forest files
+       *
+       * This will mutate the pointing nodes as a side effect.
+       */
+      allocateSubTreesToForestFiles() {
+        const ret = new Array();
+        for (const tree of this.forest) {
+          if (tree.referencingNode === this.mainTreePointer) {
+            continue;
+          }
+          let targetForest;
+          if (ret.length === 0 || ret[ret.length - 1].nodeCount + tree.nodes > this.maxNodes) {
+            targetForest = {
+              fileName: `trees-${ret.length + 1}.json`,
+              file: { version: "forest-0.1", forest: {} },
+              nodeCount: 0,
+              treeCount: 0
+            };
+            ret.push(targetForest);
+          } else {
+            targetForest = ret[ret.length - 1];
+          }
+          const treeId = `t${targetForest.treeCount++}`;
+          targetForest.file.forest[treeId] = tree.root;
+          targetForest.nodeCount += tree.nodes;
+          tree.referencingNode.fileName = targetForest.fileName;
+          tree.referencingNode.treeId = treeId;
+        }
+        return ret;
+      }
+      addNode(construct, parent, node) {
+        if (parent === void 0) {
+          if (this.forest.length > 0) {
+            throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, "Can only add exactly one node without a parent");
+          }
+          this.addNewTree(node, this.mainTreePointer);
+        } else {
+          const parentNode = this.constructMap.get(parent);
+          if (!parentNode) {
+            return;
+          }
+          this.addToExistingTree(node, parentNode);
+        }
+        this.constructMap.set(construct, node);
+      }
+      /**
+       * Add a new tree with the given Node as root
+       */
+      addNewTree(root, referencingNode) {
+        const tree = {
+          root,
+          referencingNode,
+          nodes: nodeCount(root)
+        };
+        this.forest.push(tree);
+        this.subtreeRoots.set(root, tree);
+        return tree;
+      }
+      /**
+       * Add the given node to an existing tree, potentially splitting it
+       */
+      addToExistingTree(node, parent) {
+        let tree = this.treeForNode(parent);
+        if (this.isTreeFull(tree)) {
+          const grandParent = this.parent.get(parent);
+          if (!grandParent) {
+            throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
+          }
+          const subtreeReference = {
+            id: parent.id,
+            path: parent.path,
+            fileName: "xxx"
+            // Will be replaced later
+          };
+          tree = this.addNewTree(parent, subtreeReference);
+          setChild(grandParent, subtreeReference);
+          this.subtreeRoots.set(parent, tree);
+        }
+        setChild(parent, node);
+        this.parent.set(node, parent);
+        tree.nodes += 1;
+      }
+      /**
+       * Whether the given tree is full
+       */
+      isTreeFull(t) {
+        return t.nodes >= this.maxNodes;
+      }
+      /**
+       * Return the Tree that contains the given Node
+       */
+      treeForNode(node) {
+        const tried = new Array();
+        let cur = node;
+        tried.push(cur.path);
+        let tree = this.subtreeRoots.get(cur);
+        while (!tree && cur) {
+          cur = this.parent.get(cur);
+          tried.push(cur?.path);
+          tree = cur && this.subtreeRoots.get(cur);
+        }
+        if (tree) {
+          return tree;
+        }
+        throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+      }
+    };
   }
 });
 
@@ -80977,7 +82614,7 @@ function synthesize(root, options = {}) {
   if (!options.skipValidation) {
     validateTree(root);
   }
-  const builder = STAGE_TYPE.isMarked(root) ? _convertCloudAssemblyBuilder(root._assemblyBuilder) : new private_cxapi.CloudAssemblyBuilder(options.outdir);
+  const builder = STAGE_TYPE.isMarked(root) ? _convertCloudAssemblyBuilder(root._assemblyBuilder) : new private_cxapi2.CloudAssemblyBuilder(options.outdir);
   synthesizeTree(root, builder, options.validateOnSynthesis);
   generateFeatureFlagReport(builder, root);
   const assembly = builder.buildAssembly();
@@ -81169,23 +82806,23 @@ function visit(root, order, cb) {
     cb(root);
   }
 }
-var private_cxapi, CUSTOM_SYNTHESIS_SYM;
+var private_cxapi2, CUSTOM_SYNTHESIS_SYM;
 var init_synthesis = __esm({
   "../../aws-cdk-lib/core/lib/private/synthesis.ts"() {
     "use strict";
-    private_cxapi = __toESM(require_lib3());
+    private_cxapi2 = __toESM(require_lib3());
+    init_core_construct_finders();
     init_feature_flag_report();
     init_literal_string();
     init_metadata_resource2();
     init_prepare_app();
+    init_synthesis_validation();
     init_tree_metadata();
     init_legacy_moved();
     init_annotations();
     init_app2();
     init_aspect();
     init_errors();
-    init_core_construct_finders();
-    init_synthesis_validation();
     CUSTOM_SYNTHESIS_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core:customSynthesis");
   }
 });
@@ -81367,11 +83004,11 @@ function stripInPlace(arr, startIndex, predicate) {
     }
   }
 }
-var private_cxapi2, import_constructs17, Stage;
+var private_cxapi3, import_constructs17, Stage;
 var init_stage = __esm({
   "../../aws-cdk-lib/core/lib/stage.ts"() {
     "use strict";
-    private_cxapi2 = __toESM(require_lib3());
+    private_cxapi3 = __toESM(require_lib3());
     import_constructs17 = __toESM(require_lib4());
     init_errors();
     init_feature_flags();
@@ -81584,7 +83221,7 @@ var init_stage = __esm({
         if (this.parentStage && outdir) {
           throw new ValidationError(lit`OutdirCannotBeSpecifiedForNestedStage`, '"outdir" cannot be specified for nested stages', this);
         }
-        return this.parentStage ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path) : _convertCloudAssemblyBuilder(new private_cxapi2.CloudAssemblyBuilder(outdir));
+        return this.parentStage ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path) : _convertCloudAssemblyBuilder(new private_cxapi3.CloudAssemblyBuilder(outdir));
       }
     };
   }
@@ -81980,12 +83617,12 @@ var init_app2 = __esm({
     fs13 = __toESM(require_lib5());
     init_helpers_internal();
     init_construct_iteration();
+    init_core_construct_finders();
     init_private_context();
     init_synthesis();
     init_prop_injectors();
     init_stage();
     init_cx_api();
-    init_core_construct_finders();
     APP_INIT_HOOK_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/core.App#initHook");
     DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 1e4;
     SLOW_SYNTH_THRESHOLD_CTX = "@aws-cdk/core.slowSynthThreshold";
@@ -82132,7 +83769,7 @@ var init_app2 = __esm({
 // ../../aws-cdk-lib/core/lib/context-provider.ts
 function extractProviderError(value) {
   if (typeof value === "object" && value !== null) {
-    return value[import_cloud_assembly_api.PROVIDER_ERROR_KEY];
+    return value[import_cloud_assembly_api2.PROVIDER_ERROR_KEY];
   }
   return void 0;
 }
@@ -82367,7 +84004,7 @@ function addStackArtifactToAssembly(session, stack, stackProps, additionalStackD
   const metaFile = `${stack.artifactId}.metadata.json`;
   const hasMeta = Object.keys(meta).length > 0;
   if (hasMeta) {
-    fs14.writeFileSync(path18.join(session.assembly.outdir, metaFile), JSON.stringify(meta, void 0, 2), "utf-8");
+    fs14.writeFileSync(path17.join(session.assembly.outdir, metaFile), JSON.stringify(meta, void 0, 2), "utf-8");
   }
   session.assembly.addArtifact(stack.artifactId, {
     type: cloud_assembly_schema_exports.ArtifactType.AWS_CLOUDFORMATION_STACK,
@@ -82383,7 +84020,7 @@ function collectStackMetadata(stack) {
   const queue = [stack];
   let next;
   while (next = queue.shift()) {
-    if (STACK_TYPE.isMarked(next) && next !== stack && next.nestedStackParent === void 0) {
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
       continue;
     }
     handleNode(next);
@@ -82417,13 +84054,13 @@ function assertBound(x) {
 function nonEmptyDict(xs) {
   return Object.keys(xs).length > 0 ? xs : void 0;
 }
-var crypto8, fs14, path18, import_constructs19;
+var crypto8, fs14, path17, import_constructs19;
 var init_shared2 = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/_shared.ts"() {
     "use strict";
     crypto8 = __toESM(require("crypto"));
     fs14 = __toESM(require("fs"));
-    path18 = __toESM(require("path"));
+    path17 = __toESM(require("path"));
     import_constructs19 = __toESM(require_lib4());
     init_cloud_assembly_schema();
     init_errors();
@@ -82463,12 +84100,12 @@ function validateDockerImageAssetSource(asset) {
     }
   }
 }
-var fs15, path19, AssetManifestBuilder;
+var fs15, path18, AssetManifestBuilder;
 var init_asset_manifest_builder = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/asset-manifest-builder.ts"() {
     "use strict";
     fs15 = __toESM(require("fs"));
-    path19 = __toESM(require("path"));
+    path18 = __toESM(require("path"));
     init_cloud_assembly_schema();
     init_assets();
     init_errors();
@@ -82487,7 +84124,7 @@ var init_asset_manifest_builder = __esm({
        */
       defaultAddFileAsset(stack, asset, target, options) {
         validateFileAssetSource(asset);
-        const extension = asset.fileName != void 0 ? path19.extname(asset.fileName) : "";
+        const extension = asset.fileName != void 0 ? path18.extname(asset.fileName) : "";
         const objectKey = (target.bucketPrefix ?? "") + asset.sourceHash + (asset.packaging === "zip" /* ZIP_DIRECTORY */ ? ".zip" : extension);
         return this.addFileAsset(stack, asset.sourceHash, {
           path: asset.fileName,
@@ -82588,7 +84225,7 @@ var init_asset_manifest_builder = __esm({
       emitManifest(stack, session, options = {}, dependencies = []) {
         const artifactId = `${stack.artifactId}.assets`;
         const manifestFile = `${artifactId}.json`;
-        const outPath = path19.join(session.assembly.outdir, manifestFile);
+        const outPath = path18.join(session.assembly.outdir, manifestFile);
         const manifest = {
           version: cloud_assembly_schema_exports.Manifest.version(),
           files: this.files,
@@ -82668,7 +84305,7 @@ var init_cfn_rule = __esm({
 
 // ../../aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts
 function stackTemplateFileAsset(stack, session) {
-  const templatePath = path20.join(session.assembly.outdir, stack.templateFile);
+  const templatePath = path19.join(session.assembly.outdir, stack.templateFile);
   if (!fs16.existsSync(templatePath)) {
     throw new ValidationError(lit`StackTemplate`, `Stack template ${stack.stackName} not written yet: ${templatePath}`, stack);
   }
@@ -82688,7 +84325,7 @@ function addBootstrapVersionRule(stack, requiredVersion, bootstrapStackVersionSs
   }
   const param = new CfnParameter(stack, "BootstrapVersion", {
     type: "AWS::SSM::Parameter::Value<String>",
-    description: `Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. ${import_cloud_assembly_api.SSMPARAM_NO_INVALIDATE}`,
+    description: `Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. ${import_cloud_assembly_api2.SSMPARAM_NO_INVALIDATE}`,
     default: bootstrapStackVersionSsmParameter
   });
   const oldVersions = range3(1, requiredVersion).map((n) => `${n}`);
@@ -82718,12 +84355,12 @@ function stackLocationOrInstrinsics(stack) {
 function cfnify(s) {
   return s.indexOf("${") > -1 ? Fn.sub(s) : s;
 }
-var fs16, path20, StackSynthesizer;
+var fs16, path19, StackSynthesizer;
 var init_stack_synthesizer = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts"() {
     "use strict";
     fs16 = __toESM(require("fs"));
-    path20 = __toESM(require("path"));
+    path19 = __toESM(require("path"));
     init_shared2();
     init_cx_api();
     init_assets();
@@ -83296,8 +84933,8 @@ var init_legacy = __esm({
         }
         const bucketName = params.bucketNameParameter.valueAsString;
         const encodedKey = params.objectKeyParameter.valueAsString;
-        const s3Prefix = Fn.select(0, Fn.split(import_cloud_assembly_api.ASSET_PREFIX_SEPARATOR, encodedKey));
-        const s3Filename = Fn.select(1, Fn.split(import_cloud_assembly_api.ASSET_PREFIX_SEPARATOR, encodedKey));
+        const s3Prefix = Fn.select(0, Fn.split(import_cloud_assembly_api2.ASSET_PREFIX_SEPARATOR, encodedKey));
+        const s3Filename = Fn.select(1, Fn.split(import_cloud_assembly_api2.ASSET_PREFIX_SEPARATOR, encodedKey));
         const objectKey = `${s3Prefix}${s3Filename}`;
         const httpUrl = `https://s3.${this.boundStack.region}.${this.boundStack.urlSuffix}/${bucketName}/${objectKey}`;
         const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
@@ -83698,12 +85335,12 @@ function makeCustomCoupledReference(value, strength) {
   }
   return new CustomCoupledReference(resolvable, strength);
 }
-var fs17, path21, import_constructs22, minimatch2, STACK_RESOURCE_LIMIT_CONTEXT, SUPPRESS_TEMPLATE_INDENTATION_CONTEXT, TEMPLATE_BODY_MAXIMUM_SIZE, VALID_STACK_NAME_REGEX, MAX_RESOURCES, _resolve_dec, _a6, _init9, _Stack, Stack, firstTwoAgnosticAzs;
+var fs17, path20, import_constructs22, minimatch2, STACK_RESOURCE_LIMIT_CONTEXT, SUPPRESS_TEMPLATE_INDENTATION_CONTEXT, TEMPLATE_BODY_MAXIMUM_SIZE, VALID_STACK_NAME_REGEX, MAX_RESOURCES, _resolve_dec, _a6, _init9, _Stack, Stack, firstTwoAgnosticAzs;
 var init_stack = __esm({
   "../../aws-cdk-lib/core/lib/stack.ts"() {
     "use strict";
     fs17 = __toESM(require("fs"));
-    path21 = __toESM(require("path"));
+    path20 = __toESM(require("path"));
     import_constructs22 = __toESM(require_lib4());
     init_annotations();
     init_app2();
@@ -84357,7 +85994,7 @@ var init_stack = __esm({
         this._silenceLiteralAzWarning();
         const agnostic = Token.isUnresolved(this.account) || Token.isUnresolved(this.region);
         if (agnostic) {
-          return this.node.tryGetContext(import_cloud_assembly_api.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || firstTwoAgnosticAzs();
+          return this.node.tryGetContext(import_cloud_assembly_api2.AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY) || firstTwoAgnosticAzs();
         }
         const value = ContextProvider.getValue(this, {
           provider: cloud_assembly_schema_exports.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
@@ -84506,8 +86143,9 @@ var init_stack = __esm({
        */
       _synthesizeTemplate(session, lookupRoleArn, lookupRoleExternalId, lookupRoleAdditionalOptions) {
         const builder = session.assembly;
+        this.node.addMetadata(CDK_TEMPLATE_FILE_KEY, this.templateFile);
         const template = this._toCloudFormation();
-        const outPath = path21.join(builder.outdir, this.templateFile);
+        const outPath = path20.join(builder.outdir, this.templateFile);
         if (this.maxResources > 0) {
           const resources = template.Resources || {};
           const numberOfResources = Object.keys(resources).length;
@@ -84688,6 +86326,40 @@ var init_stack = __esm({
         return importValue;
       }
       /**
+       * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
+       *
+       * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
+       * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
+       * is `CloudFormationProduct`.
+       *
+       * This indicates whether the current class represents a top-level stack
+       * (should only be true for instances of the main `Stack` class), or false for
+       * a construct that simply produces a template and happens to reuse `Stack`
+       * for that purpose.
+       *
+       * Here is the class hierarchy we should have had:
+       *
+       * ```
+       * TemplateProducer
+       * ├── Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * Here is the class hierarchy we actually have:
+       *
+       * ```
+       * Stack
+       * ├── NestedStack
+       * └── CloudFormationProduct
+       * ```
+       *
+       * @internal
+       */
+      get _isTopLevelStack() {
+        return true;
+      }
+      /**
        * Returns the naming scheme used to allocate logical IDs. By default, uses
        * the `HashedAddressingScheme` but this method can be overridden to customize
        * this behavior.
@@ -84804,8 +86476,8 @@ var init_stack = __esm({
         }
         const account = env2.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
         const region = env2.region ?? containingAssembly?.region ?? Aws.REGION;
-        const envAccount = !Token.isUnresolved(account) ? account : import_cloud_assembly_api.UNKNOWN_ACCOUNT;
-        const envRegion = !Token.isUnresolved(region) ? region : import_cloud_assembly_api.UNKNOWN_REGION;
+        const envAccount = !Token.isUnresolved(account) ? account : import_cloud_assembly_api2.UNKNOWN_ACCOUNT;
+        const envRegion = !Token.isUnresolved(region) ? region : import_cloud_assembly_api2.UNKNOWN_REGION;
         return {
           account,
           region,
@@ -85244,7 +86916,7 @@ var init_cfn_resource = __esm({
         this.cfnResourceType = props.type;
         this._cfnProperties = props.properties || {};
         if (this.node.tryGetContext(PATH_METADATA_ENABLE_CONTEXT)) {
-          this.addMetadata(import_cloud_assembly_api.PATH_METADATA_KEY, this.node.path);
+          this.addMetadata(import_cloud_assembly_api2.PATH_METADATA_KEY, this.node.path);
         }
       }
       get env() {
@@ -85390,8 +87062,8 @@ var init_cfn_resource = __esm({
        *        will be created as needed.
        * @param value - The value. Could be primitive or complex.
        */
-      addOverride(path23, value) {
-        const parts = splitOnPeriods(path23);
+      addOverride(path22, value) {
+        const parts = splitOnPeriods(path22);
         let curr = this.rawOverrides;
         while (parts.length > 1) {
           const key = parts.shift();
@@ -85408,8 +87080,8 @@ var init_cfn_resource = __esm({
        * Syntactic sugar for `addOverride(path, undefined)`.
        * @param path The path of the value to delete
        */
-      addDeletionOverride(path23) {
-        this.addOverride(path23, void 0);
+      addDeletionOverride(path22) {
+        this.addOverride(path22, void 0);
       }
       /**
        * Adds an override to a resource property.
@@ -85749,6 +87421,7 @@ var init_tag_manager = __esm({
     init_errors();
     init_lazy();
     init_literal_string();
+    init_token();
     TAG_MANAGER_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core.TagManager");
     StandardFormatter = class {
       parseTags(cfnPropertyTags, priority) {
@@ -85953,6 +87626,15 @@ var init_tag_manager = __esm({
         }
         this.parseExternalTags(combineWithTags);
         const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+        if (isResolvableObject(this.dynamicTags)) {
+          if (this.tags.size > 0) {
+            throw new UnscopedValidationError(
+              lit`CombineTagsIntrinsicWithLiteral`,
+              "Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). Remove the literal tags or resolve the intrinsic at the property level."
+            );
+          }
+          return this.dynamicTags;
+        }
         if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
           const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
           return ret.length > 0 ? ret : void 0;
@@ -86010,6 +87692,10 @@ var init_tag_manager = __esm({
        */
       parseExternalTags(initialTags) {
         if (initialTags !== void 0) {
+          if (isResolvableObject(initialTags)) {
+            this.dynamicTags = initialTags;
+            return;
+          }
           const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
           this.dynamicTags = parseTagsResult.dynamicTags;
           this._setTag(...parseTagsResult.tags);
@@ -86153,9 +87839,9 @@ var init_applicator = __esm({
   "../../aws-cdk-lib/core/lib/mixins/applicator.ts"() {
     "use strict";
     init_errors();
+    init_helpers_internal();
     init_mixin_metadata();
     init_selectors();
-    init_helpers_internal();
     init_literal_string();
     _selectedConstructs_dec = [memoizedGetter];
     MixinApplicator = class {
@@ -87558,12 +89244,12 @@ function getBooleanContext2(root, key, defaultValue) {
   if (raw === void 0) return defaultValue;
   return raw !== false && raw !== "false";
 }
-var fs18, path22, AssemblyValidationReport, APP_INIT_HOOK_SYMBOL2;
+var fs18, path21, AssemblyValidationReport, APP_INIT_HOOK_SYMBOL2;
 var init_assembly_validation_report = __esm({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/assembly-validation-report.ts"() {
     "use strict";
     fs18 = __toESM(require("fs"));
-    path22 = __toESM(require("path"));
+    path21 = __toESM(require("path"));
     init_core();
     init_literal_string();
     init_cx_api();
@@ -87602,7 +89288,7 @@ var init_assembly_validation_report = __esm({
           throw new AssumptionError(lit`MissingAppContext`, "In order to assert on validations with AssemblyValidationReport, create your App with { postCliContext: AssemblyValidationReport.APP_CONTEXT }");
         }
         const asm = app.synth();
-        const newFile = path22.join(asm.directory, "validation-report.json");
+        const newFile = path21.join(asm.directory, "validation-report.json");
         const newReport = JSON.parse(fs18.readFileSync(newFile, "utf-8"));
         return new _AssemblyValidationReport(newReport);
       }
@@ -88394,18 +90080,18 @@ var require_dist_cjs6 = __commonJS({
     __name2(_EndpointError, "EndpointError");
     var EndpointError2 = _EndpointError;
     var booleanEquals = /* @__PURE__ */ __name2((value1, value2) => value1 === value2, "booleanEquals");
-    var getAttrPathList = /* @__PURE__ */ __name2((path23) => {
-      const parts = path23.split(".");
+    var getAttrPathList = /* @__PURE__ */ __name2((path22) => {
+      const parts = path22.split(".");
       const pathList = [];
       for (const part of parts) {
         const squareBracketIndex = part.indexOf("[");
         if (squareBracketIndex !== -1) {
           if (part.indexOf("]") !== part.length - 1) {
-            throw new EndpointError2(`Path: '${path23}' does not end with ']'`);
+            throw new EndpointError2(`Path: '${path22}' does not end with ']'`);
           }
           const arrayIndex = part.slice(squareBracketIndex + 1, -1);
           if (Number.isNaN(parseInt(arrayIndex))) {
-            throw new EndpointError2(`Invalid array index: '${arrayIndex}' in path: '${path23}'`);
+            throw new EndpointError2(`Invalid array index: '${arrayIndex}' in path: '${path22}'`);
           }
           if (squareBracketIndex !== 0) {
             pathList.push(part.slice(0, squareBracketIndex));
@@ -88417,9 +90103,9 @@ var require_dist_cjs6 = __commonJS({
       }
       return pathList;
     }, "getAttrPathList");
-    var getAttr = /* @__PURE__ */ __name2((value, path23) => getAttrPathList(path23).reduce((acc, index) => {
+    var getAttr = /* @__PURE__ */ __name2((value, path22) => getAttrPathList(path22).reduce((acc, index) => {
       if (typeof acc !== "object") {
-        throw new EndpointError2(`Index '${index}' in '${path23}' not found in '${JSON.stringify(value)}'`);
+        throw new EndpointError2(`Index '${index}' in '${path22}' not found in '${JSON.stringify(value)}'`);
       } else if (Array.isArray(acc)) {
         return acc[parseInt(index)];
       }
@@ -88439,8 +90125,8 @@ var require_dist_cjs6 = __commonJS({
             return value;
           }
           if (typeof value === "object" && "hostname" in value) {
-            const { hostname: hostname2, port, protocol: protocol2 = "", path: path23 = "", query = {} } = value;
-            const url2 = new URL(`${protocol2}//${hostname2}${port ? `:${port}` : ""}${path23}`);
+            const { hostname: hostname2, port, protocol: protocol2 = "", path: path22 = "", query = {} } = value;
+            const url2 = new URL(`${protocol2}//${hostname2}${port ? `:${port}` : ""}${path22}`);
             url2.search = Object.entries(query).map(([k, v]) => `${k}=${v}`).join("&");
             return url2;
           }
@@ -89793,9 +91479,9 @@ var init_createPaginator = __esm({
     makePagedClientRequest = async (CommandCtor, client, input, ...args) => {
       return await client.send(new CommandCtor(input), ...args);
     };
-    get = (fromObject, path23) => {
+    get = (fromObject, path22) => {
       let cursor = fromObject;
-      const pathComponents = path23.split(".");
+      const pathComponents = path22.split(".");
       for (const step of pathComponents) {
         if (!cursor || typeof cursor !== "object") {
           return void 0;
@@ -90272,21 +91958,21 @@ var require_dist_cjs19 = __commonJS({
       let sendBody = true;
       if (expect === "100-continue") {
         sendBody = await Promise.race([
-          new Promise((resolve7) => {
-            timeoutId = Number(timing.setTimeout(resolve7, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
+          new Promise((resolve6) => {
+            timeoutId = Number(timing.setTimeout(resolve6, Math.max(MIN_WAIT_TIME, maxContinueTimeoutMs)));
           }),
-          new Promise((resolve7) => {
+          new Promise((resolve6) => {
             httpRequest.on("continue", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(true);
+              resolve6(true);
             });
             httpRequest.on("response", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(false);
+              resolve6(false);
             });
             httpRequest.on("error", () => {
               timing.clearTimeout(timeoutId);
-              resolve7(false);
+              resolve6(false);
             });
           })
         ]);
@@ -90322,13 +92008,13 @@ var require_dist_cjs19 = __commonJS({
       constructor(options) {
         this.socketWarningTimestamp = 0;
         this.metadata = { handlerProtocol: "http/1.1" };
-        this.configProvider = new Promise((resolve7, reject) => {
+        this.configProvider = new Promise((resolve6, reject) => {
           if (typeof options === "function") {
             options().then((_options) => {
-              resolve7(this.resolveDefaultConfig(_options));
+              resolve6(this.resolveDefaultConfig(_options));
             }).catch(reject);
           } else {
-            resolve7(this.resolveDefaultConfig(options));
+            resolve6(this.resolveDefaultConfig(options));
           }
         });
       }
@@ -90411,7 +92097,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         return new Promise((_resolve2, _reject) => {
           let writeRequestBodyPromise = void 0;
           const timeouts = [];
-          const resolve7 = /* @__PURE__ */ __name2(async (arg) => {
+          const resolve6 = /* @__PURE__ */ __name2(async (arg) => {
             await writeRequestBodyPromise;
             timeouts.forEach(timing.clearTimeout);
             _resolve2(arg);
@@ -90451,12 +92137,12 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             const password = request2.password ?? "";
             auth = `${username}:${password}`;
           }
-          let path23 = request2.path;
+          let path22 = request2.path;
           if (queryString) {
-            path23 += `?${queryString}`;
+            path22 += `?${queryString}`;
           }
           if (request2.fragment) {
-            path23 += `#${request2.fragment}`;
+            path22 += `#${request2.fragment}`;
           }
           let hostname = request2.hostname ?? "";
           if (hostname[0] === "[" && hostname.endsWith("]")) {
@@ -90468,7 +92154,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             headers: request2.headers,
             host: hostname,
             method: request2.method,
-            path: path23,
+            path: path22,
             port: request2.port,
             agent,
             auth
@@ -90481,7 +92167,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
               headers: getTransformedHeaders(res.headers),
               body: res
             });
-            resolve7({ response: httpResponse });
+            resolve6({ response: httpResponse });
           });
           req.on("error", (err) => {
             if (NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
@@ -90670,13 +92356,13 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
       constructor(options) {
         this.metadata = { handlerProtocol: "h2" };
         this.connectionManager = new NodeHttp2ConnectionManager({});
-        this.configProvider = new Promise((resolve7, reject) => {
+        this.configProvider = new Promise((resolve6, reject) => {
           if (typeof options === "function") {
             options().then((opts) => {
-              resolve7(opts || {});
+              resolve6(opts || {});
             }).catch(reject);
           } else {
-            resolve7(options || {});
+            resolve6(options || {});
           }
         });
       }
@@ -90706,7 +92392,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
           var _a7;
           let fulfilled = false;
           let writeRequestBodyPromise = void 0;
-          const resolve7 = /* @__PURE__ */ __name2(async (arg) => {
+          const resolve6 = /* @__PURE__ */ __name2(async (arg) => {
             await writeRequestBodyPromise;
             _resolve2(arg);
           }, "resolve");
@@ -90742,16 +92428,16 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
             reject(err);
           }, "rejectWithDestroy");
           const queryString = (0, import_querystring_builder.buildQueryString)(query || {});
-          let path23 = request2.path;
+          let path22 = request2.path;
           if (queryString) {
-            path23 += `?${queryString}`;
+            path22 += `?${queryString}`;
           }
           if (request2.fragment) {
-            path23 += `#${request2.fragment}`;
+            path22 += `#${request2.fragment}`;
           }
           const req = session.request({
             ...request2.headers,
-            [import_http22.constants.HTTP2_HEADER_PATH]: path23,
+            [import_http22.constants.HTTP2_HEADER_PATH]: path22,
             [import_http22.constants.HTTP2_HEADER_METHOD]: method
           });
           session.ref();
@@ -90762,7 +92448,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
               body: req
             });
             fulfilled = true;
-            resolve7({ response: httpResponse });
+            resolve6({ response: httpResponse });
             if (disableConcurrentStreams) {
               session.close();
               this.connectionManager.deleteSession(authority, session);
@@ -90852,7 +92538,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
       if (isReadableStreamInstance(stream)) {
         return collectReadableStream(stream);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const collector = new Collector();
         stream.pipe(collector);
         stream.on("error", (err) => {
@@ -90862,7 +92548,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
         collector.on("error", reject);
         collector.on("finish", function() {
           const bytes = new Uint8Array(Buffer.concat(this.bufferedBytes));
-          resolve7(bytes);
+          resolve6(bytes);
         });
       });
     }, "streamCollector");
@@ -90927,7 +92613,7 @@ var require_dist_cjs20 = __commonJS({
     }
     __name2(createRequest, "createRequest");
     function requestTimeout(timeoutInMs = 0) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         if (timeoutInMs) {
           setTimeout(() => {
             const timeoutError = new Error(`Request did not complete within ${timeoutInMs} ms`);
@@ -90980,13 +92666,13 @@ var require_dist_cjs20 = __commonJS({
           abortError.name = "AbortError";
           return Promise.reject(abortError);
         }
-        let path23 = request2.path;
+        let path22 = request2.path;
         const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
         if (queryString) {
-          path23 += `?${queryString}`;
+          path22 += `?${queryString}`;
         }
         if (request2.fragment) {
-          path23 += `#${request2.fragment}`;
+          path22 += `#${request2.fragment}`;
         }
         let auth = "";
         if (request2.username != null || request2.password != null) {
@@ -90995,7 +92681,7 @@ var require_dist_cjs20 = __commonJS({
           auth = `${username}:${password}@`;
         }
         const { port, method } = request2;
-        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path23}`;
+        const url2 = `${request2.protocol}//${auth}${request2.hostname}${port ? `:${port}` : ""}${path22}`;
         const body = method === "GET" || method === "HEAD" ? void 0 : request2.body;
         const requestOptions = {
           body,
@@ -91052,7 +92738,7 @@ var require_dist_cjs20 = __commonJS({
         ];
         if (abortSignal) {
           raceOfPromises.push(
-            new Promise((resolve7, reject) => {
+            new Promise((resolve6, reject) => {
               const onAbort = /* @__PURE__ */ __name2(() => {
                 const abortError = new Error("Request aborted");
                 abortError.name = "AbortError";
@@ -91123,7 +92809,7 @@ var require_dist_cjs20 = __commonJS({
     }
     __name2(collectStream, "collectStream");
     function readToBase64(blob) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
           if (reader.readyState !== 2) {
@@ -91132,7 +92818,7 @@ var require_dist_cjs20 = __commonJS({
           const result = reader.result ?? "";
           const commaIndex = result.indexOf(",");
           const dataOffset = commaIndex > -1 ? commaIndex + 1 : result.length;
-          resolve7(result.substring(dataOffset));
+          resolve6(result.substring(dataOffset));
         };
         reader.onabort = () => reject(new Error("Read aborted"));
         reader.onerror = () => reject(reader.error);
@@ -91447,7 +93133,7 @@ var require_headStream = __commonJS({
       if ((0, stream_type_check_1.isReadableStream)(stream)) {
         return (0, headStream_browser_1.headStream)(stream, bytes);
       }
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         const collector = new Collector();
         collector.limit = bytes;
         stream.pipe(collector);
@@ -91458,7 +93144,7 @@ var require_headStream = __commonJS({
         collector.on("error", reject);
         collector.on("finish", function() {
           const bytes2 = new Uint8Array(Buffer.concat(this.buffers));
-          resolve7(bytes2);
+          resolve6(bytes2);
         });
       });
     };
@@ -91798,8 +93484,8 @@ var init_requestBuilder = __esm({
         return this;
       }
       p(memberName, labelValueProvider, uriLabel, isGreedyLabel) {
-        this.resolvePathStack.push((path23) => {
-          this.path = resolvedPath2(path23, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
+        this.resolvePathStack.push((path22) => {
+          this.path = resolvedPath2(path22, this.input, memberName, labelValueProvider, uriLabel, isGreedyLabel);
         });
         return this;
       }
@@ -92357,11 +94043,11 @@ var require_slurpFile = __commonJS({
     var fs_1 = require("fs");
     var { readFile } = fs_1.promises;
     var filePromisesHash = {};
-    var slurpFile = (path23, options) => {
-      if (!filePromisesHash[path23] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path23] = readFile(path23, "utf8");
+    var slurpFile = (path22, options) => {
+      if (!filePromisesHash[path22] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
+        filePromisesHash[path22] = readFile(path22, "utf8");
       }
-      return filePromisesHash[path23];
+      return filePromisesHash[path22];
     };
     exports2.slurpFile = slurpFile;
   }
@@ -92425,13 +94111,13 @@ var require_dist_cjs25 = __commonJS({
         ...data.default && { default: data.default }
       }
     ), "getConfigData");
-    var import_path3 = require("path");
+    var import_path2 = require("path");
     var import_getHomeDir = require_getHomeDir();
     var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name2(() => process.env[ENV_CONFIG_PATH] || (0, import_path3.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
+    var getConfigFilepath = /* @__PURE__ */ __name2(() => process.env[ENV_CONFIG_PATH] || (0, import_path2.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
     var import_getHomeDir2 = require_getHomeDir();
     var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name2(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path3.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
+    var getCredentialsFilepath = /* @__PURE__ */ __name2(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path2.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
     var import_getHomeDir3 = require_getHomeDir();
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
@@ -92489,11 +94175,11 @@ var require_dist_cjs25 = __commonJS({
       const relativeHomeDirPrefix = "~/";
       let resolvedFilepath = filepath;
       if (filepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedFilepath = (0, import_path3.join)(homeDir, filepath.slice(2));
+        resolvedFilepath = (0, import_path2.join)(homeDir, filepath.slice(2));
       }
       let resolvedConfigFilepath = configFilepath;
       if (configFilepath.startsWith(relativeHomeDirPrefix)) {
-        resolvedConfigFilepath = (0, import_path3.join)(homeDir, configFilepath.slice(2));
+        resolvedConfigFilepath = (0, import_path2.join)(homeDir, configFilepath.slice(2));
       }
       const parsedFiles = await Promise.all([
         (0, import_slurpFile.slurpFile)(resolvedConfigFilepath, {
@@ -92863,8 +94549,8 @@ var require_dist_cjs29 = __commonJS({
               return endpoint.url.href;
             }
             if ("hostname" in endpoint) {
-              const { protocol, hostname, port, path: path23 } = endpoint;
-              return `${protocol}//${hostname}${port ? ":" + port : ""}${path23}`;
+              const { protocol, hostname, port, path: path22 } = endpoint;
+              return `${protocol}//${hostname}${port ? ":" + port : ""}${path22}`;
             }
           }
           return endpoint;
@@ -93548,7 +95234,7 @@ var require_dist_cjs31 = __commonJS({
         this.refillTokenBucket();
         if (amount > this.currentCapacity) {
           const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
-          await new Promise((resolve7) => _DefaultRateLimiter2.setTimeoutFn(resolve7, delay));
+          await new Promise((resolve6) => _DefaultRateLimiter2.setTimeoutFn(resolve6, delay));
         }
         this.currentCapacity = this.currentCapacity - amount;
       }
@@ -95433,7 +97119,7 @@ var require_dist_cjs34 = __commonJS({
               const delayFromResponse = getDelayFromRetryAfterHeader(err.$response);
               const delay = Math.max(delayFromResponse || 0, delayFromDecider);
               totalDelay += delay;
-              await new Promise((resolve7) => setTimeout(resolve7, delay));
+              await new Promise((resolve6) => setTimeout(resolve6, delay));
               continue;
             }
             if (!err.$metadata) {
@@ -95601,7 +97287,7 @@ var require_dist_cjs34 = __commonJS({
             attempts = retryToken.getRetryCount();
             const delay = retryToken.getRetryDelay();
             totalRetryDelay += delay;
-            await new Promise((resolve7) => setTimeout(resolve7, delay));
+            await new Promise((resolve6) => setTimeout(resolve6, delay));
           }
         }
       } else {
@@ -96380,10 +98066,10 @@ ${longDate}
 ${credentialScope}
 ${(0, import_util_hex_encoding.toHex)(hashedRequest)}`;
       }
-      getCanonicalPath({ path: path23 }) {
+      getCanonicalPath({ path: path22 }) {
         if (this.uriEscapePath) {
           const normalizedPathSegments = [];
-          for (const pathSegment of path23.split("/")) {
+          for (const pathSegment of path22.split("/")) {
             if ((pathSegment == null ? void 0 : pathSegment.length) === 0)
               continue;
             if (pathSegment === ".")
@@ -96394,11 +98080,11 @@ ${(0, import_util_hex_encoding.toHex)(hashedRequest)}`;
               normalizedPathSegments.push(pathSegment);
             }
           }
-          const normalizedPath = `${(path23 == null ? void 0 : path23.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path23 == null ? void 0 : path23.endsWith("/")) ? "/" : ""}`;
+          const normalizedPath = `${(path22 == null ? void 0 : path22.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path22 == null ? void 0 : path22.endsWith("/")) ? "/" : ""}`;
           const doubleEncoded = (0, import_util_uri_escape.escapeUri)(normalizedPath);
           return doubleEncoded.replace(/%2F/g, "/");
         }
-        return path23;
+        return path22;
       }
       async getSignature(longDate, credentialScope, keyPromise, canonicalRequest) {
         const stringToSign = await this.createStringToSign(longDate, credentialScope, canonicalRequest);
@@ -98604,11 +100290,11 @@ function __metadata(metadataKey, metadataValue) {
 }
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {
-    return value instanceof P ? value : new P(function(resolve7) {
-      resolve7(value);
+    return value instanceof P ? value : new P(function(resolve6) {
+      resolve6(value);
     });
   }
-  return new (P || (P = Promise))(function(resolve7, reject) {
+  return new (P || (P = Promise))(function(resolve6, reject) {
     function fulfilled(value) {
       try {
         step(generator.next(value));
@@ -98624,7 +100310,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
       }
     }
     function step(result) {
-      result.done ? resolve7(result.value) : adopt(result.value).then(fulfilled, rejected);
+      result.done ? resolve6(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
@@ -98815,14 +100501,14 @@ function __asyncValues(o) {
   }, i);
   function verb(n) {
     i[n] = o[n] && function(v) {
-      return new Promise(function(resolve7, reject) {
-        v = o[n](v), settle(resolve7, reject, v.done, v.value);
+      return new Promise(function(resolve6, reject) {
+        v = o[n](v), settle(resolve6, reject, v.done, v.value);
       });
     };
   }
-  function settle(resolve7, reject, d, v) {
+  function settle(resolve6, reject, d, v) {
     Promise.resolve(v).then(function(v2) {
-      resolve7({ value: v2, done: d });
+      resolve6({ value: v2, done: d });
     }, reject);
   }
 }
@@ -98914,13 +100600,13 @@ function __disposeResources(env2) {
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path23, preserveJsx) {
-  if (typeof path23 === "string" && /^\.\.?\//.test(path23)) {
-    return path23.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
+function __rewriteRelativeImportExtension(path22, preserveJsx) {
+  if (typeof path22 === "string" && /^\.\.?\//.test(path22)) {
+    return path22.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
   }
-  return path23;
+  return path22;
 }
 var extendStatics, __assign, __createBinding, __setModuleDefault, ownKeys, _SuppressedError, tslib_es6_default;
 var init_tslib_es6 = __esm({
@@ -99224,7 +100910,7 @@ var require_dist_cjs37 = __commonJS({
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
-      return new Promise((resolve7, reject) => {
+      return new Promise((resolve6, reject) => {
         var _a7;
         const req = (0, import_http2.request)({
           method: "GET",
@@ -99254,7 +100940,7 @@ var require_dist_cjs37 = __commonJS({
             chunks.push(chunk);
           });
           res.on("end", () => {
-            resolve7(import_buffer.Buffer.concat(chunks));
+            resolve6(import_buffer.Buffer.concat(chunks));
             req.destroy();
           });
         });
@@ -99691,7 +101377,7 @@ var require_retry_wrapper = __commonJS({
           try {
             return await toRetry();
           } catch (e) {
-            await new Promise((resolve7) => setTimeout(resolve7, delayMs));
+            await new Promise((resolve6) => setTimeout(resolve6, delayMs));
           }
         }
         return await toRetry();
@@ -99722,12 +101408,12 @@ var require_fromHttp = __commonJS({
     var fromHttp = (options = {}) => {
       options.logger?.debug("@aws-sdk/credential-provider-http - fromHttp");
       let host;
-      const relative6 = options.awsContainerCredentialsRelativeUri ?? process.env[AWS_CONTAINER_CREDENTIALS_RELATIVE_URI];
+      const relative7 = options.awsContainerCredentialsRelativeUri ?? process.env[AWS_CONTAINER_CREDENTIALS_RELATIVE_URI];
       const full = options.awsContainerCredentialsFullUri ?? process.env[AWS_CONTAINER_CREDENTIALS_FULL_URI];
       const token = options.awsContainerAuthorizationToken ?? process.env[AWS_CONTAINER_AUTHORIZATION_TOKEN];
       const tokenFile = options.awsContainerAuthorizationTokenFile ?? process.env[AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE];
       const warn = options.logger?.constructor?.name === "NoOpLogger" || !options.logger ? console.warn : options.logger.warn;
-      if (relative6 && full) {
+      if (relative7 && full) {
         warn("@aws-sdk/credential-provider-http: you have set both awsContainerCredentialsRelativeUri and awsContainerCredentialsFullUri.");
         warn("awsContainerCredentialsFullUri will take precedence.");
       }
@@ -99737,8 +101423,8 @@ var require_fromHttp = __commonJS({
       }
       if (full) {
         host = full;
-      } else if (relative6) {
-        host = `${DEFAULT_LINK_LOCAL_HOST}${relative6}`;
+      } else if (relative7) {
+        host = `${DEFAULT_LINK_LOCAL_HOST}${relative7}`;
       } else {
         throw new property_provider_1.CredentialsProviderError(`No HTTP credential provider host provided.
 Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI.`, { logger: options.logger });
@@ -104316,14 +106002,14 @@ var require_dist_cjs48 = __commonJS({
       cfId: output.headers["x-amz-cf-id"]
     }), "deserializeMetadata");
     var throwDefaultError = (0, import_smithy_client4.withBaseException)(STSServiceException);
-    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path23, resolvedHostname, body) => {
+    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path22, resolvedHostname, body) => {
       const { hostname, protocol = "https", port, path: basePath } = await context.endpoint();
       const contents = {
         protocol,
         hostname,
         port,
         method: "POST",
-        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path23 : basePath + path23,
+        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path22 : basePath + path22,
         headers
       };
       if (resolvedHostname !== void 0) {
@@ -108200,14 +109886,14 @@ var require_dist_cjs53 = __commonJS({
       cfId: output.headers["x-amz-cf-id"]
     }), "deserializeMetadata");
     var throwDefaultError = (0, import_smithy_client4.withBaseException)(SFNServiceException);
-    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path23, resolvedHostname, body) => {
+    var buildHttpRpcRequest = /* @__PURE__ */ __name2(async (context, headers, path22, resolvedHostname, body) => {
       const { hostname, protocol = "https", port, path: basePath } = await context.endpoint();
       const contents = {
         protocol,
         hostname,
         port,
         method: "POST",
-        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path23 : basePath + path23,
+        path: basePath.endsWith("/") ? basePath.slice(0, -1) + path22 : basePath + path22,
         headers
       };
       if (resolvedHostname !== void 0) {
@@ -110253,14 +111939,14 @@ function flatten2(root) {
   const ret = {};
   recurse(root);
   return ret;
-  function recurse(x, path23 = []) {
+  function recurse(x, path22 = []) {
     if (x && typeof x === "object") {
       for (const [key, value] of Object.entries(x)) {
-        recurse(value, [...path23, key]);
+        recurse(value, [...path22, key]);
       }
       return;
     }
-    ret[path23.join(".")] = x;
+    ret[path22.join(".")] = x;
   }
 }
 async function coerceSdkv3Response(value) {
@@ -110607,7 +112293,7 @@ var require_tr46 = __commonJS({
       TRANSITIONAL: 0,
       NONTRANSITIONAL: 1
     };
-    function normalize2(str) {
+    function normalize(str) {
       return str.split("\0").map(function(s) {
         return s.normalize("NFC");
       }).join("\0");
@@ -110687,7 +112373,7 @@ var require_tr46 = __commonJS({
         processing_option = PROCESSING_OPTIONS.NONTRANSITIONAL;
       }
       var error = false;
-      if (normalize2(label) !== label || label[3] === "-" && label[4] === "-" || label[0] === "-" || label[label.length - 1] === "-" || label.indexOf(".") !== -1 || label.search(combiningMarksRegex) === 0) {
+      if (normalize(label) !== label || label[3] === "-" && label[4] === "-" || label[0] === "-" || label[label.length - 1] === "-" || label.indexOf(".") !== -1 || label.search(combiningMarksRegex) === 0) {
         error = true;
       }
       var len = countSymbols(label);
@@ -110705,7 +112391,7 @@ var require_tr46 = __commonJS({
     }
     function processing(domain_name, useSTD3, processing_option) {
       var result = mapChars(domain_name, useSTD3, processing_option);
-      result.string = normalize2(result.string);
+      result.string = normalize(result.string);
       var labels = result.string.split(".");
       for (var i = 0; i < labels.length; ++i) {
         try {
@@ -111148,14 +112834,14 @@ var require_url_state_machine = __commonJS({
       return url2.replace(/\u0009|\u000A|\u000D/g, "");
     }
     function shortenPath(url2) {
-      const path23 = url2.path;
-      if (path23.length === 0) {
+      const path22 = url2.path;
+      if (path22.length === 0) {
         return;
       }
-      if (url2.scheme === "file" && path23.length === 1 && isNormalizedWindowsDriveLetter(path23[0])) {
+      if (url2.scheme === "file" && path22.length === 1 && isNormalizedWindowsDriveLetter(path22[0])) {
         return;
       }
-      path23.pop();
+      path22.pop();
     }
     function includesCredentials(url2) {
       return url2.username !== "" || url2.password !== "";
@@ -116159,7 +117845,7 @@ var require_lib9 = __commonJS({
       let accum = [];
       let accumBytes = 0;
       let abort = false;
-      return new Body.Promise(function(resolve7, reject) {
+      return new Body.Promise(function(resolve6, reject) {
         let resTimeout;
         if (_this4.timeout) {
           resTimeout = setTimeout(function() {
@@ -116193,7 +117879,7 @@ var require_lib9 = __commonJS({
           }
           clearTimeout(resTimeout);
           try {
-            resolve7(Buffer.concat(accum, accumBytes));
+            resolve6(Buffer.concat(accum, accumBytes));
           } catch (err) {
             reject(new FetchError(`Could not create Buffer from response body for ${_this4.url}: ${err.message}`, "system", err));
           }
@@ -116868,7 +118554,7 @@ var require_lib9 = __commonJS({
         throw new Error("native promise missing, set fetch.Promise to your favorite alternative");
       }
       Body.Promise = fetch3.Promise;
-      return new fetch3.Promise(function(resolve7, reject) {
+      return new fetch3.Promise(function(resolve6, reject) {
         const request2 = new Request2(url2, opts);
         const options = getNodeRequestOptions(request2);
         const send = (options.protocol === "https:" ? https2 : http).request;
@@ -117001,7 +118687,7 @@ var require_lib9 = __commonJS({
                   requestOpts.body = void 0;
                   requestOpts.headers.delete("content-length");
                 }
-                resolve7(fetch3(new Request2(locationURL, requestOpts)));
+                resolve6(fetch3(new Request2(locationURL, requestOpts)));
                 finalize();
                 return;
             }
@@ -117022,7 +118708,7 @@ var require_lib9 = __commonJS({
           const codings = headers.get("Content-Encoding");
           if (!request2.compress || request2.method === "HEAD" || codings === null || res.statusCode === 204 || res.statusCode === 304) {
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           const zlibOptions = {
@@ -117032,7 +118718,7 @@ var require_lib9 = __commonJS({
           if (codings == "gzip" || codings == "x-gzip") {
             body = body.pipe(zlib3.createGunzip(zlibOptions));
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           if (codings == "deflate" || codings == "x-deflate") {
@@ -117044,12 +118730,12 @@ var require_lib9 = __commonJS({
                 body = body.pipe(zlib3.createInflateRaw());
               }
               response = new Response(body, response_options);
-              resolve7(response);
+              resolve6(response);
             });
             raw.on("end", function() {
               if (!response) {
                 response = new Response(body, response_options);
-                resolve7(response);
+                resolve6(response);
               }
             });
             return;
@@ -117057,11 +118743,11 @@ var require_lib9 = __commonJS({
           if (codings == "br" && typeof zlib3.createBrotliDecompress === "function") {
             body = body.pipe(zlib3.createBrotliDecompress());
             response = new Response(body, response_options);
-            resolve7(response);
+            resolve6(response);
             return;
           }
           response = new Response(body, response_options);
-          resolve7(response);
+          resolve6(response);
         });
         writeToStream(req, request2);
       });
@@ -117221,9 +118907,9 @@ var CustomResourceHandler = class {
         "content-length": Buffer.byteLength(responseBody, "utf8")
       }
     };
-    return new Promise((resolve7, reject) => {
+    return new Promise((resolve6, reject) => {
       try {
-        const request2 = https.request(requestOptions, resolve7);
+        const request2 = https.request(requestOptions, resolve6);
         request2.on("error", reject);
         request2.write(responseBody);
         request2.end();
