@@ -21,6 +21,7 @@
  * Grant these to Gateway execution roles that evaluate policies during agent requests.
  *
  * Usage: policyEngine.grantEvaluate(gatewayRole)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_ENGINE_EVALUATE_PERMS = [
   'bedrock-agentcore:GetPolicyEngine',
@@ -33,6 +34,7 @@ export const POLICY_ENGINE_EVALUATE_PERMS = [
  *
  * These permissions allow reading policy engine configuration at runtime.
  * Typically used for monitoring, observability, or read-only administrative tools.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_ENGINE_READ_PERMS = [
   'bedrock-agentcore:GetPolicyEngine',
@@ -49,6 +51,7 @@ export const POLICY_ENGINE_READ_PERMS = [
  *
  * Note: `ListPolicies` is intentionally excluded as it's an administrative operation.
  * Applications should reference specific policies by ID/ARN, not list all policies.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_READ_PERMS = [
   'bedrock-agentcore:GetPolicy',
