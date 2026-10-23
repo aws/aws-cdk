@@ -1,0 +1,249 @@
+{
+ "Resources": {
+  "IntegUserdataVpcDE2938ED": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/IntegUserdataVpc"
+     }
+    ]
+   }
+  },
+  "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/16",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/IntegUserdataVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
+   }
+  },
+  "IntegUserdataVpcPublicSubnet1RouteTable7B342D96": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/IntegUserdataVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
+   }
+  },
+  "IntegUserdataVpcPublicSubnet1RouteTableAssociation724A6375": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1RouteTable7B342D96"
+    },
+    "SubnetId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85"
+    }
+   }
+  },
+  "IntegUserdataVpcPublicSubnet1DefaultRoute8F93CC39": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "IntegUserdataVpcIGWB657C40E"
+    },
+    "RouteTableId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1RouteTable7B342D96"
+    }
+   },
+   "DependsOn": [
+    "IntegUserdataVpcVPCGWFA86AC6A"
+   ]
+  },
+  "IntegUserdataVpcIGWB657C40E": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/IntegUserdataVpc"
+     }
+    ]
+   }
+  },
+  "IntegUserdataVpcVPCGWFA86AC6A": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "IntegUserdataVpcIGWB657C40E"
+    },
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
+   }
+  },
+  "WindowsV2InstanceInstanceSecurityGroup94A7E775": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-userdata-windows-v2/WindowsV2Instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/WindowsV2Instance"
+     }
+    ],
+    "VpcId": {
+     "Ref": "IntegUserdataVpcDE2938ED"
+    }
+   }
+  },
+  "WindowsV2InstanceInstanceRoleF59C4BA9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/WindowsV2Instance"
+     }
+    ]
+   }
+  },
+  "WindowsV2InstanceInstanceProfile4FD051F5": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "WindowsV2InstanceInstanceRoleF59C4BA9"
+     }
+    ]
+   }
+  },
+  "WindowsV2InstanceF6B067DF": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "WindowsV2InstanceInstanceProfile4FD051F5"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.micro",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "WindowsV2InstanceInstanceSecurityGroup94A7E775",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "IntegUserdataVpcPublicSubnet1Subnet9AE7FE85"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-userdata-windows-v2/WindowsV2Instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "version: \"1.1\"\ntasks:\n- task: executeScript\n  inputs:\n  - frequency: always\n    type: powershell\n    runAs: localSystem\n    content: |-\n      Write-Host \"Hello from EC2Launch v2!\"\n      New-Item -Path C:\\test.txt -ItemType File -Force"
+    }
+   },
+   "DependsOn": [
+    "WindowsV2InstanceInstanceRoleF59C4BA9"
+   ]
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
