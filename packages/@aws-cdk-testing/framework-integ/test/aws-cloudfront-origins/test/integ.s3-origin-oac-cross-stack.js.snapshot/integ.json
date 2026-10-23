@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "s3-origin-oac-cross-stack/DefaultTest": {
+      "stacks": [
+        "oac-cross-stack-bucket",
+        "oac-cross-stack-distribution"
+      ],
+      "assertionStack": "s3-origin-oac-cross-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "s3originoaccrossstackDefaultTestDeployAssert1F43989F"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
