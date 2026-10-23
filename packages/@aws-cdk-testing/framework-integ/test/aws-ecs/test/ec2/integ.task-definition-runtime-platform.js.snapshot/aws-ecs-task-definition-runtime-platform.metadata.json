@@ -1,0 +1,59 @@
+{
+  "/aws-ecs-task-definition-runtime-platform": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-ecs-task-definition-runtime-platform.template.json"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/TaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/TaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/TaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDef54694570"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/Publish/Output{\"Ref\":\"TaskDef54694570\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefTaskDef54694570C12CA1ED"
+    }
+  ],
+  "/aws-ecs-task-definition-runtime-platform/TaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefTaskRole1EDB4A67"
+    }
+  ]
+}

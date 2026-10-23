@@ -1,0 +1,58 @@
+{
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "TaskDefinitionRuntimePlatformDefaultTestDeployAssert4569B69A.template.json"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9"
+    }
+  ]
+}
