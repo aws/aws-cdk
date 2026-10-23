@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template, Match, Annotations } from '../../assertions';
 import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token } from '../../core';
-import { AccountPrincipal, AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
+import { AccountPrincipal, AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect, RoleGrants } from '../lib';
 
 describe('isRole() returns', () => {
   test('true if given Role instance', () => {
@@ -386,6 +386,50 @@ describe('IAM role', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test.each(['role', 'facade'])('self-assume through %s warns without changing the trust policy', (grantPath) => {
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+
+    if (grantPath === 'facade') {
+      RoleGrants.fromRole(role).assumeRole(role);
+    } else {
+      role.grantAssumeRole(role);
+    }
+
+    Annotations.fromStack(stack).hasWarning('/Default/Role', Match.stringLikeRegexp('grantAssumeRole only adds an identity-based policy'));
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+        Version: '2012-10-17',
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] } }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting another role or user permission to assume a role does not warn', () => {
+    const stack = new Stack();
+    const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+    const otherRole = new Role(stack, 'OtherRole', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+    role.grantAssumeRole(otherRole);
+    role.grantAssumeRole(new User(stack, 'User'));
+
+    expect(Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('grantAssumeRole only adds'))).toEqual([]);
+  });
+
+  test('self-assume through an imported role warns', () => {
+    const stack = new Stack();
+    const role = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/imported');
+    role.grantAssumeRole(role);
+
+    Annotations.fromStack(stack).hasWarning('/Default/ImportedRole', Match.stringLikeRegexp('grantAssumeRole only adds'));
   });
 
   test('a role cannot grant AssumeRole permission to a Service Principal', () => {
