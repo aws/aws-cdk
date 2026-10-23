@@ -9,7 +9,7 @@ import type { IAddon } from './addon';
 import { Addon } from './addon';
 import type { AlbControllerOptions } from './alb-controller';
 import { AlbController } from './alb-controller';
-import { CfnCluster } from './eks.generated';
+import { CfnAddon, CfnCluster } from './eks.generated';
 import type { FargateProfileOptions } from './fargate-profile';
 import { FargateProfile } from './fargate-profile';
 import type { HelmChartOptions } from './helm-chart';
@@ -42,6 +42,8 @@ import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from '../../cx-api';
 import type { ClusterReference, IClusterRef } from '../../interfaces/generated/aws-eks-interfaces.generated';
+
+const EKS_POD_IDENTITY_AGENT_ADDON_NAME = 'eks-pod-identity-agent';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -1819,14 +1821,37 @@ export class Cluster extends ClusterBase {
    */
   public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
-      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
+      this._eksPodIdentityAgent = this.findEksPodIdentityAgent() ?? new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
-        addonName: 'eks-pod-identity-agent',
+        addonName: EKS_POD_IDENTITY_AGENT_ADDON_NAME,
         removalPolicy: this._removalPolicy,
       });
     }
 
     return this._eksPodIdentityAgent;
+  }
+
+  /**
+   * Finds an `eks-pod-identity-agent` add-on that was already declared for this cluster,
+   * either through the `Addon` construct or directly as a `CfnAddon`, so that a second
+   * (conflicting) add-on is not created on the user's behalf.
+   */
+  private findEksPodIdentityAgent(): IAddon | undefined {
+    for (const construct of this.node.root.node.findAll()) {
+      if (!(construct instanceof CfnAddon)
+        || construct.addonName !== EKS_POD_IDENTITY_AGENT_ADDON_NAME
+        || construct.clusterName !== this.clusterName) {
+        continue;
+      }
+      if (construct.node.scope instanceof Addon) {
+        return construct.node.scope;
+      }
+      return Addon.fromAddonAttributes(this, 'EksPodIdentityAgentAddon', {
+        addonName: EKS_POD_IDENTITY_AGENT_ADDON_NAME,
+        clusterName: this.clusterName,
+      });
+    }
+    return undefined;
   }
 
   /**
