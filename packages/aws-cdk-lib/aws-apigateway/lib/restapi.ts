@@ -15,6 +15,7 @@ import type { Integration } from './integration';
 import type { Method, MethodOptions } from './method';
 import type { ModelOptions } from './model';
 import { Model } from './model';
+import { isEnhancedSecurityPolicy, validateSecurityPolicyEndpointType } from './private/security-policy';
 import type { RequestValidatorOptions } from './requestvalidator';
 import { RequestValidator } from './requestvalidator';
 import type { IResource, ResourceOptions } from './resource';
@@ -199,14 +200,20 @@ export interface RestApiBaseProps {
   readonly endpointExportName?: string;
 
   /**
-   * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
-   * @default - will be set to undefined
+  * The endpoint access mode for this REST API.
+  *
+  * Required when using enhanced security policies (those starting with `SecurityPolicy_`).
+  * STRICT is recommended for production workloads.
+  *
+  * @default - No endpoint access mode is configured.
    */
   readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
-   * The Transport Layer Security (TLS) version + cipher suite for this domain name.
-   * @default SecurityPolicy.TLS_1_0
+  * The Transport Layer Security (TLS) version + cipher suite for this REST API.
+  *
+  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html#apigateway-security-policies-default
+  * @default - API Gateway uses TLS_1_0 for public APIs and TLS_1_2 for private APIs.
    */
   readonly securityPolicy?: SecurityPolicy;
 
@@ -1012,12 +1019,21 @@ export class RestApi extends RestApiBase {
       throw new ValidationError(lit`PropertiesMinCompressionSizeMinimum`, 'both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
-    if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
-      throw new ValidationError(lit`SecurityPolicyRequiresEndpointAccessMode`, 'When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
-    }
+    const endpointTypes = props.endpointTypes ?? props.endpointConfiguration?.types ?? [EndpointType.EDGE];
+    const skipSecurityPolicyValidation =
+      Token.isUnresolved(props.securityPolicy) ||
+      Token.isUnresolved(props.endpointAccessMode) ||
+      Token.isUnresolved(endpointTypes) ||
+      endpointTypes.some(endpointType => Token.isUnresolved(endpointType));
 
-    if ((props.endpointTypes?.includes(EndpointType.EDGE) || props.endpointConfiguration?.types?.includes(EndpointType.EDGE)) && props.securityPolicy && !props.securityPolicy?.endsWith('_EDGE')) {
-      throw new ValidationError(lit`EdgeEndpointRequiresEdgeSecurityPolicy`, 'When using an EDGE endpoint configuration, the securityPolicy must end with "_EDGE".', this);
+    if (!skipSecurityPolicyValidation) {
+      if (isEnhancedSecurityPolicy(props.securityPolicy) && props.endpointAccessMode === undefined) {
+        throw new ValidationError(lit`SecurityPolicyRequiresEndpointAccessMode`, 'When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
+      }
+
+      for (const endpointType of endpointTypes) {
+        validateSecurityPolicyEndpointType(this, props.securityPolicy, endpointType);
+      }
     }
 
     this._setResourcePolicy(props.policy);
@@ -1034,7 +1050,7 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
-      endpointAccessMode: props.endpointAccessMode? props.endpointAccessMode : undefined,
+      endpointAccessMode: props.endpointAccessMode,
       securityPolicy: props.securityPolicy,
     });
     this.node.defaultChild = resource;

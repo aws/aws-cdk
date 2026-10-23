@@ -3,6 +3,7 @@ import type { DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from
 import { CfnDomainName } from './apigateway.generated';
 import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
+import { isEnhancedSecurityPolicy, validateSecurityPolicyEndpointType } from './private/security-policy';
 import type { IRestApi } from './restapi';
 import { EndpointType } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
@@ -229,21 +230,6 @@ export class DomainName extends Resource implements IDomainName {
     return new Import(scope, id);
   }
 
-  /** Policies that only support non-edge (regional/private) endpoints */
-  private static readonly NON_EDGE_ONLY_POLICIES = [
-    SecurityPolicy.TLS13_1_3_2025_09,
-    SecurityPolicy.TLS13_1_3_FIPS_2025_09,
-    SecurityPolicy.TLS13_1_2_PQ_2025_09,
-    SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
-  ];
-
-  /** Policies that only support edge endpoints */
-  private static readonly EDGE_ONLY_POLICIES = [
-    SecurityPolicy.TLS13_2025_EDGE,
-    SecurityPolicy.TLS12_PFS_2025_EDGE,
-    SecurityPolicy.TLS12_2018_EDGE,
-  ];
-
   /** @jsii suppress JSII5019 For historic reasons */
   public readonly domainName: string;
   public readonly domainNameRef: DomainNameReference;
@@ -276,7 +262,7 @@ export class DomainName extends Resource implements IDomainName {
     if (!skipSecurityPolicyValidation) {
       // Validate mTLS is not used with enhanced security policies
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-      if (props.mtls && this.isEnhancedSecurityPolicy(this.securityPolicy)) {
+      if (props.mtls && isEnhancedSecurityPolicy(this.securityPolicy)) {
         throw new ValidationError(
           lit`MtlsNotSupportedWithEnhancedSecurityPolicy`,
           'Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy. ' +
@@ -287,7 +273,7 @@ export class DomainName extends Resource implements IDomainName {
 
       // Validate endpointAccessMode is specified for enhanced security policies
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-      if (this.isEnhancedSecurityPolicy(this.securityPolicy) &&
+      if (isEnhancedSecurityPolicy(this.securityPolicy) &&
           props.endpointAccessMode === undefined) {
         throw new ValidationError(
           lit`EndpointAccessModeRequiredForEnhancedSecurityPolicy`,
@@ -301,7 +287,7 @@ export class DomainName extends Resource implements IDomainName {
       // Validate endpointAccessMode is not set for legacy security policies
       // CloudFormation rejects this combination: "Endpoint access mode is not supported for this security policy"
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-      if (!this.isEnhancedSecurityPolicy(this.securityPolicy) &&
+      if (!isEnhancedSecurityPolicy(this.securityPolicy) &&
           props.endpointAccessMode !== undefined) {
         throw new ValidationError(
           lit`EndpointAccessModeNotSupportedForLegacySecurityPolicy`,
@@ -315,7 +301,7 @@ export class DomainName extends Resource implements IDomainName {
       // Validate security policy matches endpoint type
       // Regional-only policies cannot be used with EDGE endpoints and vice versa
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
-      this.validateSecurityPolicyEndpointType(this.securityPolicy, this.endpointType);
+      validateSecurityPolicyEndpointType(this, this.securityPolicy, this.endpointType);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -441,50 +427,6 @@ export class DomainName extends Resource implements IDomainName {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
-  }
-
-  /**
-   * Checks if the given security policy is an enhanced security policy.
-   * Enhanced security policies start with 'SecurityPolicy_' prefix.
-   *
-   * Note: When the security policy is a CDK token (e.g., CfnParameter, cross-stack reference),
-   * this method returns false to defer validation to CloudFormation deployment time.
-   */
-  private isEnhancedSecurityPolicy(policy?: SecurityPolicy): boolean {
-    if (!policy || Token.isUnresolved(policy)) {
-      return false;
-    }
-    return policy.startsWith('SecurityPolicy_');
-  }
-
-  /**
-   * Validates that the security policy is compatible with the endpoint type.
-   * Some policies are only supported for specific endpoint types.
-   */
-  private validateSecurityPolicyEndpointType(policy?: SecurityPolicy, endpointType?: EndpointType): void {
-    if (!policy || !endpointType) {
-      return;
-    }
-
-    if (endpointType === EndpointType.EDGE && DomainName.NON_EDGE_ONLY_POLICIES.includes(policy)) {
-      throw new ValidationError(
-        lit`SecurityPolicyNotSupportedForEdgeEndpoint`,
-        `Security policy ${policy} is not supported for edge-optimized endpoints. ` +
-        'Use a security policy that supports edge-optimized endpoints. ' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
-        this,
-      );
-    }
-
-    if (endpointType !== EndpointType.EDGE && DomainName.EDGE_ONLY_POLICIES.includes(policy)) {
-      throw new ValidationError(
-        lit`SecurityPolicyOnlySupportedForEdgeEndpoint`,
-        `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
-        'Use a policy that supports non-edge endpoints. ' +
-        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
-        this,
-      );
-    }
   }
 }
 
