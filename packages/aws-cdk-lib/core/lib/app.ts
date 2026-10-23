@@ -229,6 +229,8 @@ export class App extends Stage {
 
   /**
    * The setting of `confirmValidationPluginsDoNotMutate` from the app's initialization properties.
+   *
+   * @internal
    */
   public readonly _confirmValidationPluginsDoNotMutate: boolean;
 
