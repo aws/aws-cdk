@@ -7,6 +7,7 @@ import type { IPolicyValidationPlugin, IPolicyValidationContext } from './valida
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 import { profileSpan, recordPerformanceEntry } from '../private/perf';
+import type { RegoRuleIndex } from './private/rego-rule-index-types';
 
 const VALIDATE_METRIC = 'CloudFormationValidate.validate';
 const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
@@ -413,38 +414,15 @@ function mapSeverity(severity: Severity): string {
  */
 const RULES_DIRECTORY = path.join(__dirname, 'rules');
 
-/**
- * Which resource types each default rule applies to.
- */
-interface RegoRuleIndex {
-  readonly rules: Array<{
-    /** File name of the rule, relative to the rules directory. */
-    readonly file: string;
-
-    /** Resource types the rule can fire on, or `null` if it applies to every template. */
-    readonly types: string[] | null;
-  }>;
-}
-
 let ruleIndex: RegoRuleIndex | undefined;
 
 /**
  * The applicability index, generated at build time by
  * `core/build-tools/generate-rego-rule-index.ts`.
- *
- * A missing index is an error rather than a fallback to loading every rule: the
- * fallback would silently cost every app the rule loading time this index exists
- * to avoid.
  */
 function defaultRegoRuleIndex(): RegoRuleIndex {
   if (!ruleIndex) {
     const indexFile = path.join(RULES_DIRECTORY, 'index.generated.json');
-    if (!fs.existsSync(indexFile)) {
-      throw new UnscopedValidationError(lit`RegoRuleIndexMissing`,
-        `[CloudFormation Validate] validation rule index not found at ${indexFile}; `
-        + 'run `yarn build` in packages/aws-cdk-lib to generate it',
-      );
-    }
     ruleIndex = JSON.parse(fs.readFileSync(indexFile, 'utf-8')) as RegoRuleIndex;
   }
   return ruleIndex;

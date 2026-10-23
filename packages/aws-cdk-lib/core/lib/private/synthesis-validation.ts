@@ -40,12 +40,14 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
+      const stacks = stageAssembly.stacksRecursively;
+
       const plugins = pluginsToEvaluate(root, construct);
       for (const plugin of plugins) {
         if (!stacksByPlugin.has(plugin)) {
           stacksByPlugin.set(plugin, new Set());
         }
-        for (const stack of stageAssembly.stacksRecursively) {
+        for (const stack of stacks) {
           stacksByPlugin.get(plugin)!.add(stack);
         }
       }

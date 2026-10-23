@@ -8,16 +8,13 @@
  * ~150ms to spin up the Rego evaluator, which today every CDK app pays even if
  * it has nothing to do with the rules.
  *
- * The index is regenerated on every build and is not committed, so a rule file
- * that is renamed, split, merged or deleted cannot drift out of sync with it.
- *
  * A rule file that does not mention any resource type (a rule about Parameters,
  * Outputs or Transform) must opt out explicitly with a `# cdk-validation: always`
- * header comment, which records it as unconditionally applicable. Failing the
- * build instead of guessing keeps a rule from being silently disabled.
+ * header comment, which records it as unconditionally applicable.
  */
 import * as fs from 'fs';
 import * as path from 'path';
+import type { RegoRuleIndex, RuleIndexEntry } from '../lib/validation/private/rego-rule-index-types';
 
 const RULES_DIR = path.join(__dirname, '..', 'lib', 'validation', 'rules');
 const INDEX_FILE = path.join(RULES_DIR, 'index.generated.json');
@@ -31,17 +28,6 @@ const INDEX_FILE = path.join(RULES_DIR, 'index.generated.json');
 const TYPE_PATTERN = /["'](AWS::[A-Za-z0-9]+::[A-Za-z0-9]+)["']/g;
 
 const ALWAYS_MARKER = /^#\s*cdk-validation:\s*always\s*$/m;
-
-interface RuleIndexEntry {
-  /** File name of the rule, relative to the rules directory. */
-  readonly file: string;
-
-  /**
-   * Resource types this rule can fire on, or `null` if it applies to every
-   * template.
-   */
-  readonly types: string[] | null;
-}
 
 function main() {
   const files = fs.readdirSync(RULES_DIR).filter((f) => f.endsWith('.rego')).sort();
@@ -68,7 +54,9 @@ function main() {
     return { file, types };
   });
 
-  fs.writeFileSync(INDEX_FILE, JSON.stringify({ rules }, undefined, 2) + '\n');
+  const indexFile: RegoRuleIndex = { rules };
+
+  fs.writeFileSync(INDEX_FILE, JSON.stringify(indexFile, undefined, 2) + '\n');
 }
 
 main();
