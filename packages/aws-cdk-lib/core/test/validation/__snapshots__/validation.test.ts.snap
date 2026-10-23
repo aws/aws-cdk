@@ -63,7 +63,7 @@ A copy of this report can be found in: <assembly-directory>/validation-report.js
 
 exports[`validations validation failure 1`] = `
 "core/test/validation/validation.test.ts:48:5
-custom test recommendation (test-plugin)
+medium test recommendation (test-plugin)
    Default/Fake (Fake) constructs.Construct
    Acknowledge with 'test-plugin::test-rule'
 

@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
@@ -9,18 +9,16 @@ import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
-import { App } from '../app';
+import type { App } from '../app';
 import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
 import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
-import { STAGE_TYPE } from './core-construct-finders';
+import { APP_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
-import { DEFAULT_STACK_FRAME_FINDER } from './stack-trace';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { formatValidationReports, humanFriendlyFilename, stripAnsi } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation, ViolationStackTraces } from '../validation/private/report';
 import { ExtraObjectData, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
@@ -31,7 +29,7 @@ const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
  * Invoke validation plugins for all stages in an App.
  */
 export function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
-  if (!App.isApp(root)) return;
+  if (!APP_TYPE.isMarked(root)) return;
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
@@ -118,8 +116,8 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // with warnings, we fail.
   const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
   const validationFails = reports.some(r => !r.success) || (constructLibStrictMode && reports.some(r => r.violations.some(v => v.severity === 'warning')));
-  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports, DEFAULT_STACK_FRAME_FINDER);
-  const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+
+  const fileLocationRenderer = private_cxapi.relativeFileLocationRenderer(process.cwd());
 
   let preamble = '';
   if (warningifiedAnyErrors) {
@@ -132,6 +130,10 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   }
 
   // Execution on the settings before starts here
+  const reportText = new private_cxapi.ValidationReportFormatter({ fileLocationRenderer }).formatReports(reportJson.pluginReports);
+  const reportPath = fileLocationRenderer.renderAbsoluteFilePath(reportFile);
+
+  // If there's nothing in the report, stop right now. Doing this here simplifies the preamble handling below.
   if (reportText.length === 0) {
     return;
   }
@@ -155,7 +157,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
     if (throwException && exceptionContainsReport) {
       // The exception contains all information.
-      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(fullMessage.join('\n\n')));
+      throw new UnscopedValidationError(lit`ValidationFailed`, private_cxapi.stripAnsi(fullMessage.join('\n\n')));
     } else if (throwException && !exceptionContainsReport) {
       // We are running in some unclear mode. We get the best fidelity results
       // from printing the report (in color) but also making sure to exit with an
@@ -209,7 +211,7 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: App, stage: Stage): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -217,7 +219,7 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
 
   // 2. Default validation engine (runs unless the user registered one explicitly,
   // or disabled validation via the CDK_VALIDATION environment variable)
-  if (defaultValidationEnabled() && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  if (defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
@@ -241,8 +243,8 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
  *
  * Explicitly user-registered validation plugins are not affected by this setting.
  */
-function defaultValidationEnabled(): boolean {
-  return process.env.CDK_VALIDATION !== 'false';
+function defaultValidationEnabled(app: App): boolean {
+  return app._builtinCloudFormationValidation && process.env.CDK_VALIDATION !== 'false';
 }
 
 function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginReport[]) {
