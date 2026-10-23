@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_voiceid"
+    },
+    "ruby": {
+      "module": "AWSCDK::VoiceID"
     }
   }
 }

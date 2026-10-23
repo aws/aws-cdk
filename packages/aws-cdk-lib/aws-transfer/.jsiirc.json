@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_transfer"
+    },
+    "ruby": {
+      "module": "AWSCDK::Transfer"
     }
   }
 }

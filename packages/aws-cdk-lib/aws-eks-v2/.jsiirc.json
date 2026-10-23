@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_eks_v2"
+    },
+    "ruby": {
+      "module": "AWSCDK::EKSv2"
     }
   }
 }

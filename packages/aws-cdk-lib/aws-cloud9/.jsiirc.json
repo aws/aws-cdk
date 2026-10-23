@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_cloud9"
+    },
+    "ruby": {
+      "module": "AWSCDK::Cloud9"
     }
   }
 }
