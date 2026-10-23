@@ -16,14 +16,20 @@ export interface KubernetesPatchProps {
   readonly cluster: ICluster;
 
   /**
-   * The JSON object to pass to `kubectl patch` when the resource is created/updated.
+   * The patch to pass to `kubectl patch` when the resource is created/updated.
+   *
+   * For `PatchType.JSON`, supply an array of JSON Patch operations.
+   * For `PatchType.MERGE` or `PatchType.STRATEGIC`, supply a JSON object.
    */
-  readonly applyPatch: { [key: string]: any };
+  readonly applyPatch: any;
 
   /**
-   * The JSON object to pass to `kubectl patch` when the resource is removed.
+   * The patch to pass to `kubectl patch` when the resource is removed.
+   *
+   * For `PatchType.JSON`, supply an array of JSON Patch operations.
+   * For `PatchType.MERGE` or `PatchType.STRATEGIC`, supply a JSON object.
    */
-  readonly restorePatch: { [key: string]: any };
+  readonly restorePatch: any;
 
   /**
    * The full name of the resource to patch (e.g. `deployment/coredns`).
