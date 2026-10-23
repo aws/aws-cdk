@@ -1348,18 +1348,21 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 
 `MCPProtocolVersion` provides the following versions:
 
-- `MCP_2026_07_28`: MCP version 2026-07-28 (latest)
+- `MCP_2026_07_28`: MCP version 2026-07-28
 - `MCP_2025_11_25`: MCP version 2025-11-25
 - `MCP_2025_06_18`: MCP version 2025-06-18
 - `MCP_2025_03_26`: MCP version 2025-03-26 (used by the default protocol configuration)
 
 Use `MCPProtocolVersion.of()` for a version that is not yet defined in the class.
 
+`supportedVersions` replaces the default list instead of adding to it. A request without the `MCP-Protocol-Version` header gets version 2025-03-26, and the gateway rejects it if that version is not in `supportedVersions`. Keep `MCP_2025_03_26` in the list to accept those clients:
+
 ```typescript fixture=default
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
   protocolConfiguration: new agentcore.McpProtocolConfiguration({
     supportedVersions: [
+      agentcore.MCPProtocolVersion.MCP_2025_03_26,
       agentcore.MCPProtocolVersion.MCP_2025_11_25,
       agentcore.MCPProtocolVersion.MCP_2026_07_28,
     ],
@@ -1367,8 +1370,8 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 ```
 
-The service fixes the supported versions when you create the gateway, unless your account is enabled for MCP version updates.
-For more information, see [MCP servers targets](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-MCPservers.html).
+You can change `supportedVersions` on an existing gateway. The gateway is updated in place and keeps its identifier and URL.
+For more information, see [How AgentCore Gateway supports the MCP 2026-07-28 spec](https://aws.amazon.com/blogs/machine-learning/how-agentcore-gateway-supports-the-mcp-2026-07-28-spec/).
 
 ### Inbound authorization
 
