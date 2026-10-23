@@ -238,7 +238,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
     charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
     format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
-    inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
+    inject: ['./my-shim.js', './other-shim.js'], // allows you to automatically replace a global variable with an import from another file
     esbuildArgs: { // Pass additional arguments to esbuild
       "--log-limit": "0",
       "--splitting": true,

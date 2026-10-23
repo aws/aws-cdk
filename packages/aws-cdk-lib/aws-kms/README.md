@@ -100,7 +100,7 @@ must be set to `true`. By default, this flag is `false` and grant calls on an im
 
 If you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.
 
-In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.
+In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows you to look up the key id.
 
 The result of the `Key.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so

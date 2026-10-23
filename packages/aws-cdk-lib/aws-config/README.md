@@ -66,7 +66,7 @@ new config.AccessKeysRotated(this, 'AccessKeyRotated');
 #### CloudFormation Stack drift detection
 
 Checks whether your CloudFormation stack's actual configuration differs, or has drifted,
-from it's expected configuration.
+from its expected configuration.
 
 ```ts
 // compliant if stack's status is 'IN_SYNC'
