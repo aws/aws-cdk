@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-search-expression-visible/DefaultTest": {
+      "stacks": [
+        "SearchExpressionVisibleIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-search-expression-visible/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsearchexpressionvisibleDefaultTestDeployAssertAE4F5C8F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
