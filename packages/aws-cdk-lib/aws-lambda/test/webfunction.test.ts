@@ -12,7 +12,7 @@ import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfigur
 import { WebFunction } from '../lib/webfunction';
 import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
-import { WebFunctionAuthType, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction-endpoint';
+import { WebFunctionAuthType, WebFunctionEndpointLocation, WebFunctionEndpointType, WebFunctionRegions, WebFunctionReplicaRegions } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
 // Use a mock bucket object for minimal test props. It behaves like an
@@ -282,122 +282,60 @@ describe('WebFunction validation', () => {
     });
   });
 
-  describe('endpointType', () => {
-    test('throws when HOME_REGION is used with replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.HOME_REGION,
-            replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
-          }),
-        );
-      }).toThrow(/replicaRegions cannot be specified when endpointType is HOME_REGION/);
+  describe('endpointLocation', () => {
+    test('maps each location to its endpoint type and regions', () => {
+      const props = (location?: WebFunctionEndpointLocation) => {
+        const s = new Stack();
+        new WebFunction(s, 'Test', minimalProps({ endpointLocation: location }));
+        const [endpoint] = Object.values(Template.fromStack(s).findResources('AWS::Lambda::WebFunctionEndpoint'));
+        return endpoint.Properties;
+      };
+      const regions = WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']);
+
+      expect(props()).toMatchObject({ EndpointType: 'HomeRegion' });
+      expect(props()).not.toHaveProperty('Regions');
+      expect(props(WebFunctionEndpointLocation.homeRegion())).toMatchObject({ EndpointType: 'HomeRegion' });
+      expect(props(WebFunctionEndpointLocation.multiRegion(regions)))
+        .toMatchObject({ EndpointType: 'MultiRegion', Regions: ['us-east-1', 'us-west-2'] });
+      expect(props(WebFunctionEndpointLocation.perRegion(regions)))
+        .toMatchObject({ EndpointType: 'PerRegion', Regions: ['us-east-1', 'us-west-2'] });
     });
 
-    test('throws when MULTI_REGION is used without replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.MULTI_REGION,
-          }),
-        );
-      }).toThrow(/replicaRegions must be specified when endpointType is MultiRegion/);
-    });
-
-    test('accepts MULTI_REGION with replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.MULTI_REGION,
-            replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
-          }),
-        );
-      }).not.toThrow();
+    test('exposes the endpoint type and replica regions', () => {
+      const regions = WebFunctionReplicaRegions.of(['us-east-1']);
+      const location = WebFunctionEndpointLocation.perRegion(regions);
+      expect(location.endpointType).toEqual(WebFunctionEndpointType.PER_REGION);
+      expect(location.replicaRegions).toBe(regions);
+      expect(WebFunctionEndpointLocation.homeRegion().replicaRegions).toBeUndefined();
     });
 
     test('throws when MULTI_REGION replicaRegions resolves to empty list', () => {
       expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.MULTI_REGION,
-            replicaRegions: WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US),
-          }),
-        );
+        new WebFunction(stack, 'Test', minimalProps({
+          endpointLocation: WebFunctionEndpointLocation.multiRegion(
+            WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+        }));
+      }).toThrow(/replicaRegions resolved to an empty list/);
+    });
+
+    test('throws when PER_REGION replicaRegions resolves to empty list', () => {
+      expect(() => {
+        new WebFunction(stack, 'Test', minimalProps({
+          endpointLocation: WebFunctionEndpointLocation.perRegion(
+            WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+        }));
       }).toThrow(/replicaRegions resolved to an empty list/);
     });
 
     test('passes a deploy-time replicaRegions list through to the endpoint without validating it', () => {
       const regions = Fn.split(',', new CfnParameter(stack, 'Regions').valueAsString);
-      new WebFunction(
-        stack,
-        'Test',
-        minimalProps({
-          endpointType: WebFunctionEndpointType.MULTI_REGION,
-          replicaRegions: WebFunctionReplicaRegions.of(regions),
-        }),
-      );
+      new WebFunction(stack, 'Test', minimalProps({
+        endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(regions)),
+      }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
         Regions: { 'Fn::Split': [',', { Ref: 'Regions' }] },
       });
-    });
-
-    test('accepts HOME_REGION without replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.HOME_REGION,
-          }),
-        );
-      }).not.toThrow();
-    });
-
-    test('throws when PER_REGION is used without replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.PER_REGION,
-          }),
-        );
-      }).toThrow(/replicaRegions must be specified when endpointType is PerRegion/);
-    });
-
-    test('accepts PER_REGION with replicaRegions', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.PER_REGION,
-            replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
-          }),
-        );
-      }).not.toThrow();
-    });
-
-    test('throws when PER_REGION replicaRegions resolves to empty list', () => {
-      expect(() => {
-        new WebFunction(
-          stack,
-          'Test',
-          minimalProps({
-            endpointType: WebFunctionEndpointType.PER_REGION,
-            replicaRegions: WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US),
-          }),
-        );
-      }).toThrow(/replicaRegions resolved to an empty list/);
     });
   });
 });
@@ -854,7 +792,7 @@ describe('WebFunction template', () => {
       return endpoint.Properties.EndpointName;
     };
     const multi = (regions: string[]) => ({
-      endpointType: WebFunctionEndpointType.MULTI_REGION, replicaRegions: WebFunctionReplicaRegions.of(regions),
+      endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(regions)),
     });
 
     test('a home-Region endpoint is named prod', () => {
@@ -868,8 +806,7 @@ describe('WebFunction template', () => {
       expect(nameFor(multi(['us-east-1', 'eu-west-1']))).not.toEqual(base);
       expect(nameFor(multi(['us-west-2', 'us-east-1']))).not.toEqual(base);
       expect(nameFor({
-        endpointType: WebFunctionEndpointType.PER_REGION,
-        replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
+        endpointLocation: WebFunctionEndpointLocation.perRegion(WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2'])),
       })).not.toEqual(base);
     });
 
@@ -885,9 +822,8 @@ describe('WebFunction template', () => {
       minimalProps({
         webFunctionName: 'my-func',
         endpointName: 'staging',
-        endpointType: WebFunctionEndpointType.MULTI_REGION,
+        endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
         authType: WebFunctionAuthType.IAM_AUTH,
-        replicaRegions: WebFunctionReplicaRegions.of(WebFunctionRegions.US),
       }),
     );
     const template = Template.fromStack(stack);
@@ -906,9 +842,8 @@ describe('WebFunction template', () => {
       'Test',
       minimalProps({
         webFunctionName: 'my-func',
-        endpointType: WebFunctionEndpointType.PER_REGION,
+        endpointLocation: WebFunctionEndpointLocation.perRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
         authType: WebFunctionAuthType.IAM_AUTH,
-        replicaRegions: WebFunctionReplicaRegions.of(WebFunctionRegions.US),
       }),
     );
     const template = Template.fromStack(stack);
@@ -1282,8 +1217,7 @@ describe('WebFunction egress network connector', () => {
 
     expect(() => new WebFunction(stack, 'Test', minimalProps({
       egressNetworkConnector: connector,
-      endpointType: WebFunctionEndpointType.MULTI_REGION,
-      replicaRegions: WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2']),
+      endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2'])),
     }))).toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint, got MultiRegion/);
   });
 

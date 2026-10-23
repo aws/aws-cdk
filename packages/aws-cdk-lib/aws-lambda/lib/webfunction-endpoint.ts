@@ -13,6 +13,8 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * The endpoint type for a WebFunction endpoint.
+ *
+ * Choose it with `WebFunctionEndpointLocation` when defining an endpoint.
  */
 export enum WebFunctionEndpointType {
   /**
@@ -24,13 +26,11 @@ export enum WebFunctionEndpointType {
    * Multi-region endpoint with managed latency-based routing.
    * The function is replicated to the specified replica regions
    * and users are routed to the nearest region.
-   * Requires `replicaRegions` to be specified.
    */
   MULTI_REGION = 'MultiRegion',
   /**
    * Per-region endpoint: a separate regional endpoint is exposed for each
    * replica region (no managed cross-region routing).
-   * Requires `replicaRegions` to be specified.
    */
   PER_REGION = 'PerRegion',
 }
@@ -188,6 +188,55 @@ export class WebFunctionReplicaRegions {
 }
 
 /**
+ * Where a WebFunction endpoint serves traffic.
+ *
+ * A regional location carries its replica Regions, and a home-Region one has none, so a
+ * combination the service rejects cannot be expressed.
+ */
+export class WebFunctionEndpointLocation {
+  /**
+   * Serve from the stack's Region only, under one regional domain name.
+   */
+  public static homeRegion(): WebFunctionEndpointLocation {
+    return new WebFunctionEndpointLocation(WebFunctionEndpointType.HOME_REGION);
+  }
+
+  /**
+   * Serve from the stack's Region and the replica Regions under one global domain name, with
+   * requests routed to the nearest Region.
+   *
+   * The stack's own Region always serves traffic, whether or not it is listed. `replicaRegions`
+   * must resolve to at least one Region. Changing the set of Regions replaces the endpoint; a
+   * deploy-time list (for example from a `CfnParameter`) cannot feed the default endpoint
+   * name, so changing its value at deployment also needs a new `endpointName`.
+   */
+  public static multiRegion(replicaRegions: WebFunctionReplicaRegions): WebFunctionEndpointLocation {
+    return new WebFunctionEndpointLocation(WebFunctionEndpointType.MULTI_REGION, replicaRegions);
+  }
+
+  /**
+   * Serve from the stack's Region and the replica Regions, with a separate domain name in each
+   * Region and no managed routing between them.
+   *
+   * The same rules for `replicaRegions` apply as for `multiRegion()`.
+   */
+  public static perRegion(replicaRegions: WebFunctionReplicaRegions): WebFunctionEndpointLocation {
+    return new WebFunctionEndpointLocation(WebFunctionEndpointType.PER_REGION, replicaRegions);
+  }
+
+  /** The endpoint type this location maps to. */
+  public readonly endpointType: WebFunctionEndpointType;
+
+  /** The replica Regions, for a regional location. */
+  public readonly replicaRegions?: WebFunctionReplicaRegions;
+
+  private constructor(endpointType: WebFunctionEndpointType, replicaRegions?: WebFunctionReplicaRegions) {
+    this.endpointType = endpointType;
+    this.replicaRegions = replicaRegions;
+  }
+}
+
+/**
  * Settings of a WebFunction endpoint.
  */
 export interface WebFunctionEndpointOptions {
@@ -199,33 +248,26 @@ export interface WebFunctionEndpointOptions {
    *
    * Changing this property replaces the endpoint, which yields a new `domainName`.
    *
-   * `endpointType` and `replicaRegions` also replace the endpoint when they change, and
-   * CloudFormation cannot replace a resource that keeps its name. Without this property the
-   * name is derived from them, so that works. With it, change the name together with them, or
-   * the deployment fails.
+   * `endpointLocation` also replaces the endpoint when it changes, and CloudFormation cannot
+   * replace a resource that keeps its name. Without this property the name is derived from the
+   * location, so that works. With it, change the name together with the location, or the
+   * deployment fails.
    *
-   * @default - `prod` for a `HOME_REGION` endpoint; for a regional endpoint, `prod-` followed by
-   * a hash of `endpointType` and `replicaRegions`
+   * @default - for the endpoint a WebFunction creates, `prod` in the home Region and, for a
+   * regional endpoint, `prod-` followed by a hash of its location; for any other endpoint, a
+   * name derived from its construct path and location
    */
   readonly endpointName?: string;
 
   /**
-   * The endpoint type for the WebFunction.
+   * Where the endpoint serves traffic: the home Region only, or a set of replica Regions.
    *
-   * This property and `replicaRegions` are intentionally modeled as flat,
-   * independent props (rather than a factory or nested object) for consistency
-   * with the rest of the WebFunction API. Their mutual constraint is validated
-   * at synth time: the regional types (`WebFunctionEndpointType.MULTI_REGION` and
-   * `WebFunctionEndpointType.PER_REGION`) require `replicaRegions` to resolve to a non-empty
-   * set, and `WebFunctionEndpointType.HOME_REGION` (the default) must not be combined with
-   * `replicaRegions`.
-   *
-   * Changing this property replaces the endpoint, which yields a new `domainName`. If you set
+   * Changing it replaces the endpoint, which yields a new `domainName`. If you set
    * `endpointName`, change it at the same time.
    *
-   * @default WebFunctionEndpointType.HOME_REGION
+   * @default WebFunctionEndpointLocation.homeRegion()
    */
-  readonly endpointType?: WebFunctionEndpointType;
+  readonly endpointLocation?: WebFunctionEndpointLocation;
 
   /**
    * The authentication type for the WebFunction endpoint.
@@ -235,25 +277,6 @@ export interface WebFunctionEndpointOptions {
    * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
    */
   readonly authType: WebFunctionAuthType;
-
-  /**
-   * The replica regions for a regional WebFunction deployment.
-   *
-   * Only valid with the regional endpoint types (`WebFunctionEndpointType.MULTI_REGION` and
-   * `WebFunctionEndpointType.PER_REGION`), where it is required and must resolve to a
-   * non-empty set of regions. Must be omitted for `WebFunctionEndpointType.HOME_REGION`.
-   * This constraint is validated at synth time (see `endpointType`).
-   *
-   * Changing the set of regions replaces the endpoint, which yields a new `domainName`. If you
-   * set `endpointName`, change it at the same time. A deploy-time list (for example from a
-   * `CfnParameter`) cannot feed the default name, so changing its value at deployment also
-   * needs a new `endpointName`.
-   *
-   * The stack's own region always serves traffic, whether or not it is listed here.
-   *
-   * @default - No replica regions (home region only).
-   */
-  readonly replicaRegions?: WebFunctionReplicaRegions;
 
   /**
    * A description of the endpoint.
@@ -479,25 +502,8 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       );
     }
 
-    // `endpointType` and `replicaRegions` are intentionally kept as flat,
-    // independent props (a documented deviation from DESIGN_GUIDELINES "flat"
-    // guidance) for API consistency. Their mutual constraint is enforced here
-    // at synth time rather than made unrepresentable via a factory/subtype.
-    const endpointType = props.endpointType ?? WebFunctionEndpointType.HOME_REGION;
-    if (endpointType === WebFunctionEndpointType.HOME_REGION && props.replicaRegions) {
-      throw new ValidationError(
-        lit`WebFunctionHomeRegionWithReplicaRegions`,
-        'replicaRegions cannot be specified when endpointType is HOME_REGION. Use MULTI_REGION or PER_REGION for multi-region deployments',
-        this,
-      );
-    }
-    if (isRegionalEndpointType(endpointType) && !props.replicaRegions) {
-      throw new ValidationError(
-        lit`WebFunctionRegionalEndpointWithoutReplicaRegions`,
-        `replicaRegions must be specified when endpointType is ${endpointType}`,
-        this,
-      );
-    }
+    const location = props.endpointLocation ?? WebFunctionEndpointLocation.homeRegion();
+    const endpointType = location.endpointType;
 
     // The schema declares a lower bound for both of these but no upper bound, so only the
     // lower bound is enforced here. An over-large value is left to the service to reject.
@@ -527,8 +533,8 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       );
     }
 
-    const regions = props.replicaRegions?._toRegionList();
-    if (isRegionalEndpointType(endpointType) && regions !== undefined && !Token.isUnresolved(regions) && regions.length === 0) {
+    const regions = location.replicaRegions?._toRegionList();
+    if (regions !== undefined && !Token.isUnresolved(regions) && regions.length === 0) {
       throw new ValidationError(
         lit`WebFunctionRegionalEndpointEmptyRegions`,
         `replicaRegions resolved to an empty list. A ${endpointType} endpoint requires at least one region`,
@@ -595,7 +601,3 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
   }
 }
 
-/** MULTI_REGION and PER_REGION serve the replica regions and require `replicaRegions`. */
-function isRegionalEndpointType(endpointType: WebFunctionEndpointType): boolean {
-  return endpointType === WebFunctionEndpointType.MULTI_REGION || endpointType === WebFunctionEndpointType.PER_REGION;
-}

@@ -2239,7 +2239,7 @@ default retention. Pass a log group of your own to control its retention or encr
 ### Endpoints
 
 A WebFunction creates one endpoint, configured by the endpoint properties above
-(`authType`, `endpointType`, `replicaRegions`, `endpointName`, ...). It is available as
+(`authType`, `endpointLocation`, `endpointName`, ...). It is available as
 `endpoint`, with the domain clients send requests to and grants for invoking it:
 
 ```ts
@@ -2286,8 +2286,9 @@ new lambda.WebFunction(this, 'GlobalApi', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
   authType: lambda.WebFunctionAuthType.IAM_AUTH,
-  endpointType: lambda.WebFunctionEndpointType.MULTI_REGION,
-  replicaRegions: lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
+  endpointLocation: lambda.WebFunctionEndpointLocation.multiRegion(
+    lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
+  ),
 });
 ```
 
@@ -2309,8 +2310,8 @@ group, including one you exclude from, once you upgrade `aws-cdk-lib`; nothing r
 in the meantime. Explicitly listed regions are unaffected.
 
 For a separate regional endpoint per region (instead of managed latency-based
-routing), use `WebFunctionEndpointType.PER_REGION`. Like `MULTI_REGION`, it requires
-`replicaRegions`:
+routing), use `WebFunctionEndpointLocation.perRegion()`, which takes replica regions the
+same way:
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -2321,25 +2322,26 @@ new lambda.WebFunction(this, 'PerRegionApi', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
   authType: lambda.WebFunctionAuthType.IAM_AUTH,
-  endpointType: lambda.WebFunctionEndpointType.PER_REGION,
-  replicaRegions: lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
+  endpointLocation: lambda.WebFunctionEndpointLocation.perRegion(
+    lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
+  ),
 });
 ```
 
 ### Changing an endpoint
 
-`endpointName`, `endpointType` and `replicaRegions` are create-only on the
-underlying endpoint resource. Changing any of them replaces the endpoint, and the
+`endpointName` and `endpointLocation`, its type and replica regions, are create-only on
+the underlying endpoint resource. Changing either replaces the endpoint, and the
 replacement gets a new `domainName`, so every client that uses the old hostname
 breaks. Adding a replica region later therefore means a new URL; decide the
 region set up front where you can. Changing `webFunctionName` replaces the whole
 WebFunction, with the same effect.
 
 CloudFormation cannot replace a resource that keeps the same name. When you leave
-`endpointName` unset, the name is derived from `endpointType` and `replicaRegions`
-(`prod` for a home-Region endpoint), so changing them renames the endpoint too and the
-replacement goes through. If you set `endpointName`, change it together with them, or the
-deployment fails. The same applies to a `replicaRegions` list that is only known at
+`endpointName` unset, the name is derived from `endpointLocation` (`prod` for a
+home-Region endpoint), so changing it renames the endpoint too and the replacement goes
+through. If you set `endpointName`, change it together with the location, or the
+deployment fails. The same applies to a list of replica regions that is only known at
 deployment, such as a `CfnParameter`, since its value cannot feed the name.
 
 Renaming the construct id has the same effect as changing `webFunctionName`: the

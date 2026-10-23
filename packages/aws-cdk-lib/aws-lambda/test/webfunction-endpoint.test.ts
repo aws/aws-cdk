@@ -7,6 +7,7 @@ import { WebFunctionCode } from '../lib/webfunction-code';
 import {
   WebFunctionAuthType,
   WebFunctionEndpoint,
+  WebFunctionEndpointLocation,
   WebFunctionEndpointType,
   WebFunctionReplicaRegions,
 } from '../lib/webfunction-endpoint';
@@ -95,17 +96,13 @@ describe('addEndpoint', () => {
   });
 
   test('a second endpoint\'s default name changes with its endpoint type', () => {
-    const name = (type?: WebFunctionEndpointType) => {
+    const name = (endpointLocation?: WebFunctionEndpointLocation) => {
       const stack = new Stack();
       const fn = new WebFunction(stack, 'Fn', minimalProps());
-      const ep = fn.addEndpoint('Second', {
-        authType: WebFunctionAuthType.IAM_AUTH,
-        endpointType: type,
-        replicaRegions: type ? WebFunctionReplicaRegions.of(['us-east-1']) : undefined,
-      });
+      const ep = fn.addEndpoint('Second', { authType: WebFunctionAuthType.IAM_AUTH, endpointLocation });
       return ep.resource.endpointName;
     };
-    expect(name()).not.toEqual(name(WebFunctionEndpointType.MULTI_REGION));
+    expect(name()).not.toEqual(name(WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1']))));
   });
 
   test('validates the endpoint', () => {
@@ -114,8 +111,8 @@ describe('addEndpoint', () => {
 
     expect(() => fn.addEndpoint('Bad', {
       authType: WebFunctionAuthType.IAM_AUTH,
-      endpointType: WebFunctionEndpointType.MULTI_REGION,
-    })).toThrow(/replicaRegions must be specified/);
+      endpointDescription: 'x'.repeat(257),
+    })).toThrow(/Endpoint description cannot be longer than 256 characters/);
   });
 
   test('only a home-Region endpoint can be added to a function with a network connector', () => {
@@ -126,8 +123,7 @@ describe('addEndpoint', () => {
 
     expect(() => fn.addEndpoint('Global', {
       authType: WebFunctionAuthType.IAM_AUTH,
-      endpointType: WebFunctionEndpointType.MULTI_REGION,
-      replicaRegions: WebFunctionReplicaRegions.of(['us-east-1']),
+      endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1'])),
     })).toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint/);
     expect(() => fn.addEndpoint('Home', { authType: WebFunctionAuthType.IAM_AUTH })).not.toThrow();
   });

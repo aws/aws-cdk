@@ -11,7 +11,7 @@ import type { INetworkConnector } from './network-connector';
 import { DEFAULT_ENDPOINT, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
 import { WebFunctionEndpoint, WebFunctionEndpointType } from './webfunction-endpoint';
-import type { WebFunctionEndpointOptions } from './webfunction-endpoint';
+import type { WebFunctionEndpointLocation, WebFunctionEndpointOptions } from './webfunction-endpoint';
 import type {
   WebFunctionRuntime,
 } from './webfunction-runtime';
@@ -464,7 +464,7 @@ export class WebFunction extends WebFunctionBase {
     // A connector is only supported with a HOME_REGION endpoint, which every endpoint of the
     // function must then be: see addEndpoint().
     if (props.egressNetworkConnector) {
-      this.assertHomeRegionEndpoint(props.endpointType);
+      this.assertHomeRegionEndpoint(props.endpointLocation);
     }
 
     // Set up the execution role
@@ -565,8 +565,7 @@ export class WebFunction extends WebFunctionBase {
     const defaultEndpoint: WebFunctionEndpointOptions = {
       authType: props.authType,
       endpointName: props.endpointName,
-      endpointType: props.endpointType,
-      replicaRegions: props.replicaRegions,
+      endpointLocation: props.endpointLocation,
       endpointDescription: props.endpointDescription,
       maxEnvironments: props.maxEnvironments,
       rateLimit: props.rateLimit,
@@ -593,7 +592,7 @@ export class WebFunction extends WebFunctionBase {
    */
   public addEndpoint(id: string, options: WebFunctionEndpointOptions): WebFunctionEndpoint {
     if (this.hasEgressNetworkConnector) {
-      this.assertHomeRegionEndpoint(options.endpointType);
+      this.assertHomeRegionEndpoint(options.endpointLocation);
     }
     return this.createEndpoint(id, options);
   }
@@ -609,8 +608,8 @@ export class WebFunction extends WebFunctionBase {
     return endpoint;
   }
 
-  private assertHomeRegionEndpoint(endpointType: WebFunctionEndpointType | undefined): void {
-    const type = endpointType ?? WebFunctionEndpointType.HOME_REGION;
+  private assertHomeRegionEndpoint(location: WebFunctionEndpointLocation | undefined): void {
+    const type = location?.endpointType ?? WebFunctionEndpointType.HOME_REGION;
     if (type !== WebFunctionEndpointType.HOME_REGION) {
       throw new ValidationError(
         lit`WebFunctionEgressConnectorRequiresHomeRegion`,
