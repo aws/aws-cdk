@@ -783,12 +783,17 @@ To get started, you create an origin group with two origins: a primary and a sec
 If the primary origin is unavailable, or returns specific HTTP response status codes that indicate a failure,
 CloudFront automatically switches to the secondary origin.
 You achieve that behavior in the CDK using the `OriginGroup` class:
+Set `originId` on the group to give it a readable identifier in CloudFront. The ID
+must be unique among all origins and origin groups in the distribution. Member
+origin IDs are configured separately on the primary and fallback origins.
+
 
 ```ts
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.OriginGroup({
+      originId: 'application-failover',
       primaryOrigin: origins.S3BucketOrigin.withOriginAccessControl(myBucket),
       fallbackOrigin: new origins.HttpOrigin('www.example.com'),
       // optional, defaults to: 500, 502, 503 and 504
