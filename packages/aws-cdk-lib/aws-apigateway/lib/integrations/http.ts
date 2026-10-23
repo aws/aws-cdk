@@ -16,7 +16,7 @@ export interface HttpIntegrationProps {
   readonly httpMethod?: string;
 
   /**
-   * Integration options, such as request/resopnse mapping, content handling,
+   * Integration options, such as request/response mapping, content handling,
    * etc.
    *
    * @default defaults based on `IntegrationOptions` defaults
