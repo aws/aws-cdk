@@ -81,6 +81,22 @@ export class Template {
   }
 
   /**
+   * Assert that the number of resources of the given type satisfies a matcher.
+   * @param type the resource type; ex: `AWS::S3::Bucket`
+   * @param matcher the matcher to apply to the resource count
+   */
+  public resourceCountMatches(type: string, matcher: Matcher): void {
+    const counted = countResources(this.template, type);
+    const result = matcher.test(counted);
+    if (result.hasFailed()) {
+      throw new AssertionError([
+        `Resource count for ${type} (${counted}) did not match:`,
+        ...result.toHumanStrings(),
+      ].join('\n'));
+    }
+  }
+
+  /**
    * Assert that the given number of resources of the given type and properties exists in the
    * CloudFormation template.
    * @param type the resource type; ex: `AWS::S3::Bucket`
