@@ -819,6 +819,32 @@ describe('special-character handling', () => {
     }));
   });
 
+  test('escapes backslashes in a table comment', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableComment: 'path\\to\\table',
+    };
+
+    await manageTable(newResourceProperties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON TABLE ${tableNamePrefix}${stackIdTruncated} IS 'path\\\\to\\\\table'`,
+    }));
+  });
+
+  test('escapes backslashes in a table comment changed by an update', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableComment: 'ends in \\',
+    };
+
+    await manageTable(newResourceProperties, updateEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON TABLE ${tableNamePrefix}${stackIdTruncated} IS 'ends in \\\\'`,
+    }));
+  });
+
   test('escapes single quotes in a column comment', async () => {
     const newResourceProperties: ResourcePropertiesType = {
       ...resourceProperties,
@@ -829,6 +855,32 @@ describe('special-character handling', () => {
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS 'o''brien'`,
+    }));
+  });
+
+  test('escapes backslashes in a column comment', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: 'C:\\data' }],
+    };
+
+    await manageTable(newResourceProperties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS 'C:\\\\data'`,
+    }));
+  });
+
+  test('escapes backslashes in a column comment changed by an update', async () => {
+    const newResourceProperties: ResourcePropertiesType = {
+      ...resourceProperties,
+      tableColumns: [{ name: 'col1', dataType: 'varchar(1)', comment: 'ends in \\' }],
+    };
+
+    await manageTable(newResourceProperties, updateEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS 'ends in \\\\'`,
     }));
   });
 
