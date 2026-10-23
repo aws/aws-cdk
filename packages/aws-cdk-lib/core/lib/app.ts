@@ -251,7 +251,7 @@ export class App extends Stage {
    * @internal
    */
   public readonly _confirmValidationPluginsDoNotMutate: boolean;
-  
+
   /**
    * The flag indicating whether the built-in CloudFormation validation is enabled.
    *
@@ -329,7 +329,7 @@ export class App extends Stage {
     }
   }
 
-  private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
+  private loadContext(defaults: { [key: string]: string } = {}, final: { [key: string]: string } = {}) {
     // prime with defaults passed through constructor
     for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
@@ -357,7 +357,7 @@ export class App extends Stage {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): public_cxapi.CloudAssembly {
+  public synth(options: StageSynthesisOptions = {}): public_cxapi.CloudAssembly {
     // Synth may be called multiple times, we do not emit performance counters the
     // second time. super.synth() already does caching.
     if (this.alreadySynthed) {
