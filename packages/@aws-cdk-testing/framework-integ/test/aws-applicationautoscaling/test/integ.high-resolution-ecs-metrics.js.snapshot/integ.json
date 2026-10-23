@@ -1,0 +1,12 @@
+{
+ "version": "38.0.1",
+ "testCases": {
+  "HighResolutionEcsMetricsTest/DefaultTest": {
+   "stacks": [
+    "aws-cdk-applicationautoscaling-high-resolution"
+   ],
+   "assertionStack": "HighResolutionEcsMetricsTest/DefaultTest/DeployAssert",
+   "assertionStackName": "HighResolutionEcsMetricsTestDefaultTestDeployAssert16EB808C"
+  }
+ }
+}
