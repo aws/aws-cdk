@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "a14de3dce7455d60456bf562fe0c0e391bd33671516b42b2563baa3b1096e1ea": {
+      "displayName": "aws-cdk-dynamodb-gt-disassociation Template",
+      "source": {
+        "path": "aws-cdk-dynamodb-gt-disassociation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-a81bd67f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "a14de3dce7455d60456bf562fe0c0e391bd33671516b42b2563baa3b1096e1ea.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
