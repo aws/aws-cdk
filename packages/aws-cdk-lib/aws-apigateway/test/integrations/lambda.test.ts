@@ -1,5 +1,6 @@
 import { Match, Template } from '../../../assertions';
 import * as lambda from '../../../aws-lambda';
+import * as ssm from '../../../aws-ssm';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
 
@@ -279,7 +280,45 @@ describe('lambda', () => {
     const bindResult = integration.bind(method);
 
     // THEN
-    expect(bindResult?.deploymentToken).toBeUndefined();
+    expect(stack.resolve(bindResult?.deploymentToken)).toBeUndefined();
+  });
+
+  test('generated function name is included in the deployment logical id', () => {
+    const deploy = (account: string) => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack', {
+        env: { account, region: 'us-east-1' },
+      });
+      const handler = new lambda.Function(stack, 'Handler', {
+        functionName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+        runtime: lambda.Runtime.PYTHON_3_14,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('foo'),
+      });
+      new apigateway.LambdaRestApi(stack, 'Api', { handler });
+
+      const other = new cdk.Stack(app, 'Other', {
+        env: { account: '999999999999', region: 'eu-west-1' },
+      });
+      new ssm.StringParameter(other, 'FunctionArn', { stringValue: handler.functionArn });
+
+      const template = Template.fromStack(stack);
+      const deploymentIds = Object.keys(template.findResources('AWS::ApiGateway::Deployment'));
+      const functions = template.findResources('AWS::Lambda::Function');
+      const functionResource = Object.values(functions)[0] as { Properties: { FunctionName?: string } };
+      return {
+        deploymentId: deploymentIds[0],
+        functionName: functionResource.Properties.FunctionName,
+      };
+    };
+
+    const first = deploy('111111111111');
+    const second = deploy('222222222222');
+    const repeat = deploy('111111111111');
+
+    expect(first.functionName).not.toEqual(second.functionName);
+    expect(first.deploymentId).not.toEqual(second.deploymentId);
+    expect(repeat.deploymentId).toEqual(first.deploymentId);
   });
 
   test('bind works for integration with imported functions', () => {
