@@ -49,6 +49,7 @@ jobs:
         if: github.event_name == 'workflow_run'
         id: "pr_output"
         run: |
+          mkdir -p pr
           if [[ ! -f pr/pr_number ]]; then
             echo "${{ github.event.workflow_run.pull_requests[0].number }}" > pr/pr_number
           fi
