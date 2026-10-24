@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4d406cc79d46011ffa6b4117eda442781a0881a0123a70ac6038b474fc9ac55b": {
+      "displayName": "aws-cdk-appscaling-target-tracking-metric-math Template",
+      "source": {
+        "path": "aws-cdk-appscaling-target-tracking-metric-math.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dd6514f7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4d406cc79d46011ffa6b4117eda442781a0881a0123a70ac6038b474fc9ac55b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
