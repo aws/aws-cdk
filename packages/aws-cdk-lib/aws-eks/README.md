@@ -1932,6 +1932,28 @@ cluster.addHelmChart('ExternalSecretsOperator', {
 });
 ```
 
+`null` values are passed through to Helm, which is how many charts let you remove a default
+(for example, disabling one of the OpenTelemetry Collector's default receivers). This works in
+TypeScript and JavaScript. In the other jsii languages (Python, Java, .NET, Go), the jsii runtime
+turns `null` (`None` in Python) inside `values` into `undefined`, so those keys are silently
+left out of the rendered values. To keep them, pass the values as a JSON string with a property
+override on the chart's underlying resource:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const chart = cluster.addHelmChart('OpenTelemetryCollector', {
+  chart: 'opentelemetry-collector',
+  release: 'opentelemetry-collector',
+  repository: 'https://open-telemetry.github.io/opentelemetry-helm-charts',
+  namespace: 'opentelemetry',
+});
+
+// A JSON string keeps `null` values intact in every language.
+const chartResource = chart.node.findChild('Resource').node.defaultChild as CfnResource;
+chartResource.addPropertyOverride('Values', '{"mode":"deployment","config":{"receivers":{"jaeger":null,"zipkin":null}}}');
+```
+
 Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
 
 ```ts
