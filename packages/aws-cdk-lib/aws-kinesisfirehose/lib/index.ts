@@ -14,6 +14,7 @@ export * from './s3-bucket';
 export * from './logging-config';
 export * from './datadog';
 export * from './http-endpoint';
+export * from './redshift';
 export * from './record-format';
 
 // AWS::KinesisFirehose CloudFormation Resources:
