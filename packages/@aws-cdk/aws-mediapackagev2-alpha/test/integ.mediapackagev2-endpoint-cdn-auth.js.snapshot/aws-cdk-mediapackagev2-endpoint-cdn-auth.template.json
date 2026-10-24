@@ -174,7 +174,8 @@
    },
    "DependsOn": [
     "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96",
-    "EndpointPolicyCdnAuthRole803DA187"
+    "EndpointPolicyCdnAuthRole803DA187",
+    "EndpointEEF1FD8F"
    ]
   }
  },
