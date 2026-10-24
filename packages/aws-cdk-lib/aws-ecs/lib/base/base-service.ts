@@ -800,9 +800,10 @@ export abstract class BaseService extends Resource
   /**
    * The task definition to use for tasks in the service.
    *
-   * Note: When the service was created with an imported task definition (`ITaskDefinition`),
-   * some `TaskDefinition`-specific properties (e.g. `defaultContainer`, `addToTaskRolePolicy`)
-   * may not be available at runtime.
+   * Note: when the service was created with an imported task definition (`ITaskDefinition`),
+   * `TaskDefinition`-specific members such as `defaultContainer`, `addToTaskRolePolicy`,
+   * `family`, and `findPortMappingByName` are not available at runtime. Narrow with
+   * `TaskDefinition.isTaskDefinition(service.taskDefinition)` before accessing them.
    *
    * [disable-awslint:ref-via-interface]
    */
