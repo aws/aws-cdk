@@ -4,6 +4,7 @@ import { HttpMethod } from './connection';
 import type { IConnectionRef } from './events.generated';
 import { CfnApiDestination } from './events.generated';
 import { toIConnection } from './private/ref-utils';
+import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -77,6 +78,18 @@ export interface IApiDestination extends IResource, IApiDestinationRef {
    * @attribute
    */
   readonly apiDestinationArnForPolicy?: string;
+
+  /**
+   * Grant the given principal permission to invoke this Api Destination.
+   *
+   * This grants the `events:InvokeApiDestination` action on the Api Destination's
+   * ARN. When available, the ARN in resource format (`apiDestinationArnForPolicy`)
+   * is used, since that is the ARN format expected in the Resource element of an
+   * IAM permission policy statement for an API destination.
+   *
+   * @param grantee The principal to grant invoke permission to
+   */
+  grantInvokeApiDestination(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -100,12 +113,54 @@ export interface ApiDestinationAttributes {
 }
 
 /**
+ * A common base class for the concrete and imported Api Destination constructs,
+ * providing the shared behaviour (such as grant methods) declared on
+ * {@link IApiDestination}.
+ */
+abstract class ApiDestinationBase extends Resource implements IApiDestination {
+  /**
+   * The Name of the Api Destination created.
+   */
+  public abstract readonly apiDestinationName: string;
+
+  /**
+   * The ARN of the Api Destination created.
+   */
+  public abstract readonly apiDestinationArn: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of an API destination in resource format.
+   */
+  public abstract readonly apiDestinationArnForPolicy?: string;
+
+  public get apiDestinationRef(): ApiDestinationReference {
+    return {
+      apiDestinationName: this.apiDestinationName,
+      apiDestinationArn: this.apiDestinationArn,
+    };
+  }
+
+  /**
+   * Grant the given principal permission to invoke this Api Destination.
+   *
+   * [disable-awslint:no-grants]
+   */
+  public grantInvokeApiDestination(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:InvokeApiDestination'],
+      resourceArns: [this.apiDestinationArnForPolicy ?? this.apiDestinationArn],
+    });
+  }
+}
+
+/**
  * Define an EventBridge Api Destination
  *
  * @resource AWS::Events::ApiDestination
  */
 @propertyInjectable
-export class ApiDestination extends Resource implements IApiDestination {
+export class ApiDestination extends ApiDestinationBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-events.ApiDestination';
 
@@ -129,7 +184,7 @@ export class ApiDestination extends Resource implements IApiDestination {
       throw new UnscopedValidationError(lit`CouldNotExtractDestinationName`, `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
-    class Import extends Resource implements IApiDestination {
+    class Import extends ApiDestinationBase {
       public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
       public readonly apiDestinationArnForPolicy = attrs.apiDestinationArnForPolicy;
@@ -137,13 +192,6 @@ export class ApiDestination extends Resource implements IApiDestination {
 
       public get connection(): IConnection {
         return toIConnection(this._importConnection);
-      }
-
-      public get apiDestinationRef(): ApiDestinationReference {
-        return {
-          apiDestinationName: this.apiDestinationName,
-          apiDestinationArn: this.apiDestinationArn,
-        };
       }
     }
 
@@ -191,13 +239,6 @@ export class ApiDestination extends Resource implements IApiDestination {
    */
   public get connection(): IConnection {
     return toIConnection(this._connection);
-  }
-
-  public get apiDestinationRef(): ApiDestinationReference {
-    return {
-      apiDestinationName: this.apiDestinationName,
-      apiDestinationArn: this.apiDestinationArn,
-    };
   }
 
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
