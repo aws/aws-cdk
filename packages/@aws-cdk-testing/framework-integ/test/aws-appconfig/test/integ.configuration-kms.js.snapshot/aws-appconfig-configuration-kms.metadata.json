@@ -1,0 +1,86 @@
+{
+  "/aws-appconfig-configuration-kms/MyKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyAppConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "applicationName": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration-kms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyKey6AB29FA6"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyAppConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAppConfigB4B63E75"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/DeploymentStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "rolloutStrategy": "*"
+      }
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/ConfigurationProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFile943CF9F9"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/Publish/Output{\"Fn::GetAtt\":[\"MyKey6AB29FA6\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttMyKey6AB29FA6Arn833E1873"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/Publish/Output{\"Ref\":\"MyAppConfigB4B63E75\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefMyAppConfigB4B63E75461D0B64"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/Publish/Output{\"Ref\":\"MyHostedConfigFromFileConfigurationProfile32B2D26F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefMyHostedConfigFromFileConfigurationProfile32B2D26F6CF116AF"
+    }
+  ],
+  "/aws-appconfig-configuration-kms/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+    }
+  ]
+}
