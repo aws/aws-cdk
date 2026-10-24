@@ -1826,7 +1826,8 @@ test('repeated esbuild arguments use separate shell-escaped Docker arguments', (
     esbuildArgs: {
       '--alias': ['first=./path with spaces', "second=./it's second"],
       '--pure': ['console.log', 'console.debug'],
-      '--conditions': ['first', 'second'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
       '--drop': [],
       '--minify': true,
       '--splitting': false,
@@ -1837,7 +1838,8 @@ test('repeated esbuild arguments use separate shell-escaped Docker arguments', (
   expect(command).toContain("'--alias:first=./path with spaces'");
   expect(command).toContain("'--alias:second=./it'\\''s second'");
   expect(command).toContain("'--pure:console.log' '--pure:console.debug'");
-  expect(command).toContain("'--conditions=first' '--conditions=second'");
+  expect(command).toContain("'--supported:bigint=true' '--supported:top-level-await=false'");
+  expect(command).toContain("'--conditions=first,second'");
   expect(command).not.toContain('--drop');
   expect(command).toContain("'--minify'");
   expect(command).not.toContain('--splitting');
@@ -1855,7 +1857,8 @@ test('repeated esbuild arguments are individual values in local spawn', () => {
     esbuildArgs: {
       '--alias': ['first=./path with spaces', "second=./it's second"],
       '--pure': ['console.log', 'console.debug'],
-      '--conditions': ['first', 'second'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
       '--drop': [],
     },
   });
@@ -1869,8 +1872,9 @@ test('repeated esbuild arguments are individual values in local spawn', () => {
     "--alias:second=./it's second",
     '--pure:console.log',
     '--pure:console.debug',
-    '--conditions=first',
-    '--conditions=second',
+    '--supported:bigint=true',
+    '--supported:top-level-await=false',
+    '--conditions=first,second',
   ]));
   expect(args.some(arg => arg.startsWith('--drop'))).toBe(false);
 });

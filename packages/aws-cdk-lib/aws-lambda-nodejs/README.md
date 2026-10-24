@@ -291,9 +291,10 @@ container for Docker bundling or on the host OS for local bundling.
 
 ### Repeated esbuild arguments
 
-Use an array value in `esbuildArgs` to pass the same option more than once. Each
-value becomes a separate CLI argument; an empty array omits the option. Options
-such as `--alias` use esbuild's colon syntax:
+Use an array value in `esbuildArgs` for options that esbuild supports repeating.
+Each value becomes a separate CLI argument using `--flag:value` syntax; an empty
+array omits the option. Single-value options must use a string or boolean instead.
+For example:
 
 ```ts
 const esbuildArgs = {

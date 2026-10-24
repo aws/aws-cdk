@@ -742,15 +742,15 @@ function toCliArgsArray(esbuildArgs: { [key: string]: string | boolean | string[
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
-    const values = Array.isArray(value) ? value : [value];
-    for (const item of values) {
-      if (item === true || item === '') {
-        args.push(key);
-      } else if (reSpecifiedKeys.includes(key)) {
-        args.push(`${key}:${item}`);
-      } else if (item) {
-        args.push(`${key}=${item}`);
-      }
+    if (Array.isArray(value)) {
+      // esbuild only accumulates repeated flags in its --flag:value form.
+      args.push(...value.map(item => `${key}:${item}`));
+    } else if (value === true || value === '') {
+      args.push(key);
+    } else if (reSpecifiedKeys.includes(key)) {
+      args.push(`${key}:${value}`);
+    } else if (value) {
+      args.push(`${key}=${value}`);
     }
   }
 
