@@ -18,7 +18,7 @@ export class PipelineQueries {
     for (const wave of this.pipeline.waves) {
       steps.push(...wave.pre, ...wave.post);
       for (const stage of wave.stages) {
-        steps.push(...stage.pre, ...stage.post);
+        steps.push(...stage.pre, ...stage.post, ...stage.deployGate);
         for (const stackDeployment of stage.stacks) {
           steps.push(...stackDeployment.pre, ...stackDeployment.changeSet, ...stackDeployment.post);
         }
