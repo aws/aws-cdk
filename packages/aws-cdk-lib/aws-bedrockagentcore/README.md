@@ -114,6 +114,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Online Evaluation Properties](#online-evaluation-properties)
     - [Basic Online Evaluation Creation](#basic-online-evaluation-creation)
     - [Built-in Evaluators](#built-in-evaluators)
+    - [Third-Party Evaluators](#third-party-evaluators)
     - [Custom Evaluators](#custom-evaluators)
       - [LLM-as-a-Judge Evaluator](#llm-as-a-judge-evaluator)
       - [Code-Based Evaluator](#code-based-evaluator)
@@ -3349,7 +3350,7 @@ For full details, see [AgentCore Evaluations Prerequisites](https://docs.aws.ama
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `onlineEvaluationConfigName` | `string` | Yes | The name of the online evaluation configuration. Must start with a letter and can contain a-z, A-Z, 0-9, _ (underscore). Maximum 48 characters |
-| `evaluators` | `EvaluatorSelector[]` | Yes | The list of built-in evaluators to apply during evaluation. Minimum 1, maximum 10 |
+| `evaluators` | `EvaluatorSelector[]` | Yes | The list of built-in, managed third-party, and custom evaluators to apply during evaluation. Minimum 1, maximum 25 |
 | `dataSource` | `DataSourceConfig` | Yes | The data source configuration specifying where to read agent traces from |
 | `executionRole` | `iam.IRole` | No | The IAM role for evaluation. If not provided, a role will be created automatically |
 | `description` | `string` | No | Description of the evaluation configuration. Maximum 200 characters |
@@ -3378,7 +3379,7 @@ const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
 
 ### Built-in Evaluators
 
-Amazon Bedrock AgentCore provides 13 built-in evaluators that assess different aspects of agent performance:
+Amazon Bedrock AgentCore provides 15 built-in evaluators that assess different aspects of agent performance:
 
 **Session-Level Evaluators:**
 
@@ -3401,6 +3402,10 @@ Amazon Bedrock AgentCore provides 13 built-in evaluators that assess different a
 
 - `TOOL_SELECTION_ACCURACY` - Whether the agent selected the appropriate tool
 - `TOOL_PARAMETER_ACCURACY` - How accurately the agent extracts parameters from user queries
+- `SKILL_SELECTION_ACCURACY` - Whether the agent selected an appropriate skill for the task
+- `SKILL_INSTRUCTION_FOLLOWING` - How fully the agent followed a loaded skill's prescribed instructions
+
+The skill evaluators produce one result per skill invocation (a tool call that loaded a `SKILL.md` file). If the agent does not load any skills, they produce no results. See [Skill evaluators](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/skill-evaluators.html).
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ComprehensiveEval', {
@@ -3424,6 +3429,41 @@ const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ComprehensiveEval
   }),
 });
 ```
+
+### Third-Party Evaluators
+
+Managed third-party evaluators run metrics from the open source [DeepEval](https://github.com/confident-ai/deepeval) and AutoEval libraries. The service hosts them and selects the model, the same way it does for built-in evaluators, and they can be mixed freely with built-in and custom evaluators. Reference them with `EvaluatorSelector.thirdParty()`:
+
+```typescript fixture=default
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ThirdPartyEval', {
+  onlineEvaluationConfigName: 'third_party_evaluation',
+  evaluators: [
+    agentcore.EvaluatorSelector.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+    agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.DEEP_EVAL_BIAS),
+    agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.DEEP_EVAL_TASK_COMPLETION),
+    agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.AUTO_EVAL_SECURITY),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+});
+```
+
+The following managed third-party evaluators are available as static members of `ThirdPartyEvaluator`:
+
+- DeepEval: `DEEP_EVAL_BIAS`, `DEEP_EVAL_TOXICITY`, `DEEP_EVAL_PII_LEAKAGE`, `DEEP_EVAL_SUMMARIZATION`, `DEEP_EVAL_TASK_COMPLETION`, `DEEP_EVAL_CONVERSATION_COMPLETENESS`, `DEEP_EVAL_KNOWLEDGE_RETENTION`, `DEEP_EVAL_TURN_RELEVANCY`, `DEEP_EVAL_GOAL_ACCURACY`, `DEEP_EVAL_TOOL_USE`
+- AutoEval: `AUTO_EVAL_SECURITY`, `AUTO_EVAL_HUMOR`, `AUTO_EVAL_POSSIBLE`
+
+To reference a third-party evaluator that does not have a static member yet, pass its ID to the constructor. The ID must be in the `ThirdParty.<Provider>.<Metric>` format:
+
+```typescript fixture=default
+const evaluator = agentcore.EvaluatorSelector.thirdParty(
+  new agentcore.ThirdPartyEvaluator('ThirdParty.DeepEval.Bias'),
+);
+```
+
+See [Third-party evaluators](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/third-party-evaluators.html) for details on each metric.
 
 ### Custom Evaluators
 
@@ -3584,7 +3624,7 @@ const stagingEval = new agentcore.OnlineEvaluationConfig(this, 'StagingEval', {
 
 **CloudWatch Logs Data Source:**
 
-For external agents or when you need to specify log groups directly:
+For external agents or when you need to specify log groups directly (up to 10 log groups and 1 service name):
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CloudWatchEval', {

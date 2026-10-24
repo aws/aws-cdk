@@ -32,14 +32,14 @@ const CONFIG_NAME_MIN_LENGTH = 1;
 const CONFIG_NAME_MAX_LENGTH = 48;
 const DESCRIPTION_MAX_LENGTH = 200;
 const EVALUATORS_MIN_COUNT = 1;
-const EVALUATORS_MAX_COUNT = 10;
+const EVALUATORS_MAX_COUNT = 25;
 const SAMPLING_PERCENTAGE_MIN = 0.01;
 const SAMPLING_PERCENTAGE_MAX = 100;
 const FILTERS_MAX_COUNT = 5;
 const SESSION_TIMEOUT_MIN = 1;
 const SESSION_TIMEOUT_MAX = 1440;
 const LOG_GROUPS_MIN_COUNT = 1;
-const LOG_GROUPS_MAX_COUNT = 5;
+const LOG_GROUPS_MAX_COUNT = 10;
 const SERVICE_NAMES_MIN_COUNT = 1;
 const SERVICE_NAMES_MAX_COUNT = 1;
 const EVALUATOR_NAME_MIN_LENGTH = 1;
@@ -52,6 +52,7 @@ const TAGS_MAX_COUNT = 50;
 const ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN = /^[a-zA-Z+\-=._:/]+$/;
 const EVALUATOR_TAG_KEY_PATTERN = /^[\p{L}\p{N}\s._:/=+@-]+$/u;
 const TAG_VALUE_PATTERN = /^[\p{L}\p{N}\s._/=+-]*$/u;
+const THIRD_PARTY_EVALUATOR_ID_PATTERN = /^ThirdParty\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/;
 
 /******************************************************************************
  *                              TYPES
@@ -152,6 +153,34 @@ export function validateEvaluators(evaluators: IEvaluatorSelector[], _scope?: IC
   if (evaluators.length > EVALUATORS_MAX_COUNT) {
     errors.push(
       `At most ${EVALUATORS_MAX_COUNT} evaluators are allowed, got ${evaluators.length}`,
+    );
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a managed third-party evaluator identifier.
+ * Must follow the `ThirdParty.<Provider>.<Metric>` format.
+ * @param evaluatorId - The evaluator identifier to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateThirdPartyEvaluatorId(evaluatorId: string, _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (evaluatorId == null) {
+    errors.push('Third-party evaluator ID is required');
+    return errors;
+  }
+
+  if (Token.isUnresolved(evaluatorId)) {
+    return errors;
+  }
+
+  if (!THIRD_PARTY_EVALUATOR_ID_PATTERN.test(evaluatorId)) {
+    errors.push(
+      `Third-party evaluator ID ${JSON.stringify(evaluatorId)} does not match required pattern. Must be in the format "ThirdParty.<Provider>.<Metric>", for example "ThirdParty.DeepEval.Bias".`,
     );
   }
 
