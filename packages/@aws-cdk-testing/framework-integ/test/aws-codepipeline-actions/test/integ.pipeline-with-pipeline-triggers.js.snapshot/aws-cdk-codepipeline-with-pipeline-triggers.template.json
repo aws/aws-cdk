@@ -1284,7 +1284,7 @@
          "ProjectName": {
           "Ref": "MyProject2B52B17CC"
          },
-         "EnvironmentVariables": "[{\"name\":\"CommitId\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.CommitId}\"}]"
+         "EnvironmentVariables": "[{\"name\":\"CommitId\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.CommitId}\"},{\"name\":\"SourceBranchName\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.SourceBranchName}\"},{\"name\":\"DestinationBranchName\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.DestinationBranchName}\"},{\"name\":\"PullRequestId\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.PullRequestId}\"},{\"name\":\"PullRequestTitle\",\"type\":\"PLAINTEXT\",\"value\":\"#{Source_CodeStarConnectionsSourceAction2_NS.PullRequestTitle}\"}]"
         },
         "InputArtifacts": [
          {
