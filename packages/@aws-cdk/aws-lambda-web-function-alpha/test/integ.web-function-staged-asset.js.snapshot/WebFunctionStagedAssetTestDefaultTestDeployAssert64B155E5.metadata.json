@@ -1,0 +1,20 @@
+{
+  "/WebFunctionStagedAssetTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionStagedAssetTestDefaultTestDeployAssert64B155E5.template.json"
+    }
+  ],
+  "/WebFunctionStagedAssetTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionStagedAssetTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "/WebFunctionRegionalTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionRegionalTestDefaultTestDeployAssert49F516FD.template.json"
+    }
+  ],
+  "/WebFunctionRegionalTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionRegionalTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
