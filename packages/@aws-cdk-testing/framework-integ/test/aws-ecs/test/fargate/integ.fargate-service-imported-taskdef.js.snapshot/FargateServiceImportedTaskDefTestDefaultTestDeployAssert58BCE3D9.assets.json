@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "6294970bbd17b46753e7df6a2ca56e3c5f6779b21864dbd27ba594126bb64fab": {
+      "source": {
+        "path": "asset.6294970bbd17b46753e7df6a2ca56e3c5f6779b21864dbd27ba594126bb64fab.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-c3a2ff5f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6294970bbd17b46753e7df6a2ca56e3c5f6779b21864dbd27ba594126bb64fab.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d4b3553d277e39cbe07789c7c98785b6ab40b433144db4c7d62454d2e22b29cc": {
+      "displayName": "FargateServiceImportedTaskDefTestDefaultTestDeployAssert58BCE3D9 Template",
+      "source": {
+        "path": "FargateServiceImportedTaskDefTestDefaultTestDeployAssert58BCE3D9.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8a4edf66": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d4b3553d277e39cbe07789c7c98785b6ab40b433144db4c7d62454d2e22b29cc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

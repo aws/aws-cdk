@@ -10,7 +10,8 @@ import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
 import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
-import type { TaskDefinition } from '../base/task-definition';
+import type { ITaskDefinition } from '../base/task-definition';
+import { TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
 
@@ -21,9 +22,12 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
+   * TaskDefinition can be either owned (created in this stack) or imported.
+   * Note that some features require an owned TaskDefinition.
+   *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -178,19 +182,21 @@ export class FargateService extends BaseService implements IFargateService {
     ];
     const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
-    const osFamily = props.taskDefinition.runtimePlatform?.operatingSystemFamily;
-    const isWindows = osFamily?.isWindows() ?? false;
-    // If the operating system family is unresolved (a token, e.g. from a CfnParameter or a
-    // cross-stack reference) we cannot determine at synthesis time whether the task is Windows.
-    // In that case we defer to deploy-time validation rather than wrongly rejecting a valid
-    // Windows task, which supports ephemeralStorageGiB from platform version 1.0.0.
-    const isOsFamilyUnresolved = osFamily !== undefined && cdk.Token.isUnresolved(osFamily._operatingSystemFamily);
-    if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion && !isWindows && !isOsFamilyUnresolved) {
-      throw new ValidationError(lit`EphemeralStorageGibFeatureRequires`, `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later for Linux tasks, got ${props.platformVersion}.`, scope);
-    }
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      const osFamily = props.taskDefinition.runtimePlatform?.operatingSystemFamily;
+      const isWindows = osFamily?.isWindows() ?? false;
+      // If the operating system family is unresolved (a token, e.g. from a CfnParameter or a
+      // cross-stack reference) we cannot determine at synthesis time whether the task is Windows.
+      // In that case we defer to deploy-time validation rather than wrongly rejecting a valid
+      // Windows task, which supports ephemeralStorageGiB from platform version 1.0.0.
+      const isOsFamilyUnresolved = osFamily !== undefined && cdk.Token.isUnresolved(osFamily._operatingSystemFamily);
+      if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion && !isWindows && !isOsFamilyUnresolved) {
+        throw new ValidationError(lit`EphemeralStorageGibFeatureRequires`, `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      }
 
-    if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
-      throw new ValidationError(lit`PidModeFeatureRequires`, `The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
+        throw new ValidationError(lit`PidModeFeatureRequires`, `The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      }
     }
 
     super(scope, id, {
@@ -223,15 +229,23 @@ export class FargateService extends BaseService implements IFargateService {
       this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
     }
 
-    this.node.addValidation({
-      validate: () => this.taskDefinition.referencesSecretJsonField && isUnsupportedPlatformVersion
-        ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
-        : [],
-    });
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      this.node.addValidation({
+        validate: () => (this.taskDefinition as TaskDefinition).referencesSecretJsonField && isUnsupportedPlatformVersion
+          ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
+          : [],
+      });
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+      this.node.addValidation({
+        validate: () => !(this.taskDefinition as TaskDefinition).defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
+      });
+    } else {
+      cdk.Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Some validations related to ephemeralStorage, pidMode, and container configuration will be skipped.',
+      );
+    }
   }
 
   /**
