@@ -2529,10 +2529,14 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-        CpuArch.X86_64;
+  let architecture: ec2.InstanceArchitecture;
+  try {
+    architecture = instanceType.architecture;
+  } catch {
+    // Instance types that cannot be parsed (for example, tokens) keep the x86_64 default.
+    return CpuArch.X86_64;
+  }
+  return architecture === ec2.InstanceArchitecture.ARM_64 ? CpuArch.ARM_64 : CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {
