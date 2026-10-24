@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "6212b0ff2f812b19cf4fc333cef9bd202fc75cefd1ade7e144c1925b19ecd7e7": {
+      "displayName": "aws-cdk-loggroup-cross-env-grant-log-group Template",
+      "source": {
+        "path": "aws-cdk-loggroup-cross-env-grant-log-group.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-1-6f2c0427": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "6212b0ff2f812b19cf4fc333cef9bd202fc75cefd1ade7e144c1925b19ecd7e7.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
