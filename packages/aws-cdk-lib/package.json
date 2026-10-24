@@ -31,6 +31,7 @@
     "compressAssembly": true,
     "pre": [
       "ts-node region-info/build-tools/generate-static-data.ts",
+      "ts-node core/build-tools/generate-rego-rule-index.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"

@@ -139,27 +139,38 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
-  private readonly engine: Engine;
+  private readonly props: CloudFormationValidatePluginProps;
+
+  /**
+   * Schema overlays, loaded eagerly so that a bad schema directory fails on
+   * plugin construction rather than at first validation.
+   */
+  private readonly additionalSchemas?: AdditionalSchemaSource[];
+
+  /**
+   * Engine without any of the default Rego rules.
+   *
+   * Also the engine used by templates that match no default rule at all, which
+   * is the overwhelmingly common case.
+   */
+  private baseEngine?: Engine;
+
+  /**
+   * Engine for the most recently requested set of default Rego rules.
+   *
+   * Only one is retained: an app validates all of its stacks in a single
+   * `validate()` call, so this is reused across stacks, and holding on to
+   * engines for rule sets we are done with would waste WASM memory.
+   */
+  private ruleEngine?: { readonly key: string; readonly engine: Engine };
+
   private disposed = false;
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
-    const config: CompositeEngineConfig = {};
-    const regoRules = [
-      ...(props.includeDefaultRules ?? true) ? defaultRegoRules() : [],
-      ...props.regoRules ?? [],
-    ];
-    if (regoRules.length > 0) {
-      config.regoRules = regoRules;
-    }
-    if (props.guardRules) {
-      config.guardRules = props.guardRules;
-    }
-    if (props._additionalSchemasDirectory) {
-      config.schemaValidatorConfig = {
-        additionalSchemas: loadSchemasFromDirectory(props._additionalSchemasDirectory),
-      };
-    }
-    this.engine = new CompositeEngine(config);
+    this.props = props;
+    this.additionalSchemas = props._additionalSchemasDirectory
+      ? loadSchemasFromDirectory(props._additionalSchemasDirectory)
+      : undefined;
   }
 
   /**
@@ -172,7 +183,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       return;
     }
     this.disposed = true;
-    this.engine.free();
+    this.baseEngine?.free();
+    this.baseEngine = undefined;
+    this.ruleEngine?.engine.free();
+    this.ruleEngine = undefined;
   }
 
   public get version(): string | undefined {
@@ -180,7 +194,10 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   }
 
   public get ruleIds(): string[] | undefined {
-    return this.engine.listRules()
+    // The engine does not report custom Rego rule IDs, so the base engine lists
+    // exactly the same rules as any other and we avoid paying for rule loading
+    // just to answer this (analytics-only) question.
+    return this.engineWithRules([]).listRules()
       // Pretend the ignored rules don't exist
       .filter((r: RuleInfo) => !IGNORE_RULES.has(r.id) && r.severity !== 'INFO' && r.severity !== 'DEBUG')
       .map((r: RuleInfo) => r.id);
@@ -189,12 +206,14 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
+    const engine = this.engineForTemplates(context.stackTemplates.map(t => t.templatePath));
+
     for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
       const templateFile = new TemplateFile(templatePath);
       const report = (() => {
         using _span = profileSpan(VALIDATE_METRIC, { telemetry: true });
 
-        return this.engine.validateTemplate(templateFile, {
+        return engine.validateTemplate(templateFile, {
           detailLevel: 'STANDARD',
           pseudoParameterOverrides: {
             accountId,
@@ -277,6 +296,98 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       violations,
     };
   }
+
+  /**
+   * The engine to validate the given templates with.
+   *
+   * Only the default rules that can fire on a resource type occurring in one of
+   * the templates are loaded. Loading any Rego rule at all has a fixed cost of
+   * roughly 150ms, so apps that use none of the covered resource types (most of
+   * them) should not be loading rules in the first place.
+   */
+  private engineForTemplates(templatePaths: string[]): Engine {
+    if (!(this.props.includeDefaultRules ?? true)) {
+      return this.engineWithRules([]);
+    }
+
+    const resourceTypes = new Set<string>();
+    for (const templatePath of templatePaths) {
+      for (const type of resourceTypesInTemplate(templatePath)) {
+        resourceTypes.add(type);
+      }
+    }
+
+    const applicable = defaultRegoRuleIndex().rules.filter(
+      rule => rule.types === null || rule.types.some(type => resourceTypes.has(type)),
+    );
+
+    return this.engineWithRules(applicable.map(rule => rule.file));
+  }
+
+  /**
+   * An engine with the given default rule files loaded, creating it if necessary.
+   */
+  private engineWithRules(ruleFiles: string[]): Engine {
+    if (this.disposed) {
+      throw new UnscopedValidationError(lit`ValidationEngineDisposed`,
+        '[CloudFormation Validate] the validation engine has already been disposed',
+      );
+    }
+
+    if (ruleFiles.length === 0) {
+      return this.baseEngine ??= new CompositeEngine(this.engineConfig([]));
+    }
+
+    const key = ruleFiles.join(',');
+    if (this.ruleEngine?.key !== key) {
+      this.ruleEngine?.engine.free();
+      this.ruleEngine = { key, engine: new CompositeEngine(this.engineConfig(ruleFiles)) };
+    }
+    return this.ruleEngine.engine;
+  }
+
+  private engineConfig(ruleFiles: string[]): CompositeEngineConfig {
+    const config: CompositeEngineConfig = {};
+    const regoRules = [
+      ...ruleFiles.map(file => ({
+        name: file,
+        content: fs.readFileSync(path.join(RULES_DIRECTORY, file), 'utf-8'),
+      })),
+      // Rules handed to us by the user are always loaded; we have no index for those.
+      ...this.props.regoRules ?? [],
+    ];
+    if (regoRules.length > 0) {
+      config.regoRules = regoRules;
+    }
+    if (this.props.guardRules) {
+      config.guardRules = this.props.guardRules;
+    }
+    if (this.additionalSchemas) {
+      config.schemaValidatorConfig = {
+        additionalSchemas: this.additionalSchemas,
+      };
+    }
+    return config;
+  }
+}
+
+/**
+ * The resource types used in a synthesized template.
+ *
+ * A template we cannot read or parse contributes no types; the validation run
+ * itself will produce a better diagnostic about it than we could here.
+ */
+function resourceTypesInTemplate(templatePath: string): string[] {
+  let template: any;
+  try {
+    template = JSON.parse(fs.readFileSync(templatePath, 'utf-8'));
+  } catch {
+    return [];
+  }
+
+  return Object.values(template?.Resources ?? {})
+    .map((resource: any) => resource?.Type)
+    .filter((type): type is string => typeof type === 'string');
 }
 
 function mapSeverity(severity: Severity): string {
@@ -294,21 +405,49 @@ function mapSeverity(severity: Severity): string {
 }
 
 /**
- * CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ * Directory holding the CDK-authored default Rego rules, shipped with aws-cdk-lib.
  *
  * These are ports of L2 construct validations to template-level rules, so the
  * same checks also apply to templates produced via L1 constructs, escape
- * hatches, or `CfnInclude`. See `rules/` next to this file.
+ * hatches, or `CfnInclude`.
  */
-function defaultRegoRules(): ValidationRuleSource[] {
-  const rulesDir = path.join(__dirname, 'rules');
-  return fs.readdirSync(rulesDir)
-    .filter((f) => f.endsWith('.rego'))
-    .sort()
-    .map((f) => ({
-      name: f,
-      content: fs.readFileSync(path.join(rulesDir, f), 'utf-8'),
-    }));
+const RULES_DIRECTORY = path.join(__dirname, 'rules');
+
+/**
+ * Which resource types each default rule applies to.
+ */
+interface RegoRuleIndex {
+  readonly rules: Array<{
+    /** File name of the rule, relative to the rules directory. */
+    readonly file: string;
+
+    /** Resource types the rule can fire on, or `null` if it applies to every template. */
+    readonly types: string[] | null;
+  }>;
+}
+
+let ruleIndex: RegoRuleIndex | undefined;
+
+/**
+ * The applicability index, generated at build time by
+ * `core/build-tools/generate-rego-rule-index.ts`.
+ *
+ * A missing index is an error rather than a fallback to loading every rule: the
+ * fallback would silently cost every app the rule loading time this index exists
+ * to avoid.
+ */
+function defaultRegoRuleIndex(): RegoRuleIndex {
+  if (!ruleIndex) {
+    const indexFile = path.join(RULES_DIRECTORY, 'index.generated.json');
+    if (!fs.existsSync(indexFile)) {
+      throw new UnscopedValidationError(lit`RegoRuleIndexMissing`,
+        `[CloudFormation Validate] validation rule index not found at ${indexFile}; `
+        + 'run `yarn build` in packages/aws-cdk-lib to generate it',
+      );
+    }
+    ruleIndex = JSON.parse(fs.readFileSync(indexFile, 'utf-8')) as RegoRuleIndex;
+  }
+  return ruleIndex;
 }
 
 // Rules that the engine will report but we want to ignore because CDK creates

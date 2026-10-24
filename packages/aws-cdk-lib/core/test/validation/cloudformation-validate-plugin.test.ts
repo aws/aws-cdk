@@ -44,7 +44,7 @@ afterAll(() => {
 describe('CloudFormationValidatePlugin', () => {
   test('_dispose frees the engine exactly once', () => {
     const plugin = newPlugin();
-    const free = jest.spyOn((plugin as any).engine, 'free');
+    const free = jest.spyOn(engineOf(plugin), 'free');
 
     plugin._dispose();
     plugin._dispose();
@@ -55,7 +55,7 @@ describe('CloudFormationValidatePlugin', () => {
   test('_configureSingleton frees the previous engine', () => {
     core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
     const previous = core.CloudFormationValidatePlugin._singletonInstance();
-    const free = jest.spyOn((previous as any).engine, 'free');
+    const free = jest.spyOn(engineOf(previous), 'free');
 
     try {
       core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
@@ -413,7 +413,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     try {
       const plugin = newPlugin();
-      const validateTemplate = jest.spyOn((plugin as any).engine, 'validateTemplate')
+      const validateTemplate = jest.spyOn(engineOf(plugin), 'validateTemplate')
         .mockReturnValueOnce({
           diagnostics: [
             { ruleId: 'F0001', severity: 'FATAL', message: 'fatal diagnostic' },
@@ -476,7 +476,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     function validateWithDiagnostics(diagnostics: any[]) {
       const plugin = newPlugin();
-      jest.spyOn((plugin as any).engine, 'validateTemplate').mockReturnValueOnce({ diagnostics });
+      jest.spyOn(engineOf(plugin), 'validateTemplate').mockReturnValueOnce({ diagnostics });
       return plugin.validate({
         templatePaths: [templatePath],
         stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
@@ -747,6 +747,67 @@ describe('CloudFormationValidatePlugin', () => {
     });
   });
 
+  describe('default rule selection', () => {
+    let tmpDir: string;
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-selection-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, { recursive: true });
+    });
+
+    function templateWithResourceType(type: string): string {
+      const templatePath = path.join(tmpDir, `${type.replace(/::/g, '-')}.json`);
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: { TheResource: { Type: type } } }));
+      return templatePath;
+    }
+
+    test('loads no default rules for a template without covered resource types', () => {
+      const plugin = newPlugin();
+      const templatePath = templateWithResourceType('AWS::S3::Bucket');
+
+      expect(engineForTemplates(plugin, [templatePath])).toBe(engineOf(plugin));
+    });
+
+    test('loads default rules for a template with a covered resource type', () => {
+      const plugin = newPlugin();
+      const templatePath = templateWithResourceType('AWS::GameLift::Fleet');
+
+      expect(engineForTemplates(plugin, [templatePath])).not.toBe(engineOf(plugin));
+    });
+
+    test('loads default rules if any template in the app has a covered resource type', () => {
+      const plugin = newPlugin();
+      const templatePaths = [
+        templateWithResourceType('AWS::S3::Bucket'),
+        templateWithResourceType('AWS::GameLift::Fleet'),
+      ];
+
+      expect(engineForTemplates(plugin, templatePaths)).not.toBe(engineOf(plugin));
+    });
+
+    test('loads no default rules when they are turned off', () => {
+      const plugin = newPlugin({ includeDefaultRules: false });
+      const templatePath = templateWithResourceType('AWS::GameLift::Fleet');
+
+      expect(engineForTemplates(plugin, [templatePath])).toBe(engineOf(plugin));
+    });
+
+    test('every default rule file is covered by the generated index', () => {
+      const rulesDirectory = path.join(__dirname, '..', '..', 'lib', 'validation', 'rules');
+      const ruleFiles = fs.readdirSync(rulesDirectory).filter(f => f.endsWith('.rego')).sort();
+      const index = JSON.parse(fs.readFileSync(path.join(rulesDirectory, 'index.generated.json'), 'utf-8'));
+
+      expect(index.rules.map((r: any) => r.file).sort()).toEqual(ruleFiles);
+      for (const rule of index.rules) {
+        // Either explicitly always-applicable, or a non-empty list of resource types
+        expect(rule.types === null || rule.types.length > 0).toBe(true);
+      }
+    });
+  });
+
   describe('_configureSingleton', () => {
     test('does not conflict with tests that register their own plugin', () => {
       // Simulate the jest hook: pre-configure the singleton with overlays
@@ -866,6 +927,20 @@ function loadValidationReport(asm: cxapi.CloudAssembly) {
 }
 
 let constructedPlugins: core.CloudFormationValidatePlugin[] = [];
+
+/**
+ * The engine a plugin uses for templates that match none of the default rules.
+ *
+ * Engines are created on demand, so this also materializes it; the templates in
+ * these tests contain no resources covered by a default rule.
+ */
+function engineOf(plugin: core.CloudFormationValidatePlugin) {
+  return (plugin as any).engineWithRules([]);
+}
+
+function engineForTemplates(plugin: core.CloudFormationValidatePlugin, templatePaths: string[]) {
+  return (plugin as any).engineForTemplates(templatePaths);
+}
 
 function newPlugin(props?: core.CloudFormationValidatePluginProps) {
   const constructed = new core.CloudFormationValidatePlugin(props);
