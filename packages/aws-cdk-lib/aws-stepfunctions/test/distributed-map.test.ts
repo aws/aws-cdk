@@ -1886,6 +1886,20 @@ describe('Distributed Map State', () => {
     expect(() => app.synth()).toThrow(/label cannot contain any whitespace or special characters/);
   });
 
+  test('fails in synthesis when maxConcurrency is a jsonPath', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        maxConcurrency: stepfunctions.JsonPath.numberAt('$.maxConcurrency'),
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/maxConcurrency does not support JSON paths/);
+  });
+
   test('does not fail in synthesis if label has `s`', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
