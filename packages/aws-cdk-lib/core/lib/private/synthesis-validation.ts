@@ -32,15 +32,21 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   if (!APP_TYPE.isMarked(root)) return;
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
-  const assemblies = getAssemblies(root, assembly);
   const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
+
+  // Loading the nested cloud assemblies re-reads every stage's manifest and stack
+  // metadata back from disk, so only do it if a plugin will actually consume them.
+  let assemblies: Map<string, private_cxapi.CloudAssembly> | undefined;
 
   visitAssemblies(root, 'post', construct => {
     if (STAGE_TYPE.isMarked(construct)) {
+      const plugins = pluginsToEvaluate(root, construct);
+      if (plugins.length === 0) return;
+
+      assemblies ??= getAssemblies(root, assembly);
       const stageAssembly = assemblies.get(construct.artifactId);
       if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
 
-      const plugins = pluginsToEvaluate(root, construct);
       for (const plugin of plugins) {
         if (!stacksByPlugin.has(plugin)) {
           stacksByPlugin.set(plugin, new Set());

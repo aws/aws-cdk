@@ -3,7 +3,7 @@ import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
 import { iterateDfsPreorder } from './private/construct-iteration';
-import { appOf, APP_TYPE } from './private/core-construct-finders';
+import { appOf, APP_TYPE, STACK_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -378,12 +378,15 @@ export class App extends Stage {
     });
 
     const totalAppTimeMs = performance.now() - this.initMark;
-    const stackCount = ret.stacksRecursively.length;
 
     // Record how many constructs we had to iterate over to synthesize the app, to get a sense for
     // how synthesis time scales with number of constructs.
+    //
+    // Count the stacks in the same pass: `assembly.stacksRecursively` would give the same
+    // number, but it reloads every nested assembly (i.e. every Stage) back from disk to do it.
+    const { constructCount, stackCount } = countTree(this);
     recordPerformanceEntry('count:Constructs', {
-      count: countConstructs(this),
+      count: constructCount,
       durationMs: 0,
       telemetry: true,
     });
@@ -415,12 +418,16 @@ export class App extends Stage {
   }
 }
 
-function countConstructs(construct: IConstruct): number {
-  let ret = 0;
-  for (const _ of iterateDfsPreorder(construct)) {
-    ret++;
+function countTree(construct: IConstruct): { constructCount: number; stackCount: number } {
+  let constructCount = 0;
+  let stackCount = 0;
+  for (const c of iterateDfsPreorder(construct)) {
+    constructCount++;
+    if (STACK_TYPE.isMarked(c)) {
+      stackCount++;
+    }
   }
-  return ret;
+  return { constructCount, stackCount };
 }
 
 /**

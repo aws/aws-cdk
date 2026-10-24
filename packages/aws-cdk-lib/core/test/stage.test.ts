@@ -394,3 +394,127 @@ class BogusStack extends Stack {
 function acctRegion(s: Stack) {
   return [s.account, s.region];
 }
+
+describe('stage synthesis does not redo work across assembly boundaries', () => {
+  const env = { account: '123456789012', region: 'us-east-1' };
+
+  /**
+   * Count how often each CfnElement is rendered to CloudFormation during synthesis.
+   *
+   * Reference resolution renders every element to find the Tokens in it. Rendering
+   * the elements of a Stage more than once per synthesis pass means the enclosing
+   * App is redoing work the Stage already did (and already wrote to disk).
+   */
+  function countRenders(app: App) {
+    const proto = CfnResource.prototype as any;
+    const original = proto._toCloudFormation;
+    let renders = 0;
+    proto._toCloudFormation = function (...args: any[]) {
+      renders++;
+      return original.apply(this, args);
+    };
+    try {
+      app.synth();
+    } finally {
+      proto._toCloudFormation = original;
+    }
+    return renders;
+  }
+
+  function appWithResources(scopeOf: (app: App) => Stack[]) {
+    const app = new App({ context: { '@aws-cdk/core:validateAgainstDefaultRules': false } });
+    for (const stack of scopeOf(app)) {
+      new CfnResource(stack, 'Resource', { type: 'AWS::SQS::Queue' });
+    }
+    return app;
+  }
+
+  test('elements inside a Stage are rendered as often as elements outside one', () => {
+    // GIVEN -- the same two stacks, once directly in the App and once inside a Stage
+    const flat = appWithResources((app) => [
+      new Stack(app, 'Stack1', { env }),
+      new Stack(app, 'Stack2', { env }),
+    ]);
+    const staged = appWithResources((app) => {
+      const stage = new Stage(app, 'Stage');
+      return [new Stack(stage, 'Stack1', { env }), new Stack(stage, 'Stack2', { env })];
+    });
+
+    // THEN -- putting the stacks in a Stage must not cost extra renders
+    expect(countRenders(staged)).toEqual(countRenders(flat));
+  });
+});
+
+describe('references and dependencies may not cross a Stage boundary', () => {
+  const env = { account: '123456789012', region: 'us-east-1' };
+  const expected = /dependency cannot cross stage boundaries/;
+
+  test('fails for a reference from inside a Stage to a Stack in the App', () => {
+    const app = new App();
+    const producer = new Stack(app, 'Producer', { env });
+    const resource = new CfnResource(producer, 'Resource', { type: 'AWS::SQS::Queue' });
+    const consumer = new Stack(new Stage(app, 'Stage'), 'Consumer', { env });
+    new CfnResource(consumer, 'Resource', {
+      type: 'AWS::SQS::Queue',
+      properties: { QueueName: resource.getAtt('QueueName').toString() },
+    });
+
+    expect(() => app.synth()).toThrow(expected);
+  });
+
+  test('fails for a reference from a Stack in the App to inside a Stage', () => {
+    const app = new App();
+    const producer = new Stack(new Stage(app, 'Stage'), 'Producer', { env });
+    const resource = new CfnResource(producer, 'Resource', { type: 'AWS::SQS::Queue' });
+    const consumer = new Stack(app, 'Consumer', { env });
+    new CfnResource(consumer, 'Resource', {
+      type: 'AWS::SQS::Queue',
+      properties: { QueueName: resource.getAtt('QueueName').toString() },
+    });
+
+    expect(() => app.synth()).toThrow(expected);
+  });
+
+  test('fails for a reference between two different Stages', () => {
+    const app = new App();
+    const producer = new Stack(new Stage(app, 'Stage1'), 'Producer', { env });
+    const resource = new CfnResource(producer, 'Resource', { type: 'AWS::SQS::Queue' });
+    const consumer = new Stack(new Stage(app, 'Stage2'), 'Consumer', { env });
+    new CfnResource(consumer, 'Resource', {
+      type: 'AWS::SQS::Queue',
+      properties: { QueueName: resource.getAtt('QueueName').toString() },
+    });
+
+    expect(() => app.synth()).toThrow(expected);
+  });
+
+  test('fails for an explicit dependency out of a Stage', () => {
+    const app = new App();
+    const producer = new Stack(app, 'Producer', { env });
+    const consumer = new Stack(new Stage(app, 'Stage'), 'Consumer', { env });
+
+    // This one is caught eagerly, rather than during synthesis
+    expect(() => consumer.addDependency(producer)).toThrow(expected);
+  });
+
+  test('a cross-stack reference within one Stage still resolves', () => {
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const producer = new Stack(stage, 'Producer', { env });
+    const resource = new CfnResource(producer, 'Resource', { type: 'AWS::SQS::Queue' });
+    const consumer = new Stack(stage, 'Consumer', { env });
+    new CfnResource(consumer, 'Resource', {
+      type: 'AWS::SQS::Queue',
+      properties: { QueueName: resource.getAtt('QueueName').toString() },
+    });
+
+    const assembly = app.synth();
+
+    // The producer exports and the consumer imports it
+    const stageAssembly = assembly.getNestedAssembly('assembly-Stage');
+    const producerTemplate = stageAssembly.getStackByName('Stage-Producer').template;
+    const consumerTemplate = stageAssembly.getStackByName('Stage-Consumer').template;
+    expect(Object.keys(producerTemplate.Outputs ?? {})).toHaveLength(1);
+    expect(JSON.stringify(consumerTemplate.Resources.Resource.Properties)).toContain('Fn::ImportValue');
+  });
+});
