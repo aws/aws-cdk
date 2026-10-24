@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { Names, RemovalPolicy, Stack } from '../../core';
+import { CfnParameter, Names, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
 
@@ -50,6 +50,61 @@ describe('k8s patch', () => {
     expect(patch.node.dependencies.map(d => Names.nodeUniqueId(d.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
   });
 
+  test.each([false, true])('serializes JSON patch arrays (empty: %s)', empty => {
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    new KubernetesPatch(stack, 'MyPatch', {
+      cluster,
+      resourceName: 'deployment/test',
+      patchType: PatchType.JSON,
+      applyPatch: empty ? [] : [
+        { op: 'test', path: '/spec/replicas', value: 3 },
+        { op: 'replace', path: '/spec/replicas', value: 5 },
+        { op: 'add', path: '/metadata/labels/example.com~1enabled', value: 'true' },
+      ],
+      restorePatch: empty ? [] : [
+        { op: 'replace', path: '/spec/replicas', value: 3 },
+        { op: 'remove', path: '/metadata/labels/example.com~1enabled' },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+      PatchType: 'json',
+      ApplyPatchJson: empty ? '[]' : '[{"op":"test","path":"/spec/replicas","value":3},{"op":"replace","path":"/spec/replicas","value":5},{"op":"add","path":"/metadata/labels/example.com~1enabled","value":"true"}]',
+      RestorePatchJson: empty ? '[]' : '[{"op":"replace","path":"/spec/replicas","value":3},{"op":"remove","path":"/metadata/labels/example.com~1enabled"}]',
+    });
+  });
+
+  test('preserves tokens in JSON patch arrays', () => {
+    const stack = new Stack();
+    const cluster = new eks.Cluster(stack, 'MyCluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    const label = new CfnParameter(stack, 'Label');
+
+    new KubernetesPatch(stack, 'MyPatch', {
+      cluster,
+      resourceName: 'deployment/test',
+      patchType: PatchType.JSON,
+      applyPatch: [{ op: 'add', path: '/metadata/labels/app', value: label.valueAsString }],
+      restorePatch: [{ op: 'test', path: '/metadata/labels/app', value: label.valueAsString }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ApplyPatchJson: {
+        'Fn::Join': ['', ['[{"op":"add","path":"/metadata/labels/app","value":"', { Ref: 'Label' }, '"}]']],
+      },
+      RestorePatchJson: {
+        'Fn::Join': ['', ['[{"op":"test","path":"/metadata/labels/app","value":"', { Ref: 'Label' }, '"}]']],
+      },
+    });
+  });
+
   test('defaults to "strategic" patch type if no patchType is specified', () => {
     // GIVEN
     const stack = new Stack();
@@ -81,8 +136,8 @@ describe('k8s patch', () => {
     // WHEN
     new KubernetesPatch(stack, 'jsonPatch', {
       cluster,
-      applyPatch: { patch: { to: 'apply' } },
-      restorePatch: { restore: { patch: 123 } },
+      applyPatch: [{ op: 'replace', path: '/spec/replicas', value: 5 }],
+      restorePatch: [{ op: 'replace', path: '/spec/replicas', value: 3 }],
       resourceName: 'jsonPatchResource',
       patchType: PatchType.JSON,
     });
@@ -104,14 +159,20 @@ describe('k8s patch', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'jsonPatchResource',
       PatchType: 'json',
+      ApplyPatchJson: '[{"op":"replace","path":"/spec/replicas","value":5}]',
+      RestorePatchJson: '[{"op":"replace","path":"/spec/replicas","value":3}]',
     });
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'mergePatchResource',
       PatchType: 'merge',
+      ApplyPatchJson: '{"patch":{"to":"apply"}}',
+      RestorePatchJson: '{"restore":{"patch":123}}',
     });
     Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
       ResourceName: 'strategicPatchResource',
       PatchType: 'strategic',
+      ApplyPatchJson: '{"patch":{"to":"apply"}}',
+      RestorePatchJson: '{"restore":{"patch":123}}',
     });
   });
 
