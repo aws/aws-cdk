@@ -708,6 +708,20 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
 ```
 
+#### Removing a VPC Runtime
+
+When a VPC-mode runtime is removed, the AgentCore service releases the network interfaces it created in your VPC asynchronously, and they can stay attached to the runtime's security groups for an extended period after the runtime is deleted. If CloudFormation tries to delete such a security group in that time, the deletion fails with `DependencyViolation`. CloudFormation retries for a while and then skips it, so the stack update can take a long time and the security group remains in your account outside of the stack.
+
+To avoid this, keep the runtime's security groups out of CloudFormation's delete path, and delete them yourself once the network interfaces are gone:
+
+```typescript fixture=default
+declare const runtime: agentcore.Runtime;
+
+runtime.connections.securityGroups.forEach(sg => sg.applyRemovalPolicy(RemovalPolicy.RETAIN));
+```
+
+Alternatively, pass a long-lived security group managed in a separate stack through the `securityGroups` property of `RuntimeNetworkConfiguration.usingVpc()`.
+
 ### Runtime IAM Permissions
 
 The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
