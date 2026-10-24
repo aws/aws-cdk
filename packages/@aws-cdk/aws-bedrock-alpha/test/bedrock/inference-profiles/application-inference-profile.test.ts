@@ -520,6 +520,49 @@ describe('ApplicationInferenceProfile', () => {
     });
   });
 
+  describe('unresolved tokens', () => {
+    test.each([
+      [
+        'CfnParameter',
+        (s: core.Stack) => new core.CfnParameter(s, 'ProfileName').valueAsString,
+        { Ref: 'ProfileName' },
+      ],
+      [
+        'Aws.STACK_NAME',
+        (_s: core.Stack) => `${core.Aws.STACK_NAME}-profile`,
+        { 'Fn::Join': ['', [{ Ref: 'AWS::StackName' }, '-profile']] },
+      ],
+      [
+        'Fn.importValue',
+        (_s: core.Stack) => core.Fn.importValue('ProfileName'),
+        { 'Fn::ImportValue': 'ProfileName' },
+      ],
+    ])('does not fail validation if name comes from %s', (_source, makeName, expectedName) => {
+      new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
+        applicationInferenceProfileName: makeName(stack),
+        modelSource: foundationModel,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::ApplicationInferenceProfile', {
+        InferenceProfileName: expectedName,
+      });
+    });
+
+    test('does not fail validation if description is a late-bound value', () => {
+      const description = new core.CfnParameter(stack, 'Description');
+
+      new bedrockAlpha.ApplicationInferenceProfile(stack, 'TestProfile', {
+        applicationInferenceProfileName: 'test-profile',
+        modelSource: foundationModel,
+        description: description.valueAsString,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::ApplicationInferenceProfile', {
+        Description: { Ref: 'Description' },
+      });
+    });
+  });
+
   describe('static methods', () => {
     test('fromApplicationInferenceProfileAttributes creates profile from attributes', () => {
       const importedProfile = bedrockAlpha.ApplicationInferenceProfile.fromApplicationInferenceProfileAttributes(

@@ -1,5 +1,6 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Token } from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as validation from './validation-helpers';
@@ -384,19 +385,19 @@ export class PromptOverrideConfiguration {
   private validateInferenceConfig = (config?: InferenceConfiguration): string[] => {
     const errors: string[] = [];
     if (config) {
-      if (config.temperature < 0 || config.temperature > 1) {
+      if (!Token.isUnresolved(config.temperature) && (config.temperature < 0 || config.temperature > 1)) {
         errors.push('Temperature must be between 0 and 1');
       }
-      if (config.topP < 0 || config.topP > 1) {
+      if (!Token.isUnresolved(config.topP) && (config.topP < 0 || config.topP > 1)) {
         errors.push('TopP must be between 0 and 1');
       }
-      if (config.topK < 0 || config.topK > 500) {
+      if (!Token.isUnresolved(config.topK) && (config.topK < 0 || config.topK > 500)) {
         errors.push('TopK must be between 0 and 500');
       }
-      if (config.stopSequences.length > 4) {
+      if (!Token.isUnresolved(config.stopSequences) && config.stopSequences.length > 4) {
         errors.push('Maximum 4 stop sequences allowed');
       }
-      if (config.maximumLength < 0 || config.maximumLength > 4096) {
+      if (!Token.isUnresolved(config.maximumLength) && (config.maximumLength < 0 || config.maximumLength > 4096)) {
         errors.push('MaximumLength must be between 0 and 4096');
       }
     }
