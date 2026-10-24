@@ -25,8 +25,7 @@ and deploy new resources.
 
 The GA module (`aws-cdk-lib/aws-glue`) folds in every API change made during GA
 preparation. If you are coming from an older alpha, you will encounter the union
-of the changes below in one upgrade. They are grouped by theme; a PR-reference
-table follows at the end.
+of the changes below in one upgrade. They are grouped by theme.
 
 ### Encryption & security
 
@@ -132,8 +131,12 @@ becomes `addEventTrigger`; all `addXxxTrigger` methods return `ITriggerRef`.
 ### Removed / corrective
 
 - **`RayJob` is not graduated** — AWS Glue for Ray is closed to new customers
-  (April 30, 2026). Stay on the alpha if you still need it, or migrate to Amazon
-  EKS with the KubeRay operator.
+  (April 30, 2026). If you still need `RayJob`, the final alpha release that
+  includes it is `@aws-cdk/aws-glue-alpha@<TODO: final version>`. In
+  `aws-cdk-lib`, you can define a Ray job with the `CfnJob` L1 construct by
+  setting `command.name` to `glueray`, `command.runtime` to `Ray2.4`,
+  `workerType` to `Z.2X` and `glueVersion` to `4.0` or later. Alternatively,
+  migrate to Amazon EKS with the KubeRay operator.
 - **`OutputFormat.AVRO`/`ORC` type corrected** — cross-assignments that relied on
   the old (buggy) type will now fail to compile in non-TypeScript jsii languages;
   the intended usage works.
@@ -149,9 +152,9 @@ with tokenized key names must now be given an explicit index name.
 ## Create a Glue Job
 
 A Job encapsulates a script that connects to data sources, processes
-them, and then writes output to a data target. There are three types of Glue
-Jobs: Spark jobs (with ETL, Streaming, and Flex execution variants), Python
-Shell jobs, and (deprecated) Ray jobs. Most
+them, and then writes output to a data target. There are two types of Glue
+Jobs: Spark jobs (with ETL, Streaming, and Flex execution variants) and Python
+Shell jobs. Most
 of the required parameters for these jobs are common across all types,
 but there are a few differences depending on the languages supported
 and features provided by each type. For all job types, the L2 defaults
@@ -162,7 +165,7 @@ to AWS best practice recommendations, such as:
 * Default parameter values for Glue job creation
 
 This iteration of the L2 construct introduces breaking changes to
-the existing glue-alpha-module, but these changes streamline the developer
+the former `@aws-cdk/aws-glue-alpha` module, but these changes streamline the developer
 experience, introduce new constants for defaults, and replacing synth-time
 validations with interface contracts for enforcement of the parameter combinations
 that Glue supports. As an opinionated construct, the Glue L2 construct does
