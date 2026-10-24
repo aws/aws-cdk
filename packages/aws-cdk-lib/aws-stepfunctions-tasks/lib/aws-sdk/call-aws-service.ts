@@ -3,6 +3,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import { AWS_SDK_IAM_SERVICE_MAP } from '../private/aws-sdk-iam-service-map';
 import { integrationResourceArn } from '../private/task-utils';
 
 interface CallAwsServiceOptions {
@@ -44,7 +45,11 @@ interface CallAwsServiceOptions {
    * Use in the case where the IAM action name does not match with the
    * API service/action name, e.g. `s3:ListBuckets` requires `s3:ListAllMyBuckets`.
    *
-   * @default - service:action
+   * For known services whose IAM service prefix differs from the SDK service
+   * name, the prefix is converted automatically, e.g. `sesv2` becomes `ses`
+   * and `emrserverless` becomes `emr-serverless`.
+   *
+   * @default - service:action, with the service converted to its IAM service prefix
    */
   readonly iamAction?: string;
 
@@ -122,16 +127,9 @@ export class CallAwsService extends sfn.TaskStateBase {
       }
     }
 
-    const iamServiceMap: Record<string, string> = {
-      bedrockagent: 'bedrock',
-      cloudwatchlogs: 'logs',
-      efs: 'elasticfilesystem',
-      elasticloadbalancingv2: 'elasticloadbalancing',
-      mediapackagevod: 'mediapackage-vod',
-      mwaa: 'airflow',
-      sfn: 'states',
-    };
-    const iamService = iamServiceMap[props.service] ?? props.service;
+    const iamService = Object.prototype.hasOwnProperty.call(AWS_SDK_IAM_SERVICE_MAP, props.service)
+      ? AWS_SDK_IAM_SERVICE_MAP[props.service]
+      : props.service;
 
     this.taskPolicies = [
       new iam.PolicyStatement({
