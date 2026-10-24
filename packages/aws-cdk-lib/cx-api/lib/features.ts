@@ -90,6 +90,7 @@ export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
+export const REDSHIFT_SINGLETON_PROVIDER = '@aws-cdk/aws-redshift:singletonProvider';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
@@ -164,6 +165,22 @@ export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 
 export const FLAGS: Record<string, FlagInfo> = {
+  [REDSHIFT_SINGLETON_PROVIDER]: {
+    type: FlagType.ApiDefault,
+    summary: 'Share one custom resource provider for Redshift database queries in each stack',
+    detailsMd: `
+      When enabled, Redshift database queries share a single custom resource provider
+      in each stack, in addition to the existing shared query handler and invoker role.
+      This reduces the number of Lambda functions created for tables, users and privileges.
+
+      Enable this flag before deploying database query resources for the first time.
+      Enabling it on an existing deployment changes the custom resources' service tokens,
+      which CloudFormation does not support updating in place.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Leave this flag unset or set it to false to preserve existing providers and custom resource service tokens.',
+  },
   //////////////////////////////////////////////////////////////////////
   [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
     type: FlagType.BugFix,
