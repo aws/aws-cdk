@@ -61,6 +61,19 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputFnGetAttServiceWithImportedTaskDefService119AA3ACName0AF99025": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ServiceWithImportedTaskDefService119AA3AC",
+     "Name"
+    ]
+   },
+   "Export": {
+    "Name": "aws-ecs-integ-imported-taskdef-consumer:ExportsOutputFnGetAttServiceWithImportedTaskDefService119AA3ACName0AF99025"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

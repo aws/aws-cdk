@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "55.0.0",
   "testCases": {
     "FargateServiceImportedTaskDefTest/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStackName": "FargateServiceImportedTaskDefTestDefaultTestDeployAssert58BCE3D9"
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
 }

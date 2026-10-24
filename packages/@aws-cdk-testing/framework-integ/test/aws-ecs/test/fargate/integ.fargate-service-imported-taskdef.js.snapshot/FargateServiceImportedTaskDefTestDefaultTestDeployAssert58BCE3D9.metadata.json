@@ -1,0 +1,58 @@
+{
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FargateServiceImportedTaskDefTestDefaultTestDeployAssert58BCE3D9.template.json"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceseb97aeb6b73701efa64a90d0e35d4220/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceseb97aeb6b73701efa64a90d0e35d4220/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServiceseb97aeb6b73701efa64a90d0e35d4220"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/FargateServiceImportedTaskDefTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceseb97aeb6b73701efa64a90d0e35d4220/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServiceseb97aeb6b73701efa64a90d0e35d4220"
+    }
+  ]
+}

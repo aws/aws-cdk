@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "55.0.0",
   "files": {
     "1c506d6e6d5b08c29ecf6fbe376720f6ee47d8b166752a2de9553c584121b2a0": {
       "displayName": "aws-ecs-integ-imported-taskdef-producer Template",

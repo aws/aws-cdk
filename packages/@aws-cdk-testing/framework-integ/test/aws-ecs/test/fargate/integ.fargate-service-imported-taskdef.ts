@@ -47,14 +47,23 @@ const importedTaskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
   taskDefinition.taskDefinitionArn,
 );
 
-new ecs.FargateService(consumerStack, 'ServiceWithImportedTaskDef', {
+const service = new ecs.FargateService(consumerStack, 'ServiceWithImportedTaskDef', {
   cluster: importedCluster,
   taskDefinition: importedTaskDef,
   desiredCount: 1,
 });
 
-new integ.IntegTest(app, 'FargateServiceImportedTaskDefTest', {
+const integTest = new integ.IntegTest(app, 'FargateServiceImportedTaskDefTest', {
   testCases: [producerStack, consumerStack],
 });
+
+// Verify the service uses the imported task definition
+integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: importedCluster.clusterName,
+  services: [service.serviceName],
+}).assertAtPath(
+  'services.0.taskDefinition',
+  integ.ExpectedResult.stringLikeRegexp('task-definition/'),
+);
 
 app.synth();

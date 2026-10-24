@@ -4068,6 +4068,41 @@ describe('fargate service', () => {
         });
       }).toThrow(/This operation requires the networkMode.*to be defined/);
     });
+
+    test('throws error when using imported TaskDefinition with Cloud Map SRV records even if networkMode is specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      // networkMode is specified, so the networkMode getter does not throw
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(
+        stack,
+        'ImportedTaskDef',
+        {
+          taskDefinitionArn: 'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+          networkMode: ecs.NetworkMode.AWS_VPC,
+        },
+      );
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      // WHEN / THEN
+      // The container and port for SRV records are looked up from an owned TaskDefinition
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            name: 'myApp',
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+          },
+        });
+      }).toThrow(/Cloud Map service discovery requires an owned TaskDefinition/);
+    });
   });
 
   test('Metric', () => {
@@ -5446,6 +5481,36 @@ describe('fargate service', () => {
           containerPort: 80,
         });
       }).toThrow(/Cannot create load balancer target from imported TaskDefinition/);
+    });
+
+    test('throws when adding an imported TaskDefinition service as a listener target without a container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      const service = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+
+      // WHEN/THEN
+      // No container is specified, so the default load balancer target is used
+      expect(() => {
+        listener.addTargets('target', {
+          port: 80,
+          targets: [service],
+        });
+      }).toThrow(/TaskDefinition must have a default container/);
     });
 
     test.each([

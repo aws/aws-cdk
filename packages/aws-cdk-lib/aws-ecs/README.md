@@ -1219,8 +1219,9 @@ const externalService = new ecs.ExternalService(this, 'ExternalService', {
 When using an imported task definition, the following features are not available
 because container and IAM information is not accessible at synthesis time.
 Features that cannot work at all fail at synthesis time with an error. Features
-that degrade but still function emit a warning (suppressible with
-`Annotations.of(...).acknowledgeWarning()`) so you can configure them manually:
+that degrade but still function emit an annotation so you can configure them
+manually: a warning (suppressible with `Annotations.of(...).acknowledgeWarning()`)
+for Execute Command, or an informational message for the remaining items:
 
 - **Service Connect** (error): Requires an owned task definition with named port mappings.
 - **Automatic load balancer target configuration** (error): `loadBalancerTarget()` and
