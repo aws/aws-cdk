@@ -127,6 +127,13 @@ export interface SecretProps {
   readonly description?: string;
 
   /**
+   * Specifies whether to block resource-based policies that allow broad access to the secret.
+   *
+   * @default - AWS Secrets Manager default
+   */
+  readonly blockPublicPolicy?: boolean;
+
+  /**
    * The customer-managed encryption key to use for encrypting the secret value.
    *
    * @default - A default KMS key for the account and region is used.
@@ -359,9 +366,11 @@ abstract class SecretBase extends Resource implements ISecret {
 
   private policy?: ResourcePolicy;
   private _arnForPolicies: string;
+  private readonly blockPublicPolicy?: boolean;
 
-  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+  constructor(scope: Construct, id: string, props: ResourceProps = {}, blockPublicPolicy?: boolean) {
     super(scope, id, props);
+    this.blockPublicPolicy = blockPublicPolicy;
     // eslint-disable-next-line no-restricted-syntax
     this._arnForPolicies = Lazy.uncachedString({
       produce: (context: IResolveContext) => {
@@ -484,7 +493,10 @@ abstract class SecretBase extends Resource implements ISecret {
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new ResourcePolicy(this, 'Policy', { secret: this });
+      this.policy = new ResourcePolicy(this, 'Policy', {
+        secret: this,
+        blockPublicPolicy: this.blockPublicPolicy,
+      });
     }
 
     if (this.policy) {
@@ -676,7 +688,7 @@ export class Secret extends SecretBase {
   constructor(scope: Construct, id: string, props: SecretProps = {}) {
     super(scope, id, {
       physicalName: props.secretName,
-    });
+    }, props.blockPublicPolicy);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
