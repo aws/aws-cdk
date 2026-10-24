@@ -348,6 +348,122 @@ export interface SecondaryIndexProps {
 }
 
 /**
+ * The distance function used to perform vector similarity search on a vector index.
+ */
+export enum VectorDistanceFunction {
+  /**
+   * Cosine similarity.
+   */
+  COSINE = 'COSINE',
+
+  /**
+   * Dot product.
+   */
+  DOT_PRODUCT = 'DOT_PRODUCT',
+
+  /**
+   * Euclidean distance.
+   */
+  EUCLIDEAN = 'EUCLIDEAN',
+}
+
+/**
+ * The role an attribute plays within a vector index search schema.
+ */
+export enum SearchSchemaElementType {
+  /**
+   * The attribute partitions the vector index. At most one HASH element is allowed.
+   * When a HASH element is declared, queries against the index must provide a
+   * search condition expression targeting it.
+   */
+  HASH = 'HASH',
+
+  /**
+   * The attribute can be used as an inline filter when querying the vector index.
+   */
+  INLINE_FILTER = 'INLINE_FILTER',
+}
+
+/**
+ * An element of a vector index search schema.
+ *
+ * A search schema defines the partitioning (HASH) and any additional inline
+ * filters that are applied when performing a vector similarity search.
+ */
+export interface SearchSchemaElement {
+  /**
+   * The attribute (name and data type) participating in the search schema.
+   *
+   * The attribute type is used to generate the table's attribute definitions.
+   */
+  readonly attribute: Attribute;
+
+  /**
+   * The role this attribute plays in the search schema.
+   */
+  readonly type: SearchSchemaElementType;
+}
+
+/**
+ * Properties for a vector index.
+ *
+ * Vector indexes enable similarity search over embedding attributes and can
+ * only be used with tables in `PAY_PER_REQUEST` (on-demand) billing mode.
+ */
+export interface VectorIndexProps {
+  /**
+   * The name of the vector index.
+   *
+   * Index names must be unique across all global secondary indexes and vector
+   * indexes on the table.
+   */
+  readonly indexName: string;
+
+  /**
+   * The name of the attribute that contains the vector embedding.
+   *
+   * This attribute has an implicit type of List (`L`) and does not need to be
+   * declared in the table's attribute definitions.
+   */
+  readonly vectorAttribute: string;
+
+  /**
+   * The number of dimensions of each vector stored in the index.
+   *
+   * Must be between 1 and 4096.
+   */
+  readonly dimensions: number;
+
+  /**
+   * The distance function used to perform vector similarity search.
+   */
+  readonly distanceFunction: VectorDistanceFunction;
+
+  /**
+   * The search schema defining partitioning (HASH) and inline filters.
+   *
+   * @default - no search schema
+   */
+  readonly searchSchema?: SearchSchemaElement[];
+
+  /**
+   * The set of attributes that are projected into the vector index.
+   *
+   * The vector attribute and search schema attributes are always included.
+   *
+   * @default ALL
+   */
+  readonly projectionType?: ProjectionType;
+
+  /**
+   * The non-key attributes that are projected into the vector index.
+   *
+   * @default - no additional attributes
+   */
+  readonly nonKeyAttributes?: string[];
+}
+
+/**
  * Properties for a local secondary index
  */
 export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
