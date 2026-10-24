@@ -263,6 +263,28 @@ export class CidrBlock {
   }
 
   /**
+   * Extracts and validates the mask from a CIDR string
+   *
+   * Parsing stays `parseInt`-based so that any mask which resolves today keeps
+   * resolving to the same number; only masks that cannot yield a usable block
+   * are rejected. Without this check they flow into the address arithmetic and
+   * surface as an error naming an address the caller never wrote (e.g.
+   * `10.0.0.0` reports `NaN.NaN.NaN.NaN is not a valid IP Address`), or produce
+   * a silently nonsensical block (`10.0.0.0/33` yields `9.255.255.255/33`).
+   * @internal
+   */
+  private static parseMask(cidr: string): number {
+    const mask = parseInt(cidr.split('/')[1], 10);
+    if (!Number.isInteger(mask) || mask < 0 || mask > 32) {
+      throw new UnscopedValidationError(
+        lit`InvalidCidrMask`,
+        `invalid CIDR mask in ${JSON.stringify(cidr)}, expected an integer between 0 and 32 after a '/', e.g. '10.0.0.0/16'`,
+      );
+    }
+    return mask;
+  }
+
+  /**
    * The CIDR Block represented as a string e.g. '10.0.0.0/21'
    * @internal
    */
@@ -301,7 +323,7 @@ export class CidrBlock {
   constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
-      this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
+      this.mask = CidrBlock.parseMask(ipAddressOrCidr);
       this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
         CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
