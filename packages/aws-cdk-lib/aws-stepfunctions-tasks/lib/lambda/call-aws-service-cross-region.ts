@@ -93,6 +93,13 @@ interface CallAwsServiceCrossRegionOptions {
    * @default true
    */
   readonly retryOnServiceExceptions?: boolean;
+
+  /**
+   * Credentials for an IAM Role that the Lambda assumes for executing the task.
+   *
+   * @default - None (Task is executed using the Lambda's execution role)
+   */
+  readonly awsSdkCredentials?: sfn.Credentials;
 }
 
 /**
@@ -192,6 +199,13 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
         actions: [props.iamAction ?? `${iamService}:${props.action}`],
       }),
       ...(props.additionalIamStatements ?? []),
+      ...(props.awsSdkCredentials ? [
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: ['sts:AssumeRole'],
+          resources: ['*'],
+        }),
+      ] : []),
     ].forEach((policy) => this.lambdaFunction.addToRolePolicy(policy));
 
     this.taskPolicies = [
@@ -228,6 +242,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
           action: this.props.action,
           service: this.props.service,
           parameters: this.props.parameters,
+          assumeRoleArn: this.props.awsSdkCredentials?.role?.roleArn,
         }, queryLanguage),
       };
     } else {
@@ -241,6 +256,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
             action: this.props.action,
             service: this.props.service,
             parameters: this.props.parameters,
+            assumeRoleArn: this.props.awsSdkCredentials?.role?.roleArn,
           },
         }, queryLanguage),
       };
