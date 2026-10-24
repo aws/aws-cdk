@@ -627,6 +627,157 @@ alarmMuteRule.addAlarm(alarm2);
 
 For more information on alarm mute rules, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html).
 
+## Log Alarms
+
+Log alarms evaluate a scheduled CloudWatch Logs query against one or more log
+groups and alarm on the aggregated results. Instead of a metric, a `LogAlarm`
+runs a query on a schedule and compares an aggregation of the results (for
+example `count(*)`) against a threshold using an M-out-of-N evaluation.
+
+### How Log Alarms Differ from Standard CloudWatch Alarms
+
+The standard `Alarm` construct is built around a metric, a comparison operator,
+a threshold, and evaluation periods. Log alarms have a different model:
+
+- Instead of a metric, a log alarm runs a scheduled query (`scheduledQueryConfiguration`) against log groups.
+- Instead of `evaluationPeriods` and `datapointsToAlarm`, log alarms use `queryResultsToEvaluate` (N) and `queryResultsToAlarm` (M).
+- The alarm can optionally include matching log lines in its notifications via `actionLogLineCount`.
+
+### Creating a Log Alarm
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: logs.LogGroup;
+declare const queryRole: iam.IRole;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  threshold: 5,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 3,
+  queryResultsToAlarm: 2,
+  scheduledQueryConfiguration: {
+    queryString: 'fields @message | filter @message like /ERROR/',
+    aggregationExpression: 'count(*)',
+    logGroups: [logGroup],
+    scheduledQueryRole: queryRole,
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+```
+
+### Querying Encrypted Log Groups
+
+A log group encrypted with a KMS key can only be queried with `kms:Decrypt` on that key.
+The construct does not grant it.
+Grant it to the scheduled query role yourself:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const logGroupKey: kms.IKey;
+declare const logAlarm: cloudwatch.LogAlarm;
+
+logGroupKey.grantDecrypt(logAlarm.scheduledQueryRole);
+```
+
+### Including Log Lines in Notifications
+
+Set `actionLogLineCount` to include matching log lines in alarm notifications.
+When it is greater than 0, a role that lets CloudWatch read the log lines is
+auto-created; pass `actionLogLineRole` to supply your own instead.
+
+The log lines are delivered verbatim to the alarm action targets.
+Those targets may reach a wider audience than the source log group.
+Shape the output with `fields` in the query.
+Mask sensitive data with CloudWatch Logs data protection.
+Restrict and encrypt the targets.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: logs.LogGroup;
+declare const queryRole: iam.IRole;
+declare const logLineRole: iam.IRole;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  threshold: 5,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 3,
+  queryResultsToAlarm: 2,
+  actionLogLineCount: 10,
+  actionLogLineRole: logLineRole,
+  scheduledQueryConfiguration: {
+    queryString: 'fields @message | filter @message like /ERROR/',
+    aggregationExpression: 'count(*)',
+    logGroups: [logGroup],
+    scheduledQueryRole: queryRole,
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+```
+
+### Adding Actions
+
+`LogAlarm` extends `AlarmBase`, so you can add alarm, OK, and insufficient-data
+actions the same way as standard alarms:
+
+```ts
+import * as cw_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
+
+declare const logAlarm: cloudwatch.LogAlarm;
+declare const topic: sns.Topic;
+
+logAlarm.addAlarmAction(new cw_actions.SnsAction(topic));
+```
+
+Log alarms dispatch a narrower set of action types than metric alarms.
+Adding an action of a type log alarms do not dispatch emits a synthesis-time warning.
+The type is only checked when the action ARN is known at synthesis time.
+
+### Delaying Evaluation with a Warm-Up Period
+
+Set `warmUpConfiguration` to hold the alarm in `INSUFFICIENT_DATA` for a period after
+it is created or updated. This reduces alarm noise while a new resource starts
+publishing data. Alarm actions are not performed during the warm-up period.
+
+```ts
+declare const logAlarmProps: cloudwatch.LogAlarmProps;
+
+new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
+  ...logAlarmProps,
+  warmUpConfiguration: {
+    warmUpPeriod: Duration.minutes(30),
+  },
+});
+```
+
+By default the alarm ends the warm-up period early once it has enough data to fill its
+evaluation window. Set `onlyStartEvaluatingAfterWarmUpPeriodEnds` to make it wait for
+the whole period.
+
+### Importing an Existing Log Alarm
+
+```ts
+const importedByArn = cloudwatch.LogAlarm.fromLogAlarmArn(
+  this, 'ImportedAlarm',
+  'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyLogAlarm',
+);
+
+const importedByName = cloudwatch.LogAlarm.fromLogAlarmName(
+  this, 'ImportedByName',
+  'MyLogAlarm',
+);
+```
+
 ## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
