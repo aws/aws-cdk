@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "fe6c6f0c32e1b244e8e1dcb805c2f74c0501fe3d44f41f5821b4e2af18338b3b": {
+      "displayName": "aws-cdk-codepipeline-commands-compute-vpc Template",
+      "source": {
+        "path": "aws-cdk-codepipeline-commands-compute-vpc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-daab988c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fe6c6f0c32e1b244e8e1dcb805c2f74c0501fe3d44f41f5821b4e2af18338b3b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
