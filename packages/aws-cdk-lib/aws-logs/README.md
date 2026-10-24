@@ -571,6 +571,123 @@ For more details on CloudWatch Logs transformation processors, refer to the [AWS
 
 In order to use the transformed logs as search pattern, set the parameter `applyOnTransformedLogs: true` in the MetricFilterProps.
 
+## Account Policies
+
+The policies described above (data protection, subscription filters, field indexes, and
+transformers) can also be applied at the *account* level instead of to a single log group, so
+that they take effect across every log group in the account (or Region) without having to
+configure each log group individually. Account-level policies are created with `AccountPolicy`.
+
+Use one of `AccountPolicyDocument`'s static factory methods to choose which kind of policy to
+create: `AccountPolicyDocument.subscriptionFilter()`, `AccountPolicyDocument.dataProtection()`,
+`AccountPolicyDocument.fieldIndex()`, `AccountPolicyDocument.transformer()`, or
+`AccountPolicyDocument.metricExtraction()`.
+
+CloudWatch Logs allows only one account-level data protection policy and one account-level
+subscription filter policy per account (per Region). Field index and transformer policies can
+have up to 20 account-level policies each, as long as their scopes don't overlap. Metric
+extraction policies allow only one unscoped policy, or up to 5 policies scoped with
+`selectionCriteria`, as long as their scopes don't overlap.
+
+### Account-level subscription filter
+
+Delivers log events from every log group in the account to a single destination. Use
+`excludeLogGroups` to exclude a subset of log groups.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+
+declare const fn: lambda.Function;
+
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideSubscriptionFilter',
+  policy: logs.AccountPolicyDocument.subscriptionFilter({
+    destination: new destinations.LambdaDestination(fn),
+    filterPattern: logs.FilterPattern.allTerms('ERROR'),
+    excludeLogGroups: ['/aws/lambda/excluded-function'],
+  }),
+});
+```
+
+### Account-level data protection policy
+
+Applies a [`DataProtectionPolicy`](#data-protection-policy) to every log group in the account.
+
+```ts
+const dataProtectionPolicy = new logs.DataProtectionPolicy({
+  name: 'account-wide-data-protection',
+  identifiers: [logs.DataIdentifier.EMAILADDRESS],
+});
+
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideDataProtection',
+  policy: logs.AccountPolicyDocument.dataProtection({ policy: dataProtectionPolicy }),
+});
+```
+
+### Account-level field index policy
+
+Scope the policy to log groups by name prefix, or to a specific vended-log data source (for
+example VPC Flow Logs) using `FieldIndexDataSource`.
+
+```ts
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideFieldIndex',
+  policy: logs.AccountPolicyDocument.fieldIndex({
+    policy: new logs.FieldIndexPolicy({ fields: ['RequestId', 'TransactionId'] }),
+    dataSource: logs.FieldIndexDataSource.VPC_FLOW_LOGS,
+  }),
+});
+```
+
+### Account-level transformer policy
+
+```ts
+const jsonParser = new logs.ParserProcessor({
+  type: logs.ParserProcessorType.JSON,
+});
+
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideTransformer',
+  policy: logs.AccountPolicyDocument.transformer({
+    processors: [jsonParser],
+    logGroupNamePrefix: '/aws/lambda/',
+  }),
+});
+```
+
+### Account-level metric extraction policy
+
+Enables or disables metric extraction from embedded metric format (EMF) log events. Several AWS
+features (CloudWatch Container Insights, Application Signals) rely on EMF internally, so
+disabling extraction account-wide also turns those features off — use `selectionCriteria` to
+exclude their log groups if you don't want that side effect.
+
+```ts
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideMetricExtraction',
+  policy: logs.AccountPolicyDocument.metricExtraction({
+    enabled: false,
+    selectionCriteria: 'LogGroupNamePrefix NOT IN ["/aws/containerinsights", "/aws/ecs/containerinsights", "/aws/application-signals/data"]',
+  }),
+});
+```
+
+### Escape hatch
+
+Each policy type accepts a `selectionCriteria` escape hatch for cases not covered by the typed
+options above, for example a `selectionCriteria` operator not yet modeled by CDK:
+
+```ts
+new logs.AccountPolicy(this, 'AccountPolicy', {
+  policyName: 'AccountWideFieldIndex',
+  policy: logs.AccountPolicyDocument.fieldIndex({
+    policy: new logs.FieldIndexPolicy({ fields: ['RequestId'] }),
+    selectionCriteria: 'LogGroupNamePrefix = "/aws/lambda/"',
+  }),
+});
+```
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

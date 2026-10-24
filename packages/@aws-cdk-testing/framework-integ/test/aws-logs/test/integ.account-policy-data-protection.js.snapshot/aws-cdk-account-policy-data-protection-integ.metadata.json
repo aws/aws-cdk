@@ -1,0 +1,26 @@
+{
+  "/aws-cdk-account-policy-data-protection-integ/AccountPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-account-policy-data-protection-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-data-protection-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-account-policy-data-protection-integ/AccountPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AccountPolicy1D7BC599"
+    }
+  ]
+}
