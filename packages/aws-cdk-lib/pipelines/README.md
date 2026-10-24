@@ -549,6 +549,32 @@ class PipelineStack extends Stack {
 }
 ```
 
+#### Deploying large cloud assemblies
+
+CodePipeline limits the input artifact of a CloudFormation action to 256 MB. By
+default the deployment actions read the full cloud assembly, which includes every
+asset staged during synthesis (Lambda code, Docker build contexts, ...). Apps with
+many or large assets can exceed the limit and fail with an "exceeds max artifact size"
+error, even though the assets have already been published by the time the stacks deploy.
+
+Set `templateOnlyDeployArtifact: true` to deploy the stacks from a copy of the cloud
+assembly without its assets. A `StripAssets` CodeBuild action in the Assets stage
+creates the copy, in parallel with asset publishing:
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
+
+  // Deploy the stacks from a copy of the cloud assembly without assets
+  templateOnlyDeployArtifact: true,
+});
+```
+
+Asset publishing, self-mutation and steps that use `pipeline.cloudAssemblyFileSet` keep
+using the full cloud assembly. The `StripAssets` action uses the pipeline's `codeBuildDefaults`.
+
 ### Execution mode
 
 To control how CodePipeline handles multiple executions of the pipeline, use the `executionMode` property.
