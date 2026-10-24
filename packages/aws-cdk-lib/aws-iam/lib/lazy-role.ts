@@ -36,7 +36,7 @@ export class LazyRole extends cdk.Resource implements IRole {
   public readonly grantPrincipal: IPrincipal = this;
   public readonly principalAccount: string | undefined = this.env.account;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
-
+  public readonly mutable: boolean = true;
   private role?: Role;
   private readonly statements = new Array<PolicyStatement>();
   private readonly policies = new Array<Policy>();
