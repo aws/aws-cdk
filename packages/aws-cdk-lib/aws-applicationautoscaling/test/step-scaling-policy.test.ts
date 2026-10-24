@@ -266,6 +266,33 @@ describe('step scaling policy', () => {
     });
   });
 
+  test('step scaling with treatMissingData configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      treatMissingData: cloudwatch.TreatMissingData.BREACHING,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      TreatMissingData: 'breaching',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'LessThanOrEqualToThreshold',
+      TreatMissingData: 'breaching',
+    });
+  });
+
   test('step scaling with invalid datapointsToAlarm throws error', () => {
     const stack = new cdk.Stack();
     const target = createScalableTarget(stack);
