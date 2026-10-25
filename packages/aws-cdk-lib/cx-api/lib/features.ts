@@ -93,6 +93,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = '@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
@@ -160,6 +161,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1977,6 +1979,45 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+    type: FlagType.BugFix,
+    summary: 'Render the API Gateway access log destination ARN without the trailing `:*`',
+    detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+    introducedIn: { v2: '2.274.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, each EvaluateExpression task gets its own Lambda function',
+    detailsMd: `
+      When this feature flag is enabled, each \`EvaluateExpression\` task creates its own Lambda function.
+      When this feature flag is disabled, all \`EvaluateExpression\` tasks in a stack that use the same runtime and
+      architecture share one Lambda function, even across state machines.
+
+      Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+      running executions finish first.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
   },
 };
 

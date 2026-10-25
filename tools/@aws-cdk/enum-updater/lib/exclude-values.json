@@ -45,6 +45,10 @@
     "glue": {
         "ConnectionType": {
             "comment": "SFTP is not supported in CFN https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype"
+        },
+        "WorkerType": {
+            "values": ["Z.2X"],
+            "comment": "Z.2X is the Ray-only worker type, and Ray (RayJob) was deliberately not graduated to the stable aws-cdk-lib/aws-glue module"
         }
     },
     "elasticloadbalancingv2": {

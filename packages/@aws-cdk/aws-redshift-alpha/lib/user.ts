@@ -14,6 +14,9 @@ import type { UserHandlerProps } from './private/handler-props';
 import { UserTablePrivileges } from './private/privileges';
 import type { ITable, TableAction } from './table';
 
+/** Characters the Redshift documentation excludes from clear-text passwords, except the backslash, which Redshift was observed to accept once `quoteLiteral` escapes it. */
+const DISALLOWED_PASSWORD_CHARACTERS = ["'", '"', '/', '@'];
+
 /**
  * Properties for configuring a Redshift user.
  */
@@ -168,6 +171,16 @@ export class User extends UserBase {
 
   constructor(scope: Construct, id: string, props: UserProps) {
     super(scope, id);
+
+    if (props.excludeCharacters !== undefined && !cdk.Token.isUnresolved(props.excludeCharacters)) {
+      const missing = DISALLOWED_PASSWORD_CHARACTERS.filter(character => !props.excludeCharacters!.includes(character));
+      if (missing.length > 0) {
+        cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-redshift-alpha:excludeCharactersIncomplete',
+          `The Redshift documentation does not allow ${JSON.stringify(DISALLOWED_PASSWORD_CHARACTERS.join(''))} in a clear-text password, and excludeCharacters does not include ${JSON.stringify(missing.join(''))}. ` +
+          'For a new user, add the missing characters to excludeCharacters. On an existing user, changing excludeCharacters gives the secret a new password, ' +
+          'which must then also be set on the database user.');
+      }
+    }
 
     this.databaseProps = props;
     this.cluster = props.cluster;
