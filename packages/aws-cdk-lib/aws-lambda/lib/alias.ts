@@ -121,11 +121,11 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
           return super.metric(metricName, props);
         }
         return super.metric(metricName, {
-          ...props,
-          dimensionsMap: props.dimensionsMap ?? props.dimensions ?? {
+          dimensionsMap: {
             FunctionName: this.lambda.functionName,
             Resource: `${this.lambda.functionName}:${this.aliasName}`,
           },
+          ...props,
         });
       }
 
