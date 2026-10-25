@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App({ context: { '@aws-cdk/aws-lambda:versionMetrics': true } });
 const stack = new Stack(app, 'VersionMetricDimensions');
@@ -15,13 +15,13 @@ const alarm = version.metricErrors().createAlarm(stack, 'Alarm', {
   evaluationPeriods: 1,
 });
 const test = new IntegTest(app, 'VersionMetricDimensionsTest', { testCases: [stack] });
-test.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
-  AlarmNames: [alarm.alarmName],
-}).expect(ExpectedResult.objectLike({
-  MetricAlarms: [{
-    Dimensions: [
-      { Name: 'FunctionName', Value: fn.functionName },
-      { Name: 'Resource', Value: `${fn.functionName}:${version.version}` },
-    ],
-  }],
-}));
+for (const dimension of [
+  { Name: 'FunctionName', Value: fn.functionName },
+  { Name: 'Resource', Value: `${fn.functionName}:${version.version}` },
+]) {
+  test.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
+    AlarmNames: [alarm.alarmName],
+  }).expect(ExpectedResult.objectLike({
+    MetricAlarms: [{ Dimensions: Match.arrayWith([dimension]) }],
+  }));
+}
