@@ -94,7 +94,7 @@ jobs:
 
       - name: Publish Security Test Results
         id: junit_static
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
+        uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d  # v6.6.1
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-static.xml'
@@ -147,7 +147,7 @@ jobs:
 
       - name: Publish Security Test Results for resolved templates
         id: junit_resolved
-        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d  # v6.5.0
+        uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d  # v6.6.1
         if: always()
         with:
           report_paths: 'test-results/**/cfn-guard-resolved.xml'
