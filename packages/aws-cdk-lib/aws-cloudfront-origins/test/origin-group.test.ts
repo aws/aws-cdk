@@ -15,6 +15,18 @@ beforeEach(() => {
 });
 
 describe('Origin Groups', () => {
+  test('fails when a custom group ID collides with an existing ordinary origin ID', () => {
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('ordinary.example.com', { originId: 'shared-id' }) },
+    });
+
+    expect(() => distribution.addBehavior('/group/*', new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com'),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
+      originId: 'shared-id',
+    }))).toThrow('Origin with id shared-id already exists');
+  });
+
   test('ignores a group ID on an ordinary origin and reuses its actual origin ID', () => {
     const httpOrigin = new origins.HttpOrigin('ordinary.example.com', { originId: 'ordinary-origin' });
     const ordinaryOrigin: cloudfront.IOrigin = {
