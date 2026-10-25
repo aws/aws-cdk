@@ -39,6 +39,7 @@ describe('policy validation plugins tolerate symlinks in the cloud assembly (#38
       policyValidationBeta1: [
         { name: 'noop', validate: () => ({ success: true, violations: [] }) },
       ],
+      confirmValidationPluginsDoNotMutate: true,
     });
     const stack = new Stack(app, 'Stack');
     new CfnResource(stack, 'Res', {
@@ -109,6 +110,7 @@ describe('policy validation plugins tolerate readdir/lstat disagreement (#38653)
       policyValidationBeta1: [
         { name: 'noop', validate: () => ({ success: true, violations: [] }) },
       ],
+      confirmValidationPluginsDoNotMutate: true,
     });
     const stack = new Stack(app, 'Stack');
     new CfnResource(stack, 'Res', {
