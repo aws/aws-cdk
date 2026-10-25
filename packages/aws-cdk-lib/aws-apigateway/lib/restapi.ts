@@ -15,7 +15,7 @@ import type { Integration } from './integration';
 import type { Method, MethodOptions } from './method';
 import type { ModelOptions } from './model';
 import { Model } from './model';
-import { isEnhancedSecurityPolicy, validateSecurityPolicyEndpointType } from './private/security-policy';
+import { validateSecurityPolicyEndpointAccessMode, validateSecurityPolicyEndpointType } from './private/security-policy';
 import type { RequestValidatorOptions } from './requestvalidator';
 import { RequestValidator } from './requestvalidator';
 import type { IResource, ResourceOptions } from './resource';
@@ -200,20 +200,20 @@ export interface RestApiBaseProps {
   readonly endpointExportName?: string;
 
   /**
-  * The endpoint access mode for this REST API.
-  *
-  * Required when using enhanced security policies (those starting with `SecurityPolicy_`).
-  * STRICT is recommended for production workloads.
-  *
-  * @default - No endpoint access mode is configured.
+   * The endpoint access mode for this REST API.
+   *
+   * Required when using enhanced security policies (those starting with `SecurityPolicy_`).
+   * STRICT is recommended for production workloads.
+   *
+   * @default - No endpoint access mode is configured.
    */
   readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
-  * The Transport Layer Security (TLS) version + cipher suite for this REST API.
-  *
-  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html#apigateway-security-policies-default
-  * @default - API Gateway uses TLS_1_0 for public APIs and TLS_1_2 for private APIs.
+   * The Transport Layer Security (TLS) version + cipher suite for this REST API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html#apigateway-security-policies-default
+   * @default - API Gateway uses TLS_1_0 for public APIs and TLS_1_2 for private APIs.
    */
   readonly securityPolicy?: SecurityPolicy;
 
@@ -1027,9 +1027,7 @@ export class RestApi extends RestApiBase {
       endpointTypes.some(endpointType => Token.isUnresolved(endpointType));
 
     if (!skipSecurityPolicyValidation) {
-      if (isEnhancedSecurityPolicy(props.securityPolicy) && props.endpointAccessMode === undefined) {
-        throw new ValidationError(lit`SecurityPolicyRequiresEndpointAccessMode`, 'When using a SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified.', this);
-      }
+      validateSecurityPolicyEndpointAccessMode(this, props.securityPolicy, props.endpointAccessMode);
 
       for (const endpointType of endpointTypes) {
         validateSecurityPolicyEndpointType(this, props.securityPolicy, endpointType);

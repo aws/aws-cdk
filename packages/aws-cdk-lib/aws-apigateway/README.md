@@ -1548,6 +1548,19 @@ const api = new apigateway.RestApi(this, 'api', {
 });
 ```
 
+Use `securityPolicy` to configure the REST API's TLS security policy. Enhanced policies
+(those starting with `SecurityPolicy_`) require `endpointAccessMode`; legacy policies
+(`TLS_1_0`, `TLS_1_2`, or the default when `securityPolicy` is omitted) must not specify it.
+The policy must also support the selected endpoint type:
+
+```ts
+const api = new apigateway.RestApi(this, 'api', {
+  endpointConfiguration: { types: [apigateway.EndpointType.REGIONAL] },
+  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09,
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT,
+});
+```
+
 You can also configure [endpoint IP address type](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-ip-address-type.html).
 The default value is `IpAddressType.DUAL_STACK` for private API, and `IpAddressType.IPV4` for regional and edge-optimized API.
 

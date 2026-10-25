@@ -2,11 +2,38 @@ import type { Construct } from 'constructs';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
+import type { EndpointAccessMode } from '../domain-name';
 import { SecurityPolicy } from '../domain-name';
 import { EndpointType } from '../restapi';
 
 export function isEnhancedSecurityPolicy(policy?: SecurityPolicy): boolean {
   return policy !== undefined && !Token.isUnresolved(policy) && policy.startsWith('SecurityPolicy_');
+}
+
+export function validateSecurityPolicyEndpointAccessMode(scope: Construct, policy?: SecurityPolicy, endpointAccessMode?: EndpointAccessMode): void {
+  if (Token.isUnresolved(policy) || Token.isUnresolved(endpointAccessMode)) {
+    return;
+  }
+
+  if (isEnhancedSecurityPolicy(policy) && endpointAccessMode === undefined) {
+    throw new ValidationError(
+      lit`EndpointAccessModeRequiredForEnhancedSecurityPolicy`,
+      'Enhanced security policies require endpointAccessMode to be specified (BASIC or STRICT). ' +
+      'STRICT is recommended for production workloads. ' +
+      'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
+      scope,
+    );
+  }
+
+  if (!isEnhancedSecurityPolicy(policy) && endpointAccessMode !== undefined) {
+    throw new ValidationError(
+      lit`EndpointAccessModeNotSupportedForLegacySecurityPolicy`,
+      'endpointAccessMode is not supported for legacy security policies (TLS_1_0, TLS_1_2). ' +
+      'It can only be specified when using enhanced security policies (those starting with SecurityPolicy_). ' +
+      'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
+      scope,
+    );
+  }
 }
 
 export function validateSecurityPolicyEndpointType(scope: Construct, policy?: SecurityPolicy, endpointType?: EndpointType): void {

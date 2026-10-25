@@ -170,7 +170,7 @@ describe('restapi', () => {
     expect(() => new apigw.RestApi(stack, 'api', {
       endpointTypes: [apigw.EndpointType.EDGE],
       securityPolicy: apigw.SecurityPolicy.TLS12_PFS_2025_EDGE,
-    })).toThrow(/SecurityPolicy starting with "SecurityPolicy_", endpointAccessMode must be specified/);
+    })).toThrow(/Enhanced security policies require endpointAccessMode to be specified/);
   });
 
   test('fails if EDGE endpoint is used with a non-edge security policy', () => {
@@ -234,6 +234,15 @@ describe('restapi', () => {
       }
     });
 
+    test.each([apigw.SecurityPolicy.TLS_1_0, apigw.SecurityPolicy.TLS_1_2, undefined])('fails for legacy or omitted security policy %s with endpointAccessMode', securityPolicy => {
+      for (const endpointAccessMode of [apigw.EndpointAccessMode.BASIC, apigw.EndpointAccessMode.STRICT]) {
+        expect(() => new apigw.RestApi(new Stack(), 'api', {
+          securityPolicy,
+          endpointAccessMode,
+        })).toThrow(/endpointAccessMode is not supported for legacy security policies/);
+      }
+    });
+
     test('accepts enhanced security policies with compatible endpoint types', () => {
       for (const endpointType of [apigw.EndpointType.EDGE, apigw.EndpointType.REGIONAL, apigw.EndpointType.PRIVATE]) {
         const api = new apigw.RestApi(new Stack(), 'api', {
@@ -242,6 +251,9 @@ describe('restapi', () => {
           endpointAccessMode: apigw.EndpointAccessMode.STRICT,
         });
         expect((api.node.defaultChild as apigw.CfnRestApi).endpointAccessMode).toBe('STRICT');
+        expect((api.node.defaultChild as apigw.CfnRestApi).securityPolicy).toBe(
+          endpointType === apigw.EndpointType.EDGE ? apigw.SecurityPolicy.TLS13_2025_EDGE : apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        );
       }
     });
 
@@ -249,6 +261,9 @@ describe('restapi', () => {
       const value = new CfnParameter(stack, 'Value').valueAsString;
       const policies: apigw.RestApiProps[] = [
         { securityPolicy: value as apigw.SecurityPolicy },
+        { securityPolicy: value as apigw.SecurityPolicy, endpointAccessMode: apigw.EndpointAccessMode.STRICT },
+        { securityPolicy: apigw.SecurityPolicy.TLS_1_2, endpointAccessMode: value as apigw.EndpointAccessMode },
+        { endpointAccessMode: value as apigw.EndpointAccessMode },
         { securityPolicy: value as apigw.SecurityPolicy, endpointTypes: [apigw.EndpointType.EDGE] },
         { securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09, endpointAccessMode: value as apigw.EndpointAccessMode },
         { securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE, endpointTypes: [value as apigw.EndpointType] },

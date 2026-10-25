@@ -3,7 +3,7 @@ import type { DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from
 import { CfnDomainName } from './apigateway.generated';
 import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
-import { isEnhancedSecurityPolicy, validateSecurityPolicyEndpointType } from './private/security-policy';
+import { isEnhancedSecurityPolicy, validateSecurityPolicyEndpointAccessMode, validateSecurityPolicyEndpointType } from './private/security-policy';
 import type { IRestApi } from './restapi';
 import { EndpointType } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
@@ -271,32 +271,7 @@ export class DomainName extends Resource implements IDomainName {
         );
       }
 
-      // Validate endpointAccessMode is specified for enhanced security policies
-      // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-      if (isEnhancedSecurityPolicy(this.securityPolicy) &&
-          props.endpointAccessMode === undefined) {
-        throw new ValidationError(
-          lit`EndpointAccessModeRequiredForEnhancedSecurityPolicy`,
-          'Enhanced security policies require endpointAccessMode to be specified (BASIC or STRICT). ' +
-          'STRICT is recommended for production workloads. ' +
-          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
-          this,
-        );
-      }
-
-      // Validate endpointAccessMode is not set for legacy security policies
-      // CloudFormation rejects this combination: "Endpoint access mode is not supported for this security policy"
-      // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-      if (!isEnhancedSecurityPolicy(this.securityPolicy) &&
-          props.endpointAccessMode !== undefined) {
-        throw new ValidationError(
-          lit`EndpointAccessModeNotSupportedForLegacySecurityPolicy`,
-          'endpointAccessMode is not supported for legacy security policies (TLS_1_0, TLS_1_2). ' +
-          'It can only be specified when using enhanced security policies (those starting with SecurityPolicy_). ' +
-          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
-          this,
-        );
-      }
+      validateSecurityPolicyEndpointAccessMode(this, this.securityPolicy, props.endpointAccessMode);
 
       // Validate security policy matches endpoint type
       // Regional-only policies cannot be used with EDGE endpoints and vice versa
