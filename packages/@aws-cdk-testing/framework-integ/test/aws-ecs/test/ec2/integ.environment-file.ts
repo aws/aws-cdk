@@ -57,10 +57,11 @@ const envFileDeployment = new s3deployment.BucketDeployment(stack, 'EnvFileDeplo
   sources: [s3deployment.Source.asset(path.join(__dirname, '..', 'demo-envfiles'))],
 });
 
-// define container with envfiles - one from local disk and another from S3
+// define container with envfiles - two from local disk and another from S3
 const containerDefinition = new ecs.ContainerDefinition(stack, 'Container', {
   environmentFiles: [
     ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env')),
+    ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'other-envfile.env')),
     ecs.EnvironmentFile.fromBucket(bucket, 'test-envfile.env'),
   ],
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
