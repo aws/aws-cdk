@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "title": "Validation Report",
   "pluginReports": [
     {
@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         },
@@ -31,24 +31,24 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/Eval105f0693c0824e9b83f39007507676f0/Resource",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0",
+              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/EvalExpressionArm/EvalFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
-                "logicalId": "Eval105f0693c0824e9b83f39007507676f0117865DA",
+                "logicalId": "EvalExpressionArmEvalFunction6D9BC052",
                 "propertyPaths": [
                   "Properties.Runtime"
                 ]
               }
             },
             {
-              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/Eval9757c2676d7c45c2af7737a30d93d2c6/Resource",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0",
+              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/EvalExpressionX86/EvalFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
-                "logicalId": "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+                "logicalId": "EvalExpressionX86EvalFunction163BF1F5",
                 "propertyPaths": [
                   "Properties.Runtime"
                 ]

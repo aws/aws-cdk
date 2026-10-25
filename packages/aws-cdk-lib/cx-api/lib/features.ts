@@ -162,6 +162,7 @@ export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackRe
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2017,10 +2018,27 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.274.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, each EvaluateExpression task gets its own Lambda function',
+    detailsMd: `
+      When this feature flag is enabled, each \`EvaluateExpression\` task creates its own Lambda function.
+      When this feature flag is disabled, all \`EvaluateExpression\` tasks in a stack that use the same runtime and
+      architecture share one Lambda function, even across state machines.
+
+      Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+      running executions finish first.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
   },
 };
 
