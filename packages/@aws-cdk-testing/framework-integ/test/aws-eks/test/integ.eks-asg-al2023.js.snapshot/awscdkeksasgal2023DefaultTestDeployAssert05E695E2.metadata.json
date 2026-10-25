@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-eks-asg-al2023/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksasgal2023DefaultTestDeployAssert05E695E2.template.json"
+    }
+  ],
+  "/aws-cdk-eks-asg-al2023/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-asg-al2023/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

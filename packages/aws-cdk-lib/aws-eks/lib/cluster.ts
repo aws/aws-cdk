@@ -29,7 +29,7 @@ import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
 import type { ServiceAccountOptions } from './service-account';
 import { ServiceAccount } from './service-account';
-import { LifecycleLabel, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
+import { LifecycleLabel, renderAmazonLinux2023UserData, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -1315,6 +1315,29 @@ abstract class ClusterBase extends Resource implements ICluster {
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
    * already added.
    */
+  /**
+   * Adds a nodeadm `NodeConfig` part to the user data of an Amazon Linux 2023 auto scaling group.
+   */
+  private addAmazonLinux2023UserData(autoScalingGroup: autoscaling.AutoScalingGroup, bootstrapOptions: BootstrapOptions = {}) {
+    const userData = autoScalingGroup.userData;
+    if (!(userData instanceof ec2.MultipartUserData)) {
+      throw new ValidationError(lit`Al2023RequiresMultipartUserData`,
+        'Amazon Linux 2023 nodes are bootstrapped by nodeadm, which reads its configuration from MIME multipart user data. ' +
+        'Create the auto scaling group with an ec2.MultipartUserData, or use addAutoScalingGroupCapacity with MachineImageType.AMAZON_LINUX_2023.', autoScalingGroup);
+    }
+    const serviceCidr = bootstrapOptions.serviceCidr ?? (this instanceof Cluster ? this._serviceIpv4Cidr : undefined);
+    if (!serviceCidr) {
+      throw new ValidationError(lit`Al2023RequiresServiceCidr`,
+        'Amazon Linux 2023 nodes need the cluster\'s service CIDR for nodeadm. Set bootstrapOptions.serviceCidr ' +
+        '(for an existing cluster, read it with `aws eks describe-cluster --query cluster.kubernetesNetworkConfig.serviceIpv4Cidr`), ' +
+        'or set serviceIpv4Cidr when creating a new cluster. Do not add serviceIpv4Cidr to an existing cluster: changing it replaces the cluster.', autoScalingGroup);
+    }
+    userData.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'application/node.eks.aws',
+      body: renderAmazonLinux2023UserData(this, autoScalingGroup, serviceCidr, bootstrapOptions),
+    }));
+  }
+
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
@@ -1378,10 +1401,14 @@ abstract class ClusterBase extends Resource implements ICluster {
     }
 
     if (bootstrapEnabled) {
-      const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
-      autoScalingGroup.addUserData(...userData);
+      if (options.machineImageType === MachineImageType.AMAZON_LINUX_2023) {
+        this.addAmazonLinux2023UserData(autoScalingGroup, options.bootstrapOptions);
+      } else {
+        const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
+          renderBottlerocketUserData(this) :
+          renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
+        autoScalingGroup.addUserData(...userData);
+      }
     }
 
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
@@ -1757,6 +1784,13 @@ export class Cluster extends ClusterBase {
   private readonly _removalPolicy?: RemovalPolicy;
 
   /**
+   * The service IPv4 CIDR set on this cluster, used to bootstrap Amazon Linux 2023 nodes.
+   *
+   * @internal
+   */
+  public readonly _serviceIpv4Cidr?: string;
+
+  /**
    * Initiates an EKS Cluster with the supplied arguments
    *
    * @param scope a Construct, most likely a cdk.Stack created
@@ -1864,6 +1898,8 @@ export class Cluster extends ClusterBase {
     if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
       throw new ValidationError(lit`CannotSpecifyClusterHandlerSecurity`, 'Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true', this);
     }
+
+    this._serviceIpv4Cidr = props.serviceIpv4Cidr;
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
       throw new ValidationError(lit`CannotSpecifyServiceIpvCidr`, 'Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6', this);
@@ -2170,6 +2206,7 @@ export class Cluster extends ClusterBase {
           nodeType: nodeTypeForInstanceType(options.instanceType),
           cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
+          machineImageType: options.machineImageType,
         }),
     });
 
@@ -2630,6 +2667,17 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
  */
 export interface BootstrapOptions {
   /**
+   * The cluster's service CIDR block, written to the nodeadm `NodeConfig` of
+   * Amazon Linux 2023 nodes. nodeadm uses it to derive the cluster DNS address.
+   *
+   * Only used with `MachineImageType.AMAZON_LINUX_2023`. For an IPv6 cluster, set this
+   * to the cluster's service IPv6 CIDR.
+   *
+   * @default - the `serviceIpv4Cidr` of the cluster, if it was set when the cluster was defined in this app
+   */
+  readonly serviceCidr?: string;
+
+  /**
    * Sets `--max-pods` for the kubelet based on the capacity of the EC2 instance.
    *
    * @default true
@@ -2897,15 +2945,25 @@ export interface EksOptimizedImageProps {
    * @default - The latest version
    */
   readonly kubernetesVersion?: string;
+
+  /**
+   * The Amazon Linux generation to retrieve the image for.
+   *
+   * `MachineImageType.BOTTLEROCKET` is not supported here.
+   *
+   * @default MachineImageType.AMAZON_LINUX_2
+   */
+  readonly machineImageType?: MachineImageType;
 }
 
 /**
- * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
+ * Construct an Amazon Linux 2 or Amazon Linux 2023 image from the latest EKS Optimized AMI published in SSM
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
   private readonly nodeType?: NodeType;
   private readonly cpuArch?: CpuArch;
   private readonly kubernetesVersion?: string;
+  private readonly machineImageType: MachineImageType;
   private readonly amiParameterName: string;
 
   /**
@@ -2915,6 +2973,16 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     this.nodeType = props.nodeType ?? NodeType.STANDARD;
     this.cpuArch = props.cpuArch ?? CpuArch.X86_64;
     this.kubernetesVersion = props.kubernetesVersion ?? LATEST_KUBERNETES_VERSION;
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
+    if (this.machineImageType === MachineImageType.BOTTLEROCKET) {
+      throw new UnscopedValidationError(lit`EksOptimizedImageBottlerocket`, 'EksOptimizedImage does not support MachineImageType.BOTTLEROCKET');
+    }
+
+    if (this.machineImageType === MachineImageType.AMAZON_LINUX_2023) {
+      this.amiParameterName = amazonLinux2023AmiParameterName(this.kubernetesVersion, this.nodeType, this.cpuArch);
+      return;
+    }
 
     // set the SSM parameter name
     this.amiParameterName = `/aws/service/eks/optimized-ami/${this.kubernetesVersion}/`
@@ -2939,9 +3007,46 @@ export class EksOptimizedImage implements ec2.IMachineImage {
     return {
       imageId: ami,
       osType: ec2.OperatingSystemType.LINUX,
-      userData: ec2.UserData.forLinux(),
+      userData: this.machineImageType === MachineImageType.AMAZON_LINUX_2023 ?
+        amazonLinux2023UserData() :
+        ec2.UserData.forLinux(),
     };
   }
+}
+
+/**
+ * The SSM parameter that holds the recommended EKS optimized Amazon Linux 2023 AMI.
+ *
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/retrieve-ami-id.html
+ */
+function amazonLinux2023AmiParameterName(kubernetesVersion: string, nodeType: NodeType, cpuArch: CpuArch): string {
+  const arch = cpuArch === CpuArch.ARM_64 ? 'arm64' : 'x86_64';
+  let variant: string;
+  switch (nodeType) {
+    case NodeType.GPU:
+      variant = 'nvidia';
+      break;
+    case NodeType.INFERENTIA:
+    case NodeType.TRAINIUM:
+      if (cpuArch === CpuArch.ARM_64) {
+        throw new UnscopedValidationError(lit`Al2023NeuronArm64Unsupported`, 'Amazon Linux 2023 Neuron AMIs are only published for x86_64');
+      }
+      variant = 'neuron';
+      break;
+    default:
+      variant = 'standard';
+  }
+  return `/aws/service/eks/optimized-ami/${kubernetesVersion}/amazon-linux-2023/${arch}/${variant}/recommended/image_id`;
+}
+
+/**
+ * Multipart user data for Amazon Linux 2023 nodes. A default shell script part keeps
+ * `addUserData()` working; the nodeadm `NodeConfig` part is added when the group joins a cluster.
+ */
+function amazonLinux2023UserData(): ec2.UserData {
+  const userData = new ec2.MultipartUserData();
+  userData.addUserDataPart(ec2.UserData.forLinux(), ec2.MultipartBody.SHELL_SCRIPT, true);
+  return userData;
 }
 
 // MAINTAINERS: use ./scripts/kube_bump.sh to update LATEST_KUBERNETES_VERSION
@@ -3028,6 +3133,16 @@ export enum MachineImageType {
    * Bottlerocket AMI
    */
   BOTTLEROCKET,
+  /**
+   * Amazon EKS-optimized Amazon Linux 2023 AMI, bootstrapped with nodeadm.
+   *
+   * Nodes need the cluster's service CIDR: set `serviceIpv4Cidr` on the cluster or
+   * `bootstrapOptions.serviceCidr`. Of the bootstrap options, only `kubeletExtraArgs`,
+   * `dnsClusterIp` and `serviceCidr` apply to Amazon Linux 2023.
+   *
+   * @see https://awslabs.github.io/amazon-eks-ami/nodeadm/
+   */
+  AMAZON_LINUX_2023,
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
