@@ -19,13 +19,7 @@
        [
         "\"",
         {
-         "Fn::GetStackOutput": {
-          "StackName": "aws-ecs-task-definition-runtime-platform",
-          "Region": {
-           "Ref": "AWS::Region"
-          },
-          "OutputName": "PublishOutputRefTaskDef54694570C12CA1ED"
-         }
+         "Fn::ImportValue": "aws-ecs-task-definition-runtime-platform:ExportsOutputRefTaskDef546945703E5E1544"
         },
         "\""
        ]
@@ -33,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1792733203308"
+    "salt": "1792907326773"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

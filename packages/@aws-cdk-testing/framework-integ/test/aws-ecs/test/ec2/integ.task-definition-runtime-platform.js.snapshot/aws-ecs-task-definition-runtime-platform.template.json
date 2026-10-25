@@ -47,9 +47,12 @@
   }
  },
  "Outputs": {
-  "PublishOutputRefTaskDef54694570C12CA1ED": {
+  "ExportsOutputRefTaskDef546945703E5E1544": {
    "Value": {
     "Ref": "TaskDef54694570"
+   },
+   "Export": {
+    "Name": "aws-ecs-task-definition-runtime-platform:ExportsOutputRefTaskDef546945703E5E1544"
    }
   }
  },

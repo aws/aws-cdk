@@ -1,6 +1,24 @@
 {
   "/TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert": [
     {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/annotations.js:1:3506)",
+        "Annotations.addWarningV2 (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/annotations.js:1:2194)",
+        "resolveValue (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:7177)",
+        "resolveReferencesInElements (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:5045)",
+        "resolveReferences (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/private/refs.js:1:4718)",
+        "prepareApp (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/private/prepare-app.js:1:1240)",
+        "synthesize (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/private/synthesis.js:1:2625)",
+        "App.synth (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/stage.js:1:5061)",
+        "App.synth (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/app.js:1:5126)",
+        "process.<anonymous> (/private/tmp/cdk-integ-39331/node_modules/aws-cdk-lib/core/lib/app.js:1:4036)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:20)"
+      ]
+    },
+    {
       "type": "aws:cdk:templateFile",
       "data": "TaskDefinitionRuntimePlatformDefaultTestDeployAssert4569B69A.template.json"
     }

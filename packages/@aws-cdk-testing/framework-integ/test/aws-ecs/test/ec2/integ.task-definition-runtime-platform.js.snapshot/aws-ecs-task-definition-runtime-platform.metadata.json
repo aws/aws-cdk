@@ -44,10 +44,10 @@
       "data": "TaskDef54694570"
     }
   ],
-  "/aws-ecs-task-definition-runtime-platform/Publish/Output{\"Ref\":\"TaskDef54694570\"}": [
+  "/aws-ecs-task-definition-runtime-platform/Exports/Output{\"Ref\":\"TaskDef54694570\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputRefTaskDef54694570C12CA1ED"
+      "data": "ExportsOutputRefTaskDef546945703E5E1544"
     }
   ],
   "/aws-ecs-task-definition-runtime-platform/TaskDef/TaskRole/Resource": [
