@@ -1324,7 +1324,7 @@ const chart = cluster.addHelmChart('OpenTelemetryCollector', {
 
 // A JSON string keeps `null` values intact in every language.
 const chartResource = chart.node.findChild('Resource').node.defaultChild as CfnResource;
-chartResource.addPropertyOverride('Values', '{"mode":"deployment","config":{"receivers":{"jaeger":null,"zipkin":null}}}');
+chartResource.addPropertyOverride('Values', '{"mode":"deployment","image":{"repository":"otel/opentelemetry-collector-k8s"},"config":{"receivers":{"jaeger":null,"zipkin":null},"service":{"pipelines":{"traces":{"receivers":["otlp"]}}}}}');
 ```
 
 Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
