@@ -14,6 +14,12 @@ describe('Amazon Linux 2023 capacity', () => {
       ['m5.large', 'x86_64/standard'],
       ['m6g.large', 'arm64/standard'],
       ['g4dn.xlarge', 'x86_64/nvidia'],
+      ['g5.xlarge', 'x86_64/nvidia'],
+      ['g6e.xlarge', 'x86_64/nvidia'],
+      ['p5.48xlarge', 'x86_64/nvidia'],
+      ['g5g.xlarge', 'arm64/nvidia'],
+      ['g4ad.xlarge', 'x86_64/standard'],
+      ['trn2.48xlarge', 'x86_64/neuron'],
       ['inf1.xlarge', 'x86_64/neuron'],
       ['trn1.2xlarge', 'x86_64/neuron'],
     ])('%s uses the amazon-linux-2023/%s image', (instanceType, amiPath) => {
@@ -40,6 +46,31 @@ describe('Amazon Linux 2023 capacity', () => {
 
       // THEN
       expect(ssmParameterDefaults(stack)).toContain('/aws/service/eks/optimized-ami/1.30/amazon-linux-2/recommended/image_id');
+    });
+
+    test('Amazon Linux 2 capacity keeps its existing AMI for newer GPU families', () => {
+      // GIVEN
+      const { stack, cluster } = newCluster();
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('Nodes', { instanceType: new ec2.InstanceType('g5.xlarge') });
+
+      // THEN
+      expect(ssmParameterDefaults(stack)).toContain('/aws/service/eks/optimized-ami/1.30/amazon-linux-2/recommended/image_id');
+    });
+
+    test('Amazon Linux 2023 trn2 capacity installs the Neuron device plugin', () => {
+      // GIVEN
+      const { stack, cluster } = newCluster({ serviceIpv4Cidr: SERVICE_CIDR });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('Nodes', {
+        instanceType: new ec2.InstanceType('trn2.48xlarge'),
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      });
+
+      // THEN
+      expect(JSON.stringify(Template.fromStack(stack).toJSON())).toContain('neuron-device-plugin');
     });
 
     test('EksOptimizedImage resolves the arm64 NVIDIA image', () => {

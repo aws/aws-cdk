@@ -27,6 +27,7 @@ import type { NodegroupOptions } from './managed-nodegroup';
 import { Nodegroup } from './managed-nodegroup';
 import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
+import { isGpuInstanceType } from './private/nodegroup';
 import type { ServiceAccountOptions } from './service-account';
 import { ServiceAccount } from './service-account';
 import { LifecycleLabel, renderAmazonLinux2023UserData, renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
@@ -2195,6 +2196,11 @@ export class Cluster extends ClusterBase {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
       throw new ValidationError(lit`BootstrapOptionsSupportedBottlerocket`, 'bootstrapOptions is not supported for Bottlerocket', this);
     }
+    // Amazon Linux 2023 is opt-in, so it can use the maintained GPU instance list without
+    // changing the AMI of existing Amazon Linux 2 capacity.
+    const isAl2023 = options.machineImageType === MachineImageType.AMAZON_LINUX_2023;
+    const nodeType = isAl2023 ? al2023NodeTypeForInstanceType(options.instanceType) : nodeTypeForInstanceType(options.instanceType);
+    const cpuArch = isAl2023 ? al2023CpuArchForInstanceType(options.instanceType) : cpuArchForInstanceType(options.instanceType);
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
       vpc: this.vpc,
@@ -2203,8 +2209,8 @@ export class Cluster extends ClusterBase {
           kubernetesVersion: this.version.version,
         }) :
         new EksOptimizedImage({
-          nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuArch: cpuArchForInstanceType(options.instanceType),
+          nodeType,
+          cpuArch,
           kubernetesVersion: this.version.version,
           machineImageType: options.machineImageType,
         }),
@@ -2218,8 +2224,7 @@ export class Cluster extends ClusterBase {
       spotInterruptHandler: options.spotInterruptHandler,
     });
 
-    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM) {
+    if (nodeType === NodeType.INFERENTIA || nodeType === NodeType.TRAINIUM) {
       this.addNeuronDevicePlugin();
     }
 
@@ -3154,6 +3159,41 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
     return NodeType.TRAINIUM;
   }
   return NodeType.STANDARD;
+}
+
+/**
+ * Node type for an Amazon Linux 2023 instance, using the maintained accelerator list shared with
+ * managed node groups. AL2023 publishes separate NVIDIA and Neuron AMIs; AMD GPU (g4ad) instances
+ * and instance types that cannot be parsed (for example, tokens) use the standard AMI.
+ */
+function al2023NodeTypeForInstanceType(instanceType: ec2.InstanceType): NodeType {
+  const family = instanceType.toString().split('.')[0];
+  if (family.startsWith('inf')) {
+    return NodeType.INFERENTIA;
+  }
+  if (family.startsWith('trn')) {
+    return NodeType.TRAINIUM;
+  }
+  if (family === 'g4ad') {
+    return NodeType.STANDARD;
+  }
+  try {
+    return isGpuInstanceType(instanceType) ? NodeType.GPU : NodeType.STANDARD;
+  } catch {
+    return NodeType.STANDARD;
+  }
+}
+
+/**
+ * CPU architecture for an Amazon Linux 2023 instance, from `ec2.InstanceType.architecture` as used by
+ * managed node groups. Instance types that cannot be parsed (for example, tokens) default to x86_64.
+ */
+function al2023CpuArchForInstanceType(instanceType: ec2.InstanceType): CpuArch {
+  try {
+    return instanceType.architecture === ec2.InstanceArchitecture.ARM_64 ? CpuArch.ARM_64 : CpuArch.X86_64;
+  } catch {
+    return CpuArch.X86_64;
+  }
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
