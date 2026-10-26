@@ -1,0 +1,2714 @@
+{
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:157:52)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "Object.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1830:14)",
+        "Object..js (node:internal/modules/cjs/loader:1961:10)",
+        "Module.load (node:internal/modules/cjs/loader:1553:32)",
+        "Module._load (node:internal/modules/cjs/loader:1355:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "restrictDefaultSecurityGroup": false,
+        "ipAddresses": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/KubectlLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "version": "*",
+        "kubectlLayer": "*",
+        "defaultCapacity": "*",
+        "remoteNodeNetworks": [
+          {
+            "cidrs": "*"
+          }
+        ],
+        "remotePodNetworks": [
+          {
+            "cidrs": "*"
+          }
+        ],
+        "authenticationMode": "API"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308:3)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:348:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "synthesizeTree (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:301:5)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:5)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308:3)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:348:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "synthesizeTree (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:301:5)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:5)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:29)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:29)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:848:29)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/KubectlLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlLayer600207B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:151:30)",
+        "...new KubectlV30Layer in @aws-cdk/lambda-layer-kubectl-v30...",
+        "getClusterVersionConfig (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ-tests-kubernetes-version.js:76:23)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:57:77)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/KubectlHandlerRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/ControlPlaneSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/KubectlReadyBarrier": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterKubectlReadyBarrier200052AF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1024:41)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/HasEcrPublic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterHasEcrPublic8EE1114E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:172:39)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3D74E8C6Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderOnEventHandlerServiceRole3D74E8C6Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:574:22)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:225:29)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole7BDBEC96Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole7BDBEC96Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:574:22)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:225:29)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderframeworkonEvent93C95F3CArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterhybridnodesadjacentcidrsawscdkawseksClusterResourceProviderframeworkonEvent93C95F3CArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:574:22)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:225:29)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:113:25)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:60:9)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "description": "*",
+        "memorySize": "*",
+        "environment": "*",
+        "role": "*",
+        "vpc": "*",
+        "securityGroups": [
+          "*"
+        ],
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterhybridnodesadjacentcidrsKubectlLayer3A85ABFFRef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterhybridnodesadjacentcidrsKubectlLayer3A85ABFFRef"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:553:17)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:210:16)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterhybridnodesadjacentcidrsClusterKubectlHandlerRoleB37CB021Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterhybridnodesadjacentcidrsClusterKubectlHandlerRoleB37CB021Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:553:17)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:210:16)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterhybridnodesadjacentcidrsVpcPrivateSubnet1Subnet90D76891Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterhybridnodesadjacentcidrsVpcPrivateSubnet1Subnet90D76891Ref"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:553:17)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:210:16)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterhybridnodesadjacentcidrsVpcPrivateSubnet2SubnetDCE92F0ARef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterhybridnodesadjacentcidrsVpcPrivateSubnet2SubnetDCE92F0ARef"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:553:17)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:210:16)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterhybridnodesadjacentcidrsClusterB0EB493AClusterSecurityGroupId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterhybridnodesadjacentcidrsClusterB0EB493AClusterSecurityGroupId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:553:17)",
+        "resolveValue (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:210:16)",
+        "resolveReferences (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:34)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:212:92)",
+        "App.synth (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:91:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:113:25)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:118:9)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:50)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1572:25)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:188:33)",
+        "WrappedClass.createNatGateways (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PublicSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1064:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1323:27)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:855:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:852:36)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1283:28)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1303:27)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1308:32)",
+        "new PrivateSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1623:13)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1071:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1035:30)",
+        "WrappedClass.createSubnets (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:994:18)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:840:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1412:27)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:209:16)",
+        "NatGatewayProvider.configureNat (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:194:18)",
+        "WrappedClass.createNatGateways (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:948:22)",
+        "new Vpc (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:865:26)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:49:21)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/KubectlLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/KubectlHandlerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterKubectlHandlerRole94549F93"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:871:90)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/KubectlHandlerRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterRoleFA261979"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:877:39)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/ControlPlaneSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterControlPlaneSecurityGroupD274242C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:440:34)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:883:58)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/CreationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grant": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeProxyAgentLayer924C1971"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:151:30)",
+        "new NodeProxyAgentLayer (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/lambda-layer-node-proxy-agent/lib/node-proxy-agent-layer.js:97:13)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:62:37)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandler42BEBAE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "new ClusterResourceOnEventFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:42:9)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:63:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandler7073F4DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "new ClusterResourceIsCompleteFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:56:9)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:76:28)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "new KubectlFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/kubectl-provider.generated.js:42:9)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:136:25)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCliLayerF44AAF94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:151:30)",
+        "new AwsCliLayer (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:97:13)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:152:56)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "securityGroups": [
+          "*"
+        ],
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:157:26)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/CreationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterCreationRole360249B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "ClusterResource.createAdminRole (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:134:30)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:70:31)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/CreationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster9EE0221C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:128:29)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:71:25)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:79:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerServiceRole15A26729"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "new ClusterResourceOnEventFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:42:9)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:63:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandlerServiceRole5810CC58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "new ClusterResourceIsCompleteFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:56:9)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:76:28)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEvent83C1D0A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:168:42)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisComplete26D7B0CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:170:49)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeout0B47CA38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:171:46)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Providerwaiterstatemachine5D4A9DF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:120:30)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:173:44)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEvent83C1D0A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:711:29)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:168:42)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:179:26)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)",
+        "new EksHybridNodesAdjacentCidrsStack (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:55:9)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/Cluster/Resource/CreationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterCreationRoleDefaultPolicyE8BDFC7B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:556:29)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ClusterResource.createAdminRole (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:141:22)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:70:31)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRole9FF04296"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:168:42)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleB1087139"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:170:49)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRole28643D26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:171:46)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRole0C7159F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new WaiterStateMachine (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:89:26)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:173:44)",
+        "new ClusterResourceProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:89:25)",
+        "ClusterResourceProvider.getOrCreate (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:53:48)",
+        "new ClusterResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:63:78)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:947:54)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRole9FF04296"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:470:34)",
+        "new Function (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:626:39)",
+        "WrappedClass.createFunction (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:213:24)",
+        "new Provider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:168:42)",
+        "new KubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:179:26)",
+        "WrappedClass.defineKubectlProvider (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1435:20)",
+        "new Cluster (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1052:50)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:194:65)",
+        "Grant.addToPrincipalOrResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:79:30)",
+        "ClusterResourceOnEventFunction.grant (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:504:33)",
+        "ClusterResourceOnEventFunction.grantInvoke (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:308:26)",
+        "WrappedClass.addPermissions (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:199:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:194:65)",
+        "Grant.addToPrincipalOrResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:79:30)",
+        "ClusterResourceOnEventFunction.grant (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:504:33)",
+        "ClusterResourceOnEventFunction.grantInvoke (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:308:26)",
+        "WrappedClass.addPermissions (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:199:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:194:65)",
+        "Grant.addToPrincipalOrResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:79:30)",
+        "ClusterResourceOnEventFunction.grant (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:504:33)",
+        "ClusterResourceOnEventFunction.grantInvoke (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:308:26)",
+        "WrappedClass.addPermissions (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:199:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:194:65)",
+        "Grant.addToPrincipalOrResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:79:30)",
+        "WrappedClass.grant (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:504:33)",
+        "WrappedClass.grantInvoke (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:308:26)",
+        "new WaiterStateMachine (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:92:37)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:145:30)",
+        "WrappedClass.addToPrincipalPolicy (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:531:42)",
+        "WrappedClass.<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:194:65)",
+        "Grant.addToPrincipalOrResource (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:79:30)",
+        "KubectlFunction.grant (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:504:33)",
+        "KubectlFunction.grantInvoke (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:308:26)",
+        "WrappedClass.addPermissions (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:199:38)"
+      ]
+    }
+  ]
+}
