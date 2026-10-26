@@ -759,12 +759,15 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
 /**
  * Converts esbuild args to an array of CLI arguments for direct spawn (no shell quoting).
  */
-function toCliArgsArray(esbuildArgs: { [key: string]: string | boolean }): string[] {
+function toCliArgsArray(esbuildArgs: { [key: string]: string | boolean | string[] }): string[] {
   const args: string[] = [];
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
-    if (value === true || value === '') {
+    if (Array.isArray(value)) {
+      // esbuild only accumulates repeated flags in its --flag:value form.
+      args.push(...value.map(item => `${key}:${item}`));
+    } else if (value === true || value === '') {
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
       args.push(`${key}:${value}`);
