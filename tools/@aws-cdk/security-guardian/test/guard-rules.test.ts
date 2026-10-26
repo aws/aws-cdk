@@ -1,6 +1,6 @@
 import { preprocessTemplates } from '../src/template-preprocessor';
 import { runCfnGuardValidation } from '../src/cfn-guard-runner';
-import { failedRules } from './junit-report';
+import { failedRules, failures } from './junit-report';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -296,7 +296,8 @@ describe('Guard Rules Validation', () => {
       // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.">');
+      expect(failures(path.join(outputDir, 'xml-failure-test.xml')).map(failure => failure.message))
+        .toContain("[Type: Failure Type] IAM role trust policy must not use broadly scoped principals. Remove '*' from Principal and scope to specific accounts or roles.");
     });
 
     test('should correctly post-process XML with enhanceXml disabled', async () => {
@@ -322,8 +323,10 @@ describe('Guard Rules Validation', () => {
       // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM_ROLE_NO_BROAD_PRINCIPALS">');
-      expect(xmlContent).toContain('##ERROR:IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.##');
+      expect(failures(path.join(outputDir, 'xml-failure-test.xml'))).toContainEqual({
+        message: '[Type: Failure Type] IAM_ROLE_NO_BROAD_PRINCIPALS',
+        text: expect.stringContaining("##ERROR:IAM role trust policy must not use broadly scoped principals. Remove '*' from Principal and scope to specific accounts or roles.##"),
+      });
     });
   });
 });
