@@ -19,6 +19,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.clearAllMocks();
   disposePlugins();
+  cleanUpTmpDirs();
 });
 
 afterAll(() => {
@@ -44,7 +45,7 @@ afterAll(() => {
 describe('CloudFormationValidatePlugin', () => {
   test('_dispose frees the engine exactly once', () => {
     const plugin = newPlugin();
-    const free = jest.spyOn(engineOf(plugin), 'free');
+    const free = jest.spyOn(engineFor(plugin), 'free');
 
     plugin._dispose();
     plugin._dispose();
@@ -52,10 +53,24 @@ describe('CloudFormationValidatePlugin', () => {
     expect(free).toHaveBeenCalledTimes(1);
   });
 
+  test('_dispose is a no-op if no engine was ever created', () => {
+    const plugin = newPlugin();
+
+    expect(() => plugin._dispose()).not.toThrow();
+  });
+
+  test('validating after _dispose fails', () => {
+    const plugin = newPlugin();
+    plugin._dispose();
+
+    expect(() => plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket'))))
+      .toThrow(/already disposed/);
+  });
+
   test('_configureSingleton frees the previous engine', () => {
     core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
     const previous = core.CloudFormationValidatePlugin._singletonInstance();
-    const free = jest.spyOn(engineOf(previous), 'free');
+    const free = jest.spyOn(engineFor(previous), 'free');
 
     try {
       core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
@@ -290,6 +305,15 @@ describe('CloudFormationValidatePlugin', () => {
     expect(plugin.ruleIds).toBeDefined();
   });
 
+  test('ruleIds reports the engine version without initializing the engine', () => {
+    const plugin = newPlugin();
+
+    // The rule IDs are analytics-only, and initializing the engine just to list them is
+    // not worth the ~150ms, so the engine version stands in for the rule set it implies.
+    expect(plugin.ruleIds).toEqual([plugin.version]);
+    expect(engineOf(plugin)).toBeUndefined();
+  });
+
   test('plugin evaluates custom Guard rules', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-guard-'));
     const templatePath = path.join(tmpDir, 'template.json');
@@ -413,7 +437,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     try {
       const plugin = newPlugin();
-      const validateTemplate = jest.spyOn(engineOf(plugin), 'validateTemplate')
+      const validateTemplate = jest.spyOn(engineFor(plugin), 'validateTemplate')
         .mockReturnValueOnce({
           diagnostics: [
             { ruleId: 'F0001', severity: 'FATAL', message: 'fatal diagnostic' },
@@ -476,7 +500,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     function validateWithDiagnostics(diagnostics: any[]) {
       const plugin = newPlugin();
-      jest.spyOn(engineOf(plugin), 'validateTemplate').mockReturnValueOnce({ diagnostics });
+      jest.spyOn(engineFor(plugin), 'validateTemplate').mockReturnValueOnce({ diagnostics });
       return plugin.validate({
         templatePaths: [templatePath],
         stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
@@ -644,6 +668,7 @@ describe('CloudFormationValidatePlugin', () => {
 
       expect(plugin.name).toBe('CloudFormation Validate');
       expect(plugin.version).toBeDefined();
+      expect(() => engineFor(plugin)).not.toThrow();
     });
 
     test('schemas in nested subdirectories are discovered', () => {
@@ -697,25 +722,25 @@ describe('CloudFormationValidatePlugin', () => {
       }
 
       // Should throw — symlinks are not allowed in schema directories
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/Symbolic link found in schema directory/);
+      }))).toThrow(/Symbolic link found in schema directory/);
     });
 
     test('malformed JSON files cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'bad.json'), 'not valid json {{{');
 
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/Invalid JSON in schema file.*bad\.json/);
+      }))).toThrow(/Invalid JSON in schema file.*bad\.json/);
     });
 
     test('schema files missing typeName cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'no-typename.json'), JSON.stringify({ properties: {} }));
 
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/missing required "typeName" field.*no-typename\.json/);
+      }))).toThrow(/missing required "typeName" field.*no-typename\.json/);
     });
 
     test('non-JSON files are safely ignored', () => {
@@ -747,52 +772,47 @@ describe('CloudFormationValidatePlugin', () => {
     });
   });
 
-  describe('default rule selection', () => {
-    let tmpDir: string;
-
-    beforeEach(() => {
-      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-selection-'));
-    });
-
-    afterEach(() => {
-      fs.rmSync(tmpDir, { recursive: true });
-    });
-
-    function templateWithResourceType(type: string): string {
-      const templatePath = path.join(tmpDir, `${type.replace(/::/g, '-')}.json`);
-      fs.writeFileSync(templatePath, JSON.stringify({ Resources: { TheResource: { Type: type } } }));
-      return templatePath;
-    }
-
-    test('loads no default rules for a template without covered resource types', () => {
+  describe('engine initialization', () => {
+    test('no engine is created until the first validation', () => {
       const plugin = newPlugin();
-      const templatePath = templateWithResourceType('AWS::S3::Bucket');
 
-      expect(engineForTemplates(plugin, [templatePath])).toBe(engineOf(plugin));
+      expect(engineOf(plugin)).toBeUndefined();
+
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+
+      expect(engineOf(plugin)).toBeDefined();
     });
 
-    test('loads default rules for a template with a covered resource type', () => {
+    test('the engine is reused if a later template adds no resource types', () => {
       const plugin = newPlugin();
-      const templatePath = templateWithResourceType('AWS::GameLift::Fleet');
+      plugin.validate(validationContext(writeTemplate('AWS::GameLift::Fleet', 'AWS::S3::Bucket')));
+      const engine = engineOf(plugin);
 
-      expect(engineForTemplates(plugin, [templatePath])).not.toBe(engineOf(plugin));
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+
+      expect(engineOf(plugin)).toBe(engine);
     });
 
-    test('loads default rules if any template in the app has a covered resource type', () => {
+    test('the engine is replaced and freed if a later template adds a resource type', () => {
       const plugin = newPlugin();
-      const templatePaths = [
-        templateWithResourceType('AWS::S3::Bucket'),
-        templateWithResourceType('AWS::GameLift::Fleet'),
-      ];
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+      const engine = engineOf(plugin);
+      const free = jest.spyOn(engine, 'free');
 
-      expect(engineForTemplates(plugin, templatePaths)).not.toBe(engineOf(plugin));
+      // A default rule applies to GameLift fleets, so the rule set is no longer the right one
+      plugin.validate(validationContext(writeTemplate('AWS::GameLift::Fleet')));
+
+      expect(engineOf(plugin)).not.toBe(engine);
+      expect(free).toHaveBeenCalledTimes(1);
     });
 
-    test('loads no default rules when they are turned off', () => {
-      const plugin = newPlugin({ includeDefaultRules: false });
-      const templatePath = templateWithResourceType('AWS::GameLift::Fleet');
+    test('templates that cannot be parsed do not fail engine initialization', () => {
+      const plugin = newPlugin();
+      const templatePath = writeTemplate();
+      fs.writeFileSync(templatePath, 'this is not json');
 
-      expect(engineForTemplates(plugin, [templatePath])).toBe(engineOf(plugin));
+      // The validation run itself reports on the broken template; reading resource types must not throw
+      expect(() => plugin.validate(validationContext(templatePath))).not.toThrow();
     });
 
     test('every default rule file is covered by the generated index', () => {
@@ -918,17 +938,44 @@ function loadValidationReport(asm: cxapi.CloudAssembly) {
 let constructedPlugins: core.CloudFormationValidatePlugin[] = [];
 
 /**
- * The engine a plugin uses for templates that match none of the default rules.
- *
- * Engines are created on demand, so this also materializes it; the templates in
- * these tests contain no resources covered by a default rule.
+ * The engine the plugin is currently holding on to, if any.
  */
 function engineOf(plugin: core.CloudFormationValidatePlugin) {
-  return (plugin as any).engineWithRules([]);
+  return (plugin as any).engine;
 }
 
-function engineForTemplates(plugin: core.CloudFormationValidatePlugin, templatePaths: string[]) {
-  return (plugin as any).engineForTemplates(templatePaths);
+/**
+ * Materialize the plugin's engine.
+ *
+ * Engines are created on first validation, so tests that need to spy on the
+ * engine (or on the side effects of creating one) have to ask for it first.
+ * The templates in these tests contain no resource types covered by a default
+ * rule, so `validate()` reuses the engine created here.
+ */
+function engineFor(plugin: core.CloudFormationValidatePlugin) {
+  return (plugin as any).initializeEngine(new Set<string>());
+}
+
+/**
+ * A template in a temporary directory with one resource per given resource type.
+ */
+function writeTemplate(...resourceTypes: string[]): string {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-template-'));
+  tmpDirs.push(tmpDir);
+  const templatePath = path.join(tmpDir, 'template.json');
+  fs.writeFileSync(templatePath, JSON.stringify({
+    Resources: Object.fromEntries(resourceTypes.map((type, i) => [`Resource${i}`, { Type: type }])),
+  }));
+  return templatePath;
+}
+
+let tmpDirs: string[] = [];
+
+function cleanUpTmpDirs() {
+  for (const tmpDir of tmpDirs) {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+  tmpDirs = [];
 }
 
 function newPlugin(props?: core.CloudFormationValidatePluginProps) {
