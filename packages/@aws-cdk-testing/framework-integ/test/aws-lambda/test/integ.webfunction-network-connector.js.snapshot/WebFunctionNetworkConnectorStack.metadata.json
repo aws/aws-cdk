@@ -76,25 +76,6 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:warning",
-      "data": "WebFunction endpoint uses APPLICATION_MANAGED auth. The Lambda service will not enforce authentication; ensure your handler code validates every request. [ack: @aws-cdk/aws-lambda:webFunctionPublicEndpoint]",
-      "trace": [
-        "Annotations.addMessage (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:651:47)",
-        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:88:21)",
-        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
-        "Object..js (node:internal/modules/cjs/loader:1839:10)",
-        "Module.load (node:internal/modules/cjs/loader:1441:32)",
-        "Function._load (node:internal/modules/cjs/loader:1263:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
-      ]
     }
   ],
   "/WebFunctionNetworkConnectorStack/AWSCDKWebFunctionAssetBucket": [
@@ -353,8 +334,30 @@
   ],
   "/WebFunctionNetworkConnectorStack/Function/Endpoint": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "FunctionEndpoint85BE574A"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "WebFunction endpoint uses APPLICATION_MANAGED auth. The Lambda service will not enforce authentication; ensure your handler code validates every request. [ack: @aws-cdk/aws-lambda:webFunctionPublicEndpoint]",
+      "trace": [
+        "Annotations.addMessage (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new WebFunctionEndpoint (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction-endpoint.js:536:47)",
+        "new WebFunctionEndpoint (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "PropertyInjectable.createEndpoint (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:497:30)",
+        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/webfunction.js:460:34)",
+        "new WebFunction (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.webfunction-network-connector.js:88:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Object..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
     }
   ],
   "/WebFunctionNetworkConnectorStack/AWSCDKWebFunctionAssetBucket/Resource": [
@@ -425,14 +428,6 @@
       "data": {
         "attachInlinePolicy": [
           "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
         ]
       }
     },
@@ -555,7 +550,7 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/CustomResourceHandler": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopyd6190910/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -591,7 +586,7 @@
       }
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/Resource": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopyd6190910/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -625,6 +620,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "FunctionLogGroup55B80E27"
+    }
+  ],
+  "/WebFunctionNetworkConnectorStack/Function/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionEndpoint85BE574A"
     }
   ],
   "/WebFunctionNetworkConnectorStack/AWSCDKWebFunctionAssetBucket/Policy/Resource": [
@@ -695,14 +696,6 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
   "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Code/AssetBucket": [
@@ -711,10 +704,10 @@
       "data": "*"
     }
   ],
-  "/WebFunctionNetworkConnectorStack/Function/CodeCopy89659aec/Resource/Default": [
+  "/WebFunctionNetworkConnectorStack/Function/CodeCopyd6190910/Resource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "FunctionCodeCopy89659aecA06E4F6B"
+      "data": "FunctionCodeCopyd61909107AB50639"
     }
   ],
   "/WebFunctionNetworkConnectorStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy/Resource": [

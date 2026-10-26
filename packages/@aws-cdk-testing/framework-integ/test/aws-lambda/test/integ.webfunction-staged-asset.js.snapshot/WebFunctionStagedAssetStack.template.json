@@ -34,7 +34,7 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticCodeCopyaea738b411903B2E": {
+  "AutomaticCodeCopyd6190910DFE30AB1": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -50,7 +50,32 @@
     "DestinationBucketName": {
      "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
     },
-    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
+    "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/",
+    "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
+    "Configuration": {
+     "FunctionName": {
+      "Ref": "AutomaticFunctionB47C23F8"
+     },
+     "RuntimeConfig": {
+      "runtime": "nodejs24.x"
+     },
+     "ServiceConfig": {
+      "executionRoleArn": {
+       "Fn::GetAtt": [
+        "AutomaticServiceRole73715D6D",
+        "Arn"
+       ]
+      },
+      "telemetryConfig": {
+       "loggingConfig": {
+        "logGroup": {
+         "Ref": "AutomaticLogGroupC4AD0641"
+        }
+       }
+      },
+      "timeoutSeconds": 30
+     }
+    }
    },
    "DependsOn": [
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
@@ -86,19 +111,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopyaea738b411903B2E",
+         "AutomaticCodeCopyd6190910DFE30AB1",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopyaea738b411903B2E",
+         "AutomaticCodeCopyd6190910DFE30AB1",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticCodeCopyaea738b411903B2E",
+         "AutomaticCodeCopyd6190910DFE30AB1",
          "VersionId"
         ]
        }
@@ -499,21 +524,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": "s3:ListBucketVersions",
-       "Condition": {
-        "StringLike": {
-         "s3:prefix": "web-function/*"
-        }
-       },
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "AWSCDKWebFunctionAssetBucket5B596593",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -533,7 +543,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
+     "S3Key": "310f8175dd56c9ddef793e0821ae77aa3edd497fdcb26821300b1acb546f5b77.zip"
     },
     "Handler": "index.handler",
     "LoggingConfig": {
@@ -589,7 +599,7 @@
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
    ]
   },
-  "AutomaticSecondCodeCopyaea738b4D7DB0431": {
+  "AutomaticSecondCodeCopyd6190910A8C0FF92": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -605,7 +615,32 @@
     "DestinationBucketName": {
      "Ref": "AWSCDKWebFunctionAssetBucket5B596593"
     },
-    "DestinationObjectKey": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/aea738b4f1c50a6f4c1af05d8aaed5ba.zip"
+    "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/",
+    "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
+    "Configuration": {
+     "FunctionName": {
+      "Ref": "AutomaticSecondFunctionAB53D7F9"
+     },
+     "RuntimeConfig": {
+      "runtime": "nodejs24.x"
+     },
+     "ServiceConfig": {
+      "executionRoleArn": {
+       "Fn::GetAtt": [
+        "AutomaticSecondServiceRoleCA7814FD",
+        "Arn"
+       ]
+      },
+      "telemetryConfig": {
+       "loggingConfig": {
+        "logGroup": {
+         "Ref": "AutomaticSecondLogGroup7FE94734"
+        }
+       }
+      },
+      "timeoutSeconds": 30
+     }
+    }
    },
    "DependsOn": [
     "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
@@ -641,19 +676,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "AutomaticSecondCodeCopyd6190910A8C0FF92",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "AutomaticSecondCodeCopyd6190910A8C0FF92",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "AutomaticSecondCodeCopyaea738b4D7DB0431",
+         "AutomaticSecondCodeCopyd6190910A8C0FF92",
          "VersionId"
         ]
        }
@@ -898,7 +933,7 @@
     "CallerCodeBucketPolicy2C433922"
    ]
   },
-  "SpecificCodeCopy35d4cb7aAB40810E": {
+  "SpecificCodeCopy8a875a7aD278F5D7": {
    "Type": "Custom::S3ObjectCopy",
    "Properties": {
     "ServiceToken": {
@@ -914,7 +949,32 @@
     "DestinationBucketName": {
      "Ref": "CallerCodeBucketFB907A2B"
     },
-    "DestinationObjectKey": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/35d4cb7add5fb1554e6068dd6d1ba03e.zip"
+    "DestinationKeyPrefix": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/",
+    "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
+    "Configuration": {
+     "FunctionName": {
+      "Ref": "SpecificFunction2B9945D8"
+     },
+     "RuntimeConfig": {
+      "runtime": "nodejs24.x"
+     },
+     "ServiceConfig": {
+      "executionRoleArn": {
+       "Fn::GetAtt": [
+        "SpecificServiceRole381077C9",
+        "Arn"
+       ]
+      },
+      "telemetryConfig": {
+       "loggingConfig": {
+        "logGroup": {
+         "Ref": "SpecificLogGroup92FAE761"
+        }
+       }
+      },
+      "timeoutSeconds": 30
+     }
+    }
    },
    "DependsOn": [
     "CallerCodeBucketPolicy2C433922"
@@ -950,19 +1010,19 @@
       "S3Object": {
        "Bucket": {
         "Fn::GetAtt": [
-         "SpecificCodeCopy35d4cb7aAB40810E",
+         "SpecificCodeCopy8a875a7aD278F5D7",
          "Bucket"
         ]
        },
        "Key": {
         "Fn::GetAtt": [
-         "SpecificCodeCopy35d4cb7aAB40810E",
+         "SpecificCodeCopy8a875a7aD278F5D7",
          "Key"
         ]
        },
        "VersionId": {
         "Fn::GetAtt": [
-         "SpecificCodeCopy35d4cb7aAB40810E",
+         "SpecificCodeCopy8a875a7aD278F5D7",
          "VersionId"
         ]
        }
@@ -1116,21 +1176,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": "s3:ListBucketVersions",
-       "Condition": {
-        "StringLike": {
-         "s3:prefix": "webfunctions/web-function/*"
-        }
-       },
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CallerCodeBucketFB907A2B",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -1150,7 +1195,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c39242493b46ab77b3689dde94cca8a951f74ec8a9745c411ac3c87db3ea4b22.zip"
+     "S3Key": "310f8175dd56c9ddef793e0821ae77aa3edd497fdcb26821300b1acb546f5b77.zip"
     },
     "Handler": "index.handler",
     "LoggingConfig": {

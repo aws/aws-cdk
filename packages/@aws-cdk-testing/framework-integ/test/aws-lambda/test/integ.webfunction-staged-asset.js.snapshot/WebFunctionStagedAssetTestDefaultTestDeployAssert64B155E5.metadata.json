@@ -12,8 +12,8 @@
         "prepareApp (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
         "synthesize (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
         "App.synth (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
-        "process.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "App.synth (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
         "Object.onceWrapper (node:events:634:26)",
         "process.emit (node:events:519:28)"
       ]
