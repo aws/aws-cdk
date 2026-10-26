@@ -4182,3 +4182,10 @@ removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2
 removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationOutputV2.obtainResourceDependencies
 removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationReferenceDataSourceV2.obtainResourceDependencies
 removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2.obtainResourceDependencies
+
+# AWS::DMS::MigrationProject: CloudFormation now lists MigrationProjectCreationTime as a
+# read-only property, so it moved from props to attrMigrationProjectCreationTime.
+# It was never a CreateMigrationProject input and was already deprecated.
+removed:aws-cdk-lib.aws_dms.CfnMigrationProject.migrationProjectCreationTime
+removed:aws-cdk-lib.aws_dms.CfnMigrationProjectProps.migrationProjectCreationTime
+removed:@aws-cdk/cfn-property-mixins.aws_dms.CfnMigrationProjectMixinProps.migrationProjectCreationTime
