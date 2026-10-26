@@ -1,0 +1,11 @@
+{
+  "Description": "DOCUMENTDB_ENCRYPTION_ENABLED fires: the cluster disables storage encryption",
+  "Resources": {
+    "UnencryptedCluster": {
+      "Type": "AWS::DocDB::DBCluster",
+      "Properties": {
+        "StorageEncrypted": false
+      }
+    }
+  }
+}
