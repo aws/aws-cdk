@@ -786,7 +786,7 @@ describe('CloudFormationValidatePlugin', () => {
   });
 });
 
-describe('CDK_VALIDATION environment variable', () => {
+describe('tests that might mutate the environment', () => {
   const originalCdkValidation = process.env.CDK_VALIDATION;
 
   afterEach(() => {
@@ -797,12 +797,13 @@ describe('CDK_VALIDATION environment variable', () => {
     }
   });
 
-  function appWithInvalidResource() {
+  function appWithInvalidResource(props?: Partial<core.AppProps>) {
     const app = new core.App({
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
+      ...props,
     });
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
@@ -817,6 +818,16 @@ describe('CDK_VALIDATION environment variable', () => {
   test('CDK_VALIDATION=false disables the auto-registered validation engine', () => {
     process.env.CDK_VALIDATION = 'false';
     const app = appWithInvalidResource();
+
+    // Would throw on BogusProperty if the default engine ran
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test('{ builtinCloudFormationValidation: false } disables the auto-registered validation engine', () => {
+    const app = appWithInvalidResource({
+      builtinCloudFormationValidation: false,
+    });
 
     // Would throw on BogusProperty if the default engine ran
     expect(() => app.synth()).not.toThrow();
