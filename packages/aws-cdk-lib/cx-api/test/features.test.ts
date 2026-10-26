@@ -54,6 +54,9 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
     [feats.DOCKERFILE_SPECIFIC_IGNORE_FILE]: false,
     [feats.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false,
+    [feats.CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: false,
+    [feats.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: false,
+    [feats.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: true,
 
   });
 });
