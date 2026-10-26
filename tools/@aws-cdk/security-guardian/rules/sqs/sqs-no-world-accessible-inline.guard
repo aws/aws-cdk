@@ -26,17 +26,18 @@ rule SQS_NO_WORLD_ACCESSIBLE_INLINE when %sqs_queue_inline_policies !empty {
         Properties.PolicyDocument.Statement[*] {
             when Effect == "Allow" {
                 when Principal exists {
-                    when Principal != "*" {
-                        when Principal.AWS exists {
-                            when Principal.AWS is_string {
-                                Principal.AWS != "*"
-                                    <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                            }
-                            when Principal.AWS is_list {
-                                Principal.AWS[*] != "*"
-                                    <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                            }
-                        }
+                    when Principal is_string {
+                        Principal != "*"
+                            <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                    }
+                    when Principal.AWS is_string {
+                        Principal.AWS != "*"
+                            <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                    }
+                    # Only string elements are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
+                    when Principal.AWS is_list {
+                        Principal.AWS[*][ this is_string ] != "*"
+                            <<##ERROR:SQS queue inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
                     }
                 }
             }
