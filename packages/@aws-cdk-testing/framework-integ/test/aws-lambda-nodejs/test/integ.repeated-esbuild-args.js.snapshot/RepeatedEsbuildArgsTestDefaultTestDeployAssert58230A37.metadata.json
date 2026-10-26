@@ -1,0 +1,82 @@
+{
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/pr-39344/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RepeatedEsbuildArgsTestDefaultTestDeployAssert58230A37.template.json"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/RepeatedEsbuildArgsTest/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
+    }
+  ]
+}

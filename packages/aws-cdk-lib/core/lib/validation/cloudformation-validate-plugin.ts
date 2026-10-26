@@ -374,11 +374,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
-  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
-  // and customers cannot control the generated expression.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
-  'E1018',
+  // WHAT: CloudFormation Metadata Context blocks are missing, lack a rationale, or do not match the schema.
+  // WHY: CDK only adds Metadata Context when users explicitly opt in, so requiring it would warn for existing apps.
+  'I4010',
+  'W4011',
+  'W4012',
 
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)

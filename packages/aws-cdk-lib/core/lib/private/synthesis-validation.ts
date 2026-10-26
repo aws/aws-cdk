@@ -9,13 +9,13 @@ import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
-import { App } from '../app';
+import type { App } from '../app';
 import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
 import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
-import { STAGE_TYPE } from './core-construct-finders';
+import { APP_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
@@ -29,7 +29,7 @@ const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
  * Invoke validation plugins for all stages in an App.
  */
 export function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
-  if (!App.isApp(root)) return;
+  if (!APP_TYPE.isMarked(root)) return;
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
@@ -72,7 +72,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(tree);
   const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
 
   // Always write validation report to disk
@@ -213,7 +213,7 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: App, stage: Stage): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -221,7 +221,7 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
 
   // 2. Default validation engine (runs unless the user registered one explicitly,
   // or disabled validation via the CDK_VALIDATION environment variable)
-  if (defaultValidationEnabled() && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  if (defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
@@ -245,8 +245,8 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
  *
  * Explicitly user-registered validation plugins are not affected by this setting.
  */
-function defaultValidationEnabled(): boolean {
-  return process.env.CDK_VALIDATION !== 'false';
+function defaultValidationEnabled(app: App): boolean {
+  return app._builtinCloudFormationValidation && process.env.CDK_VALIDATION !== 'false';
 }
 
 function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginReport[]) {
@@ -441,7 +441,7 @@ function doInvokeValidationPlugins(
     .map(p => p[0])
     .filter(p => !isTrustedPlugin(p)));
 
-  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+  const preExistingFileHashes = untrustedPlugins.size > 0 && root._confirmValidationPluginsDoNotMutate ? snapshotFileHashes(outdir) : undefined;
 
   const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
 
