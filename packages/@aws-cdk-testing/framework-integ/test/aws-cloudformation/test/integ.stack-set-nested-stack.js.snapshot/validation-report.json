@@ -16,17 +16,12 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-stackset-cross-stack-scope",
+              "constructPath": "integ-stackset-nested-stack-support",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             },
             {
-              "constructPath": "integ-stackset-cross-stack-support",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
-            },
-            {
-              "constructPath": "integ-stackset-cross-stack-consumer",
+              "constructPath": "integ-stackset-nested-stack",
               "constructFqn": "aws-cdk-lib.Stack",
               "libraryVersion": "0.0.0"
             }
@@ -41,11 +36,11 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-stackset-cross-stack-consumer/StackSet/Resource",
+              "constructPath": "integ-stackset-nested-stack/StackSet/Resource",
               "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
-                "templatePath": "integ-stackset-cross-stack-consumer.template.json",
+                "templatePath": "integ-stackset-nested-stack.template.json",
                 "logicalId": "StackSet6E6355CF",
                 "propertyPaths": [
                   "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"

@@ -1,115 +1,6 @@
 {
  "Resources": {
-  "StackSetAdminRoleFDB48078": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:SourceAccount": "12345678"
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudformation:*:12345678:stackset/*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudformation.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "StackSetAdminRoleDefaultPolicy96A312F6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-app-scope"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "StackSetAdminRoleDefaultPolicy96A312F6",
-    "Roles": [
-     {
-      "Ref": "StackSetAdminRoleFDB48078"
-     }
-    ]
-   }
-  },
-  "StackSet6E6355CF": {
-   "Type": "AWS::CloudFormation::StackSet",
-   "Properties": {
-    "AdministrationRoleARN": {
-     "Fn::GetAtt": [
-      "StackSetAdminRoleFDB48078",
-      "Arn"
-     ]
-    },
-    "Capabilities": [
-     "CAPABILITY_IAM"
-    ],
-    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-app-scope",
-    "ManagedExecution": {
-     "Active": true
-    },
-    "PermissionModel": "SELF_MANAGED",
-    "StackInstancesGroup": [
-     {
-      "DeploymentTargets": {
-       "Accounts": [
-        "12345678"
-       ]
-      },
-      "Regions": [
-       "us-east-1"
-      ]
-     }
-    ],
-    "StackSetName": "integ-stackset-app-scope-test",
-    "TemplateURL": {
-     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/2a934c6a210b984a9c6a2ae177258b5f8adf11c74fae4ff2ccc60726ac837b55.json"
-    }
-   },
-   "DependsOn": [
-    "appscopedstacksetAssetBucketDeployment0AwsCliLayer780B8BB4",
-    "appscopedstacksetAssetBucketDeployment0CustomResource9A7B3B46",
-    "StackSetAdminRoleDefaultPolicy96A312F6",
-    "StackSetAdminRoleFDB48078"
-   ]
-  },
-  "appscopedstacksetAssetBucketDeployment0AwsCliLayer780B8BB4": {
+  "integstacksetnestedstackTemplatesstackset1B6B86AEAssetBucketDeployment0AwsCliLayerB34A821E": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -119,7 +10,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "appscopedstacksetAssetBucketDeployment0CustomResource9A7B3B46": {
+  "integstacksetnestedstackTemplatesstackset1B6B86AEAssetBucketDeployment0CustomResource4570A902": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -129,10 +20,20 @@
      ]
     },
     "SourceBucketNames": [
+     "cdk-hnb659fds-assets-12345678-test-region",
      "cdk-hnb659fds-assets-12345678-test-region"
     ],
     "SourceObjectKeys": [
-     "e56263bd51a9cda3a5920a2b978d8827ae857776a6807cbe4ac9b2115dfed690.zip"
+     "e56263bd51a9cda3a5920a2b978d8827ae857776a6807cbe4ac9b2115dfed690.zip",
+     "45f1461d7b6efb4fadc7033a785193ea34d92a4ed6730b7681e0e0d6bb0c5f20.json"
+    ],
+    "SourceMarkers": [
+     {},
+     {}
+    ],
+    "SourceMarkersConfig": [
+     {},
+     {}
     ],
     "DestinationBucketName": "asset-bucket-12345678-us-east-1",
     "WaitForDistributionInvalidation": true,
@@ -283,7 +184,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "appscopedstacksetAssetBucketDeployment0AwsCliLayer780B8BB4"
+      "Ref": "integstacksetnestedstackTemplatesstackset1B6B86AEAssetBucketDeployment0AwsCliLayerB34A821E"
      }
     ],
     "MemorySize": 1024,
@@ -319,6 +220,115 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "StackSetAdminRoleFDB48078": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": "12345678"
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudformation:*:12345678:stackset/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StackSetAdminRoleDefaultPolicy96A312F6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-nested-stack"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StackSetAdminRoleDefaultPolicy96A312F6",
+    "Roles": [
+     {
+      "Ref": "StackSetAdminRoleFDB48078"
+     }
+    ]
+   }
+  },
+  "StackSet6E6355CF": {
+   "Type": "AWS::CloudFormation::StackSet",
+   "Properties": {
+    "AdministrationRoleARN": {
+     "Fn::GetAtt": [
+      "StackSetAdminRoleFDB48078",
+      "Arn"
+     ]
+    },
+    "Capabilities": [
+     "CAPABILITY_IAM"
+    ],
+    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-nested-stack",
+    "ManagedExecution": {
+     "Active": true
+    },
+    "PermissionModel": "SELF_MANAGED",
+    "StackInstancesGroup": [
+     {
+      "DeploymentTargets": {
+       "Accounts": [
+        "12345678"
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     }
+    ],
+    "StackSetName": "integ-stackset-nested-stack-test",
+    "TemplateURL": {
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/c800a86d5b3bdf17d4aea09f92cb9a8631721ea30af1445f12d96e8856b1bc24.json"
+    }
+   },
+   "DependsOn": [
+    "integstacksetnestedstackTemplatesstackset1B6B86AEAssetBucketDeployment0AwsCliLayerB34A821E",
+    "integstacksetnestedstackTemplatesstackset1B6B86AEAssetBucketDeployment0CustomResource4570A902",
+    "StackSetAdminRoleDefaultPolicy96A312F6",
+    "StackSetAdminRoleFDB48078"
+   ]
   }
  },
  "Parameters": {

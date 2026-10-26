@@ -79063,37 +79063,6 @@ var init_construct_iteration = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/private/consumer-hosted-stack.ts
-function isConsumerHostedStack(x) {
-  return x !== null && typeof x === "object" && CONSUMER_HOSTED_STACK in x;
-}
-function templateConsumersOf(stack) {
-  return stack[TEMPLATE_CONSUMERS];
-}
-function templateHostsOf(stack) {
-  return Array.from(new Set(templateConsumersOf(stack).map(stackOf)));
-}
-function stacksHostedBy(host) {
-  return host[HOSTED_STACKS] ?? [];
-}
-function topLevelStackOf(stack) {
-  let current = stack;
-  while (current.nestedStackParent) {
-    current = current.nestedStackParent;
-  }
-  return current;
-}
-var CONSUMER_HOSTED_STACK, TEMPLATE_CONSUMERS, HOSTED_STACKS;
-var init_consumer_hosted_stack = __esm({
-  "../../aws-cdk-lib/core/lib/private/consumer-hosted-stack.ts"() {
-    "use strict";
-    init_core_construct_finders();
-    CONSUMER_HOSTED_STACK = /* @__PURE__ */ Symbol.for("@aws-cdk/core.ConsumerHostedStack");
-    TEMPLATE_CONSUMERS = /* @__PURE__ */ Symbol.for("@aws-cdk/core.ConsumerHostedStack.consumers");
-    HOSTED_STACKS = /* @__PURE__ */ Symbol.for("@aws-cdk/core.ConsumerHostedStack.hostedStacks");
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/cross-stack-reference-strength.ts
 var ReferenceStrength;
 var init_cross_stack_reference_strength = __esm({
@@ -79170,15 +79139,6 @@ function resolveValue(consumer, reference, strengthOverride) {
     } else {
       return resolvedValue;
     }
-  }
-  const producerTopLevel = topLevelStackOf(producer);
-  const consumerTopLevel = topLevelStackOf(consumer);
-  if (producerTopLevel !== consumerTopLevel && (isConsumerHostedStack(producerTopLevel) || isConsumerHostedStack(consumerTopLevel))) {
-    throw new ValidationError(
-      lit`StackSetStackCrossStackReference`,
-      `stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": a StackSetStack cannot reference resources of other stacks and other stacks cannot reference its resources, because its template is deployed to other accounts and regions; pass the value as a parameter of the StackSet instead`,
-      consumer
-    );
   }
   const appRoot = consumer.node.root;
   if (!appRoot[WEAK_REFS_WARNING_EMITTED]) {
@@ -79561,7 +79521,6 @@ var init_refs = __esm({
     init_token();
     init_type_hints();
     init_construct_iteration();
-    init_consumer_hosted_stack();
     init_cfn_resource();
     init_literal_string();
     init_cross_stack_reference_strength();
@@ -79777,42 +79736,25 @@ function prepareApp(root) {
   reifyConstructDependencies(root);
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
-  const templateProducers = findAllTemplateProducers(root);
-  const nestedStacks = templateProducers.filter((s) => s.nested);
-  for (const producer of templateProducers) {
-    if (isConsumerHostedStack(producer)) {
-      defineConsumerHostedStackAsset(producer);
-    } else {
-      defineNestedStackAsset(producer);
-    }
-  }
+  const nestedStacks = findAllNestedStacks(root);
   if (nestedStacks.length > 0) {
+    for (const nested of nestedStacks) {
+      defineNestedStackAsset(nested);
+    }
     resolveReferencesInElements(nestedStacks.map((s) => s.nestedStackResource));
   }
 }
 function defineNestedStackAsset(nestedStack) {
   const nested = nestedStack;
   nested._prepareTemplateAsset();
-  const topLevelStack = topLevelStackOf(nestedStack);
-  if (isConsumerHostedStack(topLevelStack)) {
-    for (const host of templateHostsOf(topLevelStack)) {
-      reifyConstructDependencies(host);
-      resolveReferences(host);
-    }
-  }
 }
-function defineConsumerHostedStackAsset(stack) {
-  stack._prepareTemplateAsset();
-  for (const consumer of templateConsumersOf(stack)) {
-    resolveReferences(consumer);
-  }
-}
-function findAllTemplateProducers(root) {
+function findAllNestedStacks(root) {
+  const result = new Array();
   const includeStack = (stack) => {
     if (!STACK_TYPE.isMarked(stack)) {
       return false;
     }
-    if (!stack.nested && !isConsumerHostedStack(stack)) {
+    if (!stack.nested) {
       return false;
     }
     if (!stageOf(stack)) {
@@ -79820,38 +79762,12 @@ function findAllTemplateProducers(root) {
     }
     return stageOf(stack) === root;
   };
-  const postOrder = new Array();
   for (const node of iterateDfsPostorder(root)) {
     if (includeStack(node)) {
-      postOrder.push(node);
+      result.push(node);
     }
   }
-  const included = new Set(postOrder);
-  const embedded = /* @__PURE__ */ new Map();
-  for (const producer of postOrder) {
-    const embedders = isConsumerHostedStack(producer) ? templateHostsOf(producer) : [producer.nestedStackParent];
-    for (const embedder of embedders.filter((e) => included.has(e))) {
-      embedded.set(embedder, [...embedded.get(embedder) ?? [], producer]);
-    }
-  }
-  const result = /* @__PURE__ */ new Set();
-  const visiting = /* @__PURE__ */ new Set();
-  const visit2 = (producer) => {
-    if (result.has(producer)) {
-      return;
-    }
-    if (visiting.has(producer)) {
-      throw new AssumptionError(lit`TemplateProducerCycle`, `stack '${producer.node.path}' embeds the template URL of a stack that embeds its own`);
-    }
-    visiting.add(producer);
-    for (const child of embedded.get(producer) ?? []) {
-      visit2(child);
-    }
-    visiting.delete(producer);
-    result.add(producer);
-  };
-  postOrder.forEach(visit2);
-  return Array.from(result);
+  return result;
 }
 var init_prepare_app = __esm({
   "../../aws-cdk-lib/core/lib/private/prepare-app.ts"() {
@@ -79859,12 +79775,9 @@ var init_prepare_app = __esm({
     init_refs();
     init_cfn_resource();
     init_debug();
-    init_errors();
     init_construct_iteration();
-    init_consumer_hosted_stack();
     init_core_construct_finders();
     init_deps();
-    init_literal_string();
     init_resolve();
   }
 });
@@ -84349,28 +84262,16 @@ function addStackArtifactToAssembly(session, stack, stackProps, additionalStackD
 }
 function collectStackMetadata(stack) {
   const output = {};
-  const collectedHostedStacks = /* @__PURE__ */ new Set();
-  for (const node of constructsInArtifact(stack)) {
-    handleNode(node);
-    if (STACK_TYPE.isMarked(node)) {
-      for (const hosted of stacksHostedBy(node)) {
-        collectAnnotations(hosted);
-      }
+  const queue = [stack];
+  let next;
+  while (next = queue.shift()) {
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
+      continue;
     }
+    handleNode(next);
+    queue.push(...next.node.children);
   }
   return output;
-  function collectAnnotations(hosted) {
-    if (collectedHostedStacks.has(hosted)) {
-      return;
-    }
-    collectedHostedStacks.add(hosted);
-    for (const node of constructsInArtifact(hosted)) {
-      const annotations = node.node.metadata.filter((md) => ANNOTATION_METADATA_TYPES.includes(md.type));
-      if (annotations.length > 0) {
-        output[import_constructs19.Node.PATH_SEP + node.node.path] = annotations;
-      }
-    }
-  }
   function handleNode(node) {
     if (node.node.metadata.length > 0) {
       output[import_constructs19.Node.PATH_SEP + node.node.path] = node.node.metadata.map((md) => {
@@ -84387,17 +84288,6 @@ function collectStackMetadata(stack) {
     }
   }
 }
-function* constructsInArtifact(stack) {
-  const queue = [stack];
-  let next;
-  while (next = queue.shift()) {
-    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
-      continue;
-    }
-    yield next;
-    queue.push(...next.node.children);
-  }
-}
 function contentHash(content) {
   return crypto8.createHash("sha256").update(content).digest("hex");
 }
@@ -84409,7 +84299,7 @@ function assertBound(x) {
 function nonEmptyDict(xs) {
   return Object.keys(xs).length > 0 ? xs : void 0;
 }
-var crypto8, fs14, path18, import_constructs19, ANNOTATION_METADATA_TYPES;
+var crypto8, fs14, path18, import_constructs19;
 var init_shared2 = __esm({
   "../../aws-cdk-lib/core/lib/stack-synthesizers/_shared.ts"() {
     "use strict";
@@ -84419,16 +84309,9 @@ var init_shared2 = __esm({
     import_constructs19 = __toESM(require_lib4());
     init_cloud_assembly_schema();
     init_errors();
-    init_consumer_hosted_stack();
     init_core_construct_finders();
     init_literal_string();
     init_token();
-    ANNOTATION_METADATA_TYPES = [
-      cloud_assembly_schema_exports.ArtifactMetadataEntryType.ERROR,
-      cloud_assembly_schema_exports.ArtifactMetadataEntryType.WARN,
-      cloud_assembly_schema_exports.ArtifactMetadataEntryType.INFO,
-      "aws:cdk:error-code"
-    ];
   }
 });
 

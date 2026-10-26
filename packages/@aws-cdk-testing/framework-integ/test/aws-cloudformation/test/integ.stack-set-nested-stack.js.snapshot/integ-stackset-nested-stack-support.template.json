@@ -29,7 +29,7 @@
       ]
      }
     ],
-    "RoleName": "AWSCloudFormationStackSetExecutionRole-integ-cross-stack"
+    "RoleName": "AWSCloudFormationStackSetExecutionRole-integ-nested-stack"
    },
    "Metadata": {
     "guard": {

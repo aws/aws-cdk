@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCloudFormationdescribeStackInstancef5bee45b46c94afea52f11a228817de2": {
+  "AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19": {
    "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStackInsta",
    "Properties": {
     "ServiceToken": {
@@ -13,12 +13,12 @@
     "api": "describeStackInstance",
     "expected": "{\"$ObjectLike\":{\"StackInstance\":{\"Status\":\"CURRENT\"}}}",
     "parameters": {
-     "StackSetName": "\"integ-stackset-app-scope-test\"",
+     "StackSetName": "\"integ-stackset-nested-stack-test\"",
      "StackInstanceAccount": "\"12345678\"",
      "StackInstanceRegion": "\"us-east-1\""
     },
     "flattenResponse": "false",
-    "salt": "1793021718053"
+    "salt": "1793034446063"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -72,7 +72,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d4df10098ec343cb84cb18272aad6be6803e5de0b476135a5f7bf82799baf73f.zip"
+     "S3Key": "a9c9931e42162dcfc94323a17d97016cadff643991be30fc3238f841b20323d2.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -90,10 +90,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudFormationdescribeStackInstancef5bee45b46c94afea52f11a228817de2": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudFormationdescribeStackInstancef5bee45b46c94afea52f11a228817de2",
+     "AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19",
      "assertion"
     ]
    }

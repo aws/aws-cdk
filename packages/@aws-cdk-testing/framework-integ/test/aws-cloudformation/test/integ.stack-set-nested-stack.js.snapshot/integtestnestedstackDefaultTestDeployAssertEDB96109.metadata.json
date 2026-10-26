@@ -1,0 +1,58 @@
+{
+  "/integ-test-nested-stack/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestnestedstackDefaultTestDeployAssertEDB96109.template.json"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-test-nested-stack/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackInstanceed30ee4d2f4984d7ac532c57337e1d19"
+    }
+  ]
+}

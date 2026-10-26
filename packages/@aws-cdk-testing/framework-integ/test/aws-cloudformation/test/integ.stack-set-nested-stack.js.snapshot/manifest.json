@@ -1,28 +1,28 @@
 {
   "version": "55.0.0",
   "artifacts": {
-    "integ-stackset-cross-stack-support.assets": {
+    "integ-stackset-nested-stack-support.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-stackset-cross-stack-support.assets.json",
+        "file": "integ-stackset-nested-stack-support.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-stackset-cross-stack-support": {
+    "integ-stackset-nested-stack-support": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/us-east-1",
       "properties": {
-        "templateFile": "integ-stackset-cross-stack-support.template.json",
+        "templateFile": "integ-stackset-nested-stack-support.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/acf1d3e460ffb41a4946bc8f74475c802e8e16ba53815f2aa3d82de26d54c221.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/8ea0108d4ed6d9340f702c8ee55b7609c9eb0f67bfb03b1d3bb74fcaa65b7d86.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-stackset-cross-stack-support.assets"
+          "integ-stackset-nested-stack-support.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-us-east-1",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "integ-stackset-cross-stack-support.assets"
+        "integ-stackset-nested-stack-support.assets"
       ],
-      "additionalMetadataFile": "integ-stackset-cross-stack-support.metadata.json",
-      "displayName": "integ-stackset-cross-stack-support"
+      "additionalMetadataFile": "integ-stackset-nested-stack-support.metadata.json",
+      "displayName": "integ-stackset-nested-stack-support"
     },
-    "integ-stackset-cross-stack-scope.assets": {
+    "integ-stackset-nested-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-stackset-cross-stack-scope.assets.json",
+        "file": "integ-stackset-nested-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-stackset-cross-stack-scope": {
+    "integ-stackset-nested-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://12345678/test-region",
       "properties": {
-        "templateFile": "integ-stackset-cross-stack-scope.template.json",
+        "templateFile": "integ-stackset-nested-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/825a5aba272be40e823a77722bd08939299000237158c8494a077a9e2fd81b87.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/d7443bf58f0806212d0afd2d0ec7745bfe40616f820155cfdadfcd2b75c1d3fc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-stackset-cross-stack-scope.assets"
+          "integ-stackset-nested-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
@@ -66,69 +66,34 @@
         }
       },
       "dependencies": [
-        "integ-stackset-cross-stack-scope.assets"
+        "integ-stackset-nested-stack-support",
+        "integ-stackset-nested-stack.assets"
       ],
-      "additionalMetadataFile": "integ-stackset-cross-stack-scope.metadata.json",
-      "displayName": "integ-stackset-cross-stack-scope"
+      "additionalMetadataFile": "integ-stackset-nested-stack.metadata.json",
+      "displayName": "integ-stackset-nested-stack"
     },
-    "integ-stackset-cross-stack-consumer.assets": {
+    "integtestnestedstackDefaultTestDeployAssertEDB96109.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-stackset-cross-stack-consumer.assets.json",
+        "file": "integtestnestedstackDefaultTestDeployAssertEDB96109.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-stackset-cross-stack-consumer": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://12345678/test-region",
-      "properties": {
-        "templateFile": "integ-stackset-cross-stack-consumer.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/10f15c41cf8a71e1400f00a8ceb600322f546caf51818644b540053a898359e9.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "integ-stackset-cross-stack-consumer.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "integ-stackset-cross-stack-support",
-        "integ-stackset-cross-stack-consumer.assets"
-      ],
-      "additionalMetadataFile": "integ-stackset-cross-stack-consumer.metadata.json",
-      "displayName": "integ-stackset-cross-stack-consumer"
-    },
-    "integtestcrossstackDefaultTestDeployAssert2A0D5225.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "integtestcrossstackDefaultTestDeployAssert2A0D5225.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "integtestcrossstackDefaultTestDeployAssert2A0D5225": {
+    "integtestnestedstackDefaultTestDeployAssertEDB96109": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestcrossstackDefaultTestDeployAssert2A0D5225.template.json",
+        "templateFile": "integtestnestedstackDefaultTestDeployAssertEDB96109.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f62edcb960d1f9498202700bc6c8bfb05e2597acc28d33523f4dcbc8be5e1fa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/199c8cb90db9c346c9474536f2c3f905b7c3c47692a4a9bf226815293e0b85d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestcrossstackDefaultTestDeployAssert2A0D5225.assets"
+          "integtestnestedstackDefaultTestDeployAssertEDB96109.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -137,10 +102,10 @@
         }
       },
       "dependencies": [
-        "integtestcrossstackDefaultTestDeployAssert2A0D5225.assets"
+        "integtestnestedstackDefaultTestDeployAssertEDB96109.assets"
       ],
-      "additionalMetadataFile": "integtestcrossstackDefaultTestDeployAssert2A0D5225.metadata.json",
-      "displayName": "integ-test-cross-stack/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "integtestnestedstackDefaultTestDeployAssertEDB96109.metadata.json",
+      "displayName": "integ-test-nested-stack/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -1,5 +1,40 @@
 {
   "Resources": {
+    "NestedNestedStackNestedNestedStackResourceDEFDAA4D": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/",
+              {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "asset-bucket-12345678",
+                    {
+                      "Ref": "AWS::Region"
+                    }
+                  ]
+                ]
+              },
+              "/45f1461d7b6efb4fadc7033a785193ea34d92a4ed6730b7681e0e0d6bb0c5f20.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "LambdaServiceRoleA8ED4D3B": {
       "Type": "AWS::IAM::Role",
       "Properties": {

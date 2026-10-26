@@ -1,18 +1,20 @@
 import * as path from 'path';
-import type { Construct } from 'constructs';
+import { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnCapabilities, Stack } from 'aws-cdk-lib';
+import { App, CfnCapabilities, NestedStack, Stack } from 'aws-cdk-lib';
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cfn from 'aws-cdk-lib/aws-cloudformation';
 
 /**
- * A StackSetStack defined at App scope, with a file asset.
+ * A StackSetStack in a construct of the stack of its StackSet, with a nested
+ * stack and a Lambda function, whose template and code are file assets.
  *
- * The stack with the StackSet hosts the template and the file asset of the
- * StackSetStack, and copies the file asset to the asset bucket.
+ * The stack of the StackSet publishes the template and the file assets, and
+ * the StackSet waits for the copies to the asset bucket.
  *
  * Requirements for running this test:
  *
@@ -29,8 +31,8 @@ const deploymentAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_DEP
 const deploymentRegion = process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION;
 const targetAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_TARGET_ACCOUNT;
 const targetRegion = process.env.INTEG_TARGET_REGION ?? 'us-east-1';
-const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-app-scope';
-const stackSetName = 'integ-stackset-app-scope-test';
+const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-nested-stack';
+const stackSetName = 'integ-stackset-nested-stack-test';
 
 const app = new App({
   postCliContext: {
@@ -59,11 +61,13 @@ class SupportStack extends Stack {
 }
 
 /**
- * A StackSetStack with a Lambda function, whose code is a file asset
+ * A StackSetStack with a nested stack and a Lambda function
  */
-class LambdaStackSet extends cfn.StackSetStack {
+class NestedStackSet extends cfn.StackSetStack {
   constructor(scope: Construct, id: string, props?: cfn.StackSetStackProps) {
     super(scope, id, props);
+
+    new sns.Topic(new NestedStack(this, 'Nested'), 'IntegStackSetSNSTopic');
 
     new lambda.Function(this, 'Lambda', {
       runtime: lambda.Runtime.NODEJS_LATEST,
@@ -73,21 +77,21 @@ class LambdaStackSet extends cfn.StackSetStack {
   }
 }
 
-const supportStack = new SupportStack(app, 'integ-stackset-app-scope-support', {
+const supportStack = new SupportStack(app, 'integ-stackset-nested-stack-support', {
   env: { account: targetAccount, region: targetRegion },
 });
 
-const consumerStack = new Stack(app, 'integ-stackset-app-scope-consumer', {
+const testStack = new Stack(app, 'integ-stackset-nested-stack', {
   env: { account: deploymentAccount, region: deploymentRegion },
 });
-consumerStack.addStackDependency(supportStack);
+testStack.addStackDependency(supportStack);
 
-const stackSetStack = new LambdaStackSet(app, 'app-scoped-stack-set', {
-  assetBuckets: [s3.Bucket.fromBucketName(consumerStack, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
+const stackSetStack = new NestedStackSet(new Construct(testStack, 'Templates'), 'stack-set', {
+  assetBuckets: [s3.Bucket.fromBucketName(testStack, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
   assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
 });
 
-new cfn.StackSet(consumerStack, 'StackSet', {
+new cfn.StackSet(testStack, 'StackSet', {
   stackSetName,
   target: cfn.StackSetTarget.fromAccounts({
     accounts: [targetAccount!],
@@ -98,8 +102,8 @@ new cfn.StackSet(consumerStack, 'StackSet', {
   capabilities: [CfnCapabilities.ANONYMOUS_IAM],
 });
 
-const integ = new IntegTest(app, 'integ-test-app-scope', {
-  testCases: [consumerStack],
+const integ = new IntegTest(app, 'integ-test-nested-stack', {
+  testCases: [testStack],
   enableLookups: true,
 });
 
