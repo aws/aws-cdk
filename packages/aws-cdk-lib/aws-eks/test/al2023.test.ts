@@ -2,7 +2,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import { App, Stack } from '../../core';
+import { App, Fn, Stack, Token } from '../../core';
 import * as eks from '../lib';
 import { renderAmazonLinux2023UserData } from '../lib/user-data';
 
@@ -35,6 +35,21 @@ describe('Amazon Linux 2023 capacity', () => {
       // THEN
       expect(ssmParameterDefaults(stack)).toContain(
         `/aws/service/eks/optimized-ami/1.30/amazon-linux-2023/${amiPath}/recommended/image_id`);
+    });
+
+    test('an unresolved instance type falls back to the x86_64 standard image', () => {
+      // GIVEN
+      const { stack, cluster } = newCluster({ serviceIpv4Cidr: SERVICE_CIDR });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('Nodes', {
+        instanceType: new ec2.InstanceType(Token.asString({ Ref: 'InstanceTypeParam' })),
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      });
+
+      // THEN
+      expect(ssmParameterDefaults(stack)).toContain(
+        '/aws/service/eks/optimized-ami/1.30/amazon-linux-2023/x86_64/standard/recommended/image_id');
     });
 
     test('Amazon Linux 2 remains the default', () => {
@@ -150,6 +165,19 @@ describe('Amazon Linux 2023 capacity', () => {
       // THEN
       expect(nodeConfig).toContain('    config:\\n      clusterDNS:\\n      - 172.20.0.10\\n');
       expect(nodeConfig).toContain('    - \\"--node-labels=team=platform\\"\\n    - \\"--max-pods=50\\"\\n');
+    });
+
+    test('keeps tokens in kubeletExtraArgs intact when splitting into flags', () => {
+      // GIVEN
+      const { stack, cluster, asg } = newClusterAndAsg();
+
+      // WHEN
+      const nodeConfig = JSON.stringify(stack.resolve(renderAmazonLinux2023UserData(cluster, asg, SERVICE_CIDR, {
+        kubeletExtraArgs: `--max-pods=50 ${Fn.importValue('KubeletArgs')}`,
+      })));
+
+      // THEN
+      expect(nodeConfig).toContain('    - \\"--max-pods=50\\"\\n    - \\"",{"Fn::ImportValue":"KubeletArgs"},"\\"\\n');
     });
 
     test.each([
