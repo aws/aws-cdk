@@ -2644,6 +2644,10 @@ describe('cluster', () => {
   test('create a cluster using custom resource with secrets encryption using KMS CMK', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'EncryptionConfig.Resources is intentionally retained for backwards compatibility',
+    });
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', {
@@ -3122,6 +3126,10 @@ describe('cluster', () => {
     test('skips cross-network validation when all CIDRs are tokens', () => {
       // GIVEN
       const { stack } = testFixture();
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'Two remote node network entries are intentional to test token-aware cross-network validation',
+      });
       const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
       const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
 
