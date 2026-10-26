@@ -42,7 +42,7 @@ describe('consumer-hosted stacks', () => {
     const producer = new CfnResource(other, 'Producer', { type: 'My::Producer' });
     new CfnResource(hosted, 'Consumer', { type: 'My::Consumer', properties: { Value: producer.ref } });
 
-    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'StackSetStackCrossStackReference' }));
+    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'ConsumerHostedStackCrossStackReference' }));
   });
 
   test('cannot be referenced by the nested stacks of another stack', () => {
@@ -52,7 +52,7 @@ describe('consumer-hosted stacks', () => {
     const nested = new NestedStack(new Stack(app, 'Other'), 'Nested');
     new CfnResource(nested, 'Consumer', { type: 'My::Consumer', properties: { Value: producer.ref } });
 
-    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'StackSetStackCrossStackReference' }));
+    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'ConsumerHostedStackCrossStackReference' }));
   });
 
   test('have their annotations reported by the stacks that host them only', () => {

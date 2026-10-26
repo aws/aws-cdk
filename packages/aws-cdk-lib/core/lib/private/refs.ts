@@ -195,16 +195,18 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   // consumer-hosted stacks (StackSetStack)
   // ----------------------------------------------------------------------
 
-  // The template of a consumer-hosted stack is deployed into other accounts and
-  // regions, where no value of another stack can be resolved, whatever the
-  // reference strength or environment.
+  // The template of a consumer-hosted stack is deployed by the stacks that
+  // consume it, possibly into other accounts and regions, where no value of
+  // another stack can be resolved, whatever the reference strength or environment.
   const producerTopLevel = topLevelStackOf(producer);
   const consumerTopLevel = topLevelStackOf(consumer);
-  if (producerTopLevel !== consumerTopLevel && (isConsumerHostedStack(producerTopLevel) || isConsumerHostedStack(consumerTopLevel))) {
-    throw new ValidationError(lit`StackSetStackCrossStackReference`,
+  const hostedTopLevel = [producerTopLevel, consumerTopLevel].find(isConsumerHostedStack);
+  if (producerTopLevel !== consumerTopLevel && hostedTopLevel) {
+    throw new ValidationError(lit`ConsumerHostedStackCrossStackReference`,
       `stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
-      'a StackSetStack cannot reference resources of other stacks and other stacks cannot reference its resources, ' +
-      'because its template is deployed to other accounts and regions; pass the value as a parameter of the StackSet instead',
+      `the template of stack "${hostedTopLevel.node.path}" is deployed by the stacks that use it, ` +
+      'for a StackSetStack into the target accounts and regions of its StackSets, so references cannot cross its boundary; ' +
+      'pass the value as a template parameter instead, for a StackSet in its \'parameters\'',
       consumer);
   }
 

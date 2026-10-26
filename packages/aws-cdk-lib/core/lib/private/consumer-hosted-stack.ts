@@ -1,6 +1,7 @@
 import type { IConstruct } from 'constructs';
 import { stackOf } from './core-construct-finders';
 import type { Stack } from '../stack';
+import { pathToTopLevelStack } from '../util';
 
 /**
  * Private API of a stack whose template is not deployed as an artifact of its
@@ -75,9 +76,5 @@ export function stacksHostedBy(host: Stack): readonly IConsumerHostedStack[] {
  * The top-level stack of `stack`: `stack` itself, or the top-level stack a nested stack is in.
  */
 export function topLevelStackOf(stack: Stack): Stack {
-  let current = stack;
-  while (current.nestedStackParent) {
-    current = current.nestedStackParent;
-  }
-  return current;
+  return pathToTopLevelStack(stack)[0];
 }

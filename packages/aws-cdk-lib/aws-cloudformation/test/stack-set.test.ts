@@ -2208,7 +2208,7 @@ describe('references across a StackSetStack boundary', () => {
         new CfnResource(stackSetStack, 'Consumer', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
 
         expect(() => app.synth()).toThrow(expect.objectContaining({
-          name: 'StackSetStackCrossStackReference',
+          name: 'ConsumerHostedStackCrossStackReference',
           message: expect.stringContaining(topic.node.path),
         }));
       });
@@ -2219,7 +2219,7 @@ describe('references across a StackSetStack boundary', () => {
         new CfnResource(other, 'Consumer', { type: 'My::Resource', properties: { TopicName: topic.attrTopicName } });
 
         expect(() => app.synth()).toThrow(expect.objectContaining({
-          name: 'StackSetStackCrossStackReference',
+          name: 'ConsumerHostedStackCrossStackReference',
           message: expect.stringContaining(topic.node.path),
         }));
       });
@@ -2231,7 +2231,10 @@ describe('references across a StackSetStack boundary', () => {
     const topic = new sns.CfnTopic(other, 'Topic');
     new CfnResource(new NestedStack(stackSetStack, 'Nested'), 'Consumer', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
 
-    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'StackSetStackCrossStackReference' }));
+    expect(() => app.synth()).toThrow(expect.objectContaining({
+      name: 'ConsumerHostedStackCrossStackReference',
+      message: expect.stringMatching(/the template of stack "StackSetStack" .*StackSetStack.*for a StackSet in its 'parameters'/),
+    }));
   });
 
   test('allows references inside the StackSetStack, from its nested stacks and to imported values', () => {

@@ -107,7 +107,7 @@ the other.
 
 A `StackSetStack` is deployed into the target accounts and regions of its StackSets, where values of
 other stacks of your app cannot be resolved. Synthesis therefore fails with a
-`StackSetStackCrossStackReference` error when a `StackSetStack` references a resource of another
+`ConsumerHostedStackCrossStackReference` error when a `StackSetStack` references a resource of another
 stack, or another stack references a resource of a `StackSetStack`. Pass such values as StackSet
 `parameters` instead.
 
