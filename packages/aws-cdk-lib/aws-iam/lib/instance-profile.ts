@@ -84,6 +84,22 @@ export interface InstanceProfileAttributes {
   readonly role?: IRole;
 }
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
+ * Assigns the `role` on an `InstanceProfileBase`.
+ *
+ * `role` is declared `readonly` (to match the `IInstanceProfile` contract under
+ * `exactOptionalPropertyTypes`) but is set after construction, so the write goes
+ * through a `Writeable` cast. The `undefined` check keeps the property absent
+ * rather than set to `undefined`, which `exactOptionalPropertyTypes` forbids.
+ */
+function setRole(instanceProfile: InstanceProfileBase, role: IRole | undefined): void {
+  if (role !== undefined) {
+    (instanceProfile as Writeable<InstanceProfileBase>).role = role;
+  }
+}
+
 /**
  * Base class for an Instance Profile
  */
@@ -93,16 +109,8 @@ abstract class InstanceProfileBase extends Resource implements IInstanceProfile 
 
   /**
    * The role associated with the InstanceProfile.
-   * @internal
    */
-  protected _role?: IRole;
-
-  /**
-   * Returns the role associated with this InstanceProfile.
-   */
-  public get role(): IRole | undefined {
-    return this._role;
-  }
+  public readonly role?: IRole;
 
   public get instanceProfileRef(): InstanceProfileReference {
     return {
@@ -168,7 +176,7 @@ export class InstanceProfile extends InstanceProfileBase {
 
       constructor(s: Construct, i: string) {
         super(s, i);
-        this._role = attrs.role;
+        setRole(this, attrs.role);
       }
     }
     return new Import(scope, id);
@@ -207,15 +215,16 @@ export class InstanceProfile extends InstanceProfileBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._role = props.role || new Role(this, 'InstanceRole', {
+    const role = props.role ?? new Role(this, 'InstanceRole', {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
     });
+    setRole(this, role);
 
     this._path = props.path;
 
     this._resource = new CfnInstanceProfile(this, 'Resource', {
-      roles: [this._role.roleName],
+      roles: [role.roleName],
       instanceProfileName: this.physicalName,
       path: props.path,
     });
