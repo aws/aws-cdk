@@ -1,0 +1,56 @@
+{
+  "/MskClusterAuth/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:94:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/MskClusterAuth/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/MskClusterAuth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ]
+}

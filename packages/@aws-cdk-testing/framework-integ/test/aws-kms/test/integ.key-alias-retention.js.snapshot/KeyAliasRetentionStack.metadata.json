@@ -1,0 +1,101 @@
+{
+  "/KeyAliasRetentionStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:11:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/KeyAliasRetentionStack/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "alias": "*"
+      }
+    }
+  ],
+  "/KeyAliasRetentionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/KeyAliasRetentionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/KeyAliasRetentionStack/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:700:30)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:14:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/KeyAliasRetentionStack/Key/Alias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "targetKey": "*",
+        "removalPolicy": "retain"
+      }
+    }
+  ],
+  "/KeyAliasRetentionStack/Key/Alias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KeyAlias910D852D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/alias.js:398:29)",
+        "WrappedClass.addAlias (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:152:27)",
+        "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:720:22)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk-testing/framework-integ/test/aws-kms/test/integ.key-alias-retention.js:14:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
