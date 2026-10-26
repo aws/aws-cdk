@@ -46,7 +46,6 @@ rules/
 │   ├── iam-role-no-broad-principals.guard
 │   └── iam-role-root-principal-needs-conditions.guard
 ├── kinesis/
-│   ├── kinesis-encryption-enabled.guard
 │   └── kinesis-firehose-encryption-enabled.guard
 ├── neptune/
 │   └── neptune-encryption-enabled.guard
