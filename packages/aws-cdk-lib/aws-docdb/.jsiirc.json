@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_docdb"
+    },
+    "ruby": {
+      "module": "AWSCDK::DocDB"
     }
   }
 }
