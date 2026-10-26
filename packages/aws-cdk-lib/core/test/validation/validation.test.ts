@@ -479,21 +479,26 @@ describe('validations', () => {
     expect(report).toContain('ERROR Validation plugin \'broken-plugin\' failed: Something went wrong');
   });
 
-  test('plugin tries to modify a template', () => {
+  test.each([false, true])('plugin tries to modify a template with confirmValidationPluginsDoNotMutate: %s', (confirmValidationPluginsDoNotMutate) => {
     const app = new NonStrictApp({
       policyValidationBeta1: [
         new RoguePlugin(),
       ],
+      confirmValidationPluginsDoNotMutate,
     });
     const stack = new core.Stack(app);
     new FailResource(stack, 'DefaultResource');
-    expect(() => {
-      app.synth();
-    }).toThrow(/rogue-plugin.*modified the cloud assembly/);
+
+    if (confirmValidationPluginsDoNotMutate) {
+      expect(() => { app.synth(); }).toThrow(/rogue-plugin.*modified the cloud assembly/);
+    } else {
+      expect(() => { app.synth(); }).not.toThrow();
+    }
   });
 
   test('plugin that writes new files to assembly is allowed', () => {
     const app = new NonStrictApp({
+      confirmValidationPluginsDoNotMutate: true,
       policyValidationBeta1: [
         {
           name: 'file-writer-plugin',
@@ -516,8 +521,9 @@ describe('validations', () => {
     expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
   });
 
-  test('plugin that deletes pre-existing file is caught', () => {
+  test.each([false, true])('plugin that deletes pre-existing file is caught if confirmValidationPluginsDoNotMutate: %s', (confirmValidationPluginsDoNotMutate) => {
     const app = new NonStrictApp({
+      confirmValidationPluginsDoNotMutate,
       policyValidationBeta1: [
         {
           name: 'deleter-plugin',
@@ -533,7 +539,11 @@ describe('validations', () => {
       type: 'Test::Resource::Fake',
       properties: { result: 'success' },
     });
-    expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
+    if (confirmValidationPluginsDoNotMutate) {
+      expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
+    } else {
+      expect(() => app.synth()).not.toThrow();
+    }
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
