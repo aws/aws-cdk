@@ -6,7 +6,6 @@ import { Node } from 'constructs';
 import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../errors';
-import { stacksHostedBy } from '../private/consumer-hosted-stack';
 import { STACK_TYPE } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
@@ -100,36 +99,23 @@ export function addStackArtifactToAssembly(
  */
 function collectStackMetadata(stack: Stack) {
   const output: { [id: string]: cxschema.MetadataEntry[] } = { };
-  const collectedHostedStacks = new Set<Stack>();
 
-  for (const node of constructsInArtifact(stack)) {
-    handleNode(node);
+  const queue: IConstruct[] = [stack];
 
-    // A stack whose template is hosted by consumer stacks has no artifact of its
-    // own, so its consumers report its annotations.
-    if (STACK_TYPE.isMarked(node)) {
-      for (const hosted of stacksHostedBy(node)) {
-        collectAnnotations(hosted);
-      }
+  let next;
+  while (next = queue.shift()) {
+    // break off if we reached a Stack construct that is going to have its own artifact with its own metadata. Otherwise recurse.
+    // (always do the requested Stack)
+    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
+      continue;
     }
+
+    handleNode(next);
+
+    queue.push(...next.node.children);
   }
 
   return output;
-
-  function collectAnnotations(hosted: Stack) {
-    if (collectedHostedStacks.has(hosted)) {
-      return;
-    }
-    collectedHostedStacks.add(hosted);
-
-    for (const node of constructsInArtifact(hosted)) {
-      // Other metadata, such as logical IDs, describes the template of the hosted stack.
-      const annotations = node.node.metadata.filter(md => ANNOTATION_METADATA_TYPES.includes(md.type));
-      if (annotations.length > 0) {
-        output[Node.PATH_SEP + node.node.path] = annotations;
-      }
-    }
-  }
 
   function handleNode(node: IConstruct) {
     if (node.node.metadata.length > 0) {
@@ -152,38 +138,6 @@ function collectStackMetadata(stack: Stack) {
         return resolved as cxschema.MetadataEntry;
       });
     }
-  }
-}
-
-/**
- * Metadata types of annotations, including the error code an error carries.
- */
-const ANNOTATION_METADATA_TYPES: string[] = [
-  cxschema.ArtifactMetadataEntryType.ERROR,
-  cxschema.ArtifactMetadataEntryType.WARN,
-  cxschema.ArtifactMetadataEntryType.INFO,
-  'aws:cdk:error-code',
-];
-
-/**
- * The constructs of `stack` whose metadata goes into the artifact of `stack`
- *
- * Stops at stacks that have their own artifact; nested stacks are included.
- */
-function* constructsInArtifact(stack: Stack): IterableIterator<IConstruct> {
-  const queue: IConstruct[] = [stack];
-
-  let next;
-  while (next = queue.shift()) {
-    // break off if we reached a Stack construct that is going to have its own artifact with its own metadata. Otherwise recurse.
-    // (always do the requested Stack)
-    if (STACK_TYPE.isMarked(next) && next._isTopLevelStack && next !== stack) {
-      continue;
-    }
-
-    yield next;
-
-    queue.push(...next.node.children);
   }
 }
 

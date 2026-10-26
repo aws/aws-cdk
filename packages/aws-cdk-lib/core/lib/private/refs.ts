@@ -16,7 +16,7 @@ import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
-import { AssumptionError, UnscopedValidationError, ValidationError } from '../errors';
+import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
@@ -25,7 +25,6 @@ import type { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
-import { isConsumerHostedStack, topLevelStackOf } from './consumer-hosted-stack';
 import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
 import type {
@@ -189,25 +188,6 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     } else {
       return resolvedValue;
     }
-  }
-
-  // ----------------------------------------------------------------------
-  // consumer-hosted stacks (StackSetStack)
-  // ----------------------------------------------------------------------
-
-  // The template of a consumer-hosted stack is deployed by the stacks that
-  // consume it, possibly into other accounts and regions, where no value of
-  // another stack can be resolved, whatever the reference strength or environment.
-  const producerTopLevel = topLevelStackOf(producer);
-  const consumerTopLevel = topLevelStackOf(consumer);
-  const hostedTopLevel = [producerTopLevel, consumerTopLevel].find(isConsumerHostedStack);
-  if (producerTopLevel !== consumerTopLevel && hostedTopLevel) {
-    throw new ValidationError(lit`ConsumerHostedStackCrossStackReference`,
-      `stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
-      `the template of stack "${hostedTopLevel.node.path}" is deployed by the stacks that use it, ` +
-      'for a StackSetStack into the target accounts and regions of its StackSets, so references cannot cross its boundary; ' +
-      'pass the value as a template parameter instead, for a StackSet in its \'parameters\'',
-      consumer);
   }
 
   // ----------------------------------------------------------------------
