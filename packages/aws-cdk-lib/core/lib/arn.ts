@@ -216,6 +216,11 @@ export class Arn {
     return this.split(arn, arnFormat);
   }
 
+  // Naming note: if a non-throwing variant is ever added for a caller whose
+  // input may legitimately not be an ARN, name it `trySplit` here (and
+  // `trySplitArn` on `Stack`) to pair with `split`/`splitArn` — not `tryParse`,
+  // which would read as a sibling of the deprecated `Arn.parse`. See the
+  // discussion on PR aws/aws-cdk#39085.
   /**
    * Splits the provided ARN into its components.
    * Works both if 'arn' is a string like 'arn:aws:s3:::bucket',
@@ -223,12 +228,15 @@ export class Arn {
    * (in which case the returned components will also be dynamic CloudFormation expressions,
    * encoded as Tokens).
    *
-   * A concrete string that starts with `arn:` is expected to be a valid ARN; a
-   * malformed one is treated as a caller error and throws. This throw is by
-   * design (see the "Parsing ARNs" convention in the aws-cdk-lib README): to
-   * handle a value that may legitimately not be an ARN, branch on
-   * `Token.isUnresolved(arn)`/`arn.startsWith('arn:')` yourself rather than
-   * catching the exception.
+   * A concrete string is expected to be a well-formed ARN: both a malformed
+   * `arn:` string and a concrete string that does not start with `arn:` are
+   * treated as caller errors and throw. Deploy-time tokens are parsed
+   * best-effort and never throw. To handle a value that may legitimately not be
+   * an ARN, branch it away (on `Token.isUnresolved` / `startsWith('arn:')`)
+   * before calling this method rather than catching the exception.
+   *
+   * @see The "Parsing ARNs" convention in the `aws-cdk-lib` README
+   * (`#parsing-arns-the-commit-or-throw-convention`) for the full rationale.
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses

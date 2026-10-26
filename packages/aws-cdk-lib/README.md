@@ -658,44 +658,46 @@ it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 ### Parsing ARNs: the commit-or-throw convention
 
 `splitArn()` (and the underlying `Arn.split()`) is deliberately throw-on-error,
-and that reflects a convention the CDK follows consistently: **a concrete string
-that starts with `arn:` is a commitment to being a valid ARN**. There are only
-three outcomes a caller needs to distinguish, and they are kept distinct on
-purpose:
+and that reflects a convention the CDK follows consistently. Once a value is
+handed to `splitArn()`:
 
-1. The value is a deploy-time token (`Token.isUnresolved(x)` is `true`), or a
-   concrete string that does *not* start with `arn:`. It is not something this
-   code should parse as an ARN — take the "other" branch (e.g. treat it as a
-   plain name/id).
-2. The value is a concrete string that *does* start with `arn:` but is
-   malformed. This is a **caller error**, and `splitArn()` throwing is the
-   correct, fail-fast outcome — it surfaces the broken input rather than hiding
-   it.
-3. The value is a well-formed ARN (concrete or partially tokenized) — it parses.
+- a **deploy-time token** — whether fully unresolved, or a partially-tokenized
+  string such as `arn:${Aws.PARTITION}:s3:::bucket` — is parsed best-effort into
+  token components, and never throws;
+- a **concrete string** is expected to be a well-formed ARN. If it is not —
+  either malformed (an `arn:` prefix but missing required components) or not an
+  ARN at all (no `arn:` prefix) — that is a **caller error**, and throwing is the
+  correct, fail-fast outcome rather than something to recover from.
 
-So the idiomatic way to handle a value that is only *sometimes* an ARN is to
-branch on outcome (1) yourself and let `splitArn()` enforce (2):
+So the only decision a caller makes up front is *"is this value mine to parse as
+an ARN?"*. If it might legitimately be something else (a plain name/id), branch
+that case away yourself; then commit to `splitArn()` and let it fail fast on
+genuinely broken input:
 
 ```ts
 declare const stack: Stack;
 
-// Return the region only when the input is actually an ARN we can inspect.
+// Return the region only when the input is a concrete ARN we can inspect.
 function regionOfArn(maybeArn: string): string | undefined {
-  // Outcome (1): a token or a non-'arn:' string is not ours to parse.
+  // Not ours to inspect: a plain id, or a token whose region is not a concrete
+  // value at synth time. `Token.isUnresolved` is deliberately also true for a
+  // partially-tokenized `arn:${...}` string here, because you cannot compare a
+  // deploy-time region. (A caller that only needs to pass components through,
+  // rather than read a literal out, would instead let such a string flow into
+  // `splitArn()`, which parses it.)
   if (Token.isUnresolved(maybeArn) || !maybeArn.startsWith('arn:')) {
     return undefined;
   }
-  // Outcome (2)/(3): a concrete 'arn:' string is expected to be valid, so a
-  // malformed one throws here by design.
+  // Committed: a concrete 'arn:' string is expected to be valid, so a malformed
+  // one throws here by design.
   return stack.splitArn(maybeArn, ArnFormat.SLASH_RESOURCE_NAME).region;
 }
 ```
 
-Do **not** wrap `splitArn()`/`Arn.split()` in a `try`/`catch` to turn a
-malformed `arn:` string into a silent "not an ARN". That collapses outcomes (1)
-and (2) and swallows a caller error (and catching exceptions as control flow is
-discouraged by the [design
-guidelines](../../docs/DESIGN_GUIDELINES.md#never-catch-exceptions)). A
+Do **not** wrap `splitArn()`/`Arn.split()` in a `try`/`catch` to turn a broken
+ARN into a silent "not an ARN": that swallows a caller error, and catching
+exceptions as control flow is discouraged by the [design
+guidelines](../../docs/DESIGN_GUIDELINES.md#never-catch-exceptions). A
 non-throwing parser would only be justified for a caller whose input *may
 legitimately not be an ARN at all* — which is distinct from, and should not be
 conflated with, a malformed ARN.
