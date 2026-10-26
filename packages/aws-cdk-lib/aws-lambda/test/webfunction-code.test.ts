@@ -62,6 +62,22 @@ describe('WebFunctionCode', () => {
       expect(config.s3Location.objectVersion).toEqual(version);
     });
 
+    test.each(['code/*.zip', 'code?.zip', 'code/${aws:username}.zip', '/code.zip'])(
+      'rejects a key that would widen the read grant: %s', (key) => {
+        const bucket = new s3.Bucket(stack, 'TestBucket', { versioned: true });
+        expect(() => WebFunctionCode.fromBucket(bucket, key).bind(stack, {
+          webFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/my-func',
+        })).toThrow(/must not start with '\/' or contain/);
+      });
+
+    test('accepts a deploy-time key without checking it', () => {
+      const bucket = new s3.Bucket(stack, 'TestBucket', { versioned: true });
+      const key = new cdk.CfnParameter(stack, 'Key').valueAsString;
+      expect(() => WebFunctionCode.fromBucket(bucket, key).bind(stack, {
+        webFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/my-func',
+      })).not.toThrow();
+    });
+
     test('creates WebFunction with bucket code', () => {
       const bucket = new s3.Bucket(stack, 'TestBucket', { versioned: true });
       new WebFunction(stack, 'TestFunction', {

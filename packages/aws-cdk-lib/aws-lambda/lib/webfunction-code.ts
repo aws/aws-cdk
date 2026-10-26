@@ -210,6 +210,7 @@ class BucketCode extends WebFunctionCode {
         ...validateBucketEncryption(this.bucket, 'fromBucket'),
       ],
     });
+    validateCodeKey(this.key, scope);
     grantServiceRead(this.bucket, this.key, scope, options);
 
     return {
@@ -668,6 +669,23 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
  * only to parameters and cannot inspect characters, and IAM wildcard escapes need the value at
  * synthesis.
  */
+/**
+ * Rejects a `fromBucket()` key that would widen the Lambda service principal's read grant.
+ *
+ * The key goes into the grant's resource ARN, where `*` and `?` are wildcards and `${` starts a
+ * policy variable. A deploy-time key cannot be checked and is passed through.
+ */
+function validateCodeKey(key: string, scope: Construct): void {
+  if (cdk.Token.isUnresolved(key)) {
+    return;
+  }
+  if (key.startsWith('/') || /[*?]|\$\{/.test(key)) {
+    throw new ValidationError(lit`WebFunctionCodeKeyInvalid`,
+      `The code object key '${key}' must not start with '/' or contain '*', '?' or '\${'. It scopes ` +
+      'the Lambda service principal\'s read access to your bucket, where these would widen it.', scope);
+  }
+}
+
 function validateKeyPrefix(keyPrefix: string | undefined, scope: Construct): void {
   if (keyPrefix === undefined) {
     return;
