@@ -330,10 +330,11 @@ export class App extends Stage {
     const totalAppTimeMs = performance.now() - this.initMark;
 
     // Record how many constructs we had to iterate over to synthesize the app, to get a sense for
-    // how synthesis time scales with number of constructs.
-    //
-    // Count the stacks in the same pass: `assembly.stacksRecursively` would give the same
-    // number, but it reloads every nested assembly (i.e. every Stage) back from disk to do it.
+    // how synthesis time scales with number of constructs. This used to be implemented
+    // using `assembly.stackRecursively`, but that reloads every nested assembly from disk.
+    // This iterates the construct tree which gives NEARLY the same answers, except it counts
+    // Nested Stacks as Stacks which the previous implementation did not. Arguably, this is more
+    // correct.
     const { constructCount, stackCount } = countTree(this);
     recordPerformanceEntry('count:Constructs', {
       count: constructCount,

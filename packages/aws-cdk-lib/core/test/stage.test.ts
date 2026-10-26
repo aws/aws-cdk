@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import type { IAspect } from '../lib';
-import { App, CfnResource, Stack, Stage, Aspects } from '../lib';
+import { App, CfnResource, Stack, Stage, Aspects, NestedStack } from '../lib';
 
 describe('stage', () => {
   test('Stack inherits unspecified part of the env from Stage', () => {
@@ -442,6 +442,26 @@ describe('stage synthesis does not redo work across assembly boundaries', () => 
 
     // THEN -- putting the stacks in a Stage must not cost extra renders
     expect(countRenders(staged)).toEqual(countRenders(flat));
+  });
+
+  test('a NestedStack inside a Stage still gets its template asset, prepared once', () => {
+    // GIVEN
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const parent = new Stack(stage, 'Parent', { env });
+    const nested = new NestedStack(parent, 'Nested');
+    new CfnResource(nested, 'Resource', { type: 'AWS::SQS::Queue' });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    const stageAssembly = assembly.getNestedAssembly('assembly-Stage');
+    const parentTemplate = stageAssembly.getStackByName('Stage-Parent').template;
+    const nestedResource = Object.values(parentTemplate.Resources as any)
+      .find((r: any) => r.Type === 'AWS::CloudFormation::Stack');
+    expect(nestedResource).toBeDefined();
+    expect((nestedResource as any).Properties.TemplateURL).toBeDefined();
   });
 });
 
