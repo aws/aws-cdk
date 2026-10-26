@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | V2NEXT | fix |
+| [@aws-cdk/aws-ec2:encodeUserDataCommandValues](#aws-cdkaws-ec2encodeuserdatacommandvalues) | Encode tokenized values in UserData download and execute commands so a deploy-time value cannot inject OS commands | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -155,6 +156,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-ec2:encodeUserDataCommandValues": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
@@ -2661,6 +2663,37 @@ running executions finish first.
 | V2NEXT | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-ec2:encodeUserDataCommandValues
+
+*Encode tokenized values in UserData download and execute commands so a deploy-time value cannot inject OS commands*
+
+Flag type: Backwards incompatible bugfix
+
+`UserData.addS3DownloadCommand()` and `addExecuteFileCommand()` build the EC2 boot
+script by interpolating their values into shell (Linux) or PowerShell (Windows) command
+text. When a value is a deploy-time token (for example a `CfnParameter`), CloudFormation
+substitutes the resolved value with no shell-safe escaping, so a value containing shell
+metacharacters can run as commands on the instance as root (CWE-78).
+
+When this flag is enabled, each tokenized value is encoded with the `Fn::Base64` intrinsic
+and decoded on the instance when the command runs, so its text is never parsed as code.
+Literal values render the same with the flag enabled or disabled.
+
+When disabled, values are rendered unencoded, so already-deployed UserData is
+byte-identical and no instance is restarted or replaced on upgrade. Enabling the flag
+changes the synthesized UserData of any stack that passes a token to these helpers,
+including asset downloads, which updates (and, with `userDataCausesReplacement`, replaces)
+those instances on the next deploy.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Leave the flag unset (or set it to `false`) to keep rendering these values unencoded. Where a value may be supplied at deploy time, constrain it with a strict `allowedPattern` as defense-in-depth.
 
 
 <!-- END details -->

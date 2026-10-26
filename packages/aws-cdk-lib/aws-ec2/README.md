@@ -2537,6 +2537,21 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead(instance.role);
 ```
 
+When the `@aws-cdk/aws-ec2:encodeUserDataCommandValues` feature flag is enabled,
+values that are only known at deploy time, such as a `CfnParameter` or an
+asset's bucket name, are passed to the instance as data: they're encoded with
+`Fn::Base64` and decoded when the user data runs, so CloudFormation never
+inserts them into the script as code. The instance needs a `base64` command
+for this on Linux, which every common distribution includes.
+
+The flag defaults to off, so existing apps render these values unencoded and no
+instance is restarted or replaced on upgrade. Enabling it (new projects get it
+by default) changes the synthesized UserData of every call that passes a
+deploy-time value to these helpers, including every asset download. Updating
+`UserData` on an `AWS::EC2::Instance` requires some interruption, so those
+instances are stopped and started on the next deploy; with
+`userDataCausesReplacement`, those instances are replaced.
+
 ### Persisting user data
 
 By default, EC2 UserData is run once on only the first time that an instance is started. It is possible to make the

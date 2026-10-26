@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "userdata-deploy-time-values-test/DefaultTest": {
+      "stacks": [
+        "integ-userdata-deploy-time-values-linux",
+        "integ-userdata-deploy-time-values-windows"
+      ],
+      "assertionStack": "userdata-deploy-time-values-test/DefaultTest/DeployAssert",
+      "assertionStackName": "userdatadeploytimevaluestestDefaultTestDeployAssertF1F55A6C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
