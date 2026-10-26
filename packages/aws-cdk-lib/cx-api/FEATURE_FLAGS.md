@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | V2NEXT | fix |
+| [@aws-cdk/aws-ec2:validateVpcCidrAlignment](#aws-cdkaws-ec2validatevpccidralignment) | Throw an error when the VPC CIDR block is not aligned to its prefix length | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -159,6 +160,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk/aws-ec2:validateVpcCidrAlignment": true,
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
@@ -2661,6 +2663,31 @@ running executions finish first.
 | V2NEXT | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-ec2:validateVpcCidrAlignment
+
+*Throw an error when the VPC CIDR block is not aligned to its prefix length*
+
+Flag type: Backwards incompatible bugfix
+
+When a `Vpc` is given a CIDR block through `IpAddresses.cidr()` (or the deprecated `cidr`
+property) whose base address is not aligned to its prefix length, such as `10.0.40.0/19`,
+the CDK silently rounds the block up to the next aligned block (`10.0.64.0/19`) and deploys
+a VPC with an address range that differs from the one that was requested.
+
+When this flag is enabled, `Vpc` throws a validation error for a misaligned CIDR block
+instead of rounding it.
+
+When disabled, the misaligned CIDR block keeps being rounded up to the next aligned block.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to keep rounding a misaligned CIDR block up to the next aligned block, or pass the aligned CIDR block that is currently being deployed.
 
 
 <!-- END details -->

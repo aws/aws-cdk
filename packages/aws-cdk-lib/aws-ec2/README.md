@@ -376,7 +376,7 @@ Use `IpAddresses.cidr` to define a Cidr range for your Vpc directly in code:
 import { IpAddresses } from 'aws-cdk-lib/aws-ec2';
 
 new ec2.Vpc(this, 'TheVPC', {
-  ipAddresses: IpAddresses.cidr('10.0.1.0/20')
+  ipAddresses: IpAddresses.cidr('10.0.0.0/20')
 });
 ```
 
@@ -386,6 +386,11 @@ Space will be allocated to subnets in the following order:
 * Afterwards, any remaining space is divided evenly between the rest of the subnets (if any).
 
 The argument to `IpAddresses.cidr` may not be a token, and concrete Cidr values are generated in the synthesized CloudFormation template.
+
+The base address of the CIDR block must be aligned to its prefix length. For example, `10.0.32.0/19` is
+aligned, but `10.0.40.0/19` is not. By default, a misaligned CIDR block is rounded up to the next aligned
+block (`10.0.40.0/19` becomes `10.0.64.0/19`). When the `@aws-cdk/aws-ec2:validateVpcCidrAlignment`
+feature flag is enabled, a misaligned CIDR block throws an error instead.
 
 #### Allocating an IP range from AWS IPAM
 

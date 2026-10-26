@@ -162,6 +162,7 @@ export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefa
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
+export const EC2_VALIDATE_VPC_CIDR_ALIGNMENT = '@aws-cdk/aws-ec2:validateVpcCidrAlignment';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2018,6 +2019,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_VALIDATE_VPC_CIDR_ALIGNMENT]: {
+    type: FlagType.BugFix,
+    summary: 'Throw an error when the VPC CIDR block is not aligned to its prefix length',
+    detailsMd: `
+      When a \`Vpc\` is given a CIDR block through \`IpAddresses.cidr()\` (or the deprecated \`cidr\`
+      property) whose base address is not aligned to its prefix length, such as \`10.0.40.0/19\`,
+      the CDK silently rounds the block up to the next aligned block (\`10.0.64.0/19\`) and deploys
+      a VPC with an address range that differs from the one that was requested.
+
+      When this flag is enabled, \`Vpc\` throws a validation error for a misaligned CIDR block
+      instead of rounding it.
+
+      When disabled, the misaligned CIDR block keeps being rounded up to the next aligned block.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep rounding a misaligned CIDR block up to the next aligned block, or pass the aligned CIDR block that is currently being deployed.',
   },
 };
 
