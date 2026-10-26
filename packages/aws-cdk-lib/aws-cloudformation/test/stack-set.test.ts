@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { Construct } from 'constructs';
@@ -6,18 +7,25 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
+import * as sns from '../../aws-sns';
+import * as cxschema from '../../cloud-assembly-schema';
 import {
   Annotations as CoreAnnotations,
   App,
   CfnCapabilities,
   CfnOutput,
   CfnParameter,
+  CfnResource,
   DefaultStackSynthesizer,
+  Fn,
+  LegacyStackSynthesizer,
+  NestedStack,
   Stack,
   Stage,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import type { StackSetStackProps } from '../lib';
@@ -1256,10 +1264,11 @@ describe('StackSet asset bucket deployment dependencies', () => {
   test('warns with an acknowledgeable id when an asset bucket is referenced', () => {
     const app = new App();
     const stack = new Stack(app);
-    new LambdaStackSet(stack, 'AssetStack', {
+    const stackSetStack = new LambdaStackSet(stack, 'AssetStack', {
       assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'imported-us-east-1')],
       assetBucketPrefix: 'imported',
     });
+    newStackSet(stack, 'StackSet', stackSetStack);
 
     Annotations.fromStack(stack).hasWarning('/Default', Match.stringLikeRegexp(
       '^Bucket Policy Permissions cannot be added to referenced Bucket.*\\[ack: @aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions\\]',
@@ -1269,14 +1278,55 @@ describe('StackSet asset bucket deployment dependencies', () => {
   test('the referenced asset bucket warning can be acknowledged on the parent stack', () => {
     const app = new App();
     const stack = new Stack(app);
-    new LambdaStackSet(stack, 'AssetStack', {
+    const stackSetStack = new LambdaStackSet(stack, 'AssetStack', {
       assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'imported-us-east-1')],
       assetBucketPrefix: 'imported',
     });
+    newStackSet(stack, 'StackSet', stackSetStack);
 
     CoreAnnotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions');
 
     Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
+  });
+
+  test('the referenced asset bucket warning is on the stack of the StackSet and can be acknowledged there', () => {
+    const app = new App();
+    const scope = new Stack(app, 'Scope');
+    const stackSetStack = new LambdaStackSet(scope, 'AssetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(scope, 'AssetBucket', 'imported-us-east-1')],
+      assetBucketPrefix: 'imported',
+    });
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+    newStackSet(first, 'StackSet', stackSetStack);
+    newStackSet(second, 'StackSet', stackSetStack);
+
+    CoreAnnotations.of(second).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions');
+
+    Annotations.fromStack(first).hasWarning('/First', Match.stringLikeRegexp('^Bucket Policy Permissions cannot be added'));
+    Annotations.fromStack(second).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
+    Annotations.fromStack(scope).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
+  });
+
+  test.each([
+    ['their stack', (_app: App, stack: Stack): Construct => stack],
+    ['the App', (app: App): Construct => app],
+  ])('depends on bucket deployments for assets added after the StackSet is created, with the StackSetStack in %s', (_name, scopeOf) => {
+    const app = new App();
+    const stack = new Stack(app, 'Consumer');
+    const other = new Stack(app, 'Other');
+    const stackSetStack = new StackSetStack(scopeOf(app, stack), 'AssetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1')],
+      assetBucketPrefix: 'late',
+    });
+    newStackSet(stack, 'late', stackSetStack);
+    newStackSet(other, 'other', stackSetStack);
+    addLambdaTo(stackSetStack);
+
+    for (const [consumer, name] of [[stack, 'late'], [other, 'other']] as const) {
+      const template = Template.fromStack(consumer);
+      expect(dependsOnOf(template, name)).toContain(bucketDeploymentIdFor(template, 'late-us-east-1'));
+    }
   });
 });
 
@@ -1703,13 +1753,767 @@ describe('StackSet validation errors', () => {
       constructPath: 'Default/AssetStack',
     }));
   });
+});
 
-  test('fails with an error code when a StackSetStack is not defined within a stack', () => {
+function sha256(content: string): string {
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function readFile(outdir: string, fileName: string): string {
+  return fs.readFileSync(path.join(outdir, fileName), 'utf-8');
+}
+
+function stackSetTemplateHash(outdir: string, stackSetStack: StackSetStack): string {
+  return sha256(readFile(outdir, stackSetStack.templateFile));
+}
+
+function assetManifestOf(assembly: cxapi.CloudAssembly, stack: Stack): any {
+  return JSON.parse(readFile(assembly.directory, `${stack.artifactId}.assets.json`));
+}
+
+/**
+ * Render a CloudFormation string expression as one string, with `${Ref}` placeholders
+ */
+function renderString(value: any): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value.Ref) {
+    return `\${${value.Ref}}`;
+  }
+  if (value['Fn::Sub']) {
+    return value['Fn::Sub'];
+  }
+  if (value['Fn::Join']) {
+    const [separator, parts] = value['Fn::Join'];
+    return parts.map(renderString).join(separator);
+  }
+  throw new Error(`cannot render ${JSON.stringify(value)}`);
+}
+
+function stackSetResourcesOf(template: Template): any[] {
+  return Object.values(template.findResources('AWS::CloudFormation::StackSet'));
+}
+
+function templateUrlOf(template: Template): string {
+  const stackSets = stackSetResourcesOf(template);
+  expect(stackSets).toHaveLength(1);
+  return renderString(stackSets[0].Properties.TemplateURL);
+}
+
+function bucketDeploymentIdsOf(template: Template): string[] {
+  return Object.keys(template.findResources('Custom::CDKBucketDeployment'));
+}
+
+function defaultAssetUrl(account: string, region: string, hash: string): string {
+  return `https://s3.${region}.\${AWS::URLSuffix}/cdk-hnb659fds-assets-${account}-${region}/${hash}.json`;
+}
+
+function stackArtifactDependencies(assembly: cxapi.CloudAssembly, stack: Stack): string[] {
+  const stackIds = new Set(assembly.stacks.map((s) => s.id));
+  return assembly.getStackArtifact(stack.artifactId).dependencies.map((d) => d.id).filter((id) => stackIds.has(id));
+}
+
+function newStackSet(scope: Construct, id: string, stackSetStack: StackSetStack): StackSet {
+  return new StackSet(scope, id, {
+    stackSetName: id,
+    template: StackSetTemplate.fromStackSetStack(stackSetStack),
+    capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+  });
+}
+
+function addLambdaTo(scope: Construct, id: string = 'Lambda') {
+  return new lambda.Function(scope, id, {
+    runtime: lambda.Runtime.NODEJS_18_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+  });
+}
+
+describe('StackSetStack scope', () => {
+  test.each([
+    ['an App', (app: App) => app],
+    ['a plain construct', (app: App) => new Construct(app, 'Group')],
+    ['a stack that does not consume it', (app: App) => new Stack(app, 'Other')],
+  ])('can be %s and is consumed by a StackSet in a regular stack', (_name, scopeOf) => {
     const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const stackSetStack = new StackSetStack(scopeOf(app), 'StackSetStack');
+    new sns.Topic(stackSetStack, 'Topic');
+    newStackSet(consumer, 'StackSet', stackSetStack);
 
-    expect(() => new StackSetStack(app, 'Stack')).toThrow(expect.objectContaining({
-      name: 'StackSetStackMustBeDefinedWithinStack',
-      message: 'a StackSetStack must be defined within the scope of another non-stackset stack',
+    const assembly = app.synth();
+
+    const hash = stackSetTemplateHash(assembly.directory, stackSetStack);
+    const resources = JSON.parse(readFile(assembly.directory, stackSetStack.templateFile)).Resources;
+    expect(Object.values(resources).map((resource: any) => resource.Type)).toEqual(['AWS::SNS::Topic']);
+    expect(assembly.stacks.map((s) => s.id)).not.toContain(stackSetStack.artifactId);
+    expect(templateUrlOf(Template.fromStack(consumer))).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+  });
+
+  test('can be the root of a Stage and its template is written to the outdir of the Stage', () => {
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const consumer = new Stack(stage, 'Consumer');
+    const stackSetStack = new StackSetStack(stage, 'StackSetStack');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    expect(fs.existsSync(path.join(assembly.directory, stackSetStack.templateFile))).toBe(false);
+    const hash = stackSetTemplateHash(stage.outdir, stackSetStack);
+    expect(templateUrlOf(Template.fromStack(consumer))).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+  });
+
+  test('can be inside another StackSetStack, which gets none of its resources', () => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const outer = new StackSetStack(app, 'Outer');
+    const inner = new StackSetStack(outer, 'Inner');
+    new sns.Topic(inner, 'Topic');
+    newStackSet(consumer, 'OuterStackSet', outer);
+    newStackSet(consumer, 'InnerStackSet', inner);
+
+    const assembly = app.synth();
+
+    Template.fromJSON(JSON.parse(readFile(assembly.directory, outer.templateFile))).resourceCountIs('AWS::SNS::Topic', 0);
+    Template.fromJSON(JSON.parse(readFile(assembly.directory, inner.templateFile))).resourceCountIs('AWS::SNS::Topic', 1);
+  });
+});
+
+describe('StackSetStack template asset', () => {
+  test.each([
+    ['the consumer stack is created first', true],
+    ['the StackSetStack is created first', false],
+  ])('is hosted by the consuming stack when %s', (_name, consumerFirst) => {
+    const app = new App();
+    let consumer: Stack | undefined = consumerFirst ? new Stack(app, 'Consumer') : undefined;
+    const scope = new Stack(app, 'Scope');
+    const stackSetStack = new StackSetStack(scope, 'StackSetStack');
+    new sns.Topic(stackSetStack, 'Topic');
+    consumer = consumer ?? new Stack(app, 'Consumer');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const hash = stackSetTemplateHash(assembly.directory, stackSetStack);
+    expect(templateUrlOf(Template.fromStack(consumer))).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+    expect(assetManifestOf(assembly, consumer).files[hash].source).toEqual({ path: stackSetStack.templateFile, packaging: 'file' });
+    expect(assetManifestOf(assembly, scope).files[hash]).toBeUndefined();
+  });
+
+  test('keeps the hash of the written template after a forced re-synth', () => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    new sns.Topic(stackSetStack, 'Topic');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+    app.synth();
+    new sns.Topic(stackSetStack, 'AddedAfterSynth');
+
+    const assembly = app.synth({ force: true });
+
+    const hash = stackSetTemplateHash(assembly.directory, stackSetStack);
+    expect(templateUrlOf(Template.fromStack(consumer))).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+    expect(assetManifestOf(assembly, consumer).files[hash].source.path).toEqual(stackSetStack.templateFile);
+  });
+
+  test('is written without being hosted anywhere when no StackSet consumes it', () => {
+    const app = new App();
+    const scope = new Stack(app, 'Scope');
+    const stackSetStack = new LambdaStackSet(scope, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(scope, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+
+    const assembly = app.synth();
+
+    expect(fs.existsSync(path.join(assembly.directory, stackSetStack.templateFile))).toBe(true);
+    const manifestFiles = Object.values(assetManifestOf(assembly, scope).files) as any[];
+    expect(manifestFiles.map((file) => file.source.path)).toEqual([`${scope.artifactId}.template.json`]);
+    Template.fromStack(scope).resourceCountIs('Custom::CDKBucketDeployment', 0);
+    expect(Annotations.fromStack(scope).findWarning('*', Match.stringLikeRegexp('.*'))).toEqual([]);
+  });
+});
+
+describe('a StackSetStack shared by stacks in different environments', () => {
+  const envB = { account: '222222222222', region: 'us-west-2' };
+  const envC = { account: '333333333333', region: 'eu-west-1' };
+
+  test.each([
+    ['a stack', (app: App) => new Stack(app, 'A', { env: { account: '111111111111', region: 'us-east-1' } })],
+    ['the App', (app: App) => app],
+  ])('scoped in %s gives each consumer stack its own template asset and bucket deployments', (_name, scopeOf) => {
+    const app = new App();
+    const scope = scopeOf(app);
+    const stackSetStack = new StackSetStack(scope, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(new Stack(app, 'Buckets'), 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    addLambdaTo(stackSetStack);
+    const b = new Stack(app, 'B', { env: envB });
+    const c = new Stack(app, 'C', { env: envC });
+    newStackSet(b, 'StackSet', stackSetStack);
+    newStackSet(c, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const hash = stackSetTemplateHash(assembly.directory, stackSetStack);
+    for (const [consumer, env] of [[b, envB], [c, envC]] as const) {
+      const template = Template.fromStack(consumer);
+      const bucket = `cdk-hnb659fds-assets-${env.account}-${env.region}`;
+      expect(templateUrlOf(template)).toEqual(defaultAssetUrl(env.account, env.region, hash));
+      expect(Object.values(assetManifestOf(assembly, consumer).files[hash].destinations)).toEqual([
+        expect.objectContaining({ bucketName: bucket, objectKey: `${hash}.json`, region: env.region }),
+      ]);
+
+      const deployments = bucketDeploymentIdsOf(template);
+      expect(deployments).toHaveLength(1);
+      template.hasResourceProperties('Custom::CDKBucketDeployment', {
+        SourceBucketNames: [bucket],
+        DestinationBucketName: 'prefix-us-east-1',
+      });
+      const dependsOn: string[] = stackSetResourcesOf(template)[0].DependsOn;
+      expect(dependsOn).toEqual(expect.arrayContaining(deployments));
+      expect(dependsOn.filter((id) => !template.toJSON().Resources[id])).toEqual([]);
+      expect(stackArtifactDependencies(assembly, consumer)).toEqual([]);
+    }
+    if (Stack.isStack(scope)) {
+      Template.fromStack(scope).resourceCountIs('Custom::CDKBucketDeployment', 0);
+      expect(assetManifestOf(assembly, scope).files[hash]).toBeUndefined();
+    }
+  });
+});
+
+describe('two StackSets in one stack sharing a StackSetStack', () => {
+  test.each([
+    ['the App', (_app: App, stack: Stack): Construct => stack.node.root],
+    ['their stack', (_app: App, stack: Stack): Construct => stack],
+  ])('scoped in %s share one template asset and one bucket deployment per asset bucket', (_name, scopeOf) => {
+    const app = new App();
+    const stack = new Stack(app, 'Consumer');
+    const stackSetStack = new LambdaStackSet(scopeOf(app, stack), 'StackSetStack', {
+      assetBuckets: [
+        s3.Bucket.fromBucketName(stack, 'AssetBucket', 'first-us-east-1'),
+        s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'second-us-east-1'),
+      ],
+      assetBucketPrefix: 'prefix',
+    });
+    newStackSet(stack, 'First', stackSetStack);
+    newStackSet(stack, 'Second', stackSetStack);
+
+    const assembly = app.synth();
+
+    const template = Template.fromStack(stack);
+    const [first, second] = stackSetResourcesOf(template);
+    expect(first.Properties.TemplateURL).toEqual(second.Properties.TemplateURL);
+    const templateEntries = (Object.values(assetManifestOf(assembly, stack).files) as any[])
+      .filter((file) => file.source.path === stackSetStack.templateFile);
+    expect(templateEntries).toHaveLength(1);
+    const deployments = bucketDeploymentIdsOf(template);
+    expect(deployments).toHaveLength(2);
+    expect(first.DependsOn).toEqual(expect.arrayContaining(deployments));
+    expect(second.DependsOn).toEqual(expect.arrayContaining(deployments));
+  });
+});
+
+describe('StackSetStack placement rules', () => {
+  test('fails with an error code when the StackSet is in a different Stage', () => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    const consumer = new Stack(new Stage(app, 'Stage'), 'Consumer');
+
+    expect(() => newStackSet(consumer, 'StackSet', stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetStackInDifferentStage',
+      constructPath: 'Stage/Consumer/StackSet',
     }));
+  });
+
+  test('a StackSet in the Stage of the StackSetStack synthesizes into that Stage', () => {
+    const app = new App();
+    const stage = new Stage(app, 'Stage');
+    const stackSetStack = new StackSetStack(new Stack(stage, 'Scope'), 'StackSetStack');
+    const consumer = new Stack(stage, 'Consumer');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    app.synth();
+
+    const hash = stackSetTemplateHash(stage.outdir, stackSetStack);
+    expect(templateUrlOf(Template.fromStack(consumer))).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+  });
+
+  test('fails with an error code when the StackSet is inside a StackSetStack', () => {
+    const app = new App();
+    const outer = new StackSetStack(app, 'Outer');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+
+    expect(() => newStackSet(outer, 'StackSet', stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetInStackSetStack',
+      constructPath: 'Outer/StackSet',
+    }));
+  });
+
+  test('fails with an error code when the StackSet is inside a nested stack of a StackSetStack', () => {
+    const app = new App();
+    const outer = new StackSetStack(app, 'Outer');
+    const nested = new NestedStack(outer, 'Nested');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+
+    expect(() => newStackSet(nested, 'StackSet', stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetInStackSetStack',
+      constructPath: 'Outer/Nested/StackSet',
+    }));
+  });
+
+  test('fails with an error code when the StackSet uses the template of its own StackSetStack', () => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+
+    expect(() => newStackSet(stackSetStack, 'StackSet', stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetInStackSetStack',
+    }));
+  });
+});
+
+describe('StackSetStack file asset object keys across consumer stacks', () => {
+  function templateKeysOf(outdir: string, stackSetStack: StackSetStack): string[] {
+    const template = Template.fromJSON(JSON.parse(readFile(outdir, stackSetStack.templateFile)));
+    return Object.values(template.findResources('AWS::Lambda::Function')).map((resource) => resource.Properties.Code.S3Key);
+  }
+
+  function copiedFileNamesOf(stack: Stack): string[] {
+    return Object.values(Template.fromStack(stack).findResources('Custom::CDKBucketDeployment'))
+      .flatMap((resource) => resource.Properties.SourceObjectKeys)
+      .map((key: any) => typeof key === 'string' ? path.posix.basename(key) : key);
+  }
+
+  function appScopedStackSetStack(app: App) {
+    return new StackSetStack(app, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(new Stack(app, 'Buckets'), 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+  }
+
+  test('reference the file names a default and a legacy consumer stack copy to', () => {
+    const app = new App();
+    const stackSetStack = appScopedStackSetStack(app);
+    addLambdaTo(stackSetStack);
+    const defaultConsumer = new Stack(app, 'Default', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'assets/' }) });
+    const legacyConsumer = new Stack(app, 'Legacy', { synthesizer: new LegacyStackSynthesizer() });
+    newStackSet(defaultConsumer, 'StackSet', stackSetStack);
+    newStackSet(legacyConsumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const [templateKey] = templateKeysOf(assembly.directory, stackSetStack);
+    expect(copiedFileNamesOf(defaultConsumer)).toEqual([templateKey]);
+    const legacyAsset = assembly.getStackArtifact(legacyConsumer.artifactId).assets
+      .find((asset) => asset.packaging === 'zip') as cxschema.FileAssetMetadataEntry;
+    expect(templateKey).toEqual(`${legacyAsset.sourceHash}.zip`);
+  });
+
+  test('fails with an error code at the second StackSet when consumer stacks would copy an asset under different file names', () => {
+    const app = new App();
+    const stackSetStack = appScopedStackSetStack(app);
+    addLambdaTo(stackSetStack);
+    newStackSet(new Stack(app, 'First', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'first-' }) }), 'StackSet', stackSetStack);
+    const second = new Stack(app, 'Second', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'second-' }) });
+
+    expect(() => newStackSet(second, 'StackSet', stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetAssetObjectKeyMismatch',
+      constructPath: 'StackSetStack',
+    }));
+  });
+
+  test('fails with an error code at the asset when consumer stacks would copy it under different file names', () => {
+    const app = new App();
+    const stackSetStack = appScopedStackSetStack(app);
+    newStackSet(new Stack(app, 'First', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'first-' }) }), 'StackSet', stackSetStack);
+    newStackSet(new Stack(app, 'Second', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'second-' }) }), 'StackSet', stackSetStack);
+
+    expect(() => addLambdaTo(stackSetStack)).toThrow(expect.objectContaining({
+      name: 'StackSetAssetObjectKeyMismatch',
+    }));
+  });
+
+  test('take the file name of the consumer stack bucket prefix when it has no slash', () => {
+    const app = new App();
+    const stackSetStack = appScopedStackSetStack(app);
+    const consumer = new Stack(app, 'Consumer', { synthesizer: new DefaultStackSynthesizer({ bucketPrefix: 'myapp-' }) });
+    addLambdaTo(stackSetStack);
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const templateKeys = templateKeysOf(assembly.directory, stackSetStack);
+    expect(templateKeys[0]).toMatch(/^myapp-/);
+    expect(copiedFileNamesOf(consumer)).toEqual(templateKeys);
+  });
+});
+
+describe('StackSetStack consumed by a stack with the legacy synthesizer', () => {
+  test('references the asset parameters of that stack only', () => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer', { synthesizer: new LegacyStackSynthesizer() });
+    const stackSetStack = new StackSetStack(app, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(consumer, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    addLambdaTo(stackSetStack);
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const template = Template.fromStack(consumer).toJSON();
+    const parameters = Object.keys(template.Parameters);
+    const stackSet = Object.values(template.Resources).find((resource: any) => resource.Type === 'AWS::CloudFormation::StackSet') as any;
+    const deployment = Object.values(template.Resources).find((resource: any) => resource.Type === 'Custom::CDKBucketDeployment') as any;
+    const templateUrlRefs = refsOf(stackSet.Properties.TemplateURL).filter((ref) => ref.startsWith('AssetParameters'));
+    const sourceRefs = refsOf(deployment.Properties.SourceBucketNames).filter((ref) => ref.startsWith('AssetParameters'));
+
+    const templateHash = stackSetTemplateHash(assembly.directory, stackSetStack);
+    expect(templateUrlRefs.length).toBeGreaterThan(0);
+    expect(templateUrlRefs.every((ref) => ref.startsWith(`AssetParameters${templateHash}`))).toBe(true);
+    expect(sourceRefs.length).toBeGreaterThan(0);
+    expect([...templateUrlRefs, ...sourceRefs].every((ref) => parameters.includes(ref))).toBe(true);
+    expect(JSON.stringify(template)).not.toMatch(/Fn::ImportValue|\$\{Token\[/);
+  });
+});
+
+describe('references across a StackSetStack boundary', () => {
+  type ScopeOf = (app: App, other: Stack) => Construct;
+  const scopes: Array<[string, ScopeOf]> = [
+    ['under the other stack', (_app, other) => other],
+    ['at App scope', (app) => app],
+  ];
+  const envs: Array<[string, { account: string; region: string } | undefined]> = [
+    ['an environment-agnostic', undefined],
+    ['an explicit-environment', { account: '111111111111', region: 'us-east-1' }],
+  ];
+  const strengths = ['strong', 'weak'];
+
+  function arrange(scopeOf: ScopeOf, env: { account: string; region: string } | undefined, strength: string) {
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: strength } });
+    const other = new Stack(app, 'Other', { env });
+    const stackSetStack = new StackSetStack(scopeOf(app, other), 'StackSetStack');
+    newStackSet(new Stack(app, 'Consumer', { env }), 'StackSet', stackSetStack);
+    return { app, other, stackSetStack };
+  }
+
+  describe.each(scopes)('with the StackSetStack %s', (_scope, scopeOf) => {
+    describe.each(envs)('and %s other stack', (_env, env) => {
+      test.each(strengths)('fails with an error code for a %s reference from the StackSetStack', (strength) => {
+        const { app, other, stackSetStack } = arrange(scopeOf, env, strength);
+        const topic = new sns.CfnTopic(other, 'Topic');
+        new CfnResource(stackSetStack, 'Consumer', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
+
+        expect(() => app.synth()).toThrow(expect.objectContaining({
+          name: 'StackSetStackCrossStackReference',
+          message: expect.stringContaining(topic.node.path),
+        }));
+      });
+
+      test.each(strengths)('fails with an error code for a %s reference to the StackSetStack', (strength) => {
+        const { app, other, stackSetStack } = arrange(scopeOf, env, strength);
+        const topic = new sns.CfnTopic(stackSetStack, 'Topic');
+        new CfnResource(other, 'Consumer', { type: 'My::Resource', properties: { TopicName: topic.attrTopicName } });
+
+        expect(() => app.synth()).toThrow(expect.objectContaining({
+          name: 'StackSetStackCrossStackReference',
+          message: expect.stringContaining(topic.node.path),
+        }));
+      });
+    });
+  });
+
+  test('fails with an error code for a reference from a nested stack of the StackSetStack to another stack', () => {
+    const { app, other, stackSetStack } = arrange((a) => a, undefined, 'strong');
+    const topic = new sns.CfnTopic(other, 'Topic');
+    new CfnResource(new NestedStack(stackSetStack, 'Nested'), 'Consumer', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
+
+    expect(() => app.synth()).toThrow(expect.objectContaining({ name: 'StackSetStackCrossStackReference' }));
+  });
+
+  test('allows references inside the StackSetStack, from its nested stacks and to imported values', () => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(consumer, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    newStackSet(consumer, 'StackSet', stackSetStack);
+    const topic = new sns.CfnTopic(stackSetStack, 'Topic');
+    new CfnResource(stackSetStack, 'Local', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
+    new CfnResource(new NestedStack(stackSetStack, 'Nested'), 'FromNested', { type: 'My::Resource', properties: { TopicArn: topic.ref } });
+    new CfnResource(stackSetStack, 'Imported', { type: 'My::Resource', properties: { Value: Fn.importValue('SomeExport') } });
+
+    const assembly = app.synth();
+
+    const template = Template.fromJSON(JSON.parse(readFile(assembly.directory, stackSetStack.templateFile)));
+    template.hasResourceProperties('My::Resource', { TopicArn: { Ref: Match.stringLikeRegexp('^Topic') } });
+    template.hasResourceProperties('My::Resource', { Value: { 'Fn::ImportValue': 'SomeExport' } });
+  });
+});
+
+/**
+ * The asset hash that `stack`, a top-level stack, records for the file `fileName`
+ */
+function recordedAssetHashOf(assembly: cxapi.CloudAssembly, stack: Stack, fileName: string): string {
+  const artifact = assembly.getStackArtifact(stack.artifactId);
+  const legacyAsset = artifact.assets.find((asset) => asset.path === fileName);
+  if (legacyAsset) {
+    return legacyAsset.sourceHash;
+  }
+  const entries = Object.entries(assetManifestOf(assembly, stack).files)
+    .filter(([, file]: [string, any]) => file.source.path === fileName);
+  expect(entries).toHaveLength(1);
+  return entries[0][0];
+}
+
+/**
+ * The hash of a nested stack template, which nested stacks compute over compact JSON
+ */
+function nestedTemplateHash(outdir: string, fileName: string): string {
+  return sha256(JSON.stringify(JSON.parse(readFile(outdir, fileName))));
+}
+
+function refsOf(value: any): string[] {
+  return JSON.stringify(value).match(/"Ref":"[^"]+"/g)?.map((ref) => ref.slice(7, -1)) ?? [];
+}
+
+const synthesizers: Array<[string, () => StackSynthesizer]> = [
+  ['the default synthesizer', () => new DefaultStackSynthesizer()],
+  ['the legacy synthesizer', () => new LegacyStackSynthesizer()],
+];
+
+describe('a StackSet in a nested stack', () => {
+  test.each(synthesizers)('gets the URL of a StackSetStack created after the nested stack, with %s', (_name, synthesizer) => {
+    const app = new App();
+    const top = new Stack(app, 'Top', { synthesizer: synthesizer() });
+    const nested = new NestedStack(top, 'Nested');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    new sns.Topic(stackSetStack, 'Topic');
+    newStackSet(nested, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const nestedTemplate = JSON.parse(readFile(assembly.directory, nested.templateFile));
+    const stackSet = stackSetResourcesOf(Template.fromJSON(nestedTemplate))[0];
+    const urlRefs = refsOf(stackSet.Properties.TemplateURL).filter((ref) => !ref.startsWith('AWS::'));
+    expect(urlRefs.every((ref) => ref in (nestedTemplate.Parameters ?? {}))).toBe(true);
+    expect(JSON.stringify(stackSet.Properties.TemplateURL)).not.toMatch(/unresolved|\$\{Token\[/);
+    if (urlRefs.length === 0) {
+      const hash = stackSetTemplateHash(assembly.directory, stackSetStack);
+      expect(renderString(stackSet.Properties.TemplateURL)).toEqual(defaultAssetUrl('${AWS::AccountId}', '${AWS::Region}', hash));
+    }
+    expect(recordedAssetHashOf(assembly, top, nested.templateFile)).toEqual(nestedTemplateHash(assembly.directory, nested.templateFile));
+  });
+});
+
+describe('a nested stack inside a StackSetStack', () => {
+  function stackSetStackWithNestedStack(scope: Construct, bucketScope: Stack) {
+    const stackSetStack = new StackSetStack(scope, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(bucketScope, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    new sns.Topic(new NestedStack(stackSetStack, 'Nested'), 'Topic');
+    return stackSetStack;
+  }
+
+  /**
+   * Checks that the StackSet in `template` waits for the bucket deployments there, and that their handler waits for its permissions
+   */
+  function expectDeploymentsWired(template: Template) {
+    const resources = template.toJSON().Resources;
+    const deployments = bucketDeploymentIdsOf(template);
+    expect(deployments).toHaveLength(1);
+    const dependsOn: string[] = stackSetResourcesOf(template)[0].DependsOn;
+    expect(dependsOn).toEqual(expect.arrayContaining(deployments));
+    expect(dependsOn.filter((id) => !resources[id])).toEqual([]);
+
+    const handlers = Object.values(template.findResources('AWS::Lambda::Function'));
+    expect(handlers).toHaveLength(1);
+    const roleId = handlers[0].Properties.Role['Fn::GetAtt'][0];
+    const policyIds = Object.entries(template.findResources('AWS::IAM::Policy'))
+      .filter(([, policy]) => JSON.stringify(policy.Properties.Roles) === JSON.stringify([{ Ref: roleId }]))
+      .map(([id]) => id);
+    expect(policyIds).toHaveLength(1);
+    expect(handlers[0].DependsOn).toEqual(expect.arrayContaining([roleId, ...policyIds]));
+  }
+
+  test.each([
+    ['under the consumer stack', (_app: App, consumer: Stack): Construct => consumer],
+    ['at App scope', (app: App): Construct => app],
+  ])('makes the StackSet wait for the copies of its template, with the StackSetStack %s', (_name, scopeOf) => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const stackSetStack = stackSetStackWithNestedStack(scopeOf(app, consumer), consumer);
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    expectDeploymentsWired(Template.fromStack(consumer));
+  });
+
+  test('makes each StackSet wait for the copies in its own stack', () => {
+    const app = new App();
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+    const stackSetStack = stackSetStackWithNestedStack(app, new Stack(app, 'Buckets'));
+    newStackSet(first, 'StackSet', stackSetStack);
+    newStackSet(second, 'StackSet', stackSetStack);
+
+    expectDeploymentsWired(Template.fromStack(first));
+    expectDeploymentsWired(Template.fromStack(second));
+  });
+
+  test.each(synthesizers)('makes a StackSet in a nested stack wait for the copies there, with %s', (_name, synthesizer) => {
+    const app = new App();
+    const top = new Stack(app, 'Top', { synthesizer: synthesizer() });
+    const host = new NestedStack(top, 'Host');
+    const stackSetStack = stackSetStackWithNestedStack(app, top);
+    newStackSet(host, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    const hostTemplate = JSON.parse(readFile(assembly.directory, host.templateFile));
+    expectDeploymentsWired(Template.fromJSON(hostTemplate));
+    const unknownRefs = refsOf(hostTemplate.Resources).filter((ref) => !ref.startsWith('AWS::') && !(ref in hostTemplate.Resources) && !(ref in (hostTemplate.Parameters ?? {})));
+    expect(unknownRefs).toEqual([]);
+    expect(recordedAssetHashOf(assembly, top, host.templateFile)).toEqual(nestedTemplateHash(assembly.directory, host.templateFile));
+  });
+});
+
+describe('annotations inside a StackSetStack', () => {
+  const warningId = '@aws-cdk/test:stackSetWarning';
+
+  function annotate(construct: Construct) {
+    CoreAnnotations.of(construct).addError('an error inside');
+    CoreAnnotations.of(construct).addWarningV2(warningId, 'a warning inside');
+    CoreAnnotations.of(construct).addInfo('an info inside');
+  }
+
+  function expectAnnotations(stack: Stack, constructPath: string) {
+    const annotations = Annotations.fromStack(stack);
+    annotations.hasError(constructPath, 'an error inside');
+    annotations.hasWarning(constructPath, Match.stringLikeRegexp('^a warning inside'));
+    annotations.hasInfo(constructPath, 'an info inside');
+  }
+
+  function expectNoAnnotations(stack: Stack) {
+    const annotations = Annotations.fromStack(stack);
+    annotations.hasNoError('*', Match.stringLikeRegexp('inside'));
+    annotations.hasNoWarning('*', Match.stringLikeRegexp('inside'));
+    annotations.hasNoInfo('*', Match.stringLikeRegexp('inside'));
+  }
+
+  function metadataTypesUnder(assembly: cxapi.CloudAssembly, stack: Stack, constructPath: string): string[] {
+    const metadata: Record<string, cxschema.MetadataEntry[]> = JSON.parse(readFile(assembly.directory, `${stack.artifactId}.metadata.json`));
+    return Object.entries(metadata)
+      .filter(([key]) => key === constructPath || key.startsWith(`${constructPath}/`))
+      .flatMap(([, entries]) => entries.map((entry) => entry.type));
+  }
+
+  test('appear in each consumer stack and not in a non-consuming parent stack', () => {
+    const app = new App();
+    const parent = new Stack(app, 'Parent');
+    const stackSetStack = new StackSetStack(parent, 'StackSetStack');
+    const topic = new sns.Topic(stackSetStack, 'Topic');
+    annotate(topic);
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+    newStackSet(first, 'StackSet', stackSetStack);
+    newStackSet(second, 'StackSet', stackSetStack);
+
+    expectAnnotations(first, '/Parent/StackSetStack/Topic');
+    expectAnnotations(second, '/Parent/StackSetStack/Topic');
+    expectNoAnnotations(parent);
+  });
+
+  test('appear in a consumer stack when the StackSetStack is at App scope', () => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    annotate(stackSetStack);
+    const consumer = new Stack(app, 'Consumer');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    expectAnnotations(consumer, '/StackSetStack');
+  });
+
+  test('appear in the top-level stack of a nested stack that consumes the StackSetStack', () => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    annotate(new sns.Topic(stackSetStack, 'Topic'));
+    const top = new Stack(app, 'Top');
+    newStackSet(new NestedStack(top, 'Nested'), 'StackSet', stackSetStack);
+
+    expectAnnotations(top, '/StackSetStack/Topic');
+  });
+
+  test('appear in a consumer stack when added in a nested stack of the StackSetStack', () => {
+    const app = new App();
+    const consumer = new Stack(app, 'Consumer');
+    const stackSetStack = new StackSetStack(app, 'StackSetStack', {
+      assetBuckets: [s3.Bucket.fromBucketName(consumer, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    annotate(new sns.Topic(new NestedStack(stackSetStack, 'Nested'), 'Topic'));
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    expectAnnotations(consumer, '/StackSetStack/Nested/Topic');
+  });
+
+  test('are copied with the error code of an error, and without other metadata of the StackSetStack', () => {
+    const app = new App({ context: { [cxapi.DISABLE_CREATION_STACK_TRACES]: false } });
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    const topic = new sns.Topic(stackSetStack, 'Topic');
+    CoreAnnotations.of(topic)._addTrackableError(lit`MyErrorCode`, 'an error inside');
+    const consumer = new Stack(app, 'Consumer');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    const assembly = app.synth();
+
+    expect(topic.node.defaultChild!.node.metadata.map((entry) => entry.type)).toContain(cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+    expect(new Set(metadataTypesUnder(assembly, consumer, '/StackSetStack'))).toEqual(new Set(['aws:cdk:error', 'aws:cdk:error-code']));
+    Annotations.fromStack(consumer).hasError('/StackSetStack/Topic', 'an error inside');
+  });
+
+  test('of a StackSetStack without a consumer appear nowhere', () => {
+    const app = new App();
+    const parent = new Stack(app, 'Parent');
+    annotate(new StackSetStack(parent, 'StackSetStack'));
+
+    expectNoAnnotations(parent);
+  });
+
+  test.each([
+    ['the StackSetStack', (stackSetStack: StackSetStack): Construct => stackSetStack],
+    ['an ancestor of the StackSetStack', (stackSetStack: StackSetStack): Construct => stackSetStack.node.scope!],
+    ['the construct with the warning', (stackSetStack: StackSetStack): Construct => stackSetStack.node.findChild('Topic')],
+  ])('warnings acknowledged on %s are removed from every consumer stack', (_name, acknowledgeOn) => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(new Construct(app, 'Group'), 'StackSetStack');
+    annotate(new sns.Topic(stackSetStack, 'Topic'));
+    const first = new Stack(app, 'First');
+    const second = new Stack(app, 'Second');
+    newStackSet(first, 'StackSet', stackSetStack);
+    newStackSet(second, 'StackSet', stackSetStack);
+
+    CoreAnnotations.of(acknowledgeOn(stackSetStack)).acknowledgeWarning(warningId);
+
+    for (const consumer of [first, second]) {
+      Annotations.fromStack(consumer).hasNoWarning('*', Match.stringLikeRegexp('inside'));
+      Annotations.fromStack(consumer).hasError('/Group/StackSetStack/Topic', 'an error inside');
+    }
+  });
+
+  test('warnings acknowledged on a consumer stack that is not an ancestor remain', () => {
+    const app = new App();
+    const stackSetStack = new StackSetStack(app, 'StackSetStack');
+    annotate(stackSetStack);
+    const consumer = new Stack(app, 'Consumer');
+    newStackSet(consumer, 'StackSet', stackSetStack);
+
+    CoreAnnotations.of(consumer).acknowledgeWarning(warningId);
+
+    Annotations.fromStack(consumer).hasWarning('/StackSetStack', Match.stringLikeRegexp('^a warning inside'));
   });
 });

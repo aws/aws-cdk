@@ -1,13 +1,14 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Construct, IDependable } from 'constructs';
+import type { Construct, IConstruct, IDependable } from 'constructs';
 import { DependencyGroup } from 'constructs';
 import type { IBucket } from '../../aws-s3';
 import { Bucket } from '../../aws-s3';
 import { BucketDeployment, Source } from '../../aws-s3-deployment';
 import {
   Stack,
+  Stage,
   StackSynthesizer,
   Names,
   FileAssetPackaging,
@@ -28,17 +29,43 @@ import type {
 import type { IBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import {
+  addTemplateConsumer,
+  isConsumerHostedStack,
+  markConsumerHostedStack,
+  topLevelStackOf,
+} from '../../core/lib/private/consumer-hosted-stack';
 import { lit } from '../../core/lib/private/literal-string';
 
-interface AssetBucketDeploymentProperties {
-  assetBucket: IBucket;
-  bucketDeployment?: BucketDeployment;
+/**
+ * A file asset of a StackSetStack, which every host stack publishes and copies to the asset buckets.
+ */
+interface NestedFileAsset {
+  readonly source: FileAssetSource;
+  /** The object key used when no host stack determines it */
+  readonly defaultObjectKey: string;
+  /** The object key the template references */
+  readonly objectKey: IBox<string>;
+  /** The object key the host stacks copy the asset to, once one host has it */
+  hostObjectKey?: string;
+}
+
+/**
+ * The copies of a StackSetStack's file assets that one host stack makes.
+ */
+interface HostAssetCopies {
+  readonly host: Stack;
+  /** The bucket deployments of this host, one per asset bucket */
+  readonly bucketDeployments: BucketDeployment[];
+  readonly deployments: DependencyGroup;
+  sourceBucket?: IBucket;
 }
 
 /**
  * Deployment environment for an AWS StackSet stack.
  *
- * Interoperates with the StackSynthesizer of the parent stack.
+ * Every stack that hosts the template of the StackSet stack publishes the file
+ * assets with its own synthesizer and copies them to the asset buckets.
  */
 class StackSetStackSynthesizer extends StackSynthesizer {
   /**
@@ -58,9 +85,8 @@ class StackSetStackSynthesizer extends StackSynthesizer {
    * @default - No Buckets provided and Assets will not be supported.
    */
   readonly assetBucketPrefix?: string;
-  private bucketDeployments: { [key: string]: AssetBucketDeploymentProperties };
-  private parentAssetBucket?: IBucket;
-  private readonly assetDeployments = new DependencyGroup();
+  private readonly assets = new Array<NestedFileAsset>();
+  private readonly hosts = new Map<Stack, HostAssetCopies>();
 
   /**
    * Creates a new StackSetStackSynthesizer.
@@ -72,22 +98,25 @@ class StackSetStackSynthesizer extends StackSynthesizer {
     super();
     this.assetBuckets = assetBuckets;
     this.assetBucketPrefix = assetBucketPrefix;
-    this.bucketDeployments = {};
-    for (const assetBucket of assetBuckets ?? []) {
-      this.bucketDeployments[assetBucket.bucketName] = { assetBucket };
-    }
   }
 
   /**
-   * The bucket deployments that copy this stack's file assets to the asset buckets.
+   * Make `host` publish and copy every file asset of this stack, including assets added later.
    *
-   * Resolved when dependencies are rendered, so it includes assets added after a
-   * StackSet takes a dependency on it.
-   *
+   * @returns the bucket deployments in `host` that copy the file assets. Resolved
+   * when dependencies are rendered, so it includes assets added later.
    * @internal
    */
-  public get _assetDeployments(): IDependable {
-    return this.assetDeployments;
+  public _addHost(host: Stack): IDependable {
+    let copies = this.hosts.get(host);
+    if (!copies) {
+      copies = { host, bucketDeployments: [], deployments: new DependencyGroup() };
+      this.hosts.set(host, copies);
+      for (const asset of this.assets) {
+        this.copyToHost(copies, asset);
+      }
+    }
+    return copies.deployments;
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
@@ -103,60 +132,18 @@ class StackSetStackSynthesizer extends StackSynthesizer {
       throw new ValidationError(lit`AssetFileNameRequired`, 'asset filename is undefined', this.boundStack);
     }
 
-    const parentStack = (this.boundStack as StackSetStack)._getParentStack();
+    const extension = asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.fileName);
+    const defaultObjectKey = `${asset.sourceHash}${extension}`;
+    const nestedAsset: NestedFileAsset = { source: asset, defaultObjectKey, objectKey: Box.fromValue(defaultObjectKey) };
+    this.assets.push(nestedAsset);
 
-    // Delegate to the parent stack's synthesizer to handle asset staging
-    const parentLocation = parentStack.synthesizer.addFileAsset(asset);
-
-    // Create a reference to the parent's asset bucket (lazily, once)
-    if (!this.parentAssetBucket) {
-      this.parentAssetBucket = Bucket.fromBucketName(
-        this.boundStack,
-        'ParentAssetBucket',
-        parentLocation.bucketName,
-      );
-    }
-
-    // Copy the object the parent synthesizer publishes, instead of re-staging a local path
-    const source = Source.bucket(this.parentAssetBucket, parentLocation.objectKey);
-
-    for (const assetBucket of this.assetBuckets) {
-      const index = this.assetBuckets.indexOf(assetBucket);
-      const assetDeployment = this.bucketDeployments[assetBucket.bucketName];
-
-      if (!assetDeployment.bucketDeployment) {
-        if (!Resource.isOwnedResource(assetDeployment.assetBucket)) {
-          Annotations.of(parentStack).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
-            'Bucket Policy Permissions cannot be added to' +
-              ' referenced Bucket. Please make sure your bucket has the correct permissions');
-        }
-
-        const bucketDeploymentConstructName = `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${index}`;
-
-        const bucketDeployment = new BucketDeployment(
-          parentStack,
-          bucketDeploymentConstructName,
-          {
-            sources: [source],
-            destinationBucket: assetDeployment.assetBucket,
-            extract: false,
-            prune: false,
-          },
-        );
-
-        assetDeployment.bucketDeployment = bucketDeployment;
-        this.assetDeployments.add(bucketDeployment);
-      } else {
-        assetDeployment.bucketDeployment.addSource(source);
-      }
+    for (const copies of this.hosts.values()) {
+      this.copyToHost(copies, nestedAsset);
     }
 
     // Resolve the bucket per target region at deploy time
     const bucketName = Fn.join('-', [this.assetBucketPrefix, Aws.REGION]);
-    // BucketDeployment (extract: false) copies each object to the bucket root under its file name only.
-    // A token can't resolve during synth so rebuild the file name the way the asset manifest does.
-    const extension = asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : path.extname(asset.fileName);
-    const objectKey = Token.isUnresolved(parentLocation.objectKey) ? `${asset.sourceHash}${extension}` : path.posix.basename(parentLocation.objectKey);
+    const objectKey = Token.asString(nestedAsset.objectKey);
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
 
@@ -169,8 +156,59 @@ class StackSetStackSynthesizer extends StackSynthesizer {
 
   public synthesize(session: ISynthesisSession): void {
     // Synthesize the template, but don't emit as a cloud assembly artifact.
-    // It will be registered as an S3 asset of its parent instead.
+    // It will be registered as an S3 asset of each host stack instead.
     this.synthesizeTemplate(session);
+  }
+
+  /**
+   * Publish `asset` with the synthesizer of the host and copy it to every asset bucket.
+   */
+  private copyToHost(copies: HostAssetCopies, asset: NestedFileAsset) {
+    const assetBuckets = this.assetBuckets!;
+    const location = copies.host.synthesizer.addFileAsset(asset.source);
+
+    // BucketDeployment (extract: false) copies each object to the bucket root under its file name only.
+    // A token can't resolve during synth so rebuild the file name the way the asset manifest does.
+    const objectKey = Token.isUnresolved(location.objectKey) ? asset.defaultObjectKey : path.posix.basename(location.objectKey);
+    if (asset.hostObjectKey === undefined) {
+      asset.hostObjectKey = objectKey;
+      asset.objectKey.set(objectKey);
+    } else if (asset.hostObjectKey !== objectKey) {
+      throw new ValidationError(lit`StackSetAssetObjectKeyMismatch`,
+        `stack ${JSON.stringify(copies.host.node.path)} would copy asset ${JSON.stringify(asset.source.sourceHash)} to the asset buckets as ${JSON.stringify(objectKey)}, ` +
+        `but another stack that uses this StackSetStack copies it as ${JSON.stringify(asset.hostObjectKey)}; ` +
+        'give the synthesizers of these stacks the same \'bucketPrefix\', or a \'bucketPrefix\' that ends with \'/\'',
+        this.boundStack);
+    }
+
+    // Copy the object the host synthesizer publishes, instead of re-staging a local path
+    if (!copies.sourceBucket) {
+      copies.sourceBucket = Bucket.fromBucketName(copies.host, `${Names.uniqueId(this.boundStack)}-AssetSourceBucket`, location.bucketName);
+    }
+    const source = Source.bucket(copies.sourceBucket, location.objectKey);
+
+    assetBuckets.forEach((assetBucket, index) => {
+      const bucketDeployment = copies.bucketDeployments[index];
+      if (bucketDeployment) {
+        bucketDeployment.addSource(source);
+        return;
+      }
+
+      if (!Resource.isOwnedResource(assetBucket)) {
+        Annotations.of(copies.host).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
+          'Bucket Policy Permissions cannot be added to' +
+            ' referenced Bucket. Please make sure your bucket has the correct permissions');
+      }
+
+      const deployment = new BucketDeployment(copies.host, `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${index}`, {
+        sources: [source],
+        destinationBucket: assetBucket,
+        extract: false,
+        prune: false,
+      });
+      copies.bucketDeployments[index] = deployment;
+      copies.deployments.add(deployment);
+    });
   }
 }
 
@@ -201,18 +239,44 @@ export interface StackSetStackProps {
 }
 
 /**
+ * The template URL and dependencies a StackSet gets from a StackSetStack.
+ */
+interface StackSetStackBinding {
+  /**
+   * The URL of the template in the asset location of the stack of the StackSet
+   */
+  readonly templateUrl: string;
+
+  /**
+   * Resources in the stack of the StackSet that must be deployed before the StackSet
+   */
+  readonly dependencies: IDependable[];
+}
+
+/**
+ * The template asset of a StackSetStack in one host stack.
+ */
+interface HostTemplate {
+  readonly host: Stack;
+  readonly templateUrl: IBox<string | undefined>;
+  readonly templateUrlToken: string;
+  readonly dependencies: IDependable[];
+}
+
+/**
  * A StackSet stack, which is similar to a normal CloudFormation stack with
  * some differences.
  *
  * This stack will not be treated as an independent deployment
  * artifact (won't be listed in "cdk list" or deployable through "cdk deploy"),
- * but rather only synthesized as a template and uploaded as an asset to S3.
+ * but rather only synthesized as a template and uploaded as an asset to S3
+ * by every stack that has a StackSet using it.
  */
 @noBoxStackTraces
 export class StackSetStack extends Stack {
   public readonly templateFile: string;
-  private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
-  private _parentStack: Stack;
+  private readonly hostTemplates = new Map<Stack, HostTemplate>();
+  private template?: string;
 
   /**
    * Creates a new StackSetStack.
@@ -225,69 +289,77 @@ export class StackSetStack extends Stack {
       synthesizer: new StackSetStackSynthesizer(props.assetBuckets, props.assetBucketPrefix),
     });
 
-    this._parentStack = findParentStack(scope);
+    markConsumerHostedStack(this);
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.stackset.template.json`;
   }
 
   /**
-   * Fetch the template URL.
+   * Make the stack of `consumer` host this stack's template and file assets.
    *
+   * @returns the template URL in that stack and the resources in it that must
+   * be deployed before `consumer`
    * @internal
    */
-  public _getTemplateUrl(): string {
-    return Token.asString(this._templateUrl);
+  public _bindConsumer(consumer: IConstruct): StackSetStackBinding {
+    const host = Stack.of(consumer);
+
+    if (Stage.of(host) !== Stage.of(this)) {
+      throw new ValidationError(lit`StackSetStackInDifferentStage`,
+        `a StackSet must be in the same Stage as the StackSetStack of its template, got StackSetStack ${JSON.stringify(this.node.path)}; ` +
+        'define the StackSetStack in the Stage of the StackSet',
+        consumer);
+    }
+    if (isConsumerHostedStack(topLevelStackOf(host))) {
+      throw new ValidationError(lit`StackSetInStackSetStack`,
+        `a StackSet cannot be defined inside a StackSetStack, got StackSetStack ${JSON.stringify(topLevelStackOf(host).node.path)}; ` +
+        'define the StackSet in a regular stack',
+        consumer);
+    }
+
+    addTemplateConsumer(this, consumer);
+
+    let hostTemplate = this.hostTemplates.get(host);
+    if (!hostTemplate) {
+      const templateUrl = Box.fromValue<string | undefined>(undefined);
+      const deployments = (this.synthesizer as StackSetStackSynthesizer)._addHost(host);
+      hostTemplate = { host, templateUrl, templateUrlToken: Token.asString(templateUrl), dependencies: [deployments] };
+      this.hostTemplates.set(host, hostTemplate);
+    }
+
+    return { templateUrl: hostTemplate.templateUrlToken, dependencies: hostTemplate.dependencies };
   }
 
   /**
-   * Fetch the Parent Stack.
+   * Render the template once and register it as a file asset of every host stack.
    *
    * @internal
    */
-  public _getParentStack(): Stack {
-    return this._parentStack;
+  public _prepareTemplateAsset(): void {
+    if (this.template !== undefined) {
+      return;
+    }
+
+    this.template = JSON.stringify(this._toCloudFormation(), undefined, 2);
+    const templateHash = crypto.createHash('sha256').update(this.template).digest('hex');
+
+    for (const { host, templateUrl } of this.hostTemplates.values()) {
+      templateUrl.set(host.synthesizer.addFileAsset({
+        packaging: FileAssetPackaging.FILE,
+        sourceHash: templateHash,
+        fileName: this.templateFile,
+      }).httpUrl);
+    }
   }
 
   /**
-   * Fetch the bucket deployments that copy this stack's file assets.
-   *
-   * @internal
-   */
-  public _getAssetDeployments(): IDependable {
-    return (this.synthesizer as StackSetStackSynthesizer)._assetDeployments;
-  }
-
-  /**
-   * Synthesize the product stack template, overrides the `super` class method.
-   *
-   * Defines an asset at the parent stack which represents the template of this
-   * product stack.
+   * Write the template that was rendered when its asset was registered.
    *
    * @internal
    */
   public _synthesizeTemplate(session: ISynthesisSession): void {
-    const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
-    const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
-
-    this._templateUrl.set(this._parentStack.synthesizer.addFileAsset({
-      packaging: FileAssetPackaging.FILE,
-      sourceHash: templateHash,
-      fileName: this.templateFile,
-    }).httpUrl);
-
-    fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
-  }
-}
-
-/**
- * Validates the scope for a stackset stack, which must be defined within the scope of another `Stack`.
- */
-function findParentStack(scope: Construct): Stack {
-  try {
-    const parentStack = Stack.of(scope);
-    return parentStack as Stack;
-  } catch {
-    throw new ValidationError(lit`StackSetStackMustBeDefinedWithinStack`, 'a StackSetStack must be defined within the scope of another non-stackset stack', scope);
+    this._prepareTemplateAsset();
+    fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), this.template!);
   }
 }
