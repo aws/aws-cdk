@@ -2,6 +2,7 @@ import type { Construct, IConstruct } from 'constructs';
 import type { ApplicationLogLevel, SystemLogLevel } from './function';
 import {
   CfnNetworkConnector,
+  CfnResourcePolicy,
   CfnWebFunction,
   CfnWebFunctionRevision,
 } from './lambda.generated';
@@ -270,6 +271,18 @@ export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable
    * permission to be granted manually instead.
    */
   addToRolePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Adds a statement to the WebFunction's resource-based policy.
+   *
+   * A web function has a single resource-based policy, so all statements are rendered into one
+   * `AWS::Lambda::ResourcePolicy`. Use it to allow another account, or a service such as
+   * CloudFront, to invoke the function's endpoints.
+   *
+   * For an imported WebFunction the policy cannot be changed without replacing it, so this adds
+   * a warning instead and returns `statementAdded: false`.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
@@ -297,6 +310,17 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * Whether this construct owns the WebFunction's resource-based policy.
+   *
+   * A web function has one policy, and `AWS::Lambda::ResourcePolicy` replaces all of it, so only
+   * the construct that defines the function can add to it.
+   */
+  protected abstract readonly canCreateResourcePolicy: boolean;
+
+  private resourcePolicy?: CfnResourcePolicy;
+  private resourcePolicyDocument?: iam.PolicyDocument;
+
+  /**
    * Adds a statement to the WebFunction's execution role.
    *
    * For an imported WebFunction the role is unknown, so this adds a warning asking for the
@@ -304,6 +328,40 @@ export abstract class WebFunctionBase extends Resource implements IWebFunction {
    */
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     this.grantPrincipal.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Adds a statement to the WebFunction's resource-based policy.
+   *
+   * A web function has a single resource-based policy, so all statements are rendered into one
+   * `AWS::Lambda::ResourcePolicy`. Use it to allow another account, or a service such as
+   * CloudFront, to invoke the function's endpoints.
+   *
+   * For an imported WebFunction the policy cannot be changed without replacing it, so this adds
+   * a warning instead and returns `statementAdded: false`.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.canCreateResourcePolicy) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:webFunctionResourcePolicyNotModified',
+        'The resource-based policy of an imported WebFunction cannot be added to: a web function has a ' +
+        'single policy, and defining it here would replace the existing one. Add this statement where ' +
+        `the function is defined: ${JSON.stringify(statement.toStatementJson())}`,
+      );
+      return { statementAdded: false };
+    }
+    if (!this.resourcePolicy) {
+      // Sids are assigned because the service identifies statements by them.
+      this.resourcePolicyDocument = new iam.PolicyDocument({ assignSids: true });
+      const document = this.resourcePolicyDocument;
+      this.resourcePolicy = new CfnResourcePolicy(this, 'ResourcePolicy', {
+        resourceArn: this.webFunctionArn,
+        policyDocument: document,
+      });
+      this.node.addValidation({ validate: () => document.validateForResourcePolicy() });
+    }
+    this.resourcePolicyDocument!.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.resourcePolicy };
   }
 
   public get webFunctionRef(): WebFunctionReference {
@@ -353,6 +411,7 @@ export class WebFunction extends WebFunctionBase {
       public readonly webFunctionName = name;
       public readonly role = undefined;
       public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
+      protected readonly canCreateResourcePolicy = false;
     }
 
     return new Import(scope, id, {
@@ -421,6 +480,8 @@ export class WebFunction extends WebFunctionBase {
   public readonly revisionId: string;
 
   private readonly hasEgressNetworkConnector: boolean;
+
+  protected readonly canCreateResourcePolicy = true;
 
   /** The underlying L1 CfnWebFunction resource. Use for escape hatches. */
   public readonly resource: CfnWebFunction;

@@ -1,5 +1,5 @@
 import { Annotations, Match, Template } from '../../assertions';
-import { Role, ServicePrincipal } from '../../aws-iam';
+import { AccountPrincipal, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { Fn, PropertyInjectors, Stack } from '../../core';
 import { NetworkConnector } from '../lib/network-connector';
 import { WebFunction } from '../lib/webfunction';
@@ -9,10 +9,10 @@ import {
   WebFunctionEndpoint,
   WebFunctionEndpointLocation,
   WebFunctionEndpointType,
-  WebFunctionEndpointProps,
   WebFunctionTraffic,
   WebFunctionReplicaRegions,
 } from '../lib/webfunction-endpoint';
+import type { WebFunctionEndpointProps } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
 
 const mockBucket = {
@@ -209,6 +209,119 @@ describe('grants.invoke', () => {
         Statement: [Match.objectLike({ Resource: stack.resolve(second.endpointArn) })],
       },
     });
+  });
+});
+
+describe('resource-based policy', () => {
+  let stack: Stack;
+  beforeEach(() => {
+    stack = new Stack(undefined, undefined, { env: { account: '111111111111', region: 'us-east-1' } });
+  });
+
+  test('a same-account role is granted in its own policy, not in a resource policy', () => {
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    fn.endpoint.grants.invoke(new Role(stack, 'Caller', { assumedBy: new ServicePrincipal('ec2.amazonaws.com') }));
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::ResourcePolicy', 0);
+  });
+
+  test('a service principal is granted in the function\'s resource policy, with its conditions', () => {
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    const distributionArn = 'arn:aws:cloudfront::111111111111:distribution/EDFDVBD6EXAMPLE';
+    fn.endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com', {
+      conditions: { ArnLike: { 'aws:SourceArn': distributionArn } },
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+      ResourceArn: stack.resolve(fn.webFunctionArn),
+      PolicyDocument: {
+        Statement: [{
+          Sid: Match.anyValue(),
+          Action: 'lambda:InvokeWebFunctionEndpoint',
+          Effect: 'Allow',
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Resource: stack.resolve(fn.endpoint.endpointArn),
+          Condition: { ArnLike: { 'aws:SourceArn': distributionArn } },
+        }],
+      },
+    });
+  });
+
+  test('another account is granted in the function\'s resource policy', () => {
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    fn.endpoint.grants.invoke(new AccountPrincipal('222222222222'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+      PolicyDocument: {
+        Statement: [Match.objectLike({
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+        })],
+      },
+    });
+  });
+
+  test('grants on several endpoints and direct statements share one policy', () => {
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    const second = fn.addEndpoint('Second', { authType: WebFunctionAuthType.IAM_AUTH });
+    fn.endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+    second.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+    fn.addToResourcePolicy(new PolicyStatement({
+      actions: ['lambda:InvokeWebFunctionEndpoint'],
+      principals: [new AccountPrincipal('333333333333')],
+      resources: [second.endpointArn],
+    }));
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Lambda::ResourcePolicy', 1);
+    template.hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+      PolicyDocument: {
+        Statement: [
+          Match.objectLike({ Resource: stack.resolve(fn.endpoint.endpointArn) }),
+          Match.objectLike({ Resource: stack.resolve(second.endpointArn) }),
+          Match.objectLike({ Principal: Match.objectLike({ AWS: Match.anyValue() }) }),
+        ],
+      },
+    });
+  });
+
+  test('a standalone endpoint of a WebFunction defined in the app adds to that function\'s policy', () => {
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    const endpoint = new WebFunctionEndpoint(stack, 'Standalone', {
+      webFunction: fn,
+      traffic: WebFunctionTraffic.single(fn.revisionId),
+      authType: WebFunctionAuthType.IAM_AUTH,
+    });
+    endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+      ResourceArn: stack.resolve(fn.webFunctionArn),
+      PolicyDocument: { Statement: [Match.objectLike({ Resource: stack.resolve(endpoint.endpointArn) })] },
+    });
+  });
+
+  test('an imported WebFunction does not get a resource policy and warns', () => {
+    const fn = WebFunction.fromWebFunctionArn(stack, 'Fn', 'arn:aws:lambda:us-east-1:111111111111:web-function/existing');
+    const result = fn.addToResourcePolicy(new PolicyStatement({
+      actions: ['lambda:InvokeWebFunctionEndpoint'],
+      principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+      resources: ['*'],
+    }));
+
+    expect(result.statementAdded).toBe(false);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::ResourcePolicy', 0);
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('imported WebFunction cannot be added to'));
+  });
+
+  test('an imported endpoint warns when a service principal is granted', () => {
+    const imported = WebFunctionEndpoint.fromWebFunctionEndpointAttributes(stack, 'Imported', {
+      endpointArn: 'arn:aws:lambda:us-east-1:111111111111:web-function/existing/endpoint/prod',
+      domainName: 'abc.lambda-web.global.on.aws',
+      endpointType: WebFunctionEndpointType.HOME_REGION,
+    });
+    imported.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::ResourcePolicy', 0);
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('function is not defined in this app'));
   });
 });
 

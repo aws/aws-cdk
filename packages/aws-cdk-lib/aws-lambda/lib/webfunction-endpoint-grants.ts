@@ -19,12 +19,20 @@ export class WebFunctionEndpointGrants {
    *
    * Only meaningful for an endpoint with `WebFunctionAuthType.IAM_AUTH`; requests to it must be
    * signed by the grantee.
+   *
+   * A role or user in this account gets the permission in its own policy. Any other grantee, such
+   * as a service principal or another account, gets a statement in the resource-based policy of
+   * the WebFunction the endpoint serves, which requires that function to be defined in this app.
    */
   public invoke(grantee: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
+    const options = {
       grantee,
       actions: ['lambda:InvokeWebFunctionEndpoint'],
       resourceArns: [this.endpoint.webFunctionEndpointRef.endpointArn],
-    });
+    };
+    if (iam.GrantableResources.isResourceWithPolicy(this.endpoint)) {
+      return iam.Grant.addToPrincipalOrResource({ ...options, resource: this.endpoint });
+    }
+    return iam.Grant.addToPrincipal(options);
   }
 }

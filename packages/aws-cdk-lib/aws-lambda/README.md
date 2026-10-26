@@ -2279,6 +2279,28 @@ const endpoint = lambda.WebFunctionEndpoint.fromWebFunctionEndpointAttributes(th
 });
 ```
 
+### Granting Access to Other Accounts and Services
+
+`grants.invoke()` gives a role or user in the same account the permission in its own policy.
+Any other grantee, such as another account or a service principal, gets a statement in the
+WebFunction's resource-based policy instead. For example, to let a CloudFront distribution
+with origin access control call an endpoint:
+
+```ts
+declare const fn: lambda.WebFunction;
+declare const distributionArn: string;
+
+fn.endpoint.grants.invoke(new iam.ServicePrincipal('cloudfront.amazonaws.com', {
+  conditions: { ArnLike: { 'aws:SourceArn': distributionArn } },
+}));
+```
+
+A web function has a single resource-based policy, so every statement for it, from any of its
+endpoints or from `addToResourcePolicy()`, goes into one `AWS::Lambda::ResourcePolicy`. Do not
+define another policy for the same function: `AWS::Lambda::ResourcePolicy` replaces the whole
+document. For the same reason the policy of an imported WebFunction cannot be added to; CDK
+warns instead.
+
 ### Multi-Region Deployment
 
 Deploy globally with latency-based routing:

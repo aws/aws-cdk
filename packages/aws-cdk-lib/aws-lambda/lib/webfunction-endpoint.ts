@@ -3,6 +3,7 @@ import { CfnWebFunctionEndpoint } from './lambda.generated';
 import type { IWebFunctionEndpointRef, IWebFunctionRef, WebFunctionEndpointReference } from './lambda.generated';
 import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
 import { WebFunctionEndpointGrants } from './webfunction-endpoint-grants';
+import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import { Annotations, Fn, Names, Resource, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -377,7 +378,7 @@ export interface WebFunctionEndpointProps extends WebFunctionEndpointOptions {
 /**
  * Represents a WebFunction endpoint, either created in this stack or imported.
  */
-export interface IWebFunctionEndpoint extends IResource, IWebFunctionEndpointRef {
+export interface IWebFunctionEndpoint extends IResource, IWebFunctionEndpointRef, iam.IResourceWithPolicyV2 {
   /**
    * The ARN of the endpoint.
    *
@@ -445,6 +446,34 @@ export abstract class WebFunctionEndpointBase extends Resource implements IWebFu
 
   /** Grant methods for the endpoint. */
   public readonly grants: WebFunctionEndpointGrants = WebFunctionEndpointGrants.fromWebFunctionEndpoint(this);
+
+  /**
+   * The WebFunction whose resource-based policy holds statements about this endpoint, when it
+   * is defined in this app.
+   *
+   * @internal
+   */
+  protected _resourcePolicyTarget?: iam.IResourceWithPolicyV2;
+
+  /**
+   * Adds a statement to the resource-based policy of the WebFunction the endpoint serves.
+   *
+   * Only an endpoint created for a `WebFunction` defined in this app can do so, since a web
+   * function has a single policy; otherwise this adds a warning and returns
+   * `statementAdded: false`.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this._resourcePolicyTarget) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:webFunctionEndpointResourcePolicyNotModified',
+        'The resource-based policy of the WebFunction this endpoint serves cannot be added to from ' +
+        'here, because the function is not defined in this app. Add this statement where the ' +
+        `function is defined: ${JSON.stringify(statement.toStatementJson())}`,
+      );
+      return { statementAdded: false };
+    }
+    return this._resourcePolicyTarget.addToResourcePolicy(statement);
+  }
 
   public get webFunctionEndpointRef(): WebFunctionEndpointReference {
     return { endpointArn: this.endpointArn };
@@ -612,6 +641,10 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
         ? { rateLimit: props.rateLimit }
         : undefined,
     });
+
+    if (iam.GrantableResources.isResourceWithPolicy(props.webFunction)) {
+      this._resourcePolicyTarget = props.webFunction;
+    }
 
     this.endpointArn = this.resource.attrEndpointArn;
     this.domainName = this.resource.attrDomainName;
