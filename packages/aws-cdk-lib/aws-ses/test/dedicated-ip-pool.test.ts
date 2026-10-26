@@ -1,5 +1,5 @@
 import { Template, Match } from '../../assertions';
-import { Stack } from '../../core';
+import { CfnParameter, Fn, Stack } from '../../core';
 import { DedicatedIpPool, ScalingMode } from '../lib';
 
 let stack: Stack;
@@ -33,4 +33,31 @@ test('dedicated IP pool with invalid name', () => {
   expect(() => new DedicatedIpPool(stack, 'Pool', {
     dedicatedIpPoolName: 'invalidName',
   })).toThrow('Invalid dedicatedIpPoolName "invalidName". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.');
+});
+
+test('dedicated IP pool name from Fn::ImportValue', () => {
+  // WHEN
+  new DedicatedIpPool(stack, 'Pool', {
+    dedicatedIpPoolName: Fn.importValue('SharedPoolName'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::DedicatedIpPool', {
+    PoolName: { 'Fn::ImportValue': 'SharedPoolName' },
+  });
+});
+
+test('dedicated IP pool name from a CfnParameter', () => {
+  // GIVEN
+  const poolName = new CfnParameter(stack, 'PoolName', { type: 'String' });
+
+  // WHEN
+  new DedicatedIpPool(stack, 'Pool', {
+    dedicatedIpPoolName: poolName.valueAsString,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::DedicatedIpPool', {
+    PoolName: { Ref: 'PoolName' },
+  });
 });
