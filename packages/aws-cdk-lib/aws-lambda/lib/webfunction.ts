@@ -10,7 +10,7 @@ import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
 import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
-import { WebFunctionEndpoint, WebFunctionEndpointLocation, WebFunctionEndpointType } from './webfunction-endpoint';
+import { WebFunctionEndpoint, WebFunctionEndpointLocation, WebFunctionEndpointType, WebFunctionTraffic } from './webfunction-endpoint';
 import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointOptions } from './webfunction-endpoint';
 import type {
   WebFunctionRuntime,
@@ -620,7 +620,7 @@ export class WebFunction extends WebFunctionBase {
     const endpoint = new WebFunctionEndpoint(this, id, {
       ...options,
       webFunction: this,
-      revisionId: this.revisionId,
+      traffic: WebFunctionTraffic.single(this.revisionId),
     });
     endpoint.resource.addResourceDependency(this.resource);
     endpoint.resource.addResourceDependency(this.resourceRevision);

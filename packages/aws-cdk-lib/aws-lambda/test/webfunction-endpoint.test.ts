@@ -10,6 +10,7 @@ import {
   WebFunctionEndpointLocation,
   WebFunctionEndpointType,
   WebFunctionEndpointProps,
+  WebFunctionTraffic,
   WebFunctionReplicaRegions,
 } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
@@ -63,7 +64,7 @@ describe('default endpoint', () => {
       constructUniqueId: WebFunctionEndpoint.PROPERTY_INJECTION_ID,
       inject: (props: WebFunctionEndpointProps) => ({
         webFunction: props.webFunction,
-        revisionId: props.revisionId,
+        traffic: props.traffic,
         authType: props.authType,
         endpointName: props.endpointName,
         endpointLocation: props.endpointLocation,
@@ -267,7 +268,7 @@ describe('a standalone WebFunctionEndpoint', () => {
     const fn = WebFunction.fromWebFunctionArn(stack, 'Fn', 'arn:aws:lambda:us-east-1:123456789012:web-function/existing');
     new WebFunctionEndpoint(stack, 'Endpoint', {
       webFunction: fn,
-      revisionId: 'rev-abc',
+      traffic: WebFunctionTraffic.single('rev-abc'),
       authType: WebFunctionAuthType.IAM_AUTH,
     });
 

@@ -331,6 +331,32 @@ export interface WebFunctionEndpointOptions extends WebFunctionDefaultEndpointOp
 }
 
 /**
+ * How a WebFunction endpoint splits its traffic between revisions.
+ */
+export class WebFunctionTraffic {
+  /**
+   * Send all of the endpoint's traffic to one revision.
+   *
+   * @param revisionId the ID of the revision. For a `WebFunction` defined in this app, use its
+   * `revisionId`.
+   */
+  public static single(revisionId: string): WebFunctionTraffic {
+    return new WebFunctionTraffic([{ revisionId, weight: 100 }]);
+  }
+
+  private constructor(private readonly weights: CfnWebFunctionEndpoint.RevisionWeightProperty[]) {}
+
+  /**
+   * The endpoint's `RevisionWeights`.
+   *
+   * @internal
+   */
+  public _toRevisionWeights(): CfnWebFunctionEndpoint.RevisionWeightProperty[] {
+    return this.weights;
+  }
+}
+
+/**
  * Properties for defining a `WebFunctionEndpoint`.
  */
 export interface WebFunctionEndpointProps extends WebFunctionEndpointOptions {
@@ -340,12 +366,12 @@ export interface WebFunctionEndpointProps extends WebFunctionEndpointOptions {
   readonly webFunction: IWebFunctionRef;
 
   /**
-   * The ID of the revision that receives all of the endpoint's traffic.
+   * The revisions that receive the endpoint's traffic.
    *
-   * For a `WebFunction` defined in this app, use its `revisionId`, or create the endpoint with
-   * `WebFunction.addEndpoint()`, which sets it.
+   * For a `WebFunction` defined in this app, `WebFunction.addEndpoint()` sets this to the
+   * function's revision.
    */
-  readonly revisionId: string;
+  readonly traffic: WebFunctionTraffic;
 }
 
 /**
@@ -574,7 +600,7 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       endpointName: props.endpointName ?? this.defaultEndpointName(endpointType, regions),
       endpointType,
       authType: props.authType,
-      revisionWeights: [{ revisionId: props.revisionId, weight: 100 }],
+      revisionWeights: props.traffic._toRevisionWeights(),
       regions: regions, // note: regional (MULTI_REGION / PER_REGION) property only
       description: props.endpointDescription,
       // Only emit the wrapper objects when their single member is set, so that an
