@@ -661,13 +661,16 @@ it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 and that reflects a convention the CDK follows consistently. Once a value is
 handed to `splitArn()`:
 
-- a **deploy-time token** — whether fully unresolved, or a partially-tokenized
-  string such as `arn:${Aws.PARTITION}:s3:::bucket` — is parsed best-effort into
-  token components, and never throws;
-- a **concrete string** is expected to be a well-formed ARN. If it is not —
-  either malformed (an `arn:` prefix but missing required components) or not an
-  ARN at all (no `arn:` prefix) — that is a **caller error**, and throwing is the
-  correct, fail-fast outcome rather than something to recover from.
+- a value that does **not** start with `arn:` is accepted only when it is a
+  fully-unresolved deploy-time token — parsed best-effort via `Fn::Split` /
+  `Fn::Select`, and never throwing. A *concrete* string that does not start with
+  `arn:` is a **caller error** and throws (`ArnsMustStartWithArn`);
+- any `arn:`-prefixed string — concrete, or one that embeds tokens such as
+  `arn:${Aws.PARTITION}:s3:::bucket` — is structurally validated. A well-formed
+  one parses (token segments come back as deploy-time components); one missing a
+  required component (partition, service or resource) is a **caller error** and
+  throws, *even if it embeds tokens* (e.g. `arn:${Aws.PARTITION}:svc:::` throws
+  `ArnResourceRequired`).
 
 So the only decision a caller makes up front is *"is this value mine to parse as
 an ARN?"*. If it might legitimately be something else (a plain name/id), branch
