@@ -5,6 +5,7 @@ import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema'
 import { Construct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
+import type { IPolicyValidationContext } from '../../lib';
 import { readPerfCounters, resetCounters } from '../../lib/private/perf';
 
 let consoleErrorMock: jest.SpyInstance;
@@ -17,6 +18,11 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.clearAllMocks();
+  disposePlugins();
+});
+
+afterAll(() => {
+  core.CloudFormationValidatePlugin._disposeSingleton();
 });
 
 const originalContextJson = process.env.CDK_CONTEXT_JSON;
@@ -36,6 +42,31 @@ afterAll(() => {
 });
 
 describe('CloudFormationValidatePlugin', () => {
+  test('_dispose frees the engine exactly once', () => {
+    const plugin = newPlugin();
+    const free = jest.spyOn((plugin as any).engine, 'free');
+
+    plugin._dispose();
+    plugin._dispose();
+
+    expect(free).toHaveBeenCalledTimes(1);
+  });
+
+  test('_configureSingleton frees the previous engine', () => {
+    core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
+    const previous = core.CloudFormationValidatePlugin._singletonInstance();
+    const free = jest.spyOn((previous as any).engine, 'free');
+
+    try {
+      core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
+
+      expect(free).toHaveBeenCalledTimes(1);
+    } finally {
+      previous._dispose();
+      core.CloudFormationValidatePlugin._disposeSingleton();
+    }
+  });
+
   test('reports schema violations for invalid properties', () => {
     const app = new core.App({
       context: {
@@ -250,13 +281,49 @@ describe('CloudFormationValidatePlugin', () => {
   });
 
   test('plugin can be instantiated directly with custom rules', () => {
-    const plugin = new core.CloudFormationValidatePlugin({
+    const plugin = newPlugin({
       regoRules: [{ name: 'my-rule', content: 'package main' }],
     });
 
     expect(plugin.name).toBe('CloudFormation Validate');
     expect(plugin.version).toBeDefined();
     expect(plugin.ruleIds).toBeDefined();
+  });
+
+  test('plugin evaluates custom Guard rules', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-guard-'));
+    const templatePath = path.join(tmpDir, 'template.json');
+    fs.writeFileSync(templatePath, JSON.stringify({
+      Resources: {
+        MyBucket: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+    }));
+
+    try {
+      const plugin = newPlugin({
+        guardRules: [{
+          name: 'encryption.guard',
+          content: [
+            'rule check_bucket_encryption {',
+            '    AWS::S3::Bucket {',
+            '        Properties.BucketEncryption EXISTS',
+            '        <<S3 bucket must have encryption configured>>',
+            '    }',
+            '}',
+          ].join('\n'),
+        }],
+      });
+      const report = plugin.validate(validationContext(templatePath));
+
+      expect(report.violations).toContainEqual(expect.objectContaining({
+        ruleName: 'check_bucket_encryption',
+        violatingResources: [expect.objectContaining({ resourceLogicalId: 'MyBucket' })],
+      }));
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true });
+    }
   });
 
   test('user-registered instance replaces the auto-registered one', () => {
@@ -266,7 +333,7 @@ describe('CloudFormationValidatePlugin', () => {
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
     });
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+    core.Validations.of(app).addPlugins(newPlugin());
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
       type: 'AWS::S3::Bucket',
@@ -284,8 +351,8 @@ describe('CloudFormationValidatePlugin', () => {
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
     });
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+    core.Validations.of(app).addPlugins(newPlugin());
+    core.Validations.of(app).addPlugins(newPlugin());
 
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
@@ -303,7 +370,7 @@ describe('CloudFormationValidatePlugin', () => {
       },
     });
     const stage = new core.Stage(app, 'MyStage');
-    core.Validations.of(stage).addPlugins(new core.CloudFormationValidatePlugin());
+    core.Validations.of(stage).addPlugins(newPlugin());
     const stack = new core.Stack(stage, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
       type: 'AWS::S3::Bucket',
@@ -326,14 +393,8 @@ describe('CloudFormationValidatePlugin', () => {
       },
     }));
 
-    const plugin = new core.CloudFormationValidatePlugin();
-    const report = plugin.validate({
-      templatePaths: [templatePath],
-      stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
-      appConstruct: new Construct(undefined as any, ''),
-      accountId: undefined,
-      region: undefined,
-    });
+    const plugin = newPlugin();
+    const report = plugin.validate(validationContext(templatePath));
 
     expect(report.success).toBe(false);
     expect(report.violations.length).toBeGreaterThan(0);
@@ -351,8 +412,8 @@ describe('CloudFormationValidatePlugin', () => {
     }
 
     try {
-      const plugin = new core.CloudFormationValidatePlugin();
-      const validateDetailed = jest.spyOn((plugin as any).engine, 'validateDetailed')
+      const plugin = newPlugin();
+      const validateTemplate = jest.spyOn((plugin as any).engine, 'validateTemplate')
         .mockReturnValueOnce({
           diagnostics: [
             { ruleId: 'F0001', severity: 'FATAL', message: 'fatal diagnostic' },
@@ -381,9 +442,9 @@ describe('CloudFormationValidatePlugin', () => {
       });
 
       const counters = readPerfCounters({ telemetry: true });
-      expect(validateDetailed).toHaveBeenCalledTimes(2);
+      expect(validateTemplate).toHaveBeenCalledTimes(2);
       expect(counters).toMatchObject({
-        [VALIDATE_DETAILED_METRIC]: {
+        [VALIDATE_METRIC]: {
           count: 2,
           total: expect.any(Number),
         },
@@ -397,6 +458,86 @@ describe('CloudFormationValidatePlugin', () => {
     } finally {
       fs.rmSync(tmpDir, { recursive: true });
     }
+  });
+
+  describe('grouping diagnostics into violations', () => {
+    let tmpDir: string;
+    let templatePath: string;
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-grouping-'));
+      templatePath = path.join(tmpDir, 'template.json');
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: {} }));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, { recursive: true });
+    });
+
+    function validateWithDiagnostics(diagnostics: any[]) {
+      const plugin = newPlugin();
+      jest.spyOn((plugin as any).engine, 'validateTemplate').mockReturnValueOnce({ diagnostics });
+      return plugin.validate({
+        templatePaths: [templatePath],
+        stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
+        appConstruct: new Construct(undefined as any, ''),
+        accountId: undefined,
+        region: undefined,
+      });
+    }
+
+    test('reports each resource with its own message when a rule fires with different messages', () => {
+      const report = validateWithDiagnostics([
+        {
+          ruleId: 'E3047',
+          severity: 'ERROR',
+          message: "Cpu '1024' is not compatible with Memory 49152 for Fargate",
+          propertyPath: 'Properties.Cpu',
+          entity: { entityType: 'Resource', logicalId: 'TaskA' },
+        },
+        {
+          ruleId: 'E3047',
+          severity: 'ERROR',
+          message: "Cpu '256' is not compatible with Memory 8192 for Fargate",
+          propertyPath: 'Properties.Cpu',
+          entity: { entityType: 'Resource', logicalId: 'TaskB' },
+        },
+      ]);
+
+      expect(report.violations).toHaveLength(2);
+      expect(report.violations).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          ruleName: 'E3047',
+          description: "Cpu: Cpu '1024' is not compatible with Memory 49152 for Fargate",
+          violatingResources: [expect.objectContaining({ resourceLogicalId: 'TaskA' })],
+        }),
+        expect.objectContaining({
+          ruleName: 'E3047',
+          description: "Cpu: Cpu '256' is not compatible with Memory 8192 for Fargate",
+          violatingResources: [expect.objectContaining({ resourceLogicalId: 'TaskB' })],
+        }),
+      ]));
+    });
+
+    test('groups resources that share a rule and an identical message into one violation', () => {
+      const report = validateWithDiagnostics([
+        {
+          ruleId: 'W3011',
+          severity: 'WARN',
+          message: 'Both UpdateReplacePolicy and DeletionPolicy are needed',
+          entity: { entityType: 'Resource', logicalId: 'BucketA' },
+        },
+        {
+          ruleId: 'W3011',
+          severity: 'WARN',
+          message: 'Both UpdateReplacePolicy and DeletionPolicy are needed',
+          entity: { entityType: 'Resource', logicalId: 'BucketB' },
+        },
+      ]);
+
+      expect(report.violations).toHaveLength(1);
+      expect(report.violations[0].violatingResources.map(r => r.resourceLogicalId)).toEqual(['BucketA', 'BucketB']);
+    });
   });
 
   describe('_additionalSchemasDirectory', () => {
@@ -427,7 +568,7 @@ describe('CloudFormationValidatePlugin', () => {
           [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
         },
       });
-      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      core.Validations.of(app).addPlugins(newPlugin({
         _additionalSchemasDirectory: schemaDir,
       }));
       const stack = new core.Stack(app, 'TestStack');
@@ -459,7 +600,7 @@ describe('CloudFormationValidatePlugin', () => {
           [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
         },
       });
-      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      core.Validations.of(app).addPlugins(newPlugin({
         _additionalSchemasDirectory: schemaDir,
       }));
       const stack = new core.Stack(app, 'TestStack');
@@ -481,7 +622,7 @@ describe('CloudFormationValidatePlugin', () => {
           [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
         },
       });
-      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      core.Validations.of(app).addPlugins(newPlugin({
         _additionalSchemasDirectory: schemaDir, // empty dir, no schemas
       }));
       const stack = new core.Stack(app, 'TestStack');
@@ -497,7 +638,7 @@ describe('CloudFormationValidatePlugin', () => {
     });
 
     test('non-existent directory is a no-op', () => {
-      const plugin = new core.CloudFormationValidatePlugin({
+      const plugin = newPlugin({
         _additionalSchemasDirectory: '/non/existent/path',
       });
 
@@ -523,7 +664,7 @@ describe('CloudFormationValidatePlugin', () => {
           [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
         },
       });
-      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      core.Validations.of(app).addPlugins(newPlugin({
         _additionalSchemasDirectory: schemaDir,
       }));
       const stack = new core.Stack(app, 'TestStack');
@@ -556,7 +697,7 @@ describe('CloudFormationValidatePlugin', () => {
       }
 
       // Should throw — symlinks are not allowed in schema directories
-      expect(() => new core.CloudFormationValidatePlugin({
+      expect(() => newPlugin({
         _additionalSchemasDirectory: schemaDir,
       })).toThrow(/Symbolic link found in schema directory/);
     });
@@ -564,7 +705,7 @@ describe('CloudFormationValidatePlugin', () => {
     test('malformed JSON files cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'bad.json'), 'not valid json {{{');
 
-      expect(() => new core.CloudFormationValidatePlugin({
+      expect(() => newPlugin({
         _additionalSchemasDirectory: schemaDir,
       })).toThrow(/Invalid JSON in schema file.*bad\.json/);
     });
@@ -572,7 +713,7 @@ describe('CloudFormationValidatePlugin', () => {
     test('schema files missing typeName cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'no-typename.json'), JSON.stringify({ properties: {} }));
 
-      expect(() => new core.CloudFormationValidatePlugin({
+      expect(() => newPlugin({
         _additionalSchemasDirectory: schemaDir,
       })).toThrow(/missing required "typeName" field.*no-typename\.json/);
     });
@@ -592,7 +733,7 @@ describe('CloudFormationValidatePlugin', () => {
           [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
         },
       });
-      core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin({
+      core.Validations.of(app).addPlugins(newPlugin({
         _additionalSchemasDirectory: schemaDir,
       }));
       const stack = new core.Stack(app, 'TestStack');
@@ -627,7 +768,7 @@ describe('CloudFormationValidatePlugin', () => {
             [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
           },
         });
-        core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+        core.Validations.of(app).addPlugins(newPlugin());
         const stack = new core.Stack(app, 'TestStack');
         new core.CfnResource(stack, 'MyBucket', {
           type: 'AWS::S3::Bucket',
@@ -645,7 +786,7 @@ describe('CloudFormationValidatePlugin', () => {
   });
 });
 
-describe('CDK_VALIDATION environment variable', () => {
+describe('tests that might mutate the environment', () => {
   const originalCdkValidation = process.env.CDK_VALIDATION;
 
   afterEach(() => {
@@ -656,12 +797,13 @@ describe('CDK_VALIDATION environment variable', () => {
     }
   });
 
-  function appWithInvalidResource() {
+  function appWithInvalidResource(props?: Partial<core.AppProps>) {
     const app = new core.App({
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
+      ...props,
     });
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
@@ -682,10 +824,20 @@ describe('CDK_VALIDATION environment variable', () => {
     expect(process.exitCode).toBeUndefined();
   });
 
+  test('{ builtinCloudFormationValidation: false } disables the auto-registered validation engine', () => {
+    const app = appWithInvalidResource({
+      builtinCloudFormationValidation: false,
+    });
+
+    // Would throw on BogusProperty if the default engine ran
+    expect(() => app.synth()).not.toThrow();
+    expect(process.exitCode).toBeUndefined();
+  });
+
   test('CDK_VALIDATION=false does not disable explicitly registered plugins', () => {
     process.env.CDK_VALIDATION = 'false';
     const app = appWithInvalidResource();
-    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+    core.Validations.of(app).addPlugins(newPlugin());
 
     expect(() => app.synth()).toThrow(/BogusProperty/);
   });
@@ -705,10 +857,35 @@ describe('CDK_VALIDATION environment variable', () => {
   });
 });
 
-const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const VALIDATE_METRIC = 'CloudFormationValidate.validate';
 const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 function loadValidationReport(asm: cxapi.CloudAssembly) {
   const p = path.join(asm.directory, 'validation-report.json');
   return JSON.parse(fs.readFileSync(p, { encoding: 'utf-8' })) as PolicyValidationReportJson;
+}
+
+let constructedPlugins: core.CloudFormationValidatePlugin[] = [];
+
+function newPlugin(props?: core.CloudFormationValidatePluginProps) {
+  const constructed = new core.CloudFormationValidatePlugin(props);
+  constructedPlugins.push(constructed);
+  return constructed;
+}
+
+function disposePlugins() {
+  for (const constructed of constructedPlugins) {
+    constructed._dispose();
+  }
+  constructedPlugins = [];
+}
+
+function validationContext(templatePath: string): IPolicyValidationContext {
+  return {
+    templatePaths: [templatePath],
+    stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
+    appConstruct: new Construct(undefined as any, ''),
+    accountId: undefined,
+    region: undefined,
+  };
 }

@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "4efb6fc9ba9bb1604a842661942e939ca4535e99cb7638fbe815ea5de83296cb": {
+      "source": {
+        "path": "asset.4efb6fc9ba9bb1604a842661942e939ca4535e99cb7638fbe815ea5de83296cb.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-caecbba3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4efb6fc9ba9bb1604a842661942e939ca4535e99cb7638fbe815ea5de83296cb.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2298fd65a6894a496d2ece965fd1ea638a6b4903d6bc97b78fd8fab12f10f8f4": {
+      "displayName": "EmptyLoadBalancersTestDefaultTestDeployAssertFCB4C730 Template",
+      "source": {
+        "path": "EmptyLoadBalancersTestDefaultTestDeployAssertFCB4C730.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-26466046": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2298fd65a6894a496d2ece965fd1ea638a6b4903d6bc97b78fd8fab12f10f8f4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
