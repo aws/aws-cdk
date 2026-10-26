@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "test-rds-instance-from-snapshot-manage-master-password/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-from-snapshot-manage-master-password-integ"
+      ],
+      "assertionStack": "test-rds-instance-from-snapshot-manage-master-password/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsinstancefromsnapshotmanagemasterpasswordDefaultTestDeployAssert3611EE97"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
