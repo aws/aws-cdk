@@ -21,8 +21,9 @@ const minimalProps = (overrides: Partial<S3ObjectCopyProps> = {}): S3ObjectCopyP
   sourceBucket,
   sourceKey: 'incoming/app.zip',
   destinationBucket,
-  destinationKey: 'app.zip',
-  destinationKeyPattern: 'app.zip',
+  destinationKeyPrefix: 'code/',
+  contentHash: 'abc123',
+  destinationKeyPattern: 'code/*',
   ...overrides,
 });
 
@@ -34,7 +35,16 @@ describe('S3ObjectCopy', () => {
       SourceBucketName: { Ref: stack.getLogicalId(sourceBucket.node.defaultChild as cdk.CfnElement) },
       SourceObjectKey: 'incoming/app.zip',
       DestinationBucketName: { Ref: stack.getLogicalId(destinationBucket.node.defaultChild as cdk.CfnElement) },
-      DestinationObjectKey: 'app.zip',
+      DestinationKeyPrefix: 'code/',
+      ContentHash: 'abc123',
+    });
+  });
+
+  test('passes the consumer configuration that the key is derived from', () => {
+    new S3ObjectCopy(stack, 'Copy', minimalProps({ configuration: { Runtime: 'nodejs24.x' } }));
+
+    Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
+      Configuration: { Runtime: 'nodejs24.x' },
     });
   });
 
@@ -77,7 +87,7 @@ describe('S3ObjectCopy', () => {
             Action: Match.arrayWith(['s3:PutObject']),
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Destination.*'), 'Arn'] }, '/app.zip']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Destination.*'), 'Arn'] }, '/code/*']],
             },
           }),
         ]),
@@ -85,28 +95,27 @@ describe('S3ObjectCopy', () => {
     });
   });
 
-  test('grants the handler delete on the destination key and a version listing on the bucket', () => {
-    // Deletion removes every version of the key, so the role needs DeleteObjectVersion on the
-    // object and ListBucketVersions on the bucket. Without a cleanup pattern the delete grant
-    // is limited to the destination key.
+  test('grants the handler delete on the key pattern and no version listing', () => {
+    // Deletion removes the one version the copy wrote, which takes DeleteObjectVersion only.
     new S3ObjectCopy(stack, 'Copy', minimalProps());
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 's3:DeleteObject*',
             Resource: {
-              'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Destination.*'), 'Arn'] }, '/app.zip']],
+              'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('Destination.*'), 'Arn'] }, '/code/*']],
             },
-          }),
-          Match.objectLike({
-            Action: 's3:ListBucketVersions',
-            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Destination.*'), 'Arn'] },
           }),
         ]),
       },
     });
+    const actions = Object.values(template.findResources('AWS::IAM::Policy'))
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
+      .flatMap((statement: any) => [statement.Action].flat());
+    expect(actions).not.toContain('s3:ListBucketVersions');
   });
 
   test('widens the put and delete grants to the destination key pattern', () => {
@@ -134,7 +143,7 @@ describe('S3ObjectCopy', () => {
   describe('singleton handler', () => {
     test('two copies with the same configuration share one function', () => {
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps());
 
       const template = Template.fromStack(stack);
       template.resourceCountIs('Custom::S3ObjectCopy', 2);
@@ -145,7 +154,7 @@ describe('S3ObjectCopy', () => {
       const vpc = new ec2.Vpc(stack, 'Vpc');
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip', vpc }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ vpc }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
@@ -156,7 +165,7 @@ describe('S3ObjectCopy', () => {
       });
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip', role }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ role }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
@@ -166,7 +175,7 @@ describe('S3ObjectCopy', () => {
       const securityGroups = [new ec2.SecurityGroup(stack, 'Sg', { vpc })];
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps({ vpc }));
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip', vpc, securityGroups }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ vpc, securityGroups }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
@@ -178,7 +187,6 @@ describe('S3ObjectCopy', () => {
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps({ vpc, securityGroups: [first, second] }));
       new S3ObjectCopy(stack, 'Copy2', minimalProps({
-        destinationKey: 'other.zip',
         vpc,
         securityGroups: [second, first],
       }));
@@ -190,14 +198,14 @@ describe('S3ObjectCopy', () => {
       const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip', logGroup }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ logGroup }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
 
     test('a copy to a different key pattern gets its own function', () => {
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'b/app.zip', destinationKeyPattern: 'b/*' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKeyPrefix: 'b/', destinationKeyPattern: 'b/*' }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
@@ -216,14 +224,14 @@ describe('S3ObjectCopy', () => {
       const second = s3.Bucket.fromBucketName(stack, 'Second', 'my-code-bucket');
 
       new S3ObjectCopy(stack, 'Copy1', minimalProps({ destinationBucket: first }));
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationBucket: second, destinationKey: 'other.zip' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationBucket: second }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
     });
 
     test('key patterns that differ only in punctuation get separate functions', () => {
-      new S3ObjectCopy(stack, 'Copy1', minimalProps({ destinationKey: 'a/b/app.zip', destinationKeyPattern: 'a/b/*' }));
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'ab/app.zip', destinationKeyPattern: 'ab/*' }));
+      new S3ObjectCopy(stack, 'Copy1', minimalProps({ destinationKeyPrefix: 'a/b/', destinationKeyPattern: 'a/b/*' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKeyPrefix: 'ab/', destinationKeyPattern: 'ab/*' }));
 
       Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
     });
@@ -241,7 +249,7 @@ describe('S3ObjectCopy', () => {
 
     test('copies sharing a function share its log group', () => {
       new S3ObjectCopy(stack, 'Copy1', minimalProps());
-      new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip' }));
+      new S3ObjectCopy(stack, 'Copy2', minimalProps());
 
       Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
     });
@@ -266,7 +274,6 @@ describe('S3ObjectCopy', () => {
           vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
         }));
         new S3ObjectCopy(stack, 'Copy2', minimalProps({
-          destinationKey: 'other.zip',
           vpc,
           vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true },
         }));
@@ -279,7 +286,7 @@ describe('S3ObjectCopy', () => {
         const vpcSubnets = { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
         new S3ObjectCopy(stack, 'Copy1', minimalProps({ vpc, vpcSubnets }));
-        new S3ObjectCopy(stack, 'Copy2', minimalProps({ destinationKey: 'other.zip', vpc, vpcSubnets }));
+        new S3ObjectCopy(stack, 'Copy2', minimalProps({ vpc, vpcSubnets }));
 
         Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
       });
@@ -294,7 +301,6 @@ describe('S3ObjectCopy', () => {
           vpcSubnets: { subnets: vpc.privateSubnets },
         }));
         new S3ObjectCopy(stack, 'Copy2', minimalProps({
-          destinationKey: 'other.zip',
           vpc,
           vpcSubnets: { subnets: [vpc.privateSubnets[0]] },
         }));

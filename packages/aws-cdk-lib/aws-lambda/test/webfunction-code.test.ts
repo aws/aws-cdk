@@ -392,19 +392,18 @@ describe('WebFunctionCode', () => {
       expect(deleteGrantKeyPatterns(stack)).toEqual(['/web-function/*']);
     });
 
-    test('scopes the version listing to the same pattern as the delete grant', () => {
-      // Listing versions is bucket-level, so the resource cannot be narrowed; the `s3:prefix`
-      // condition is what keeps it from enumerating anything else in the bucket.
+    test('grants no version listing', () => {
+      // The copy deletes the one version it wrote, named by its physical ID.
       new WebFunction(stack, 'TestFunction', minimalStaged());
 
-      expect(listGrantPrefixConditions(stack)).toEqual(['web-function/*']);
+      expect(listGrantPrefixConditions(stack)).toEqual([]);
     });
 
     test('writes the code object under the reserved segment', () => {
       new WebFunction(stack, 'TestFunction', minimalStaged());
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
-        DestinationObjectKey: Match.stringLikeRegexp('^web-function/[A-Za-z0-9]+/[0-9a-f]{32}\\.zip$'),
+        DestinationKeyPrefix: Match.stringLikeRegexp('^web-function/[A-Za-z0-9]+/$'),
       });
     });
 
@@ -599,42 +598,64 @@ describe('WebFunctionCode', () => {
       });
     });
 
-    describe('the copy resource and its key change together', () => {
-      // A replaced copy resource is deleted in the cleanup phase, and its Delete removes every
-      // version of its key. If the new resource wrote the same key, that would remove the object
-      // the new revision reads. So whatever replaces the resource has to change the key too.
+    describe('the copy resource', () => {
+      // The copy represents the code object of one revision. Its resource is replaced, through a
+      // new physical ID, whenever the content or the revision's configuration changes, and is a
+      // new resource only when it needs another copy function, whose ServiceToken it cannot
+      // take over.
       interface Setup {
         readonly bucket: s3.IBucket;
         readonly assetPath?: string;
         readonly options?: WebFunctionProvidedBucketAssetOptions;
+        readonly timeout?: cdk.Duration;
       }
       const copyOf = (configure: (s: cdk.Stack) => Setup) => {
         const s = new cdk.Stack();
-        const { bucket, assetPath, options } = configure(s);
+        const { bucket, assetPath, options, timeout } = configure(s);
         new WebFunction(s, 'TestFunction', {
           code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath ?? ASSET_PATH, options),
           runtime: WebFunctionRuntime.NODEJS_24_X,
           defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          timeout,
         });
         const copies = Template.fromStack(s).findResources('Custom::S3ObjectCopy');
         const [logicalId] = Object.keys(copies);
-        return { logicalId, key: copies[logicalId].Properties.DestinationObjectKey };
+        const { DestinationKeyPrefix, ContentHash, Configuration } = copies[logicalId].Properties;
+        return { logicalId, prefix: DestinationKeyPrefix, contentHash: ContentHash, configuration: Configuration };
       };
       const owned = (s: cdk.Stack) => new s3.Bucket(s, 'MyBucket', { versioned: true, bucketName: 'my-bucket' });
       const original = () => copyOf(s => ({ bucket: owned(s) }));
 
+      test('keeps its logical ID and changes its content hash for new code', () => {
+        const before = original();
+        const after = copyOf(s => ({ bucket: owned(s), assetPath: path.join(__dirname, 'handler.zip') }));
+        expect(after.logicalId).toEqual(before.logicalId);
+        expect(after.contentHash).not.toEqual(before.contentHash);
+      });
+
+      test('keeps its logical ID and passes the new configuration when only the revision changes', () => {
+        const before = original();
+        const after = copyOf(s => ({ bucket: owned(s), timeout: cdk.Duration.seconds(60) }));
+        expect(after.logicalId).toEqual(before.logicalId);
+        expect(after.contentHash).toEqual(before.contentHash);
+        expect(after.configuration).not.toEqual(before.configuration);
+        expect(after.configuration.ServiceConfig.timeoutSeconds).toEqual(60);
+      });
+
+      test('carries the revision configuration without the code location', () => {
+        const { configuration } = original();
+        expect(Object.keys(configuration).sort()).toEqual(['FunctionName', 'RuntimeConfig', 'ServiceConfig']);
+        expect(configuration.RuntimeConfig).toEqual({ runtime: 'nodejs24.x' });
+      });
+
       test.each<[string, (s: cdk.Stack) => Setup]>([
-        ['new code', s => ({ bucket: owned(s), assetPath: path.join(__dirname, 'handler.zip') })],
         ['a new key prefix', s => ({ bucket: owned(s), options: { keyPrefix: 'b/' } })],
         ['the same bucket imported by name', s => ({ bucket: s3.Bucket.fromBucketName(s, 'MyBucket', 'my-bucket') })],
         ['a copy function in a VPC', s => ({
           bucket: owned(s), options: { copyOptions: { vpc: new ec2.Vpc(s, 'Vpc') } },
         })],
-      ])('%s', (_name, configure) => {
-        const before = original();
-        const after = copyOf(configure);
-        expect(after.logicalId).not.toEqual(before.logicalId);
-        expect(after.key).not.toEqual(before.key);
+      ])('is a new resource for %s, which needs another copy function', (_name, configure) => {
+        expect(copyOf(configure).logicalId).not.toEqual(original().logicalId);
       });
 
       test('nothing changes when nothing does', () => {
@@ -689,10 +710,8 @@ describe('WebFunctionCode', () => {
       expect(putGrantKeyPatterns(stack)).toEqual(['/webfunctions/web-function/*']);
     });
 
-    test('cannot enumerate the rest of the caller\'s bucket', () => {
-      // The delete grant is narrowed by resource, but listing versions is bucket-level. Without
-      // the `s3:prefix` condition the copy handler could enumerate every versioned object in a
-      // bucket that is not ours.
+    test('cannot enumerate the caller\'s bucket', () => {
+      // A version listing is bucket-level; the copy handler does not need one, so it gets none.
       const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH, {
@@ -702,7 +721,7 @@ describe('WebFunctionCode', () => {
         defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
-      expect(listGrantPrefixConditions(stack)).toEqual(['webfunctions/web-function/*']);
+      expect(listGrantPrefixConditions(stack)).toEqual([]);
     });
 
     test('never grants delete on the whole of a provided bucket, even without a prefix', () => {
@@ -752,7 +771,7 @@ describe('WebFunctionCode', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
-        DestinationObjectKey: Match.stringLikeRegexp('^webfunctions/web-function/[A-Za-z0-9]+/[0-9a-f]{32}\\.zip$'),
+        DestinationKeyPrefix: Match.stringLikeRegexp('^webfunctions/web-function/[A-Za-z0-9]+/$'),
       });
     });
 
@@ -854,6 +873,92 @@ describe('WebFunctionCode', () => {
           SubnetIds: Match.anyValue(),
         }),
       });
+    });
+  });
+
+  describe('retention', () => {
+    const managed = (s: cdk.Stack, id = 'Fn') => new WebFunction(s, id, {
+      code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
+      runtime: WebFunctionRuntime.NODEJS_24_X,
+      defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+    });
+    const policies = (resource: any) => ({ DeletionPolicy: resource.DeletionPolicy, UpdateReplacePolicy: resource.UpdateReplacePolicy });
+    const copyPolicies = (s: cdk.Stack) => Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy')).map(policies);
+    const bucketPolicies = (s: cdk.Stack) => policies(Object.values(Template.fromStack(s).findResources('AWS::S3::Bucket'))[0]);
+    const autoDeletePolicies = (s: cdk.Stack) =>
+      Object.values(Template.fromStack(s).findResources('Custom::S3AutoDeleteObjects')).map(policies);
+    const DELETE = { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' };
+    const RETAIN = { DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' };
+
+    test('copy, bucket and auto-delete are deleted when no revision is retained', () => {
+      managed(stack);
+
+      expect(copyPolicies(stack)).toEqual([DELETE]);
+      expect(bucketPolicies(stack)).toEqual(DELETE);
+      expect(autoDeletePolicies(stack)).toEqual([DELETE]);
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+    });
+
+    test('a retained revision retains its copy, the bucket and the auto-delete resource, and warns', () => {
+      const fn = managed(stack);
+      fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      expect(copyPolicies(stack)).toEqual([RETAIN]);
+      expect(bucketPolicies(stack)).toEqual(RETAIN);
+      expect(autoDeletePolicies(stack)).toEqual([RETAIN]);
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+    });
+
+    test.each([false, true])('follows a removal policy applied by an aspect (aspectStabilization: %s)', (stabilization) => {
+      const app = new cdk.App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
+      const s = new cdk.Stack(app, 'Stack');
+      managed(s);
+      cdk.RemovalPolicies.of(s).retain({ applyToResourceTypes: ['AWS::Lambda::WebFunctionRevision'] });
+
+      // The warning is checked first: a second synthesis runs the aspects again, by which time the
+      // first one has already set the policy.
+      Annotations.fromStack(s).hasWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+      expect(copyPolicies(s)).toEqual([RETAIN]);
+      expect(bucketPolicies(s)).toEqual(RETAIN);
+    });
+
+    test('retains the bucket for a revision of a function defined after the bucket', () => {
+      managed(stack, 'First');
+      const second = managed(stack, 'Second');
+      second.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      expect(bucketPolicies(stack)).toEqual(RETAIN);
+      expect(copyPolicies(stack)).toEqual(expect.arrayContaining([DELETE, RETAIN]));
+    });
+
+    test('a revision retained on replacement only retains its copy in both cases', () => {
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+      const fn = managed(stack);
+      fn.resourceRevision.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
+
+      expect(copyPolicies(stack)).toEqual([RETAIN]);
+    });
+
+    test('a revision retained on deletion only keeps its copy on deletion, not on replacement', () => {
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+      const fn = managed(stack);
+      fn.resourceRevision.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+
+      expect(copyPolicies(stack)).toEqual([{ DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Delete' }]);
+    });
+
+    test('a retained revision in a provided bucket retains its copy and leaves the bucket alone', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      const fn = new WebFunction(stack, 'Fn', {
+        code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+      });
+      fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      expect(copyPolicies(stack)).toEqual([RETAIN]);
+      expect(bucketPolicies(stack)).toEqual(RETAIN); // the s3.Bucket default
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
     });
   });
 });

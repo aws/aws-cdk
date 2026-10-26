@@ -2129,9 +2129,9 @@ new lambda.WebFunction(this, 'MyWebFunction', {
 
 One bucket is created per stack and shared by every WebFunction in it that uses this
 factory, configured with everything WebFunction requires: versioning, AES256 (SSE-S3)
-encryption, and a policy granting `lambda.amazonaws.com` read access. It is created
-with `RemovalPolicy.DESTROY` and `autoDeleteObjects`, so it is removed together with
-the stack that owns it.
+encryption, and a policy granting `lambda.amazonaws.com` read access. It is removed and
+emptied together with the stack that owns it, unless a revision whose code it holds is
+retained (see *Retaining revisions* below).
 
 The read grant covers every object in the bucket and matches any WebFunction revision in
 the account, rather than one statement per function, so that the policy does not grow with
@@ -2199,12 +2199,28 @@ CloudFormation custom resource: a small Lambda function that CloudFormation invo
 during deployment to copy the object. It returns the S3 version ID of the object it
 wrote, and the WebFunction revision refers to exactly that version.
 
-Each deployment of new code writes a new object, and the copy that wrote the previous
-one is replaced. The previous revision keeps serving from its own object while the
-deployment is in progress, and if the deployment rolls back, the new object is removed and
-traffic returns to it. Once the deployment succeeds, the previous object is deleted. The
-same happens when the destination or `copyOptions` change, and when a WebFunction is removed
-from the stack its object is deleted as well.
+Each revision has a code object of its own. A revision is replaced whenever any of its
+properties changes, so a new object is written whenever the code or any other revision
+setting changes, at a key derived from both, and the copy that wrote the previous one is
+replaced. The previous revision keeps serving from its own object while the deployment is in
+progress, and if the deployment rolls back, the new object is removed and traffic returns to
+it. Once the deployment succeeds, the previous object is deleted with the previous revision.
+The same happens when the destination or `copyOptions` change, and when a WebFunction is
+removed from the stack its object is deleted as well.
+
+#### Retaining revisions
+
+A revision can be retained with `resourceRevision.applyRemovalPolicy(RemovalPolicy.RETAIN)` or
+a `RemovalPolicies` aspect. Its code object is retained with it: the copy that wrote it takes
+the revision's `UpdateReplacePolicy`, and its `DeletionPolicy` is `Retain` when either of the
+revision's policies is. With `fromAssetToManagedBucket()`, the bucket and its auto-delete
+resource are retained too, and a warning says so: the bucket and the code of every retained
+revision are then yours to clean up. To manage them yourself, use
+`fromAssetToProvidedBucket()` with a bucket you own.
+
+Change retention in a deployment that does not also change `copyOptions` or the destination
+bucket. Such a change replaces the copy function, and the old copy is removed under its
+previous policy.
 
 One copy function is created per stack and shared by all WebFunctions in it. Pass
 `copyOptions` if your organization requires it to run inside a VPC, or to give it an

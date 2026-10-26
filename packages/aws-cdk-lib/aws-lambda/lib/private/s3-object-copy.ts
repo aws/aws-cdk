@@ -37,13 +37,34 @@ export interface S3ObjectCopyProps extends WebFunctionCodeCopyOptions {
   readonly destinationBucket: s3.IBucket;
 
   /**
-   * The key to copy the object to.
+   * Prefix of the key to copy the object to.
+   *
+   * The rest of the key is a hash of `contentHash` and `configuration`, computed by the copy
+   * function at deploy time, so that values only known then can feed it.
    */
-  readonly destinationKey: string;
+  readonly destinationKeyPrefix: string;
 
   /**
-   * Object key pattern the copy function may write to, delete from and list in the
-   * destination bucket.
+   * Identifies the content of the source object, independent of where it is stored.
+   *
+   * A source that moves without its content changing, for example to a bucket with another
+   * bootstrap qualifier, keeps the destination key and is not copied again.
+   */
+  readonly contentHash: string;
+
+  /**
+   * Configuration of whatever reads the copied object.
+   *
+   * A change gives the object a new key and replaces this resource, so every configuration
+   * has an object of its own, with the removal policy of its own consumer.
+   *
+   * @default - the key depends on the content only
+   */
+  readonly configuration?: any;
+
+  /**
+   * Object key pattern the copy function may write to and delete from in the destination
+   * bucket.
    *
    * The copy function is shared by every copy in the stack, so its role's policy is shared
    * too. Granting each copy its exact key would add a statement per copy and the policy would
@@ -62,11 +83,11 @@ export interface S3ObjectCopyProps extends WebFunctionCodeCopyOptions {
  * Unlike `BucketDeployment`, which mirrors a directory tree, this copies exactly one object and
  * never prunes:
  *
- * - **On update** the new object is copied and prior versions of the destination object are
- *   left in place. `WebFunctionCode` gives each source object its own key and resource, so it
- *   does not rely on this.
- * - **On delete** every version of the object is removed. By then nothing that read the object
- *   through this resource's outputs exists any more.
+ * - **The key** is the prefix followed by a hash of the content and the configuration. A change
+ *   to either copies to a new key and returns a new physical ID, so CloudFormation replaces the
+ *   resource, and deletes the old one in the cleanup phase unless its `UpdateReplacePolicy` is
+ *   `Retain`. Any other update copies nothing.
+ * - **On delete** the one version this resource wrote is removed, named by its physical ID.
  *
  * The copy is a server-side `CopyObject`, so the object's bytes never pass through Lambda. That
  * avoids the AWS CLI layer, the `/tmp` size ceiling and the long timeouts that
@@ -106,7 +127,8 @@ export class S3ObjectCopy extends Construct {
   /** The execution role of the Lambda function performing the copy. */
   public readonly handlerRole: iam.IRole;
 
-  private readonly cr: cdk.CustomResource;
+  /** The custom resource that performs the copy. */
+  public readonly resource: cdk.CfnResource;
 
   constructor(scope: Construct, id: string, props: S3ObjectCopyProps) {
     super(scope, id);
@@ -151,33 +173,26 @@ export class S3ObjectCopy extends Construct {
     });
     const keyPattern = props.destinationKeyPattern;
     props.destinationBucket.grantPut(handler, keyPattern);
-    // Deletion removes every version of the key, which takes a version listing on the bucket
-    // plus DeleteObjectVersion on the objects.
+    // Deletion removes one version of the object, which takes DeleteObjectVersion.
     props.destinationBucket.grantDelete(handler, keyPattern);
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['s3:ListBucketVersions'],
-      // A version listing is a bucket-level operation, so the resource cannot be narrowed.
-      // Condition it on the same pattern the put and delete grants use instead: the handler
-      // lists with the object key as its prefix, so a destination bucket that holds unrelated
-      // data cannot be enumerated through this role.
-      resources: [props.destinationBucket.bucketArn],
-      conditions: { StringLike: { 's3:prefix': keyPattern } },
-    }));
 
-    this.cr = new cdk.CustomResource(this, 'Resource', {
+    const cr = new cdk.CustomResource(this, 'Resource', {
       serviceToken: handler.functionArn,
       resourceType: RESOURCE_TYPE,
       properties: {
         SourceBucketName: props.sourceBucket.bucketName,
         SourceObjectKey: props.sourceKey,
         DestinationBucketName: props.destinationBucket.bucketName,
-        DestinationObjectKey: props.destinationKey,
+        DestinationKeyPrefix: props.destinationKeyPrefix,
+        ContentHash: props.contentHash,
+        Configuration: props.configuration,
       },
     });
+    this.resource = cr.node.defaultChild as cdk.CfnResource;
 
-    this.destinationBucketName = this.cr.getAttString('Bucket');
-    this.destinationObjectKey = this.cr.getAttString('Key');
-    this.versionId = this.cr.getAttString('VersionId');
+    this.destinationBucketName = cr.getAttString('Bucket');
+    this.destinationObjectKey = cr.getAttString('Key');
+    this.versionId = cr.getAttString('VersionId');
   }
 }
 
@@ -232,16 +247,16 @@ export type S3ObjectCopyFunctionProps = Pick<S3ObjectCopyProps,
   'destinationBucket' | 'destinationKeyPattern' | keyof WebFunctionCodeCopyOptions>;
 
 /**
- * A hex identity for one copy: the function that performs it and the object it copies.
+ * A hex identity for the function that performs a copy.
  *
- * `WebFunctionCode` derives both the copy's construct id and the destination key from it, so
- * the two can only change together. That is what makes a replaced copy safe to delete. The
- * old resource's Delete removes every version of the key it wrote, so its key must never be
- * the one the new resource writes. And since the old resource keeps its ServiceToken, the old
- * function, with the grants it had, performs that Delete.
+ * `WebFunctionCode` derives the copy's construct id from it, and only from it. A resource's
+ * ServiceToken cannot change, so a copy that needs another function has to be a new resource;
+ * the old one keeps its ServiceToken, so the old function, with the grants it had, performs its
+ * Delete. The content is deliberately left out: a code change updates the same resource, which
+ * then replaces itself through a new physical ID under the removal policy of its consumer.
  */
-export function copyIdentity(props: S3ObjectCopyFunctionProps, sourceIdentity: string): string {
-  return md5hash(`${renderSingletonUuid(props)}/${sourceIdentity}`);
+export function copyFunctionIdentity(props: S3ObjectCopyFunctionProps): string {
+  return md5hash(renderSingletonUuid(props));
 }
 
 /**

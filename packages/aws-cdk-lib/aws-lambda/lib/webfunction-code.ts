@@ -1,11 +1,12 @@
 import type { Construct } from 'constructs';
+import { CfnWebFunctionRevision } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
-import { S3ObjectCopy, copyIdentity } from './private/s3-object-copy';
+import { S3ObjectCopy, copyFunctionIdentity } from './private/s3-object-copy';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 
@@ -115,8 +116,8 @@ export abstract class WebFunctionCode {
    * factory. It is configured with everything WebFunction requires: versioning, AES256
    * (SSE-S3) encryption, and a bucket policy granting `lambda.amazonaws.com` read access.
    *
-   * The bucket is created with `RemovalPolicy.DESTROY` and `autoDeleteObjects`, so it is
-   * removed along with the stack that owns it.
+   * The bucket is removed and emptied along with the stack that owns it. If a revision whose
+   * code it holds is retained, the bucket is retained as well, with a warning.
    *
    * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
    */
@@ -328,6 +329,10 @@ export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetO
  */
 abstract class StagedAssetCode extends WebFunctionCode {
   private asset?: s3_assets.Asset;
+  /** The copy made by the last `bind()`, waiting for the revision that reads it. */
+  private pendingCopy?: S3ObjectCopy;
+  /** The revision that reads the copy, set by `bindToResource()`. */
+  private revision?: cdk.CfnResource;
 
   constructor(private readonly path: string, private readonly options: WebFunctionAssetOptions) {
     super();
@@ -356,24 +361,30 @@ abstract class StagedAssetCode extends WebFunctionCode {
     // being replaced keeps reading its own object until the deployment completes.
     this.grantDestinationRead(destination, `${functionPrefix}*`, scope, options);
 
-    // Each copy gets its own key and its own construct id, both derived from the source object
-    // and the copy function's configuration (including the destination). Whenever the copy
-    // resource is replaced, its key is new as well. CloudFormation deletes the old resource in
-    // the cleanup phase, through its own ServiceToken, and that Delete removes only the old key,
-    // never the object the new revision reads. Deriving the id from the copy function also keeps
-    // the ServiceToken of a resource fixed, which CloudFormation does not allow to change.
+    // The copy represents the code object of one revision. A revision is replaced whenever any
+    // of its properties changes, since they are all create-only, so the destination key is a
+    // hash of the content and of the revision's other configuration. The copy function computes
+    // it at deploy time, because some of that configuration (a connector's latest version, a
+    // replaced role or key) is only known then. A changed key gives the copy a new physical ID,
+    // so it is replaced in the same deployment as the revision, under the same removal policy.
+    //
+    // The construct id depends on the copy function only, not on the content: a resource's
+    // ServiceToken cannot change, so a copy that needs another function has to be a new
+    // resource, while a code change updates this one.
     const copyProps = {
       destinationBucket: destination,
       destinationKeyPattern: `${prefix}*`,
       ...this.options.copyOptions,
     };
-    const identity = copyIdentity(copyProps, this.asset.assetHash);
-    const copy = new S3ObjectCopy(scope, `CodeCopy${identity.slice(0, 8)}`, {
+    const copy = new S3ObjectCopy(scope, `CodeCopy${copyFunctionIdentity(copyProps).slice(0, 8)}`, {
       ...copyProps,
       sourceBucket: this.asset.bucket,
       sourceKey: this.asset.s3ObjectKey,
-      destinationKey: `${functionPrefix}${identity}.zip`,
+      destinationKeyPrefix: functionPrefix,
+      contentHash: this.asset.assetHash,
+      configuration: cdk.Lazy.any({ produce: () => this.revision && revisionConfiguration(this.revision) }),
     });
+    this.pendingCopy = copy;
 
     return {
       // The full address comes from the copy's outputs — what was actually written — rather
@@ -384,6 +395,36 @@ abstract class StagedAssetCode extends WebFunctionCode {
         objectVersion: copy.versionId,
       },
     };
+  }
+
+  /**
+   * Ties the copy made by `bind()` to the revision that reads it: the revision's configuration
+   * feeds the copy's key, and its removal policy decides the copy's.
+   */
+  public bindToResource(resource: cdk.CfnResource): void {
+    const copy = this.pendingCopy;
+    this.pendingCopy = undefined;
+    if (!copy) {
+      return;
+    }
+    this.revision = resource;
+    // The copy's policies follow the revision's. They are resolved at synthesis, after every
+    // aspect has run and wherever the revision's policy was set: an aspect visits one node at a
+    // time, in tree order, and the copy is visited before the revision it belongs to.
+    const retention = retentionOf(resource);
+    copy.resource.addOverride('UpdateReplacePolicy',
+      cdk.Lazy.string({ produce: () => retention().onReplace ? 'Retain' : 'Delete' }));
+    copy.resource.addOverride('DeletionPolicy',
+      cdk.Lazy.string({ produce: () => retention().any ? 'Retain' : 'Delete' }));
+    this.retainDestinationFor(resource);
+  }
+
+  /**
+   * Lets the destination follow a revision that may be retained. The default does nothing,
+   * for destinations whose lifecycle is the caller's.
+   */
+  protected retainDestinationFor(_revision: cdk.CfnResource): void {
+    return;
   }
 
   /** The bucket the code is copied into. */
@@ -435,6 +476,22 @@ class ManagedBucketAssetCode extends StagedAssetCode {
   protected destinationPrefix(): string {
     // The bucket is CDK-owned and holds only WebFunction code, so this covers all of it.
     return CODE_KEY_SEGMENT;
+  }
+
+  protected retainDestinationFor(revision: cdk.CfnResource): void {
+    const bucket = getOrCreateAssetBucket(revision);
+    managedBucketRevisions(bucket).push(revision);
+    cdk.Aspects.of(revision).add({
+      visit: (node) => {
+        if (node === revision && retentionOf(revision)().any) {
+          cdk.Annotations.of(revision).addWarningV2('@aws-cdk/aws-lambda:webFunctionManagedBucketRetained',
+            `This revision is retained, so the code bucket ${bucket.node.path} is retained too, with the ` +
+            'code of every retained revision in it. Deleting the stack leaves them in place, and they are ' +
+            'yours to clean up. To manage them yourself, stage the code with ' +
+            'WebFunctionCode.fromAssetToProvidedBucket() into a bucket you own.');
+        }
+      },
+    }, { priority: cdk.AspectPriority.READONLY });
   }
 }
 
@@ -558,6 +615,63 @@ function grantServiceRead(
   }
 }
 
+/**
+ * Whether a revision is retained, read when the template is resolved.
+ */
+function retentionOf(resource: cdk.CfnResource): () => { onReplace: boolean; any: boolean } {
+  return () => {
+    const isRetain = (p?: cdk.CfnDeletionPolicy) =>
+      p === cdk.CfnDeletionPolicy.RETAIN || p === cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+    const onReplace = isRetain(resource.cfnOptions.updateReplacePolicy);
+    return { onReplace, any: onReplace || isRetain(resource.cfnOptions.deletionPolicy) };
+  };
+}
+
+/**
+ * The configuration of a revision that the copy's key is derived from: every property except
+ * the code location, which comes from the copy itself.
+ */
+function revisionConfiguration(resource: cdk.CfnResource): any {
+  if (!CfnWebFunctionRevision.isCfnWebFunctionRevision(resource)) {
+    return undefined;
+  }
+  const buildConfig = resource.buildConfig;
+  return {
+    FunctionName: resource.functionName,
+    Description: resource.description,
+    RuntimeConfig: cdk.Token.isUnresolved(buildConfig) ? undefined : (buildConfig as CfnWebFunctionRevision.BuildConfigProperty).runtimeConfig,
+    ServiceConfig: resource.serviceConfig,
+    KmsKeyArn: resource.kmsKeyArn,
+  };
+}
+
+const MANAGED_BUCKET_REVISIONS = new WeakMap<s3.IBucket, cdk.CfnResource[]>();
+
+/**
+ * The revisions whose code is in the managed bucket. If any of them is retained, so is the
+ * bucket: deleting it, or emptying it, would take their code.
+ */
+function managedBucketRevisions(bucket: s3.IBucket): cdk.CfnResource[] {
+  let revisions = MANAGED_BUCKET_REVISIONS.get(bucket);
+  if (!revisions) {
+    revisions = [];
+    MANAGED_BUCKET_REVISIONS.set(bucket, revisions);
+    const list = revisions;
+    const retained = () => (list.some((r) => retentionOf(r)().any) ? 'Retain' : 'Delete');
+    // Resolved at synthesis, so revisions added after the bucket and policies set by aspects
+    // are seen. The auto-delete resource is retained with the bucket, so it is never sent the
+    // Delete that would empty it.
+    const autoDelete = bucket.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
+    for (const resource of [bucket.node.defaultChild, autoDelete]) {
+      if (resource instanceof cdk.CfnResource) {
+        resource.addOverride('DeletionPolicy', cdk.Lazy.string({ produce: retained }));
+        resource.addOverride('UpdateReplacePolicy', cdk.Lazy.string({ produce: retained }));
+      }
+    }
+  }
+  return revisions;
+}
+
 // Namespaced like other stack-level singletons (`AWSCDKCfnUtilsProvider`) so a customer
 // construct is unlikely to occupy it. The id feeds the bucket's logical ID, so it is permanent.
 const ASSET_BUCKET_ID = 'AWSCDKWebFunctionAssetBucket';
@@ -613,9 +727,8 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
     encryption: s3.BucketEncryption.S3_MANAGED,
     blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     enforceSSL: true,
-    // Fixed rather than configurable. Retaining the bucket would not retain any code: each
-    // copy resource deletes every version of its own object when it leaves the stack, so a
-    // retained bucket is an empty one the customer has to delete by hand.
+    // Not configurable: the bucket follows the revisions whose code it holds. It is retained,
+    // auto-delete included, when any of them is (see managedBucketRevisions).
     removalPolicy: cdk.RemovalPolicy.DESTROY,
     autoDeleteObjects: true,
   });
@@ -657,19 +770,6 @@ function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
 }
 
 /**
- * Reject a key prefix that would widen the copy function's grants on the caller's bucket.
- *
- * The prefix is used verbatim in the IAM resource ARNs and the `s3:prefix` condition that scope
- * the copy function's writes, deletes and version listing. There, `*` and `?` are wildcards and
- * `${` starts a policy variable, so any of them reaches beyond `web-function/`. A leading `/`
- * gives keys that start with an empty path segment, which is never intended.
- *
- * A token is rejected as well. Its value is only known at deployment, when the grants are
- * already in the template, and nothing at that point can check it: CloudFormation Rules apply
- * only to parameters and cannot inspect characters, and IAM wildcard escapes need the value at
- * synthesis.
- */
-/**
  * Rejects a `fromBucket()` key that would widen the Lambda service principal's read grant.
  *
  * The key goes into the grant's resource ARN, where `*` and `?` are wildcards and `${` starts a
@@ -686,6 +786,19 @@ function validateCodeKey(key: string, scope: Construct): void {
   }
 }
 
+/**
+ * Reject a key prefix that would widen the copy function's grants on the caller's bucket.
+ *
+ * The prefix is used verbatim in the IAM resource ARNs and the `s3:prefix` condition that scope
+ * the copy function's writes, deletes and version listing. There, `*` and `?` are wildcards and
+ * `${` starts a policy variable, so any of them reaches beyond `web-function/`. A leading `/`
+ * gives keys that start with an empty path segment, which is never intended.
+ *
+ * A token is rejected as well. Its value is only known at deployment, when the grants are
+ * already in the template, and nothing at that point can check it: CloudFormation Rules apply
+ * only to parameters and cannot inspect characters, and IAM wildcard escapes need the value at
+ * synthesis.
+ */
 function validateKeyPrefix(keyPrefix: string | undefined, scope: Construct): void {
   if (keyPrefix === undefined) {
     return;
