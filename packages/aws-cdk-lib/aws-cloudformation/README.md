@@ -37,11 +37,18 @@ are a couple of differences. `StackSetStack`s have a couple of special requireme
 compared to Stacks.
 
 *Requirements*
-- Must be created in the scope of a `Stack`
 - Must be environment agnostic
+- Must be in the same `Stage` as the StackSets that use it
+- Cannot contain a `StackSet`, directly or in a nested stack
+- Cannot reference resources of other stacks, and other stacks cannot reference its resources
 
 *Limitations*
 - Does not support Docker container assets
+
+You can define a `StackSetStack` in any scope: an `App`, a `Stage`, a plain construct or a `Stack`.
+It is not deployed as a stack of its own and is not listed by `cdk list`. Instead, every stack that
+has a `StackSet` using it publishes a copy of its template as a file asset, in that stack's own
+asset location. The StackSet's `TemplateURL` points to that copy.
 
 Once you create a `StackSetStack` you can create resources within the stack.
 ```ts
@@ -65,6 +72,56 @@ class MyStackSet extends StackSetStack {
   }
 }
 ```
+
+#### Sharing a StackSet Stack
+
+Because each stack with a StackSet hosts its own copy of the template, StackSets in different stacks,
+accounts and regions can share one `StackSetStack`. Define it outside the stacks, for example at `App`
+scope:
+
+```ts
+const app = new App();
+const stackSetStack = new StackSetStack(app, 'SharedStackSet');
+new iam.Role(stackSetStack, 'MyRole', {
+  assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+});
+
+const usStack = new Stack(app, 'UsAdmin', { env: { account: '111111111111', region: 'us-east-1' } });
+new StackSet(usStack, 'StackSet', {
+  target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['222222222222'] }),
+  template: StackSetTemplate.fromStackSetStack(stackSetStack),
+  capabilities: [CfnCapabilities.NAMED_IAM],
+});
+
+const euStack = new Stack(app, 'EuAdmin', { env: { account: '333333333333', region: 'eu-west-1' } });
+new StackSet(euStack, 'StackSet', {
+  target: StackSetTarget.fromAccounts({ regions: ['eu-west-1'], accounts: ['444444444444'] }),
+  template: StackSetTemplate.fromStackSetStack(stackSetStack),
+  capabilities: [CfnCapabilities.NAMED_IAM],
+});
+```
+
+Each of `UsAdmin` and `EuAdmin` publishes the template, and the file assets of the `StackSetStack`
+(see [Using File Assets](#using-file-assets)), in its own account and region. Neither stack depends on
+the other.
+
+A `StackSetStack` is deployed into the target accounts and regions of its StackSets, where values of
+other stacks of your app cannot be resolved. Synthesis therefore fails with a
+`StackSetStackCrossStackReference` error when a `StackSetStack` references a resource of another
+stack, or another stack references a resource of a `StackSetStack`. Pass such values as StackSet
+`parameters` instead.
+
+#### Warnings and errors in a StackSet Stack
+
+A `StackSetStack` has no cloud assembly artifact of its own. Warnings, errors and info messages
+that constructs inside it report appear in the artifact of every stack that has a StackSet using
+it, under the path of the construct that reported them. An error therefore fails the synthesis and
+deployment of each of those stacks. A `StackSetStack` that no StackSet uses reports nothing.
+
+To acknowledge a warning, call `Annotations.of(scope).acknowledgeWarning(id)` with the construct
+that reports it, the `StackSetStack` or any scope that contains the `StackSetStack` as `scope`.
+This removes the warning from every stack that uses the `StackSetStack`. Acknowledging it on the
+stack of a StackSet has no effect unless that stack contains the `StackSetStack`.
 
 ### Creating a StackSet
 
@@ -238,17 +295,19 @@ new StackSet(stack, 'StackSet', {
 
 #### Using File Assets
 
-You can use the StackSet's parent stack to facilitate file assets. Behind the scenes,
-this is accomplished using the `BucketDeployment` construct from the
-`aws_s3_deployment` module. You need to provide a list of buckets outside the scope of the CDK
+A `StackSetStack` can use file assets, such as Lambda code. Every stack that has a StackSet using
+the `StackSetStack` publishes the file assets, and the template, to its own CDK asset bucket, and
+copies the file assets into the asset buckets you provide with the `BucketDeployment` construct from
+the `aws_s3_deployment` module. So there is one copy, and one set of bucket deployments, per stack
+that uses the `StackSetStack`. You need to provide a list of buckets outside the scope of the CDK
 managed asset buckets and ensure you have permissions for the target accounts to pull
 the artifacts from the supplied bucket(s).
 
 As a basic example, if using a `serviceManaged` deployment, you just need to give read
-access to the Organization. You can create the asset bucket in the parent stack, or another
+access to the Organization. You can create the asset bucket in the stack of the StackSet, or another
 stack in the same app and pass the object as a prop. Or, import an existing bucket as needed.
 
-If you create the bucket in the parent or a sibling stack, you could define it similar to this:
+If you create the bucket in the stack of the StackSet or a sibling stack, you could define it similar to this:
 
 ```ts
 const bucket = new s3.Bucket(this, "Assets", {
@@ -287,9 +346,21 @@ need to ensure the roles in all target accounts have access to the central asset
 bucket you pass as the property.
 
 The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
-If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning.
-Once you have granted access yourself, acknowledge it with
+If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning on
+each stack that has a StackSet using the `StackSetStack`. Once you have granted access yourself,
+acknowledge it on that stack with
 `Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
+
+When different stacks use the same `StackSetStack`, their synthesizers must copy each file asset
+under the same file name, because the template references one object key. A `bucketPrefix` without
+a trailing `/` becomes part of the file name, so synthesis fails with a
+`StackSetAssetObjectKeyMismatch` error when such stacks use different prefixes.
+
+A nested stack inside a `StackSetStack` is a file asset too. Its template is published while the app
+is prepared for synthesis, after aspects have run. If nothing earlier in a stack using the
+`StackSetStack` created them, the bucket deployments that copy the template are created at that
+point, together with the deployment handler function and its role, default policy and layer.
+Aspects, such as `Tags` or a permissions boundary, do not apply to those constructs.
 
 ### Importing an existing StackSet
 
