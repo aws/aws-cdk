@@ -2237,6 +2237,11 @@ no default — you must choose explicitly:
 - `WebFunctionAuthType.IAM_AUTH` — Lambda authorizes requests using SigV4/IAM.
 - `WebFunctionAuthType.APPLICATION_MANAGED` — The endpoint is public; your handler code must validate every request.
 
+With `IAM_AUTH`, sign requests with SigV4 and include the `X-Amz-Content-SHA256` header, the
+SHA-256 hash of the request body, also for a request without a body. Without the header the
+endpoint returns `403 Forbidden`, even when the signature is valid. A `MULTI_REGION` endpoint
+has one global domain, so its requests are signed with SigV4a for the Region set `*`.
+
 ### Endpoints
 
 A WebFunction creates one endpoint. Its auth type is `defaultEndpointAuth`, and its other

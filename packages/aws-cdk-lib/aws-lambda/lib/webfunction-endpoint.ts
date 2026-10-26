@@ -43,7 +43,12 @@ export enum WebFunctionAuthType {
    * The Lambda service will not enforce authentication; ensure your handler code validates every request.
    */
   APPLICATION_MANAGED = 'ApplicationManaged',
-  /** Authentication using AWS IAM */
+  /**
+   * Authentication using AWS IAM.
+   *
+   * Requests must be signed with SigV4 and carry the `X-Amz-Content-SHA256` header, also for a
+   * request without a body. A `MULTI_REGION` endpoint is signed with SigV4a, for the Region set `*`.
+   */
   IAM_AUTH = 'IamAuth',
 }
 
@@ -318,6 +323,10 @@ export interface WebFunctionEndpointOptions extends WebFunctionDefaultEndpointOp
    * There is no default: you must choose explicitly so an endpoint is never accidentally public or
    * accidentally locked down. Specify `WebFunctionAuthType.IAM_AUTH` (Lambda authorizes requests with SigV4/IAM)
    * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
+   *
+   * With `IAM_AUTH`, requests must be signed with SigV4 and carry the `X-Amz-Content-SHA256`
+   * header, also for a request without a body; without it the endpoint returns 403 even for a
+   * valid signature. A `MULTI_REGION` endpoint is signed with SigV4a, for the Region set `*`.
    */
   readonly authType: WebFunctionAuthType;
 }
