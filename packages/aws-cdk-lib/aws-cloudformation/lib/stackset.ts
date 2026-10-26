@@ -16,7 +16,6 @@ import {
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IStackSetRef, StackSetReference } from '../../interfaces/generated/aws-cloudformation-interfaces.generated';
@@ -37,31 +36,32 @@ export abstract class StackSetTemplate {
   }
 
   /**
+   * The S3 URL of the StackSet template
+   */
+  public abstract readonly templateUrl: string;
+
+  /**
    * Bind the template to a StackSet that uses it
    *
-   * @param scope the StackSet
-   * @returns the template URL in the stack of the StackSet, and the resources in
-   * that stack that must be deployed before the StackSet
+   * @param _scope the StackSet
+   * @returns the resources that must be deployed before the StackSet
    * @internal
    */
-  public abstract _bind(scope: Construct): StackSetTemplateConfig;
-}
-
-/**
- * The template configuration of a StackSet
- */
-interface StackSetTemplateConfig {
-  readonly templateUrl: string;
-  readonly dependencies: IDependable[];
+  public _bind(_scope: Construct): IDependable[] {
+    return [];
+  }
 }
 
 class StackSetStackTemplate extends StackSetTemplate {
+  public readonly templateUrl: string;
+
   constructor(private readonly stack: StackSetStack) {
     super();
+    this.templateUrl = stack._getTemplateUrl();
   }
 
-  public _bind(scope: Construct): StackSetTemplateConfig {
-    return this.stack._bindConsumer(scope);
+  public _bind(scope: Construct): IDependable[] {
+    return this.stack._bindStackSet(scope);
   }
 }
 
@@ -719,7 +719,6 @@ class ImportedStackSet extends Resource implements IStackSet {
  * @resource AWS::CloudFormation::StackSet
  */
 @propertyInjectable
-@noBoxStackTraces
 export class StackSet extends Resource implements IStackSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
@@ -773,6 +772,7 @@ export class StackSet extends Resource implements IStackSet {
 
     addConstructMetadata(this, props);
 
+    const templateDependencies = props.template._bind(this);
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
       this._role = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
@@ -801,7 +801,6 @@ export class StackSet extends Resource implements IStackSet {
     }
 
     this.permissionModel = deploymentTypeConfig.permissionsModel;
-    const templateConfig = props.template._bind(this);
 
     if (props.target) {
       this.addTarget(props.target);
@@ -829,7 +828,7 @@ export class StackSet extends Resource implements IStackSet {
       capabilities: props.capabilities,
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
-      templateUrl: templateConfig.templateUrl,
+      templateUrl: props.template.templateUrl,
       stackInstancesGroup: Lazy.any({
         produce: () => {
           return this.stackInstances;
@@ -852,7 +851,7 @@ export class StackSet extends Resource implements IStackSet {
     }
 
     // the file asset bucket deployment needs to complete before the stackset can deploy
-    stackSet.node.addDependency(...templateConfig.dependencies);
+    stackSet.node.addDependency(...templateDependencies);
   }
 
   public get stackSetRef(): StackSetReference {
