@@ -72,7 +72,7 @@ const webFunction = new WebFunction(stack, 'Function', {
   // The assertion below has to reach the handler, and integ-tests cannot sign requests.
   // The handler only returns the test object's fixed content, and the stack is torn down
   // after the test.
-  authType: WebFunctionAuthType.APPLICATION_MANAGED,
+  defaultEndpointAuth: WebFunctionAuthType.APPLICATION_MANAGED,
   egressNetworkConnector: connector,
   environment: {
     OBJECT_URL: egressBucket.virtualHostedUrlForObject(EGRESS_OBJECT_KEY),

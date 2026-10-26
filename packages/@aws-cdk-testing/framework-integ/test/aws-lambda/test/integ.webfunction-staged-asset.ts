@@ -29,14 +29,14 @@ const stack = new cdk.Stack(app, 'WebFunctionStagedAssetStack');
 const automatic = new WebFunction(stack, 'Automatic', {
   code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
 });
 
 // A second function in the same stack: reuses the bucket above, gets its own copy and version.
 const automaticSecond = new WebFunction(stack, 'AutomaticSecond', {
   code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
 });
 
 // Code staged into a bucket the caller owns. The caller is responsible for the bucket meeting
@@ -53,7 +53,7 @@ const specific = new WebFunction(stack, 'Specific', {
     keyPrefix: 'webfunctions/',
   }),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
 });
 
 const testCase = new integ.IntegTest(app, 'WebFunctionStagedAssetTest', {

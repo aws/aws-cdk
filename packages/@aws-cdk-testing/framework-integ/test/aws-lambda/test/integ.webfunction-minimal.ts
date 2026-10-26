@@ -31,7 +31,7 @@ const webFunction = new WebFunction(stack, 'MinimalBucket', {
     cdk.Fn.select(0, deployment.objectVersionIds),
   ),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
 });
 
 cdk.Tags.of(webFunction).add('App', 'integ-test');

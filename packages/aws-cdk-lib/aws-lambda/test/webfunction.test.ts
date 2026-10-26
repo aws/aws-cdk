@@ -28,7 +28,7 @@ const mockBucket = {
 const minimalProps = (overrides: Record<string, any> = {}) => ({
   code: WebFunctionCode.fromBucket(mockBucket, 'code.zip'),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
   ...overrides,
 });
 
@@ -111,10 +111,10 @@ describe('WebFunction validation', () => {
     test('validates endpointName by the same rule', () => {
       // The service uses one regex for both names.
       for (const name of ['-leading', 'a', 'a'.repeat(65), 'bad name']) {
-        expect(() => new WebFunction(stack, `Test${name}`, minimalProps({ endpointName: name })))
+        expect(() => new WebFunction(stack, `Test${name}`, minimalProps({ defaultEndpoint: { endpointName: name } })))
           .toThrow(/Endpoint name .* must be 2 to 64 characters/);
       }
-      expect(() => new WebFunction(stack, 'Ok', minimalProps({ endpointName: 'my-endpoint_01' })))
+      expect(() => new WebFunction(stack, 'Ok', minimalProps({ defaultEndpoint: { endpointName: 'my-endpoint_01' } })))
         .not.toThrow();
     });
 
@@ -237,13 +237,13 @@ describe('WebFunction validation', () => {
   describe('endpointDescription', () => {
     test('throws when longer than 256 characters', () => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ endpointDescription: 'a'.repeat(257) }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { endpointDescription: 'a'.repeat(257) } }));
       }).toThrow(/Endpoint description cannot be longer than 256 characters/);
     });
 
     test('accepts 256 characters', () => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ endpointDescription: 'a'.repeat(256) }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { endpointDescription: 'a'.repeat(256) } }));
       }).not.toThrow();
     });
   });
@@ -251,19 +251,19 @@ describe('WebFunction validation', () => {
   describe('maxEnvironments', () => {
     test.each([1, 2.5])('throws when value is %p', (value) => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ maxEnvironments: value }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { maxEnvironments: value } }));
       }).toThrow(/maxEnvironments must be an integer of 2 or greater/);
     });
 
     test('accepts the lower boundary', () => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ maxEnvironments: 2 }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { maxEnvironments: 2 } }));
       }).not.toThrow();
     });
 
     test('accepts a large value, since the schema declares no upper bound', () => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ maxEnvironments: 100000 }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { maxEnvironments: 100000 } }));
       }).not.toThrow();
     });
   });
@@ -271,13 +271,13 @@ describe('WebFunction validation', () => {
   describe('rateLimit', () => {
     test.each([-1, 0.5])('throws when value is %p', (value) => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ rateLimit: value }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { rateLimit: value } }));
       }).toThrow(/rateLimit must be an integer of 0 or greater/);
     });
 
     test('accepts zero, which the schema allows', () => {
       expect(() => {
-        new WebFunction(stack, 'Test', minimalProps({ rateLimit: 0 }));
+        new WebFunction(stack, 'Test', minimalProps({ defaultEndpoint: { rateLimit: 0 } }));
       }).not.toThrow();
     });
   });
@@ -286,7 +286,7 @@ describe('WebFunction validation', () => {
     test('maps each location to its endpoint type and regions', () => {
       const props = (location?: WebFunctionEndpointLocation) => {
         const s = new Stack();
-        new WebFunction(s, 'Test', minimalProps({ endpointLocation: location }));
+        new WebFunction(s, 'Test', minimalProps({ defaultEndpoint: { endpointLocation: location } }));
         const [endpoint] = Object.values(Template.fromStack(s).findResources('AWS::Lambda::WebFunctionEndpoint'));
         return endpoint.Properties;
       };
@@ -312,8 +312,10 @@ describe('WebFunction validation', () => {
     test('throws when MULTI_REGION replicaRegions resolves to empty list', () => {
       expect(() => {
         new WebFunction(stack, 'Test', minimalProps({
-          endpointLocation: WebFunctionEndpointLocation.multiRegion(
-            WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+          defaultEndpoint: {
+            endpointLocation: WebFunctionEndpointLocation.multiRegion(
+              WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+          },
         }));
       }).toThrow(/replicaRegions resolved to an empty list/);
     });
@@ -321,8 +323,10 @@ describe('WebFunction validation', () => {
     test('throws when PER_REGION replicaRegions resolves to empty list', () => {
       expect(() => {
         new WebFunction(stack, 'Test', minimalProps({
-          endpointLocation: WebFunctionEndpointLocation.perRegion(
-            WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+          defaultEndpoint: {
+            endpointLocation: WebFunctionEndpointLocation.perRegion(
+              WebFunctionReplicaRegions.of(WebFunctionRegions.US, WebFunctionRegions.US)),
+          },
         }));
       }).toThrow(/replicaRegions resolved to an empty list/);
     });
@@ -330,7 +334,7 @@ describe('WebFunction validation', () => {
     test('passes a deploy-time replicaRegions list through to the endpoint without validating it', () => {
       const regions = Fn.split(',', new CfnParameter(stack, 'Regions').valueAsString);
       new WebFunction(stack, 'Test', minimalProps({
-        endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(regions)),
+        defaultEndpoint: { endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(regions)) },
       }));
 
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
@@ -461,9 +465,11 @@ describe('WebFunction template', () => {
 
   test('WebFunctionEndpoint carries the description, scaling and throttle settings', () => {
     new WebFunction(stack, 'Test', minimalProps({
-      endpointDescription: 'my endpoint',
-      maxEnvironments: 50,
-      rateLimit: 500,
+      defaultEndpoint: {
+        endpointDescription: 'my endpoint',
+        maxEnvironments: 50,
+        rateLimit: 500,
+      },
     }));
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
@@ -785,9 +791,9 @@ describe('WebFunction template', () => {
   describe('the default endpoint name follows the endpoint shape', () => {
     // Type and regions are create-only, like the name, so changing them replaces the endpoint,
     // which CloudFormation cannot do under the same name.
-    const nameFor = (props: Partial<WebFunctionProps>) => {
+    const nameFor = (defaultEndpoint: WebFunctionProps['defaultEndpoint']) => {
       const s = new Stack();
-      new WebFunction(s, 'Test', minimalProps(props));
+      new WebFunction(s, 'Test', minimalProps({ defaultEndpoint }));
       const [endpoint] = Object.values(Template.fromStack(s).findResources('AWS::Lambda::WebFunctionEndpoint'));
       return endpoint.Properties.EndpointName;
     };
@@ -796,7 +802,7 @@ describe('WebFunction template', () => {
     });
 
     test('a home-Region endpoint is named prod', () => {
-      expect(nameFor({})).toEqual('prod');
+      expect(nameFor(undefined)).toEqual('prod');
     });
 
     test('a regional endpoint gets a name derived from its type and regions', () => {
@@ -821,9 +827,11 @@ describe('WebFunction template', () => {
       'Test',
       minimalProps({
         webFunctionName: 'my-func',
-        endpointName: 'staging',
-        endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpoint: {
+          endpointName: 'staging',
+          endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
+        },
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       }),
     );
     const template = Template.fromStack(stack);
@@ -842,8 +850,10 @@ describe('WebFunction template', () => {
       'Test',
       minimalProps({
         webFunctionName: 'my-func',
-        endpointLocation: WebFunctionEndpointLocation.perRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpoint: {
+          endpointLocation: WebFunctionEndpointLocation.perRegion(WebFunctionReplicaRegions.of(WebFunctionRegions.US)),
+        },
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       }),
     );
     const template = Template.fromStack(stack);
@@ -1059,7 +1069,7 @@ describe('WebFunction template', () => {
   test('APPLICATION_MANAGED authType emits public endpoint warning', () => {
     const warningStack = new Stack();
     new WebFunction(warningStack, 'Test', minimalProps({
-      authType: WebFunctionAuthType.APPLICATION_MANAGED,
+      defaultEndpointAuth: WebFunctionAuthType.APPLICATION_MANAGED,
     }));
 
     Annotations.fromStack(warningStack).hasWarning(
@@ -1071,7 +1081,7 @@ describe('WebFunction template', () => {
   test('IAM_AUTH authType does not emit public endpoint warning', () => {
     const noWarningStack = new Stack();
     new WebFunction(noWarningStack, 'Test', minimalProps({
-      authType: WebFunctionAuthType.IAM_AUTH,
+      defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
     }));
 
     Annotations.fromStack(noWarningStack).hasNoWarning(
@@ -1217,7 +1227,7 @@ describe('WebFunction egress network connector', () => {
 
     expect(() => new WebFunction(stack, 'Test', minimalProps({
       egressNetworkConnector: connector,
-      endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2'])),
+      defaultEndpoint: { endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1', 'us-west-2'])) },
     }))).toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint, got MultiRegion/);
   });
 

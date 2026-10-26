@@ -67,7 +67,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       const template = Template.fromStack(stack);
@@ -91,7 +91,7 @@ describe('WebFunctionCode', () => {
         webFunctionName: 'my-fn',
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       const template = Template.fromStack(stack);
@@ -134,7 +134,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).toThrow(/must have versioning enabled/);
@@ -150,7 +150,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).toThrow(/AWS-managed KMS key/);
@@ -171,7 +171,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'code.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).toThrow(/encrypted with an AWS-managed KMS key/);
@@ -187,7 +187,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'code.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).not.toThrow();
@@ -202,7 +202,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).toThrow(/AWS-managed KMS key/);
@@ -220,12 +220,12 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'S3ManagedFunction', {
         code: WebFunctionCode.fromBucket(s3Managed, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
       new WebFunction(stack, 'CmkFunction', {
         code: WebFunctionCode.fromBucket(cmk, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).not.toThrow();
@@ -238,7 +238,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).not.toThrow();
@@ -249,7 +249,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       const template = Template.fromStack(stack);
@@ -286,7 +286,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -326,7 +326,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromBucket(bucket, 'my-function.zip'),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       Annotations.fromStack(stack).hasWarning(
@@ -340,7 +340,7 @@ describe('WebFunctionCode', () => {
     const minimalStaged = (overrides: Record<string, any> = {}) => ({
       code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
       runtime: WebFunctionRuntime.NODEJS_24_X,
-      authType: WebFunctionAuthType.IAM_AUTH,
+      defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       ...overrides,
     });
 
@@ -528,7 +528,7 @@ describe('WebFunctionCode', () => {
         new WebFunction(stack, 'TestFunction', {
           code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
           runtime: WebFunctionRuntime.NODEJS_24_X,
-          authType: WebFunctionAuthType.IAM_AUTH,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
         });
       }).toThrow(/reserved for the code bucket/);
     });
@@ -544,7 +544,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
@@ -559,7 +559,7 @@ describe('WebFunctionCode', () => {
         new WebFunction(stack, 'TestFunction', {
           code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
           runtime: WebFunctionRuntime.NODEJS_24_X,
-          authType: WebFunctionAuthType.IAM_AUTH,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
         });
       }).toThrow(/reserved for the code bucket/);
     });
@@ -571,7 +571,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       const template = Template.fromStack(stack);
@@ -598,7 +598,7 @@ describe('WebFunctionCode', () => {
         new WebFunction(s, 'TestFunction', {
           code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath ?? ASSET_PATH, options),
           runtime: WebFunctionRuntime.NODEJS_24_X,
-          authType: WebFunctionAuthType.IAM_AUTH,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
         });
         const copies = Template.fromStack(s).findResources('Custom::S3ObjectCopy');
         const [logicalId] = Object.keys(copies);
@@ -635,7 +635,7 @@ describe('WebFunctionCode', () => {
         new WebFunction(s, 'TestFunction', {
           code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath),
           runtime: WebFunctionRuntime.NODEJS_24_X,
-          authType: WebFunctionAuthType.IAM_AUTH,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
         });
         return Template.fromStack(s).findResources('AWS::S3::BucketPolicy');
       };
@@ -652,7 +652,7 @@ describe('WebFunctionCode', () => {
           keyPrefix: 'webfunctions/',
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(deleteGrantKeyPatterns(stack)).toEqual(['/webfunctions/web-function/*']);
@@ -667,7 +667,7 @@ describe('WebFunctionCode', () => {
           keyPrefix: 'webfunctions/',
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(putGrantKeyPatterns(stack)).toEqual(['/webfunctions/web-function/*']);
@@ -683,7 +683,7 @@ describe('WebFunctionCode', () => {
           keyPrefix: 'webfunctions/',
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(listGrantPrefixConditions(stack)).toEqual(['webfunctions/web-function/*']);
@@ -696,7 +696,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(deleteGrantKeyPatterns(stack)).toEqual(['/web-function/*']);
@@ -709,7 +709,7 @@ describe('WebFunctionCode', () => {
       expect(() => new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH, { keyPrefix }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       })).toThrow(/keyPrefix .* must not start with '\/' or contain/);
     });
 
@@ -721,7 +721,7 @@ describe('WebFunctionCode', () => {
           keyPrefix: new cdk.CfnParameter(stack, 'Prefix').valueAsString,
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       })).toThrow(/keyPrefix must be a literal string, not a deploy-time value/);
     });
 
@@ -732,7 +732,7 @@ describe('WebFunctionCode', () => {
           keyPrefix: 'webfunctions/',
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
@@ -745,7 +745,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       // Scoped to this function's objects, not to the whole bucket: the caller owns the bucket
@@ -777,7 +777,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       // The error names this factory, not `fromBucket()`, so the message points at the
@@ -798,7 +798,7 @@ describe('WebFunctionCode', () => {
       new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       expect(() => Template.fromStack(stack)).toThrow(
@@ -812,7 +812,7 @@ describe('WebFunctionCode', () => {
       expect(() => new WebFunction(stack, 'TestFunction', {
         code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       })).not.toThrow();
 
       Template.fromStack(stack).hasResourceProperties('Custom::S3ObjectCopy', {
@@ -829,7 +829,7 @@ describe('WebFunctionCode', () => {
           copyOptions: { vpc },
         }),
         runtime: WebFunctionRuntime.NODEJS_24_X,
-        authType: WebFunctionAuthType.IAM_AUTH,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
       });
 
       // The copy handler is the singleton Lambda behind Custom::S3ObjectCopy.

@@ -2057,7 +2057,7 @@ const codeBucket = s3.Bucket.fromBucketName(this, 'CodeBucket', 'my-code-bucket'
 const webFunction = new lambda.WebFunction(this, 'MyWebFunction', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
 });
 ```
 
@@ -2123,7 +2123,7 @@ In that case, upload the code to a bucket yourself and use `fromBucket()`.
 new lambda.WebFunction(this, 'MyWebFunction', {
   code: lambda.WebFunctionCode.fromAssetToManagedBucket(path.join(__dirname, 'my-app')),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
 });
 ```
 
@@ -2152,7 +2152,7 @@ new lambda.WebFunction(this, 'MyWebFunction', {
     keyPrefix: 'apps/',
   }),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
 });
 ```
 
@@ -2231,16 +2231,17 @@ default retention. Pass a log group of your own to control its retention or encr
 
 ### Authentication
 
-`authType` is required with no default — you must choose explicitly:
+`defaultEndpointAuth`, the auth type of the endpoint a WebFunction creates, is required with
+no default — you must choose explicitly:
 
 - `WebFunctionAuthType.IAM_AUTH` — Lambda authorizes requests using SigV4/IAM.
 - `WebFunctionAuthType.APPLICATION_MANAGED` — The endpoint is public; your handler code must validate every request.
 
 ### Endpoints
 
-A WebFunction creates one endpoint, configured by the endpoint properties above
-(`authType`, `endpointLocation`, `endpointName`, ...). It is available as
-`endpoint`, with the domain clients send requests to and grants for invoking it:
+A WebFunction creates one endpoint. Its auth type is `defaultEndpointAuth`, and its other
+settings (`endpointLocation`, `endpointName`, `rateLimit`, ...) go in `defaultEndpoint`. It is
+available as `endpoint`, with the domain clients send requests to and grants for invoking it:
 
 ```ts
 declare const fn: lambda.WebFunction;
@@ -2251,8 +2252,8 @@ fn.endpoint.grants.invoke(caller);
 ```
 
 Add more endpoints with `addEndpoint()`, for example to serve the same function under a
-different auth type or endpoint type. Each endpoint has its own domain and grants, and
-serves the function's revision:
+different auth type or endpoint type. Each endpoint has its own settings, auth type included,
+and its own domain and grants, and serves the function's revision:
 
 ```ts
 declare const fn: lambda.WebFunction;
@@ -2285,10 +2286,12 @@ declare const codeBucket: s3.IBucket;
 new lambda.WebFunction(this, 'GlobalApi', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
-  endpointLocation: lambda.WebFunctionEndpointLocation.multiRegion(
-    lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
-  ),
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpoint: {
+    endpointLocation: lambda.WebFunctionEndpointLocation.multiRegion(
+      lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
+    ),
+  },
 });
 ```
 
@@ -2321,17 +2324,19 @@ declare const codeBucket: s3.IBucket;
 new lambda.WebFunction(this, 'PerRegionApi', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
-  endpointLocation: lambda.WebFunctionEndpointLocation.perRegion(
-    lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
-  ),
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpoint: {
+    endpointLocation: lambda.WebFunctionEndpointLocation.perRegion(
+      lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
+    ),
+  },
 });
 ```
 
 ### Changing an endpoint
 
-`endpointName` and `endpointLocation`, its type and replica regions, are create-only on
-the underlying endpoint resource. Changing either replaces the endpoint, and the
+An endpoint's `endpointName` and `endpointLocation`, its type and replica regions, are
+create-only on the underlying endpoint resource. Changing either replaces the endpoint, and the
 replacement gets a new `domainName`, so every client that uses the old hostname
 breaks. Adding a replica region later therefore means a new URL; decide the
 region set up front where you can. Changing `webFunctionName` replaces the whole
@@ -2352,7 +2357,7 @@ id stable once an endpoint is in use.
 
 Changes to the revision (code, runtime, environment variables, `kmsKey`,
 `timeout`, `role`, logging) create a new revision and repoint the existing
-endpoint to it in place, and `authType` is updated in place. `domainName` does
+endpoint to it in place, and the auth type is updated in place. `domainName` does
 not change in either case.
 
 The new revision receives all traffic as soon as the endpoint is repointed, and the
@@ -2397,7 +2402,7 @@ declare const codeBucket: s3.IBucket;
 new lambda.WebFunction(this, 'MyWebFunction', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   environment: {
     TABLE_NAME: 'my-table',
   },
@@ -2428,7 +2433,7 @@ declare const codeBucket: s3.IBucket;
 new lambda.WebFunction(this, 'MyWebFunction', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   entryPoint: 'src/server.js',
 });
 ```
@@ -2460,7 +2465,7 @@ const connector = new lambda.NetworkConnector(this, 'Egress', {
 new lambda.WebFunction(this, 'MyWebFunction', {
   code,
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   egressNetworkConnector: connector,
 });
 ```
@@ -2506,7 +2511,7 @@ const connector = lambda.NetworkConnector.fromNetworkConnectorVersionArn(
 new lambda.WebFunction(this, 'MyWebFunction', {
   code,
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   egressNetworkConnector: connector,
 });
 ```
@@ -2546,7 +2551,7 @@ declare const codeBucket: s3.IBucket;
 const wf = new lambda.WebFunction(this, 'MyWebFunction', {
   code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
-  authType: lambda.WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
 });
 
 wf.resource.addOverride('Properties.SomeField', 'value');

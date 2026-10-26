@@ -11,7 +11,7 @@ import type { INetworkConnector } from './network-connector';
 import { DEFAULT_ENDPOINT, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
 import { WebFunctionEndpoint, WebFunctionEndpointType } from './webfunction-endpoint';
-import type { WebFunctionEndpointLocation, WebFunctionEndpointOptions } from './webfunction-endpoint';
+import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointLocation, WebFunctionEndpointOptions } from './webfunction-endpoint';
 import type {
   WebFunctionRuntime,
 } from './webfunction-runtime';
@@ -68,7 +68,7 @@ function topLevelStack(stack: Stack): Stack {
 /**
  * Properties for defining a `WebFunction`.
  */
-export interface WebFunctionProps extends WebFunctionEndpointOptions {
+export interface WebFunctionProps {
   /**
    * The name of the WebFunction.
    *
@@ -213,6 +213,25 @@ export interface WebFunctionProps extends WebFunctionEndpointOptions {
    * @default - the service default of 64 is applied
    */
   readonly maxConcurrencyPerEnvironment?: number;
+
+  /**
+   * The authentication type of the endpoint the WebFunction creates, `endpoint`.
+   *
+   * There is no default: you must choose explicitly so an endpoint is never accidentally public or
+   * accidentally locked down. Specify `WebFunctionAuthType.IAM_AUTH` (Lambda authorizes requests with SigV4/IAM)
+   * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
+   */
+  readonly defaultEndpointAuth: WebFunctionAuthType;
+
+  /**
+   * The other settings of the endpoint the WebFunction creates, `endpoint`.
+   *
+   * Endpoints added with `addEndpoint()` take their own settings, auth type included.
+   *
+   * @default - a home-Region endpoint named `prod`, with no description and no scaling or rate
+   * limit beyond your account's quotas
+   */
+  readonly defaultEndpoint?: WebFunctionDefaultEndpointOptions;
 }
 
 /**
@@ -464,7 +483,7 @@ export class WebFunction extends WebFunctionBase {
     // A connector is only supported with a HOME_REGION endpoint, which every endpoint of the
     // function must then be: see addEndpoint().
     if (props.egressNetworkConnector) {
-      this.assertHomeRegionEndpoint(props.endpointLocation);
+      this.assertHomeRegionEndpoint(props.defaultEndpoint?.endpointLocation);
     }
 
     // Set up the execution role
@@ -563,12 +582,8 @@ export class WebFunction extends WebFunctionBase {
     // The default endpoint is marked so it keeps the name it had before endpoints were a
     // construct of their own.
     const defaultEndpoint: WebFunctionEndpointOptions = {
-      authType: props.authType,
-      endpointName: props.endpointName,
-      endpointLocation: props.endpointLocation,
-      endpointDescription: props.endpointDescription,
-      maxEnvironments: props.maxEnvironments,
-      rateLimit: props.rateLimit,
+      ...props.defaultEndpoint,
+      authType: props.defaultEndpointAuth,
     };
     this.endpoint = this.createEndpoint('Endpoint', { ...defaultEndpoint, [DEFAULT_ENDPOINT]: true } as WebFunctionEndpointOptions);
 

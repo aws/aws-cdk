@@ -237,9 +237,12 @@ export class WebFunctionEndpointLocation {
 }
 
 /**
- * Settings of a WebFunction endpoint.
+ * Settings of a WebFunction endpoint other than its auth type.
+ *
+ * Used for the endpoint a WebFunction creates for itself, whose auth type is set by
+ * `WebFunctionProps.defaultEndpointAuth`.
  */
-export interface WebFunctionEndpointOptions {
+export interface WebFunctionDefaultEndpointOptions {
   /**
    * The name of the WebFunction endpoint.
    *
@@ -268,15 +271,6 @@ export interface WebFunctionEndpointOptions {
    * @default WebFunctionEndpointLocation.homeRegion()
    */
   readonly endpointLocation?: WebFunctionEndpointLocation;
-
-  /**
-   * The authentication type for the WebFunction endpoint.
-   *
-   * There is no default: you must choose explicitly so an endpoint is never accidentally public or
-   * accidentally locked down. Specify `WebFunctionAuthType.IAM_AUTH` (Lambda authorizes requests with SigV4/IAM)
-   * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
-   */
-  readonly authType: WebFunctionAuthType;
 
   /**
    * A description of the endpoint.
@@ -312,6 +306,20 @@ export interface WebFunctionEndpointOptions {
    * @default - The request rate is limited only by your account's rate limit quota.
    */
   readonly rateLimit?: number;
+}
+
+/**
+ * Settings of a WebFunction endpoint.
+ */
+export interface WebFunctionEndpointOptions extends WebFunctionDefaultEndpointOptions {
+  /**
+   * The authentication type for the WebFunction endpoint.
+   *
+   * There is no default: you must choose explicitly so an endpoint is never accidentally public or
+   * accidentally locked down. Specify `WebFunctionAuthType.IAM_AUTH` (Lambda authorizes requests with SigV4/IAM)
+   * or `WebFunctionAuthType.APPLICATION_MANAGED` (the endpoint is public and your function handles authorization).
+   */
+  readonly authType: WebFunctionAuthType;
 }
 
 /**

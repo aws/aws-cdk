@@ -24,7 +24,7 @@ const mockBucket = {
 const minimalProps = (overrides: Record<string, any> = {}) => ({
   code: WebFunctionCode.fromBucket(mockBucket, 'code.zip'),
   runtime: WebFunctionRuntime.NODEJS_24_X,
-  authType: WebFunctionAuthType.IAM_AUTH,
+  defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
   ...overrides,
 });
 
@@ -44,7 +44,7 @@ describe('default endpoint', () => {
 
   test('is configured by the endpoint properties of the WebFunction', () => {
     const stack = new Stack();
-    const fn = new WebFunction(stack, 'Fn', minimalProps({ endpointName: 'live', rateLimit: 100 }));
+    const fn = new WebFunction(stack, 'Fn', minimalProps({ defaultEndpoint: { endpointName: 'live', rateLimit: 100 } }));
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
       FunctionName: { Ref: Match.stringLikeRegexp('^FnFunction') },
@@ -78,7 +78,7 @@ describe('default endpoint', () => {
 describe('addEndpoint', () => {
   test('adds an endpoint for the same revision, named so it does not collide', () => {
     const stack = new Stack();
-    const fn = new WebFunction(stack, 'Fn', minimalProps({ authType: WebFunctionAuthType.APPLICATION_MANAGED }));
+    const fn = new WebFunction(stack, 'Fn', minimalProps({ defaultEndpointAuth: WebFunctionAuthType.APPLICATION_MANAGED }));
     const second = fn.addEndpoint('Cdn', { authType: WebFunctionAuthType.IAM_AUTH });
 
     const all = Object.values(endpoints(stack));
@@ -93,6 +93,20 @@ describe('addEndpoint', () => {
     const secondProps = endpoints(stack)[stack.resolve(second.endpointArn)['Fn::GetAtt'][0]].Properties;
     expect(secondProps.AuthType).toEqual('IamAuth');
     expect(secondProps.RevisionWeights).toEqual(endpoints(stack)[stack.resolve(fn.endpoint.endpointArn)['Fn::GetAtt'][0]].Properties.RevisionWeights);
+  });
+
+  test('takes its own settings, not those of the default endpoint', () => {
+    const stack = new Stack();
+    const fn = new WebFunction(stack, 'Fn', minimalProps({
+      defaultEndpointAuth: WebFunctionAuthType.APPLICATION_MANAGED,
+      defaultEndpoint: { endpointDescription: 'public', rateLimit: 100 },
+    }));
+    const second = fn.addEndpoint('Second', { authType: WebFunctionAuthType.IAM_AUTH });
+
+    const props = endpoints(stack)[stack.resolve(second.endpointArn)['Fn::GetAtt'][0]].Properties;
+    expect(props.AuthType).toEqual('IamAuth');
+    expect(props).not.toHaveProperty('Description');
+    expect(props).not.toHaveProperty('ThrottleConfig');
   });
 
   test('a second endpoint\'s default name changes with its endpoint type', () => {
