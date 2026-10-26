@@ -16,7 +16,7 @@ import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
-import { AssumptionError, UnscopedValidationError } from '../errors';
+import { AssumptionError, UnscopedValidationError, ValidationError } from '../errors';
 import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
@@ -25,6 +25,7 @@ import type { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
+import { isConsumerHostedStack, topLevelStackOf } from './consumer-hosted-stack';
 import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
 import type {
@@ -188,6 +189,23 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     } else {
       return resolvedValue;
     }
+  }
+
+  // ----------------------------------------------------------------------
+  // consumer-hosted stacks (StackSetStack)
+  // ----------------------------------------------------------------------
+
+  // The template of a consumer-hosted stack is deployed into other accounts and
+  // regions, where no value of another stack can be resolved, whatever the
+  // reference strength or environment.
+  const producerTopLevel = topLevelStackOf(producer);
+  const consumerTopLevel = topLevelStackOf(consumer);
+  if (producerTopLevel !== consumerTopLevel && (isConsumerHostedStack(producerTopLevel) || isConsumerHostedStack(consumerTopLevel))) {
+    throw new ValidationError(lit`StackSetStackCrossStackReference`,
+      `stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
+      'a StackSetStack cannot reference resources of other stacks and other stacks cannot reference its resources, ' +
+      'because its template is deployed to other accounts and regions; pass the value as a parameter of the StackSet instead',
+      consumer);
   }
 
   // ----------------------------------------------------------------------
