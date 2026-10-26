@@ -5000,31 +5000,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       },
       'defaultDatabaseName': '*',
-      'loggingProperties': {
-        'loggingBucket': {
-          'bucketArn': '*',
-          'bucketName': '*',
-          'bucketWebsiteUrl': '*',
-          'bucketWebsiteDomainName': '*',
-          'bucketDomainName': '*',
-          'bucketDualStackDomainName': '*',
-          'bucketRegionalDomainName': '*',
-          'isWebsite': 'boolean',
-          'encryptionKey': {
-            'keyArn': '*',
-            'keyId': '*',
-            'stack': '*',
-            'node': '*',
-            'env': {
-              'account': '*',
-              'region': '*'
-            }
-          },
-          'policy': '*',
-          'replicationRoleArn': '*'
-        },
-        'loggingKeyPrefix': '*'
-      },
+      'logging': '*',
       'removalPolicy': 'RemovalPolicy',
       'publiclyAccessible': 'boolean',
       'classicResizing': 'boolean',
@@ -9266,6 +9242,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-cdk-lib.aws-batch': {
+    'ConsumableResource': {
+      'consumableResourceName': '*',
+      'resourceType': 'ConsumableResourceType',
+      'totalQuantity': '*',
+      'tags': '*'
+    },
     'EcsJobDefinition': {
       'container': {
         'image': '*',
@@ -11137,6 +11119,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'principalAccount': '*'
           }
         },
+        'hostKernel': 'HostKernel',
         'privileged': 'boolean',
         'certificate': {
           'bucket': {
@@ -13928,7 +13911,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipv6CidrBlock': '*',
       'assignIpv6AddressOnCreation': 'boolean',
       'addNatGateway': [
-        '*'
+        '*',
+        {
+          'maxDrainDuration': '*'
+        }
       ]
     },
     'PrivateSubnet': {
@@ -20294,6 +20280,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'minutes': '*'
       },
       'enableAutoSoftwareUpdate': 'boolean',
+      'useLatestServiceSoftwareForBlueGreen': 'boolean',
       'ipAddressType': 'IpAddressType',
       'suppressLogsResourcePolicy': 'boolean',
       'coldStorageEnabled': 'boolean',
@@ -24863,6 +24850,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
+      'environmentEncryption': '*',
       'dryRunAndUpdate': 'boolean',
       'resourcesToReplicateTags': 'ResourceToReplicateTags',
       'browserConfigs': 'BrowserType',
@@ -26007,6 +25995,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         }
       ]
+    },
+    'KnowledgeBase': {
+      'type': '*',
+      'knowledgeBaseName': '*',
+      'description': '*',
+      'role': '*',
+      'tags': '*'
     },
     'Prompt': {
       'promptName': '*',
@@ -27851,6 +27846,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'networkConfiguration': '*',
       'description': '*',
       'protocolConfiguration': '*',
+      'platformVersion': '*',
       'environmentVariables': '*',
       'authorizerConfiguration': '*',
       'tags': '*',

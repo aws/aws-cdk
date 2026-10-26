@@ -210,7 +210,14 @@
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
       "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_OPUS_4_8",
+      "ANTHROPIC_CLAUDE_OPUS_5_5",
+      "ANTHROPIC_CLAUDE_SONNET_5_5",
+      "ANTHROPIC_CLAUDE_HAIKU_5_5",
+      "ANTHROPIC_CLAUDE_FABLE_5_1",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
+      "ANTHROPIC_CLAUDE_SONNET_5",
+      "ANTHROPIC_CLAUDE_OPUS_5",
+      "ANTHROPIC_CLAUDE_FABLE_5",
       "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
@@ -242,6 +249,10 @@
       "MISTRAL_LARGE_2402_V1",
       "MISTRAL_LARGE_2407_V1",
       "MISTRAL_PIXTRAL_LARGE_2502_V1",
+      "OPENAI_GPT_6_1_SOL",
+      "OPENAI_GPT_6_ASTRA",
+      "OPENAI_GPT_6_SOL",
+      "OPENAI_GPT_6_LUNA",
       "OPENAI_GPT_5_6_SOL",
       "OPENAI_GPT_5_6_TERRA",
       "OPENAI_GPT_5_6_LUNA",
@@ -421,6 +432,7 @@
       "FLINK_1_18",
       "FLINK_1_19",
       "FLINK_1_20",
+      "FLINK_2_2",
       "ZEPPELIN_FLINK_3_0",
       "ZEPPELIN_FLINK_2_0",
       "ZEPPELIN_FLINK_1_0",
@@ -2212,8 +2224,15 @@
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
       "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_OPUS_4_8",
+      "ANTHROPIC_CLAUDE_OPUS_5_5",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_SONNET_5",
+      "ANTHROPIC_CLAUDE_OPUS_5",
+      "ANTHROPIC_CLAUDE_MYTHOS_5",
+      "ANTHROPIC_CLAUDE_FABLE_5",
+      "ANTHROPIC_CLAUDE_SONNET_5_5",
+      "ANTHROPIC_CLAUDE_HAIKU_5_5",
+      "ANTHROPIC_CLAUDE_FABLE_5_1",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -2241,6 +2260,10 @@
       "OPENAI_GPT_5_6_LUNA",
       "OPENAI_GPT_5_6_CYBER",
       "OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL",
+      "OPENAI_GPT_6_ASTRA",
+      "OPENAI_GPT_6_SOL",
+      "OPENAI_GPT_6_LUNA",
+      "OPENAI_GPT_6_1_SOL",
       "LUMA_RAY_V2_0",
       "META_LLAMA_2_13B_V1",
       "META_LLAMA_2_13B_V1_0_4K",
@@ -2431,6 +2454,10 @@
       "HTTP",
       "A2A",
       "AGUI"
+    ],
+    "PlatformVersion": [
+      "V1",
+      "V2"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -2475,7 +2502,9 @@
   "aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.ts": {
     "Signing": [
       "SIGV4_ALWAYS",
+      "SIGV4_ALWAYS_AMZ_AUTH",
       "SIGV4_NO_OVERRIDE",
+      "SIGV4A_ALWAYS",
       "NEVER"
     ]
   },
@@ -2517,7 +2546,8 @@
       "AMAZON_LINUX_2_STANDARD_2_0",
       "AMAZON_LINUX_2_STANDARD_3_0",
       "AMAZON_LINUX_2023_STANDARD_2_0",
-      "AMAZON_LINUX_2023_STANDARD_3_0"
+      "AMAZON_LINUX_2023_STANDARD_3_0",
+      "AMAZON_LINUX_2023_STANDARD_4_0"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/linux-arm-lambda-build-image.ts": {
@@ -2590,6 +2620,7 @@
       "STANDARD_5_0",
       "STANDARD_6_0",
       "STANDARD_7_0",
+      "STANDARD_8_0",
       "AMAZON_LINUX_2",
       "AMAZON_LINUX_2_2",
       "AMAZON_LINUX_2_3",
@@ -2597,6 +2628,7 @@
       "AMAZON_LINUX_2_5",
       "AMAZON_LINUX_2023_4",
       "AMAZON_LINUX_2023_5",
+      "AMAZON_LINUX_2023_6",
       "AMAZON_LINUX_2_CORETTO_8",
       "AMAZON_LINUX_2_CORETTO_11",
       "AMAZON_LINUX_2023_CORETTO_8",
@@ -3304,6 +3336,7 @@
       "ECS_TELEMETRY",
       "EKS",
       "EKS_AUTH",
+      "EKS_PROXY",
       "ELASTIC_BEANSTALK",
       "ELASTIC_BEANSTALK_HEALTH",
       "ELASTIC_DISASTER_RECOVERY",
@@ -4630,7 +4663,10 @@
       "VER_17_5",
       "VER_17_6",
       "VER_17_7",
-      "VER_17_9"
+      "VER_17_9",
+      "VER_18_3",
+      "VER_18_4",
+      "VER_18_6"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
