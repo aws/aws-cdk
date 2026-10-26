@@ -1,12 +1,11 @@
 import type { Construct } from 'constructs';
 import { CfnWebFunctionEndpoint } from './lambda.generated';
 import type { IWebFunctionEndpointRef, IWebFunctionRef, WebFunctionEndpointReference } from './lambda.generated';
-import { DEFAULT_ENDPOINT, hasTokens, validateResourceName } from './private/webfunction-util';
+import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
 import { WebFunctionEndpointGrants } from './webfunction-endpoint-grants';
 import type { IResource } from '../../core';
-import { Annotations, Fn, Names, Resource, Stack, Token } from '../../core';
+import { Annotations, Fn, Names, Resource, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -566,15 +565,13 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       );
     }
 
-    const isDefault = (props as any)[DEFAULT_ENDPOINT] === true;
-
     // Named 'Default' rather than 'Resource': CDK leaves a 'Default' child out of the logical
     // ID, so the endpoint a WebFunction creates keeps the logical ID it had when the
     // WebFunction created the L1 directly. A changed logical ID would replace the endpoint and
     // give it a new domain name.
     this.resource = new CfnWebFunctionEndpoint(this, 'Default', {
       functionName: props.webFunction.webFunctionRef.functionName,
-      endpointName: props.endpointName ?? this.defaultEndpointName(isDefault, endpointType, regions),
+      endpointName: props.endpointName ?? this.defaultEndpointName(endpointType, regions),
       endpointType,
       authType: props.authType,
       revisionWeights: [{ revisionId: props.revisionId, weight: 100 }],
@@ -607,14 +604,8 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
    * home-Region endpoint. Any other endpoint is named after its construct path, so several
    * endpoints of one function do not collide.
    */
-  private defaultEndpointName(isDefault: boolean, endpointType: WebFunctionEndpointType, regions: string[] | undefined): string {
-    const isPlainHomeRegion = endpointType === WebFunctionEndpointType.HOME_REGION && regions === undefined;
-    // Order is kept: the property is a list, so reordering it replaces the endpoint too.
-    const shapeHash = md5hash(JSON.stringify([endpointType, Stack.of(this).resolve(regions) ?? null])).slice(0, 8);
-    if (isDefault) {
-      return isPlainHomeRegion ? 'prod' : `prod-${shapeHash}`;
-    }
-    return `${Names.uniqueResourceName(this, { maxLength: 55 })}-${shapeHash}`;
+  private defaultEndpointName(endpointType: WebFunctionEndpointType, regions: string[] | undefined): string {
+    return `${Names.uniqueResourceName(this, { maxLength: 55 })}-${endpointShapeHash(this, endpointType, regions)}`;
   }
 }
 

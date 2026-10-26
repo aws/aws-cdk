@@ -1,13 +1,20 @@
 import type { Construct } from 'constructs';
-import { Token } from '../../../core';
+import { Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { md5hash } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 
 /**
- * Marks the props of the endpoint a WebFunction creates for itself, so that endpoint keeps the
- * name it has always had.
+ * A short hash of an endpoint's type and replica regions.
+ *
+ * Both are create-only, like the endpoint name, so changing them replaces the endpoint, which
+ * CloudFormation cannot do under the same name. A default name includes this hash so that it
+ * changes with them. Order is kept: the property is a list, so reordering it replaces the
+ * endpoint too.
  */
-export const DEFAULT_ENDPOINT = Symbol.for('@aws-cdk/aws-lambda.WebFunctionDefaultEndpoint');
+export function endpointShapeHash(scope: Construct, endpointType: string, regions: string[] | undefined): string {
+  return md5hash(JSON.stringify([endpointType, Stack.of(scope).resolve(regions) ?? null])).slice(0, 8);
+}
 
 /**
  * The names the service accepts for a WebFunction and for its endpoint.

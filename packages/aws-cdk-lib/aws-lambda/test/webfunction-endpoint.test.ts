@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
-import { Fn, Stack } from '../../core';
+import { Fn, PropertyInjectors, Stack } from '../../core';
 import { NetworkConnector } from '../lib/network-connector';
 import { WebFunction } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
@@ -9,6 +9,7 @@ import {
   WebFunctionEndpoint,
   WebFunctionEndpointLocation,
   WebFunctionEndpointType,
+  WebFunctionEndpointProps,
   WebFunctionReplicaRegions,
 } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
@@ -54,6 +55,27 @@ describe('default endpoint', () => {
       RevisionWeights: [{ RevisionId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^FnRevision'), 'RevisionId'] }, Weight: 100 }],
     });
     expect(fn.endpoint.endpointType).toEqual(WebFunctionEndpointType.HOME_REGION);
+  });
+
+  test('keeps its name and logical ID when a property injector rebuilds the endpoint props', () => {
+    const stack = new Stack();
+    PropertyInjectors.of(stack).add({
+      constructUniqueId: WebFunctionEndpoint.PROPERTY_INJECTION_ID,
+      inject: (props: WebFunctionEndpointProps) => ({
+        webFunction: props.webFunction,
+        revisionId: props.revisionId,
+        authType: props.authType,
+        endpointName: props.endpointName,
+        endpointLocation: props.endpointLocation,
+        endpointDescription: props.endpointDescription,
+        maxEnvironments: props.maxEnvironments,
+        rateLimit: props.rateLimit,
+      }),
+    });
+    new WebFunction(stack, 'Fn', minimalProps());
+
+    expect(Object.keys(endpoints(stack))).toEqual(['FnEndpointAA26FDCA']);
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', { EndpointName: 'prod' });
   });
 
   test('is named prod by default', () => {

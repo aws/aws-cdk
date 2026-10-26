@@ -8,10 +8,10 @@ import {
 import type { IWebFunctionRef, WebFunctionReference } from './lambda.generated';
 import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
-import { DEFAULT_ENDPOINT, hasTokens, validateResourceName } from './private/webfunction-util';
+import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
-import { WebFunctionEndpoint, WebFunctionEndpointType } from './webfunction-endpoint';
-import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointLocation, WebFunctionEndpointOptions } from './webfunction-endpoint';
+import { WebFunctionEndpoint, WebFunctionEndpointLocation, WebFunctionEndpointType } from './webfunction-endpoint';
+import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointOptions } from './webfunction-endpoint';
 import type {
   WebFunctionRuntime,
 } from './webfunction-runtime';
@@ -583,13 +583,13 @@ export class WebFunction extends WebFunctionBase {
     this.revisionId = this.resourceRevision.attrRevisionId;
     this.hasEgressNetworkConnector = props.egressNetworkConnector !== undefined;
 
-    // The default endpoint is marked so it keeps the name it had before endpoints were a
-    // construct of their own.
-    const defaultEndpoint: WebFunctionEndpointOptions = {
+    // The default endpoint's name is resolved here and passed explicitly, so it does not depend
+    // on anything a property injector could drop from the endpoint's props.
+    this.endpoint = this.createEndpoint('Endpoint', {
       ...props.defaultEndpoint,
       authType: props.defaultEndpointAuth,
-    };
-    this.endpoint = this.createEndpoint('Endpoint', { ...defaultEndpoint, [DEFAULT_ENDPOINT]: true } as WebFunctionEndpointOptions);
+      endpointName: props.defaultEndpoint?.endpointName ?? this.defaultEndpointName(props.defaultEndpoint?.endpointLocation),
+    });
 
     // Bind the code to the resource
     props.code.bindToResource(this.resourceRevision);
@@ -625,6 +625,20 @@ export class WebFunction extends WebFunctionBase {
     endpoint.resource.addResourceDependency(this.resource);
     endpoint.resource.addResourceDependency(this.resourceRevision);
     return endpoint;
+  }
+
+  /**
+   * The name of the endpoint the WebFunction creates, when none is given: `prod` in the home
+   * Region, and for a regional endpoint `prod-` followed by a hash of its location, so that
+   * whatever replaces the endpoint also renames it.
+   */
+  private defaultEndpointName(location: WebFunctionEndpointLocation | undefined): string {
+    const { endpointType, replicaRegions } = location ?? WebFunctionEndpointLocation.homeRegion();
+    const regions = replicaRegions?._toRegionList();
+    if (endpointType === WebFunctionEndpointType.HOME_REGION && regions === undefined) {
+      return 'prod';
+    }
+    return `prod-${endpointShapeHash(this, endpointType, regions)}`;
   }
 
   private assertHomeRegionEndpoint(location: WebFunctionEndpointLocation | undefined): void {
