@@ -661,10 +661,11 @@ it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 and that reflects a convention the CDK follows consistently. Once a value is
 handed to `splitArn()`:
 
-- a value that does **not** start with `arn:` is accepted only when it is a
-  fully-unresolved deploy-time token — parsed best-effort via `Fn::Split` /
-  `Fn::Select`, and never throwing. A *concrete* string that does not start with
-  `arn:` is a **caller error** and throws (`ArnsMustStartWithArn`);
+- a value that does **not** start with `arn:` is accepted only when it contains
+  an unresolved token (whether fully or partially tokenized, e.g. `${account}`
+  or `prefix-${token}`) — it is then parsed best-effort via `Fn::Split` /
+  `Fn::Select`, and never throws. A *fully concrete* string that does not start
+  with `arn:` is a **caller error** and throws (`ArnsMustStartWithArn`);
 - any `arn:`-prefixed string — concrete, or one that embeds tokens such as
   `arn:${Aws.PARTITION}:s3:::bucket` — is structurally validated. A well-formed
   one parses (token segments come back as deploy-time components); one missing a

@@ -226,11 +226,12 @@ export class Arn {
    * Any `arn:`-prefixed string is structurally validated, so both a malformed
    * `arn:` string and a concrete string that does not start with `arn:` are
    * treated as caller errors and throw — as is an `arn:`-prefixed string that
-   * embeds tokens but is missing a required component. Only a fully-unresolved
-   * token (no `arn:` prefix) is always parsed best-effort and never throws. To
-   * handle a value that may legitimately not be an ARN, branch it away (on
-   * `Token.isUnresolved` / `startsWith('arn:')`) before calling this method
-   * rather than catching the exception.
+   * embeds tokens but is missing a required component. Only a non-`arn:` value
+   * that embeds an unresolved token (fully or partially tokenized) is always
+   * parsed best-effort and never throws. To handle a value that may
+   * legitimately not be an ARN, branch it away (on `Token.isUnresolved` /
+   * `startsWith('arn:')`) before calling this method rather than catching the
+   * exception.
    *
    * @see https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#parsing-arns-the-commit-or-throw-convention
    *
