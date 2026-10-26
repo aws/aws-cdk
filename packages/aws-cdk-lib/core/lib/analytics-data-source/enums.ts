@@ -4025,11 +4025,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "SigningBehavior": [
     "always",
+    "always-amz-auth",
     "never",
     "no-override"
   ],
   "SigningProtocol": [
-    "sigv4"
+    "sigv4",
+    "sigv4a"
   ],
   "SizeRoundingBehavior": [
     0,
