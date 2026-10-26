@@ -223,6 +223,14 @@ describe('NetworkConnector', () => {
         }],
       });
       Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('networkConnectorOperatorRoleNotModified'));
+      Annotations.fromStack(stack).hasWarning('*',
+        Match.stringLikeRegexp('was attached to the operator role .*use a role dedicated to this connector'));
+    });
+
+    test('does not warn about a shared role for the role it creates', () => {
+      new NetworkConnector(stack, 'Connector', { configuration: vpcEgress() });
+
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('was attached to the operator role'));
     });
 
     test('warns instead of modifying an imported role', () => {

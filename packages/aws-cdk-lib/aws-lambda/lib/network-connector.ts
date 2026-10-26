@@ -408,7 +408,7 @@ export class NetworkConnector extends NetworkConnectorBase {
     const roleName = Token.isUnresolved(roleArn) ? `'${role.node.path}'` : `'${roleArn}' (${role.node.path})`;
     if (Resource.isOwnedResource(role) && isRoleWithManagedPolicies(role)) {
       role.addManagedPolicy(policy);
-      Annotations.of(this).addInfoV2(
+      Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-lambda:networkConnectorOperatorRoleShared',
         `The ${OPERATOR_MANAGED_POLICY} managed policy was attached to the operator role ${roleName}. ` +
         'The service assumes this role without a source account or ARN, so its trust cannot be ' +
