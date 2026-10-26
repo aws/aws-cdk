@@ -1,0 +1,119 @@
+{
+ "version": "38.0.1",
+ "artifacts": {
+  "aws-ecs-container-definition-env-var-limit.assets": {
+   "type": "cdk:asset-manifest",
+   "properties": {
+    "file": "aws-ecs-container-definition-env-var-limit.assets.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+   }
+  },
+  "aws-ecs-container-definition-env-var-limit": {
+   "type": "aws:cloudformation:stack",
+   "environment": "aws://unknown-account/unknown-region",
+   "properties": {
+    "templateFile": "aws-ecs-container-definition-env-var-limit.template.json",
+    "terminationProtection": false,
+    "validateOnSynth": false,
+    "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+    "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+    "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90dd0ce3541c95adebf5f54e7cd5b95fb405877fe26dd62ffaef6c31a131f715.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+    "additionalDependencies": [
+     "aws-ecs-container-definition-env-var-limit.assets"
+    ],
+    "lookupRole": {
+     "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+     "requiresBootstrapStackVersion": 8,
+     "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+    }
+   },
+   "dependencies": [
+    "aws-ecs-container-definition-env-var-limit.assets"
+   ],
+   "metadata": {
+    "/aws-ecs-container-definition-env-var-limit/TaskDef/TaskRole/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefTaskRole1EDB4A67"
+     }
+    ],
+    "/aws-ecs-container-definition-env-var-limit/TaskDef/Resource": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDef54694570"
+     }
+    ],
+    "/aws-ecs-container-definition-env-var-limit/BootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+     }
+    ],
+    "/aws-ecs-container-definition-env-var-limit/CheckBootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+     }
+    ]
+   },
+   "displayName": "aws-ecs-container-definition-env-var-limit"
+  },
+  "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C.assets": {
+   "type": "cdk:asset-manifest",
+   "properties": {
+    "file": "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C.assets.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+   }
+  },
+  "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C": {
+   "type": "aws:cloudformation:stack",
+   "environment": "aws://unknown-account/unknown-region",
+   "properties": {
+    "templateFile": "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C.template.json",
+    "terminationProtection": false,
+    "validateOnSynth": false,
+    "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+    "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+    "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+    "requiresBootstrapStackVersion": 6,
+    "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+    "additionalDependencies": [
+     "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C.assets"
+    ],
+    "lookupRole": {
+     "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+     "requiresBootstrapStackVersion": 8,
+     "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+    }
+   },
+   "dependencies": [
+    "ContainerDefinitionEnvVarLimitDefaultTestDeployAssert16EB808C.assets"
+   ],
+   "metadata": {
+    "/ContainerDefinitionEnvVarLimit/DefaultTest/DeployAssert/BootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+     }
+    ],
+    "/ContainerDefinitionEnvVarLimit/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+     {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+     }
+    ]
+   },
+   "displayName": "ContainerDefinitionEnvVarLimit/DefaultTest/DeployAssert"
+  },
+  "Tree": {
+   "type": "cdk:tree",
+   "properties": {
+    "file": "tree.json"
+   }
+  }
+ }
+}
