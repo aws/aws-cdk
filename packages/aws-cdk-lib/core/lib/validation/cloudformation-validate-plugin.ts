@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CompositeEngine, TemplateFile, version } from '@aws/cloudformation-validate';
+import { CompositeEngine, TemplateContent, version } from '@aws/cloudformation-validate';
 import type { AdditionalSchemaSource, CompositeEngineConfig, Engine, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext, PolicyValidationStack } from './validation';
@@ -184,7 +184,7 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
     const engine = this.initializeEngine(allResourceTypes);
 
     for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
-      const templateFile = new TemplateFile(templatePath);
+      const templateFile = new TemplateContent(allTemplates[templatePath], templatePath);
       const report = (() => {
         using _span = profileSpan(VALIDATE_METRIC, { telemetry: true });
 
