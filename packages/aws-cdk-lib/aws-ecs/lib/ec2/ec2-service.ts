@@ -231,7 +231,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
       placementConstraints: constraints.derive(c => this.constraintsInitialized ? c : undefined),
       placementStrategies: strategies.derive(s => this.strategiesInitialized ? s : undefined),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED
+        ? props.availabilityZoneRebalancing
+        : undefined,
     }, props.taskDefinition);
 
     this.constraints = constraints;
