@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-test-cross-stack/DefaultTest": {
+      "stacks": [
+        "integ-stackset-cross-stack-scope",
+        "integ-stackset-cross-stack-consumer"
+      ],
+      "assertionStack": "integ-test-cross-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcrossstackDefaultTestDeployAssert2A0D5225"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

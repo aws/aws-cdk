@@ -1,0 +1,7 @@
+{
+  "Resources": {
+    "IntegStackSetSNSTopic360B333E": {
+      "Type": "AWS::SNS::Topic"
+    }
+  }
+}

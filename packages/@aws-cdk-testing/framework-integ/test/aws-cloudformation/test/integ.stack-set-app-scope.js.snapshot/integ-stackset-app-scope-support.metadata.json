@@ -1,0 +1,43 @@
+{
+  "/integ-stackset-app-scope-support": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stackset-app-scope-support.template.json"
+    }
+  ],
+  "/integ-stackset-app-scope-support/CfnExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-stackset-app-scope-support/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stackset-app-scope-support/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stackset-app-scope-support/CfnExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnExecutionRole87CC388E"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-test-app-scope/DefaultTest": {
+      "stacks": [
+        "integ-stackset-app-scope-consumer"
+      ],
+      "assertionStack": "integ-test-app-scope/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestappscopeDefaultTestDeployAssert21E12108"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
