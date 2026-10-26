@@ -4,6 +4,7 @@ import { RepositoryGrants } from './codecommit-grants.generated';
 import type { IRepositoryRef, RepositoryReference } from './codecommit.generated';
 import { CfnRepository } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
+import { notifyOn } from '../../aws-codestarnotifications/lib/private/notify-on';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
@@ -412,7 +413,7 @@ abstract class RepositoryBase extends Resource implements IRepository {
     target: notifications.INotificationRuleTarget,
     options: RepositoryNotifyOnOptions,
   ): notifications.INotificationRule {
-    return new notifications.NotificationRule(this, id, {
+    return notifyOn(this, id, {
       ...options,
       source: this,
       targets: [target],

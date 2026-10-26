@@ -21,6 +21,7 @@ import type { TriggerProps } from './trigger';
 import { Trigger } from './trigger';
 import type { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
+import { notifyOn } from '../../aws-codestarnotifications/lib/private/notify-on';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -450,7 +451,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
     target: notifications.INotificationRuleTarget,
     options: PipelineNotifyOnOptions,
   ): notifications.INotificationRule {
-    return new notifications.NotificationRule(this, id, {
+    return notifyOn(this, id, {
       ...options,
       source: this,
       targets: [target],

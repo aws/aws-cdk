@@ -54,6 +54,18 @@ const rule = new notifications.NotificationRule(this, 'NotificationRule', {
 rule.addTarget(slack);
 ```
 
+Use `addEvents()` to add event types to an existing rule:
+
+```ts
+declare const rule: notifications.NotificationRule;
+rule.addEvents(['codebuild-project-build-state-in-progress']);
+```
+
+Each resource can have at most 10 notification rules. One rule can have many event types
+and up to 10 targets, so combine them instead of creating a rule for each event. The
+`notifyOnXxx()` methods on pipelines, build projects and repositories do this when they
+are called with the same `id`.
+
 ## Notification Source
 
 This module includes classes that implement the `INotificationRuleSource` interface for AWS CodeBuild,

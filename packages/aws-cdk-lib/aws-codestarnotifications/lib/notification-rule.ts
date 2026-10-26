@@ -3,10 +3,13 @@ import { CfnNotificationRule } from './codestarnotifications.generated';
 import type { INotificationRuleSource } from './notification-rule-source';
 import type { INotificationRuleTarget, NotificationRuleTargetConfig } from './notification-rule-target';
 import type { IResource } from '../../core';
-import { Resource, Names } from '../../core';
+import { Resource, Names, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { INotificationRuleRef, NotificationRuleReference } from '../../interfaces/generated/aws-codestarnotifications-interfaces.generated';
+
+const NOTIFICATION_RULE_SYMBOL = Symbol.for('@aws-cdk/aws-codestarnotifications.NotificationRule');
 
 /**
  * The level of detail to include in the notifications for this resource.
@@ -119,6 +122,13 @@ export class NotificationRule extends Resource implements INotificationRule {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codestarnotifications.NotificationRule';
 
   /**
+   * Return whether the given object is a NotificationRule
+   */
+  public static isNotificationRule(x: any): x is NotificationRule {
+    return x !== null && typeof x === 'object' && NOTIFICATION_RULE_SYMBOL in x;
+  }
+
+  /**
    * Import an existing notification rule provided an ARN
    * @param scope The parent creating construct
    * @param id The construct's name
@@ -159,12 +169,20 @@ export class NotificationRule extends Resource implements INotificationRule {
 
   private readonly events: string[] = [];
 
+  private readonly boundTargets = new Set<INotificationRuleTarget>();
+
+  private readonly options: NotificationRuleOptions;
+
+  private readonly sourceArn: string;
+
   constructor(scope: constructs.Construct, id: string, props: NotificationRuleProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     const source = props.source.bindAsNotificationRuleSource(this);
+    this.sourceArn = source.sourceArn;
+    this.options = effectiveOptions(props);
 
     this.addEvents(props.events);
 
@@ -195,17 +213,21 @@ export class NotificationRule extends Resource implements INotificationRule {
   @MethodMetadata()
   public addTarget(target: INotificationRuleTarget): boolean {
     this.targets.push(target.bindAsNotificationRuleTarget(this));
+    this.boundTargets.add(target);
     return true;
   }
 
   /**
    * Adds events to notification rule
    *
+   * Events that are already on the rule are ignored.
+   *
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-pipeline
    * @see https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-buildproject
    * @param events The list of event types for AWS Codebuild and AWS CodePipeline
    */
-  private addEvents(events: string[]): void {
+  @MethodMetadata()
+  public addEvents(events: string[]): void {
     events.forEach((event) => {
       if (this.events.includes(event)) {
         return;
@@ -214,4 +236,52 @@ export class NotificationRule extends Resource implements INotificationRule {
       this.events.push(event);
     });
   }
+
+  /**
+   * Add the events and targets of another `notifyOn` call to this rule.
+   *
+   * Targets that are already on the rule are not added again.
+   *
+   * @internal
+   */
+  public _merge(props: NotificationRuleProps): void {
+    const sourceArn = props.source.bindAsNotificationRuleSource(this).sourceArn;
+    if (sourceArn !== this.sourceArn) {
+      throw new ValidationError(lit`NotificationRuleSourceMismatch`, `notification rule ${JSON.stringify(this.node.path)} already exists for a different source, use a different id`, this);
+    }
+
+    const options = effectiveOptions(props);
+    for (const key of ['notificationRuleName', 'enabled', 'detailType', 'createdBy'] as const) {
+      const value = options[key];
+      if (value === this.options[key]) {
+        continue;
+      }
+      if (Token.isUnresolved(value) || Token.isUnresolved(this.options[key])) {
+        continue;
+      }
+      throw new ValidationError(lit`NotificationRuleOptionsMismatch`, `notification rule ${JSON.stringify(this.node.path)} already exists with ${key} ${JSON.stringify(this.options[key])}, got ${JSON.stringify(value)}; use the same options or a different id`, this);
+    }
+
+    this.addEvents(props.events);
+    props.targets?.forEach((target) => {
+      if (!this.boundTargets.has(target)) {
+        this.addTarget(target);
+      }
+    });
+  }
 }
+
+function effectiveOptions(options: NotificationRuleOptions): NotificationRuleOptions {
+  return {
+    notificationRuleName: options.notificationRuleName,
+    enabled: options.enabled ?? true,
+    detailType: options.detailType ?? DetailType.FULL,
+    createdBy: options.createdBy,
+  };
+}
+
+Object.defineProperty(NotificationRule.prototype, NOTIFICATION_RULE_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});

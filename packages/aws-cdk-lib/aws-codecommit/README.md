@@ -102,3 +102,17 @@ const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
 });
 const rule = repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
 ```
+
+Each resource can have at most 10 notification rules. Calls to `notifyOnXxx()` with the
+same `id` add their events and targets to one notification rule:
+
+```ts
+import * as chatbot from 'aws-cdk-lib/aws-chatbot';
+
+declare const repository: codecommit.Repository;
+declare const target: chatbot.SlackChannelConfiguration;
+
+// One notification rule for both events
+repository.notifyOnPullRequestCreated('PullRequestNotifications', target);
+repository.notifyOnPullRequestMerged('PullRequestNotifications', target);
+```
