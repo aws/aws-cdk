@@ -19,6 +19,13 @@ export interface DestinationConfig {
   readonly httpEndpointDestinationConfiguration?: CfnDeliveryStream.HttpEndpointDestinationConfigurationProperty;
 
   /**
+   * Iceberg destination configuration properties.
+   *
+   * @default - Iceberg destination is not used.
+   */
+  readonly icebergDestinationConfiguration?: CfnDeliveryStream.IcebergDestinationConfigurationProperty;
+
+  /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
    *
    * @default []
