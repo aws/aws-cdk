@@ -455,3 +455,172 @@ test('sagemaker model with deep learning container images without AccountId', ()
     },
   });
 });
+
+describe('InferenceExecutionMode', () => {
+  test('with Direct mode and container hostnames, InferenceExecutionConfig is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerB' },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      InferenceExecutionConfig: { Mode: 'Direct' },
+      Containers: Match.arrayWith([
+        Match.objectLike({ ContainerHostname: 'containerA' }),
+        Match.objectLike({ ContainerHostname: 'containerB' }),
+      ]),
+    });
+  });
+
+  test('with Serial mode, InferenceExecutionConfig is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.SERIAL,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      InferenceExecutionConfig: { Mode: 'Serial' },
+    });
+  });
+
+  test('with no inference execution mode, InferenceExecutionConfig is absent', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      InferenceExecutionConfig: Match.absent(),
+    });
+  });
+
+  test('fails with Direct mode when containers are missing hostnames', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // WHEN
+    const when = () => app.synth();
+
+    // THEN
+    expect(when).toThrow(/all containers must have a unique containerHostname/);
+  });
+
+  test('fails with Direct mode when all containers are missing hostnames', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo) },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // WHEN
+    const when = () => app.synth();
+
+    // THEN
+    expect(when).toThrow(/all containers must have a unique containerHostname/);
+  });
+
+  test('with Direct mode and single container with hostname, succeeds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'myContainer' },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      InferenceExecutionConfig: { Mode: 'Direct' },
+      PrimaryContainer: Match.objectLike({ ContainerHostname: 'myContainer' }),
+    });
+  });
+
+  test('with Serial mode and container hostnames, hostnames are preserved', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+
+    // WHEN
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerB' },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.SERIAL,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::Model', {
+      InferenceExecutionConfig: { Mode: 'Serial' },
+      Containers: Match.arrayWith([
+        Match.objectLike({ ContainerHostname: 'containerA' }),
+        Match.objectLike({ ContainerHostname: 'containerB' }),
+      ]),
+    });
+  });
+
+  test('fails with Direct mode when containers have duplicate hostnames', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // WHEN
+    const when = () => app.synth();
+
+    // THEN
+    expect(when).toThrow(/all container hostnames must be unique/);
+  });
+});
