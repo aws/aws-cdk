@@ -1,0 +1,191 @@
+{
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:15:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/TaggedLogGroupRuntime": [
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
+      "trace": [
+        "Annotations.addMessage (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.ts:220:23)",
+        "Annotations.addInfo (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.ts:148:10)",
+        "WrappedClass.validateContainerUri (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:834:28)",
+        "WrappedClass.renderAgentRuntimeArtifact (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:553:14)",
+        "Object.produce (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:395:29)",
+        "LazyAny.resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\lazy.ts:342:60)",
+        "LazyAny.resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\lazy.ts:418:28)",
+        "LazyBox.get (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\lazy.ts:380:23)",
+        "LazyBox.resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\helpers-internal\\box.ts:467:17)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\resolvable.ts:167:24)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:440:18)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:222:46)",
+        "_resolveWithPrefix (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:334:17)",
+        "resolveObject (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:292:15)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:232:10)",
+        "resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:133:10)",
+        "Object.resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:353:14)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\resolvable.ts:170:26)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:440:18)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:222:46)",
+        "_resolveWithPrefix (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:334:17)",
+        "resolveObject (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:292:15)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:232:10)",
+        "resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:133:10)",
+        "Object.resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:353:14)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\resolvable.ts:170:26)",
+        "RememberingTokenResolver.resolveToken (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:440:18)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:222:46)",
+        "_resolveWithPrefix (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:334:17)",
+        "resolveObject (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:292:15)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:232:10)",
+        "_resolveWithPrefix (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:334:17)",
+        "resolveObject (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:292:15)",
+        "_resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:232:10)",
+        "resolve (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:133:10)",
+        "findTokens (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\resolve.ts:378:3)",
+        "findAllReferences (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:324:32)",
+        "resolveReferences (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:96:31)",
+        "prepareApp (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\prepare-app.ts:50:20)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:59:13)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)",
+        "process.<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:263:45)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)",
+        "process.emit (node:domain:489:12)",
+        "process.emit.sharedData.processEmitHook.installedValue [as emit] (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\node_modules\\@cspotcode\\source-map-support\\source-map-support.js:745:40)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.ts:498:12)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522:2)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:587:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:514:3)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:74:3)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack-synthesizers\\default-synthesizer.ts:498:12)",
+        "C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522: (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:522:2)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:587:5)",
+        "visit (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:583:5)",
+        "synthesizeTree (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:514:3)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:74:3)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/TaggedLogGroupRuntime/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedLogGroupRuntime63FEB606"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Runtime (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:419:28)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:23:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/Exports/Output{\"Fn::GetAtt\":[\"TaggedLogGroupRuntime63FEB606\",\"AgentRuntimeId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTaggedLogGroupRuntime63FEB606AgentRuntimeIdE6F6FEC2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stack.ts:1326:7)",
+        "createImportValue (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:374:31)",
+        "resolveValue (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:291:12)",
+        "resolveReferences (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.ts:103:24)",
+        "prepareApp (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\prepare-app.ts:50:20)",
+        "synthesize (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.ts:59:13)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.ts:278:55)",
+        "App.synth (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:314:23)",
+        "process.<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.ts:263:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/TaggedLogGroupRuntime/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedLogGroupRuntimeExecutionRoleF014C487"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\aws-iam\\lib\\role.ts:598:24)",
+        "new Runtime (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:371:19)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:23:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/TaggedLogGroupRuntime/ApplicationLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedLogGroupRuntimeApplicationLogGroupDBF4F5AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\aws-logs\\lib\\log-group.ts:715:21)",
+        "new Runtime (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:445:35)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:23:17)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-application-log-group-tags/TaggedLogGroupRuntime/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedLogGroupRuntimeExecutionRoleDefaultPolicyEA71962D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\aws-iam\\lib\\policy.ts:180:22)",
+        "WrappedClass.addToPrincipalPolicy (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\aws-iam\\lib\\role.ts:656:30)",
+        "WrappedClass.<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\metadata-resource.ts:61:29)",
+        "WrappedClass.addExecutionRolePermissions (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:476:15)",
+        "new Runtime (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\lib\\runtime\\runtime.ts:377:10)",
+        "<anonymous> (C:\\Users\\RadhaKrishnan\\Documents\\Github Contribution\\aws-cdk\\packages\\@aws-cdk\\aws-bedrock-agentcore-alpha\\test\\agentcore\\runtime\\integ.runtime-application-log-group-tags.ts:23:17)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
