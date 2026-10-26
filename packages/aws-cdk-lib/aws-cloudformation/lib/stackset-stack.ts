@@ -351,14 +351,22 @@ export class StackSetStack extends Stack {
    * both show as stack dependencies.
    */
   private validateNoStackDependencies() {
-    const dependents = this.node.root.node.findAll()
-      .filter((c): c is Stack => Stack.isStack(c) && c.dependencies.includes(this));
-    const other = [...this.dependencies, ...dependents][0];
-    if (other) {
+    const dependency = this.dependencies[0];
+    if (dependency) {
       throw new ValidationError(lit`StackSetStackCrossStackReference`,
-        `StackSetStack ${JSON.stringify(this.node.path)} and stack ${JSON.stringify(other.node.path)} depend on each other, through a reference or a stack dependency; ` +
-        'a StackSetStack is deployed to the target accounts and regions of its StackSets, so it cannot reference resources of other stacks ' +
-        'and other stacks cannot reference its resources, pass the value as a parameter of the StackSet instead',
+        `StackSetStack ${JSON.stringify(this.node.path)} depends on stack ${JSON.stringify(dependency.node.path)}, through a reference to one of its resources or a stack dependency; ` +
+        'a StackSetStack is deployed to the target accounts and regions of its StackSets, where resources of other stacks cannot be referenced, ' +
+        'pass the value as a parameter of the StackSet instead',
+        this);
+    }
+
+    const dependent = this.node.root.node.findAll()
+      .find((c): c is Stack => Stack.isStack(c) && c.dependencies.includes(this));
+    if (dependent) {
+      throw new ValidationError(lit`StackSetStackCrossStackReference`,
+        `StackSetStack ${JSON.stringify(this.node.path)} is a dependency of stack ${JSON.stringify(dependent.node.path)}, through a reference to one of its resources or a stack dependency; ` +
+        'the resources of a StackSetStack are created in the target accounts and regions of its StackSets and cannot be used outside it, ' +
+        'remove the reference or the dependency from that stack',
         this);
     }
   }

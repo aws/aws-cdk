@@ -7,7 +7,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { BucketDeployment } from '../../aws-s3-deployment';
 import * as servicecatalog from '../../aws-servicecatalog';
 import * as sns from '../../aws-sns';
 import * as cxschema from '../../cloud-assembly-schema';
@@ -1800,7 +1799,7 @@ function withAssetBuckets(stack: Stack, ...names: string[]): StackSetStackProps 
  */
 function bucketDeploymentResourceIds(stack: Stack): string[] {
   return stack.node.findAll()
-    .filter((c): c is BucketDeployment => c instanceof BucketDeployment)
+    .filter((c) => /-AssetBucketDeployment-\d+$/.test(c.node.id))
     .flatMap((deployment) => deployment.node.findAll())
     .filter(CfnResource.isCfnResource)
     .map((resource) => stack.resolve(resource.logicalId));
@@ -1993,17 +1992,19 @@ describe('references across a StackSetStack boundary', () => {
     new CfnResource(from, 'Consuming', { type: 'My::Resource', properties: { TopicArn: producer.ref } });
   };
 
-  const cases: Array<[string, (a: Arranged) => void, (a: Arranged) => Stack]> = [
-    ['from the StackSetStack to its stack', (a) => refer(a.stackSetStack, a.stack), (a) => a.stack],
-    ['from its stack to the StackSetStack', (a) => refer(a.stack, a.stackSetStack), (a) => a.stack],
-    ['from the StackSetStack to a sibling stack', (a) => refer(a.stackSetStack, a.sibling), (a) => a.sibling],
-    ['from a sibling stack to the StackSetStack', (a) => refer(a.sibling, a.stackSetStack), (a) => a.sibling],
-    ['from a nested stack of the StackSetStack to its stack', (a) => refer(new NestedStack(a.stackSetStack, 'Nested'), a.stack), (a) => a.stack],
-    ['from a nested stack of the StackSetStack to a sibling stack', (a) => refer(new NestedStack(a.stackSetStack, 'Nested'), a.sibling), (a) => a.sibling],
+  const outbound = /depends on stack .*pass the value as a parameter of the StackSet/;
+  const inbound = /is a dependency of stack .*cannot be used outside it/;
+  const cases: Array<[string, (a: Arranged) => void, (a: Arranged) => Stack, RegExp]> = [
+    ['from the StackSetStack to its stack', (a) => refer(a.stackSetStack, a.stack), (a) => a.stack, outbound],
+    ['from its stack to the StackSetStack', (a) => refer(a.stack, a.stackSetStack), (a) => a.stack, inbound],
+    ['from the StackSetStack to a sibling stack', (a) => refer(a.stackSetStack, a.sibling), (a) => a.sibling, outbound],
+    ['from a sibling stack to the StackSetStack', (a) => refer(a.sibling, a.stackSetStack), (a) => a.sibling, inbound],
+    ['from a nested stack of the StackSetStack to its stack', (a) => refer(new NestedStack(a.stackSetStack, 'Nested'), a.stack), (a) => a.stack, outbound],
+    ['from a nested stack of the StackSetStack to a sibling stack', (a) => refer(new NestedStack(a.stackSetStack, 'Nested'), a.sibling), (a) => a.sibling, outbound],
   ];
 
   describe.each(['strong', 'weak'])('with %s references', (strength) => {
-    test.each(cases)('fails with an error code for a reference %s', (_name, act, otherOf) => {
+    test.each(cases)('fails with an error code for a reference %s', (_name, act, otherOf, direction) => {
       const a = arrange(strength);
       act(a);
 
@@ -2011,17 +2012,19 @@ describe('references across a StackSetStack boundary', () => {
         name: 'StackSetStackCrossStackReference',
         message: expect.stringMatching(new RegExp(`"Consumer/StackSetStack".*"${otherOf(a).node.path}"`)),
       }));
+      expect(() => a.app.synth()).toThrow(direction);
     });
   });
 
   test.each([
-    ['from a sibling stack on the StackSetStack', (a: Arranged) => a.sibling.addStackDependency(a.stackSetStack)],
-    ['from the StackSetStack on a sibling stack', (a: Arranged) => a.stackSetStack.addStackDependency(a.sibling)],
-  ])('fails with an error code for a stack dependency %s', (_name, act) => {
+    ['from a sibling stack on the StackSetStack', (a: Arranged) => a.sibling.addStackDependency(a.stackSetStack), inbound],
+    ['from the StackSetStack on a sibling stack', (a: Arranged) => a.stackSetStack.addStackDependency(a.sibling), outbound],
+  ])('fails with an error code for a stack dependency %s', (_name, act, direction) => {
     const a = arrange('strong');
     act(a);
 
     expect(() => a.app.synth()).toThrow(expect.objectContaining({ name: 'StackSetStackCrossStackReference' }));
+    expect(() => a.app.synth()).toThrow(direction);
   });
 
   test('allows references inside the StackSetStack, from its nested stacks and to imported values', () => {
@@ -2060,8 +2063,9 @@ describe('references across a StackSetStack boundary', () => {
       expect(() => app.synth()).toThrow(expect.objectContaining({
         name: expect.stringMatching(/^(NoCfnExecutionRoleForCrossAccountRefs|CrossRegionReferencesRequireExplicitRegion)$/),
       }));
-      for (const construct of [stack, sibling, stackSetStack]) {
-        expect(JSON.stringify(construct.resolve((construct as any)._toCloudFormation()))).not.toMatch(/Fn::ImportValue|Fn::GetStackOutput|PublishGetStackOutputRole/);
+      const writtenFiles = fs.existsSync(app.outdir) ? fs.readdirSync(app.outdir).filter((file) => file.endsWith('.json')) : [];
+      for (const file of writtenFiles) {
+        expect(readFile(app.outdir, file)).not.toMatch(/Fn::ImportValue|Fn::GetStackOutput|PublishGetStackOutputRole/);
       }
     }
   });
@@ -2176,7 +2180,10 @@ describe('a nested stack inside a StackSetStack', () => {
     expect(handlers[0].DependsOn).toEqual(expect.arrayContaining([roleId, ...policyIds]));
   }
 
-  test.each([1, 2])('makes %d StackSets wait for the copies of its template', (count) => {
+  test.each([
+    ['one StackSet', 1],
+    ['two StackSets', 2],
+  ])('makes %s wait for the copies of its template', (_name, count) => {
     const app = new App();
     const stack = new Stack(app, 'Consumer');
     const stackSetStack = new StackSetStack(new Construct(stack, 'Group'), 'StackSetStack', withAssetBuckets(stack, 'prefix-us-east-1'));

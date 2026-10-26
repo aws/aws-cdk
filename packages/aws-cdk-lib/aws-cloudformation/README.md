@@ -317,7 +317,10 @@ prepared for synthesis, after aspects have run. If no other file asset created t
 deployments that copy the template are created at that point, together with the deployment handler
 function and its role, default policy and layer. Aspects, such as `Tags` or a permissions boundary, do not
 apply to those constructs, and they cannot reference an asset bucket that another stack owns. Import the
-asset bucket, or create it in the stack that contains the `StackSetStack`, in that case.
+asset bucket, or create it in the stack that contains the `StackSetStack`, in that case. If the deployment
+handler must get your aspects, for example a mandatory permissions boundary, make it exist before the app is
+prepared: give the `StackSetStack` a file asset of its own, such as Lambda code, or define a
+`BucketDeployment` without memory, storage, VPC or security group settings in the stack that contains it.
 
 ### Importing an existing StackSet
 
