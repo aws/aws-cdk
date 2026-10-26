@@ -47,6 +47,36 @@ import * as instanceLib from '../lib/instance';
 
 describe('vpc', () => {
   describe('When creating a VPC', () => {
+    test('warns when no availability zones are available without rejecting the VPC', () => {
+      const stack = new Stack();
+      new Vpc(stack, 'Vpc', { availabilityZones: [], natGateways: 0 });
+      Annotations.fromStack(stack).hasWarning('/Default/Vpc', Match.stringLikeRegexp('no availability zones'));
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::VPC', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Subnet', 0);
+    });
+
+    test.each([undefined, ['us-east-1a']])('does not warn for available zones %p', availabilityZones => {
+      const stack = new Stack();
+      new Vpc(stack, 'Vpc', { availabilityZones, natGateways: 0 });
+      Annotations.fromStack(stack).hasNoWarning('/Default/Vpc', Match.stringLikeRegexp('no availability zones'));
+    });
+
+    test.each([{ maxAzs: 0 }, { availabilityZones: [], subnetConfiguration: [] }])('does not warn for an intentionally subnetless VPC %p', props => {
+      const stack = new Stack();
+      new Vpc(stack, 'Vpc', { ...props, natGateways: 0 });
+      Annotations.fromStack(stack).hasNoWarning('/Default/Vpc', Match.stringLikeRegexp('no availability zones'));
+    });
+
+    test('does not treat a tokenized AZ list as an empty list', () => {
+      const stack = new Stack();
+      new Vpc(stack, 'Vpc', {
+        availabilityZones: Token.asList({ Ref: 'AvailabilityZones' }),
+        natGateways: 0,
+        subnetConfiguration: [],
+      });
+      Annotations.fromStack(stack).hasNoWarning('/Default/Vpc', Match.stringLikeRegexp('no availability zones'));
+    });
+
     testDeprecated('SubnetType.PRIVATE_WITH_NAT is equivalent to SubnetType.PRIVATE_WITH_EGRESS', () => {
       const stack1 = getTestStack();
       const stack2 = getTestStack();
