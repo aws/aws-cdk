@@ -20,7 +20,7 @@ import type { Rule } from './rule';
 import type { TriggerProps } from './trigger';
 import { Trigger } from './trigger';
 import type { Variable } from './variable';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
 import { notifyOn } from '../../aws-codestarnotifications/lib/private/notify-on';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';

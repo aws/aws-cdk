@@ -57,6 +57,8 @@ rule.addTarget(slack);
 Use `addEvents()` to add event types to an existing rule:
 
 ```ts
+import * as notifications from 'aws-cdk-lib/aws-codestarnotifications';
+
 declare const rule: notifications.NotificationRule;
 rule.addEvents(['codebuild-project-build-state-in-progress']);
 ```

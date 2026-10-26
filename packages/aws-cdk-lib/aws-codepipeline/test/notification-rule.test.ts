@@ -213,7 +213,7 @@ describe('pipeline with codestar notification integration', () => {
       const template = Template.fromStack(stack);
       template.resourceCountIs('AWS::CodeStarNotifications::NotificationRule', 1);
       template.hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
-        Name: 'PipelineNotifications8AF7A2C3',
+        Name: 'PipelineNotifications15BAB178',
         EventTypeIds: [
           'codepipeline-pipeline-pipeline-execution-failed',
           'codepipeline-pipeline-pipeline-execution-canceled',

@@ -3,7 +3,7 @@ import type { Code } from './code';
 import { RepositoryGrants } from './codecommit-grants.generated';
 import type { IRepositoryRef, RepositoryReference } from './codecommit.generated';
 import { CfnRepository } from './codecommit.generated';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
 import { notifyOn } from '../../aws-codestarnotifications/lib/private/notify-on';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
