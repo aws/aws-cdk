@@ -223,27 +223,18 @@ export class Arn {
    * (in which case the returned components will also be dynamic CloudFormation expressions,
    * encoded as Tokens).
    *
-   * Any `arn:`-prefixed string is structurally validated, so both a malformed
-   * `arn:` string and a concrete string that does not start with `arn:` are
-   * treated as caller errors and throw — as is an `arn:`-prefixed string that
-   * embeds tokens but is missing a required component. Only a non-`arn:` value
-   * that embeds an unresolved token (fully or partially tokenized) is always
-   * parsed best-effort and never throws. To handle a value that may
-   * legitimately not be an ARN, branch it away (on `Token.isUnresolved` /
-   * `startsWith('arn:')`) before calling this method rather than catching the
-   * exception.
+   * Throws on a malformed ARN — a concrete string that is not a valid ARN, or
+   * an `arn:`-prefixed string (even one that embeds tokens) missing a required
+   * component — rather than returning a partial result. To handle a value that
+   * may legitimately not be an ARN, branch it away up front (`Token.isUnresolved`
+   * / `startsWith('arn:')`) instead of catching the throw.
    *
-   * @see https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#parsing-arns-the-commit-or-throw-convention
+   * @see https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#never-catch-exceptions
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
    */
   public static split(arn: string, arnFormat: ArnFormat): ArnComponents {
-    // Naming note: if a non-throwing variant is ever added for a caller whose
-    // input may legitimately not be an ARN, name it `trySplit` here (and
-    // `trySplitArn` on `Stack`) to pair with `split`/`splitArn` — not `tryParse`,
-    // which would read as a sibling of the deprecated `Arn.parse`. See the
-    // discussion on PR aws/aws-cdk#39085.
     const components = parseArnShape(arn);
     if (components === 'token') {
       return parseTokenArn(arn, arnFormat);
