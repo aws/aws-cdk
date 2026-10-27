@@ -163,7 +163,11 @@ function ignoreWarnings(result: esbuild.BuildResult) {
   return ret;
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exitCode = 1;
-});
+// Only generate when run as a script: tests import helpers from this file, and
+// must not regenerate (and wipe) dist/ while dependent packages are reading it.
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
+}
