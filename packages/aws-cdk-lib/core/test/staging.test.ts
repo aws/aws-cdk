@@ -1010,7 +1010,7 @@ describe('staging', () => {
         image: DockerImage.fromRegistry('this-is-an-invalid-docker-image'),
         command: [DockerStubCommand.FAIL],
       },
-    })).toThrow(/Failed to bundle asset stack\/Asset/);
+    })).toThrow(/Failed to bundle asset stack\/Asset[\s\S]*A HUGE FAILING DOCKER STUFF[\s\S]*permission denied while trying to connect to the Docker daemon socket/);
     expect(
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
