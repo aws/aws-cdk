@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
@@ -639,13 +640,55 @@ describe('WebFunctionCode', () => {
         expect(after.logicalId).toEqual(before.logicalId);
         expect(after.contentHash).toEqual(before.contentHash);
         expect(after.configuration).not.toEqual(before.configuration);
-        expect(after.configuration.ServiceConfig.timeoutSeconds).toEqual(60);
       });
 
       test('carries the revision configuration without the code location', () => {
         const { configuration } = original();
         expect(Object.keys(configuration).sort()).toEqual(['FunctionName', 'RuntimeConfig', 'ServiceConfig']);
-        expect(configuration.RuntimeConfig).toEqual({ runtime: 'nodejs24.x' });
+        expect(Object.keys(configuration.RuntimeConfig)).toEqual(['runtime']);
+      });
+
+      test('passes a fingerprint of the environment, not its values', () => {
+        const s = new cdk.Stack();
+        // The validator does not list WebFunctionRevision among the properties that accept an
+        // SSM SecureString reference; the revision itself is not what this test is about.
+        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'ssm-secure on the revision' });
+        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            SECRET: cdk.SecretValue.secretsManager('my-secret').unsafeUnwrap(),
+            SECURE: cdk.SecretValue.ssmSecure('/my/param').unsafeUnwrap(),
+            PLAIN: 'plain-value',
+            ROLE: role.roleArn,
+            JOINED: `joined-literal-${role.roleArn}`,
+          },
+        });
+        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        const properties = JSON.stringify(copy.Properties);
+        expect(properties).not.toContain('{{resolve:');
+        expect(properties).not.toContain('plain-value');
+        expect(properties).not.toContain('joined-literal-');
+        // A value only known at deployment is kept, so it still changes the key.
+        expect(copy.Properties.Configuration.ServiceConfig.environmentVariables.ROLE).toEqual(
+          { 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
+      });
+
+      test('a changed environment value changes the configuration', () => {
+        const withEnv = (value: string) => {
+          const s = new cdk.Stack();
+          new WebFunction(s, 'TestFunction', {
+            code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+            runtime: WebFunctionRuntime.NODEJS_24_X,
+            defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+            environment: { A: value },
+          });
+          return Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'))[0].Properties.Configuration;
+        };
+        expect(withEnv('one')).not.toEqual(withEnv('two'));
+        expect(withEnv('one')).toEqual(withEnv('one'));
       });
 
       test.each<[string, (s: cdk.Stack) => Setup]>([

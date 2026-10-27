@@ -8,6 +8,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { S3ObjectCopy, copyFunctionIdentity } from './private/s3-object-copy';
 import { ValidationError } from '../../core/lib/errors';
+import { md5hash } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -630,19 +631,56 @@ function retentionOf(resource: cdk.CfnResource): () => { onReplace: boolean; any
 /**
  * The configuration of a revision that the copy's key is derived from: every property except
  * the code location, which comes from the copy itself.
+ *
+ * The key only has to depend on the configuration, not carry it, so it is passed as a
+ * fingerprint (see `fingerprint`): the copy's properties, its invocation event and its log
+ * hold no environment values or dynamic references.
  */
 function revisionConfiguration(resource: cdk.CfnResource): any {
   if (!CfnWebFunctionRevision.isCfnWebFunctionRevision(resource)) {
     return undefined;
   }
   const buildConfig = resource.buildConfig;
-  return {
+  return fingerprint(cdk.Stack.of(resource).resolve({
     FunctionName: resource.functionName,
     Description: resource.description,
     RuntimeConfig: cdk.Token.isUnresolved(buildConfig) ? undefined : (buildConfig as CfnWebFunctionRevision.BuildConfigProperty).runtimeConfig,
     ServiceConfig: resource.serviceConfig,
     KmsKeyArn: resource.kmsKeyArn,
-  };
+  }));
+}
+
+/**
+ * Replaces every literal string in a resolved template value with its hash.
+ *
+ * CloudFormation rejects secure dynamic references (`{{resolve:secretsmanager:...}}`,
+ * `{{resolve:ssm-secure:...}}`) in a custom resource's properties, and plain values would be
+ * copied into its invocation event. Both are literal strings at synthesis, so hashing them keeps
+ * the key's dependency on them without passing them on.
+ *
+ * `Ref` and `Fn::GetAtt` are kept, so a value only known at deployment, such as a replaced role,
+ * still changes the key. Inside `Fn::Join` only the parts are processed. Any other intrinsic is
+ * kept as it is: hashing its arguments could make it unresolvable, as for `Fn::ImportValue`.
+ */
+function fingerprint(value: any): any {
+  if (typeof value === 'string') {
+    return md5hash(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(fingerprint);
+  }
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+  const keys = Object.keys(value);
+  if (keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::'))) {
+    if (keys[0] === 'Fn::Join') {
+      const [delimiter, parts] = value['Fn::Join'];
+      return { 'Fn::Join': [delimiter, (parts as any[]).map(fingerprint)] };
+    }
+    return value;
+  }
+  return Object.fromEntries(keys.map((k) => [k, fingerprint(value[k])]));
 }
 
 const MANAGED_BUCKET_REVISIONS = new WeakMap<s3.IBucket, cdk.CfnResource[]>();
