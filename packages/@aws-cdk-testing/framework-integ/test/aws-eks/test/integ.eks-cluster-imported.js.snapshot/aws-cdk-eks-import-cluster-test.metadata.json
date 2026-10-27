@@ -1,4 +1,25 @@
 {
+  "/aws-cdk-eks-import-cluster-test": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at EksClusterStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new EksClusterStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-imported.js:54:20)",
+        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-imported.js:220:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-eks-import-cluster-test.template.json"
+    }
+  ],
   "/aws-cdk-eks-import-cluster-test/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -49,6 +70,18 @@
           }
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksimportclustertestawscdkawseksClusterResourceProvider7AA2A5F4.nested.template.json"
+    }
+  ],
+  "/aws-cdk-eks-import-cluster-test/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksimportclustertestawscdkawseksKubectlProvider31F66FBD.nested.template.json"
     }
   ],
   "/aws-cdk-eks-import-cluster-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -148,7 +181,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
