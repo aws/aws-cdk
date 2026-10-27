@@ -37,6 +37,10 @@ export function getLatestVersions(count = 2): string[] {
   return sortedVersions.slice(-count);
 }
 
+/**
+ * Returns the version and kubectlLayer for an EKS cluster,
+ * dynamically picking the latest available version as fallback.
+ */
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
   const latestVersion = sortedVersions[sortedVersions.length - 1];
   const _version = version ?? eks.KubernetesVersion.of(latestVersion);
