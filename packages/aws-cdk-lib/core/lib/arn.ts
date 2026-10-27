@@ -226,10 +226,8 @@ export class Arn {
    * Throws on a malformed ARN — a concrete string that is not a valid ARN, or
    * an `arn:`-prefixed string (even one that embeds tokens) missing a required
    * component — rather than returning a partial result. To handle a value that
-   * may legitimately not be an ARN, branch it away up front (`Token.isUnresolved`
-   * / `startsWith('arn:')`) instead of catching the throw.
-   *
-   * @see https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#never-catch-exceptions
+   * may legitimately not be an ARN, branch it away up front (`startsWith('arn:')`
+   * / `Token.isUnresolved`) instead of catching the throw.
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses

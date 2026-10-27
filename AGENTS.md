@@ -172,6 +172,7 @@ public static isFoo(x: any): x is Foo {
 - Error messages: lowercase, no period, include wrong value via `JSON.stringify()`, expected values, what to change
 - Three mechanisms: (1) eagerly throw for API misuse, (2) `node.addValidation()` for post-init checks, (3) `Annotations.of(construct).addError()` for environmental issues
 - Never catch exceptions — all CDK errors are unrecoverable. Model recoverable errors in return values instead.
+- Don't pre-check-and-swallow either: when a value self-identifies as a type (e.g. a string starting with `arn:`), a malformed instance is a caller error — let the parse/validation fail fast. A hand-rolled check that returns `undefined` for both "not that type" and "malformed" hides the bug. Branch on the discriminator (`startsWith('arn:')`, then `Token.isUnresolved`) to decide whether the value is yours to parse
 
 ### Token Safety
 
