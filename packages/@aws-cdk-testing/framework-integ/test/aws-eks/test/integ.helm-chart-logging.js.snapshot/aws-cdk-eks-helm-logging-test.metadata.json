@@ -6,12 +6,12 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at HelmChartLoggingStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
-        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new HelmChartLoggingStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:52:21)",
-        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:80:15)",
+        "    at Validations.acknowledge (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at HelmChartLoggingStack._silenceLiteralAzWarning (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/aemada/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at new HelmChartLoggingStack (/Users/aemada/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:52:21)",
+        "    at <anonymous> (/Users/aemada/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:80:15)",
         "    ...node internals..."
       ]
     },
@@ -23,10 +23,7 @@
   "/aws-cdk-eks-helm-logging-test/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "natGateways": "*",
-        "restrictDefaultSecurityGroup": false
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/KubectlLayer": [
@@ -91,124 +88,61 @@
   "/aws-cdk-eks-helm-logging-test/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*",
-          {
-            "maxDrainDuration": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/Vpc/IGW": [
