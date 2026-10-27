@@ -247,6 +247,37 @@ describe('Guard Rules Validation', () => {
         // Should pass - resolved values are valid ARNs, not "*"
         expect(success).toBe(true);
       });
+
+      test('Static: should not flag an inline-policy PassRole scoped to a list of Fn::GetAtt role ARNs', async () => {
+        // Covers the Properties.Policies[*].PolicyDocument branch, which cfn-guard evaluates
+        // independently of the Properties.PolicyDocument path.
+        const success = await runCfnGuardValidation(
+          path.join(passroleFixturesDir, 'compliant-inline-policy-intrinsic-arn-list.json'),
+          passroleRule,
+          path.join(outputDir, 'passrole-inline-intrinsic-list-static-test.xml'),
+          'PassRole Inline Intrinsic List Static',
+          new Map(),
+          true,
+        );
+
+        // Should pass - a list of intrinsic ARNs on the inline-policy path is not a wildcard
+        expect(success).toBe(true);
+      });
+
+      test('Static: should flag an inline-policy PassRole whose resource list contains "*"', async () => {
+        const success = await runCfnGuardValidation(
+          path.join(passroleFixturesDir, 'non-compliant-inline-policy-wildcard-in-list.json'),
+          passroleRule,
+          path.join(outputDir, 'passrole-inline-wildcard-in-list-static-test.xml'),
+          'PassRole Inline Wildcard In List Static',
+          new Map(),
+          false,
+        );
+
+        // Should fail - a "*" element is a wildcard on the inline-policy path too
+        expect(success).toBe(false);
+        expect(failedRules(path.join(outputDir, 'passrole-inline-wildcard-in-list-static-test.xml'))).toContain('IAM_NO_OVERLY_PERMISSIVE_PASSROLE');
+      });
     });
   });
 
