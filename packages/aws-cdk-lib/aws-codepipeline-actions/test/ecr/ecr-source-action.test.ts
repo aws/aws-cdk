@@ -112,7 +112,7 @@ describe('ecr source action', () => {
           'detail': {
             'result': ['SUCCESS'],
             'repository-name': ['repo'],
-            'image-tag': [],
+            'image-tag': Match.absent(),
             'action-type': ['PUSH'],
           },
         },
