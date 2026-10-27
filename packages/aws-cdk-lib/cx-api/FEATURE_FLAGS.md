@@ -121,8 +121,8 @@ Flags come in three types:
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile](#aws-cdkaws-ecr-assetsdockerfilespecificignorefile) | Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset | V2NEXT | new default |
-| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -2643,6 +2643,28 @@ When disabled, the destination ARN keeps using the log group `Arn` attribute.
 **Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
 
 
+### @aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction
+
+*When enabled, each EvaluateExpression task gets its own Lambda function*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, each `EvaluateExpression` task creates its own Lambda function.
+When this feature flag is disabled, all `EvaluateExpression` tasks in a stack that use the same runtime and
+architecture share one Lambda function, even across state machines.
+
+Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+running executions finish first.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.275.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
 ### @aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile
 
 *Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset*
@@ -2664,28 +2686,6 @@ historic CDK behavior.
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Leave `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile` unset or set it to `false`. CDK will keep reading only `.dockerignore`.
-
-
-### @aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction
-
-*When enabled, each EvaluateExpression task gets its own Lambda function*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, each `EvaluateExpression` task creates its own Lambda function.
-When this feature flag is disabled, all `EvaluateExpression` tasks in a stack that use the same runtime and
-architecture share one Lambda function, even across state machines.
-
-Enabling this flag replaces the shared function with one function per task on the next deployment, so let
-running executions finish first.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
-
-**Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
 
 
 <!-- END details -->
