@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "cbef25a451761e597db77f42afff8f4958c391660a4eeb4430e2051a62fad143": {
+      "displayName": "aws-cdk-elbv2-env-agnostic-logging Template",
+      "source": {
+        "path": "aws-cdk-elbv2-env-agnostic-logging.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6a56e79a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cbef25a451761e597db77f42afff8f4958c391660a4eeb4430e2051a62fad143.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
