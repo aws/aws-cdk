@@ -208,6 +208,32 @@ When working with `nodeModules` using native dependencies, you might want to for
 Docker container even if `esbuild` is available in your environment. This can be done by setting
 `bundling.forceDockerBundling` to `true`.
 
+### pnpm catalogs
+
+When using pnpm [catalogs](https://pnpm.io/catalogs), shared dependency versions are pinned in
+`pnpm-workspace.yaml` and referenced from `package.json` via the `catalog:` protocol. Because
+bundling runs in an isolated directory that is decoupled from the parent workspace, the catalog
+configuration would otherwise be unavailable and `pnpm install` would fail to resolve `catalog:`
+specifiers.
+
+When a module listed in `nodeModules` uses the `catalog:` protocol, the `catalog`/`catalogs` blocks
+from your project's `pnpm-workspace.yaml` are copied into the bundling directory automatically, so
+no extra configuration is required.
+
+If you need full control over the workspace configuration used during bundling, supply it explicitly
+via the `pnpmWorkspaceYaml` prop:
+
+```ts
+import { readFileSync } from 'fs';
+
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    nodeModules: ['@sparticuz/chromium'],
+    pnpmWorkspaceYaml: readFileSync('pnpm-workspace.yaml', 'utf-8'),
+  },
+});
+```
+
 ## Configuring `esbuild`
 
 The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.io/api/#build-api)
