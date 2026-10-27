@@ -1,0 +1,24 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE must still fire: iam:PassRole resource list contains a literal wildcard '*' alongside a scoped intrinsic ARN. The wildcard element must be detected even when the list also holds intrinsic objects. Action is a list here to exercise the Action is_list branch.",
+  "Resources": {
+    "WildcardInListPassRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "WildcardInListPassRolePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": ["iam:PassRole"],
+              "Effect": "Allow",
+              "Resource": [
+                { "Fn::GetAtt": ["SomeRole", "Arn"] },
+                "*"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
