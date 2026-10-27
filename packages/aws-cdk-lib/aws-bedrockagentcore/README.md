@@ -1736,6 +1736,17 @@ const toolSchema = agentcore.ToolSchema.fromInline([{
 
 ```
 
+The `type` of an `inputSchema` — and of every entry in its `properties` — comes from the
+`SchemaDefinitionType` class rather than a raw string. Use `SchemaDefinitionType.of()` for a
+type that the class does not define yet.
+
+This distinction matters outside TypeScript. In languages where a `ToolDefinition` can be
+passed as a plain map or dictionary, the map keys must be camelCase (`inputSchema`, not
+`input_schema`), and `type` must be a `SchemaDefinitionType` member such as
+`SchemaDefinitionType.OBJECT` — a bare string such as `"object"` cannot be deserialized, and
+`fromInline` rejects it. Constructing `ToolDefinition` and `SchemaDefinition` values
+explicitly works in every language.
+
 ### Api schema For OpenAPI and Smithy target
 
 The OpenAPI and Smithy target need API Schema. The Gateway construct provide three ways to upload API schema for your target:
