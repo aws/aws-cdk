@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "subnet-v2-zone-id-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-subnet-v2-zone-id-test"
+      ],
+      "assertionStack": "subnet-v2-zone-id-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "subnetv2zoneidintegtestDefaultTestDeployAssert47A3FECE"
+    }
+  },
+  "minimumCliVersion": "2.1023.0"
+}
