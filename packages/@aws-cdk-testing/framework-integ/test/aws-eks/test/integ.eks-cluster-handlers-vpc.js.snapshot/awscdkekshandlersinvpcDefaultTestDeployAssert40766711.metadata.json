@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshandlersinvpcDefaultTestDeployAssert40766711.template.json"
+    }
+  ],
   "/aws-cdk-eks-handlers-in-vpc/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
