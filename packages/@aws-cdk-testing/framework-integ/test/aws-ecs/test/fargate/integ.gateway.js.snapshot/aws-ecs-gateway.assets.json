@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f397aaf9a8e2c65103000624f183ea67347fa2617b65797fa17587e7f92b68d2": {
+      "displayName": "aws-ecs-gateway Template",
+      "source": {
+        "path": "aws-ecs-gateway.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-917d2ed0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f397aaf9a8e2c65103000624f183ea67347fa2617b65797fa17587e7f92b68d2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -3,7 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type { IResource } from '../../../core';
-import { Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
+import { Lazy, Names, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../../core';
 import type { IArrayBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
@@ -939,6 +939,15 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     return portMapping;
+  }
+
+  /**
+   * Whether the name of a port mapping of any container is a token.
+   *
+   * @internal
+   */
+  public _hasUnresolvedPortMappingName(): boolean {
+    return this.containers.some(c => c.portMappings.some(pm => pm.name !== undefined && Token.isUnresolved(pm.name)));
   }
 
   /**
