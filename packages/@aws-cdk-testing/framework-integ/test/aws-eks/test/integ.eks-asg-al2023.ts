@@ -75,7 +75,23 @@ class EksAsgAl2023Stack extends Stack {
 const app = new App();
 const stack = new EksAsgAl2023Stack(app, 'aws-cdk-eks-asg-al2023-test');
 
-new integ.IntegTest(app, 'aws-cdk-eks-asg-al2023', {
+const test = new integ.IntegTest(app, 'aws-cdk-eks-asg-al2023', {
   testCases: [stack],
   diffAssets: false,
 });
+
+// Fails the run unless the probe output reports exactly one completed pod.
+test.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: stack.stackName,
+}).expect(integ.ExpectedResult.objectLike({
+  Stacks: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Outputs: integ.Match.arrayWith([
+        integ.Match.objectLike({
+          OutputKey: 'NodeJoinProbeSucceededCount',
+          OutputValue: '1',
+        }),
+      ]),
+    }),
+  ]),
+}));

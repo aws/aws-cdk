@@ -1,16 +1,29 @@
 {
   "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "4a7c6aac6c6fbaa54f1b6e7c0f8defb91b43e57a250996a63f71aac6b00aa84b": {
+      "source": {
+        "path": "asset.4a7c6aac6c6fbaa54f1b6e7c0f8defb91b43e57a250996a63f71aac6b00aa84b.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-51facd58": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a7c6aac6c6fbaa54f1b6e7c0f8defb91b43e57a250996a63f71aac6b00aa84b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "51239f5f23ebfddbd651ed49a5c7c6bae564a91596e90157189e2b7d78ece060": {
       "displayName": "awscdkeksasgal2023DefaultTestDeployAssert05E695E2 Template",
       "source": {
         "path": "awscdkeksasgal2023DefaultTestDeployAssert05E695E2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-4b63b6c7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "51239f5f23ebfddbd651ed49a5c7c6bae564a91596e90157189e2b7d78ece060.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

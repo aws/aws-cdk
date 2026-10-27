@@ -6,23 +6,7 @@
       "pluginName": "CloudFormation Validate",
       "pluginVersion": "1.12.1",
       "conclusion": "success",
-      "violations": [
-        {
-          "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
-          "severity": "warning",
-          "ruleMetadata": {
-            "category": "Structure"
-          },
-          "violatingConstructs": [
-            {
-              "constructPath": "aws-cdk-eks-asg-al2023/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
-            }
-          ]
-        }
-      ],
+      "violations": [],
       "suppressedViolations": [
         {
           "ruleName": "W2506",
@@ -41,7 +25,7 @@
           "acknowledgedId": "CloudFormation-Validate::W2506",
           "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
           "acknowledgedAt": "aws-cdk-eks-asg-al2023-test",
-          "acknowledgedStackTrace": "    at Validations.acknowledge (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at EksOptimizedImage.getImage (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1865:59)\n    at new LaunchTemplate (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-ec2/lib/launch-template.js:403:53)\n    at new AutoScalingGroup (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.js:896:48)\n    at PropertyInjectable.addAutoScalingGroupCapacity (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1315:25)\n    at PropertyInjectable.<anonymous> (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)\n    at new EksAsgAl2023Stack (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-asg-al2023.js:64:31)"
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at EksOptimizedImage.getImage (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1870:59)\n    at new LaunchTemplate (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-ec2/lib/launch-template.js:403:53)\n    at new AutoScalingGroup (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.js:896:48)\n    at PropertyInjectable.addAutoScalingGroupCapacity (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1321:25)\n    at PropertyInjectable.<anonymous> (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)\n    at new EksAsgAl2023Stack (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-asg-al2023.js:64:31)"
         }
       ]
     }
