@@ -10,6 +10,13 @@ import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framew
 const framework: { [fqn: string]: ComponentProps[] } = {};
 
 async function main() {
+  // Everything under dist/ is produced below, and `calculateDirectoryHash` hashes
+  // the handler directories as they are found on disk. Leftovers from an earlier
+  // build (e.g. after switching branches) would therefore change the asset hash
+  // baked into the generated code, making this script's output depend on state
+  // rather than only on its inputs. Start from empty so a build is reproducible.
+  fs.rmSync('dist', { recursive: true, force: true });
+
   recurse(config, []);
 
   for (const [fqn, components] of Object.entries(framework)) {
