@@ -132,7 +132,7 @@ becomes `addEventTrigger`; all `addXxxTrigger` methods return `ITriggerRef`.
 
 - **`RayJob` is not graduated** — AWS Glue for Ray is closed to new customers
   (April 30, 2026). If you still need `RayJob`, the final alpha release that
-  includes it is `@aws-cdk/aws-glue-alpha@<TODO: final version>`. In
+  includes it is `@aws-cdk/aws-glue-alpha@2.274.0-alpha.0`. In
   `aws-cdk-lib`, you can define a Ray job with the `CfnJob` L1 construct by
   setting `command.name` to `glueray`, `command.runtime` to `Ray2.4`,
   `workerType` to `Z.2X` and `glueVersion` to `4.0` or later. Alternatively,
