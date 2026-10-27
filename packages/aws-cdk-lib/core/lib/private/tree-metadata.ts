@@ -248,13 +248,14 @@ class FragmentedTreeWriter {
           fileName: `trees-${ret.length + 1}.json`,
           file: { version: 'forest-0.1', forest: { } },
           nodeCount: 0,
+          treeCount: 0,
         };
         ret.push(targetForest);
       } else {
         targetForest = ret[ret.length - 1];
       }
 
-      const treeId = `t${Object.keys(targetForest.file.forest).length}`;
+      const treeId = `t${targetForest.treeCount++}`;
       targetForest.file.forest[treeId] = tree.root;
       targetForest.nodeCount += tree.nodes;
       tree.referencingNode.fileName = targetForest.fileName;
@@ -431,6 +432,15 @@ interface IncompleteForestFile {
   fileName: string;
   nodeCount: number;
   file: ForestFile;
+
+  /**
+   * How many trees have been added to this forest file so far.
+   *
+   * Used to generate tree ids. Tracked explicitly rather than derived from
+   * `Object.keys(file.forest).length`, because that is O(n) in the number of
+   * trees already in the file and makes the surrounding loop quadratic.
+   */
+  treeCount: number;
 }
 
 export function isSubtreeReference(x: TreeFile['tree']): x is Extract<TreeFile['tree'], { fileName: string }> {

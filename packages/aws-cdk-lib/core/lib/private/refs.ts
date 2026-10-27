@@ -94,7 +94,18 @@ export class CustomCoupledReference extends Intrinsic {
  * reference is resolved based on its consumption context.
  */
 export function resolveReferences(scope: IConstruct): void {
-  const { refs, overrides } = findAllReferences(scope);
+  resolveReferencesInElements(iterateDfsPreorder(scope));
+}
+
+/**
+ * Resolve the references found in the given constructs only.
+ *
+ * Use this instead of `resolveReferences()` if you know exactly which
+ * constructs may have gained new references, to avoid re-rendering the
+ * CloudFormation representation of the entire construct tree.
+ */
+export function resolveReferencesInElements(elements: Iterable<IConstruct>): void {
+  const { refs, overrides } = findAllReferences(elements);
 
   for (const { source, value } of refs) {
     const consumer = stackOf(source);
@@ -279,9 +290,6 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     });
   }
 
-  // export the value through a cloudformation "export name" and use an
-  // Fn::ImportValue in the consumption site.
-
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
   // top-level stacks).
@@ -309,13 +317,13 @@ function renderReference(ref: CfnReference) {
 }
 
 /**
- * Finds all the CloudFormation references in a construct tree.
+ * Finds all the CloudFormation references in the given constructs.
  */
-function findAllReferences(root: IConstruct) {
+function findAllReferences(elements: Iterable<IConstruct>) {
   const refs = new Array<{ source: CfnElement; value: CfnReference }>();
   const overrides = new Array<{ source: CfnElement; override: CustomCoupledReference }>();
 
-  for (const consumer of iterateDfsPreorder(root)) {
+  for (const consumer of elements) {
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
       continue;
