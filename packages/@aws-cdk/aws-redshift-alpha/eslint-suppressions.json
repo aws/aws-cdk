@@ -28,5 +28,10 @@
     "@cdklabs/no-throw-default-error": {
       "count": 1
     }
+  },
+  "lib/private/database-query-provider/validate.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
   }
 }

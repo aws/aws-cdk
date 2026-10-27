@@ -32,6 +32,7 @@ Principles:
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
 | Lint with auto-fix | `yarn lint --fix` | repo root |
+| Check skills | `node scripts/check-skills.js` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
@@ -53,6 +54,7 @@ Principles:
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Review skills | [`skills/cdk-review/`](./skills/cdk-review/README.md) | Skills for reviewing changes to AWS CDK code, locally or on a pull request, with any agent |
 
 ## Architecture — The Layer Model
 
@@ -104,7 +106,8 @@ Standard constructor: `constructor(scope: Construct, id: string, props: FooProps
 
 ### Static Type Check (never use `instanceof`)
 
-All L1 (`Cfn*`) constructs and some core constructs have this auto-generated.
+L1 `Cfn*` constructs have it auto-generated (via `spec2cdk`); some core classes, such as `App`,
+`Stack` and `Stage`, implement the same pattern by hand.
 
 ```ts
 public static isFoo(x: any): x is Foo {
@@ -133,7 +136,7 @@ public static isFoo(x: any): x is Foo {
 ## Props Design
 
 - Name: `FooProps` — always a struct (readonly properties only)
-- Flat — no artificial nesting, use shared prefixes for related props
+- Flat — no artificial nesting, use shared prefixes for related props. Exception: group **co-dependent** props (only valid together) into a required-together value object when it makes incomplete combinations unrepresentable — e.g. `workerConfiguration: { workerType, numberOfWorkers }`. Litmus: if flattening would need a synth-time throw for partial input, nest; mutually *exclusive* props use factory methods instead
 - Every optional prop needs `@default` tag:
   - Simple: `@default true`
   - Context-dependent: `@default - uses the account default encryption`
@@ -331,7 +334,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 
 - Module scope optional for repo-wide changes: `chore: update dependencies`
 - Lowercase, no period at end
-- `feat` and `fix` PRs MUST reference an issue: `fixes #<issue>` or `closes #<issue>`
+- You SHOULD reference an issue in every `feat` and `fix` PR: `fixes #<issue>` or `closes #<issue>`. A PR with no linked issue is routed to a lower-priority review queue, so link one to keep the PR in the normal queue. If no issue exists, open one before raising the PR.
 - `feat()` PRs require unit tests, integration snapshots, and README updates
 - Breaking changes are only allowed in `-alpha` libraries. Declare with `BREAKING CHANGE:` in the PR body before the `---` line
 - One concern per PR — submit cosmetic changes separately
@@ -339,7 +342,7 @@ Required for: new CFN resource types, new CFN properties, cross-service integrat
 ## Anti-Patterns — Things NOT To Do
 
 - **MUST NOT use jsii-incompatible patterns** — mapped types, conditional types, overloaded functions, TypeScript namespaces, `export const` objects (use `public static readonly` on classes). MUST NOT move public types between files — file location is part of the external contract in jsii bindings
-- **MUST NOT use fluent API patterns** (method chaining returning `this`) — jsii languages can't chain methods that return `this`, and it hides mutation behind a return value ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
+- **SHOULD NOT use fluent API patterns** (method chaining returning `this`) - this is a consistency rule, not a jsii limitation (chaining works in all jsii languages): the library configures through props objects, and returning `this` both hides mutation behind a return value and permanently reserves the method's return type. A fluent API that is present MUST come with a written justification, and accepting it is at the maintainer's discretion. When you find one, notify the human that it is present as a warning, not as a blocking issue. ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT add speculative abstractions** — add what customers need today; unused abstractions become maintenance burden and API surface that can't be removed ([DESIGN_GUIDELINES.md#general-principles](./docs/DESIGN_GUIDELINES.md#general-principles))
 - **MUST NOT change construct IDs** — logical IDs derive from the full construct path; any change replaces all resources in scope, causing data loss ([DESIGN_GUIDELINES.md#construct-ids](./docs/DESIGN_GUIDELINES.md#construct-ids))
 - **MUST NOT leave commented-out code, dead code, or `eslint-disable` directives** — they rot, confuse future contributors, and mask real lint violations
