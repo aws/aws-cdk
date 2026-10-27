@@ -19,7 +19,7 @@ const bundled = new Set<string>(pkg.bundleDependencies ?? []);
 
 const ownPacmakVersion: string = readPackageJson('jsii-pacmak').version;
 
-const violations: string[] = [];
+const violations: Array<{ dep: string; pacmakVersion: string }> = [];
 
 for (const depName of Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies })) {
   if (bundled.has(depName)) continue;
@@ -28,27 +28,24 @@ for (const depName of Object.keys({ ...pkg.dependencies, ...pkg.peerDependencies
   if (!depPkg.jsii) continue;
 
   const depPacmakRange: string | undefined = depPkg.devDependencies?.['jsii-pacmak'];
-  const depPacmakVersion = depPacmakRange ? semver.minVersion(depPacmakRange)?.version : undefined;
-  if (!depPacmakVersion) {
-    console.log(`Skipping ${depName}@${depPkg.version}: cannot determine the jsii-pacmak version it was built with`);
-    continue;
+  if (!depPacmakRange) {
+    throw new Error(`Unable to determine jsii-pacmak version of ${depName}`);
   }
+  console.log(`${depName}: jsii-pacmak@${depPacmakRange}`);
+  const depPacmakVersion = semver.minVersion(depPacmakRange)!.version;
 
   if (semver.gt(depPacmakVersion, ownPacmakVersion)) {
-    violations.push(`${depName}@${depPkg.version} was built with jsii-pacmak@${depPacmakVersion}`);
+    violations.push({ dep: `${depName}@${depPkg.version}`, pacmakVersion: depPacmakVersion });
   }
 }
 
 if (violations.length > 0) {
-  console.error(`aws-cdk-lib is built with jsii-pacmak@${ownPacmakVersion}, but the following dependencies were built with a newer version:\n`);
-  for (const v of violations) {
-    console.error(`  ${v}`);
-  }
-  console.error('\nTheir generated packages require a newer jsii runtime than aws-cdk-lib does, which breaks some package managers (e.g. NuGet error NU1605). Upgrade jsii-pacmak to at least the highest version listed above.');
-  process.exitCode = 1;
-} else {
-  console.log(`All jsii dependencies are compatible with jsii-pacmak@${ownPacmakVersion}.`);
+  const requiredVersion = violations.map(v => v.pacmakVersion).sort(semver.rcompare)[0];
+  const details = violations.map(v => `  ${v.dep} was built with jsii-pacmak@${v.pacmakVersion}`).join('\n');
+  throw new Error(`aws-cdk-lib is built with jsii-pacmak@${ownPacmakVersion}, but the following dependencies were built with a newer version:\n\n${details}\n\nUpgrade jsii-pacmak to ${requiredVersion} or later.`);
 }
+
+console.log(`All jsii dependencies are compatible with jsii-pacmak@${ownPacmakVersion}.`);
 
 function readPackageJson(name: string) {
   return JSON.parse(fs.readFileSync(require.resolve(`${name}/package.json`, { paths: [pkgDir] }), 'utf-8'));
