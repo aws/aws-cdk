@@ -629,7 +629,7 @@
       "Ref": "Function042596DC"
      },
      "RuntimeConfig": {
-      "runtime": "nodejs24.x"
+      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
      },
      "ServiceConfig": {
       "executionRoleArn": {
@@ -643,14 +643,14 @@
         "Fn::Join": [
          "",
          [
-          "https://",
+          "f8eae6750519389e078e1eb1bcb3d708",
           {
            "Fn::GetAtt": [
             "EgressBucket1ABE5DC5",
             "RegionalDomainName"
            ]
           },
-          "/egress.txt"
+          "68159f03775c1e8adfdef7c9f447c72a"
          ]
         ]
        }

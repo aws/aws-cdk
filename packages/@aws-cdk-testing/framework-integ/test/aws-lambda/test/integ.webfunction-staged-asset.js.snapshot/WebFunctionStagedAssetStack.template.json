@@ -57,7 +57,7 @@
       "Ref": "AutomaticFunctionB47C23F8"
      },
      "RuntimeConfig": {
-      "runtime": "nodejs24.x"
+      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
      },
      "ServiceConfig": {
       "executionRoleArn": {
@@ -622,7 +622,7 @@
       "Ref": "AutomaticSecondFunctionAB53D7F9"
      },
      "RuntimeConfig": {
-      "runtime": "nodejs24.x"
+      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
      },
      "ServiceConfig": {
       "executionRoleArn": {
@@ -956,7 +956,7 @@
       "Ref": "SpecificFunction2B9945D8"
      },
      "RuntimeConfig": {
-      "runtime": "nodejs24.x"
+      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
      },
      "ServiceConfig": {
       "executionRoleArn": {
