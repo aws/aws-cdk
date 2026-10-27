@@ -489,6 +489,51 @@
     }
    }
   },
+  "MyVpcS3DualstackEndpoint72DA66B2": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "DnsOptions": {
+     "DnsRecordIpType": "dualstack"
+    },
+    "IpAddressType": "dualstack",
+    "RouteTableIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+     },
+     {
+      "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+     },
+     {
+      "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
   "MyVpcEcrDockerEndpointSecurityGroup47BB9CC1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -551,7 +596,18 @@
       ]
      }
     ],
-    "ServiceName": "com.amazonaws.us-west-2.ecr.dkr",
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".ecr.dkr"
+      ]
+     ]
+    },
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -634,7 +690,18 @@
       ]
      }
     ],
-    "ServiceName": "com.amazonaws.us-west-2.dynamodb",
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".dynamodb"
+      ]
+     ]
+    },
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -717,7 +784,18 @@
       ]
      }
     ],
-    "ServiceName": "com.amazonaws.us-west-2.email-smtp",
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".email-smtp"
+      ]
+     ]
+    },
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -804,7 +882,6 @@
       ]
      }
     ],
-<<<<<<< HEAD
     "ServiceName": {
      "Fn::Join": [
       "",
@@ -901,9 +978,6 @@
     ],
     "ServiceName": "com.amazonaws.eu-west-1.s3",
     "ServiceRegion": "eu-west-1",
-=======
-    "ServiceName": "com.amazonaws.us-west-2.logs",
->>>>>>> 853ccd8772 (fix: set the correct port for the SES SMTP service endpoint)
     "SubnetIds": [
      {
       "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
@@ -921,51 +995,6 @@
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
-    }
-   }
-  },
-  "MyVpcS3DualstackEndpoint72DA66B2": {
-   "Type": "AWS::EC2::VPCEndpoint",
-   "Properties": {
-    "RouteTableIds": [
-     {
-      "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-     },
-     {
-      "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-     },
-     {
-      "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-     },
-     {
-      "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
-     }
-    ],
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".s3"
-      ]
-     ]
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
-     }
-    ],
-    "VpcEndpointType": "Gateway",
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
-    "IpAddressType": "dualstack",
-    "DnsOptions": {
-     "DnsRecordIpType": "dualstack"
     }
    }
   }
