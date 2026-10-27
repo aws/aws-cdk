@@ -9,18 +9,20 @@ jest.mock('@aws-sdk/client-lambda', () => ({
   InvokeCommand: jest.fn().mockImplementation((params) => params),
 }));
 
+const mockDynamoDBClient = jest.fn().mockImplementation(() => ({
+  send: mockSend,
+}));
 jest.mock('@aws-sdk/client-dynamodb', () => ({
-  DynamoDBClient: jest.fn().mockImplementation(() => ({
-    send: mockSend,
-  })),
+  DynamoDBClient: mockDynamoDBClient,
   ListTablesCommand: jest.fn().mockImplementation((params) => params),
 }));
 
+const mockSTSSend = jest.fn();
 jest.mock('@aws-sdk/client-sts', () => ({
   STSClient: jest.fn().mockImplementation(() => ({
-    send: jest.fn(),
+    send: mockSTSSend,
   })),
-  AssumeRoleCommand: jest.fn(),
+  AssumeRoleCommand: jest.fn().mockImplementation((params) => params),
 }));
 
 describe('Cross-Region AWS SDK Handler - Lambda Payload Processing', () => {
@@ -208,6 +210,77 @@ describe('Cross-Region AWS SDK Handler - Lambda Payload Processing', () => {
       expect(result.Payload).not.toHaveProperty('1'); // Not byte array
       expect(result.Payload.statusCode).toBe(200);
       expect(result.Payload.body.status).toBe('success');
+    });
+  });
+
+  describe('Assume Role Functionality', () => {
+    test('should assume role when assumeRoleArn is provided', async () => {
+      // GIVEN - Successful STS assume role response
+      mockSTSSend.mockResolvedValue({
+        Credentials: {
+          AccessKeyId: 'ACCESS_KEY_ID',
+          SecretAccessKey: 'SECRET_ACCESS_KEY',
+          SessionToken: 'SESSION_TOKEN',
+        },
+      });
+
+      mockSend.mockResolvedValue({
+        $metadata: { httpStatusCode: 200 },
+        TableNames: ['table1'],
+      });
+
+      const event = {
+        service: 'dynamodb',
+        action: 'listTables',
+        parameters: {},
+        region: 'us-west-2',
+        endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+        assumeRoleArn: 'arn:aws:iam::123456789012:role/example-role',
+      };
+
+      // WHEN
+      const result = await handler(event);
+
+      // THEN
+      expect(mockSTSSend).toHaveBeenCalledTimes(1);
+      expect(mockSTSSend).toHaveBeenCalledWith({
+        RoleArn: 'arn:aws:iam::123456789012:role/example-role',
+        RoleSessionName: expect.stringMatching(/^cross-region-aws-sdk-\d+$/),
+      });
+      expect(mockDynamoDBClient).toHaveBeenCalledWith({
+        region: 'us-west-2',
+        endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+        credentials: {
+          accessKeyId: 'ACCESS_KEY_ID',
+          secretAccessKey: 'SECRET_ACCESS_KEY',
+          sessionToken: 'SESSION_TOKEN',
+        },
+      });
+      expect(result.TableNames).toEqual(['table1']);
+    });
+
+    test('should not assume role when assumeRoleArn is not provided', async () => {
+      // GIVEN
+      mockSend.mockResolvedValue({
+        $metadata: { httpStatusCode: 200 },
+        TableNames: ['table1'],
+      });
+
+      const event = {
+        service: 'dynamodb',
+        action: 'listTables',
+        parameters: {},
+        region: 'us-west-2',
+        endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+        // No assumeRoleArn
+      };
+
+      // WHEN
+      const result = await handler(event);
+
+      // THEN
+      expect(mockSTSSend).not.toHaveBeenCalled();
+      expect(result.TableNames).toEqual(['table1']);
     });
   });
 });
