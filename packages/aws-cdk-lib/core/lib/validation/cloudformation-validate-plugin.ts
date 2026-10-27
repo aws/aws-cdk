@@ -320,19 +320,14 @@ function mapSeverity(severity: Severity): string {
 
 /**
  * Directory holding the CDK-authored default Rego rules, shipped with aws-cdk-lib.
- *
- * These are ports of L2 construct validations to template-level rules, so the
- * same checks also apply to templates produced via L1 constructs, escape
- * hatches, or `CfnInclude`. See `rules/` next to this file.
- * hatches, or `CfnInclude`.
  */
 const RULES_DIRECTORY = path.join(__dirname, 'rules');
 
 let ruleIndex: RegoRuleIndex | undefined;
 
 /**
- * Load the index, which contains metadata about the additional Rego rule files
- * so that we can load them more efficiently.
+ * The applicability index, generated at build time by
+ * `core/build-tools/generate-rego-rule-index.ts`.
  */
 function defaultRegoRuleIndex(): RegoRuleIndex {
   if (!ruleIndex) {
@@ -343,21 +338,23 @@ function defaultRegoRuleIndex(): RegoRuleIndex {
 }
 
 /**
- * CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ * CDK-authored default Rego rules that can fire on one of the given resource types.
  *
  * These are ports of L2 construct validations to template-level rules, so the
  * same checks also apply to templates produced via L1 constructs, escape
  * hatches, or `CfnInclude`. See `rules/` next to this file.
+ *
+ * Loading any Rego rule at all costs a fixed ~150ms to spin up the Rego
+ * evaluator, so apps that use none of the covered resource types (most of them)
+ * should not be loading rules in the first place.
  */
 function loadBuiltinRegoRules(resourceTypes: Set<string>): ValidationRuleSource[] {
-  const rulesDir = path.join(__dirname, 'rules');
-
   return defaultRegoRuleIndex().rules
     .filter(r => r.types === null || r.types.some(type => resourceTypes.has(type)))
     .sort((a, b) => a.file.localeCompare(b.file))
     .map((r) => ({
       name: r.file,
-      content: fs.readFileSync(path.join(rulesDir, r.file), 'utf-8'),
+      content: fs.readFileSync(path.join(RULES_DIRECTORY, r.file), 'utf-8'),
     }));
 }
 
