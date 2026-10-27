@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import { isCfnResource, NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { LinkedQueue } from './linked-queue';
 import type { CfnResource } from '../cfn-resource';
+import type { Stage } from '../stage';
 
 /**
  * Depth-first iterator over the construct tree
@@ -21,6 +22,38 @@ export function* iterateDfsPreorder(root: IConstruct) {
     yield next;
 
     next = stack.pop();
+  }
+}
+
+/**
+ * Depth-first iterator over the cloud assemblies at or below the given Stage, parents first
+ *
+ * Yields the given Stage itself, plus every Stage nested inside it. Parents come
+ * before their children, so a parent assembly can be processed before the
+ * assemblies nested inside it.
+ *
+ * A Stage does not have to be a direct child of its parent assembly: it can be
+ * nested underneath any number of regular constructs, so this walks the entire
+ * tree, the same way `synthNestedAssemblies` does when it synthesizes them.
+ */
+export function* iterateAssembliesPreorder(root: Stage): IterableIterator<Stage> {
+  for (const construct of iterateDfsPreorder(root)) {
+    if (STAGE_TYPE.isMarked(construct)) {
+      yield construct;
+    }
+  }
+}
+
+/**
+ * Depth-first iterator over the cloud assemblies at or below the given Stage, children first
+ *
+ * See `iterateAssembliesPreorder`.
+ */
+export function* iterateAssembliesPostorder(root: Stage): IterableIterator<Stage> {
+  for (const construct of iterateDfsPostorder(root)) {
+    if (STAGE_TYPE.isMarked(construct)) {
+      yield construct;
+    }
   }
 }
 
