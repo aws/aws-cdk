@@ -26,7 +26,7 @@ import type * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
 import type { ArnComponents, Duration, IResource } from '../../core';
-import { ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization, Validations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -1211,6 +1211,17 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       timezone: props.timezone,
       dbParameterGroupName,
     };
+
+    // RDS resolves a major-version-only engine version (such as SqlServerEngineVersion.VER_16)
+    // to the latest minor version, but the bundled validation rules only allow fully
+    // qualified versions, so they would flag these constants.
+    const engineVersion = props.engine.engineVersion;
+    if (engineVersion !== undefined && engineVersion.fullVersion === engineVersion.majorVersion) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::E9006',
+        reason: 'RDS accepts a major-version-only engine version and resolves it to the latest minor version',
+      });
+    }
   }
 
   /**

@@ -2809,3 +2809,31 @@ describe('database insights for instance', () => {
     }).toThrow(/`performanceInsightRetention` must be set to '\${PerformanceInsightRetention.MONTHS_15}' when `databaseInsightsMode` is set to '\${DatabaseInsightsMode.ADVANCED}'/);
   });
 });
+
+describe('instance engine version validation', () => {
+  function stackWithInstance(engine: rds.IInstanceEngine): cdk.Stack {
+    const validationStack = new cdk.Stack();
+    new rds.DatabaseInstance(validationStack, 'Instance', {
+      engine,
+      vpc: new ec2.Vpc(validationStack, 'VPC'),
+    });
+    return validationStack;
+  }
+
+  test.each([
+    ['SQL Server', rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_16 })],
+    ['MySQL', rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 })],
+  ])('does not report E9006 for a %s major-version-only engine version', (_, engine) => {
+    const validationStack = stackWithInstance(engine);
+
+    expect(() => Template.fromStack(validationStack)).not.toThrow();
+  });
+
+  test('fails validation with E9006 for an invalid fully qualified engine version', () => {
+    const validationStack = stackWithInstance(rds.DatabaseInstanceEngine.sqlServerSe({
+      version: rds.SqlServerEngineVersion.of('16.00.9999.9.v1', '16.00'),
+    }));
+
+    expect(() => Template.fromStack(validationStack)).toThrow(/E9006/);
+  });
+});
