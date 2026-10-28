@@ -6,7 +6,7 @@ import { WebFunctionEndpointGrants } from './webfunction-endpoint-grants';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import { Annotations, Fn, Names, Resource, Stack, Token } from '../../core';
-import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -53,146 +53,6 @@ export enum WebFunctionAuthType {
 }
 
 /**
- * Predefined region groups for use with WebFunctionReplicaRegions
- *
- * Group membership is fixed by the installed version of `aws-cdk-lib`. A region launched
- * after that version only appears in a group once you upgrade `aws-cdk-lib`, and nothing
- * reports it in the meantime. The same applies when you exclude regions from a group: "all
- * regions except X" built that way does not include a newly launched region either. To cover
- * one, upgrade `aws-cdk-lib` or list the regions explicitly; explicit lists are unaffected.
- */
-export class WebFunctionRegions {
-  /** US regions */
-  static readonly US: string[] = Object.freeze(['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2']) as string[];
-
-  /** European regions */
-  static readonly EU: string[] = Object.freeze([
-    'eu-west-1',
-    'eu-west-2',
-    'eu-west-3',
-    'eu-central-1',
-    'eu-north-1',
-  ]) as string[];
-
-  /** Asia Pacific regions */
-  static readonly AP: string[] = Object.freeze([
-    'ap-south-1',
-    'ap-northeast-3',
-    'ap-northeast-2',
-    'ap-northeast-1',
-    'ap-southeast-1',
-    'ap-southeast-2',
-  ]) as string[];
-
-  /** Canada regions */
-  static readonly CA: string[] = Object.freeze(['ca-central-1']) as string[];
-
-  /** South America regions */
-  static readonly SA: string[] = Object.freeze(['sa-east-1']) as string[];
-
-  /** All regions in the groups above */
-  static readonly ALL_DEFAULT_REGIONS: string[] = Object.freeze([
-    ...WebFunctionRegions.US,
-    ...WebFunctionRegions.EU,
-    ...WebFunctionRegions.AP,
-    ...WebFunctionRegions.CA,
-    ...WebFunctionRegions.SA,
-  ]) as string[];
-
-  /**
-   * Sparse global coverage — 7 regions across North America, Europe, Asia Pacific and
-   * South America. Use when you need worldwide presence with minimal region count.
-   */
-  static readonly SPARSE_GLOBAL: string[] = Object.freeze([
-    'us-east-1',
-    'eu-west-1',
-    'ap-northeast-1',
-    'eu-central-1',
-    'ap-southeast-2',
-    'sa-east-1',
-    'ap-southeast-1',
-  ]) as string[];
-
-  /**
-   * High-traffic regions only — US, Europe, and Asia Pacific (6 regions).
-   * Use when most of your users are in these areas and you don't need
-   * South America or Oceania coverage.
-   */
-  static readonly MAJOR_REGIONS: string[] = Object.freeze([
-    'us-east-1',
-    'us-west-2',
-    'eu-west-1',
-    'eu-central-1',
-    'ap-northeast-1',
-    'ap-southeast-1',
-  ]) as string[];
-}
-
-/**
- * Represents a set of replica regions for a WebFunction.
- *
- * Build one with `WebFunctionReplicaRegions.of(included, excluded?)`, passing `WebFunctionRegions.*`
- * group constants (or explicit region arrays) for the regions to include and,
- * optionally, a set to exclude.
- *
- * @example
- * // Include all default regions except the EU group
- * lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.ALL_DEFAULT_REGIONS, lambda.WebFunctionRegions.EU)
- *
- * @example
- * // Include explicit regions
- * lambda.WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1'])
- *
- * @example
- * // Combine multiple groups by spreading them
- * lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU])
- */
-export class WebFunctionReplicaRegions {
-  /**
-   * Create a set of replica regions from an `included` list, with an optional
-   * `excluded` list removed from it. Both accept `WebFunctionRegions.*` group constants or
-   * explicit region arrays; spread multiple groups into a single array to
-   * combine them (e.g. `[...WebFunctionRegions.US, ...WebFunctionRegions.EU]`).
-   *
-   * `included` may be a deploy-time list (for example `CfnParameter.valueAsList`),
-   * in which case it is passed through unchanged. Exclusion is computed at synth
-   * time and therefore requires concrete region strings in both lists.
-   *
-   * A `WebFunctionRegions` group contributes the regions it lists in the installed version of
-   * `aws-cdk-lib`, so regions launched later are not included until you upgrade it.
-   */
-  public static of(included: string[], excluded?: string[]): WebFunctionReplicaRegions {
-    return new WebFunctionReplicaRegions(included, excluded ?? []);
-  }
-
-  private constructor(
-    private readonly included: string[],
-    private readonly excluded: string[],
-  ) {}
-
-  /**
-   * The final, de-duplicated list of replica regions (included minus excluded).
-   *
-   * Not named `resolve`: CDK treats any object with a `resolve` method as a token.
-   *
-   * @internal
-   */
-  public _toRegionList(): string[] {
-    if (this.excluded.length === 0) {
-      return Token.isUnresolved(this.included) ? this.included : [...new Set(this.included)];
-    }
-    if (hasTokens(this.included) || hasTokens(this.excluded)) {
-      throw new UnscopedValidationError(
-        lit`WebFunctionReplicaRegionsUnresolvedExclusion`,
-        'Excluding replica regions requires concrete region strings in both lists; a deploy-time value cannot be filtered at synth time',
-      );
-    }
-    const excludedSet = new Set(this.excluded);
-    return [...new Set(this.included)].filter((r) => !excludedSet.has(r));
-  }
-}
-
-/**
  * Where a WebFunction endpoint serves traffic.
  *
  * A regional location carries its replica Regions, and a home-Region one has none, so a
@@ -210,12 +70,15 @@ export class WebFunctionEndpointLocation {
    * Serve from the stack's Region and the replica Regions under one global domain name, with
    * requests routed to the nearest Region.
    *
-   * The stack's own Region always serves traffic, whether or not it is listed. `replicaRegions`
-   * must resolve to at least one Region. Changing the set of Regions replaces the endpoint; a
+   * The stack's own Region always serves traffic, so listing it has no effect, and
+   * `replicaRegions` must hold at least one other Region. The list is treated as a set: order
+   * and duplicates do not matter. Adding or removing a Region replaces the endpoint; a
    * deploy-time list (for example from a `CfnParameter`) cannot feed the default endpoint
    * name, so changing its value at deployment also needs a new `endpointName`.
+   *
+   * @param replicaRegions the Regions to replicate to, for example `['us-east-1', 'eu-west-1']`
    */
-  public static multiRegion(replicaRegions: WebFunctionReplicaRegions): WebFunctionEndpointLocation {
+  public static multiRegion(replicaRegions: string[]): WebFunctionEndpointLocation {
     return new WebFunctionEndpointLocation(WebFunctionEndpointType.MULTI_REGION, replicaRegions);
   }
 
@@ -225,19 +88,37 @@ export class WebFunctionEndpointLocation {
    *
    * The same rules for `replicaRegions` apply as for `multiRegion()`.
    */
-  public static perRegion(replicaRegions: WebFunctionReplicaRegions): WebFunctionEndpointLocation {
+  public static perRegion(replicaRegions: string[]): WebFunctionEndpointLocation {
     return new WebFunctionEndpointLocation(WebFunctionEndpointType.PER_REGION, replicaRegions);
   }
 
   /** The endpoint type this location maps to. */
   public readonly endpointType: WebFunctionEndpointType;
 
-  /** The replica Regions, for a regional location. */
-  public readonly replicaRegions?: WebFunctionReplicaRegions;
+  /** The replica Regions, for a regional location, as given. */
+  public readonly replicaRegions?: string[];
 
-  private constructor(endpointType: WebFunctionEndpointType, replicaRegions?: WebFunctionReplicaRegions) {
+  private constructor(endpointType: WebFunctionEndpointType, replicaRegions?: string[]) {
     this.endpointType = endpointType;
     this.replicaRegions = replicaRegions;
+  }
+
+  /**
+   * The endpoint's `Regions`, as a set: sorted, without duplicates, and without the stack's
+   * Region, which always serves traffic. Normalizing it keeps the default name, and the
+   * create-only property, from changing when the same Regions are listed differently. A list
+   * holding a deploy-time value is used as it is.
+   *
+   * @internal
+   */
+  public _regionList(scope: Construct): string[] | undefined {
+    const regions = this.replicaRegions;
+    if (regions === undefined || hasTokens(regions)) {
+      return regions;
+    }
+    // In an environment-agnostic stack the Region is a token, which matches no listed Region.
+    const home = Stack.of(scope).region;
+    return [...new Set(regions)].filter((r) => r !== home).sort();
   }
 }
 
@@ -620,11 +501,11 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       );
     }
 
-    const regions = location.replicaRegions?._toRegionList();
+    const regions = location._regionList(this);
     if (regions !== undefined && !Token.isUnresolved(regions) && regions.length === 0) {
       throw new ValidationError(
         lit`WebFunctionRegionalEndpointEmptyRegions`,
-        `replicaRegions resolved to an empty list. A ${endpointType} endpoint requires at least one region`,
+        `A ${endpointType} endpoint needs at least one replica Region other than the stack's own Region`,
         this,
       );
     }

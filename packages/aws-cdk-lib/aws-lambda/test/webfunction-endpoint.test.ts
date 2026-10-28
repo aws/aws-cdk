@@ -10,7 +10,6 @@ import {
   WebFunctionEndpointLocation,
   WebFunctionEndpointType,
   WebFunctionTraffic,
-  WebFunctionReplicaRegions,
 } from '../lib/webfunction-endpoint';
 import type { WebFunctionEndpointProps } from '../lib/webfunction-endpoint';
 import { WebFunctionRuntime } from '../lib/webfunction-runtime';
@@ -160,7 +159,7 @@ describe('addEndpoint', () => {
       const ep = fn.addEndpoint('Second', { authType: WebFunctionAuthType.IAM_AUTH, endpointLocation });
       return ep.resource.endpointName;
     };
-    expect(name()).not.toEqual(name(WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1']))));
+    expect(name()).not.toEqual(name(WebFunctionEndpointLocation.multiRegion(['us-east-1'])));
   });
 
   test('validates the endpoint', () => {
@@ -181,7 +180,7 @@ describe('addEndpoint', () => {
 
     expect(() => fn.addEndpoint('Global', {
       authType: WebFunctionAuthType.IAM_AUTH,
-      endpointLocation: WebFunctionEndpointLocation.multiRegion(WebFunctionReplicaRegions.of(['us-east-1'])),
+      endpointLocation: WebFunctionEndpointLocation.multiRegion(['us-east-1']),
     })).toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint/);
     expect(() => fn.addEndpoint('Home', { authType: WebFunctionAuthType.IAM_AUTH })).not.toThrow();
   });

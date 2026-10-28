@@ -9,8 +9,9 @@ import { lit } from '../../../core/lib/private/literal-string';
  *
  * Both are create-only, like the endpoint name, so changing them replaces the endpoint, which
  * CloudFormation cannot do under the same name. A default name includes this hash so that it
- * changes with them. Order is kept: the property is a list, so reordering it replaces the
- * endpoint too.
+ * changes with them. `regions` is the normalized list the endpoint renders (see
+ * `WebFunctionEndpointLocation._regionList`), so listing the same Regions differently changes
+ * neither.
  */
 export function endpointShapeHash(scope: Construct, endpointType: string, regions: string[] | undefined): string {
   return md5hash(JSON.stringify([endpointType, Stack.of(scope).resolve(regions) ?? null])).slice(0, 8);

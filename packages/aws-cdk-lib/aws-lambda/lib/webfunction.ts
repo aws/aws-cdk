@@ -685,8 +685,9 @@ export class WebFunction extends WebFunctionBase {
    * whatever replaces the endpoint also renames it.
    */
   private defaultEndpointName(location: WebFunctionEndpointLocation | undefined): string {
-    const { endpointType, replicaRegions } = location ?? WebFunctionEndpointLocation.homeRegion();
-    const regions = replicaRegions?._toRegionList();
+    const resolved = location ?? WebFunctionEndpointLocation.homeRegion();
+    const endpointType = resolved.endpointType;
+    const regions = resolved._regionList(this);
     if (endpointType === WebFunctionEndpointType.HOME_REGION && regions === undefined) {
       return 'prod';
     }

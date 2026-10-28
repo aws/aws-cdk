@@ -2347,29 +2347,14 @@ new lambda.WebFunction(this, 'GlobalApi', {
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
   defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   defaultEndpoint: {
-    endpointLocation: lambda.WebFunctionEndpointLocation.multiRegion(
-      lambda.WebFunctionReplicaRegions.of([...lambda.WebFunctionRegions.US, ...lambda.WebFunctionRegions.EU]),
-    ),
+    endpointLocation: lambda.WebFunctionEndpointLocation.multiRegion(['us-east-1', 'eu-west-1', 'ap-northeast-1']),
   },
 });
 ```
 
-Use predefined region groups or pass explicit arrays. The stack's own region always serves
-traffic, whether or not it is listed. `of()` takes the regions to include, and optionally a
-second list of regions to exclude from them:
-
-```ts
-// All default regions except the EU group
-lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.ALL_DEFAULT_REGIONS, lambda.WebFunctionRegions.EU)
-
-// Explicit regions
-lambda.WebFunctionReplicaRegions.of(['us-east-1', 'eu-west-1', 'ap-northeast-1'])
-```
-
-The groups in `WebFunctionRegions` list the regions known to the installed version of
-`aws-cdk-lib`, and are expanded at synthesis. A region launched later only appears in a
-group, including one you exclude from, once you upgrade `aws-cdk-lib`; nothing reports it
-in the meantime. Explicitly listed regions are unaffected.
+The stack's own region always serves traffic, so listing it has no effect, and at least one
+other region is required. The list is treated as a set, so order and duplicates do not
+matter. Adding or removing a region replaces the endpoint, which gives it a new `domainName`.
 
 For a separate regional endpoint per region (instead of managed latency-based
 routing), use `WebFunctionEndpointLocation.perRegion()`, which takes replica regions the
@@ -2385,9 +2370,7 @@ new lambda.WebFunction(this, 'PerRegionApi', {
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
   defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   defaultEndpoint: {
-    endpointLocation: lambda.WebFunctionEndpointLocation.perRegion(
-      lambda.WebFunctionReplicaRegions.of(lambda.WebFunctionRegions.US),
-    ),
+    endpointLocation: lambda.WebFunctionEndpointLocation.perRegion(['us-east-1', 'us-west-2']),
   },
 });
 ```
