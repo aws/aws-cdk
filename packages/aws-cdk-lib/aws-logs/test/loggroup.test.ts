@@ -3,7 +3,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { App, CfnParameter, Fn, Lazy, RemovalPolicy, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
 import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
@@ -1115,6 +1115,61 @@ test('set more than 20 field indexes in a field index policy', () => {
 
   expect(message).toBeDefined();
   expect(message).toEqual('A maximum of 20 fields can be indexed per log group');
+});
+
+test('fails when a field index name exceeds 100 characters', () => {
+  // GIVEN
+  const tooLongFieldName = 'a'.repeat(101);
+
+  let message;
+  try {
+    // WHEN
+    new FieldIndexPolicy({
+      fields: [tooLongFieldName],
+    });
+  } catch (e) {
+    message = (e as Error).message;
+  }
+
+  // THEN
+  expect(message).toBeDefined();
+  expect(message).toMatch(/field index name .* maximum of 100 characters/);
+});
+
+test('accepts a field index name of exactly 100 characters', () => {
+  // GIVEN
+  const stack = new Stack();
+  const boundaryFieldName = 'a'.repeat(100);
+  const fieldIndexPolicy = new FieldIndexPolicy({
+    fields: [boundaryFieldName],
+  });
+
+  // WHEN
+  const logGroupName = 'test-field-index-name-boundary';
+  new LogGroup(stack, 'LogGroup', {
+    logGroupName: logGroupName,
+    fieldIndexPolicies: [fieldIndexPolicy],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: logGroupName,
+    FieldIndexPolicies: [{
+      Fields: [boundaryFieldName],
+    }],
+  });
+});
+
+test('does not validate the length of a tokenized field index name', () => {
+  // GIVEN
+  // A token whose resolved value would exceed 100 characters. Its length is
+  // unknown at synth time, so Token.isUnresolved() must skip the length check.
+  const tokenizedFieldName = Lazy.string({ produce: () => 'a'.repeat(200) });
+
+  // THEN
+  expect(() => new FieldIndexPolicy({
+    fields: [tokenizedFieldName],
+  })).not.toThrow();
 });
 
 describe('subscription filter', () => {
