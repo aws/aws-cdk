@@ -2149,6 +2149,20 @@ new eks.KubernetesPatch(this, 'hello-kub-deployment-label', {
 })
 ```
 
+Use an array of [JSON Patch operations](https://datatracker.ietf.org/doc/html/rfc6902) with `PatchType.JSON`.
+Merge and strategic merge patches use JSON objects instead.
+
+```ts
+declare const cluster: eks.Cluster;
+new eks.KubernetesPatch(this, 'hello-kub-deployment-json-patch', {
+  cluster,
+  resourceName: 'deployment/hello-kubernetes',
+  patchType: eks.PatchType.JSON,
+  applyPatch: [{ op: 'replace', path: '/spec/replicas', value: 5 }],
+  restorePatch: [{ op: 'replace', path: '/spec/replicas', value: 3 }],
+});
+```
+
 ## Querying Kubernetes Resources
 
 The `KubernetesObjectValue` construct can be used to query for information about kubernetes objects,
