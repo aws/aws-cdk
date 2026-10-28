@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * Asks for a response on open draft PRs that have had no activity for a number of days.
  *
@@ -13,14 +12,12 @@
  *
  * Drafts with `response-requested`, `closing-soon` or `no-autoclose` are skipped.
  *
- * Usage: node request-response-on-idle-drafts.js
+ * Called from the request-response-on-idle-drafts.yml workflow via actions/github-script,
+ * which provides the authenticated Octokit client.
  *
- * Env: GITHUB_TOKEN      - token with pull-requests: write
- *      GITHUB_REPOSITORY - owner/repo (e.g. "aws/aws-cdk")
- *      DAYS_THRESHOLD    - days without activity before asking (default 90)
- *      MAX_PER_RUN       - most drafts to act on in one run (default 50)
- *      DRY_RUN           - "true" to only log what would happen
- *      GITHUB_STEP_SUMMARY - set by GitHub Actions; a summary table is appended to it
+ * Env: DAYS_THRESHOLD - days without activity before asking (default 90)
+ *      MAX_PER_RUN    - most drafts to act on in one run (default 50)
+ *      DRY_RUN        - "true" to only log what would happen
  */
 'use strict';
 
@@ -92,39 +89,14 @@ function findIdleDrafts(drafts, cutoff) {
 }
 
 /**
- * Makes a GitHub API request. Returns the parsed JSON body, or throws on a non-2xx status.
- */
-async function githubFetch(path, token, { method = 'GET', body } = {}) {
-  const response = await fetch(`https://api.github.com${path}`, {
-    method,
-    headers: {
-      'Accept': 'application/vnd.github+json',
-      'Authorization': `Bearer ${token}`,
-      'User-Agent': 'aws-cdk-request-response-on-idle-drafts',
-    },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : {};
-  if (!response.ok) {
-    throw new Error(`${method} ${path} failed with ${response.status}: ${data.message ?? text}`);
-  }
-  if (data.errors) {
-    throw new Error(`${method} ${path} returned errors: ${JSON.stringify(data.errors)}`);
-  }
-  return data;
-}
-
-/**
  * Lists all open drafts in the repository, skipping drafts that carry a skip label.
  */
-async function listDrafts(api, owner, repo) {
+async function listDrafts(github, owner, repo) {
   const q = `repo:${owner}/${repo} is:pr is:open draft:true ${SKIP_LABELS.map((l) => `-label:${l}`).join(' ')}`;
   const drafts = [];
   let cursor = null;
   do {
-    const res = await api('/graphql', { method: 'POST', body: { query: SEARCH_QUERY, variables: { q, cursor } } });
-    const search = res.data.search;
+    const { search } = await github.graphql(SEARCH_QUERY, { q, cursor });
     drafts.push(...search.nodes.filter((n) => n && n.number));
     cursor = search.pageInfo.hasNextPage ? search.pageInfo.endCursor : null;
   } while (cursor);
@@ -135,7 +107,7 @@ async function listDrafts(api, owner, repo) {
  * Finds idle drafts and asks for a response on each. Returns what it did.
  *
  * @param {object} opts
- * @param {(path: string, init?: object) => Promise<any>} opts.api - GitHub API caller
+ * @param {object} opts.github - Octokit client from actions/github-script
  * @param {string} opts.owner
  * @param {string} opts.repo
  * @param {number} opts.days
@@ -144,13 +116,13 @@ async function listDrafts(api, owner, repo) {
  * @param {Date} [opts.now]
  * @param {(msg: string) => void} [opts.log]
  */
-async function requestResponseOnIdleDrafts({ api, owner, repo, days, maxPerRun, dryRun, now = new Date(), log = console.log }) {
+async function requestResponseOnIdleDrafts({ github, owner, repo, days, maxPerRun, dryRun, now = new Date(), log = console.log }) {
   const cutoff = new Date(now.getTime() - days * DAY_MS);
-  const drafts = await listDrafts(api, owner, repo);
+  const drafts = await listDrafts(github, owner, repo);
   const idle = findIdleDrafts(drafts, cutoff);
   log(`Found ${drafts.length} open drafts, ${idle.length} with no activity since ${cutoff.toISOString()}`);
 
-  const message = buildMessage(days);
+  const body = buildMessage(days);
   const done = [];
   const errors = [];
   for (const pr of idle.slice(0, maxPerRun)) {
@@ -162,8 +134,8 @@ async function requestResponseOnIdleDrafts({ api, owner, repo, days, maxPerRun, 
     try {
       // Order matters: comment first, then label. close-stale-issues.yml removes the
       // label when the newest comment is later than the label.
-      await api(`/repos/${owner}/${repo}/issues/${pr.number}/comments`, { method: 'POST', body: { body: message } });
-      await api(`/repos/${owner}/${repo}/issues/${pr.number}/labels`, { method: 'POST', body: { labels: [RESPONSE_LABEL] } });
+      await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body });
+      await github.rest.issues.addLabels({ owner, repo, issue_number: pr.number, labels: [RESPONSE_LABEL] });
       log(`asked for a response on #${pr.number} (last activity ${pr.lastActivity.toISOString()})`);
       done.push(pr);
     } catch (err) {
@@ -174,58 +146,42 @@ async function requestResponseOnIdleDrafts({ api, owner, repo, days, maxPerRun, 
   return { cutoff, scanned: drafts.length, idle, done, errors };
 }
 
-function renderSummary({ cutoff, scanned, idle, done, errors }, { days, maxPerRun, dryRun }) {
-  const lines = [
-    '## Request Response on Idle Drafts',
-    '',
-    `Threshold: ${days} days | Cutoff: ${cutoff.toISOString()} | Drafts scanned: ${scanned} | Idle: ${idle.length} | Max per run: ${maxPerRun}${dryRun ? ' | DRY RUN' : ''}`,
-    '',
-  ];
-  if (done.length > 0) {
-    lines.push('| PR | Title | Last activity |', '|---|---|---|');
-    for (const pr of done) {
-      lines.push(`| #${pr.number} | ${pr.title.replace(/\|/g, '\\|')} | ${pr.lastActivity.toISOString()} |`);
-    }
-  } else {
-    lines.push('No idle drafts.');
-  }
-  if (errors.length > 0) {
-    lines.push('', '### Errors', '', '| PR | Error |', '|---|---|');
-    for (const e of errors) {
-      lines.push(`| #${e.number} | ${e.error.replace(/\|/g, '\\|')} |`);
-    }
-  }
-  return lines.join('\n') + '\n';
-}
-
-if (require.main === module) {
-  (async () => {
-    const token = process.env.GITHUB_TOKEN;
-    const [owner, repo] = (process.env.GITHUB_REPOSITORY ?? '').split('/');
-    if (!token || !owner || !repo) {
-      throw new Error('GITHUB_TOKEN and GITHUB_REPOSITORY must be set');
-    }
-    const settings = {
-      days: parseInt(process.env.DAYS_THRESHOLD, 10) || 90,
-      maxPerRun: parseInt(process.env.MAX_PER_RUN, 10) || 50,
-      dryRun: process.env.DRY_RUN === 'true',
-    };
-    const result = await requestResponseOnIdleDrafts({
-      api: (path, init) => githubFetch(path, token, init),
-      owner,
-      repo,
-      ...settings,
-    });
-    if (process.env.GITHUB_STEP_SUMMARY) {
-      require('fs').appendFileSync(process.env.GITHUB_STEP_SUMMARY, renderSummary(result, settings));
-    }
-    if (result.errors.length > 0) {
-      process.exitCode = 1;
-    }
-  })().catch((err) => {
-    console.error(err.message);
-    process.exit(1);
+/**
+ * Entry point for actions/github-script.
+ */
+async function run({ github, context, core }) {
+  const settings = {
+    days: parseInt(process.env.DAYS_THRESHOLD, 10) || 90,
+    maxPerRun: parseInt(process.env.MAX_PER_RUN, 10) || 50,
+    dryRun: process.env.DRY_RUN === 'true',
+  };
+  const result = await requestResponseOnIdleDrafts({
+    github,
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    log: (msg) => core.info(msg),
+    ...settings,
   });
+
+  core.summary.addHeading('Request Response on Idle Drafts', 2);
+  core.summary.addRaw(`Threshold: ${settings.days} days | Cutoff: ${result.cutoff.toISOString()} | Drafts scanned: ${result.scanned} | Idle: ${result.idle.length} | Max per run: ${settings.maxPerRun}${settings.dryRun ? ' | DRY RUN' : ''}`, true);
+  if (result.done.length > 0) {
+    core.summary.addTable([
+      [{ data: 'PR', header: true }, { data: 'Title', header: true }, { data: 'Last activity', header: true }],
+      ...result.done.map((pr) => [`#${pr.number}`, pr.title, pr.lastActivity.toISOString()]),
+    ]);
+  } else {
+    core.summary.addRaw('No idle drafts.', true);
+  }
+  if (result.errors.length > 0) {
+    core.summary.addHeading('Errors', 3);
+    core.summary.addTable([
+      [{ data: 'PR', header: true }, { data: 'Error', header: true }],
+      ...result.errors.map((e) => [`#${e.number}`, e.error]),
+    ]);
+    core.setFailed(`Failed on ${result.errors.length} draft(s)`);
+  }
+  await core.summary.write();
 }
 
-module.exports = { requestResponseOnIdleDrafts, findIdleDrafts, lastActivity, buildMessage, renderSummary, githubFetch };
+module.exports = { run, requestResponseOnIdleDrafts, findIdleDrafts, lastActivity, buildMessage };

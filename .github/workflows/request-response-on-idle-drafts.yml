@@ -35,11 +35,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Request response on idle drafts
-        run: node scripts/request-response-on-idle-drafts.js
+        uses: actions/github-script@v9
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Scheduled runs have no inputs, so these fall back to the script defaults
           # (90 days, not a dry run).
           DAYS_THRESHOLD: ${{ inputs.days_threshold }}
           DRY_RUN: ${{ inputs.dry_run }}
           MAX_PER_RUN: '50'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { run } = require('./scripts/request-response-on-idle-drafts.js');
+            await run({ github, context, core });
