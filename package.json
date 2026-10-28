@@ -31,7 +31,7 @@
     "jsii-diff": "1.142.0",
     "jsii-pacmak": "1.142.0",
     "jsii-reflect": "1.142.0",
-    "jsii-rosetta": "~6.0.20",
+    "jsii-rosetta": "~6.0.21",
     "lerna": "^8.2.4",
     "nx": "^24",
     "semver": "^7.8.5",
