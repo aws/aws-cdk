@@ -73,6 +73,8 @@ export interface MarkersConfig extends SourceDataOptions {
    * For every marker specified in the `markers` property, this defines how the marker value should be encoded.
    *
    * The key is the marker name and the value is the encoding to use for that marker.
+   *
+   * @default - markers with no entry use the default encoding derived from jsonEscape
    */
   readonly markerEncodings?: Record<string, MarkerEncoding>;
 }
