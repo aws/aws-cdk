@@ -2213,10 +2213,13 @@ removed from the stack its object is deleted as well.
 A revision can be retained with `resourceRevision.applyRemovalPolicy(RemovalPolicy.RETAIN)` or
 a `RemovalPolicies` aspect. Its code object is retained with it: the copy that wrote it takes
 the revision's `UpdateReplacePolicy`, and its `DeletionPolicy` is `Retain` when either of the
-revision's policies is. With `fromAssetToManagedBucket()`, the bucket and its auto-delete
-resource are retained too, and a warning says so: the bucket and the code of every retained
-revision are then yours to clean up. To manage them yourself, use
-`fromAssetToProvidedBucket()` with a bucket you own.
+revision's policies is. With `fromAssetToManagedBucket()`, the bucket, its policy and its
+auto-delete resource are retained too, and a warning says so: the bucket and the code of
+every retained revision are then yours to clean up. To manage them yourself, use
+`fromAssetToProvidedBucket()` with a bucket you own. With a provided bucket defined in your
+app, its bucket policy, which holds the service's read grant, is retained while any revision
+using it is; the bucket keeps its own removal policy. For an imported bucket, keep the read
+grant in place yourself.
 
 Change retention in a deployment that does not also change `copyOptions` or the destination
 bucket. Such a change replaces the copy function, and the old copy is removed under its

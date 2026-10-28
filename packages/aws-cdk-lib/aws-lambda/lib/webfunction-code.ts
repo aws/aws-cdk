@@ -492,7 +492,7 @@ class ManagedBucketAssetCode extends StagedAssetCode {
       visit: (node) => {
         if (node === revision && retentionOf(revision)().any) {
           cdk.Annotations.of(revision).addWarningV2('@aws-cdk/aws-lambda:webFunctionManagedBucketRetained',
-            `This revision is retained, so the code bucket ${bucket.node.path} is retained too, with the ` +
+            `This revision is retained, so the code bucket ${bucket.node.path} and its policy are retained too, with the ` +
             'code of every retained revision in it. Deleting the stack leaves them in place, and they are ' +
             'yours to clean up. To manage them yourself, stage the code with ' +
             'WebFunctionCode.fromAssetToProvidedBucket() into a bucket you own.');
@@ -529,6 +529,25 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
     // Only what this module writes under the caller's prefix; the caller's own objects under
     // the same prefix stay out of reach.
     return `${this.providedOptions.keyPrefix ?? ''}${CODE_KEY_SEGMENT}`;
+  }
+
+  /**
+   * A retained revision keeps reading its code through the bucket policy, so the policy is
+   * retained with it. Otherwise the policy keeps its own removal policy. An imported bucket has
+   * no policy resource here, and its policy is the caller's to keep.
+   */
+  protected retainDestinationFor(revision: cdk.CfnResource): void {
+    const policy = this.bucket.policy?.node.defaultChild;
+    if (!(policy instanceof cdk.CfnResource)) {
+      return;
+    }
+    let revisions = PROVIDED_POLICY_REVISIONS.get(policy);
+    if (!revisions) {
+      revisions = [];
+      PROVIDED_POLICY_REVISIONS.set(policy, revisions);
+      retainWithRevisions(policy, revisions, (p) => p);
+    }
+    revisions.push(revision);
   }
 
   /**
@@ -729,20 +748,38 @@ function managedBucketRevisions(bucket: s3.IBucket): cdk.CfnResource[] {
   if (!revisions) {
     revisions = [];
     MANAGED_BUCKET_REVISIONS.set(bucket, revisions);
-    const list = revisions;
-    const retained = () => (list.some((r) => retentionOf(r)().any) ? 'Retain' : 'Delete');
-    // Resolved at synthesis, so revisions added after the bucket and policies set by aspects
-    // are seen. The auto-delete resource is retained with the bucket, so it is never sent the
-    // Delete that would empty it.
+    // The auto-delete resource is retained with the bucket, so it is never sent the Delete
+    // that would empty it, and so is the bucket policy, which holds the service's read grant.
     const autoDelete = bucket.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
     for (const resource of [bucket.node.defaultChild, autoDelete]) {
       if (resource instanceof cdk.CfnResource) {
-        resource.addOverride('DeletionPolicy', cdk.Lazy.string({ produce: retained }));
-        resource.addOverride('UpdateReplacePolicy', cdk.Lazy.string({ produce: retained }));
+        retainWithRevisions(resource, revisions, () => 'Delete');
       }
+    }
+    const policy = bucket.policy?.node.defaultChild;
+    if (policy instanceof cdk.CfnResource) {
+      retainWithRevisions(policy, revisions, (p) => p);
     }
   }
   return revisions;
+}
+
+const PROVIDED_POLICY_REVISIONS = new WeakMap<cdk.CfnResource, cdk.CfnResource[]>();
+
+/**
+ * Makes `resource` retained whenever any of `revisions` is, and otherwise gives it `fallback`.
+ * Resolved at synthesis, so revisions added later and policies set by aspects are seen.
+ */
+function retainWithRevisions(
+  resource: cdk.CfnResource, revisions: cdk.CfnResource[], fallback: (p?: cdk.CfnDeletionPolicy) => string | undefined,
+): void {
+  const retained = () => revisions.some((r) => retentionOf(r)().any);
+  resource.addOverride('DeletionPolicy', cdk.Lazy.string({
+    produce: () => (retained() ? 'Retain' : fallback(resource.cfnOptions.deletionPolicy)),
+  }));
+  resource.addOverride('UpdateReplacePolicy', cdk.Lazy.string({
+    produce: () => (retained() ? 'Retain' : fallback(resource.cfnOptions.updateReplacePolicy)),
+  }));
 }
 
 // Namespaced like other stack-level singletons (`AWSCDKCfnUtilsProvider`) so a customer

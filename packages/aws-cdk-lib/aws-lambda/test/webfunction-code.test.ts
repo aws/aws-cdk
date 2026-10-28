@@ -989,6 +989,13 @@ describe('WebFunctionCode', () => {
     const bucketPolicies = (s: cdk.Stack) => policies(Object.values(Template.fromStack(s).findResources('AWS::S3::Bucket'))[0]);
     const autoDeletePolicies = (s: cdk.Stack) =>
       Object.values(Template.fromStack(s).findResources('Custom::S3AutoDeleteObjects')).map(policies);
+    const bucketPolicyPolicies = (s: cdk.Stack) =>
+      Object.values(Template.fromStack(s).findResources('AWS::S3::BucketPolicy')).map(policies);
+    const provided = (s: cdk.Stack, bucket: s3.IBucket, id = 'Fn') => new WebFunction(s, id, {
+      code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
+      runtime: WebFunctionRuntime.NODEJS_24_X,
+      defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+    });
     const DELETE = { DeletionPolicy: 'Delete', UpdateReplacePolicy: 'Delete' };
     const RETAIN = { DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Retain' };
 
@@ -998,17 +1005,19 @@ describe('WebFunctionCode', () => {
       expect(copyPolicies(stack)).toEqual([DELETE]);
       expect(bucketPolicies(stack)).toEqual(DELETE);
       expect(autoDeletePolicies(stack)).toEqual([DELETE]);
-      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+      expect(bucketPolicyPolicies(stack)).toEqual([{ DeletionPolicy: undefined, UpdateReplacePolicy: undefined }]);
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* are retained'));
     });
 
-    test('a retained revision retains its copy, the bucket and the auto-delete resource, and warns', () => {
+    test('a retained revision retains its copy, the bucket, its policy and the auto-delete resource, and warns', () => {
       const fn = managed(stack);
       fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
       expect(copyPolicies(stack)).toEqual([RETAIN]);
       expect(bucketPolicies(stack)).toEqual(RETAIN);
       expect(autoDeletePolicies(stack)).toEqual([RETAIN]);
-      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+      expect(bucketPolicyPolicies(stack)).toEqual([RETAIN]);
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('code bucket .* are retained'));
     });
 
     test.each([false, true])('follows a removal policy applied by an aspect (aspectStabilization: %s)', (stabilization) => {
@@ -1019,9 +1028,10 @@ describe('WebFunctionCode', () => {
 
       // The warning is checked first: a second synthesis runs the aspects again, by which time the
       // first one has already set the policy.
-      Annotations.fromStack(s).hasWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+      Annotations.fromStack(s).hasWarning('*', Match.stringLikeRegexp('code bucket .* are retained'));
       expect(copyPolicies(s)).toEqual([RETAIN]);
       expect(bucketPolicies(s)).toEqual(RETAIN);
+      expect(bucketPolicyPolicies(s)).toEqual([RETAIN]);
     });
 
     test('retains the bucket for a revision of a function defined after the bucket', () => {
@@ -1049,18 +1059,36 @@ describe('WebFunctionCode', () => {
       expect(copyPolicies(stack)).toEqual([{ DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Delete' }]);
     });
 
-    test('a retained revision in a provided bucket retains its copy and leaves the bucket alone', () => {
+    test('a retained revision in a provided bucket retains its copy and the bucket policy, and leaves the bucket alone', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
-      const fn = new WebFunction(stack, 'Fn', {
-        code: WebFunctionCode.fromAssetToProvidedBucket(bucket, ASSET_PATH),
-        runtime: WebFunctionRuntime.NODEJS_24_X,
-        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-      });
+      const fn = provided(stack, bucket);
       fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
       expect(copyPolicies(stack)).toEqual([RETAIN]);
       expect(bucketPolicies(stack)).toEqual(RETAIN); // the s3.Bucket default
-      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* is retained'));
+      expect(bucketPolicyPolicies(stack)).toEqual([RETAIN]);
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('code bucket .* are retained'));
+    });
+
+    test('a provided bucket policy keeps its own removal policy when no revision is retained', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      provided(stack, bucket);
+      expect(Object.values(Template.fromStack(stack).findResources('AWS::S3::BucketPolicy'))[0])
+        .not.toHaveProperty('DeletionPolicy');
+
+      const s = new cdk.Stack();
+      const retainedBucket = new s3.Bucket(s, 'MyBucket', { versioned: true });
+      provided(s, retainedBucket);
+      retainedBucket.policy!.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+      expect(bucketPolicyPolicies(s)).toEqual([RETAIN]);
+    });
+
+    test('a provided bucket policy is retained when a later function sharing it has a retained revision', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      provided(stack, bucket, 'First');
+      provided(stack, bucket, 'Second').resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+
+      expect(bucketPolicyPolicies(stack)).toEqual([RETAIN]);
     });
   });
 });
