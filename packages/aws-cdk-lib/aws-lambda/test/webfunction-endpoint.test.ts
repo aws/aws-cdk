@@ -49,7 +49,7 @@ describe('default endpoint', () => {
     const fn = new WebFunction(stack, 'Fn', minimalProps({ defaultEndpoint: { endpointName: 'live', rateLimit: 100 } }));
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
-      FunctionName: { Ref: Match.stringLikeRegexp('^FnFunction') },
+      FunctionName: { 'Fn::GetAtt': [Match.stringLikeRegexp('^FnFunction'), 'FunctionArn'] },
       EndpointName: 'live',
       AuthType: 'IamAuth',
       ThrottleConfig: { RateLimit: 100 },
@@ -95,6 +95,27 @@ describe('default endpoint', () => {
       expect.stringMatching(/^FnFunction/),
       expect.stringMatching(/^FnRevision/),
     ]));
+  });
+});
+
+describe('function reference', () => {
+  test('names the function by its name, not by the ARN its Ref returns', () => {
+    const stack = new Stack();
+    const fn = new WebFunction(stack, 'Fn', minimalProps({ webFunctionName: 'my-fn' }));
+
+    expect(fn.webFunctionRef.functionName).toEqual('my-fn');
+    expect(fn.webFunctionRef.functionName).toEqual(fn.webFunctionName);
+  });
+
+  test('an endpoint takes the function ARN, so it depends on the function', () => {
+    const stack = new Stack();
+    const fn = new WebFunction(stack, 'Fn', minimalProps({ webFunctionName: 'my-fn' }));
+    const second = fn.addEndpoint('Second', { authType: WebFunctionAuthType.IAM_AUTH });
+
+    const functionArn = { 'Fn::GetAtt': [stack.getLogicalId(fn.resource), 'FunctionArn'] };
+    for (const endpoint of [fn.endpoint, second]) {
+      expect(stack.resolve(endpoint.resource.functionName)).toEqual(functionArn);
+    }
   });
 });
 
@@ -439,7 +460,7 @@ describe('a standalone WebFunctionEndpoint', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
-      FunctionName: 'existing',
+      FunctionName: 'arn:aws:lambda:us-east-1:123456789012:web-function/existing',
       RevisionWeights: [{ RevisionId: 'rev-abc', Weight: 100 }],
       EndpointName: Match.stringLikeRegexp('^Endpoint.*-[0-9a-f]{8}$'),
     });

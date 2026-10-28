@@ -657,11 +657,14 @@ export class WebFunction extends WebFunctionBase {
   }
 
   /**
-   * The function's reference, with its name as a `Ref` to the L1 so that resources that take
-   * it depend on the function.
+   * The function's reference.
+   *
+   * `Ref` on `AWS::Lambda::WebFunction` returns the ARN, so the name is `webFunctionName` rather
+   * than the L1's `ref`. Resources that should depend on the function take `functionArn`, a
+   * `GetAtt` on it.
    */
   public override get webFunctionRef(): WebFunctionReference {
-    return { functionArn: this.webFunctionArn, functionName: this.resource.ref };
+    return { functionArn: this.webFunctionArn, functionName: this.webFunctionName };
   }
 
   /**

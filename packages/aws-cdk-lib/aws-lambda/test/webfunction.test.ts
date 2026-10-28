@@ -776,7 +776,7 @@ describe('WebFunction template', () => {
     const template = Template.fromStack(stack);
 
     template.hasResourceProperties('AWS::Lambda::WebFunctionEndpoint', {
-      FunctionName: { Ref: Match.stringLikeRegexp('Function') },
+      FunctionName: { 'Fn::GetAtt': [Match.stringLikeRegexp('Function'), 'FunctionArn'] },
       EndpointName: 'prod',
       EndpointType: 'HomeRegion',
       RevisionWeights: [

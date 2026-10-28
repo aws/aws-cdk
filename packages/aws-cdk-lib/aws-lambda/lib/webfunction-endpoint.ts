@@ -642,7 +642,9 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
     // give it a new domain name.
     const endpointName = props.endpointName ?? this.defaultEndpointName(endpointType, regions);
     this.resource = new CfnWebFunctionEndpoint(this, 'Default', {
-      functionName: props.webFunction.webFunctionRef.functionName,
+      // An ARN is accepted here. Unlike the name, it is a `GetAtt` for a function defined in the
+      // app, so the endpoint depends on the function.
+      functionName: props.webFunction.webFunctionRef.functionArn,
       endpointName,
       endpointType,
       authType: props.authType,
