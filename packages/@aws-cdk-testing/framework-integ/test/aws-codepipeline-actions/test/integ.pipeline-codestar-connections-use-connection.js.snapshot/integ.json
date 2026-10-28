@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "codepipeline-codestar-connections-use-connection-test/DefaultTest": {
+      "stacks": [
+        "codepipeline-codestar-connections-use-connection"
+      ],
+      "assertionStack": "codepipeline-codestar-connections-use-connection-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelinecodestarconnectionsuseconnectiontestDefaultTestDeployAssert6CB6CD33"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

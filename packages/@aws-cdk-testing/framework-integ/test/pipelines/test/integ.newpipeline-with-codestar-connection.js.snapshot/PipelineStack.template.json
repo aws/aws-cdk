@@ -499,7 +499,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "codestar-connections:UseConnection",
+       "Action": [
+        "codeconnections:UseConnection",
+        "codestar-connections:UseConnection"
+       ],
        "Effect": "Allow",
        "Resource": "arn:aws:codestar-connections:us-east-1:111111111111:connection/184ba85d-b626-48ef-960f-b377c9c01a76"
       },
