@@ -31,7 +31,13 @@ export class WebFunctionEndpointGrants {
       resourceArns: [this.endpoint.webFunctionEndpointRef.endpointArn],
     };
     if (iam.GrantableResources.isResourceWithPolicy(this.endpoint)) {
-      return iam.Grant.addToPrincipalOrResource({ ...options, resource: this.endpoint });
+      const policyArn = (this.endpoint as { _arnForResourcePolicy?: () => string })._arnForResourcePolicy?.();
+      return iam.Grant.addToPrincipalOrResource({
+        ...options,
+        resource: this.endpoint,
+        // How the function's resource-based policy names the endpoint; see `_arnForResourcePolicy`.
+        resourceSelfArns: policyArn ? [policyArn] : undefined,
+      });
     }
     return iam.Grant.addToPrincipal(options);
   }

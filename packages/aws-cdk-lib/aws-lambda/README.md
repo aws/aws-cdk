@@ -2317,6 +2317,19 @@ define another policy for the same function: `AWS::Lambda::ResourcePolicy` repla
 document. For the same reason the policy of an imported WebFunction cannot be added to; CDK
 warns instead.
 
+The policy is in the WebFunction's stack. If the distribution is in another stack, the
+condition on its ARN makes the function's stack depend on the distribution's, while the
+distribution reads the endpoint's domain name from the function's stack, so the two
+reference each other. Define the distribution in the function's stack, or in another stack
+condition the statement on `aws:SourceAccount` and an `ArnLike` on
+`arn:<partition>:cloudfront::<account>:distribution/*` instead, which names no single
+distribution.
+
+An endpoint created with `new WebFunctionEndpoint()` in another stack from its function can
+be granted on as well: the statement names it by the function's ARN and the endpoint name, so
+that the function's stack does not depend on the endpoint's. Its `endpointName` must then be
+a literal.
+
 ### Multi-Region Deployment
 
 Deploy globally with latency-based routing:

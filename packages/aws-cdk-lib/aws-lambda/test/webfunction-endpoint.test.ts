@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '../../assertions';
 import { AccountPrincipal, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { Fn, PropertyInjectors, Stack } from '../../core';
+import { App, Fn, PropertyInjectors, Stack } from '../../core';
 import { NetworkConnector } from '../lib/network-connector';
 import { WebFunction } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
@@ -296,6 +296,59 @@ describe('resource-based policy', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
       ResourceArn: stack.resolve(fn.webFunctionArn),
       PolicyDocument: { Statement: [Match.objectLike({ Resource: stack.resolve(endpoint.endpointArn) })] },
+    });
+  });
+
+  describe('an endpoint in a different stack from its function', () => {
+    const setup = (endpointName?: string) => {
+      const app = new App();
+      const env = { account: '111111111111', region: 'us-east-1' };
+      const functionStack = new Stack(app, 'FunctionStack', { env });
+      const endpointStack = new Stack(app, 'EndpointStack', { env });
+      const fn = new WebFunction(functionStack, 'Fn', minimalProps());
+      const endpoint = new WebFunctionEndpoint(endpointStack, 'Endpoint', {
+        webFunction: fn,
+        traffic: WebFunctionTraffic.single(fn.revisionId),
+        authType: WebFunctionAuthType.IAM_AUTH,
+        endpointName,
+      });
+      return { app, functionStack, fn, endpoint };
+    };
+
+    test('grants in the function\'s policy without a cyclic reference', () => {
+      const { app, functionStack, fn, endpoint } = setup('edge');
+      endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+
+      expect(() => app.synth()).not.toThrow();
+      Template.fromStack(functionStack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+        PolicyDocument: {
+          Statement: [Match.objectLike({
+            Resource: { 'Fn::Join': ['', [functionStack.resolve(fn.webFunctionArn), '/endpoint/edge']] },
+          })],
+        },
+      });
+    });
+
+    test('uses the default name when none is given', () => {
+      const { app, endpoint } = setup();
+      endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+
+      expect(() => app.synth()).not.toThrow();
+    });
+
+    test('rejects a grant when the endpoint name is a deploy-time value', () => {
+      const { endpoint } = setup(Fn.importValue('Name'));
+      expect(() => endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com')))
+        .toThrow(/endpoint name is a deploy-time value/);
+    });
+
+    test('an endpoint in the function\'s stack is named by its own ARN', () => {
+      const fn = new WebFunction(stack, 'Fn', minimalProps());
+      fn.endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::ResourcePolicy', {
+        PolicyDocument: { Statement: [Match.objectLike({ Resource: stack.resolve(fn.endpoint.endpointArn) })] },
+      });
     });
   });
 

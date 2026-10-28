@@ -5,7 +5,7 @@ import { endpointShapeHash, hasTokens, validateResourceName } from './private/we
 import { WebFunctionEndpointGrants } from './webfunction-endpoint-grants';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
-import { Annotations, Fn, Names, Resource, Token } from '../../core';
+import { Annotations, Fn, Names, Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -475,6 +475,15 @@ export abstract class WebFunctionEndpointBase extends Resource implements IWebFu
     return this._resourcePolicyTarget.addToResourcePolicy(statement);
   }
 
+  /**
+   * The ARN that names this endpoint in the resource-based policy of its WebFunction.
+   *
+   * @internal
+   */
+  public _arnForResourcePolicy(): string {
+    return this.endpointArn;
+  }
+
   public get webFunctionEndpointRef(): WebFunctionEndpointReference {
     return { endpointArn: this.endpointArn };
   }
@@ -552,6 +561,13 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
   /** The underlying L1 CfnWebFunctionEndpoint resource. Use for escape hatches. */
   public readonly resource: CfnWebFunctionEndpoint;
 
+  /**
+   * Set when the function is in another stack. The policy statement then names the endpoint by
+   * the function's ARN and the endpoint name: the endpoint's own ARN attribute would make the
+   * function's stack depend on this one, which already depends on it.
+   */
+  private readonly crossStackPolicyArn?: { readonly webFunctionArn: string; readonly endpointName: string };
+
   constructor(scope: Construct, id: string, props: WebFunctionEndpointProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -624,9 +640,10 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
     // ID, so the endpoint a WebFunction creates keeps the logical ID it had when the
     // WebFunction created the L1 directly. A changed logical ID would replace the endpoint and
     // give it a new domain name.
+    const endpointName = props.endpointName ?? this.defaultEndpointName(endpointType, regions);
     this.resource = new CfnWebFunctionEndpoint(this, 'Default', {
       functionName: props.webFunction.webFunctionRef.functionName,
-      endpointName: props.endpointName ?? this.defaultEndpointName(endpointType, regions),
+      endpointName,
       endpointType,
       authType: props.authType,
       revisionWeights: props.traffic._toRevisionWeights(),
@@ -644,12 +661,30 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
 
     if (iam.GrantableResources.isResourceWithPolicy(props.webFunction)) {
       this._resourcePolicyTarget = props.webFunction;
+      if (Stack.of(props.webFunction) !== Stack.of(this)) {
+        this.crossStackPolicyArn = { webFunctionArn: props.webFunction.webFunctionRef.functionArn, endpointName };
+      }
     }
 
     this.endpointArn = this.resource.attrEndpointArn;
     this.domainName = this.resource.attrDomainName;
     this.webFunctionArn = this.resource.attrFunctionArn;
     this.endpointType = endpointType;
+  }
+
+  /** @internal */
+  public _arnForResourcePolicy(): string {
+    if (!this.crossStackPolicyArn) {
+      return this.endpointArn;
+    }
+    const { webFunctionArn, endpointName } = this.crossStackPolicyArn;
+    if (Token.isUnresolved(endpointName)) {
+      throw new ValidationError(lit`WebFunctionEndpointCrossStackGrantName`,
+        'Cannot grant on an endpoint in a different stack from its WebFunction when the endpoint name is ' +
+        'a deploy-time value: the grant goes into the function\'s resource-based policy, which names the ' +
+        'endpoint by its name. Use a literal endpointName, or define the endpoint in the function\'s stack.', this);
+    }
+    return `${webFunctionArn}/endpoint/${endpointName}`;
   }
 
   /**
