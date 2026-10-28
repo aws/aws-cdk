@@ -248,18 +248,21 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
 
-        const existing = violations.find(
-          v => v.ruleName === diagnostic.ruleId && v.severity === severity,
-        );
-
         const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, '')}: ` : '';
+        const description = `${propertyPathPefix}${diagnostic.message}`;
+
+        // Only diagnostics with the same description share a violation, so each
+        // violating resource is reported with its own message.
+        const existing = violations.find(
+          v => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description,
+        );
 
         if (existing) {
           existing.violatingResources.push(violatingResource);
         } else {
           violations.push({
             ruleName: diagnostic.ruleId,
-            description: `${propertyPathPefix}${diagnostic.message}`,
+            description,
             severity,
             fix: diagnostic.suggestedFix,
             violatingResources: [violatingResource],
@@ -321,11 +324,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
-  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
-  // and customers cannot control the generated expression.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
-  'E1018',
+  // WHAT: CloudFormation Metadata Context blocks are missing, lack a rationale, or do not match the schema.
+  // WHY: CDK only adds Metadata Context when users explicitly opt in, so requiring it would warn for existing apps.
+  'I4010',
+  'W4011',
+  'W4012',
 
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)

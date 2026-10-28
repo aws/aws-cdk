@@ -32,6 +32,7 @@ Principles:
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
 | Lint with auto-fix | `yarn lint --fix` | repo root |
+| Check skills | `node scripts/check-skills.js` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
