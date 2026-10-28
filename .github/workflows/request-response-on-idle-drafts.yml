@@ -1,0 +1,45 @@
+# Ask for a response on draft PRs with no activity for 90 days.
+#
+# scripts/request-response-on-idle-drafts.js comments and adds the `response-requested`
+# label. The existing "Close Stale Issues" workflow (close-stale-issues.yml) then adds
+# `closing-soon` and closes the PR about a week later unless a person comments.
+#
+# Add the `no-autoclose` label to a draft to exempt it.
+name: Request Response on Idle Drafts
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # daily at 8am UTC
+  workflow_dispatch:
+    inputs:
+      days_threshold:
+        description: 'Days without activity before asking for a response'
+        required: false
+        type: number
+        default: 90
+      dry_run:
+        description: 'Log what would happen without commenting or labeling'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  request-response-on-idle-drafts:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Request response on idle drafts
+        run: node scripts/request-response-on-idle-drafts.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Scheduled runs have no inputs, so these fall back to the script defaults
+          # (90 days, not a dry run).
+          DAYS_THRESHOLD: ${{ inputs.days_threshold }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          MAX_PER_RUN: '50'
