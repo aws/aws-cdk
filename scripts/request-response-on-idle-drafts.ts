@@ -71,30 +71,6 @@ interface SearchResult {
   };
 }
 
-export interface IdleDraft {
-  number: number;
-  title: string;
-  lastActivity: Date;
-}
-
-export interface RunResult {
-  cutoff: Date;
-  scanned: number;
-  idle: IdleDraft[];
-  done: IdleDraft[];
-  errors: Array<{ number: number; error: string }>;
-}
-
-export interface RequestResponseOptions {
-  github: GitHubClient;
-  owner: string;
-  repo: string;
-  days: number;
-  dryRun: boolean;
-  now?: Date;
-  log?: (msg: string) => void;
-}
-
 export function buildMessage(days: number): string {
   return [
     `This draft PR has had no activity for ${days} days.`,
@@ -132,7 +108,7 @@ export function lastActivity(pr: DraftNode): Date {
 /**
  * Returns the drafts with no activity since `cutoff`, oldest first.
  */
-export function findIdleDrafts(drafts: DraftNode[], cutoff: Date): IdleDraft[] {
+export function findIdleDrafts(drafts: DraftNode[], cutoff: Date) {
   return drafts
     .filter((pr) => !pr.labels.nodes.some((l) => SKIP_LABELS.includes(l.name)))
     .map((pr) => ({ number: pr.number, title: pr.title, lastActivity: lastActivity(pr) }))
@@ -160,15 +136,23 @@ async function listDrafts(github: GitHubClient, owner: string, repo: string): Pr
  */
 export async function requestResponseOnIdleDrafts({
   github, owner, repo, days, dryRun, now = new Date(), log = console.log,
-}: RequestResponseOptions): Promise<RunResult> {
+}: {
+  github: GitHubClient;
+  owner: string;
+  repo: string;
+  days: number;
+  dryRun: boolean;
+  now?: Date;
+  log?: (msg: string) => void;
+}) {
   const cutoff = new Date(now.getTime() - days * DAY_MS);
   const drafts = await listDrafts(github, owner, repo);
   const idle = findIdleDrafts(drafts, cutoff);
   log(`Found ${drafts.length} open drafts, ${idle.length} with no activity since ${cutoff.toISOString()}`);
 
   const body = buildMessage(days);
-  const done: IdleDraft[] = [];
-  const errors: RunResult['errors'] = [];
+  const done: typeof idle = [];
+  const errors: Array<{ number: number; error: string }> = [];
   for (const pr of idle) {
     if (dryRun) {
       log(`dry run: would ask for a response on #${pr.number} (last activity ${pr.lastActivity.toISOString()})`);
