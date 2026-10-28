@@ -743,7 +743,7 @@ function powershellCommandLine(command: string[]): string {
  * (e.g. .cmd or .bat shims). Native .exe binaries and the current node runtime
  * can be spawned directly by spawnSync without shell overhead.
  */
-function needsWindowsShell(executable: string): boolean {
+export function needsWindowsShell(executable: string): boolean {
   const lower = executable.toLowerCase();
   if (lower.endsWith('.cmd') || lower.endsWith('.bat')) {
     return true;
