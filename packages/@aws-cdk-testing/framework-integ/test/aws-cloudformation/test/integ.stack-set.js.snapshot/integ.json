@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-test/DefaultTest": {
+      "stacks": [
+        "integ-stackset-test",
+        "integ-stackset-asset-test"
+      ],
+      "assertionStack": "integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
