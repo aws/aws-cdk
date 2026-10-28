@@ -1,0 +1,56 @@
+{
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest.template.json"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/Gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/Gateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gateway43CB3636"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81"
+    }
+  ],
+  "/BedrockAgentCoreGatewayMcpProtocolVersionsIntegTest/Gateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRole162DEA77"
+    }
+  ]
+}
