@@ -56,8 +56,8 @@ class TestBucketDeploymentData extends Stack {
     // Test proper escaping of quotes in JSON
     const file6 = Source.jsonData('my-json/secret-config.json', {
       secret_value: tokenizedValue,
-    });
-    // Test YAML file: a value that cannot be written unquoted gets quoted
+    }, { escape: true });
+    // Test YAML file (which doesn't require escaping)
     const file7 = Source.yamlData('my-yaml/secret-config.yaml', {
       secret_value: tokenizedValue,
     });
@@ -129,8 +129,8 @@ const yamlAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject',
 
 // Verify the content is valid YAML with properly escaped quotes
 yamlAssertionProvider.expect(ExpectedResult.objectLike({
-  // The value contains double quotes, so it is written as a quoted YAML string
-  Body: 'secret_value: "test\\"with\\"quotes"\n',
+  // YAML format with proper escaping
+  Body: 'secret_value: test"with"quotes\n',
 }));
 
 app.synth();

@@ -1,5 +1,5 @@
 {
-  "version": "55.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-cross-nested-stack-source/DefaultTest": {
       "stacks": [
@@ -9,6 +9,5 @@
       "assertionStackName": "integcrossnestedstacksourceDefaultTestDeployAssert411BAFE0"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "minimumCliVersion": "2.1027.0"
 }

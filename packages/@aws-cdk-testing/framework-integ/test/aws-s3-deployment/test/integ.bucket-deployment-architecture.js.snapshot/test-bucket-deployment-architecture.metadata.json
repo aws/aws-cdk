@@ -1,10 +1,4 @@
 {
-  "/test-bucket-deployment-architecture": [
-    {
-      "type": "aws:cdk:templateFile",
-      "data": "test-bucket-deployment-architecture.template.json"
-    }
-  ],
   "/test-bucket-deployment-architecture/Destination": [
     {
       "type": "aws:cdk:analytics:construct",

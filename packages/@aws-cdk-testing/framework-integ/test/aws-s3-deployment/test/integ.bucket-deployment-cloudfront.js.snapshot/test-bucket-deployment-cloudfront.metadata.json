@@ -1,10 +1,4 @@
 {
-  "/test-bucket-deployment-cloudfront": [
-    {
-      "type": "aws:cdk:templateFile",
-      "data": "test-bucket-deployment-cloudfront.template.json"
-    }
-  ],
   "/test-bucket-deployment-cloudfront/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -34,7 +28,6 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -146,7 +139,6 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
-        "architecture": "*",
         "layers": [
           "*"
         ],

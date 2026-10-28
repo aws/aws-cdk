@@ -160,7 +160,7 @@ const fileWithMarker = Source.jsonData('my-json/secret-config.json', {
 
 const noEscapeFileWithMarker = Source.jsonData('my-json/secret-config-no-escape.json', {
   secret_value: param.stringValue,
-}, { escape: false });
+});
 
 // Deploy the large files
 new BucketDeployment(stack, 'DeployWithLargeFiles', {
@@ -187,7 +187,7 @@ assertionProvider.expect(ExpectedResult.objectLike({
   Body: '{"secret_value":"test\\"with\\"quotes"}',
 }));
 
-// Assert that turning escaping off substitutes the value unescaped
+// Assert that unescaped JSON works without escape option
 integTest.assertions.awsApiCall('S3', 'getObject', {
   Bucket: bucket.bucketName,
   Key: 'my-json/secret-config-no-escape.json',

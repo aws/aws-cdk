@@ -1,5 +1,5 @@
 {
-  "version": "55.0.0",
+  "version": "48.0.0",
   "artifacts": {
     "MainStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6963c219cffff6a6c1b93ea834201c768617bbf94cdd1e98c9191957f52bc404.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e17cb5156802757278536e950272893e8be63a670577a77c3b83bf808dba0026.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,7 +33,325 @@
       "dependencies": [
         "MainStack.assets"
       ],
-      "additionalMetadataFile": "MainStack.metadata.json",
+      "metadata": {
+        "/MainStack/ResourceNestedStack/UserPool": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MainStack/ResourceNestedStack/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/MainStack/ResourceNestedStack/MainStackResourceNestedStackUserPoolEB3BCBB9Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+          }
+        ],
+        "/MainStack/ResourceNestedStack.NestedStack/ResourceNestedStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Bucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/AwsCliLayer": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {}
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResourceHandler": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "uuid": "*",
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "lambdaPurpose": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                true
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addMetadata": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployWithCrossNestedStackSourceCustomResource74A727EA"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "layers": [
+                "*"
+              ],
+              "environment": "*",
+              "timeout": "*",
+              "role": "*",
+              "memorySize": "*",
+              "ephemeralStorageSize": "*",
+              "vpc": "*",
+              "vpcSubnets": "*",
+              "securityGroups": "*",
+              "filesystem": "*",
+              "logGroup": "*",
+              "code": "*",
+              "handler": "*",
+              "runtime": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addLayers": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-singleton",
+            "data": true
+          },
+          {
+            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+            "data": 2
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/reference-to-MainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack/MainStackDeploymentNestedStackBucket171013D4Ref": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MainStackDeploymentNestedStackBucket171013D4Ref"
+          }
+        ],
+        "/MainStack/DeploymentNestedStack.NestedStack/DeploymentNestedStack.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4"
+          }
+        ],
+        "/MainStack/Exports/Output{\"Fn::GetAtt\":[\"ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF\",\"Outputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BFOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref75ED0C95"
+          }
+        ],
+        "/MainStack/Exports/Output{\"Fn::GetAtt\":[\"DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4\",\"Outputs.MainStackDeploymentNestedStackBucket171013D4Ref\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttDeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4OutputsMainStackDeploymentNestedStackBucket171013D4Ref5463A51D"
+          }
+        ],
+        "/MainStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MainStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
       "displayName": "MainStack"
     },
     "integcrossnestedstacksourceDefaultTestDeployAssert411BAFE0.assets": {
@@ -53,7 +371,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e64c5d4d501ac9b929b7a5783d1ac9f9c9da1f4661e5f86c8dffb893561c08e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d53b3fd608255c6d0445c299a7e5d7715e5e8f4cc86b42f9df57b066d0d0036.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,7 +387,58 @@
         "MainStack",
         "integcrossnestedstacksourceDefaultTestDeployAssert411BAFE0.assets"
       ],
-      "additionalMetadataFile": "integcrossnestedstacksourceDefaultTestDeployAssert411BAFE0.metadata.json",
+      "metadata": {
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/AwsApiCallS3getObject997415a80d159cf88c320d6b05921668/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/AwsApiCallS3getObject997415a80d159cf88c320d6b05921668/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getObject997415a80d159cf88c320d6b05921668"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/AwsApiCallS3getObject997415a80d159cf88c320d6b05921668/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getObject997415a80d159cf88c320d6b05921668"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cross-nested-stack-source/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
       "displayName": "integ-cross-nested-stack-source/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -84,7 +453,6 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -103,7 +471,6 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -215,7 +582,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -369,11 +736,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
-          "@aws-cdk/aws-eks:useNativeOidcProvider": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
-          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -405,6 +767,16 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
+          },
+          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
+          },
+          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -551,7 +923,6 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -563,78 +934,12 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
-          },
-          "@aws-cdk/aws-route53-patterns:useDistribution": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
-          },
-          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
-          },
-          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
-          },
-          "@aws-cdk/core:automaticL1Traits": {
-            "recommendedValue": true,
-            "explanation": "Automatically use the default L1 traits for L1 constructs`",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-batch:defaultToAL2023": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
-          },
-          "@aws-cdk/aws-eks:defaultToAL2023": {
-            "recommendedValue": true,
-            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
-          },
-          "@aws-cdk/core:annotationsInValidationReport": {
-            "recommendedValue": true,
-            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
-          },
-          "@aws-cdk/core:defaultCrossStackReferences": {
-            "recommendedValue": "weak",
-            "explanation": "Controls whether cross-stack references are strong, weak, or both",
-            "unconfiguredBehavesLike": {
-              "v2": "strong"
-            }
-          },
-          "@aws-cdk/core:validateAgainstDefaultRules": {
-            "recommendedValue": true,
-            "explanation": "Treat CloudFormation Validate findings as errors"
-          },
-          "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
-            "recommendedValue": true,
-            "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
-          },
-          "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": {
-            "recommendedValue": true,
-            "explanation": "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS"
-          },
-          "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": {
-            "recommendedValue": true,
-            "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
-          },
-          "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
-            "recommendedValue": true,
-            "explanation": "When enabled, each EvaluateExpression task gets its own Lambda function",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1145.0"
+  "minimumCliVersion": "2.1027.0"
 }

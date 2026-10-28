@@ -1,10 +1,4 @@
 {
-  "/test-bucket-deployment-object-versions": [
-    {
-      "type": "aws:cdk:templateFile",
-      "data": "test-bucket-deployment-object-versions.template.json"
-    }
-  ],
   "/test-bucket-deployment-object-versions/Destination": [
     {
       "type": "aws:cdk:analytics:construct",

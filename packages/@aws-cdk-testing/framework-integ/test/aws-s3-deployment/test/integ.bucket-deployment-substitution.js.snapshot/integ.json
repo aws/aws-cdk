@@ -1,5 +1,5 @@
 {
-  "version": "55.0.0",
+  "version": "52.0.0",
   "testCases": {
     "integ-test-bucket-deployment-substitution/DefaultTest": {
       "stacks": [
@@ -9,6 +9,5 @@
       "assertionStackName": "integtestbucketdeploymentsubstitutionDefaultTestDeployAssertBF501875"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "minimumCliVersion": "2.1107.0"
 }

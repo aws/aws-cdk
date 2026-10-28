@@ -1,10 +1,4 @@
 {
-  "/integ-test-bucket-deployment-signcontent/DefaultTest/DeployAssert": [
-    {
-      "type": "aws:cdk:templateFile",
-      "data": "integtestbucketdeploymentsigncontentDefaultTestDeployAssert99231547.template.json"
-    }
-  ],
   "/integ-test-bucket-deployment-signcontent/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

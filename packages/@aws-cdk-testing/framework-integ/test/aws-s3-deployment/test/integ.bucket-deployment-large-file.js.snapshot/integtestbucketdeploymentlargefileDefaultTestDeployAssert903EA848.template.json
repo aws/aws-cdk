@@ -28,7 +28,7 @@
      "Key": "\"my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793199465210"
+    "salt": "1779973460404"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -127,7 +127,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -136,10 +136,6 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -171,7 +167,7 @@
      "Key": "\"my-json/secret-config-no-escape.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793199465211"
+    "salt": "1779973460406"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -208,7 +204,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1793199465211"
+    "salt": "1779973460406"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -408,7 +404,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -417,10 +413,6 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -454,7 +446,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -463,10 +455,6 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -502,7 +490,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1793199465236"
+    "salt": "1779973460410"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
