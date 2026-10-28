@@ -50,8 +50,8 @@ function mockGithub(pages: DraftNode[] | DraftNode[][], { createComment = async 
 
 type MockGithub = ReturnType<typeof mockGithub>;
 
-function runOn(github: MockGithub, overrides: { dryRun?: boolean; maxPerRun?: number } = {}) {
-  return requestResponseOnIdleDrafts({ github: github as any, owner: 'aws', repo: 'aws-cdk', days: 90, maxPerRun: 50, dryRun: false, now: NOW, log: () => {}, ...overrides });
+function runOn(github: MockGithub, overrides: { dryRun?: boolean } = {}) {
+  return requestResponseOnIdleDrafts({ github: github as any, owner: 'aws', repo: 'aws-cdk', days: 90, dryRun: false, now: NOW, log: () => {}, ...overrides });
 }
 
 test('asks for a response on a draft with no commits or comments for 90 days', async () => {
@@ -132,17 +132,16 @@ test('dry run makes no comments or labels', async () => {
   expect(result.done.map((p) => p.number)).toEqual([105]);
 });
 
-test('acts on at most maxPerRun drafts, oldest first', async () => {
+test('acts on every idle draft, oldest first', async () => {
   const github = mockGithub([
     draft(106, { createdAt: '2026-03-01T00:00:00Z' }),
     draft(107, { createdAt: '2026-01-01T00:00:00Z' }),
   ]);
 
-  const result = await runOn(github, { maxPerRun: 1 });
+  const result = await runOn(github);
 
-  expect(github.rest.issues.createComment).toHaveBeenCalledTimes(1);
-  expect(github.rest.issues.createComment).toHaveBeenCalledWith(expect.objectContaining({ issue_number: 107 }));
-  expect(result.done.map((p) => p.number)).toEqual([107]);
+  expect(github.rest.issues.createComment.mock.calls.map(([params]) => params.issue_number)).toEqual([107, 106]);
+  expect(result.done.map((p) => p.number)).toEqual([107, 106]);
 });
 
 test('records an error and continues when a write fails', async () => {
@@ -189,7 +188,7 @@ describe('run', () => {
     return { info: jest.fn(), setFailed: jest.fn(), summary };
   }
 
-  const ENV = ['DAYS_THRESHOLD', 'MAX_PER_RUN', 'DRY_RUN'];
+  const ENV = ['DAYS_THRESHOLD', 'DRY_RUN'];
   let saved: Record<string, string | undefined>;
   beforeEach(() => {
     saved = Object.fromEntries(ENV.map((k) => [k, process.env[k]]));

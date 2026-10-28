@@ -18,7 +18,6 @@
  * which provides the authenticated Octokit client.
  *
  * Env: DAYS_THRESHOLD - days without activity before asking (default 90)
- *      MAX_PER_RUN    - most drafts to act on in one run (default 50)
  *      DRY_RUN        - "true" to only log what would happen
  */
 
@@ -31,8 +30,8 @@ type ActionCore = typeof core;
 
 const RESPONSE_LABEL = 'response-requested';
 const SKIP_LABELS = ['response-requested', 'closing-soon', 'no-autoclose'];
-// Accounts whose comments are automation, not a person responding.
-const AUTOMATION_LOGINS = ['aws-cdk-automation', 'github-actions', 'mergify', 'dependabot'];
+// GitHub App bots have __typename 'Bot'. This account is a regular user that automation posts as.
+const AUTOMATION_LOGINS = ['aws-cdk-automation'];
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const SEARCH_QUERY = `query($q: String!, $cursor: String) {
@@ -91,7 +90,6 @@ export interface RequestResponseOptions {
   owner: string;
   repo: string;
   days: number;
-  maxPerRun: number;
   dryRun: boolean;
   now?: Date;
   log?: (msg: string) => void;
@@ -111,7 +109,7 @@ export function buildMessage(days: number): string {
 function isPerson(author: Author | null): boolean {
   return author !== null
     && author.__typename !== 'Bot'
-    && !AUTOMATION_LOGINS.includes(author.login.replace(/\[bot\]$/, ''));
+    && !AUTOMATION_LOGINS.includes(author.login);
 }
 
 /**
@@ -161,7 +159,7 @@ async function listDrafts(github: GitHubClient, owner: string, repo: string): Pr
  * Finds idle drafts and asks for a response on each. Returns what it did.
  */
 export async function requestResponseOnIdleDrafts({
-  github, owner, repo, days, maxPerRun, dryRun, now = new Date(), log = console.log,
+  github, owner, repo, days, dryRun, now = new Date(), log = console.log,
 }: RequestResponseOptions): Promise<RunResult> {
   const cutoff = new Date(now.getTime() - days * DAY_MS);
   const drafts = await listDrafts(github, owner, repo);
@@ -171,7 +169,7 @@ export async function requestResponseOnIdleDrafts({
   const body = buildMessage(days);
   const done: IdleDraft[] = [];
   const errors: RunResult['errors'] = [];
-  for (const pr of idle.slice(0, maxPerRun)) {
+  for (const pr of idle) {
     if (dryRun) {
       log(`dry run: would ask for a response on #${pr.number} (last activity ${pr.lastActivity.toISOString()})`);
       done.push(pr);
@@ -199,7 +197,6 @@ export async function requestResponseOnIdleDrafts({
 export async function run({ github, context, core }: { github: GitHubClient; context: Context; core: ActionCore }): Promise<void> {
   const settings = {
     days: parseInt(process.env.DAYS_THRESHOLD ?? '', 10) || 90,
-    maxPerRun: parseInt(process.env.MAX_PER_RUN ?? '', 10) || 50,
     dryRun: process.env.DRY_RUN === 'true',
   };
   const result = await requestResponseOnIdleDrafts({
@@ -211,7 +208,7 @@ export async function run({ github, context, core }: { github: GitHubClient; con
   });
 
   core.summary.addHeading('Request Response on Idle Drafts', 2);
-  core.summary.addRaw(`Threshold: ${settings.days} days | Cutoff: ${result.cutoff.toISOString()} | Drafts scanned: ${result.scanned} | Idle: ${result.idle.length} | Max per run: ${settings.maxPerRun}${settings.dryRun ? ' | DRY RUN' : ''}`, true);
+  core.summary.addRaw(`Threshold: ${settings.days} days | Cutoff: ${result.cutoff.toISOString()} | Drafts scanned: ${result.scanned} | Idle: ${result.idle.length}${settings.dryRun ? ' | DRY RUN' : ''}`, true);
   if (result.done.length > 0) {
     core.summary.addTable([
       [{ data: 'PR', header: true }, { data: 'Title', header: true }, { data: 'Last activity', header: true }],

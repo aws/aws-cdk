@@ -45,7 +45,6 @@ jobs:
           # (90 days, not a dry run).
           DAYS_THRESHOLD: ${{ inputs.days_threshold }}
           DRY_RUN: ${{ inputs.dry_run }}
-          MAX_PER_RUN: '50'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
