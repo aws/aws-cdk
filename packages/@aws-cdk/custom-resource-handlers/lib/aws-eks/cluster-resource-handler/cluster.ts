@@ -153,7 +153,8 @@ export class ClusterResourceHandler extends ResourceHandler {
             // This means there are old tags as well as new tags so get the difference
             // Update existing tag keys and add newly added tags
             const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
-            if (tagsToAdd) {
+            // TagResource requires a non-empty tags map; {} is truthy so check keys
+            if (Object.keys(tagsToAdd).length > 0) {
               const tagConfig: EKS.TagResourceCommandInput = {
                 resourceArn: cluster?.arn,
                 tags: tagsToAdd,
@@ -177,7 +178,7 @@ export class ClusterResourceHandler extends ResourceHandler {
             };
             await this.eks.untagResource(config);
           }
-        } else {
+        } else if (this.newProps.tags && Object.keys(this.newProps.tags).length > 0) {
           // This means oldProps.tags was empty hence add all tags from newProps.tags
           const config: EKS.TagResourceCommandInput = {
             resourceArn: cluster?.arn,

@@ -1093,6 +1093,29 @@ describe('cluster resource provider', () => {
             tagKeys: ['hello'],
           });
         });
+        test('remove some tags while keeping others', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }));
+          await handler.onEvent();
+          // TagResource requires a non-empty tags map; skip it when only removing tags
+          expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
+          expect(mocks.actualRequest.untagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tagKeys: ['hello'],
+          });
+        });
         test('remove all tags', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
             // this is the new props
@@ -1111,6 +1134,35 @@ describe('cluster resource provider', () => {
             resourceArn: 'arn:cluster-arn',
             tagKeys: ['foo', 'hello'],
           });
+        });
+        test('remove all tags when new tags is an empty map', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            tags: {},
+          }, {
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }));
+          await handler.onEvent();
+          expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
+          expect(mocks.actualRequest.untagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tagKeys: ['foo', 'hello'],
+          });
+        });
+        test('does not call tagResource when new tags are an empty map', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            tags: {},
+          }, {
+            ...mocks.MOCK_PROPS,
+          }));
+          await handler.onEvent();
+          expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
+          expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
         });
         test('add tags after creation of cluster', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
