@@ -10,14 +10,24 @@ import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfac
  */
 export enum TagOperation {
   /**
-   * StringEquals
+   * StringEquals - exact match (case sensitive)
    */
   STRING_EQUALS = 'STRINGEQUALS',
 
   /**
-   * Dummy member
+   * StringLike - wildcard match using * anywhere in the string (case sensitive)
    */
-  DUMMY = 'dummy',
+  STRING_LIKE = 'STRINGLIKE',
+
+  /**
+   * StringNotEquals - negated exact match (case sensitive)
+   */
+  STRING_NOT_EQUALS = 'STRINGNOTEQUALS',
+
+  /**
+   * StringNotLike - negated wildcard match using * anywhere in the string (case sensitive)
+   */
+  STRING_NOT_LIKE = 'STRINGNOTLIKE',
 }
 
 /**
@@ -122,7 +132,11 @@ export class BackupResource {
   }
 
   /**
-   * A tag condition
+   * A tag condition.
+   *
+   * @deprecated Use `tagConditions` on `BackupSelectionOptions` instead.
+   * Tag conditions apply globally to all resources in a selection — this method
+   * can mislead callers into thinking the condition is scoped to a single ARN.
    */
   public static fromTag(key: string, value: string, operation?: TagOperation) {
     return new BackupResource(undefined, {
