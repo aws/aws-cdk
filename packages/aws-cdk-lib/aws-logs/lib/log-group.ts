@@ -271,11 +271,26 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
-      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
-      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      resourceArns: [this.logGroupArn],
+      // Include both the log group ARN and the log stream ARN (':*').
+      resourceArns: [this._logGroupArnWithoutStreamSuffix, this.logGroupArn],
       resource: this,
     });
+  }
+
+  /**
+   * The ARN of this log group without the ':*' log stream suffix.
+   *
+   * @internal
+   */
+  protected get _logGroupArnWithoutStreamSuffix(): string {
+    return Arn.format({
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: this.logGroupName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      account: this.env.account,
+      region: this.env.region,
+    }, Stack.of(this));
   }
 
   /**
@@ -650,6 +665,11 @@ export class LogGroup extends LogGroupBase {
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
       public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+
+      protected get _logGroupArnWithoutStreamSuffix(): string {
+        // An unresolved token may or may not carry ':*', so rebuild it from the name instead.
+        return Token.isUnresolved(baseLogGroupArn) ? super._logGroupArnWithoutStreamSuffix : baseLogGroupArn;
+      }
     }
 
     return new Import(scope, id, {
