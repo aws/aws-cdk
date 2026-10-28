@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "SkippedBundlingExcludes/DefaultTest": {
+      "stacks": [
+        "python-skipped-bundling-excludes"
+      ],
+      "assertionStack": "SkippedBundlingExcludes/DefaultTest/DeployAssert",
+      "assertionStackName": "SkippedBundlingExcludesDefaultTestDeployAssert6C5D82C1"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
