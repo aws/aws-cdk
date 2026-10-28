@@ -707,6 +707,34 @@ describe('WebFunctionCode', () => {
         expect(copyFor(second).DeletionPolicy).toEqual('Delete');
       });
 
+      test('passes no secure reference used inside Fn::Sub, Fn::If or Fn::Select', () => {
+        const s = new cdk.Stack();
+        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'secure references on the revision' });
+        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+        const param = new cdk.CfnParameter(s, 'Env');
+        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
+        const secret = '{{resolve:secretsmanager:db:SecretString:password}}';
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            SUB: cdk.Fn.sub(`postgres://\${AWS::AccountId}:${secret}@host`),
+            SUB_VARS: cdk.Fn.sub('postgres://${User}@host', { User: secret }),
+            IF: cdk.Fn.conditionIf(condition.logicalId, secret, 'none').toString(),
+            SELECT: cdk.Fn.select(0, [secret, role.roleArn]),
+          },
+        });
+        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
+        const env = copy.Properties.Configuration.ServiceConfig.environmentVariables;
+        // Placeholders and condition names stay, so the template still resolves at deployment.
+        expect(env.SUB['Fn::Sub']).toContain('${AWS::AccountId}');
+        expect(env.SUB_VARS['Fn::Sub'][0]).toContain('${User}');
+        expect(env.IF['Fn::If'][0]).toEqual('IsProd');
+        expect(env.SELECT['Fn::Select'][0]).toEqual(0);
+      });
+
       test('a changed environment value changes the configuration', () => {
         const withEnv = (value: string) => {
           const s = new cdk.Stack();

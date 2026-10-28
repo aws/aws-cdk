@@ -665,8 +665,12 @@ function revisionConfiguration(resource: cdk.CfnResource): any {
  * the key's dependency on them without passing them on.
  *
  * `Ref` and `Fn::GetAtt` are kept, so a value only known at deployment, such as a replaced role,
- * still changes the key. Inside `Fn::Join` only the parts are processed. Any other intrinsic is
- * kept as it is: hashing its arguments could make it unresolvable, as for `Fn::ImportValue`.
+ * still changes the key. Inside the intrinsics that combine values, only the values are
+ * processed: the parts of `Fn::Join`, the literal segments of an `Fn::Sub` template (its
+ * `${...}` placeholders are kept, since they can refer to deploy-time values) and its variables,
+ * the branches of `Fn::If` and the list of `Fn::Select`. Any other intrinsic is kept as it is:
+ * its arguments are names, as for `Fn::ImportValue`, or hashing them could change how many
+ * values it yields, as for `Fn::Split`.
  */
 function fingerprint(value: any): any {
   if (typeof value === 'string') {
@@ -680,13 +684,38 @@ function fingerprint(value: any): any {
   }
   const keys = Object.keys(value);
   if (keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::'))) {
-    if (keys[0] === 'Fn::Join') {
-      const [delimiter, parts] = value['Fn::Join'];
-      return { 'Fn::Join': [delimiter, (parts as any[]).map(fingerprint)] };
+    const args = value[keys[0]];
+    switch (keys[0]) {
+      case 'Fn::Join':
+        return { 'Fn::Join': [args[0], fingerprint(args[1])] };
+      case 'Fn::Sub':
+        return {
+          'Fn::Sub': Array.isArray(args)
+            ? [fingerprintSubTemplate(args[0]), fingerprint(args[1])]
+            : fingerprintSubTemplate(args),
+        };
+      case 'Fn::If':
+        return { 'Fn::If': [args[0], fingerprint(args[1]), fingerprint(args[2])] };
+      case 'Fn::Select':
+        return { 'Fn::Select': [args[0], fingerprint(args[1])] };
+      default:
+        return value;
     }
-    return value;
   }
   return Object.fromEntries(keys.map((k) => [k, fingerprint(value[k])]));
+}
+
+/**
+ * Replaces the literal segments of an `Fn::Sub` template with their hashes and keeps its
+ * placeholders. `${!Literal}` is an escaped literal, so it is hashed with its segment.
+ */
+function fingerprintSubTemplate(template: any): any {
+  if (typeof template !== 'string') {
+    return fingerprint(template);
+  }
+  return template.split(/(\$\{(?!!)[^}]*\})/)
+    .map((segment, i) => (i % 2 === 1 || segment === '' ? segment : md5hash(segment)))
+    .join('');
 }
 
 const MANAGED_BUCKET_REVISIONS = new WeakMap<s3.IBucket, cdk.CfnResource[]>();
