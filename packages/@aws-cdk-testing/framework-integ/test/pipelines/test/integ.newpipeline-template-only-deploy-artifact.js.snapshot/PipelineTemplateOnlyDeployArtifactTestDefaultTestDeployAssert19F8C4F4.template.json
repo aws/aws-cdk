@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "AwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodePipeline",
+    "api": "getPipeline",
+    "expected": "{\"$StringLike\":\"^StripAssets_Output$\"}",
+    "actualPath": "pipeline.stages.3.actions.1.outputArtifacts.0.name",
+    "parameters": {
+     "name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PipelineStack:ExportsOutputRefPipeline9850B417D3213ADD"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipeline.stages.3.actions.1.outputArtifacts.0.name"
+    ],
+    "salt": "1790978194623"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "codepipeline:GetPipeline"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipeline"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f6908d65aad9689b7f3773d17be62afe6e973baa92c16c8521798e925c3a6f3e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d1": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodePipeline",
+    "api": "getPipeline",
+    "expected": "{\"$StringLike\":\"^StripAssets_Output$\"}",
+    "actualPath": "pipeline.stages.4.actions.0.inputArtifacts.0.name",
+    "parameters": {
+     "name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "PipelineStack:ExportsOutputRefPipeline9850B417D3213ADD"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipeline.stages.4.actions.0.inputArtifacts.0.name"
+    ],
+    "salt": "1790978194624"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodePipelinegetPipeline9c402bc9595ce6ababf2bd144f4fe26d1",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
