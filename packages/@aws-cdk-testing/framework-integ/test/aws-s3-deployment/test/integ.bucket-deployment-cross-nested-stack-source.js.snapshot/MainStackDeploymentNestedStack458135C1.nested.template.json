@@ -20,7 +20,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -40,26 +40,19 @@
      }
     ],
     "SourceObjectKeys": [
-     "6e5e47dea668bae2ff62a51b010dbfe9f1243863347a037b706dd627165cc333.zip"
+     "238ad5eeb6d728bec8e7d742afb5c1d03ec8c73888bddf97ea9a3dffd3dbf7ad.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
-         },
-         "\""
-        ]
-       ]
+       "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
       }
      }
     ],
     "SourceMarkersConfig": [
-     {}
+     {
+      "jsonEscape": true
+     }
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -206,7 +199,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "815da5705747b4685c56b7d9a7eae6a81e75f489fb8fa7020032ef255f6923be.zip"
     },
     "Environment": {
      "Variables": {
@@ -219,6 +212,7 @@
       "Ref": "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -226,8 +220,7 @@
      ]
     },
     "Runtime": "python3.13",
-    "Timeout": 900,
-    "MemorySize": 1024
+    "Timeout": 900
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",

@@ -1,0 +1,38 @@
+{
+  "/stack2": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "stack2.template.json"
+    }
+  ],
+  "/stack2/userpool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/stack2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/stack2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/stack2/userpool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "userpool0AC4AA96"
+    }
+  ],
+  "/stack2/Exports/Output{\"Ref\":\"userpool0AC4AA96\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefuserpool0AC4AA967C30B4CC"
+    }
+  ]
+}

@@ -182,7 +182,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -228,10 +228,10 @@
     "SourceObjectKeys": [
      "d09271be89b6cb0398f793b40c1531fd9b076aa92ba80b5e436914b1808fe18d.zip",
      "0f14dedeaf4386031c978375cbda0f65d7b52b29452cabb8873eb8f0d0fa936b.zip",
-     "ef45f69fe7c715abf58a9bda311a5bf7751d8a483d42506d6942dfa8bd3750a0.zip",
+     "27eff729291aea0a2b33592996b9a764c233dc3387bd9cfd58c6f064073f177f.zip",
      "939a4ab8b51f1a1cccb59d97f04c318ad41c1d404e666c158ca2810894bc5f5f.zip",
-     "4ba8cfb53da242e91a423f3333c95db70ac0b5c2481a2d7e5c51142e5738403f.zip",
-     "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
+     "4050143e044258715dc77e0d45e38dfaaba94cba5339fe6f76f1c067fa45020d.zip",
+     "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
      "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip",
      "10cb9bf43614add407e699e4af8e1ba4a9789363f48fa816662b15885c354e1a.zip",
      "8de7dc173740857dd772ca214c7ac8381483f7ee406d94fb9ff9e95ad407d876.zip"
@@ -245,96 +245,51 @@
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "WebsiteURL"
-          ]
-         },
-         "\""
-        ]
+       "Fn::GetAtt": [
+        "Bucket83908E77",
+        "WebsiteURL"
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "Bucket83908E77",
-           "WebsiteURL"
-          ]
-         },
-         "\""
-        ]
+       "Fn::GetAtt": [
+        "Bucket83908E77",
+        "WebsiteURL"
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::Select": [
-           2,
-           {
-            "Fn::Split": [
-             "/",
-             {
-              "Fn::GetAtt": [
-               "Bucket83908E77",
-               "WebsiteURL"
-              ]
-             }
-            ]
-           }
-          ]
-         },
-         "\""
-        ]
+       "Fn::Select": [
+        2,
+        {
+         "Fn::Split": [
+          "/",
+          {
+           "Fn::GetAtt": [
+            "Bucket83908E77",
+            "WebsiteURL"
+           ]
+          }
+         ]
+        }
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
+       "Fn::GetAtt": [
+        "SecretParam0C31D215",
+        "Value"
        ]
       }
      },
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
+       "Fn::GetAtt": [
+        "SecretParam0C31D215",
+        "Value"
        ]
       }
      },
@@ -344,15 +299,29 @@
     "SourceMarkersConfig": [
      {},
      {},
-     {},
-     {},
-     {},
      {
       "jsonEscape": true
      },
+     {
+      "markerEncodings": {
+       "<<marker:0xbaba:0>>": "YAML_STRING"
+      }
+     },
+     {
+      "jsonEscape": true
+     },
+     {
+      "jsonEscape": true
+     },
+     {
+      "markerEncodings": {
+       "<<marker:0xbaba:0>>": "YAML_STRING"
+      }
+     },
      {},
-     {},
-     {}
+     {
+      "jsonEscape": true
+     }
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -501,7 +470,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "815da5705747b4685c56b7d9a7eae6a81e75f489fb8fa7020032ef255f6923be.zip"
     },
     "Environment": {
      "Variables": {
@@ -514,6 +483,7 @@
       "Ref": "DeployWithDataSourcesAwsCliLayerC67F66A7"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -521,8 +491,7 @@
      ]
     },
     "Runtime": "python3.13",
-    "Timeout": 900,
-    "MemorySize": 1024
+    "Timeout": 900
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",

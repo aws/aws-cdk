@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1779973461152"
+    "salt": "1793199464719"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -100,7 +100,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -109,6 +109,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -140,7 +144,7 @@
      "Key": "\"deploy/here/my-json/config-with-null.json\""
     },
     "flattenResponse": "false",
-    "salt": "1779973461154"
+    "salt": "1793199464720"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -156,7 +160,7 @@
     },
     "service": "S3",
     "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"secret_value: test\\\"with\\\"quotes\\n\"}}",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"secret_value: \\\"test\\\\\\\"with\\\\\\\"quotes\\\"\\n\"}}",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -173,7 +177,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1779973461154"
+    "salt": "1793199464720"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
