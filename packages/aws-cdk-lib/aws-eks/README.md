@@ -853,6 +853,56 @@ if (cluster.albController) {
 }
 ```
 
+#### OIDC authentication on Ingresses
+
+Ingresses can authenticate users against an OIDC identity provider with the
+`alb.ingress.kubernetes.io/auth-type: oidc` and `alb.ingress.kubernetes.io/auth-idp-oidc` annotations.
+The OIDC client ID and client secret live in a Kubernetes Secret in the Ingress's namespace (the
+`secretName` in `auth-idp-oidc`), and the controller reads it with its own service account,
+`aws-load-balancer-controller` in `kube-system`. The controller's Helm chart does not grant access to
+secrets by default, so without additional RBAC the Ingress fails to reconcile with an error like
+`secrets "my-oidc-secret" is forbidden: User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "secrets"`.
+
+Grant the controller read access to that one secret with a Role and RoleBinding in the Ingress's namespace:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const namespace = 'my-app'; // namespace of the Ingress and its OIDC secret
+const oidcSecretName = 'my-oidc-secret'; // the `secretName` in `auth-idp-oidc`
+
+cluster.addManifest('AlbControllerOidcSecretAccess', {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'Role',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  rules: [{
+    apiGroups: [''],
+    resources: ['secrets'],
+    resourceNames: [oidcSecretName],
+    verbs: ['get', 'list', 'watch'],
+  }],
+}, {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'RoleBinding',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  roleRef: {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'Role',
+    name: 'aws-load-balancer-controller-oidc',
+  },
+  subjects: [{
+    kind: 'ServiceAccount',
+    name: 'aws-load-balancer-controller',
+    namespace: 'kube-system',
+  }],
+});
+```
+
+Restricting `list` and `watch` with `resourceNames` works because the controller reads each OIDC secret
+with a `metadata.name` field selector. The chart's `clusterSecretsPermissions.allowAllSecrets` value
+grants access to every secret in the cluster instead; the chart recommends a namespaced Role and
+RoleBinding like the one above.
+
 ### VPC Support
 
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
