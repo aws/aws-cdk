@@ -108,15 +108,13 @@ export class Archive extends Resource {
       }));
     }
 
-    // When an empty string is supplied to the L1 template, it means to use an AWS managed key
-    // This empty string is necessary as the definitions in the L1 requires an empty string to enforce an update that removes any previously used CMK
     let archive = new CfnArchive(this, 'Archive', {
       sourceArn: props.sourceEventBus.eventBusRef.eventBusArn,
       description: props.description,
       eventPattern: renderEventPattern(props.eventPattern),
       retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
-      kmsKeyIdentifier: props?.kmsKey?.keyArn || '',
+      kmsKeyIdentifier: props?.kmsKey?.keyArn,
     });
 
     this.archiveArn = archive.attrArn;

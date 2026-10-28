@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 
 import * as kms from '../../aws-kms';
 
@@ -184,8 +184,8 @@ describe('archive', () => {
     });
   });
 
-  // Create archive without supplying CMK, verify that the template contains the empty key identifier
-  test('Archive without passing a key has an empty key identifier', () => {
+  // Create archive without supplying CMK, verify that KmsKeyIdentifier is omitted entirely
+  test('Archive without a KMS key omits KmsKeyIdentifier from the template', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -199,9 +199,9 @@ describe('archive', () => {
       },
     });
 
-    // THEN
+    // THEN — property must be absent, not an empty string (empty string causes CF deployment failures)
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
-      KmsKeyIdentifier: '',
+      KmsKeyIdentifier: Match.absent(),
     });
   });
 });
