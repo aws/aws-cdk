@@ -2,7 +2,7 @@
 #
 # scripts/request-response-on-idle-drafts.js comments and adds the `response-requested`
 # label. The existing "Close Stale Issues" workflow (close-stale-issues.yml) then adds
-# `closing-soon` and closes the PR about a week later unless a person comments.
+# `closing-soon` and closes the PR 7 days later unless a person comments.
 #
 # Add the `no-autoclose` label to a draft to exempt it.
 name: Request Response on Idle Drafts
@@ -34,6 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Install type dependencies
+        run: yarn install --frozen-lockfile
+      - name: Compile TypeScript
+        run: npx tsc --project scripts/tsconfig.request-response-on-idle-drafts.json
       - name: Request response on idle drafts
         uses: actions/github-script@v9
         env:

@@ -1,6 +1,4 @@
-'use strict';
-
-const { requestResponseOnIdleDrafts, run } = require('../../request-response-on-idle-drafts');
+import { requestResponseOnIdleDrafts, run, type DraftNode } from '../../request-response-on-idle-drafts';
 
 const NOW = new Date('2026-10-28T00:00:00Z');
 
@@ -8,12 +6,20 @@ const MESSAGE = [
   'This draft PR has had no activity for 90 days.',
   '',
   'If you are still working on it, please leave a comment or push a commit, and mark it ready for review when it is done.',
-  'If there is no response, this PR will be closed in about a week. You can reopen it at any time.',
+  'If there is no response, this PR will be closed in 7 days.',
   '',
   'To keep a draft open longer, a maintainer can add the `no-autoclose` label.',
 ].join('\n');
 
-function draft(number, { createdAt = '2026-01-01T00:00:00Z', committedDate, comments = [], labels = [], title = `feat: draft ${number}` } = {}) {
+interface DraftOptions {
+  createdAt?: string;
+  committedDate?: string;
+  comments?: DraftNode['comments']['nodes'];
+  labels?: string[];
+  title?: string;
+}
+
+function draft(number: number, { createdAt = '2026-01-01T00:00:00Z', committedDate, comments = [], labels = [], title = `feat: draft ${number}` }: DraftOptions = {}): DraftNode {
   return {
     number,
     title,
@@ -25,10 +31,10 @@ function draft(number, { createdAt = '2026-01-01T00:00:00Z', committedDate, comm
 }
 
 /** A mock of the Octokit client that actions/github-script provides. */
-function mockGithub(pages, { createComment = async () => ({}) } = {}) {
-  const searchPages = Array.isArray(pages[0]) ? pages : [pages];
+function mockGithub(pages: DraftNode[] | DraftNode[][], { createComment = async (_params: { issue_number: number }): Promise<object> => ({}) } = {}) {
+  const searchPages = (pages.length > 0 && Array.isArray(pages[0]) ? pages : [pages]) as DraftNode[][];
   return {
-    graphql: jest.fn(async (_query, { cursor }) => {
+    graphql: jest.fn(async (_query: string, { cursor }: { cursor: string | null }) => {
       const index = cursor === null ? 0 : Number(cursor);
       const hasNextPage = index + 1 < searchPages.length;
       return { search: { pageInfo: { hasNextPage, endCursor: hasNextPage ? String(index + 1) : null }, nodes: searchPages[index] } };
@@ -42,8 +48,10 @@ function mockGithub(pages, { createComment = async () => ({}) } = {}) {
   };
 }
 
-function runOn(github, overrides = {}) {
-  return requestResponseOnIdleDrafts({ github, owner: 'aws', repo: 'aws-cdk', days: 90, maxPerRun: 50, dryRun: false, now: NOW, log: () => {}, ...overrides });
+type MockGithub = ReturnType<typeof mockGithub>;
+
+function runOn(github: MockGithub, overrides: { dryRun?: boolean; maxPerRun?: number } = {}) {
+  return requestResponseOnIdleDrafts({ github: github as any, owner: 'aws', repo: 'aws-cdk', days: 90, maxPerRun: 50, dryRun: false, now: NOW, log: () => {}, ...overrides });
 }
 
 test('asks for a response on a draft with no commits or comments for 90 days', async () => {
@@ -142,7 +150,7 @@ test('records an error and continues when a write fails', async () => {
     draft(108, { createdAt: '2026-01-01T00:00:00Z' }),
     draft(109, { createdAt: '2026-01-02T00:00:00Z' }),
   ], {
-    createComment: async ({ issue_number }) => {
+    createComment: async ({ issue_number }: { issue_number: number }) => {
       if (issue_number === 108) {
         throw new Error('Resource not accessible by integration');
       }
@@ -172,7 +180,7 @@ test('follows search pagination', async () => {
 
 describe('run', () => {
   function mockCore() {
-    const summary = {
+    const summary: Record<string, jest.Mock> = {
       addHeading: jest.fn(() => summary),
       addRaw: jest.fn(() => summary),
       addTable: jest.fn(() => summary),
@@ -182,13 +190,19 @@ describe('run', () => {
   }
 
   const ENV = ['DAYS_THRESHOLD', 'MAX_PER_RUN', 'DRY_RUN'];
-  let saved;
+  let saved: Record<string, string | undefined>;
   beforeEach(() => {
     saved = Object.fromEntries(ENV.map((k) => [k, process.env[k]]));
     ENV.forEach((k) => delete process.env[k]);
   });
   afterEach(() => {
-    ENV.forEach((k) => (saved[k] === undefined ? delete process.env[k] : (process.env[k] = saved[k])));
+    ENV.forEach((k) => {
+      if (saved[k] === undefined) {
+        delete process.env[k];
+      } else {
+        process.env[k] = saved[k];
+      }
+    });
   });
 
   test('passes PR titles to the summary table as data', async () => {
@@ -196,7 +210,7 @@ describe('run', () => {
     const core = mockCore();
     process.env.DRY_RUN = 'true';
 
-    await run({ github, context: { repo: { owner: 'aws', repo: 'aws-cdk' } }, core });
+    await run({ github: github as any, context: { repo: { owner: 'aws', repo: 'aws-cdk' } } as any, core: core as any });
 
     expect(core.summary.addTable).toHaveBeenCalledWith([
       expect.any(Array),
@@ -207,10 +221,10 @@ describe('run', () => {
   });
 
   test('fails the job when a write fails', async () => {
-    const github = mockGithub([draft(113)], { createComment: async () => { throw new Error('boom'); } });
+    const github = mockGithub([draft(113)], { createComment: async (): Promise<object> => { throw new Error('boom'); } });
     const core = mockCore();
 
-    await run({ github, context: { repo: { owner: 'aws', repo: 'aws-cdk' } }, core });
+    await run({ github: github as any, context: { repo: { owner: 'aws', repo: 'aws-cdk' } } as any, core: core as any });
 
     expect(core.setFailed).toHaveBeenCalledWith('Failed on 1 draft(s)');
   });
