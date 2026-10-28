@@ -219,6 +219,43 @@ describe('run', () => {
     expect(core.setFailed).not.toHaveBeenCalled();
   });
 
+  // run() uses the real clock, so these drafts are dated relative to now.
+  const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString();
+
+  test('honors a custom DAYS_THRESHOLD', async () => {
+    const github = mockGithub([draft(120, { createdAt: daysAgo(60) })]);
+    const core = mockCore();
+    process.env.DAYS_THRESHOLD = '30';
+
+    await run({ github: github as any, context: { repo: { owner: 'aws', repo: 'aws-cdk' } } as any, core: core as any });
+
+    expect(github.rest.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({ issue_number: 120, body: expect.stringContaining('no activity for 30 days') }),
+    );
+  });
+
+  test.each([
+    ['unset', undefined],
+    ['empty, as on a scheduled run', ''],
+    ['not a number', 'abc'],
+  ])('defaults to 90 days when DAYS_THRESHOLD is %s', async (_name, value) => {
+    const github = mockGithub([
+      draft(121, { createdAt: daysAgo(60) }),
+      draft(122, { createdAt: daysAgo(100) }),
+    ]);
+    const core = mockCore();
+    if (value !== undefined) {
+      process.env.DAYS_THRESHOLD = value;
+    }
+
+    await run({ github: github as any, context: { repo: { owner: 'aws', repo: 'aws-cdk' } } as any, core: core as any });
+
+    expect(github.rest.issues.createComment).toHaveBeenCalledTimes(1);
+    expect(github.rest.issues.createComment).toHaveBeenCalledWith(
+      expect.objectContaining({ issue_number: 122, body: expect.stringContaining('no activity for 90 days') }),
+    );
+  });
+
   test('fails the job when a write fails', async () => {
     const github = mockGithub([draft(113)], { createComment: async (): Promise<object> => { throw new Error('boom'); } });
     const core = mockCore();
