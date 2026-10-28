@@ -577,7 +577,10 @@
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "MinimalBucketFunction70777F34"
+     "Fn::GetAtt": [
+      "MinimalBucketFunction70777F34",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {

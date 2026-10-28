@@ -1,4 +1,10 @@
 {
+  "/WebFunctionAllFieldsStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionAllFieldsStack.template.json"
+    }
+  ],
   "/WebFunctionAllFieldsStack/CodeBucketKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -334,8 +340,8 @@
   ],
   "/WebFunctionAllFieldsStack/AllFields/Endpoint": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "AllFieldsEndpoint1B3E2E37"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/WebFunctionAllFieldsStack/Exports/Output{\"Fn::GetAtt\":[\"AllFieldsEndpoint1B3E2E37\",\"DomainName\"]}": [
@@ -442,6 +448,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+    }
+  ],
+  "/WebFunctionAllFieldsStack/AllFields/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AllFieldsEndpoint1B3E2E37"
     }
   ],
   "/WebFunctionAllFieldsStack/DeployCode/AwsCliLayer/Code/AssetBucket": [

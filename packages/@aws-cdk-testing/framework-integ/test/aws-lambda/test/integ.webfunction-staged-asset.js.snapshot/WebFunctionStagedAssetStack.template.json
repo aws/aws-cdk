@@ -165,7 +165,10 @@
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "AutomaticFunctionB47C23F8"
+     "Fn::GetAtt": [
+      "AutomaticFunctionB47C23F8",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {
@@ -730,7 +733,10 @@
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "AutomaticSecondFunctionAB53D7F9"
+     "Fn::GetAtt": [
+      "AutomaticSecondFunctionAB53D7F9",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {
@@ -1064,7 +1070,10 @@
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "SpecificFunction2B9945D8"
+     "Fn::GetAtt": [
+      "SpecificFunction2B9945D8",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {

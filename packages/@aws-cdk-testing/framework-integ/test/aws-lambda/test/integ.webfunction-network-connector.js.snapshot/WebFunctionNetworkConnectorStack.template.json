@@ -783,7 +783,10 @@
     "EndpointName": "prod",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "Function042596DC"
+     "Fn::GetAtt": [
+      "Function042596DC",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {

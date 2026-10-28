@@ -756,7 +756,10 @@
     "EndpointName": "live",
     "EndpointType": "HomeRegion",
     "FunctionName": {
-     "Ref": "AllFieldsFunctionCF5EDC3E"
+     "Fn::GetAtt": [
+      "AllFieldsFunctionCF5EDC3E",
+      "FunctionArn"
+     ]
     },
     "RevisionWeights": [
      {

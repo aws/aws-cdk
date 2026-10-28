@@ -288,8 +288,8 @@
   ],
   "/WebFunctionMinimalStack/MinimalBucket/Endpoint": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "MinimalBucketEndpoint910239E5"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/WebFunctionMinimalStack/Exports/Output{\"Fn::GetAtt\":[\"MinimalBucketEndpoint910239E5\",\"DomainName\"]}": [
@@ -400,6 +400,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MinimalBucketLogGroup04559959"
+    }
+  ],
+  "/WebFunctionMinimalStack/MinimalBucket/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinimalBucketEndpoint910239E5"
     }
   ],
   "/WebFunctionMinimalStack/DeployCode/AwsCliLayer/Code/AssetBucket": [
