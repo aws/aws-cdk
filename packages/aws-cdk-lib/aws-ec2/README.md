@@ -413,6 +413,43 @@ new ec2.Vpc(this, 'TheVPC', {
 
 With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
+#### Allocating a subnet CIDR from AWS IPAM
+
+A standalone `Subnet` (or `PublicSubnet`/`PrivateSubnet`) can also have its IPv4 CIDR block allocated from an IPAM pool at deploy time instead of taking a concrete `cidrBlock`. Pass the pool and the netmask length of the block to allocate in `ipv4IpamAllocation`; exactly one of `cidrBlock` and `ipv4IpamAllocation` must be set:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const ipam: ec2.CfnIPAM;
+
+const pool = new ec2.CfnIPAMPool(this, 'SubnetPool', {
+  addressFamily: 'ipv4',
+  ipamScopeId: ipam.attrPrivateDefaultScopeId,
+  locale: this.region,
+  sourceResource: {
+    resourceId: vpc.vpcId,
+    resourceOwner: this.account,
+    resourceRegion: this.region,
+    resourceType: 'vpc',
+  },
+  provisionedCidrs: [{ cidr: vpc.vpcCidrBlock }],
+});
+
+const subnet = new ec2.Subnet(this, 'IpamSubnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: vpc.availabilityZones[0],
+  ipv4IpamAllocation: {
+    ipamPool: pool,
+    netmaskLength: 24,
+  },
+});
+```
+
+The pool must be a resource planning pool for the subnet's VPC: its `sourceResource` is the VPC, and the CIDR block allocated from it must lie within the CIDR of the VPC. If the VPC's own CIDR is allocated from IPAM (`IpAddresses.awsIpamAllocation()`), also set the planning pool's `sourceIpamPoolId` to the pool that the VPC's CIDR comes from (see [Use VPC IP Address Manager to manage subnet CIDRs](https://aws.amazon.com/blogs/networking-and-content-delivery/use-vpc-ip-address-manager-to-manage-subnet-cidrs/)). Pools in a private scope require the [IPAM Advanced Tier](https://docs.aws.amazon.com/vpc/latest/ipam/mod-ipam-tier.html). To use a pool that is not defined in your CDK app (for example one shared with your account through AWS RAM), reference it by ID with `ec2.CfnIPAMPool.fromIpamPoolId(this, 'Pool', 'ipam-pool-0123456789abcdef0')`. If the pool's address space is provisioned through separate `CfnIPAMPoolCidr` resources, add a dependency from the subnet on them so the pool has space to allocate from when the subnet is created.
+
+IPAM must discover the VPC before a planning pool can be created for it, and for a new VPC this takes several minutes. Creating a new VPC and its planning pool in the same deployment therefore fails with "The source resource ... is not monitored in the IPAM scope". Create the pool after IPAM has discovered the VPC, for example in a stack deployed after the VPC's stack, or make the pool depend on a custom resource that waits until `GetIpamResourceCidrs` lists the VPC in the pool's IPAM scope.
+
+Because the CIDR block is only known at deploy time, `subnet.ipv4CidrBlock` is a CloudFormation attribute reference rather than a concrete string. Subnet filters that parse the CIDR (`SubnetFilter.byCidrMask()`, `SubnetFilter.byCidrRanges()` and `SubnetFilter.containsIpAddresses()`) therefore cannot be used with IPAM-allocated subnets. Subnets created by `Vpc` from `subnetConfiguration` are not affected by this option; they keep getting their CIDRs from the VPC's `IpAddresses` provider.
+
 ### Dual Stack configuration
 
 To allocate both IPv4 and IPv6 addresses in your VPC, you can configure your VPC to have a dual stack protocol.
