@@ -120,7 +120,7 @@
     "@aws-cdk/asset-awscli-v1": "2.2.292",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.3",
     "@aws-cdk/cloud-assembly-api": "^2.5.0",
-    "@aws-cdk/cloud-assembly-schema": "^55.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^55.2.0",
     "@aws/cloudformation-validate": "1.14.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
@@ -165,13 +165,13 @@
     "@smithy/util-stream": "3.3.4",
     "@types/aws-lambda": "^8.10.164",
     "@types/jest": "^29.5.14",
-    "@types/lodash": "^4.17.26",
+    "@types/lodash": "^4.17.27",
     "@types/mime-types": "^2.1.4",
     "@types/punycode": "^2.1.4",
-    "aws-cdk": "^2.1145.0",
+    "aws-cdk": "^2.1146.1",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.70.111",
+    "cdk8s": "2.70.116",
     "constructs": "^10.5.0",
     "delay": "5.0.0",
     "esbuild": "^0.28.2",
@@ -595,6 +595,7 @@
     "exampleDependencies": {
       "@aws-cdk/lambda-layer-kubectl-v35": "^2.0.0",
       "@aws-cdk/lambda-layer-kubectl-v36": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v37": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0"
     }
   }
