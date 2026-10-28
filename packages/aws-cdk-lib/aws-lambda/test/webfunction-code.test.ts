@@ -676,6 +676,37 @@ describe('WebFunctionCode', () => {
           { 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
       });
 
+      test('one code object bound to two functions gives each copy its own function\'s configuration', () => {
+        cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+        const code = WebFunctionCode.fromAssetToProvidedBucket(owned(stack), ASSET_PATH);
+        const first = new WebFunction(stack, 'First', {
+          code,
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          timeout: cdk.Duration.seconds(10),
+        });
+        const second = new WebFunction(stack, 'Second', {
+          code,
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          timeout: cdk.Duration.seconds(20),
+        });
+        first.resourceRevision.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
+
+        const copies = Template.fromStack(stack).findResources('Custom::S3ObjectCopy');
+        const copyFor = (fn: WebFunction) => {
+          const id = Object.keys(copies).find((logicalId) => logicalId.startsWith(fn.node.id))!;
+          return copies[id];
+        };
+        const functionRef = (fn: WebFunction) => ({ Ref: stack.getLogicalId(fn.resource) });
+        expect(copyFor(first).Properties.Configuration.FunctionName).toEqual(functionRef(first));
+        expect(copyFor(second).Properties.Configuration.FunctionName).toEqual(functionRef(second));
+        expect(copyFor(first).Properties.Configuration.ServiceConfig.timeoutSeconds).toEqual(10);
+        expect(copyFor(second).Properties.Configuration.ServiceConfig.timeoutSeconds).toEqual(20);
+        expect(copyFor(first).DeletionPolicy).toEqual('Retain');
+        expect(copyFor(second).DeletionPolicy).toEqual('Delete');
+      });
+
       test('a changed environment value changes the configuration', () => {
         const withEnv = (value: string) => {
           const s = new cdk.Stack();

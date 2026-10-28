@@ -330,10 +330,14 @@ export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetO
  */
 abstract class StagedAssetCode extends WebFunctionCode {
   private asset?: s3_assets.Asset;
-  /** The copy made by the last `bind()`, waiting for the revision that reads it. */
-  private pendingCopy?: S3ObjectCopy;
-  /** The revision that reads the copy, set by `bindToResource()`. */
-  private revision?: cdk.CfnResource;
+  /**
+   * The copy made by the last `bind()`, waiting for the revision that reads it, and the holder
+   * that revision is put in.
+   *
+   * The holder belongs to that one copy, not to this code object: one code object can be bound to
+   * several functions, and each copy has to read its own function's revision.
+   */
+  private pending?: { readonly copy: S3ObjectCopy; readonly holder: { revision?: cdk.CfnResource } };
 
   constructor(private readonly path: string, private readonly options: WebFunctionAssetOptions) {
     super();
@@ -372,6 +376,7 @@ abstract class StagedAssetCode extends WebFunctionCode {
     // The construct id depends on the copy function only, not on the content: a resource's
     // ServiceToken cannot change, so a copy that needs another function has to be a new
     // resource, while a code change updates this one.
+    const holder: { revision?: cdk.CfnResource } = {};
     const copyProps = {
       destinationBucket: destination,
       destinationKeyPattern: `${prefix}*`,
@@ -383,9 +388,9 @@ abstract class StagedAssetCode extends WebFunctionCode {
       sourceKey: this.asset.s3ObjectKey,
       destinationKeyPrefix: functionPrefix,
       contentHash: this.asset.assetHash,
-      configuration: cdk.Lazy.any({ produce: () => this.revision && revisionConfiguration(this.revision) }),
+      configuration: cdk.Lazy.any({ produce: () => holder.revision && revisionConfiguration(holder.revision) }),
     });
-    this.pendingCopy = copy;
+    this.pending = { copy, holder };
 
     return {
       // The full address comes from the copy's outputs — what was actually written — rather
@@ -403,12 +408,13 @@ abstract class StagedAssetCode extends WebFunctionCode {
    * feeds the copy's key, and its removal policy decides the copy's.
    */
   public bindToResource(resource: cdk.CfnResource): void {
-    const copy = this.pendingCopy;
-    this.pendingCopy = undefined;
-    if (!copy) {
+    const pending = this.pending;
+    this.pending = undefined;
+    if (!pending) {
       return;
     }
-    this.revision = resource;
+    const copy = pending.copy;
+    pending.holder.revision = resource;
     // The copy's policies follow the revision's. They are resolved at synthesis, after every
     // aspect has run and wherever the revision's policy was set: an aspect visits one node at a
     // time, in tree order, and the copy is visited before the revision it belongs to.
