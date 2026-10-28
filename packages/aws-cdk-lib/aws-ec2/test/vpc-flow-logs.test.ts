@@ -45,13 +45,15 @@ describe('vpc flow logs', () => {
             },
           }),
           Match.objectEquals({
-            Action: ['logs:DescribeLogStreams'],
+            Action: 'logs:DescribeLogStreams',
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
                 '',
                 [
-                  'arn:aws:logs:us-east-1:123456789012:log-group:',
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:',
                   { Ref: 'FlowLogsLogGroup9853A85F' },
                 ],
               ],
@@ -133,9 +135,18 @@ describe('vpc flow logs', () => {
             Resource: 'arn:aws:logs:us-west-2:111122223333:log-group:imported-log-group:*',
           }),
           Match.objectEquals({
-            Action: ['logs:DescribeLogStreams'],
+            Action: 'logs:DescribeLogStreams',
             Effect: 'Allow',
-            Resource: 'arn:aws:logs:us-west-2:111122223333:log-group:imported-log-group',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-west-2:111122223333:log-group:imported-log-group',
+                ],
+              ],
+            },
           }),
         ]),
       },
@@ -172,7 +183,7 @@ describe('vpc flow logs', () => {
             Effect: 'Allow',
           }),
           Match.objectLike({
-            Action: ['logs:DescribeLogStreams'],
+            Action: 'logs:DescribeLogStreams',
             Effect: 'Allow',
           }),
         ]),
