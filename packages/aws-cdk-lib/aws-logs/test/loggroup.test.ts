@@ -534,6 +534,107 @@ describe('log group', () => {
     });
   });
 
+  test('grant uses both the log group ARN and the log stream ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    lg.grant(user, 'logs:CreateLogStream', 'logs:PutLogEvents');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:',
+                  { Ref: 'LogGroupF5B46931' },
+                ]],
+              },
+              { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant on log group imported by name uses both ARN forms', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'User');
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', 'my-log-group');
+
+    // WHEN
+    imported.grant(user, 'logs:PutLogEvents');
+
+    // THEN
+    const arnPrefix = [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':logs:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+    ];
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'logs:PutLogEvents',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', [...arnPrefix, ':log-group:my-log-group']] },
+              { 'Fn::Join': ['', [...arnPrefix, ':log-group:my-log-group:*']] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  describe('grant on log group imported by ARN uses both ARN forms', () => void dataDrivenTests([
+    '',
+    ':*',
+  ], (suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'User');
+    const imported = LogGroup.fromLogGroupArn(stack, 'lg', `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`);
+
+    // WHEN
+    imported.grant(user, 'logs:PutLogEvents');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'logs:PutLogEvents',
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group',
+              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+            ],
+          },
+        ],
+      },
+    });
+  }));
+
   test('grant to service principal', () => {
     // GIVEN
     const stack = new Stack();
