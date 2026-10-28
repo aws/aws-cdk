@@ -25,9 +25,8 @@ const securityGroup = new ec2.SecurityGroup(stack, 'ConnectorSecurityGroup', {
   allowAllOutbound: true,
 });
 
-// MicroVm rather than WebFunction: the published registry schema accepts only MicroVm
-// today, so this is the compute type a real deployment can exercise. The construct
-// code under test is the same for both.
+// MicroVm: integ.webfunction-network-connector deploys a WebFunction connector, so this is
+// the only test that deploys the other compute type.
 const connector = new NetworkConnector(stack, 'Connector', {
   configuration: NetworkConnectorConfiguration.vpcEgress({
     computeType: NetworkConnectorComputeType.MICRO_VM,
