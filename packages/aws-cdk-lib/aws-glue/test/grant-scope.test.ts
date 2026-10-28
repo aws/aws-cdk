@@ -23,7 +23,7 @@ test('warns when granting on a user-provided bucket with an empty s3Prefix', () 
 
   table.grantRead(new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('glue.amazonaws.com') }));
 
-  Annotations.fromStack(stack).hasWarning('/Default/Table', Match.stringLikeRegexp('.*entire data bucket.*grantScopedToWholeBucket.*'));
+  Annotations.fromStack(stack).hasWarning('/Default/Table', Match.stringLikeRegexp('.*entire data bucket.*\\[ack: @aws-cdk/aws-glue:grantScopedToWholeBucket\\]'));
 });
 
 test('does not warn when a user-provided bucket is scoped with an s3Prefix', () => {
