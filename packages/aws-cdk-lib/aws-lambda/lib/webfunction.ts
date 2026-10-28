@@ -242,7 +242,7 @@ export interface WebFunctionProps {
 /**
  * Represents a WebFunction resource, either created in this stack or imported.
  */
-export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable {
+export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable, iam.IResourceWithPolicyV2 {
   /**
    * The ARN of the WebFunction.
    *
@@ -271,18 +271,6 @@ export interface IWebFunction extends IResource, IWebFunctionRef, iam.IGrantable
    * permission to be granted manually instead.
    */
   addToRolePolicy(statement: iam.PolicyStatement): void;
-
-  /**
-   * Adds a statement to the WebFunction's resource-based policy.
-   *
-   * A web function has a single resource-based policy, so all statements are rendered into one
-   * `AWS::Lambda::ResourcePolicy`. Use it to allow another account, or a service such as
-   * CloudFront, to invoke the function's endpoints.
-   *
-   * For an imported WebFunction the policy cannot be changed without replacing it, so this adds
-   * a warning instead and returns `statementAdded: false`.
-   */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 }
 
 /**
