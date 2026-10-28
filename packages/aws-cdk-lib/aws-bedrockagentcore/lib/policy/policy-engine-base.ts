@@ -18,25 +18,11 @@ import type { MetricOptions, MetricProps } from '../../../aws-cloudwatch';
 import { Metric, Stats } from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
-import { Lazy, Resource, Stack } from '../../../core';
+import { Resource } from '../../../core';
 import type { IResource, ResourceProps } from '../../../core';
 // Internal imports
+import { gatewayArnPatternForName } from '../gateway/gateway-arn-pattern';
 import type { IGateway } from '../gateway/gateway-base';
-
-/**
- * Number of generated characters BedrockAgentCore appends to a gateway name to form the gateway
- * id that appears in the gateway ARN.
- *
- * A gateway ARN is `gateway/<id>`, and the id is the gateway name, lowercased, followed by a
- * hyphen and exactly this many lowercase alphanumeric characters. Both the length and the
- * lowercasing come from the documented ARN pattern,
- * `gateway/(0-9a-z?){1,48}-[a-z0-9]{10}`, and CloudFormation documents the same shape by
- * example, returning ids such as `my-gateway-a1b2c3d4e5` from `Ref`.
- *
- * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/APIReference/API_HarnessAgentCoreGatewayConfig.html
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-gateway.html
- */
-const GATEWAY_ID_SUFFIX_LENGTH = 10;
 
 /******************************************************************************
  *                                Interface
@@ -271,23 +257,7 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
     // Scoped from the gateway name rather than `gateway.gatewayArn`: while creating a gateway the
     // service runs a preflight check that calls AuthorizeAction on the gateway being created, so
     // this permission must already exist, and referencing that ARN would be a dependency cycle.
-    // Resolution is deferred rather than branching on `Token.isUnresolved`, which cannot tell an
-    // auto-generated name that resolves during synthesis from a deploy-time value, and so would
-    // widen the grant to every gateway in the account on the default path. A resolved name is
-    // lowercased and its generated suffix matched by length, because the ARN carries the lowercased
-    // name plus GATEWAY_ID_SUFFIX_LENGTH characters and IAM matches resource ARNs case sensitively.
-    const gatewayArn = Stack.of(this).formatArn({
-      service: 'bedrock-agentcore',
-      resource: 'gateway',
-      resourceName: Lazy.string({
-        produce: () => {
-          const resolvedName = Stack.of(this).resolve(gateway.gatewayName);
-          return typeof resolvedName === 'string'
-            ? `${resolvedName.toLowerCase()}-${'?'.repeat(GATEWAY_ID_SUFFIX_LENGTH)}`
-            : '*';
-        },
-      }),
-    });
+    const gatewayArn = gatewayArnPatternForName(this, gateway.gatewayName);
 
     const authorizationGrant = iam.Grant.addToPrincipal({
       grantee,

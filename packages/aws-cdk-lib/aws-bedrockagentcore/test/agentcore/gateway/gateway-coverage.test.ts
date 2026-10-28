@@ -2,7 +2,7 @@
  * Targeted tests to improve branch coverage
  */
 
-import { Template, Match } from '../../../../assertions';
+import { Annotations, Template, Match } from '../../../../assertions';
 import * as apigateway from '../../../../aws-apigateway';
 import * as cloudwatch from '../../../../aws-cloudwatch';
 import * as iam from '../../../../aws-iam';
@@ -46,22 +46,6 @@ describe('Gateway Coverage Tests', () => {
   beforeEach(() => {
     const app = new cdk.App();
     stack = new cdk.Stack(app, 'TestStack');
-  });
-
-  test('Should create a ServiceRole when no custom role is provided', () => {
-    new Gateway(stack, 'Gateway');
-
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::IAM::Role', 1);
-    template.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
-          }),
-        ]),
-      },
-    });
   });
 
   test('Should use the provided role and not create a ServiceRole', () => {
@@ -469,6 +453,127 @@ describe('Gateway Coverage Tests', () => {
         ]),
       },
     });
+  });
+});
+
+describe('Gateway default service role trust policy', () => {
+  const account = '123456789012';
+  const region = 'us-east-1';
+  const trustWarning = Match.stringLikeRegexp('aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust');
+
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TrustStack', { env: { account, region } });
+  });
+
+  function gatewayArn(resourceName: string) {
+    return {
+      'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:bedrock-agentcore:${region}:${account}:gateway/${resourceName}`]],
+    };
+  }
+
+  // The role must carry exactly one statement for the service: a second statement without
+  // conditions would let the service assume the role regardless of the conditions on this one.
+  function expectOnlyTrustStatement(template: Template, sourceArn: object) {
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectEquals({
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': account },
+              ArnLike: { 'aws:SourceArn': sourceArn },
+            },
+          }),
+        ],
+      },
+    });
+  }
+
+  test('trusts the service only for this gateway, matching its auto-generated name in lowercase', () => {
+    new Gateway(stack, 'Gateway');
+
+    const template = Template.fromStack(stack);
+    const gatewayName: string = Object.values(template.findResources('AWS::BedrockAgentCore::Gateway'))[0].Properties.Name;
+    // Auto-generated names keep the construct path's case, while the gateway ARN carries the
+    // name lowercased followed by a hyphen and ten generated characters.
+    expect(gatewayName).toMatch(/[A-Z]/);
+    expectOnlyTrustStatement(template, gatewayArn(`${gatewayName.toLowerCase()}-??????????`));
+  });
+
+  test('trusts the service only for this gateway, matching its explicit name in lowercase', () => {
+    new Gateway(stack, 'Gateway', { gatewayName: 'My-Gateway01' });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('my-gateway01-??????????'));
+  });
+
+  test('trusts the service for any gateway in the account and region, with a warning, when the name is only known at deployment', () => {
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('*'));
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', trustWarning);
+  });
+
+  // A dynamic reference resolves to its `{{resolve:...}}` text during synthesis, but CloudFormation
+  // substitutes the actual name only at deployment, so the name cannot be lowercased either.
+  test.each([
+    ['is a dynamic reference', (ref: string) => ref],
+    ['contains a dynamic reference', (ref: string) => `gw-${ref}`],
+  ])('trusts the service for any gateway in the account and region, with a warning, when the name %s', (_description, nameFor) => {
+    const ref = cdk.Token.asString(new cdk.CfnDynamicReference(cdk.CfnDynamicReferenceService.SSM, '/My/GatewayName'));
+    new Gateway(stack, 'Gateway', { gatewayName: nameFor(ref) });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('*'));
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', trustWarning);
+  });
+
+  // The construct never changes a caller-supplied role, so the warning must say which conditions
+  // that role needs for the trust to be limited to this gateway.
+  test('warns that a supplied role needs its own source account and source ARN conditions', () => {
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString });
+
+    Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', Match.stringLikeRegexp(
+      'use a literal gatewayName, or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway',
+    ));
+  });
+
+  test.each([
+    ['an auto-generated name', undefined],
+    ['a literal name', 'my-gateway'],
+  ])('does not warn about the trust policy for %s', (_description, gatewayName) => {
+    new Gateway(stack, 'Gateway', { gatewayName });
+
+    Annotations.fromStack(stack).hasNoWarning('*', trustWarning);
+  });
+
+  test('leaves the trust policy of a caller-supplied role unchanged, without a warning', () => {
+    const role = new iam.Role(stack, 'CallerRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+    const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
+    new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString, role });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          Match.objectEquals({
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+          }),
+        ],
+      },
+    });
+    Annotations.fromStack(stack).hasNoWarning('*', trustWarning);
   });
 });
 
