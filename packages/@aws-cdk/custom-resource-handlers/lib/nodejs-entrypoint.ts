@@ -21,10 +21,31 @@ export type HandlerResponse = undefined | {
   NoEcho?: boolean;
 };
 
-export function makeHandler(userHandler: Handler) {
+export interface MakeHandlerOptions {
+  /**
+   * Top-level names in `ResourceProperties` and `OldResourceProperties` whose
+   * values are replaced with a placeholder in the event this wrapper logs.
+   *
+   * Use this for properties that may carry deploy-time-sensitive values (for
+   * example a `Ref` to a `NoEcho` parameter): CloudFormation resolves them to
+   * plaintext before invoking the handler. Only the log output is affected; the
+   * user handler always receives the real values.
+   *
+   * Only top-level property names are supported. A name containing `.` is
+   * rejected, which reserves dotted names for nested paths later.
+   *
+   * @default - no properties are redacted
+   */
+  readonly redactProperties?: string[];
+}
+
+export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = {}) {
+  const redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
+
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
-    external.log(JSON.stringify(sanitizedEvent, undefined, 2));
+    const loggableEvent = redactEventForLog(event, redactProperties);
+    external.log(JSON.stringify(loggableEvent, undefined, 2));
 
     // ignore DELETE event when the physical resource ID is the marker that
     // indicates that this DELETE is a subsequent DELETE to a failed CREATE
@@ -64,7 +85,7 @@ export function makeHandler(userHandler: Handler) {
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
+          external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(loggableEvent)}`);
         }
       }
 
@@ -108,7 +129,7 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
 
   const parsedUrl = url.parse(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-  external.log('submit response to cloudformation', loggingSafeUrl, json);
+  external.log('submit response to cloudformation', loggingSafeUrl, json.NoEcho ? redactResponseData(json) : json);
 
   const responseBody = JSON.stringify(json);
   const req = {
@@ -146,6 +167,68 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
       reject(e);
     }
   });
+}
+
+const REDACTED = '*****';
+
+/**
+ * Validates a list of property names to redact from logs. Only top-level names are
+ * supported; anything else fails with an explicit error instead of being ignored.
+ *
+ * NOTE: duplicated in `core/nodejs-entrypoint-handler/index.ts`, which is copied
+ * into assets without bundling and therefore cannot import from here.
+ */
+function validateRedactProperties(names: unknown, source: string): string[] {
+  if (names === undefined) {
+    return [];
+  }
+  if (!Array.isArray(names)) {
+    throw new Error(`Invalid ${source}: expected an array of top-level property names, got ${typeof names}`);
+  }
+  for (const name of names) {
+    if (typeof name !== 'string' || name.length === 0) {
+      throw new Error(`Invalid ${source}: entries must be non-empty strings, got ${JSON.stringify(name)}`);
+    }
+    if (name.includes('.')) {
+      throw new Error(`Invalid ${source}: "${name}" contains '.'; only top-level property names are supported, nested paths are not supported yet`);
+    }
+  }
+  return names;
+}
+
+/**
+ * Returns a copy of the event that is safe to log: the presigned `ResponseURL`
+ * is hidden and the listed top-level properties are replaced with a placeholder
+ * in both `ResourceProperties` and `OldResourceProperties`.
+ */
+function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: string[]) {
+  const loggable: any = { ...event, ResponseURL: '...' };
+  for (const key of ['ResourceProperties', 'OldResourceProperties']) {
+    if (key in loggable) {
+      loggable[key] = redactPropertyValues(loggable[key], redactProperties);
+    }
+  }
+  return loggable;
+}
+
+function redactPropertyValues(props: unknown, redactProperties: string[]) {
+  if (redactProperties.length === 0 || !props || typeof props !== 'object') {
+    return props;
+  }
+  const ret: Record<string, unknown> = { ...props };
+  for (const name of redactProperties) {
+    if (Object.prototype.hasOwnProperty.call(ret, name)) {
+      ret[name] = REDACTED;
+    }
+  }
+  return ret;
+}
+
+function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
+  if (!json.Data) {
+    return json;
+  }
+  return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
 
 function defaultLog(fmt: string, ...params: any[]) {

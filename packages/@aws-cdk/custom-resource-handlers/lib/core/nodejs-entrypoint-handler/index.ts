@@ -23,7 +23,21 @@ export type HandlerResponse = undefined | {
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   const sanitizedEvent = { ...event, ResponseURL: '...' };
-  external.log(JSON.stringify(sanitizedEvent, undefined, 2));
+
+  // load the user module up front, because it declares which properties must not
+  // be logged (`exports.redactProperties`). a load or validation error is reported
+  // to cloudformation below; until then we cannot know which properties are
+  // sensitive, so all property values are redacted from the log.
+  let userModule: UserModule | undefined;
+  let loadError: unknown;
+  try {
+    userModule = loadUserModule();
+  } catch (e) {
+    loadError = e;
+  }
+
+  const loggableEvent = redactEventForLog(event, userModule?.redactProperties ?? REDACT_ALL);
+  external.log(JSON.stringify(loggableEvent, undefined, 2));
 
   // ignore DELETE event when the physical resource ID is the marker that
   // indicates that this DELETE is a subsequent DELETE to a failed CREATE
@@ -38,9 +52,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // invoke the user handler. this is intentionally inside the try-catch to
     // ensure that if there is an error it's reported as a failure to
     // cloudformation (otherwise cfn waits).
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const userHandler: Handler = require(external.userHandlerIndex).handler;
-    const result = await userHandler(sanitizedEvent, context);
+    if (!userModule) {
+      throw loadError;
+    }
+    const result = await userModule.handler(sanitizedEvent, context);
 
     // validate user response and create the combined event
     const responseEvent = renderResponse(event, result);
@@ -65,7 +80,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       } else {
         // otherwise, if PhysicalResourceId is not specified, something is
         // terribly wrong because all other events should have an ID.
-        external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
+        external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(loggableEvent)}`);
       }
     }
 
@@ -108,7 +123,7 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
 
   const parsedUrl = url.parse(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-  external.log('submit response to cloudformation', loggingSafeUrl, json);
+  external.log('submit response to cloudformation', loggingSafeUrl, json.NoEcho ? redactResponseData(json) : json);
 
   const responseBody = JSON.stringify(json);
   const req = {
@@ -146,6 +161,84 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
       reject(e);
     }
   });
+}
+
+interface UserModule {
+  readonly handler: Handler;
+  readonly redactProperties: string[];
+}
+
+function loadUserModule(): UserModule {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mod = require(external.userHandlerIndex);
+  return {
+    handler: mod.handler,
+    redactProperties: validateRedactProperties(mod.redactProperties, '"exports.redactProperties"'),
+  };
+}
+
+const REDACTED = '*****';
+const REDACT_ALL = Symbol('redact-all');
+
+/**
+ * Validates a list of property names to redact from logs. Only top-level names are
+ * supported; anything else fails with an explicit error instead of being ignored.
+ *
+ * NOTE: duplicated from `nodejs-entrypoint.ts`. This file is copied into assets
+ * without bundling, so it cannot import shared code.
+ */
+function validateRedactProperties(names: unknown, source: string): string[] {
+  if (names === undefined) {
+    return [];
+  }
+  if (!Array.isArray(names)) {
+    throw new Error(`Invalid ${source}: expected an array of top-level property names, got ${typeof names}`);
+  }
+  for (const name of names) {
+    if (typeof name !== 'string' || name.length === 0) {
+      throw new Error(`Invalid ${source}: entries must be non-empty strings, got ${JSON.stringify(name)}`);
+    }
+    if (name.includes('.')) {
+      throw new Error(`Invalid ${source}: "${name}" contains '.'; only top-level property names are supported, nested paths are not supported yet`);
+    }
+  }
+  return names;
+}
+
+/**
+ * Returns a copy of the event that is safe to log: the presigned `ResponseURL`
+ * is hidden and the listed top-level properties (or all of them) are replaced
+ * with a placeholder in both `ResourceProperties` and `OldResourceProperties`.
+ */
+function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: string[] | typeof REDACT_ALL) {
+  const loggable: any = { ...event, ResponseURL: '...' };
+  for (const key of ['ResourceProperties', 'OldResourceProperties']) {
+    if (key in loggable) {
+      loggable[key] = redactPropertyValues(loggable[key], redactProperties);
+    }
+  }
+  return loggable;
+}
+
+function redactPropertyValues(props: unknown, redactProperties: string[] | typeof REDACT_ALL) {
+  if (!props || typeof props !== 'object') {
+    return props;
+  }
+  const names = redactProperties === REDACT_ALL ? Object.keys(props) : redactProperties;
+  const ret: Record<string, unknown> = { ...props };
+  for (const name of names) {
+    if (Object.prototype.hasOwnProperty.call(ret, name)) {
+      ret[name] = REDACTED;
+    }
+  }
+  return ret;
+}
+
+function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
+  if (!json.Data) {
+    return json;
+  }
+  return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
 
 function defaultLog(fmt: string, ...params: any[]) {
