@@ -119,6 +119,17 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "DSSEBucketEncryption": {
+   "Value": "DSSE_MANAGED"
+  },
+  "SSES3BucketEncryption": {
+   "Value": "S3_MANAGED"
+  },
+  "KMSBucketEncryption": {
+   "Value": "KMS"
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
