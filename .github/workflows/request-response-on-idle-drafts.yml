@@ -37,7 +37,7 @@ jobs:
       - name: Install type dependencies
         run: yarn install --frozen-lockfile
       - name: Compile TypeScript
-        run: npx tsc --project scripts/tsconfig.request-response-on-idle-drafts.json
+        run: npx tsc --target es2020 --module node20 --strict --skipLibCheck --esModuleInterop scripts/request-response-on-idle-drafts.ts
       - name: Request response on idle drafts
         uses: actions/github-script@v9
         env:
