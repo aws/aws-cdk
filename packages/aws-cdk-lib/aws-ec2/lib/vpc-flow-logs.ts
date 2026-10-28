@@ -9,6 +9,7 @@ import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
 import type { IResource } from '../../core';
 import {
+  ArnFormat,
   Validations,
   CfnResource,
   FeatureFlags,
@@ -24,7 +25,10 @@ import {
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
+import {
+  EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED,
+  S3_CREATE_DEFAULT_LOGGING_POLICY,
+} from '../../cx-api';
 
 /**
  * Name tag constant
@@ -448,17 +452,34 @@ class CloudWatchLogsDestination extends FlowLogDestination {
       logGroup = this.props.logGroup;
     }
 
+    const isScopedCloudWatchLogsPermissions =
+      FeatureFlags.of(scope).isEnabled(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED);
     iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:PutLogEvents',
-          'logs:DescribeLogStreams',
-        ],
+        actions: isScopedCloudWatchLogsPermissions
+          ? ['logs:CreateLogStream', 'logs:PutLogEvents']
+          : ['logs:CreateLogStream', 'logs:PutLogEvents', 'logs:DescribeLogStreams'],
         effect: iam.Effect.ALLOW,
         resources: [logGroup.logGroupRef.logGroupArn],
       }),
     );
+
+    if (isScopedCloudWatchLogsPermissions) {
+      iamRole.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          actions: ['logs:DescribeLogStreams'],
+          effect: iam.Effect.ALLOW,
+          resources: [Stack.of(logGroup).formatArn({
+            service: 'logs',
+            account: logGroup.env.account,
+            region: logGroup.env.region,
+            resource: 'log-group',
+            resourceName: logGroup.logGroupRef.logGroupName,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          })],
+        }),
+      );
+    }
 
     return {
       logDestinationType: FlowLogDestinationType.CLOUD_WATCH_LOGS,
