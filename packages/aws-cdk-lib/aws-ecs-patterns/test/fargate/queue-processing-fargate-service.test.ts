@@ -1048,3 +1048,62 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
     HealthCheckGracePeriodSeconds: 120,
   });
 });
+
+test('QueueProcessingFargateService omits AvailabilityZoneRebalancing by default', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    AvailabilityZoneRebalancing: Match.absent(),
+  });
+});
+
+test('QueueProcessingFargateService passes availabilityZoneRebalancing through', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    AvailabilityZoneRebalancing: 'ENABLED',
+  });
+});
+
+test('QueueProcessingFargateService passes availabilityZoneRebalancing DISABLED through', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.DISABLED,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    AvailabilityZoneRebalancing: 'DISABLED',
+  });
+});
