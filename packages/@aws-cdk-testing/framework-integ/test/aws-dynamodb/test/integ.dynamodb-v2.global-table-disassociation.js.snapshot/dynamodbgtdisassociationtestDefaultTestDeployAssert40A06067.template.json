@@ -16,7 +16,7 @@
      "TableName": "\"aws-cdk-dynamodb-gt-disassociation-integ\""
     },
     "flattenResponse": "false",
-    "salt": "1789415808427"
+    "salt": "1793186771647"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -79,7 +79,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "428190d5eeaafd22b80e5da36f1e1d5c9f7f8b38cca6acc34e1d86135fe817c4.zip"
+     "S3Key": "6f9a0690ddb09262b16c59cd6592b6dd188423b31bb364097829973d59c17be5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -111,7 +111,7 @@
      "TableName": "\"aws-cdk-dynamodb-regional-tabletype-integ\""
     },
     "flattenResponse": "false",
-    "salt": "1789415808428"
+    "salt": "1793186771649"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

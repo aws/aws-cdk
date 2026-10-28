@@ -8,7 +8,7 @@ const app = new App();
 
 /**
  * A global table declaring its type explicitly, with disassociation protection
- * enabled on the primary (inherited by the us-west-2 replica through the usual
+ * enabled on the primary (inherited by the us-east-2 replica through the usual
  * propagation rules) and disabled on the opted-out replica.
  */
 class GlobalTableStack extends Stack {
@@ -23,8 +23,8 @@ class GlobalTableStack extends Stack {
       tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA,
       disassociationProtection: true,
       replicas: [
-        { region: 'us-west-2' },
-        { region: 'us-east-2', disassociationProtection: false },
+        { region: 'us-east-2' },
+        { region: 'us-west-1', disassociationProtection: false },
       ],
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -66,14 +66,15 @@ class RegionalTableStack extends Stack {
 }
 
 const globalTableStack = new GlobalTableStack(app, 'aws-cdk-dynamodb-gt-disassociation', {
-  env: { region: 'us-east-1' },
+  env: { region: 'us-west-2' },
 });
 const regionalTableStack = new RegionalTableStack(app, 'aws-cdk-dynamodb-regional-tabletype', {
-  env: { region: 'us-east-1' },
+  env: { region: 'us-west-2' },
 });
 
 const integ = new IntegTest(app, 'dynamodb-gt-disassociation-test', {
   testCases: [globalTableStack, regionalTableStack],
+  regions: ['us-west-2'],
 });
 
 // Verify both tables were created and are ACTIVE.

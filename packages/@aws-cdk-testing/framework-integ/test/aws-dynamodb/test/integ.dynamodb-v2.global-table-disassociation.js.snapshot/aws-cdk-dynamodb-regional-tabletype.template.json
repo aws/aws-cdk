@@ -18,7 +18,7 @@
     ],
     "Replicas": [
      {
-      "Region": "us-east-1"
+      "Region": "us-west-2"
      }
     ],
     "TableName": "aws-cdk-dynamodb-regional-tabletype-integ",

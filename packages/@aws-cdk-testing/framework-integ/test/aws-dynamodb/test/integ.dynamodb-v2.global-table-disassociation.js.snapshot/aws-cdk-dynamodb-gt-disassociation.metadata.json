@@ -2,15 +2,42 @@
   "/aws-cdk-dynamodb-gt-disassociation/GlobalTable": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "tableName": "*",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "replicas": [
+          {
+            "region": "*"
+          },
+          {
+            "region": "*"
+          }
+        ],
+        "removalPolicy": "destroy"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:hasPhysicalName",

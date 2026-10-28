@@ -872,6 +872,8 @@ Disassociating a replica stops replication to and from it and keeps it as a stan
 
 Disassociation is supported for multi-Region eventual consistency (MREC) global tables only. It cannot be undone: the standalone table cannot rejoin the global table it left. A stack can disassociate only the replica in its own account and Region. If the global table has three or more replicas, the other replicas continue as a global table and the stack no longer manages them. If the global table has two replicas, both tables become standalone.
 
+DynamoDB rejects disassociating a replica that was the source for a new replica added in the last 24 hours. CloudFormation adds replicas from the table in the stack's Region, so run the second deployment at least 24 hours after the last replica was added.
+
 The IAM principal that CloudFormation uses to deploy the stack needs `dynamodb:UpdateTable` and `dynamodb:DisassociateTableReplica` on the table. The default CDK bootstrap execution role has these permissions. A bootstrap with custom execution policies needs them added.
 
 ### Same-account global table
@@ -917,7 +919,7 @@ const table = new dynamodb.TableV2(this, 'Table', {
 
 `TableV2` rejects `replicas`, `witnessRegion`, `multiRegionConsistency` and `globalTableSettingsReplicationMode` together with `TableType.REGIONAL`, and warns when `disassociationProtection` is declared or `dynamoStream` is not. Deploy this change on its own, with no changes to other resources in the stack.
 
-The stack continues to manage the `us-east-1` table as a standalone table. The `us-east-2` and `us-west-2` tables continue as a global table that the stack no longer manages. To manage them with CloudFormation, import them into a stack in one of their Regions. To disassociate a replica in a Region other than the stack's Region, first import that replica into a stack in its own Region (`cdk import`) as a `TableV2` that lists every other replica in `replicas` and declares `tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA`, and then run the two deployments in that stack.
+The stack continues to manage the `us-east-1` table as a standalone table. The `us-east-2` and `us-west-2` tables continue as a global table that the stack no longer manages. To manage them with CloudFormation, import them into a stack in one of their Regions. To disassociate a replica in a Region other than the stack's Region, first import that replica into a stack in its own Region (`cdk import`) as a `TableV2` that lists every other replica in `replicas` and declares `tableType: dynamodb.TableType.GLOBAL_TABLE_REPLICA`, and then run the two deployments in that stack. After the second deployment, remove that Region from `replicas` in the stack that manages the rest of the global table. CloudFormation finds the table already standalone and deletes nothing.
 
 ### Multi-account global table
 

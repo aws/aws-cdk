@@ -6,6 +6,9 @@
         "aws-cdk-dynamodb-gt-disassociation",
         "aws-cdk-dynamodb-regional-tabletype"
       ],
+      "regions": [
+        "us-west-2"
+      ],
       "assertionStack": "dynamodb-gt-disassociation-test/DefaultTest/DeployAssert",
       "assertionStackName": "dynamodbgtdisassociationtestDefaultTestDeployAssert40A06067"
     }

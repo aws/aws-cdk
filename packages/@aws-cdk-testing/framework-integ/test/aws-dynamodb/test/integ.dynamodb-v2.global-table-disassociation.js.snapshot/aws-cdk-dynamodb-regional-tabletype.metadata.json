@@ -2,7 +2,14 @@
   "/aws-cdk-dynamodb-regional-tabletype/RegionalTable": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "tableName": "*",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
     },
     {
       "type": "aws:cdk:hasPhysicalName",

@@ -19,15 +19,15 @@
     "Replicas": [
      {
       "DisassociationProtectionEnabled": true,
-      "Region": "us-west-2"
-     },
-     {
-      "DisassociationProtectionEnabled": false,
       "Region": "us-east-2"
      },
      {
+      "DisassociationProtectionEnabled": false,
+      "Region": "us-west-1"
+     },
+     {
       "DisassociationProtectionEnabled": true,
-      "Region": "us-east-1"
+      "Region": "us-west-2"
      }
     ],
     "StreamSpecification": {
