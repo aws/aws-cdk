@@ -252,7 +252,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The operating system that your task definitions are running on.
    *
-   * A runtimePlatform is supported only for tasks using the Fargate launch type.
+   * A runtimePlatform is not supported for tasks using the External launch type.
    *
    * @default - Undefined.
    */
@@ -556,8 +556,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    if (!this.isFargateCompatible && !this.isManagedInstancesCompatible && props.runtimePlatform) {
-      throw new ValidationError(lit`CannotSpecifyRuntimePlatform`, 'Cannot specify runtimePlatform in non-Fargate and non-Managed Instances compatible tasks', this);
+    if (this.isExternalCompatible && props.runtimePlatform) {
+      throw new ValidationError(lit`CannotSpecifyRuntimePlatform`, 'Cannot specify runtimePlatform in External compatible tasks', this);
     }
 
     // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
@@ -579,7 +579,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.pidMode = props.pidMode;
 
     // validate the cpu and memory size for the Windows operation system family.
-    if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
+    if (this.isFargateCompatible && props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
       // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
       // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
@@ -614,7 +614,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
-      runtimePlatform: (this.isFargateCompatible || this.isManagedInstancesCompatible) && this._runtimePlatform ? {
+      runtimePlatform: this._runtimePlatform ? {
         cpuArchitecture: this._runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this._runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,

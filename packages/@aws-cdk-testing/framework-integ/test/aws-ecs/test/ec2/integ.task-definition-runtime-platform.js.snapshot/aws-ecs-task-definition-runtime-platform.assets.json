@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "1971d3e5cd12c24731428a93c7dbdbadf84e3ffcfd83087710a95537b86773cb": {
+      "displayName": "aws-ecs-task-definition-runtime-platform Template",
+      "source": {
+        "path": "aws-ecs-task-definition-runtime-platform.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a109a30a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1971d3e5cd12c24731428a93c7dbdbadf84e3ffcfd83087710a95537b86773cb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
