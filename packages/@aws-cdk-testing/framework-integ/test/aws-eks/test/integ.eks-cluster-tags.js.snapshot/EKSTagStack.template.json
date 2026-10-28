@@ -760,7 +760,8 @@
       "endpointPrivateAccess": true
      },
      "tags": {
-      "foo": "world"
+      "foo": "bar",
+      "hello": "world"
      },
      "accessConfig": {}
     },
