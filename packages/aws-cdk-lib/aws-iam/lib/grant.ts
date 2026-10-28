@@ -170,6 +170,7 @@ export class Grant implements IDependable {
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
       principals: [options.grantee!.grantPrincipal],
+      conditions: options.conditions,
     });
 
     const resourceResult = options.resource.addToResourcePolicy(statement);
@@ -279,6 +280,7 @@ export class Grant implements IDependable {
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
       principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
+      conditions: options.conditions,
     });
 
     const resourceResult = options.resource.addToResourcePolicy(statement);

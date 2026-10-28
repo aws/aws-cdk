@@ -58,6 +58,10 @@ export interface HelmChartOptions {
    *  installationCRDs: true,
    *  webhook: { port: 9443 }
    * }
+   *
+   * In languages other than TypeScript and JavaScript, `null` values (such as
+   * `None` in Python) are dropped when crossing the jsii boundary. To pass
+   * `null` values to the chart, see the "Helm Charts" section of the module README.
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};

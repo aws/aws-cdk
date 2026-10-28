@@ -437,7 +437,10 @@ class SharedConverterGenerator {
       throw Error(`${event.name} ${propName} is not a string, but ${prop.type.type}`);
     }
 
-    return expr.list([expr.directCode(`iRef?.${this.context.referenceName}.${targetProp.declaration.name}`)]);
+    const referenceValue = expr.directCode(`iRef.${this.context.referenceName}.${targetProp.declaration.name}`);
+    return expr.cond(expr.eq(expr.ident('iRef'), expr.UNDEFINED))
+      .then(expr.UNDEFINED)
+      .else(expr.list([referenceValue]));
   }
 }
 

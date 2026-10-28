@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "6cdb2c3c4e478cd54737608f705d5e132e01691f64727ec2a4a2401d3b9ee85b": {
+      "source": {
+        "path": "asset.6cdb2c3c4e478cd54737608f705d5e132e01691f64727ec2a4a2401d3b9ee85b.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-78313c46": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6cdb2c3c4e478cd54737608f705d5e132e01691f64727ec2a4a2401d3b9ee85b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "123ffef8ea9405c3e87062ee4f5d3a627a9c378de802ea8bf75ce07d1bd6eded": {
+      "displayName": "GrantResourcePolicyConditionsTestDefaultTestDeployAssertFCCD86E7 Template",
+      "source": {
+        "path": "GrantResourcePolicyConditionsTestDefaultTestDeployAssertFCCD86E7.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-387f194b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "123ffef8ea9405c3e87062ee4f5d3a627a9c378de802ea8bf75ce07d1bd6eded.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
