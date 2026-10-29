@@ -7,7 +7,9 @@ FROM $IMAGE
 RUN npm install --global yarn@1.22.5
 
 # Install pnpm
-RUN npm install --global pnpm@7.33.7
+# pnpm 7 cannot read lock files of pnpm 9 and later, use the PNPM_VERSION build arg to install a newer version
+ARG PNPM_VERSION=7.33.7
+RUN npm install --global pnpm@$PNPM_VERSION
 
 # Install bun
 RUN npm install --global bun@1.2.23
