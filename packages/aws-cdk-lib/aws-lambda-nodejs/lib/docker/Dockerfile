@@ -33,8 +33,9 @@ RUN mkdir /tmp/yarn-cache && \
 
 # Ensure all users can write to pnpm cache
 RUN mkdir /tmp/pnpm-cache && \
-    chmod -R 777 /tmp/pnpm-cache && \
-    pnpm config --global set store-dir /tmp/pnpm-cache
+    chmod -R 777 /tmp/pnpm-cache
+ENV npm_config_store_dir=/tmp/pnpm-cache
+ENV pnpm_config_store_dir=/tmp/pnpm-cache
 
 # Disable npm update notifications
 RUN npm config --global set update-notifier false
