@@ -29,6 +29,18 @@ export interface IAttributeGroup extends cdk.IResource {
   readonly attributeGroupId: string;
 
   /**
+   * The attributes that compose the attribute group, as a JSON of nested key-value pairs.
+   *
+   * For an attribute group created in this stack, these are the attributes supplied at creation.
+   * For an attribute group imported via `fromAttributeGroupAttributes`, these are the attributes passed
+   * at import time, since AppRegistry does not return attributes from an ARN.
+   *
+   * @default - the attributes supplied at creation; for imports, the attributes passed to
+   * `fromAttributeGroupAttributes`, or `undefined` if none were provided
+   */
+  readonly attributes?: { [key: string]: any };
+
+  /**
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
    *
    * @param id The construct name for the share.
@@ -65,9 +77,30 @@ export interface AttributeGroupProps {
   readonly attributes: { [key: string]: any };
 }
 
+/**
+ * Properties for importing an existing Service Catalog AppRegistry Attribute Group.
+ */
+export interface AttributeGroupAttributes {
+  /**
+   * The Amazon Resource Name (ARN) of the existing AppRegistry attribute group.
+   */
+  readonly attributeGroupArn: string;
+
+  /**
+   * The attributes that compose the attribute group, as a JSON of nested key-value pairs.
+   *
+   * AppRegistry does not return attributes from an ARN, so provide them here if your stack needs to
+   * read them back via the imported attribute group's `attributes` property.
+   *
+   * @default - the imported attribute group's `attributes` resolves to `undefined`
+   */
+  readonly attributes?: { [key: string]: any };
+}
+
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
   public abstract readonly attributeGroupArn: string;
   public abstract readonly attributeGroupId: string;
+  public abstract readonly attributes?: { [key: string]: any };
   private readonly associatedApplications: Set<string> = new Set();
 
   public associateWith(application: IApplication): void {
@@ -125,21 +158,40 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
   /**
    * Imports an attribute group construct that represents an external attribute group.
    *
+   * The imported attribute group's `attributes` property resolves to `undefined`. Use
+   * `fromAttributeGroupAttributes` instead if you need it populated.
+   *
    * @param scope The parent creating construct (usually `this`).
    * @param id The construct's name.
    * @param attributeGroupArn the Amazon Resource Name of the existing AppRegistry attribute group
    */
   public static fromAttributeGroupArn(scope: Construct, id: string, attributeGroupArn: string): IAttributeGroup {
-    const arn = cdk.Stack.of(scope).splitArn(attributeGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
+    return AttributeGroup.fromAttributeGroupAttributes(scope, id, { attributeGroupArn });
+  }
+
+  /**
+   * Imports an attribute group construct that represents an external attribute group, including its
+   * attributes.
+   *
+   * Use this instead of `fromAttributeGroupArn` when you want the imported attribute group's
+   * `attributes` property to be populated, since AppRegistry does not return attributes from an ARN.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs the attributes of the existing AppRegistry attribute group being imported.
+   */
+  public static fromAttributeGroupAttributes(scope: Construct, id: string, attrs: AttributeGroupAttributes): IAttributeGroup {
+    const arn = cdk.Stack.of(scope).splitArn(attrs.attributeGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME);
     const attributeGroupId = arn.resourceName;
 
     if (!attributeGroupId) {
-      throw new Error('Missing required Attribute Group ID from Attribute Group ARN: ' + attributeGroupArn);
+      throw new Error('Missing required Attribute Group ID from Attribute Group ARN: ' + attrs.attributeGroupArn);
     }
 
     class Import extends AttributeGroupBase {
-      public readonly attributeGroupArn = attributeGroupArn;
+      public readonly attributeGroupArn = attrs.attributeGroupArn;
       public readonly attributeGroupId = attributeGroupId!;
+      public readonly attributes = attrs.attributes;
 
       protected generateUniqueHash(resourceAddress: string): string {
         return hashValues(this.attributeGroupArn, resourceAddress);
@@ -147,12 +199,13 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
     }
 
     return new Import(scope, id, {
-      environmentFromArn: attributeGroupArn,
+      environmentFromArn: attrs.attributeGroupArn,
     });
   }
 
   public readonly attributeGroupArn: string;
   public readonly attributeGroupId: string;
+  public readonly attributes?: { [key: string]: any };
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: AttributeGroupProps) {
@@ -170,6 +223,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
     this.attributeGroupArn = attributeGroup.attrArn;
     this.attributeGroupId = attributeGroup.attrId;
+    this.attributes = props.attributes;
     this.nodeAddress = cdk.Names.nodeUniqueId(attributeGroup.node);
   }
 
