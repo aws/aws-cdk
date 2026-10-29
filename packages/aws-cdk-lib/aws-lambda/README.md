@@ -2045,7 +2045,7 @@ new lambda.Function(this, 'Function', {
 
 ## WebFunction
 
-`WebFunction` is a serverless compute resource that lets you build and deploy low-latency web applications on AWS infrastructure. WebFunctions deploy as function endpoints spanning multiple regions, acting as global web servers — no API Gateway or CloudFront required.
+`WebFunction` is a serverless compute resource that lets you build and deploy low-latency web applications on AWS infrastructure. Each WebFunction gets its own HTTPS endpoint, in one Region by default or across several.
 
 ### Basic Usage
 
@@ -2228,7 +2228,8 @@ Change retention in a deployment that does not also change `copyOptions` or the 
 bucket. Such a change replaces the copy function, and the old copy is removed under its
 previous policy.
 
-One copy function is created per stack and shared by all WebFunctions in it. Pass
+One copy function is created for each destination bucket and set of `copyOptions`, and shared
+by every WebFunction in the stack that uses them. Pass
 `copyOptions` if your organization requires it to run inside a VPC, or to give it an
 execution role, security groups or log group of your own:
 
@@ -2319,9 +2320,11 @@ fn.endpoint.grants.invoke(new iam.ServicePrincipal('cloudfront.amazonaws.com', {
 
 A web function has a single resource-based policy, so every statement for it, from any of its
 endpoints or from `addToResourcePolicy()`, goes into one `AWS::Lambda::ResourcePolicy`. Do not
-define another policy for the same function: `AWS::Lambda::ResourcePolicy` replaces the whole
-document. For the same reason the policy of an imported WebFunction cannot be added to; CDK
-warns instead.
+define another policy for the same function: a second `AWS::Lambda::ResourcePolicy` fails with
+"already exists", and so does this one when the function already has a policy set outside
+CloudFormation. To move from such a policy, or from a `CfnResourcePolicy` of your own, to
+`grants.invoke()`, deploy twice: first remove the old policy, then add the grants. For the same
+reason the policy of an imported WebFunction cannot be added to; CDK warns instead.
 
 The policy is in the WebFunction's stack. If the distribution is in another stack, the
 condition on its ARN makes the function's stack depend on the distribution's, while the
