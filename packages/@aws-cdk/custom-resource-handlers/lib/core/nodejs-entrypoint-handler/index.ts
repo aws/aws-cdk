@@ -24,10 +24,21 @@ export type HandlerResponse = undefined | {
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   const sanitizedEvent = { ...event, ResponseURL: '...' };
 
-  // load the user module up front, because it declares which properties must not
-  // be logged (`exports.redactProperties`). a load or validation error is reported
-  // to cloudformation below; until then we cannot know which properties are
-  // sensitive, so all property values are redacted from the log.
+  // ignore DELETE event when the physical resource ID is the marker that
+  // indicates that this DELETE is a subsequent DELETE to a failed CREATE
+  // operation. the user module is not loaded on this path, so which properties
+  // are sensitive is unknown: redact all of them from the log.
+  if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
+    external.log(JSON.stringify(redactEventForLog(event, REDACT_ALL), undefined, 2));
+    external.log('ignoring DELETE event caused by a failed CREATE event');
+    await submitResponse('SUCCESS', event);
+    return;
+  }
+
+  // load the user module before logging, because it declares which properties
+  // must not be logged (`exports.redactProperties`). a load or validation error
+  // is reported to cloudformation below; until then we cannot know which
+  // properties are sensitive, so all property values are redacted from the log.
   let userModule: UserModule | undefined;
   let loadError: unknown;
   try {
@@ -38,15 +49,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   const loggableEvent = redactEventForLog(event, userModule?.redactProperties ?? REDACT_ALL);
   external.log(JSON.stringify(loggableEvent, undefined, 2));
-
-  // ignore DELETE event when the physical resource ID is the marker that
-  // indicates that this DELETE is a subsequent DELETE to a failed CREATE
-  // operation.
-  if (event.RequestType === 'Delete' && event.PhysicalResourceId === CREATE_FAILED_PHYSICAL_ID_MARKER) {
-    external.log('ignoring DELETE event caused by a failed CREATE event');
-    await submitResponse('SUCCESS', event);
-    return;
-  }
 
   try {
     // invoke the user handler. this is intentionally inside the try-catch to
@@ -177,15 +179,18 @@ function loadUserModule(): UserModule {
   };
 }
 
+// BEGIN shared log-redaction helpers
+// This block is duplicated byte-for-byte in `nodejs-entrypoint.ts` and
+// `core/nodejs-entrypoint-handler/index.ts`. The core entrypoint is copied into
+// assets without bundling, so it cannot import shared code.
+// `test/redaction-helpers-in-sync.test.ts` fails if the two copies diverge.
+
 const REDACTED = '*****';
 const REDACT_ALL = Symbol('redact-all');
 
 /**
  * Validates a list of property names to redact from logs. Only top-level names are
  * supported; anything else fails with an explicit error instead of being ignored.
- *
- * NOTE: duplicated from `nodejs-entrypoint.ts`. This file is copied into assets
- * without bundling, so it cannot import shared code.
  */
 function validateRedactProperties(names: unknown, source: string): string[] {
   if (names === undefined) {
@@ -240,6 +245,7 @@ function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse
   }
   return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
+// END shared log-redaction helpers
 
 function defaultLog(fmt: string, ...params: any[]) {
   console.log(fmt, ...params);

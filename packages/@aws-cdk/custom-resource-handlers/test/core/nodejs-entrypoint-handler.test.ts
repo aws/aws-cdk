@@ -249,6 +249,23 @@ describe('nodejs entrypoint', () => {
       expect(JSON.parse(logs[0]).ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
     });
 
+    test('the ignored DELETE after a failed CREATE does not load the user module and redacts all properties', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Delete',
+        PhysicalResourceId: 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED',
+        ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'SECRET-CONFIG' },
+      });
+
+      // WHEN - loading this module would throw
+      const { logs, response } = await invokeHandler(event, async _ => undefined, 'throw new Error("must not be loaded");');
+
+      // THEN
+      expect(response.Status).toEqual('SUCCESS');
+      expect(logs.join('\n')).not.toContain('SECRET-CONFIG');
+      expect(JSON.parse(logs[0]).ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
+    });
+
     test('a user module that fails to load fails the request and redacts all properties', async () => {
       // GIVEN
       const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'SECRET-CONFIG' } });

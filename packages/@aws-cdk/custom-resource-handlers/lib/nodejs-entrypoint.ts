@@ -169,14 +169,18 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
   });
 }
 
+// BEGIN shared log-redaction helpers
+// This block is duplicated byte-for-byte in `nodejs-entrypoint.ts` and
+// `core/nodejs-entrypoint-handler/index.ts`. The core entrypoint is copied into
+// assets without bundling, so it cannot import shared code.
+// `test/redaction-helpers-in-sync.test.ts` fails if the two copies diverge.
+
 const REDACTED = '*****';
+const REDACT_ALL = Symbol('redact-all');
 
 /**
  * Validates a list of property names to redact from logs. Only top-level names are
  * supported; anything else fails with an explicit error instead of being ignored.
- *
- * NOTE: duplicated in `core/nodejs-entrypoint-handler/index.ts`, which is copied
- * into assets without bundling and therefore cannot import from here.
  */
 function validateRedactProperties(names: unknown, source: string): string[] {
   if (names === undefined) {
@@ -198,10 +202,10 @@ function validateRedactProperties(names: unknown, source: string): string[] {
 
 /**
  * Returns a copy of the event that is safe to log: the presigned `ResponseURL`
- * is hidden and the listed top-level properties are replaced with a placeholder
- * in both `ResourceProperties` and `OldResourceProperties`.
+ * is hidden and the listed top-level properties (or all of them) are replaced
+ * with a placeholder in both `ResourceProperties` and `OldResourceProperties`.
  */
-function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: string[]) {
+function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: string[] | typeof REDACT_ALL) {
   const loggable: any = { ...event, ResponseURL: '...' };
   for (const key of ['ResourceProperties', 'OldResourceProperties']) {
     if (key in loggable) {
@@ -211,12 +215,13 @@ function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, r
   return loggable;
 }
 
-function redactPropertyValues(props: unknown, redactProperties: string[]) {
-  if (redactProperties.length === 0 || !props || typeof props !== 'object') {
+function redactPropertyValues(props: unknown, redactProperties: string[] | typeof REDACT_ALL) {
+  if (!props || typeof props !== 'object') {
     return props;
   }
+  const names = redactProperties === REDACT_ALL ? Object.keys(props) : redactProperties;
   const ret: Record<string, unknown> = { ...props };
-  for (const name of redactProperties) {
+  for (const name of names) {
     if (Object.prototype.hasOwnProperty.call(ret, name)) {
       ret[name] = REDACTED;
     }
@@ -230,6 +235,7 @@ function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse
   }
   return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
+// END shared log-redaction helpers
 
 function defaultLog(fmt: string, ...params: any[]) {
   console.log(fmt, ...params);
