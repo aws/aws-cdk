@@ -403,7 +403,7 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants query permissions to a caller-supplied role, starting queries only on the log groups', () => {
+  test('grants query permissions to a caller-supplied role, scoped to the log groups', () => {
     new LogAlarm(stack, 'Alarm', baseProps());
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -413,7 +413,10 @@ describe('LogAlarm', () => {
             Action: 'logs:StartQuery',
             Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
           }),
-          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: '*' }),
+          Match.objectLike({
+            Action: 'logs:GetQueryResults',
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
+          }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
@@ -521,21 +524,6 @@ describe('LogAlarm', () => {
       ...props,
       scheduledQueryConfiguration: { ...props.scheduledQueryConfiguration, logGroups: [] },
     })).toThrow(/logGroups must contain between 1 and 50 entries, got 0/);
-  });
-
-  test('fails when actionLogLineRole is given without actionLogLineCount', () => {
-    expect(() => new LogAlarm(stack, 'Alarm', {
-      ...baseProps(),
-      actionLogLineRole: queryRole,
-    })).toThrow(/actionLogLineRole is only used when actionLogLineCount is greater than 0/);
-  });
-
-  test('fails when actionLogLineRole is given with actionLogLineCount of 0', () => {
-    expect(() => new LogAlarm(stack, 'Alarm', {
-      ...baseProps(),
-      actionLogLineCount: 0,
-      actionLogLineRole: queryRole,
-    })).toThrow(/actionLogLineRole is only used when actionLogLineCount is greater than 0/);
   });
 
   test.each([
@@ -692,10 +680,10 @@ describe('LogAlarm', () => {
     })).toThrow(/not supported by log alarms/);
   });
 
-  test('auto-creates a log line role when actionLogLineCount > 0 and no role is given', () => {
+  test('auto-creates a log line role when actionLogLines is given without a role', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      actionLogLineCount: 10,
+      actionLogLines: { count: 10 },
     });
 
     const template = Template.fromStack(stack);
@@ -722,7 +710,7 @@ describe('LogAlarm', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
       alarmName: 'my-log-alarm',
-      actionLogLineCount: 10,
+      actionLogLines: { count: 10 },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -747,7 +735,7 @@ describe('LogAlarm', () => {
   test('matches any alarm in the log line role trust policy when alarmName is generated', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      actionLogLineCount: 10,
+      actionLogLines: { count: 10 },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -769,10 +757,30 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants logs:GetQueryResults to the log line role', () => {
+  test('grants the log line role logs:GetQueryResults on the log groups', () => {
     new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      actionLogLineCount: 10,
+      actionLogLines: { count: 10 },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] } }),
+        ]),
+      }),
+      Roles: [{ Ref: Match.stringLikeRegexp('^AlarmLogLineRole') }],
+    });
+  });
+
+  test('grants the log line role logs:GetQueryResults on * when the query selects its own log groups', () => {
+    const props = baseProps();
+    const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
+    void logGroups;
+    new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: sqcWithout,
+      actionLogLines: { count: 10 },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -783,6 +791,31 @@ describe('LogAlarm', () => {
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^AlarmLogLineRole') }],
     });
+  });
+
+  test('uses a caller-supplied log line role and grants it read permission', () => {
+    const logLineRole = new Role(stack, 'LogLineRole', {
+      assumedBy: new ServicePrincipal('cloudwatch.amazonaws.com'),
+    });
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLines: { count: 5, role: logLineRole },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ActionLogLineCount: 5,
+      ActionLogLineRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogLineRole'), 'Arn'] },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] } }),
+        ]),
+      }),
+      Roles: [{ Ref: Match.stringLikeRegexp('^LogLineRole') }],
+    });
+    template.resourceCountIs('AWS::IAM::Role', 2);
   });
 
   test('fromLogAlarmArn derives the alarm name', () => {
@@ -832,12 +865,30 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('fails when actionLogLineCount exceeds 50', () => {
+  test.each([0, 51, 1.5])('fails for an actionLogLines count of %s', (count) => {
     expect(() => new LogAlarm(stack, 'Alarm', {
       ...baseProps(),
-      actionLogLineCount: 51,
-      actionLogLineRole: queryRole,
-    })).toThrow(/actionLogLineCount must be an integer between 0 and 50/);
+      actionLogLines: { count },
+    })).toThrow(/actionLogLines.count must be an integer between 1 and 50/);
+  });
+
+  test.each(['alarmActions', 'okActions', 'insufficientDataActions'])('fails when %s has more than 5 actions', (propName) => {
+    const actions = Array.from({ length: 6 }, (_, i): IAlarmAction => ({
+      bind: () => ({ alarmActionArn: `arn:aws:sns:us-east-1:123456789012:topic-${i}` }),
+    }));
+
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      [propName]: actions,
+    })).toThrow(new RegExp(`${propName} can contain at most 5 actions, got 6`));
+  });
+
+  test('fails when adding an action beyond 5 for a state', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+    const action = (i: number): IAlarmAction => ({ bind: () => ({ alarmActionArn: `arn:aws:sns:us-east-1:123456789012:topic-${i}` }) });
+    alarm.addAlarmAction(...[0, 1, 2, 3, 4].map(action));
+
+    expect(() => alarm.addAlarmAction(action(5))).toThrow(/alarmActions can contain at most 5 actions, got 6/);
   });
 
   test('fails when startTimeOffset exceeds 30 days', () => {
@@ -847,7 +898,31 @@ describe('LogAlarm', () => {
         ...baseProps().scheduledQueryConfiguration,
         schedule: { rate: Duration.minutes(5), startTimeOffset: Duration.days(31) },
       },
-    })).toThrow(/startTimeOffset must be between 1 second and 2592000 seconds/);
+    })).toThrow(/startTimeOffset must be a whole number of seconds between 1 and 2592000/);
+  });
+
+  test('fails when startTimeOffset is not a whole number of seconds', () => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      scheduledQueryConfiguration: {
+        ...baseProps().scheduledQueryConfiguration,
+        schedule: { rate: Duration.minutes(5), startTimeOffset: Duration.millis(1500) },
+      },
+    })).toThrow(/startTimeOffset must be a whole number of seconds between 1 and 2592000 \(30 days\), got 1.5 seconds/);
+  });
+
+  test('fails when endTimeOffset is not a whole number of seconds', () => {
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      scheduledQueryConfiguration: {
+        ...baseProps().scheduledQueryConfiguration,
+        schedule: {
+          rate: Duration.minutes(5),
+          startTimeOffset: Duration.minutes(5),
+          endTimeOffset: Duration.millis(500),
+        },
+      },
+    })).toThrow(/endTimeOffset must be a whole number of seconds between 0 and 2592000 \(30 days\), got 0.5 seconds/);
   });
 
   test('fails when endTimeOffset exceeds 30 days', () => {
@@ -861,7 +936,7 @@ describe('LogAlarm', () => {
           endTimeOffset: Duration.days(31),
         },
       },
-    })).toThrow(/endTimeOffset must be between 0 seconds and 2592000 seconds/);
+    })).toThrow(/endTimeOffset must be a whole number of seconds between 0 and 2592000/);
   });
 
   test('fails when aggregationExpression exceeds 2048 characters', () => {

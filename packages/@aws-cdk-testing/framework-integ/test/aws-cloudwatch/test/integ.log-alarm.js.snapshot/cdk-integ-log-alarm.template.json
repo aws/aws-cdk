@@ -31,7 +31,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "logs:StartQuery",
+       "Action": [
+        "logs:GetQueryResults",
+        "logs:StartQuery"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -39,11 +42,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "logs:GetQueryResults",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -152,7 +150,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "logs:StartQuery",
+       "Action": [
+        "logs:GetQueryResults",
+        "logs:StartQuery"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -160,11 +161,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "logs:GetQueryResults",
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -231,7 +227,12 @@
       {
        "Action": "logs:GetQueryResults",
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::GetAtt": [
+         "LogGroupF5B46931",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

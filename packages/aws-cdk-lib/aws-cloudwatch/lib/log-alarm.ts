@@ -9,6 +9,7 @@ import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
 import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError } from '../../core';
 import type { ArnComponents, Duration } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -158,8 +159,11 @@ export interface LogAlarmProps {
   /**
    * The comparison used to test the aggregated query result against the threshold.
    *
-   * Only the static-threshold operators are supported; anomaly-detection
-   * operators are not valid for a log alarm.
+   * Must be one of the static-threshold operators:
+   * - GREATER_THAN_OR_EQUAL_TO_THRESHOLD
+   * - GREATER_THAN_THRESHOLD
+   * - LESS_THAN_THRESHOLD
+   * - LESS_THAN_OR_EQUAL_TO_THRESHOLD
    */
   readonly comparisonOperator: ComparisonOperator;
 
@@ -215,35 +219,11 @@ export interface LogAlarmProps {
   readonly treatMissingData?: TreatMissingData;
 
   /**
-   * The number of matching log lines to include in alarm notifications.
-   *
-   * Must be between 0 and 50.
-   *
-   * The included log lines are delivered verbatim to the alarm action targets
-   * (e.g. an SNS topic or Lambda), which may reach a wider audience than the
-   * source log group. Shape the output with `fields`, apply CloudWatch Logs data
-   * protection / masking for sensitive data, and restrict and encrypt the targets.
+   * Matching log lines to include in alarm notifications.
    *
    * @default - no log lines are included in notifications
    */
-  readonly actionLogLineCount?: number;
-
-  /**
-   * The IAM role used to read the log lines included in notifications.
-   *
-   * The construct adds the log-line read permission to this role, so it must be
-   * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
-   * discards that addition silently.
-   *
-   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
-   * `addToPrincipalPolicy`.
-   *
-   * [disable-awslint:prefer-ref-interface]
-   *
-   * @default - when actionLogLineCount is greater than 0, a role that CloudWatch can assume to
-   * read the log lines is created automatically; otherwise no role
-   */
-  readonly actionLogLineRole?: IRole;
+  readonly actionLogLines?: LogAlarmActionLogLines;
 
   /**
    * Actions to invoke when the alarm transitions to ALARM state.
@@ -319,7 +299,42 @@ export interface LogAlarmWarmUpConfiguration {
 }
 
 /**
- * Represents a CloudWatch log alarm.
+ * Matching log lines to include in the notifications of a log alarm.
+ */
+export interface LogAlarmActionLogLines {
+  /**
+   * The number of matching log lines to include in alarm notifications.
+   *
+   * Must be between 1 and 50.
+   *
+   * The included log lines are delivered verbatim to the alarm action targets
+   * (e.g. an SNS topic or Lambda), which may reach a wider audience than the
+   * source log group. Shape the output with `fields`, apply CloudWatch Logs data
+   * protection / masking for sensitive data, and restrict and encrypt the targets.
+   */
+  readonly count: number;
+
+  /**
+   * The IAM role used to read the log lines included in notifications.
+   *
+   * The construct adds the log-line read permission to this role, so it must be
+   * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
+   * discards that addition silently.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
+   * `addToPrincipalPolicy`.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - a role that CloudWatch can assume to read the log lines is created automatically
+   */
+  readonly role?: IRole;
+}
+
+/**
+ * A CloudWatch log alarm. Marker interface so `fromLogAlarmArn`/`fromLogAlarmName`
+ * can return a log-alarm-specific type; optional members can be added later without
+ * a breaking change (adding to an interface is additive).
  */
 export interface ILogAlarm extends IAlarm {}
 
@@ -372,9 +387,9 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
   /**
    * The IAM role that CloudWatch assumes to read log lines for notifications.
    *
-   * This is the role passed via `actionLogLineRole`, or the role created automatically when
-   * `actionLogLineCount` is greater than 0 and no role was provided. Undefined when no log lines
-   * are included in notifications.
+   * This is the role passed via `actionLogLines.role`, or the role created automatically when
+   * `actionLogLines` is set and no role was provided. Undefined when no log lines are included
+   * in notifications.
    */
   public readonly actionLogLineRole?: IRole;
 
@@ -405,9 +420,10 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       throw new ValidationError(lit`InvalidQueryResults`, `queryResultsToAlarm must not exceed queryResultsToEvaluate, got ${props.queryResultsToAlarm} > ${props.queryResultsToEvaluate}`, this);
     }
 
-    if (props.actionLogLineCount !== undefined && !Token.isUnresolved(props.actionLogLineCount)
-      && (!Number.isInteger(props.actionLogLineCount) || props.actionLogLineCount < 0 || props.actionLogLineCount > 50)) {
-      throw new ValidationError(lit`InvalidActionLogLineCount`, `actionLogLineCount must be an integer between 0 and 50, got ${props.actionLogLineCount}`, this);
+    const logLines = props.actionLogLines;
+    if (logLines !== undefined && !Token.isUnresolved(logLines.count)
+      && (!Number.isInteger(logLines.count) || logLines.count < 1 || logLines.count > 50)) {
+      throw new ValidationError(lit`InvalidActionLogLineCount`, `actionLogLines.count must be an integer between 1 and 50, got ${logLines.count}`, this);
     }
 
     const sqc = props.scheduledQueryConfiguration;
@@ -440,16 +456,16 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     }
 
     if (!sqc.schedule.startTimeOffset.isUnresolved()) {
-      const startOffsetSeconds = sqc.schedule.startTimeOffset.toSeconds();
-      if (startOffsetSeconds < 1 || startOffsetSeconds > 2592000) {
-        throw new ValidationError(lit`InvalidStartTimeOffset`, `startTimeOffset must be between 1 second and 2592000 seconds (30 days), got ${startOffsetSeconds} seconds`, this);
+      const startOffsetSeconds = sqc.schedule.startTimeOffset.toSeconds({ integral: false });
+      if (!Number.isInteger(startOffsetSeconds) || startOffsetSeconds < 1 || startOffsetSeconds > 2592000) {
+        throw new ValidationError(lit`InvalidStartTimeOffset`, `startTimeOffset must be a whole number of seconds between 1 and 2592000 (30 days), got ${startOffsetSeconds} seconds`, this);
       }
     }
 
     if (sqc.schedule.endTimeOffset !== undefined && !sqc.schedule.endTimeOffset.isUnresolved()) {
-      const endOffsetSeconds = sqc.schedule.endTimeOffset.toSeconds();
-      if (endOffsetSeconds < 0 || endOffsetSeconds > 2592000) {
-        throw new ValidationError(lit`InvalidEndTimeOffset`, `endTimeOffset must be between 0 seconds and 2592000 seconds (30 days), got ${endOffsetSeconds} seconds`, this);
+      const endOffsetSeconds = sqc.schedule.endTimeOffset.toSeconds({ integral: false });
+      if (!Number.isInteger(endOffsetSeconds) || endOffsetSeconds < 0 || endOffsetSeconds > 2592000) {
+        throw new ValidationError(lit`InvalidEndTimeOffset`, `endTimeOffset must be a whole number of seconds between 0 and 2592000 (30 days), got ${endOffsetSeconds} seconds`, this);
       }
     }
 
@@ -469,18 +485,12 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
         'logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them');
     }
 
-    const includesLogLines = props.actionLogLineCount !== undefined
-      && (Token.isUnresolved(props.actionLogLineCount) || props.actionLogLineCount > 0);
-    if (props.actionLogLineRole !== undefined && !includesLogLines) {
-      throw new ValidationError(lit`ActionLogLineRoleWithoutLogLines`, 'actionLogLineRole is only used when actionLogLineCount is greater than 0; set actionLogLineCount or remove the role', this);
-    }
-    this.actionLogLineRole = props.actionLogLineRole
-      ?? (includesLogLines
-        ? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm',
-          props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined)
-        : undefined);
+    this.actionLogLineRole = logLines === undefined
+      ? undefined
+      : logLines.role ?? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm',
+        props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined);
     if (this.actionLogLineRole !== undefined) {
-      this.grantReadLogLines(this.actionLogLineRole);
+      this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
     }
 
     this.alarm = new CfnLogAlarm(this, 'Resource', {
@@ -492,7 +502,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       queryResultsToEvaluate: props.queryResultsToEvaluate,
       queryResultsToAlarm: props.queryResultsToAlarm,
       treatMissingData: props.treatMissingData,
-      actionLogLineCount: props.actionLogLineCount,
+      actionLogLineCount: logLines?.count,
       actionLogLineRoleArn: this.actionLogLineRole?.roleArn,
       alarmActions: Token.asList(this._alarmActionArns),
       insufficientDataActions: Token.asList(this._insufficientDataActionArns),
@@ -540,7 +550,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * adding one emits a synthesis-time warning where the type can be determined.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
-    this._alarmActionArns.push(...actions.map(a => this.bindAndWarn(a)));
+    this.addActions('alarmActions', this._alarmActionArns, actions);
   }
 
   /**
@@ -551,7 +561,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * adding one emits a synthesis-time warning where the type can be determined.
    */
   public addOkAction(...actions: IAlarmAction[]) {
-    this._okActionArns.push(...actions.map(a => this.bindAndWarn(a)));
+    this.addActions('okActions', this._okActionArns, actions);
   }
 
   /**
@@ -562,7 +572,14 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * adding one emits a synthesis-time warning where the type can be determined.
    */
   public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    this._insufficientDataActionArns.push(...actions.map(a => this.bindAndWarn(a)));
+    this.addActions('insufficientDataActions', this._insufficientDataActionArns, actions);
+  }
+
+  private addActions(propName: string, arns: IArrayBox<string>, actions: IAlarmAction[]): void {
+    if (arns.length + actions.length > 5) {
+      throw new ValidationError(lit`TooManyAlarmActions`, `${propName} can contain at most 5 actions, got ${arns.length + actions.length}`, this);
+    }
+    arns.push(...actions.map(a => this.bindAndWarn(a)));
   }
 
   private bindAndWarn(action: IAlarmAction): string {
@@ -621,7 +638,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     if (offset.isUnresolved() && offset.unitLabel() !== 'seconds') {
       throw new ValidationError(lit`UnresolvedTimeOffsetUnit`, `${name} must be given as Duration.seconds() when its amount comes from a token, got Duration.${offset.unitLabel()}`, this);
     }
-    return offset.toSeconds();
+    return offset.toSeconds({ integral: false });
   }
 
   /**
@@ -661,31 +678,40 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * caller. Passing an imported immutable role (`Role.fromRoleArn` with
    * `mutable: false`) turns these additions into no-ops.
    *
-   * `logs:StartQuery` is scoped to the log groups. Results are retrieved by query ID,
-   * so `logs:GetQueryResults` is granted on every resource. `logs:DescribeLogGroups` is
-   * granted only when the query selects its own log groups, because that is the only
-   * case in which the service enumerates them on the role's behalf, and it supports no
-   * resource types.
+   * `logs:StartQuery` and `logs:GetQueryResults` are scoped to the log groups, as the
+   * CloudWatch Log Alarms documentation prescribes. When the query selects its own log
+   * groups, `logs:GetQueryResults` and `logs:DescribeLogGroups` are granted on every
+   * resource instead, because the service enumerates the log groups on the role's
+   * behalf and `logs:DescribeLogGroups` supports no resource types.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
     const selectsOwnLogGroups = logGroups === undefined;
+    const resourceArns = this.logGroupPolicyResources(logGroups);
     Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:StartQuery'],
-      resourceArns: this.logGroupPolicyResources(logGroups),
+      resourceArns,
     });
     Grant.addToPrincipal({
       grantee: role,
       actions: selectsOwnLogGroups ? ['logs:GetQueryResults', 'logs:DescribeLogGroups'] : ['logs:GetQueryResults'],
-      resourceArns: ['*'],
+      resourceArns: selectsOwnLogGroups ? ['*'] : resourceArns,
     });
   }
 
-  private grantReadLogLines(role: IRole): void {
+  /**
+   * Grant a role the permission CloudWatch needs to read the log lines it includes in
+   * notifications, scoped to the log groups when they are known.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
+   */
+  private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
     Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:GetQueryResults'],
-      resourceArns: ['*'],
+      resourceArns: logGroups === undefined ? ['*'] : this.logGroupPolicyResources(logGroups),
     });
   }
 

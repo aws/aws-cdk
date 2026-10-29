@@ -33,14 +33,14 @@ new LogAlarm(stack, 'LogAlarm', {
   },
 });
 
-// Auto-created roles: no scheduledQueryRole, and actionLogLineCount > 0 to trigger the log-line role.
+// Auto-created roles: no scheduledQueryRole, and actionLogLines to trigger the log-line role.
 new LogAlarm(stack, 'AutoRoleLogAlarm', {
   alarmName: 'integ-log-alarm-auto-role',
   threshold: 1,
   comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
   queryResultsToEvaluate: 1,
   queryResultsToAlarm: 1,
-  actionLogLineCount: 5,
+  actionLogLines: { count: 5 },
   warmUpConfiguration: {
     warmUpPeriod: Duration.minutes(10),
     onlyStartEvaluatingAfterWarmUpPeriodEnds: true,

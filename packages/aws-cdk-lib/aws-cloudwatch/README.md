@@ -641,7 +641,7 @@ a threshold, and evaluation periods. Log alarms have a different model:
 
 - Instead of a metric, a log alarm runs a scheduled query (`scheduledQueryConfiguration`) against log groups.
 - Instead of `evaluationPeriods` and `datapointsToAlarm`, log alarms use `queryResultsToEvaluate` (N) and `queryResultsToAlarm` (M).
-- The alarm can optionally include matching log lines in its notifications via `actionLogLineCount`.
+- The alarm can optionally include matching log lines in its notifications via `actionLogLines`.
 
 ### Creating a Log Alarm
 
@@ -687,9 +687,9 @@ logGroupKey.grantDecrypt(logAlarm.scheduledQueryRole);
 
 ### Including Log Lines in Notifications
 
-Set `actionLogLineCount` to include matching log lines in alarm notifications.
-When it is greater than 0, a role that lets CloudWatch read the log lines is
-auto-created; pass `actionLogLineRole` to supply your own instead.
+Set `actionLogLines` to include matching log lines in alarm notifications.
+A role that lets CloudWatch read the log lines is auto-created.
+Pass `role` to supply your own instead.
 
 The log lines are delivered verbatim to the alarm action targets.
 Those targets may reach a wider audience than the source log group.
@@ -710,8 +710,10 @@ new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
   comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
   queryResultsToEvaluate: 3,
   queryResultsToAlarm: 2,
-  actionLogLineCount: 10,
-  actionLogLineRole: logLineRole,
+  actionLogLines: {
+    count: 10,
+    role: logLineRole,
+  },
   scheduledQueryConfiguration: {
     queryString: 'fields @message | filter @message like /ERROR/',
     aggregationExpression: 'count(*)',
