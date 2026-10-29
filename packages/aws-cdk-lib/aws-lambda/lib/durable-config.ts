@@ -1,3 +1,4 @@
+import type { IKeyRef } from '../../aws-kms';
 import type { Duration } from '../../core';
 
 /**
@@ -24,4 +25,16 @@ export interface DurableConfig {
    * @default Duration.days(14)
    */
   readonly retentionPeriod?: Duration;
+
+  /**
+   * The AWS KMS customer managed key (CMK) used to encrypt durable execution data at rest.
+   *
+   * For a CDK-managed key, CDK adds the Lambda service, execution role, and function
+   * author statements to the key policy. The function author statement uses the account
+   * principal, so the deploying identity also needs IAM permissions for these KMS
+   * actions. For an imported key, author the key policy yourself.
+   *
+   * @default - Durable execution data is encrypted at rest with an AWS owned key.
+   */
+  readonly kmsKey?: IKeyRef;
 }
