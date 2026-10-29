@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0": {
+      "source": {
+        "path": "asset.3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-1cf95fec": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "bcefc6aba5bd8f9ca537ecd13112204a79669cc31f3ea681a36d15c5ae7a01dc": {
+      "displayName": "GpuSharingTestDefaultTestDeployAssertAAF45D8D Template",
+      "source": {
+        "path": "GpuSharingTestDefaultTestDeployAssertAAF45D8D.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1df73906": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bcefc6aba5bd8f9ca537ecd13112204a79669cc31f3ea681a36d15c5ae7a01dc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

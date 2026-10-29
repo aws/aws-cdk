@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "fd0c889cf115a31ce0c72701b39da58e9be6264d487cd91ec04e4eb4db0b4fce": {
+      "displayName": "aws-ecs-gpu-sharing Template",
+      "source": {
+        "path": "aws-ecs-gpu-sharing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6fbc0c8e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fd0c889cf115a31ce0c72701b39da58e9be6264d487cd91ec04e4eb4db0b4fce.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

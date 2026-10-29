@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GpuSharingTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-gpu-sharing"
+      ],
+      "assertionStack": "GpuSharingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GpuSharingTestDefaultTestDeployAssertAAF45D8D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

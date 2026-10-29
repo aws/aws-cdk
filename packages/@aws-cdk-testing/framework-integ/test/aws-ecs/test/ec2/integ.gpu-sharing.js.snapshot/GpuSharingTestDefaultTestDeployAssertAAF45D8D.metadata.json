@@ -1,0 +1,62 @@
+{
+  "/GpuSharingTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]"
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GpuSharingTestDefaultTestDeployAssertAAF45D8D.template.json"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/GpuSharingTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeTaskDefinitionb77d7704b88385b5fb0cab4efa40c3b9"
+    }
+  ]
+}
