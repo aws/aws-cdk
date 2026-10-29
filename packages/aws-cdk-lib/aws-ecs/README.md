@@ -1990,6 +1990,48 @@ cluster.addDefaultCapacityProviderStrategy([
 ]);
 ```
 
+## GPUs
+
+To reserve whole GPUs for a container, set `gpuCount`:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('Training', {
+  image: ecs.ContainerImage.fromRegistry('my-training-image'),
+  memoryLimitMiB: 16384,
+  gpuCount: 1,
+});
+```
+
+### GPU sharing with NVIDIA MPS
+
+Containers in one or more tasks can share one NVIDIA GPU with NVIDIA Multi-Process Service (MPS).
+Use `gpuSharing` instead of `gpuCount` to request an amount of GPU memory and,
+optionally, a maximum share of the GPU's compute capacity:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('Model', {
+  image: ecs.ContainerImage.fromRegistry('my-inference-image'),
+  memoryLimitMiB: 8192,
+  gpuSharing: ecs.GpuSharing.nvidiaMps({
+    memory: Size.gibibytes(4),
+    maxComputePercent: 50,
+  }),
+});
+```
+
+`memory` must be a whole number of MiB and at least 1 MiB, and `maxComputePercent` must be an integer between 1 and 100.
+
+GPU sharing is supported on Amazon EC2 and Amazon ECS Managed Instances. It is not supported
+for task definitions that are compatible with AWS Fargate or external instances (ECS Anywhere).
+A container cannot set both `gpuCount` and `gpuSharing`, and all containers in a task definition
+that request GPUs must either all use `gpuSharing` or all use `gpuCount`.
+
+For more information, see [Amazon ECS task definitions for GPU workloads](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html).
+
 ## Elastic Inference Accelerators
 
 Currently, this feature is only supported for services with EC2 launch types.
