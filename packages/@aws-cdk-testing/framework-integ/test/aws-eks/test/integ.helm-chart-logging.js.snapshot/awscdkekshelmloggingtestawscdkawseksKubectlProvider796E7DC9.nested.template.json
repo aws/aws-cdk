@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a4a3a38c8e5a85724e76a5d93eb8b8985f94e4ef5ff9f769aa88aad6b6c1c5bf.zip"
+     "S3Key": "2296578a8c38be662dc1a519a25645c57458fc0d2cb192880647f3747e8f7da5.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
