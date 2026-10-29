@@ -1,4 +1,10 @@
 {
+  "/test-step-functions-start-state-machine-action-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-step-functions-start-state-machine-action-stack.template.json"
+    }
+  ],
   "/test-step-functions-start-state-machine-action-stack/TopicRule": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -10,9 +16,9 @@
         "CloudFormation-Validate::W9009": "topicRulePayload is deprecated, but we are using it for historical reasons"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at new TopicRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:126:41)",
-        "    at <anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/step-functions/integ.step-functions-start-state-machine.js:43:19)",
+        "    at Validations.acknowledge (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at new TopicRule (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:126:41)",
+        "    at <anonymous> (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/step-functions/integ.step-functions-start-state-machine.js:43:19)",
         "    ...node internals..."
       ]
     },

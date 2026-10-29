@@ -1,18 +1,31 @@
 {
+  "/aws-stepfunctions-tasks-eventbridge-put-events-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-tasks-eventbridge-put-events-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/EventBus": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {}
     }
   ],
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/BootstrapVersion": [
@@ -36,19 +49,36 @@
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Resource": [
@@ -76,15 +106,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-eventbridge-put-events-integ/StateMachine/Role/DefaultPolicy/Resource": [

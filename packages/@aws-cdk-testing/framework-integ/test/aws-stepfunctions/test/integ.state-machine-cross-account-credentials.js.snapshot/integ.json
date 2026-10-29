@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "StateMachineCrossAccountCredentials/DefaultTest": {
+      "stacks": [
+        "StateMachineCrossAccountCredentialsTargetStack",
+        "StateMachineCrossAccountCredentialsStack"
+      ],
+      "assertionStack": "StateMachineCrossAccountCredentialsAssertionStack",
+      "assertionStackName": "StateMachineCrossAccountCredentialsAssertionStack"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

@@ -1,8 +1,17 @@
 {
+  "/listAt-after-parallel": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "listAt-after-parallel.template.json"
+    }
+  ],
   "/listAt-after-parallel/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/listAt-after-parallel/BootstrapVersion": [
@@ -20,7 +29,12 @@
   "/listAt-after-parallel/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/listAt-after-parallel/StateMachine/Resource": [

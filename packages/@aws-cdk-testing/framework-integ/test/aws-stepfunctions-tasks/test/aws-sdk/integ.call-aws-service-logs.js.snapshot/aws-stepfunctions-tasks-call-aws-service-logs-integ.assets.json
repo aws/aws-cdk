@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "82e819d75181c5c1b95ceb23037aee6f9713196b6508922c97443340a961f90f": {
+    "c690e9bd82cbfb53291bf06182de11a7823cbe830c5a255f3e41b5c20d339441": {
       "displayName": "aws-stepfunctions-tasks-call-aws-service-logs-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-logs-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-568ceb18": {
+        "current_account-current_region-c7e8d06c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "82e819d75181c5c1b95ceb23037aee6f9713196b6508922c97443340a961f90f.json",
+          "objectKey": "c690e9bd82cbfb53291bf06182de11a7823cbe830c5a255f3e41b5c20d339441.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

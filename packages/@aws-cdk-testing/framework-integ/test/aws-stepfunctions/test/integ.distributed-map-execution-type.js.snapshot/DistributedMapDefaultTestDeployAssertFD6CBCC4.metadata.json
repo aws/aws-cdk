@@ -1,4 +1,10 @@
 {
+  "/DistributedMap/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "DistributedMapDefaultTestDeployAssertFD6CBCC4.template.json"
+    }
+  ],
   "/DistributedMap/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

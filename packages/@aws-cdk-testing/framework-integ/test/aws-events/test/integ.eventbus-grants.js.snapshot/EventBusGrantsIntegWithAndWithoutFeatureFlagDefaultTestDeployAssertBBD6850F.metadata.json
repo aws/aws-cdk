@@ -1,4 +1,10 @@
 {
+  "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EventBusGrantsIntegWithAndWithoutFeatureFlagDefaultTestDeployAssertBBD6850F.template.json"
+    }
+  ],
   "/EventBusGrantsIntegWithAndWithoutFeatureFlag/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

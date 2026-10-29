@@ -1,4 +1,10 @@
 {
+  "/cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkstepfunctionsmapinlineintegDefaultTestDeployAssertD29BA3EB.template.json"
+    }
+  ],
   "/cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

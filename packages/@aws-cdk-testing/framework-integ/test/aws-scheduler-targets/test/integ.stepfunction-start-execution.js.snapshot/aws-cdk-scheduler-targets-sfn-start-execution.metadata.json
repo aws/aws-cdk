@@ -1,42 +1,78 @@
 {
+  "/aws-cdk-scheduler-targets-sfn-start-execution": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-scheduler-targets-sfn-start-execution.template.json"
+    }
+  ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/MyParameter": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/Schedule": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "schedule": "*",
+        "target": "*"
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/SchedulerRoleForTarget-6258ef": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/BootstrapVersion": [
@@ -60,19 +96,36 @@
   "/aws-cdk-scheduler-targets-sfn-start-execution/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/StateMachine/Resource": [
@@ -100,15 +153,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/StateMachine/Role/Resource": [
@@ -124,15 +189,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-scheduler-targets-sfn-start-execution/SchedulerRoleForTarget-6258ef/DefaultPolicy/Resource": [

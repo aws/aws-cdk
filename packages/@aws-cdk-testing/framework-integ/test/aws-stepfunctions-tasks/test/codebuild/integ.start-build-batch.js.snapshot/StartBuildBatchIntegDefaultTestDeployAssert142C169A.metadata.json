@@ -1,4 +1,10 @@
 {
+  "/StartBuildBatchInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "StartBuildBatchIntegDefaultTestDeployAssert142C169A.template.json"
+    }
+  ],
   "/StartBuildBatchInteg/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

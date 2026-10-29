@@ -1,12 +1,24 @@
 {
+  "/aws-stepfunctions-tasks-call-aws-service-efs-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-tasks-call-aws-service-efs-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-call-aws-service-efs-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-call-aws-service-efs-integ/BootstrapVersion": [
@@ -24,19 +36,36 @@
   "/aws-stepfunctions-tasks-call-aws-service-efs-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-call-aws-service-efs-integ/StateMachine/Resource": [
@@ -58,15 +87,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-call-aws-service-efs-integ/StateMachine/Role/DefaultPolicy/Resource": [

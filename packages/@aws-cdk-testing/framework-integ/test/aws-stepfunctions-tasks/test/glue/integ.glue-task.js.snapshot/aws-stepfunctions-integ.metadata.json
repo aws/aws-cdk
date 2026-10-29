@@ -1,4 +1,10 @@
 {
+  "/aws-stepfunctions-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-integ/Glue Job Role": [
     {
       "type": "aws:cdk:analytics:construct",

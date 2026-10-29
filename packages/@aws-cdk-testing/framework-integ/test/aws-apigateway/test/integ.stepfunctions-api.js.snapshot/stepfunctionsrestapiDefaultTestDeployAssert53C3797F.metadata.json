@@ -1,4 +1,10 @@
 {
+  "/step-functions-restapi/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "stepfunctionsrestapiDefaultTestDeployAssert53C3797F.template.json"
+    }
+  ],
   "/step-functions-restapi/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

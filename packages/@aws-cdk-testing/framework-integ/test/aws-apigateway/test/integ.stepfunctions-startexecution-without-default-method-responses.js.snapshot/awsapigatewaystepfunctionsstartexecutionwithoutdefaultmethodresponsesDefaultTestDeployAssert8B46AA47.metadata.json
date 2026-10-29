@@ -1,4 +1,10 @@
 {
+  "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.template.json"
+    }
+  ],
   "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

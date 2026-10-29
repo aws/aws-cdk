@@ -1007,7 +1007,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/96077daf294f58c5c0f107fa4964fa8f3093aa7f19c8232715eb0d99aa51f592.json"
+       "/4dc859af638bef012bbfd76120f6062cb4b68b8cf8878f9a110b31c2c10d9c2a.json"
       ]
      ]
     }
@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/67699745972b774c12e09134eef12d17786605a1c160fac52070c91694e60334.json"
+       "/2b2946e04565c9a7bd9cf843ed9da1f88bcd9b4dc95819a16af2053f48cde7c0.json"
       ]
      ]
     }
@@ -1248,11 +1248,6 @@
             ":stateMachine:*"
            ]
           ]
-         }
-        },
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
          }
         }
        },

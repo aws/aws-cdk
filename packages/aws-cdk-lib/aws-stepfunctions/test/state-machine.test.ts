@@ -910,7 +910,7 @@ describe('State Machine', () => {
               Service: 'states.amazonaws.com',
             },
             Action: 'sts:AssumeRole',
-            Condition: {
+            Condition: Match.objectEquals({
               ArnLike: {
                 'aws:SourceArn': {
                   'Fn::Join': [
@@ -933,12 +933,7 @@ describe('State Machine', () => {
                   ],
                 },
               },
-              StringEquals: {
-                'aws:SourceAccount': {
-                  Ref: 'AWS::AccountId',
-                },
-              },
-            },
+            }),
           },
         ],
         Version: '2012-10-17',
@@ -1002,6 +997,55 @@ describe('State Machine', () => {
           Ref: 'MyStateMachineRoleD59FFEBC',
         },
       ],
+    });
+  });
+
+  test('Instantiate a State Machine with a task assuming a literal roleArn (cross-account) - Ensure that default role trust policy does not restrict aws:SourceAccount', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stateMachineStack = new cdk.Stack(app, 'StateMachineStack', { env: { account: '123456789' } });
+    const roleStack = new cdk.Stack(app, 'RoleStack', { env: { account: '987654321' } });
+    const role = iam.Role.fromRoleName(roleStack, 'Role', 'example-role');
+
+    // WHEN
+    new sfn.StateMachine(stateMachineStack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } })),
+    });
+
+    // THEN
+    Template.fromStack(stateMachineStack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Service: 'states.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+            Condition: Match.objectEquals({
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':123456789:stateMachine:*',
+                    ],
+                  ],
+                },
+              },
+            }),
+          },
+        ],
+        Version: '2012-10-17',
+      },
     });
   });
 

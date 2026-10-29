@@ -1,4 +1,10 @@
 {
+  "/EventBusGrantsTestStackWithFlag": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EventBusGrantsTestStackWithFlag.template.json"
+    }
+  ],
   "/EventBusGrantsTestStackWithFlag/TestEventBus": [
     {
       "type": "aws:cdk:analytics:construct",

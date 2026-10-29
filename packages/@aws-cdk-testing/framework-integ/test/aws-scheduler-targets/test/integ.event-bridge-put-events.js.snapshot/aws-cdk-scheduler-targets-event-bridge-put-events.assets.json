@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "aa01fdc7be6a1c573442145c72ebbd1e65ef516df4d5b6a887c995d839fd3774": {
+    "e1212b6bf1e3dd9917df00954cab658da499e7754a74b9c5078765f77672b4d6": {
       "displayName": "aws-cdk-scheduler-targets-event-bridge-put-events Template",
       "source": {
         "path": "aws-cdk-scheduler-targets-event-bridge-put-events.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-188dd645": {
+        "current_account-current_region-968aeb94": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "aa01fdc7be6a1c573442145c72ebbd1e65ef516df4d5b6a887c995d839fd3774.json",
+          "objectKey": "e1212b6bf1e3dd9917df00954cab658da499e7754a74b9c5078765f77672b4d6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
