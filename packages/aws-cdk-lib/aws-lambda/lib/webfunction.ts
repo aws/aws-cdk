@@ -9,7 +9,7 @@ import {
 import type { IWebFunctionRef, WebFunctionReference } from './lambda.generated';
 import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
-import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
+import { endpointShapeHash, FUNCTIONS_WITH_EGRESS_CONNECTOR, hasTokens, validateResourceName } from './private/webfunction-util';
 import type { WebFunctionCode } from './webfunction-code';
 import { WebFunctionEndpoint, WebFunctionEndpointLocation, WebFunctionEndpointType, WebFunctionTraffic } from './webfunction-endpoint';
 import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointOptions } from './webfunction-endpoint';
@@ -467,8 +467,6 @@ export class WebFunction extends WebFunctionBase {
    */
   public readonly revisionId: string;
 
-  private readonly hasEgressNetworkConnector: boolean;
-
   protected readonly canCreateResourcePolicy = true;
 
   /** The underlying L1 CfnWebFunction resource. Use for escape hatches. */
@@ -533,10 +531,10 @@ export class WebFunction extends WebFunctionBase {
       );
     }
 
-    // A connector is only supported with a HOME_REGION endpoint, which every endpoint of the
-    // function must then be: see addEndpoint().
+    // A connector is only supported with a HOME_REGION endpoint, which WebFunctionEndpoint
+    // checks for every endpoint of the function.
     if (props.egressNetworkConnector) {
-      this.assertHomeRegionEndpoint(props.defaultEndpoint?.endpointLocation);
+      FUNCTIONS_WITH_EGRESS_CONNECTOR.add(this);
     }
 
     // Set up the execution role
@@ -630,7 +628,6 @@ export class WebFunction extends WebFunctionBase {
     this.webFunctionName = functionName;
     this.revisionArn = this.resourceRevision.attrRevisionArn;
     this.revisionId = this.resourceRevision.attrRevisionId;
-    this.hasEgressNetworkConnector = props.egressNetworkConnector !== undefined;
 
     // The default endpoint's name is resolved here and passed explicitly, so it does not depend
     // on anything a property injector could drop from the endpoint's props.
@@ -662,9 +659,6 @@ export class WebFunction extends WebFunctionBase {
    * for example a second, `IAM_AUTH` endpoint for a CloudFront origin.
    */
   public addEndpoint(id: string, options: WebFunctionEndpointOptions): WebFunctionEndpoint {
-    if (this.hasEgressNetworkConnector) {
-      this.assertHomeRegionEndpoint(options.endpointLocation);
-    }
     return this.createEndpoint(id, options);
   }
 
@@ -692,17 +686,6 @@ export class WebFunction extends WebFunctionBase {
       return 'prod';
     }
     return `prod-${endpointShapeHash(this, endpointType, regions)}`;
-  }
-
-  private assertHomeRegionEndpoint(location: WebFunctionEndpointLocation | undefined): void {
-    const type = location?.endpointType ?? WebFunctionEndpointType.HOME_REGION;
-    if (type !== WebFunctionEndpointType.HOME_REGION) {
-      throw new ValidationError(
-        lit`WebFunctionEgressConnectorRequiresHomeRegion`,
-        `egressNetworkConnector is only supported with a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${type}`,
-        this,
-      );
-    }
   }
 
   /**

@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnWebFunctionEndpoint } from './lambda.generated';
 import type { IWebFunctionEndpointRef, IWebFunctionRef, WebFunctionEndpointReference } from './lambda.generated';
-import { endpointShapeHash, hasTokens, validateResourceName } from './private/webfunction-util';
+import { endpointShapeHash, FUNCTIONS_WITH_EGRESS_CONNECTOR, hasTokens, validateResourceName } from './private/webfunction-util';
 import { WebFunctionEndpointGrants } from './webfunction-endpoint-grants';
 import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
@@ -472,6 +472,16 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
 
     const location = props.endpointLocation ?? WebFunctionEndpointLocation.homeRegion();
     const endpointType = location.endpointType;
+
+    // The service only accepts a home-Region endpoint for a function with an egress network
+    // connector. An imported function's connector is unknown, so it is not checked.
+    if (FUNCTIONS_WITH_EGRESS_CONNECTOR.has(props.webFunction) && endpointType !== WebFunctionEndpointType.HOME_REGION) {
+      throw new ValidationError(
+        lit`WebFunctionEgressConnectorRequiresHomeRegion`,
+        `egressNetworkConnector is only supported with a ${WebFunctionEndpointType.HOME_REGION} endpoint, got ${endpointType}`,
+        this,
+      );
+    }
 
     // The schema declares a lower bound for both of these but no upper bound, so only the
     // lower bound is enforced here. An over-large value is left to the service to reject.

@@ -185,6 +185,23 @@ describe('addEndpoint', () => {
     expect(() => fn.addEndpoint('Home', { authType: WebFunctionAuthType.IAM_AUTH })).not.toThrow();
   });
 
+  test('only a home-Region standalone endpoint can serve a function with a network connector', () => {
+    const stack = new Stack();
+    const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Connector',
+      'arn:aws:lambda:us-east-1:123456789012:network-connector:my-connector:1');
+    const fn = new WebFunction(stack, 'Fn', minimalProps({ egressNetworkConnector: connector }));
+    const endpoint = (id: string, endpointLocation?: WebFunctionEndpointLocation) => new WebFunctionEndpoint(stack, id, {
+      webFunction: fn,
+      authType: WebFunctionAuthType.IAM_AUTH,
+      traffic: WebFunctionTraffic.single(fn.revisionId),
+      endpointLocation,
+    });
+
+    expect(() => endpoint('Global', WebFunctionEndpointLocation.perRegion(['eu-west-1'])))
+      .toThrow(/egressNetworkConnector is only supported with a HomeRegion endpoint, got PerRegion/);
+    expect(() => endpoint('Home')).not.toThrow();
+  });
+
   test('warns on its own path for an APPLICATION_MANAGED endpoint', () => {
     const stack = new Stack();
     const fn = new WebFunction(stack, 'Fn', minimalProps());

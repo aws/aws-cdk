@@ -33,6 +33,13 @@ export function validateResourceName(name: string, label: string, scope: Constru
   }
 }
 
+/**
+ * The WebFunctions in this app that have an egress network connector. The service only accepts
+ * a `HOME_REGION` endpoint for them, which `WebFunctionEndpoint` checks for every endpoint,
+ * however it is created.
+ */
+export const FUNCTIONS_WITH_EGRESS_CONNECTOR = new WeakSet<object>();
+
 /** A list token has `length === 1`, so both the list and its elements must be checked. */
 export function hasTokens(list: string[]): boolean {
   return Token.isUnresolved(list) || list.some((r) => Token.isUnresolved(r));

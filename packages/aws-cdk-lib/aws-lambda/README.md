@@ -2519,6 +2519,10 @@ A connector serves one compute type, so a WebFunction needs one created for
 `NetworkConnectorComputeType.WEB_FUNCTION`. The connector only initiates connections; the
 security groups' outbound rules decide what the function can reach.
 
+A function with a connector can only be served by home-Region endpoints: its default
+endpoint, any endpoint added with `addEndpoint()` and any `WebFunctionEndpoint` for it must
+use `WebFunctionEndpointLocation.homeRegion()`, and synthesis fails otherwise.
+
 The Lambda service manages the network interfaces through the connector's `operatorRole`.
 By default a role with the AWS managed policy `AWSLambdaNetworkConnectorOperatorPolicy` is
 created. If you pass your own role, that policy is attached to it when the role is defined in
