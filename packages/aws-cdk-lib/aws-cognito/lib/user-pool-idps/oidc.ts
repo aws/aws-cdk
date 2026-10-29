@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
+import type { SecretValue } from '../../../core';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
@@ -19,8 +20,22 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
 
   /**
    * The client secret
+   *
+   * Exactly one of `clientSecret` or `clientSecretValue` must be configured.
+   *
+   * @default - `clientSecretValue` is used
+   * @deprecated use clientSecretValue instead
    */
-  readonly clientSecret: string;
+  readonly clientSecret?: string;
+
+  /**
+   * The client secret as a SecretValue
+   *
+   * Exactly one of `clientSecret` or `clientSecretValue` must be configured.
+   *
+   * @default - `clientSecret` is used
+   */
+  readonly clientSecretValue?: SecretValue;
 
   /**
    * Issuer URL
@@ -118,13 +133,17 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     const scopes = props.scopes ?? ['openid'];
 
+    if ((props.clientSecret === undefined) === (props.clientSecretValue === undefined)) {
+      throw new ValidationError(lit`ExactlyOneClientSecretClient`, 'exactly one of "clientSecret" or "clientSecretValue" must be configured, specify "clientSecretValue"', this);
+    }
+
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'OIDC',
       providerDetails: {
         client_id: props.clientId,
-        client_secret: props.clientSecret,
+        client_secret: props.clientSecretValue ? props.clientSecretValue.unsafeUnwrap() : props.clientSecret,
         authorize_scopes: scopes.join(' '),
         attributes_request_method: props.attributeRequestMethod ?? OidcAttributeRequestMethod.GET,
         oidc_issuer: props.issuerUrl,

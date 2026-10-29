@@ -1,5 +1,6 @@
-import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from 'aws-cdk-lib/aws-cognito';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 /*
  * Stack verification steps
@@ -16,7 +17,7 @@ new UserPoolIdentityProviderOidc(stack, 'cdk', {
   userPool: userpool,
   name: 'cdk',
   clientId: 'client-id',
-  clientSecret: 'client-secret',
+  clientSecretValue: SecretValue.unsafePlainText('client-secret'),
   issuerUrl: 'https://www.issuer-url.com',
   endpoints: {
     authorization: 'https://www.issuer-url.com/authorize',
@@ -28,6 +29,24 @@ new UserPoolIdentityProviderOidc(stack, 'cdk', {
   attributeMapping: {
     phoneNumber: ProviderAttribute.other('phone_number'),
     emailVerified: ProviderAttribute.other('email_verified'),
+  },
+});
+
+const clientSecret = new Secret(stack, 'ClientSecret', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+new UserPoolIdentityProviderOidc(stack, 'cdkSecretValue', {
+  userPool: userpool,
+  name: 'cdk-secret-value',
+  clientId: 'client-id',
+  clientSecretValue: clientSecret.secretValue,
+  issuerUrl: 'https://www.issuer-url.com',
+  endpoints: {
+    authorization: 'https://www.issuer-url.com/authorize',
+    token: 'https://www.issuer-url.com/token',
+    userInfo: 'https://www.issuer-url.com/userinfo',
+    jwksUri: 'https://www.issuer-url.com/jwks',
   },
 });
 
