@@ -610,15 +610,16 @@ describe('WebFunctionCode', () => {
         readonly options?: WebFunctionProvidedBucketAssetOptions;
         readonly timeout?: cdk.Duration;
       }
-      const copyOf = (configure: (s: cdk.Stack) => Setup) => {
+      const copyOf = (configure: (s: cdk.Stack) => Setup, adjust?: (fn: WebFunction) => void) => {
         const s = new cdk.Stack();
         const { bucket, assetPath, options, timeout } = configure(s);
-        new WebFunction(s, 'TestFunction', {
+        const fn = new WebFunction(s, 'TestFunction', {
           code: WebFunctionCode.fromAssetToProvidedBucket(bucket, assetPath ?? ASSET_PATH, options),
           runtime: WebFunctionRuntime.NODEJS_24_X,
           defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
           timeout,
         });
+        adjust?.(fn);
         const copies = Template.fromStack(s).findResources('Custom::S3ObjectCopy');
         const [logicalId] = Object.keys(copies);
         const { DestinationKeyPrefix, ContentHash, Configuration } = copies[logicalId].Properties;
@@ -644,8 +645,8 @@ describe('WebFunctionCode', () => {
 
       test('carries the revision configuration without the code location', () => {
         const { configuration } = original();
-        expect(Object.keys(configuration).sort()).toEqual(['FunctionName', 'RuntimeConfig', 'ServiceConfig']);
-        expect(Object.keys(configuration.RuntimeConfig)).toEqual(['runtime']);
+        expect(Object.keys(configuration.Properties).sort()).toEqual(['BuildConfig', 'FunctionName', 'ServiceConfig']);
+        expect(Object.keys(configuration.Properties.BuildConfig)).toEqual(['RuntimeConfig']);
       });
 
       test('passes a fingerprint of the environment, not its values', () => {
@@ -672,7 +673,7 @@ describe('WebFunctionCode', () => {
         expect(properties).not.toContain('plain-value');
         expect(properties).not.toContain('joined-literal-');
         // A value only known at deployment is kept, so it still changes the key.
-        expect(copy.Properties.Configuration.ServiceConfig.environmentVariables.ROLE).toEqual(
+        expect(copy.Properties.Configuration.Properties.ServiceConfig.EnvironmentVariables.ROLE).toEqual(
           { 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
       });
 
@@ -699,10 +700,11 @@ describe('WebFunctionCode', () => {
           return copies[id];
         };
         const functionRef = (fn: WebFunction) => ({ Ref: stack.getLogicalId(fn.resource) });
-        expect(copyFor(first).Properties.Configuration.FunctionName).toEqual(functionRef(first));
-        expect(copyFor(second).Properties.Configuration.FunctionName).toEqual(functionRef(second));
-        expect(copyFor(first).Properties.Configuration.ServiceConfig.timeoutSeconds).toEqual(10);
-        expect(copyFor(second).Properties.Configuration.ServiceConfig.timeoutSeconds).toEqual(20);
+        const config = (fn: WebFunction) => copyFor(fn).Properties.Configuration.Properties;
+        expect(config(first).FunctionName).toEqual(functionRef(first));
+        expect(config(second).FunctionName).toEqual(functionRef(second));
+        expect(config(first).ServiceConfig.TimeoutSeconds).toEqual(10);
+        expect(config(second).ServiceConfig.TimeoutSeconds).toEqual(20);
         expect(copyFor(first).DeletionPolicy).toEqual('Retain');
         expect(copyFor(second).DeletionPolicy).toEqual('Delete');
       });
@@ -727,12 +729,92 @@ describe('WebFunctionCode', () => {
         });
         const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
         expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
-        const env = copy.Properties.Configuration.ServiceConfig.environmentVariables;
+        const env = copy.Properties.Configuration.Properties.ServiceConfig.EnvironmentVariables;
         // Placeholders and condition names stay, so the template still resolves at deployment.
         expect(env.SUB['Fn::Sub']).toContain('${AWS::AccountId}');
         expect(env.SUB_VARS['Fn::Sub'][0]).toContain('${User}');
         expect(env.IF['Fn::If'][0]).toEqual('IsProd');
-        expect(env.SELECT['Fn::Select'][0]).toEqual(0);
+        // Any other intrinsic is replaced by a hash, with the references inside it kept apart.
+        expect(typeof env.SELECT).toEqual('string');
+        expect(copy.Properties.Configuration.References)
+          .toContainEqual({ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
+      });
+
+      test('passes no secure reference used inside any other intrinsic, nested or not', () => {
+        const s = new cdk.Stack();
+        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'secure references on the revision' });
+        const secret = '{{resolve:secretsmanager:db:SecretString:password}}';
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            BASE64: cdk.Fn.base64(`admin:${secret}`),
+            SPLIT: cdk.Fn.select(1, cdk.Fn.split(':', `a:${secret}`)),
+            IN_JOIN: cdk.Fn.join('', ['x', cdk.Fn.base64(secret)]),
+            IN_SUB_VARS: cdk.Fn.sub('${V}', { V: cdk.Fn.base64(secret) }),
+          },
+        });
+        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
+        expect(JSON.stringify(copy.Properties)).not.toContain('Fn::Base64');
+      });
+
+      test('keeps a reference inside a conditional branch conditional', () => {
+        const s = new cdk.Stack();
+        const param = new cdk.CfnParameter(s, 'Env');
+        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
+        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            IF: cdk.Fn.conditionIf(condition.logicalId, cdk.Fn.base64(role.roleArn), 'none').toString(),
+          },
+        });
+        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        expect(copy.Properties.Configuration.References).toEqual([{
+          'Fn::If': ['IsProd', [{ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] }], []],
+        }]);
+      });
+
+      test('keeps a conditional reference inside a hashed intrinsic conditional', () => {
+        const s = new cdk.Stack();
+        const param = new cdk.CfnParameter(s, 'Env');
+        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
+        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            BASE64: cdk.Fn.base64(cdk.Fn.conditionIf(condition.logicalId, role.roleArn, 'none').toString()),
+          },
+        });
+        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
+        expect(copy.Properties.Configuration.References).toEqual([{
+          'Fn::If': ['IsProd', [{ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] }], []],
+        }]);
+      });
+
+      test('fails synthesis rather than pass on a dynamic reference it cannot hash', () => {
+        const s = new cdk.Stack();
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: { IMPORTED: cdk.Fn.importValue('{{resolve:ssm:/export/name}}') },
+        });
+        expect(() => Template.fromStack(s)).toThrow(/dynamic reference .* would reach the code copy/);
+      });
+
+      test('sees property overrides on the revision', () => {
+        const before = original();
+        const after = copyOf((s) => ({ bucket: owned(s) }), (fn) => {
+          fn.resourceRevision.addPropertyOverride('ServiceConfig.TimeoutSeconds', 60);
+        });
+        expect(after.configuration).not.toEqual(before.configuration);
       });
 
       test('a changed environment value changes the configuration', () => {
@@ -1059,6 +1141,35 @@ describe('WebFunctionCode', () => {
       expect(copyPolicies(stack)).toEqual([{ DeletionPolicy: 'Retain', UpdateReplacePolicy: 'Delete' }]);
     });
 
+    test('follows a removal policy set with an escape hatch on the revision', () => {
+      const fn = managed(stack);
+      fn.resourceRevision.addOverride('DeletionPolicy', 'Retain');
+      fn.resourceRevision.addOverride('UpdateReplacePolicy', 'Retain');
+
+      expect(copyPolicies(stack)).toEqual([RETAIN]);
+      expect(bucketPolicies(stack)).toEqual(RETAIN);
+    });
+
+    test('carries RetainExceptOnCreate rather than retaining outright', () => {
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+      const fn = managed(stack);
+      fn.resourceRevision.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+
+      const EXCEPT_ON_CREATE = { DeletionPolicy: 'RetainExceptOnCreate', UpdateReplacePolicy: 'Retain' };
+      expect(copyPolicies(stack)).toEqual([{ DeletionPolicy: 'RetainExceptOnCreate', UpdateReplacePolicy: 'Delete' }]);
+      expect(bucketPolicies(stack)).toEqual(EXCEPT_ON_CREATE);
+      expect(autoDeletePolicies(stack)).toEqual([EXCEPT_ON_CREATE]);
+      expect(bucketPolicyPolicies(stack)).toEqual([EXCEPT_ON_CREATE]);
+    });
+
+    test('a shared bucket takes the strongest policy of the revisions using it', () => {
+      managed(stack, 'First').resourceRevision.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+      managed(stack, 'Second').resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+
+      expect(bucketPolicies(stack)).toEqual(RETAIN);
+    });
+
     test('a retained revision in a provided bucket retains its copy and the bucket policy, and leaves the bucket alone', () => {
       const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
       const fn = provided(stack, bucket);
@@ -1081,6 +1192,15 @@ describe('WebFunctionCode', () => {
       provided(s, retainedBucket);
       retainedBucket.policy!.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
       expect(bucketPolicyPolicies(s)).toEqual([RETAIN]);
+    });
+
+    test('a provided bucket policy keeps a stronger policy of its own', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      provided(stack, bucket).resourceRevision.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+      bucket.policy!.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
+
+      expect(bucketPolicyPolicies(stack)).toEqual([RETAIN]);
     });
 
     test('a provided bucket policy is retained when a later function sharing it has a retained revision', () => {

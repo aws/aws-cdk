@@ -418,11 +418,10 @@ abstract class StagedAssetCode extends WebFunctionCode {
     // The copy's policies follow the revision's. They are resolved at synthesis, after every
     // aspect has run and wherever the revision's policy was set: an aspect visits one node at a
     // time, in tree order, and the copy is visited before the revision it belongs to.
-    const retention = retentionOf(resource);
     copy.resource.addOverride('UpdateReplacePolicy',
-      cdk.Lazy.string({ produce: () => retention().onReplace ? 'Retain' : 'Delete' }));
+      cdk.Lazy.string({ produce: () => replacePolicyName(retentionOf(resource).onReplace) }));
     copy.resource.addOverride('DeletionPolicy',
-      cdk.Lazy.string({ produce: () => retention().any ? 'Retain' : 'Delete' }));
+      cdk.Lazy.string({ produce: () => deletionPolicyName(retentionOf(resource).any) }));
     this.retainDestinationFor(resource);
   }
 
@@ -490,7 +489,7 @@ class ManagedBucketAssetCode extends StagedAssetCode {
     managedBucketRevisions(bucket).push(revision);
     cdk.Aspects.of(revision).add({
       visit: (node) => {
-        if (node === revision && retentionOf(revision)().any) {
+        if (node === revision && retentionOf(revision).any > Retention.DELETE) {
           cdk.Annotations.of(revision).addWarningV2('@aws-cdk/aws-lambda:webFunctionManagedBucketRetained',
             `This revision is retained, so the code bucket ${bucket.node.path} and its policy are retained too, with the ` +
             'code of every retained revision in it. Deleting the stack leaves them in place, and they are ' +
@@ -545,7 +544,7 @@ class ProvidedBucketAssetCode extends StagedAssetCode {
     if (!revisions) {
       revisions = [];
       PROVIDED_POLICY_REVISIONS.set(policy, revisions);
-      retainWithRevisions(policy, revisions, (p) => p);
+      retainWithRevisions(policy, revisions);
     }
     revisions.push(revision);
   }
@@ -642,20 +641,57 @@ function grantServiceRead(
 }
 
 /**
- * Whether a revision is retained, read when the template is resolved.
+ * How strongly a resource is kept, ordered so that the strongest of several can be taken.
  */
-function retentionOf(resource: cdk.CfnResource): () => { onReplace: boolean; any: boolean } {
-  return () => {
-    const isRetain = (p?: cdk.CfnDeletionPolicy) =>
-      p === cdk.CfnDeletionPolicy.RETAIN || p === cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
-    const onReplace = isRetain(resource.cfnOptions.updateReplacePolicy);
-    return { onReplace, any: onReplace || isRetain(resource.cfnOptions.deletionPolicy) };
+enum Retention {
+  DELETE = 0,
+  RETAIN_EXCEPT_ON_CREATE = 1,
+  RETAIN = 2,
+}
+
+function retentionLevel(policy: unknown): Retention {
+  switch (policy) {
+    case cdk.CfnDeletionPolicy.RETAIN: return Retention.RETAIN;
+    case cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE: return Retention.RETAIN_EXCEPT_ON_CREATE;
+    default: return Retention.DELETE;
+  }
+}
+
+function deletionPolicyName(level: Retention): string {
+  return [cdk.CfnDeletionPolicy.DELETE, cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE, cdk.CfnDeletionPolicy.RETAIN][level];
+}
+
+/** `UpdateReplacePolicy` has no `RetainExceptOnCreate`: a replacement is never a first create. */
+function replacePolicyName(level: Retention): string {
+  return level > Retention.DELETE ? cdk.CfnDeletionPolicy.RETAIN : cdk.CfnDeletionPolicy.DELETE;
+}
+
+/**
+ * The revision as it is rendered, escape-hatch overrides included.
+ */
+function renderedRevision(resource: cdk.CfnResource): { properties: any; deletionPolicy?: string; updateReplacePolicy?: string } {
+  const template = cdk.Stack.of(resource).resolve(resource._toCloudFormation());
+  const rendered: any = Object.values(template.Resources)[0];
+  return {
+    properties: rendered.Properties ?? {},
+    deletionPolicy: rendered.DeletionPolicy,
+    updateReplacePolicy: rendered.UpdateReplacePolicy,
   };
 }
 
 /**
- * The configuration of a revision that the copy's key is derived from: every property except
- * the code location, which comes from the copy itself.
+ * How strongly a revision is retained on replacement, and at all, read from its rendered form
+ * when the template is resolved.
+ */
+function retentionOf(resource: cdk.CfnResource): { onReplace: Retention; any: Retention } {
+  const { deletionPolicy, updateReplacePolicy } = renderedRevision(resource);
+  const onReplace = retentionLevel(updateReplacePolicy);
+  return { onReplace, any: Math.max(onReplace, retentionLevel(deletionPolicy)) };
+}
+
+/**
+ * The configuration of a revision that the copy's key is derived from: every rendered property
+ * except the code location, which comes from the copy itself.
  *
  * The key only has to depend on the configuration, not carry it, so it is passed as a
  * fingerprint (see `fingerprint`): the copy's properties, its invocation event and its log
@@ -665,14 +701,29 @@ function revisionConfiguration(resource: cdk.CfnResource): any {
   if (!CfnWebFunctionRevision.isCfnWebFunctionRevision(resource)) {
     return undefined;
   }
-  const buildConfig = resource.buildConfig;
-  return fingerprint(cdk.Stack.of(resource).resolve({
-    FunctionName: resource.functionName,
-    Description: resource.description,
-    RuntimeConfig: cdk.Token.isUnresolved(buildConfig) ? undefined : (buildConfig as CfnWebFunctionRevision.BuildConfigProperty).runtimeConfig,
-    ServiceConfig: resource.serviceConfig,
-    KmsKeyArn: resource.kmsKeyArn,
-  }));
+  const properties = { ...renderedRevision(resource).properties };
+  if (properties.BuildConfig) {
+    const { CodeConfig: _code, ...buildConfig } = properties.BuildConfig;
+    properties.BuildConfig = buildConfig;
+  }
+  const references: any[] = [];
+  const result = { Properties: fingerprint(properties, references), References: references };
+  if (JSON.stringify(result).includes('{{resolve:')) {
+    throw new ValidationError(lit`WebFunctionCodeCopyDynamicReference`,
+      'A dynamic reference in the revision\'s configuration would reach the code copy. Please report this as a bug.',
+      resource);
+  }
+  return result;
+}
+
+const REFERENCE_INTRINSICS = ['Ref', 'Fn::GetAtt', 'Fn::ImportValue'];
+
+function intrinsicName(value: any): string | undefined {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+  const keys = Object.keys(value);
+  return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::')) ? keys[0] : undefined;
 }
 
 /**
@@ -683,54 +734,92 @@ function revisionConfiguration(resource: cdk.CfnResource): any {
  * copied into its invocation event. Both are literal strings at synthesis, so hashing them keeps
  * the key's dependency on them without passing them on.
  *
- * `Ref` and `Fn::GetAtt` are kept, so a value only known at deployment, such as a replaced role,
- * still changes the key. Inside the intrinsics that combine values, only the values are
- * processed: the parts of `Fn::Join`, the literal segments of an `Fn::Sub` template (its
- * `${...}` placeholders are kept, since they can refer to deploy-time values) and its variables,
- * the branches of `Fn::If` and the list of `Fn::Select`. Any other intrinsic is kept as it is:
- * its arguments are names, as for `Fn::ImportValue`, or hashing them could change how many
- * values it yields, as for `Fn::Split`.
+ * Only references are kept: `Ref`, `Fn::GetAtt` and `Fn::ImportValue`, so a value only known at
+ * deployment, such as a replaced role, still changes the key. `Fn::Join`, `Fn::Sub` and `Fn::If`
+ * keep their shape, with their literals hashed (an `Fn::Sub` keeps its `${...}` placeholders,
+ * and an `Fn::If` its condition, so a conditional reference stays conditional). Any other
+ * intrinsic is replaced by the hash of its whole value, and the references inside it are added
+ * to `references`, so they still count without being evaluated in place.
  */
-function fingerprint(value: any): any {
+function fingerprint(value: any, references: any[]): any {
   if (typeof value === 'string') {
     return md5hash(value);
   }
   if (Array.isArray(value)) {
-    return value.map(fingerprint);
+    return value.map((v) => fingerprint(v, references));
   }
   if (value === null || typeof value !== 'object') {
     return value;
   }
-  const keys = Object.keys(value);
-  if (keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::'))) {
-    const args = value[keys[0]];
-    switch (keys[0]) {
-      case 'Fn::Join':
-        return { 'Fn::Join': [args[0], fingerprint(args[1])] };
-      case 'Fn::Sub':
-        return {
-          'Fn::Sub': Array.isArray(args)
-            ? [fingerprintSubTemplate(args[0]), fingerprint(args[1])]
-            : fingerprintSubTemplate(args),
-        };
-      case 'Fn::If':
-        return { 'Fn::If': [args[0], fingerprint(args[1]), fingerprint(args[2])] };
-      case 'Fn::Select':
-        return { 'Fn::Select': [args[0], fingerprint(args[1])] };
-      default:
-        return value;
-    }
+  const name = intrinsicName(value);
+  if (name === undefined) {
+    return Object.fromEntries(Object.keys(value).map((k) => [k, fingerprint(value[k], references)]));
   }
-  return Object.fromEntries(keys.map((k) => [k, fingerprint(value[k])]));
+  const args = value[name];
+  if (REFERENCE_INTRINSICS.includes(name)) {
+    return value;
+  }
+  switch (name) {
+    case 'Fn::Join':
+      return { 'Fn::Join': [args[0], fingerprint(args[1], references)] };
+    case 'Fn::Sub':
+      return {
+        'Fn::Sub': Array.isArray(args)
+          ? [fingerprintSubTemplate(args[0], references), fingerprint(args[1], references)]
+          : fingerprintSubTemplate(args, references),
+      };
+    case 'Fn::If': {
+      const whenTrue: any[] = [];
+      const whenFalse: any[] = [];
+      const result = { 'Fn::If': [args[0], fingerprint(args[1], whenTrue), fingerprint(args[2], whenFalse)] };
+      addConditional(references, args[0], whenTrue, whenFalse);
+      return result;
+    }
+    default:
+      collectReferences(value, references);
+      return md5hash(JSON.stringify(value));
+  }
+}
+
+/** Adds the references found inside an intrinsic that is replaced by its hash. */
+function collectReferences(value: any, references: any[]): void {
+  if (Array.isArray(value)) {
+    value.forEach((v) => collectReferences(v, references));
+    return;
+  }
+  if (value === null || typeof value !== 'object') {
+    return;
+  }
+  const name = intrinsicName(value);
+  if (name !== undefined && REFERENCE_INTRINSICS.includes(name)) {
+    references.push(value);
+  } else if (name === 'Fn::Sub') {
+    references.push(fingerprint(value, references));
+  } else if (name === 'Fn::If') {
+    const [condition, a, b] = value[name];
+    const whenTrue: any[] = [];
+    const whenFalse: any[] = [];
+    collectReferences(a, whenTrue);
+    collectReferences(b, whenFalse);
+    addConditional(references, condition, whenTrue, whenFalse);
+  } else {
+    Object.values(value).forEach((v) => collectReferences(v, references));
+  }
+}
+
+function addConditional(references: any[], condition: any, whenTrue: any[], whenFalse: any[]): void {
+  if (whenTrue.length > 0 || whenFalse.length > 0) {
+    references.push({ 'Fn::If': [condition, whenTrue, whenFalse] });
+  }
 }
 
 /**
  * Replaces the literal segments of an `Fn::Sub` template with their hashes and keeps its
  * placeholders. `${!Literal}` is an escaped literal, so it is hashed with its segment.
  */
-function fingerprintSubTemplate(template: any): any {
+function fingerprintSubTemplate(template: any, references: any[]): any {
   if (typeof template !== 'string') {
-    return fingerprint(template);
+    return fingerprint(template, references);
   }
   return template.split(/(\$\{(?!!)[^}]*\})/)
     .map((segment, i) => (i % 2 === 1 || segment === '' ? segment : md5hash(segment)))
@@ -753,12 +842,12 @@ function managedBucketRevisions(bucket: s3.IBucket): cdk.CfnResource[] {
     const autoDelete = bucket.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
     for (const resource of [bucket.node.defaultChild, autoDelete]) {
       if (resource instanceof cdk.CfnResource) {
-        retainWithRevisions(resource, revisions, () => 'Delete');
+        retainWithRevisions(resource, revisions);
       }
     }
     const policy = bucket.policy?.node.defaultChild;
     if (policy instanceof cdk.CfnResource) {
-      retainWithRevisions(policy, revisions, (p) => p);
+      retainWithRevisions(policy, revisions);
     }
   }
   return revisions;
@@ -767,18 +856,21 @@ function managedBucketRevisions(bucket: s3.IBucket): cdk.CfnResource[] {
 const PROVIDED_POLICY_REVISIONS = new WeakMap<cdk.CfnResource, cdk.CfnResource[]>();
 
 /**
- * Makes `resource` retained whenever any of `revisions` is, and otherwise gives it `fallback`.
- * Resolved at synthesis, so revisions added later and policies set by aspects are seen.
+ * Makes `resource` retained as strongly as the most strongly retained of `revisions`, and
+ * otherwise leaves its own policy. Resolved at synthesis, so revisions added later and policies
+ * set by aspects are seen.
  */
-function retainWithRevisions(
-  resource: cdk.CfnResource, revisions: cdk.CfnResource[], fallback: (p?: cdk.CfnDeletionPolicy) => string | undefined,
-): void {
-  const retained = () => revisions.some((r) => retentionOf(r)().any);
+function retainWithRevisions(resource: cdk.CfnResource, revisions: cdk.CfnResource[]): void {
+  const strongest = () => Math.max(Retention.DELETE, ...revisions.map((r) => retentionOf(r).any));
+  const policy = (own: cdk.CfnDeletionPolicy | undefined, name: (level: Retention) => string) => {
+    const level = strongest();
+    return level === Retention.DELETE ? own : name(Math.max(level, retentionLevel(own)));
+  };
   resource.addOverride('DeletionPolicy', cdk.Lazy.string({
-    produce: () => (retained() ? 'Retain' : fallback(resource.cfnOptions.deletionPolicy)),
+    produce: () => policy(resource.cfnOptions.deletionPolicy, deletionPolicyName),
   }));
   resource.addOverride('UpdateReplacePolicy', cdk.Lazy.string({
-    produce: () => (retained() ? 'Retain' : fallback(resource.cfnOptions.updateReplacePolicy)),
+    produce: () => policy(resource.cfnOptions.updateReplacePolicy, replacePolicyName),
   }));
 }
 
