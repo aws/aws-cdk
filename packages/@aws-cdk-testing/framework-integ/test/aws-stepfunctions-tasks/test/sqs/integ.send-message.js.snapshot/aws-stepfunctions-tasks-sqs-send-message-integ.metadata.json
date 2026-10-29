@@ -1,4 +1,10 @@
 {
+  "/aws-stepfunctions-tasks-sqs-send-message-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-tasks-sqs-send-message-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-sqs-send-message-integ/show-me-the-messages": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,11 +14,18 @@
   "/aws-stepfunctions-tasks-sqs-send-message-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-sqs-send-message-integ/stateMachineArn": [
@@ -48,19 +61,36 @@
   "/aws-stepfunctions-tasks-sqs-send-message-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-sqs-send-message-integ/StateMachine/Resource": [
@@ -82,15 +112,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-sqs-send-message-integ/StateMachine/Role/DefaultPolicy/Resource": [

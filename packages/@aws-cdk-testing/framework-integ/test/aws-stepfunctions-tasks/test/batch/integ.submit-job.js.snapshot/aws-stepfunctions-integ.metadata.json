@@ -6,14 +6,18 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at RunBatchStack._silenceLiteralAzWarning (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new RunBatchStack (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job.js:54:21)",
-        "    at <anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job.js:105:1)",
+        "    at Validations.acknowledge (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at RunBatchStack._silenceLiteralAzWarning (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new RunBatchStack (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job.js:54:21)",
+        "    at <anonymous> (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/batch/integ.submit-job.js:105:1)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-integ.template.json"
     }
   ],
   "/aws-stepfunctions-integ/vpc": [

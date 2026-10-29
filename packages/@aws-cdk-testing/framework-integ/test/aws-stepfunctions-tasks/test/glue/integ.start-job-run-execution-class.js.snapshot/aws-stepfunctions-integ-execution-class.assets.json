@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
     "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d": {
       "displayName": "Glue Job Script",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "90b99ba2cea7f9474115121bb5df7bcd36d4194d6ab8cbe5546a73f4b7d80439": {
+    "b67229bdb828568085bce07fd7c3dc6f079a3211cbce021e5694d7a092d6e333": {
       "displayName": "aws-stepfunctions-integ-execution-class Template",
       "source": {
         "path": "aws-stepfunctions-integ-execution-class.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-05b59cb3": {
+        "current_account-current_region-e675df4e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "90b99ba2cea7f9474115121bb5df7bcd36d4194d6ab8cbe5546a73f4b7d80439.json",
+          "objectKey": "b67229bdb828568085bce07fd7c3dc6f079a3211cbce021e5694d7a092d6e333.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

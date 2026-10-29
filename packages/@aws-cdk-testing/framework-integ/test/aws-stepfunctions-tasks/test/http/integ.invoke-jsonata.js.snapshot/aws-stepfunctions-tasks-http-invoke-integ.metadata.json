@@ -1,12 +1,26 @@
 {
+  "/aws-stepfunctions-tasks-http-invoke-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-tasks-http-invoke-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "entry": "*",
+        "handler": "*",
+        "runtime": "*",
+        "code": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "entry": "*",
+        "handler": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/Authorizer": [
@@ -24,25 +38,42 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/Connection": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "authorization": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/BootstrapVersion": [
@@ -60,7 +91,17 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/AuthorizerHandler/Resource": [
@@ -90,25 +131,43 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Deployment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/DeploymentStage.prod": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "deployment": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Endpoint": [
@@ -132,27 +191,52 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Resource": [
@@ -194,7 +278,10 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/Resource": [
@@ -210,23 +297,43 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/Resource": [
@@ -238,11 +345,29 @@
   "/aws-stepfunctions-tasks-http-invoke-integ/IntegRestApi/Default/test/GET": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "authorizer": "*",
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-http-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [

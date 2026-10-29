@@ -31,11 +31,6 @@ exports[`stepfunctions should grant pipe role invoke access 1`] = `
                   ],
                 },
               },
-              "StringEquals": {
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId",
-                },
-              },
             },
             "Effect": "Allow",
             "Principal": {

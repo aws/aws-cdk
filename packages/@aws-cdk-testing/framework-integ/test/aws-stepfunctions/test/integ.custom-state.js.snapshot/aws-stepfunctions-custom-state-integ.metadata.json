@@ -1,8 +1,17 @@
 {
+  "/aws-stepfunctions-custom-state-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-custom-state-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-custom-state-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/aws-stepfunctions-custom-state-integ/StateMachineARN": [
@@ -26,7 +35,12 @@
   "/aws-stepfunctions-custom-state-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-custom-state-integ/StateMachine/Resource": [

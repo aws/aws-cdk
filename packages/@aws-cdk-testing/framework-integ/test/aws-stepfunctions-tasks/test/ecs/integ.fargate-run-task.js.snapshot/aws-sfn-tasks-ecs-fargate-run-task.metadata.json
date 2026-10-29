@@ -6,14 +6,18 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new Cluster (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:376:37)",
-        "    at <anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/ecs/integ.fargate-run-task.js:61:17)",
+        "    at Validations.acknowledge (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new Cluster (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:376:37)",
+        "    at <anonymous> (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/ecs/integ.fargate-run-task.js:61:17)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-sfn-tasks-ecs-fargate-run-task.template.json"
     }
   ],
   "/aws-sfn-tasks-ecs-fargate-run-task/FargateCluster": [

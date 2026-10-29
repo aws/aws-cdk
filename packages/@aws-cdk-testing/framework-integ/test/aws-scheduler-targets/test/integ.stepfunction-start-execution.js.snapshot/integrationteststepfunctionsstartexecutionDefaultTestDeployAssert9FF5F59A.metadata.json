@@ -1,4 +1,10 @@
 {
+  "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integrationteststepfunctionsstartexecutionDefaultTestDeployAssert9FF5F59A.template.json"
+    }
+  ],
   "/integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

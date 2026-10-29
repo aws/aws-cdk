@@ -1,8 +1,17 @@
 {
+  "/cdk-stepfunctions-map-inline-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-stepfunctions-map-inline-stack.template.json"
+    }
+  ],
   "/cdk-stepfunctions-map-inline-stack/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/cdk-stepfunctions-map-inline-stack/StateMachineARN": [
@@ -26,7 +35,12 @@
   "/cdk-stepfunctions-map-inline-stack/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/cdk-stepfunctions-map-inline-stack/StateMachine/Resource": [

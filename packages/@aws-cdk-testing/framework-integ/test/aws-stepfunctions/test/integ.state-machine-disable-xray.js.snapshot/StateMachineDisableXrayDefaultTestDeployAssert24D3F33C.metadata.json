@@ -1,4 +1,10 @@
 {
+  "/StateMachineDisableXray/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "StateMachineDisableXrayDefaultTestDeployAssert24D3F33C.template.json"
+    }
+  ],
   "/StateMachineDisableXray/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

@@ -1,4 +1,10 @@
 {
+  "/EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.template.json"
+    }
+  ],
   "/EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

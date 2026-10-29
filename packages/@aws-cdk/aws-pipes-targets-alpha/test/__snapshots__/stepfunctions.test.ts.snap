@@ -48,11 +48,6 @@ exports[`step-function should grant pipe role push access (StartAsyncExecution) 
                   ],
                 },
               },
-              "StringEquals": {
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId",
-                },
-              },
             },
             "Effect": "Allow",
             "Principal": {
@@ -116,11 +111,6 @@ exports[`step-function should grant pipe role push access (StartAsyncExecution) 
                   ],
                 },
               },
-              "StringEquals": {
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId",
-                },
-              },
             },
             "Effect": "Allow",
             "Principal": {
@@ -182,11 +172,6 @@ exports[`step-function should grant pipe role push access (StartSyncExecution) w
                       ":stateMachine:*",
                     ],
                   ],
-                },
-              },
-              "StringEquals": {
-                "aws:SourceAccount": {
-                  "Ref": "AWS::AccountId",
                 },
               },
             },

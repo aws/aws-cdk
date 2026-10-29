@@ -1,8 +1,16 @@
 {
+  "/aws-stepfunctions-state-machine-jsonata-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-state-machine-jsonata-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-state-machine-jsonata-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     }
   ],
   "/aws-stepfunctions-state-machine-jsonata-integ/BootstrapVersion": [
@@ -20,7 +28,12 @@
   "/aws-stepfunctions-state-machine-jsonata-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-state-machine-jsonata-integ/StateMachine/Resource": [

@@ -1,28 +1,53 @@
 {
+  "/aws-stepfunctions-tasks-lambda-invoke-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-tasks-lambda-invoke-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*"
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/stateMachineArn": [
@@ -46,7 +71,17 @@
   "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/submitJobLambda/Resource": [
@@ -58,7 +93,17 @@
   "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/checkJobStateLambda/Resource": [
@@ -70,23 +115,44 @@
   "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Resource": [
@@ -120,19 +186,35 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-tasks-lambda-invoke-integ/StateMachine/Role/DefaultPolicy/Resource": [

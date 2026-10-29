@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "3da1a5b674621fabf7d623044ced4ff4135291c5bf14d771eb2f35ca367498fc": {
+    "932d7c63d2ef2e489c603557b17fc02520a1be41ebcef1aa79ecbb89e2fbb596": {
       "displayName": "aws-stepfunctions-tasks-call-aws-service-mwaa-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-mwaa-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b089d8e8": {
+        "current_account-current_region-bb82263e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3da1a5b674621fabf7d623044ced4ff4135291c5bf14d771eb2f35ca367498fc.json",
+          "objectKey": "932d7c63d2ef2e489c603557b17fc02520a1be41ebcef1aa79ecbb89e2fbb596.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,4 +1,10 @@
 {
+  "/SfnTasksEcsEc2TaskTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "SfnTasksEcsEc2TaskTestDefaultTestDeployAssert9E1A388C.template.json"
+    }
+  ],
   "/SfnTasksEcsEc2TaskTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

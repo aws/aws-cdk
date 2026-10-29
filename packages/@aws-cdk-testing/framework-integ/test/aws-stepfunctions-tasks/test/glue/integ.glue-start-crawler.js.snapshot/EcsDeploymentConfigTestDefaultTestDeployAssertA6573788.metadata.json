@@ -1,4 +1,10 @@
 {
+  "/EcsDeploymentConfigTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EcsDeploymentConfigTestDefaultTestDeployAssertA6573788.template.json"
+    }
+  ],
   "/EcsDeploymentConfigTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

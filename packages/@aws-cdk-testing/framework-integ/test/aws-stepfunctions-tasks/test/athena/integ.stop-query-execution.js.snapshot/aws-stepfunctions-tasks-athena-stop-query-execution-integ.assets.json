@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "458b899f5381bf1cf0eb975ddd6c79ec01aa00796d3ce3e99fd6dab371600803": {
+    "b291b1f9e2362f309f9849e88f2d00b2b852877bf8d2cd8737d55d0122db982d": {
       "displayName": "aws-stepfunctions-tasks-athena-stop-query-execution-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-athena-stop-query-execution-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-152b1b6c": {
+        "current_account-current_region-e20be9ca": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "458b899f5381bf1cf0eb975ddd6c79ec01aa00796d3ce3e99fd6dab371600803.json",
+          "objectKey": "b291b1f9e2362f309f9849e88f2d00b2b852877bf8d2cd8737d55d0122db982d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

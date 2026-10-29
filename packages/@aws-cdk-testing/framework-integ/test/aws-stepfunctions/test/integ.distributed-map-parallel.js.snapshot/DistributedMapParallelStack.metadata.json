@@ -1,8 +1,17 @@
 {
+  "/DistributedMapParallelStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "DistributedMapParallelStack.template.json"
+    }
+  ],
   "/DistributedMapParallelStack/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/DistributedMapParallelStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -14,11 +23,17 @@
   "/DistributedMapParallelStack/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/DistributedMapParallelStack/BootstrapVersion": [
@@ -41,14 +56,16 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
       }
     }
   ],
   "/DistributedMapParallelStack/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "bucket": "*"
+      }
     }
   ],
   "/DistributedMapParallelStack/Bucket/AutoDeleteObjectsCustomResource": [
@@ -72,27 +89,52 @@
   "/DistributedMapParallelStack/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/DistributedMapParallelStack/StateMachine/Resource": [
@@ -108,23 +150,43 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/DistributedMapParallelStack/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
@@ -147,7 +209,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
       }
     }
   ],
@@ -170,15 +232,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/DistributedMapParallelStack/StateMachine/DistributedMapPolicy/Resource": [

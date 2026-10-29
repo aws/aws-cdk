@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "c0216381148b861dba0732026cd1187cc3cfe1b3208ef0246eda1189d6128bfb": {
+    "61f4c06586ce78c9c0efa6d6371f1690f427910444618d72277e4a505a5d6c55": {
       "displayName": "createScheduleInteg Template",
       "source": {
         "path": "createScheduleInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7df8d595": {
+        "current_account-current_region-f53b5211": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c0216381148b861dba0732026cd1187cc3cfe1b3208ef0246eda1189d6128bfb.json",
+          "objectKey": "61f4c06586ce78c9c0efa6d6371f1690f427910444618d72277e4a505a5d6c55.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

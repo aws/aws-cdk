@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "cdb72adecbd445e428a799cff69d87a93067bf7cbfb455fb03e64561e30c5dd8": {
+    "002292d4c7490c5c02362339b3491fd9bf06867dfb10fc9426fb9520178c9ce6": {
       "displayName": "aws-cdk-pipes-enrichments-stepfunctions Template",
       "source": {
         "path": "aws-cdk-pipes-enrichments-stepfunctions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f6112cd1": {
+        "current_account-current_region-c8d5d15a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cdb72adecbd445e428a799cff69d87a93067bf7cbfb455fb03e64561e30c5dd8.json",
+          "objectKey": "002292d4c7490c5c02362339b3491fd9bf06867dfb10fc9426fb9520178c9ce6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

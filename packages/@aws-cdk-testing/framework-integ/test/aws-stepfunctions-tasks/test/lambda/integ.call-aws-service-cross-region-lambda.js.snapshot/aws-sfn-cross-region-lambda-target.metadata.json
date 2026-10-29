@@ -1,8 +1,19 @@
 {
+  "/aws-sfn-cross-region-lambda-target": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-sfn-cross-region-lambda-target.template.json"
+    }
+  ],
   "/aws-sfn-cross-region-lambda-target/TargetLambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
     }
   ],
   "/aws-sfn-cross-region-lambda-target/BootstrapVersion": [
@@ -20,7 +31,17 @@
   "/aws-sfn-cross-region-lambda-target/TargetLambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/aws-sfn-cross-region-lambda-target/TargetLambda/Resource": [
