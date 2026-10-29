@@ -172,6 +172,22 @@ describe('addEndpoint', () => {
     })).toThrow(/Endpoint description cannot be longer than 256 characters/);
   });
 
+  test('isWebFunctionEndpoint recognizes a WebFunctionEndpoint only', () => {
+    const stack = new Stack();
+    const fn = new WebFunction(stack, 'Fn', minimalProps());
+    const imported = WebFunctionEndpoint.fromWebFunctionEndpointAttributes(stack, 'Imported', {
+      endpointArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/other/endpoint/prod',
+      domainName: 'example.lambda-web.us-east-1.on.aws',
+      endpointType: WebFunctionEndpointType.HOME_REGION,
+    });
+
+    expect(WebFunctionEndpoint.isWebFunctionEndpoint(fn.endpoint)).toBe(true);
+    expect(WebFunctionEndpoint.isWebFunctionEndpoint(imported)).toBe(false);
+    expect(WebFunctionEndpoint.isWebFunctionEndpoint(fn)).toBe(false);
+    expect(WebFunctionEndpoint.isWebFunctionEndpoint({})).toBe(false);
+    expect(WebFunctionEndpoint.isWebFunctionEndpoint(null)).toBe(false);
+  });
+
   test('only a home-Region endpoint can be added to a function with a network connector', () => {
     const stack = new Stack();
     const connector = NetworkConnector.fromNetworkConnectorVersionArn(stack, 'Connector',

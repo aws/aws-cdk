@@ -382,6 +382,8 @@ function functionArnOfEndpoint(endpointArn: string): string {
   return Fn.select(0, Fn.split('/endpoint/', endpointArn));
 }
 
+const WEB_FUNCTION_ENDPOINT_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.WebFunctionEndpoint');
+
 /**
  * An endpoint of a Lambda WebFunction: a domain that serves HTTP traffic for one of the
  * function's revisions.
@@ -395,6 +397,13 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.WebFunctionEndpoint';
+
+  /**
+   * Return whether the given object is a WebFunctionEndpoint.
+   */
+  public static isWebFunctionEndpoint(x: any): x is WebFunctionEndpoint {
+    return x !== null && typeof x === 'object' && WEB_FUNCTION_ENDPOINT_SYMBOL in x;
+  }
 
   /**
    * Import an existing WebFunction endpoint by its attributes.
@@ -595,4 +604,10 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
     return `${Names.uniqueResourceName(this, { maxLength: 55 })}-${endpointShapeHash(this, endpointType, regions)}`;
   }
 }
+
+Object.defineProperty(WebFunctionEndpoint.prototype, WEB_FUNCTION_ENDPOINT_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
