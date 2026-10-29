@@ -37,13 +37,19 @@ class EksClusterStack extends Stack {
       chartAsset: chartAsset,
     });
 
+    // Release name and namespace for the OCI chart whose end-to-end install we verify with
+    // a deploy-time assertion below. Declared once and shared with the assertion so the two
+    // cannot silently drift apart.
+    const ociChartRelease = 's3-chart';
+    const ociChartNamespace = 'ack-system';
+
     // https://gallery.ecr.aws/aws-controllers-k8s/s3-chart
     const ociChart = this.cluster.addHelmChart('test-oci-chart', {
       chart: 's3-chart',
-      release: 's3-chart',
+      release: ociChartRelease,
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
       version: 'v0.1.0',
-      namespace: 'ack-system',
+      namespace: ociChartNamespace,
       createNamespace: true,
       values: { aws: { region: this.region } },
     });
@@ -128,15 +134,25 @@ class EksClusterStack extends Stack {
     });
 
     // Deploy-time verification that a Helm chart was actually installed on the cluster.
-    // Helm v3 records every successful release as a Secret named
-    // `sh.helm.release.v1.<release>.v<revision>` carrying a `status` label. Reading that
-    // label back from the live cluster asserts the end-to-end OCI pull + install path for
-    // the `s3-chart` release above succeeded (not merely that the stack synthesized).
+    // Helm v3's default `secrets` storage driver records each release revision as a Secret
+    // named `sh.helm.release.v1.<release>.v<revision>` (the leading `v1` is Helm's storage
+    // format version, the trailing `v1` is the release revision) carrying a `status` label.
+    // Reading that label back from the live cluster asserts the end-to-end OCI pull +
+    // install path for the release above succeeded, not merely that the stack synthesized.
+    // Each chart is installed exactly once here - the `disable-update-workflow` pragma keeps
+    // CI on the first-install path - so revision 1 is the deployed revision and its label
+    // reads `deployed`. A local rerun against a leftover stack would bump the chart to
+    // revision 2 and leave this `v1` Secret reading `superseded`; redeploy from a clean state
+    // in that case rather than relaxing the expected value, which must stay `deployed` to keep
+    // proving the latest install succeeded.
     const ociReleaseStatus = new eks.KubernetesObjectValue(this, 'OciHelmReleaseStatus', {
       cluster: this.cluster,
       objectType: 'secret',
-      objectName: 'sh.helm.release.v1.s3-chart.v1',
-      objectNamespace: 'ack-system',
+      objectName: `sh.helm.release.v1.${ociChartRelease}.v1`,
+      objectNamespace: ociChartNamespace,
+      // Keep this scoped to the release's `status` label. Never widen to `.data` /
+      // `.stringData`: that would publish the rendered manifest and any user-supplied values
+      // into a CloudFormation output, the kubectl provider's logs, and the committed snapshot.
       jsonPath: '.metadata.labels.status',
     });
     ociReleaseStatus.node.addDependency(ociChart);
@@ -166,7 +182,7 @@ const integTest = new integ.IntegTest(app, 'aws-cdk-eks-helm', {
 // Deploy-time assertion: confirm the OCI Helm release reached the `deployed` state on the
 // live cluster, via the `HelmReleaseStatus` output of the latest-version stack.
 integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
-  StackName: 'aws-cdk-eks-helm-test',
+  StackName: stackLatest.stackName,
 }).expect(integ.ExpectedResult.objectLike({
   Stacks: integ.Match.arrayWith([
     integ.Match.objectLike({
