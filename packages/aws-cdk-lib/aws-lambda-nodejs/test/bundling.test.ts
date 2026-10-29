@@ -751,6 +751,29 @@ test('with Docker build args', () => {
   }));
 });
 
+test('with PNPM_VERSION Docker build arg', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    buildArgs: {
+      PNPM_VERSION: '10.34.9',
+    },
+    forceDockerBundling: true,
+  });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib\/docker$/), expect.objectContaining({
+    buildArgs: expect.objectContaining({
+      PNPM_VERSION: '10.34.9',
+    }),
+  }));
+  const dockerfile = fs.readFileSync(path.join(__dirname, '..', 'lib', 'docker', 'Dockerfile'), 'utf-8');
+  expect(dockerfile).toMatch(/^ARG PNPM_VERSION=7\.33\.7$/m);
+  expect(dockerfile).toMatch(/^RUN npm install --global pnpm@\$PNPM_VERSION$/m);
+});
+
 test('Local bundling', () => {
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
