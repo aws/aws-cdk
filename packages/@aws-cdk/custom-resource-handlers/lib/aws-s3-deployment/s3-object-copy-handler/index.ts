@@ -2,7 +2,8 @@ import { createHash } from 'crypto';
 import { S3 } from '@aws-sdk/client-s3';
 import { makeHandler } from '../../nodejs-entrypoint';
 
-const s3 = new S3({});
+// The copy function runs in the stack's Region, and a provided bucket may be in another one.
+export const s3 = new S3({ followRegionRedirects: true });
 
 interface ResourceProperties {
   readonly SourceBucketName: string;
@@ -165,14 +166,6 @@ async function deleteVersion(target: ObjectVersion): Promise<void> {
   } catch (error: any) {
     if (error.name === 'NoSuchBucket') {
       console.log(`Bucket '${target.Bucket}' does not exist; nothing to delete.`);
-      return;
-    }
-    if (error.name === 'AccessDenied') {
-      // This Delete runs in the cleanup phase, by which time the handler's policy has been
-      // regenerated for the current destination — so a bucket or prefix this resource no
-      // longer writes to can be out of reach. Failing would only buy retries and bury the
-      // result; the object cannot be removed either way.
-      console.log(`Access denied deleting '${target.Bucket}/${target.Key}' version ${target.VersionId}; it is left in place.`);
       return;
     }
     throw error;

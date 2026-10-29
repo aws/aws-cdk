@@ -2179,6 +2179,8 @@ For an imported bucket or key, CDK can neither change nor inspect any of this. T
 grants become no-ops and a warning is emitted, a bucket without versioning is rejected at
 deployment, and an AWS-managed key surfaces as a read failure at runtime.
 
+The bucket can be in another Region than the stack.
+
 Because the bucket-policy statements accumulate, the 20 KB policy limit fits roughly 40–45
 WebFunctions per bucket, fewer if the policy already carries statements of your own. To
 serve more, you can:

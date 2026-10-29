@@ -1,6 +1,6 @@
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
-import { destinationKey, s3ObjectCopyHandler } from '../../../lib/aws-s3-deployment/s3-object-copy-handler/index';
+import { destinationKey, s3, s3ObjectCopyHandler } from '../../../lib/aws-s3-deployment/s3-object-copy-handler/index';
 
 const s3Mock = mockClient(S3Client);
 
@@ -165,7 +165,12 @@ test.each(['request-id', `destination-bucket/${KEY}`, 'destination-bucket/key?ve
     expect(response).toEqual({ PhysicalResourceId: id });
   });
 
-test.each(['NoSuchBucket', 'AccessDenied'])('delete succeeds without removing anything on %s', async (name) => {
+test('follows a redirect to a bucket in another Region', async () => {
+  expect(await s3.config.followRegionRedirects).toBe(true);
+});
+
+test('delete succeeds without removing anything when the bucket is gone', async () => {
+  const name = 'NoSuchBucket';
   const error = new Error(name);
   error.name = name;
   s3Mock.on(DeleteObjectCommand).rejects(error);
@@ -177,16 +182,16 @@ test.each(['NoSuchBucket', 'AccessDenied'])('delete succeeds without removing an
   } as any)).resolves.toEqual({ PhysicalResourceId: physicalId(KEY, 'v1') });
 });
 
-test('delete fails on any other error', async () => {
-  const error = new Error('throttled');
-  error.name = 'SlowDown';
+test.each(['AccessDenied', 'SlowDown'])('delete fails on %s', async (name) => {
+  const error = new Error(`${name} error`);
+  error.name = name;
   s3Mock.on(DeleteObjectCommand).rejects(error);
 
   await expect(s3ObjectCopyHandler({
     ...baseEvent,
     RequestType: 'Delete',
     PhysicalResourceId: physicalId(KEY, 'v1'),
-  } as any)).rejects.toThrow('throttled');
+  } as any)).rejects.toThrow(`${name} error`);
 });
 
 test('fails when S3 returns no version', async () => {
