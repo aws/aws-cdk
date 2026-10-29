@@ -962,6 +962,17 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Whether this cluster's parameter group, created in this app, sets `enable_case_sensitive_identifier` to `true`.
+   *
+   * @internal
+   */
+  public _isCaseSensitiveIdentifierEnabled(): boolean {
+    const pg = this.parameterGroup;
+    // ClusterParameterGroup has no static type check; as in the user activity logging check, any other group counts as imported.
+    return pg instanceof ClusterParameterGroup && pg.parameters.enable_case_sensitive_identifier === 'true';
+  }
+
+  /**
    * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
    */
   @MethodMetadata()

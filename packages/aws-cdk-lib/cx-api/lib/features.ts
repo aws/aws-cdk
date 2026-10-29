@@ -2031,7 +2031,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       Enabling this flag replaces the shared function with one function per task on the next deployment, so let
       running executions finish first.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.275.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
