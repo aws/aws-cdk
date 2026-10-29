@@ -1,4 +1,10 @@
 {
+  "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4.template.json"
+    }
+  ],
   "/DynamoImportSourceIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

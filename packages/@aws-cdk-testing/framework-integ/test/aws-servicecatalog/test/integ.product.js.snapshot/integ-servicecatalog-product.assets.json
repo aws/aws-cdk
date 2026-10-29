@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+    "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5": {
       "displayName": "integ-servicecatalog-product/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "path": "asset.05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5",
         "packaging": "zip"
       },
       "destinations": {
-        "12345678-test-region-21013dc7": {
+        "12345678-test-region-2d8692d5": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "objectKey": "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
@@ -53,7 +53,7 @@
         "packaging": "zip"
       },
       "destinations": {
-        "12345678-test-region-f0816d50": {
+        "12345678-test-region-60b19dec": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
           "objectKey": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip",
           "region": "test-region",
@@ -77,7 +77,7 @@
       }
     },
     "b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e": {
-      "displayName": "TestProduct/Templatef2be850540ce",
+      "displayName": "TestProduct/Template5b4cf9f4fca4",
       "source": {
         "path": "asset.b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json",
         "packaging": "file"
@@ -92,7 +92,7 @@
       }
     },
     "6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5": {
-      "displayName": "TestProduct/Template389bdde2f86c",
+      "displayName": "TestProduct/Template251eb866e106",
       "source": {
         "path": "asset.6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json",
         "packaging": "file"
@@ -136,16 +136,16 @@
         }
       }
     },
-    "bd2a44c4e87e4687bae0888a61dd359f4266e954a2a5ac21d3d4c84b16e2cf22": {
+    "6315e41484bbdeb539fa20b79ca87737865c421e4e4ee9246f65279ca1f08129": {
       "displayName": "integ-servicecatalog-product Template",
       "source": {
         "path": "integ-servicecatalog-product.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-e52e9751": {
+        "12345678-test-region-d9bfc918": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "bd2a44c4e87e4687bae0888a61dd359f4266e954a2a5ac21d3d4c84b16e2cf22.json",
+          "objectKey": "6315e41484bbdeb539fa20b79ca87737865c421e4e4ee9246f65279ca1f08129.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }

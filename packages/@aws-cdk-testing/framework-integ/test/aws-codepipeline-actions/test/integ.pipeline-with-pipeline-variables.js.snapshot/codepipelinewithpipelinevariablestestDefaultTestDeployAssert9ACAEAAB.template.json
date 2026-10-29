@@ -27,7 +27,7 @@
      "Key": "\"sample.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1779973586514"
+    "salt": "1793299080548"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -116,7 +116,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "54cbc03a880c886f31278a4bfa2f4196626ebe7ab0ddeb766a8da508811ff42a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -125,6 +125,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -156,7 +160,7 @@
      "Body": "\"HelloWorld\""
     },
     "flattenResponse": "false",
-    "salt": "1779973586515"
+    "salt": "1793299080548"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -191,7 +195,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779973586516"
+    "salt": "1793299080549"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -362,7 +366,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "54cbc03a880c886f31278a4bfa2f4196626ebe7ab0ddeb766a8da508811ff42a.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -371,6 +375,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -404,7 +412,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "54cbc03a880c886f31278a4bfa2f4196626ebe7ab0ddeb766a8da508811ff42a.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -413,6 +421,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

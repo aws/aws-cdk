@@ -1,6 +1,5 @@
 {
-  "enableLookups": true,
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "integ-cloudfront-custom-s3/DefaultTest": {
       "stacks": [
@@ -11,5 +10,6 @@
       "assertionStackName": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.0"
 }

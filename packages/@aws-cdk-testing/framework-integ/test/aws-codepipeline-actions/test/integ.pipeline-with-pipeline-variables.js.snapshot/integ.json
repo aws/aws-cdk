@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "codepipeline-with-pipeline-variables-test/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStackName": "codepipelinewithpipelinevariablestestDefaultTestDeployAssert9ACAEAAB"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.0"
 }

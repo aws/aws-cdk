@@ -1,4 +1,24 @@
 {
+  "/aws-ecs-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:57:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-ecs-integ.template.json"
+    }
+  ],
   "/aws-ecs-integ/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -86,6 +106,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -133,19 +154,19 @@
   "/aws-ecs-integ/Service": [
     {
       "type": "aws:cdk:warning",
-      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
       "trace": [
-        "Annotations.addMessage (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new BaseService (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:516:47)",
-        "new BaseService (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Ec2Service (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
-        "new Ec2Service (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1829:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1969:10)",
-        "Module.load (node:internal/modules/cjs/loader:1552:32)",
-        "Module._load (node:internal/modules/cjs/loader:1354:12)",
+        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:520:47)",
+        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
+        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
         "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
@@ -155,17 +176,17 @@
       "type": "aws:cdk:warning",
       "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
       "trace": [
-        "Annotations.addMessage (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new BaseService (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:541:47)",
-        "new BaseService (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Ec2Service (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
-        "new Ec2Service (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1829:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1969:10)",
-        "Module.load (node:internal/modules/cjs/loader:1552:32)",
-        "Module._load (node:internal/modules/cjs/loader:1354:12)",
+        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:545:47)",
+        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
+        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
         "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
@@ -263,7 +284,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -299,7 +323,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -455,6 +482,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],
