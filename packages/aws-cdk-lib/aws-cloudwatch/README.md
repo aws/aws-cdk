@@ -347,6 +347,32 @@ Please note that it is **not possible** to:
   used to evaluate the Alarm doesn't have a `SampleCount` field anymore ("[When CloudWatch evaluates alarms, periods are aggregated into single data points](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create-alarm-on-metric-math-expression.html)"). The result is that the Alarm cannot evaluate at all.
 - Create a cross-Region alarm ([source](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html)).
 
+### Alarm warm-up periods
+
+A warm-up period delays alarm evaluation after the alarm is created or updated. During this period,
+the alarm remains in `INSUFFICIENT_DATA` and does not perform alarm actions. By default, the warm-up
+period ends early when enough metric data is available to fill the evaluation window. Set
+`onlyStartEvaluatingAfterWarmupPeriodEnds` to wait for the entire warm-up period instead.
+
+Alarm warm-up is supported for alarms that evaluate a single time series, including metric math and
+anomaly detection. It cannot be used with `PromQLAlarm` or a multi-time-series Metrics Insights query.
+To use a Metrics Insights query with `GROUP BY`, wrap it in a metric math expression that collapses the
+query results to a single time series.
+
+```ts
+declare const fn: lambda.Function;
+
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: fn.metricErrors(),
+  threshold: 100,
+  evaluationPeriods: 2,
+  warmupConfiguration: {
+    warmupPeriod: Duration.minutes(10),
+    onlyStartEvaluatingAfterWarmupPeriodEnds: true,
+  },
+});
+```
+
 ### Alarm Actions
 
 To add actions to an alarm, use the integration classes from the
