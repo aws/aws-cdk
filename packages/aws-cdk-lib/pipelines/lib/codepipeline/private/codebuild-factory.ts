@@ -374,22 +374,31 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
  * Generate commands to move additional input artifacts into the right place
  */
 function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
-  return inputs.map(input => {
-    const fragments = [];
+  return inputs.flatMap(input => {
+    const directory = input.directory;
+    const parentDirectory = path.dirname(directory);
+    const hasParent = !['.', '..'].includes(parentDirectory);
+    const variable = `CODEBUILD_SRC_DIR_${artifacts.toCodePipeline(input.fileSet).artifactName}`;
+    const existsMessage = `additionalInputs: "${directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.`;
 
-    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+    const linux = [
+      `[ ! -d "${directory}" ] || { echo '${existsMessage}'; exit 1; }`,
+      ...hasParent ? [`mkdir -p -- "${parentDirectory}"`] : [],
+      `ln -s -- "$${variable}" "${directory}"`,
+    ];
 
-    const parentDirectory = path.dirname(input.directory);
-    if (!['.', '..'].includes(parentDirectory)) {
-      fragments.push(`mkdir -p -- "${parentDirectory}"`);
-    }
+    const windows = [
+      `if (Test-Path -LiteralPath ${powershellLiteral(directory)}) { throw ${powershellLiteral(existsMessage)} }`,
+      ...hasParent ? [`New-Item -ItemType Directory -Force -Path ${powershellLiteral(parentDirectory)} -ErrorAction Stop`] : [],
+      `New-Item -ItemType SymbolicLink -Path ${powershellLiteral(directory)} -Target $env:${variable} -ErrorAction Stop`,
+    ];
 
-    const artifact = artifacts.toCodePipeline(input.fileSet);
-
-    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
-
-    return fragments.join(' && ');
+    return [`!LINUX!${linux.join(' && ')}`, `!WINDOWS!try { ${windows.join('; ')} } catch { Write-Output $_; exit 1 }`];
   });
+}
+
+function powershellLiteral(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`;
 }
 
 function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLocation[]) {
