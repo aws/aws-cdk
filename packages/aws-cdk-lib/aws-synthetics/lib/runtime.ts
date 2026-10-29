@@ -316,6 +316,104 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_PUPPETEER_13_0 = new Runtime('syn-nodejs-puppeteer-13.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-puppeteer-13.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.25.0
+   * - Chromium version 142.0.7444.175
+   * - Firefox version 145.x
+   *
+   * New Features:
+   * - Namespace migration.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-13.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_13_1 = new Runtime('syn-nodejs-puppeteer-13.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-14.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.34.0
+   * - Chromium version 143.0.7499.169
+   * - Firefox version 146.x
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-14.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_14_0 = new Runtime('syn-nodejs-puppeteer-14.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-15.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.37.5
+   * - Chromium version 145.0.7632.77
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-15.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_15_0 = new Runtime('syn-nodejs-puppeteer-15.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-15.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-15.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_15_1 = new Runtime('syn-nodejs-puppeteer-15.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-16.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-16.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_16_0 = new Runtime('syn-nodejs-puppeteer-16.0', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-16.1` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 24.42.0
+   * - Chromium version 147.0.7727.57
+   * - Firefox version 147.0.4
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-16.1
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_16_1 = new Runtime('syn-nodejs-puppeteer-16.1', RuntimeFamily.NODEJS);
+
+  /**
+   * `syn-nodejs-puppeteer-17.0` includes the following:
+   * - Lambda runtime Node.js 22.x
+   * - Puppeteer-core version 25.2.1
+   * - Chromium version 150.0.7871.24
+   * - Firefox version 152.0.2
+   *
+   * New Features:
+   * - Applied security patches and updated Puppeteer and browser versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-17.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_17_0 = new Runtime('syn-nodejs-puppeteer-17.0', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-nodejs-playwright-1.0` includes the following:
    * - Lambda runtime Node.js 20.x
    * - Playwright version 1.45

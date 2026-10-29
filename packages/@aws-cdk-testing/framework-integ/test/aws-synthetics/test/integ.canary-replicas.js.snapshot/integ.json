@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "IntegCanaryReplicasTest/DefaultTest": {
+      "stacks": [
+        "canary-replicas"
+      ],
+      "assertionStack": "IntegCanaryReplicasTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryReplicasTestDefaultTestDeployAssertE676E8AB"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
