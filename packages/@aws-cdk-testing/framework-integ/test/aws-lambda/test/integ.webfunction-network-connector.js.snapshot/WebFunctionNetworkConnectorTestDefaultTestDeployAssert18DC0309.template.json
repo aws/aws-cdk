@@ -28,7 +28,7 @@
      "Body": "\"reached-through-the-vpc\""
     },
     "flattenResponse": "false",
-    "salt": "1793224362742"
+    "salt": "1793235139729"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -123,7 +123,7 @@
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"object\":\"reached-through-the-vpc\"}}}",
     "flattenResponse": "false",
-    "salt": "1793224362742"
+    "salt": "1793235139730"
    },
    "DependsOn": [
     "AwsApiCallS3putObject5d965a19a7cf9826f911494ff03b6a97"

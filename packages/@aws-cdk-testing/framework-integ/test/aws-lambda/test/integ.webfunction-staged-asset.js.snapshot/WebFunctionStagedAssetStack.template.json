@@ -53,28 +53,33 @@
     "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "FunctionName": {
-      "Ref": "AutomaticFunctionB47C23F8"
-     },
-     "RuntimeConfig": {
-      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-     },
-     "ServiceConfig": {
-      "executionRoleArn": {
-       "Fn::GetAtt": [
-        "AutomaticServiceRole73715D6D",
-        "Arn"
-       ]
-      },
-      "telemetryConfig": {
-       "loggingConfig": {
-        "logGroup": {
-         "Ref": "AutomaticLogGroupC4AD0641"
-        }
+     "Properties": {
+      "BuildConfig": {
+       "RuntimeConfig": {
+        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
        }
       },
-      "timeoutSeconds": 30
-     }
+      "FunctionName": {
+       "Ref": "AutomaticFunctionB47C23F8"
+      },
+      "ServiceConfig": {
+       "ExecutionRoleArn": {
+        "Fn::GetAtt": [
+         "AutomaticServiceRole73715D6D",
+         "Arn"
+        ]
+       },
+       "TelemetryConfig": {
+        "LoggingConfig": {
+         "LogGroup": {
+          "Ref": "AutomaticLogGroupC4AD0641"
+         }
+        }
+       },
+       "TimeoutSeconds": 30
+      }
+     },
+     "References": []
     }
    },
    "DependsOn": [
@@ -546,7 +551,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "310f8175dd56c9ddef793e0821ae77aa3edd497fdcb26821300b1acb546f5b77.zip"
+     "S3Key": "965d74011d2d81904552e2dfcbccddea0b3749ab4cbfd8a3828f52eb5292d46d.zip"
     },
     "Handler": "index.handler",
     "LoggingConfig": {
@@ -621,28 +626,33 @@
     "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "FunctionName": {
-      "Ref": "AutomaticSecondFunctionAB53D7F9"
-     },
-     "RuntimeConfig": {
-      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-     },
-     "ServiceConfig": {
-      "executionRoleArn": {
-       "Fn::GetAtt": [
-        "AutomaticSecondServiceRoleCA7814FD",
-        "Arn"
-       ]
-      },
-      "telemetryConfig": {
-       "loggingConfig": {
-        "logGroup": {
-         "Ref": "AutomaticSecondLogGroup7FE94734"
-        }
+     "Properties": {
+      "BuildConfig": {
+       "RuntimeConfig": {
+        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
        }
       },
-      "timeoutSeconds": 30
-     }
+      "FunctionName": {
+       "Ref": "AutomaticSecondFunctionAB53D7F9"
+      },
+      "ServiceConfig": {
+       "ExecutionRoleArn": {
+        "Fn::GetAtt": [
+         "AutomaticSecondServiceRoleCA7814FD",
+         "Arn"
+        ]
+       },
+       "TelemetryConfig": {
+        "LoggingConfig": {
+         "LogGroup": {
+          "Ref": "AutomaticSecondLogGroup7FE94734"
+         }
+        }
+       },
+       "TimeoutSeconds": 30
+      }
+     },
+     "References": []
     }
    },
    "DependsOn": [
@@ -958,28 +968,33 @@
     "DestinationKeyPrefix": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "FunctionName": {
-      "Ref": "SpecificFunction2B9945D8"
-     },
-     "RuntimeConfig": {
-      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-     },
-     "ServiceConfig": {
-      "executionRoleArn": {
-       "Fn::GetAtt": [
-        "SpecificServiceRole381077C9",
-        "Arn"
-       ]
-      },
-      "telemetryConfig": {
-       "loggingConfig": {
-        "logGroup": {
-         "Ref": "SpecificLogGroup92FAE761"
-        }
+     "Properties": {
+      "BuildConfig": {
+       "RuntimeConfig": {
+        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
        }
       },
-      "timeoutSeconds": 30
-     }
+      "FunctionName": {
+       "Ref": "SpecificFunction2B9945D8"
+      },
+      "ServiceConfig": {
+       "ExecutionRoleArn": {
+        "Fn::GetAtt": [
+         "SpecificServiceRole381077C9",
+         "Arn"
+        ]
+       },
+       "TelemetryConfig": {
+        "LoggingConfig": {
+         "LogGroup": {
+          "Ref": "SpecificLogGroup92FAE761"
+         }
+        }
+       },
+       "TimeoutSeconds": 30
+      }
+     },
+     "References": []
     }
    },
    "DependsOn": [
@@ -1204,7 +1219,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "310f8175dd56c9ddef793e0821ae77aa3edd497fdcb26821300b1acb546f5b77.zip"
+     "S3Key": "965d74011d2d81904552e2dfcbccddea0b3749ab4cbfd8a3828f52eb5292d46d.zip"
     },
     "Handler": "index.handler",
     "LoggingConfig": {

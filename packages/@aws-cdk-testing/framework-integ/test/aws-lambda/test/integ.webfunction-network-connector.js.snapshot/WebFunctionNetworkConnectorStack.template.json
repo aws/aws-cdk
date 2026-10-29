@@ -625,51 +625,56 @@
     "DestinationKeyPrefix": "web-function/WebFunctionNetworkConnectorStackFunction4CFB0255/",
     "ContentHash": "f43caef5f59d8d69c7a740076b980608cb5d502efb430a777568820012525e43",
     "Configuration": {
-     "FunctionName": {
-      "Ref": "Function042596DC"
-     },
-     "RuntimeConfig": {
-      "runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-     },
-     "ServiceConfig": {
-      "executionRoleArn": {
-       "Fn::GetAtt": [
-        "FunctionServiceRole675BB04A",
-        "Arn"
-       ]
+     "Properties": {
+      "BuildConfig": {
+       "RuntimeConfig": {
+        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
+       }
       },
-      "environmentVariables": {
-       "OBJECT_URL": {
-        "Fn::Join": [
-         "",
-         [
-          "f8eae6750519389e078e1eb1bcb3d708",
-          {
-           "Fn::GetAtt": [
-            "EgressBucket1ABE5DC5",
-            "RegionalDomainName"
-           ]
-          },
-          "68159f03775c1e8adfdef7c9f447c72a"
-         ]
+      "FunctionName": {
+       "Ref": "Function042596DC"
+      },
+      "ServiceConfig": {
+       "EgressNetworkConnectorArn": {
+        "Fn::GetAtt": [
+         "ConnectorC537A2FB",
+         "LatestVersionArn"
         ]
-       }
-      },
-      "telemetryConfig": {
-       "loggingConfig": {
-        "logGroup": {
-         "Ref": "FunctionLogGroup55B80E27"
+       },
+       "EnvironmentVariables": {
+        "OBJECT_URL": {
+         "Fn::Join": [
+          "",
+          [
+           "f8eae6750519389e078e1eb1bcb3d708",
+           {
+            "Fn::GetAtt": [
+             "EgressBucket1ABE5DC5",
+             "RegionalDomainName"
+            ]
+           },
+           "68159f03775c1e8adfdef7c9f447c72a"
+          ]
+         ]
         }
-       }
-      },
-      "timeoutSeconds": 30,
-      "egressNetworkConnectorArn": {
-       "Fn::GetAtt": [
-        "ConnectorC537A2FB",
-        "LatestVersionArn"
-       ]
+       },
+       "ExecutionRoleArn": {
+        "Fn::GetAtt": [
+         "FunctionServiceRole675BB04A",
+         "Arn"
+        ]
+       },
+       "TelemetryConfig": {
+        "LoggingConfig": {
+         "LogGroup": {
+          "Ref": "FunctionLogGroup55B80E27"
+         }
+        }
+       },
+       "TimeoutSeconds": 30
       }
-     }
+     },
+     "References": []
     }
    },
    "DependsOn": [
@@ -1106,7 +1111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "310f8175dd56c9ddef793e0821ae77aa3edd497fdcb26821300b1acb546f5b77.zip"
+     "S3Key": "965d74011d2d81904552e2dfcbccddea0b3749ab4cbfd8a3828f52eb5292d46d.zip"
     },
     "Handler": "index.handler",
     "LoggingConfig": {
