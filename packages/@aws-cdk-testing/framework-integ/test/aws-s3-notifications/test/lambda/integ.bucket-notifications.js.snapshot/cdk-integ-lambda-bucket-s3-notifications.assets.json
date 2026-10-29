@@ -1,7 +1,7 @@
 {
   "version": "53.0.0",
   "files": {
-    "ed0de31844e2f6330f4a4ea2c36e0a518887a9558786b9efde5b79c1ebcc0b20": {
+    "113de4228a09594a9f22084e5b8d7ca00f5e1d32d6280410342ab5097ab45781": {
       "displayName": "cdk-integ-lambda-bucket-s3-notifications Template",
       "source": {
         "path": "cdk-integ-lambda-bucket-s3-notifications.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region-8f051c83": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ed0de31844e2f6330f4a4ea2c36e0a518887a9558786b9efde5b79c1ebcc0b20.json",
+          "objectKey": "113de4228a09594a9f22084e5b8d7ca00f5e1d32d6280410342ab5097ab45781.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

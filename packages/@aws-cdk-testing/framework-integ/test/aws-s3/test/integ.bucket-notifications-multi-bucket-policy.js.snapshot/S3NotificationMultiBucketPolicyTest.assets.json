@@ -1,7 +1,7 @@
 {
   "version": "53.0.0",
   "files": {
-    "6863b544096df88dc7e7523e0b89017e88d1d80998f769aa20f4d678dd0a520b": {
+    "b6ef63e562862608af51d7523d08128c0f7c392b53cc23772af405c541fa721c": {
       "displayName": "S3NotificationMultiBucketPolicyTest Template",
       "source": {
         "path": "S3NotificationMultiBucketPolicyTest.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region-b97a8df7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6863b544096df88dc7e7523e0b89017e88d1d80998f769aa20f4d678dd0a520b.json",
+          "objectKey": "b6ef63e562862608af51d7523d08128c0f7c392b53cc23772af405c541fa721c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
