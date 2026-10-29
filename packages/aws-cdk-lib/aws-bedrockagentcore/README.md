@@ -3235,6 +3235,53 @@ policyEngine.addPolicy("RawCedarPolicy", {
 
 There is no way to escape one value and keep the modelled form: the direct tier replaces a whole statement. A `PolicyStatement` is either constructed from properties or created from raw Cedar, and the two cannot be combined.
 
+#### Policy Enforcement Mode
+
+Each policy has its own enforcement mode, separate from the policy engine mode on the gateway:
+
+- `PolicyEnforcementMode.ACTIVE` — the policy is evaluated and its decision is enforced.
+- `PolicyEnforcementMode.LOG_ONLY` — the policy is evaluated but its decision is only logged. Use this to validate a new policy against real traffic before you switch it to `ACTIVE`.
+
+When `enforcementMode` is not set, the property is left out of the template and the service uses `ACTIVE`. While the gateway runs the policy engine in `PolicyEngineMode.LOG_ONLY`, no policy is enforced, whatever its own enforcement mode.
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+
+policyEngine.addPolicy("NewRestriction", {
+  statement: agentcore.PolicyStatement.fromCedar(
+    'forbid(principal, action, resource) when { resource.confidential == true };'
+  ),
+  enforcementMode: agentcore.PolicyEnforcementMode.LOG_ONLY,
+});
+```
+
+#### Statements for the `policy` Definition Member
+
+A policy definition has two members. `PolicyStatement.fromCedar()` and the modelled statements write to the `cedar` member. Statements that the `cedar` member does not accept, such as a `when guardrails { ... }` block or the `suppressOutput` effect, go in the `policy` member. Use `PolicyStatement.fromPolicy()` for these:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+policyEngine.addPolicy("ScreenContactDetails", {
+  statement: agentcore.PolicyStatement.fromPolicy(`
+    suppressOutput(
+      principal,
+      action == AgentCore::Action::"CustomerTool__get_customer",
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
+    )
+    when guardrails {
+      BedrockGuardrails::SensitiveInformation(["EMAIL", "PHONE"], [context.output.customer]).categories().contains("EMAIL")
+    };
+  `),
+  // The AgentCore guide says to create guardrail policies with IGNORE_ALL_FINDINGS
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS,
+  enforcementMode: agentcore.PolicyEnforcementMode.LOG_ONLY,
+});
+```
+
+`fromPolicy()` treats its input the same way as `fromCedar()`: the string is used exactly as given and is trusted input.
+
 #### Accessing Policies on PolicyEngine
 
 You can access the list of policies added to a PolicyEngine using policyEngine.policies.
