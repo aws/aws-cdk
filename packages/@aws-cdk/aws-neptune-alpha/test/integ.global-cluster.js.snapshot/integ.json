@@ -1,0 +1,19 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "GlobalClusterTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-neptune-global-cluster-integ",
+        "aws-cdk-neptune-global-cluster-secondary-integ"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "GlobalClusterAssertStack",
+      "assertionStackName": "GlobalClusterAssertStack"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
