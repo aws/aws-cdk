@@ -79,8 +79,11 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
       throw new UnscopedValidationError(lit`AssetBucketRequired`, 'An Asset Bucket must be provided to use Assets');
     }
 
-    // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
-    const location = this.parentStack.synthesizer.addFileAsset(asset);
+    // Register the asset on the stack that owns the asset bucket, because that is where the
+    // 'ProductAssetsDeployment' copying it lives. That way the asset is published before the
+    // deployment runs, even if the asset bucket is in a different stack than the parent stack.
+    // This assumes all assets added to that stack's synthesizer go into the same bucket.
+    const location = cdk.Stack.of(this.assetBucket).synthesizer.addFileAsset(asset);
     if (!this.parentAssetBucket) {
       this.parentAssetBucket = Bucket.fromBucketName(this.boundStack, 'ParentAssetBucket', location.bucketName);
     }
