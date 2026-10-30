@@ -47,7 +47,11 @@ export class LogGroupGrants {
    * Grant the given identity custom permissions
    */
   public actions(grantee: iam.IGrantable, actions: Array<string>, options: cdk.PermissionsOptions = {}): iam.Grant {
-    const resourceArns = options.resourceArns ?? [logs.CfnLogGroup.arnForLogGroup(this.resource)];
+    // Include both the log group ARN and the log stream ARN (':*') by default.
+    const resourceArns = options.resourceArns ?? [
+      logGroupArnWithoutStreamSuffix(this.resource),
+      logs.CfnLogGroup.arnForLogGroup(this.resource),
+    ];
     return this.policyResource
       ? iam.Grant.addToPrincipalOrResource({
         actions: actions,
@@ -75,12 +79,6 @@ export class LogGroupGrants {
    */
   public read(grantee: iam.IGrantable): iam.Grant {
     const actions = ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'];
-    // Include both the log group ARN and the log stream ARN (':*').
-    return this.actions(grantee, actions, {
-      resourceArns: [
-        logGroupArnWithoutStreamSuffix(this.resource),
-        logs.CfnLogGroup.arnForLogGroup(this.resource),
-      ],
-    });
+    return this.actions(grantee, actions, {});
   }
 }

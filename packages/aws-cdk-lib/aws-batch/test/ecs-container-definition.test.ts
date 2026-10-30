@@ -98,10 +98,20 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
               'logs:PutLogEvents',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -109,9 +119,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':log-group:/aws/batch/job:*',
-                ],
-              ],
-            },
+                ]],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
@@ -366,9 +376,20 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '', [
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -376,9 +397,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':log-group:/aws/batch/job:*',
-                ],
-              ],
-            },
+                ]],
+              },
+            ],
           },
           {
             Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -431,9 +452,20 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '', [
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -441,9 +473,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':log-group:/aws/batch/job:*',
-                ],
-              ],
-            },
+                ]],
+              },
+            ],
           },
           {
             Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -501,9 +533,20 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '', [
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:/aws/batch/job',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':logs:',
@@ -511,9 +554,9 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
                   ':',
                   { Ref: 'AWS::AccountId' },
                   ':log-group:/aws/batch/job:*',
-                ],
-              ],
-            },
+                ]],
+              },
+            ],
           },
           {
             Action: ['ssm:DescribeParameters', 'ssm:GetParameters', 'ssm:GetParameter', 'ssm:GetParameterHistory'],

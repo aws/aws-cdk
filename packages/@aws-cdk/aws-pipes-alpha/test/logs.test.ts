@@ -79,9 +79,19 @@ describe('Pipe', () => {
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
               ],
-              Resource: {
-                'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
-              },
+              Resource: [
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':logs:us-east-1:123456789012:log-group:',
+                    { Ref: 'LogGroupF5B46931' },
+                  ]],
+                },
+                {
+                  'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'],
+                },
+              ],
             }],
           },
         },

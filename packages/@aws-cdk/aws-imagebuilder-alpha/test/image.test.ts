@@ -544,12 +544,17 @@ describe('Image', () => {
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: {
+            Resource: [{
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group'],
+              ],
+            }, {
               'Fn::Join': [
                 '',
                 ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group:*'],
               ],
-            },
+            }],
           },
         ]),
       },
@@ -586,12 +591,17 @@ describe('Image', () => {
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: {
+            Resource: [{
+              'Fn::Join': [
+                '',
+                ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group'],
+              ],
+            }, {
               'Fn::Join': [
                 '',
                 ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group:*'],
               ],
-            },
+            }],
           },
         ]),
       },
