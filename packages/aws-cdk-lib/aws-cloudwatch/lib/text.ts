@@ -40,7 +40,7 @@ export interface TextWidgetProps {
   /**
    * Background for the widget
    *
-   * @default solid
+   * @default TextWidgetBackground.TRANSPARENT
    */
   readonly background?: TextWidgetBackground;
 }
@@ -55,7 +55,7 @@ export class TextWidget extends ConcreteWidget {
   constructor(props: TextWidgetProps) {
     super(props.width || 6, props.height || 2);
     this.markdown = props.markdown;
-    this.background = props.background;
+    this.background = props.background ?? TextWidgetBackground.TRANSPARENT;
   }
 
   public position(x: number, y: number): void {
