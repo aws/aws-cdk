@@ -7,13 +7,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": {
@@ -37,7 +30,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":gateway/policy-integ-gateway*"
+            ":gateway/policy-integ-gateway-??????????"
            ]
           ]
          }
@@ -451,13 +444,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": {
@@ -481,7 +467,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":gateway/PolicyIntegTestStackdPolicyEngineGateway99C83002*"
+            ":gateway/policyintegteststackdpolicyenginegateway99c83002-??????????"
            ]
           ]
          }
@@ -603,13 +589,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": {
@@ -633,7 +612,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":gateway/PolicyIntegMixedCase*"
+            ":gateway/policyintegmixedcase-??????????"
            ]
           ]
          }
@@ -755,13 +734,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "bedrock-agentcore.amazonaws.com"
-       }
-      },
-      {
-       "Action": "sts:AssumeRole",
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": {
@@ -785,11 +757,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":gateway/",
-            {
-             "Ref": "TokenGatewayName"
-            },
-            "*"
+            ":gateway/*"
            ]
           ]
          }

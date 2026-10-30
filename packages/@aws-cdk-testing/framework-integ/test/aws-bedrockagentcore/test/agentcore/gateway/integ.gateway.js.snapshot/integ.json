@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "GatewayIntegTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "GatewayIntegTestDefaultTestDeployAssert9223BB27"
     }
   },
-  "minimumCliVersion": "2.1121.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
 }

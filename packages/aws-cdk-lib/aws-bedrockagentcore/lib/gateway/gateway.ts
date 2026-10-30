@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 // Internal imports
+import { gatewayArnPatternForName } from './gateway-arn-pattern';
 import type { GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayBase } from './gateway-base';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
@@ -7,7 +8,7 @@ import { GatewayAuthorizer, GatewayAuthorizerType } from './inbound-auth/authori
 import type { IInterceptor, InterceptorBindConfig } from './interceptor';
 import { InterceptionPoint } from './interceptor';
 import type { ICredentialProviderConfig } from './outbound-auth/credential-provider';
-import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
+import { GATEWAY_KMS_KEY_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
 import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
 import type { IRestApi } from '../../../aws-apigateway';
@@ -616,7 +617,7 @@ export class Gateway extends GatewayBase {
     }
 
     this.kmsKey = props.kmsKey;
-    this.role = props.role ?? this.createGatewayRole();
+    this.role = props.role ?? this.createGatewayRole(props.gatewayName);
 
     if (this.kmsKey && this.role) {
       this.kmsKey.grantEncryptDecrypt(this.role);
@@ -847,32 +848,37 @@ export class Gateway extends GatewayBase {
    * - KMS encryption: Automatically grants encrypt/decrypt permissions
    *
    * For other target types, manually grant permissions using standard CDK grant methods:
+   * @param explicitName The gateway name the caller supplied, if any
    * @internal
    */
-  private createGatewayRole(): iam.Role {
+  private createGatewayRole(explicitName?: string): iam.Role {
+    // An auto-generated name is a token too, but it always resolves during synthesis, so only a
+    // caller-supplied token can leave the trust policy unable to name this gateway.
+    if (explicitName !== undefined && Token.isUnresolved(explicitName)) {
+      Annotations.of(this).addWarningV2(
+        'aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust',
+        'The gateway name is a token. If it is only known at deployment, the trust policy of the default service role cannot name this gateway ' +
+        'and allows any gateway in this account and region (gateway/*) to assume the role. ' +
+        'To trust only this gateway, use a literal gatewayName, ' +
+        'or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway.',
+      );
+    }
+
+    // The service assumes this role on behalf of the gateway and presents the gateway's ARN as
+    // aws:SourceArn. The conditions sit on the only statement that trusts the service, so they
+    // apply to every assumption of the role.
+    // See: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
     const role = new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
-      description: `Service role for Bedrock AgentCore Gateway ${this.gatewayName}`,
-    });
-
-    const region = Stack.of(this).region;
-    const account = Stack.of(this).account;
-    const partition = Stack.of(this).partition;
-
-    // This restricts role assumption to the specific gateway resource only in this account,
-    // preventing other accounts from assuming this role.
-    // See:https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-prerequisites-permissions.html#gateway-service-role-permissions
-    role.assumeRolePolicy?.addStatements(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com')],
-        actions: GATEWAY_ASSUME_ROLE,
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
         conditions: {
-          StringEquals: { 'aws:SourceAccount': account },
-          ArnLike: { 'aws:SourceArn': `arn:${partition}:bedrock-agentcore:${region}:${account}:gateway/${this.gatewayName}*` },
+          StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+          ArnLike: {
+            'aws:SourceArn': gatewayArnPatternForName(this, this.gatewayName, { dynamicReferenceIsDeployTime: true }),
+          },
         },
       }),
-    );
+      description: `Service role for Bedrock AgentCore Gateway ${this.gatewayName}`,
+    });
 
     if (this.kmsKey) {
       role.addToPolicy(new iam.PolicyStatement({
