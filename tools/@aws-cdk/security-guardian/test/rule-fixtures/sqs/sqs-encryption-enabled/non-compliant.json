@@ -1,0 +1,11 @@
+{
+  "Description": "SQS_ENCRYPTION_ENABLED fires: the queue disables SQS-managed encryption and names no KMS key",
+  "Resources": {
+    "UnencryptedQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "SqsManagedSseEnabled": false
+      }
+    }
+  }
+}

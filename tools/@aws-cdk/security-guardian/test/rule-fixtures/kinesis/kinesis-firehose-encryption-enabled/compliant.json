@@ -1,0 +1,14 @@
+{
+  "Description": "KINESIS_FIREHOSE_ENCRYPTION_ENABLED passes: the delivery stream is encrypted with an AWS owned key",
+  "Resources": {
+    "EncryptedDeliveryStream": {
+      "Type": "AWS::KinesisFirehose::DeliveryStream",
+      "Properties": {
+        "DeliveryStreamType": "DirectPut",
+        "DeliveryStreamEncryptionConfigurationInput": {
+          "KeyType": "AWS_OWNED_CMK"
+        }
+      }
+    }
+  }
+}

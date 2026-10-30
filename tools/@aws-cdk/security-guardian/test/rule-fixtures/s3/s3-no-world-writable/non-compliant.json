@@ -1,0 +1,22 @@
+{
+  "Description": "S3_NO_WORLD_WRITABLE fires: any AWS principal can write objects",
+  "Resources": {
+    "WorldWritableBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "example-bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "s3:PutObject",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
