@@ -1,0 +1,62 @@
+{
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]"
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ProjectNotificationSharedRuleDefaultTestDeployAssert6AF280C9.template.json"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/AwsApiCallCodeStarNotificationsdescribeNotificationRule06012e7f17e39b229d4d3501cb81fca2/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/AwsApiCallCodeStarNotificationsdescribeNotificationRule06012e7f17e39b229d4d3501cb81fca2/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeStarNotificationsdescribeNotificationRule06012e7f17e39b229d4d3501cb81fca2"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ProjectNotificationSharedRule/DefaultTest/DeployAssert/AwsApiCallCodeStarNotificationsdescribeNotificationRule06012e7f17e39b229d4d3501cb81fca2/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeStarNotificationsdescribeNotificationRule06012e7f17e39b229d4d3501cb81fca2"
+    }
+  ]
+}

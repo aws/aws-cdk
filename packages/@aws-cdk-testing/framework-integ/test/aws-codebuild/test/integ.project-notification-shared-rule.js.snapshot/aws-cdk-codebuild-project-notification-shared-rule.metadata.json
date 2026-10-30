@@ -1,0 +1,194 @@
+{
+  "/aws-cdk-codebuild-project-notification-shared-rule": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-codebuild-project-notification-shared-rule.template.json"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*"
+      }
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProject39F7B0AE"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/BuildNotifications": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "events": "*",
+        "source": "*",
+        "targets": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic86869434"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyTopic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/Exports/Output{\"Ref\":\"MyProjectBuildNotificationsBD6E4374\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyProjectBuildNotificationsBD6E437415C91D39"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRole9BBE5233"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/BuildNotifications/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectBuildNotificationsBD6E4374"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyTopic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopicPolicy12A5EC17"
+    }
+  ],
+  "/aws-cdk-codebuild-project-notification-shared-rule/MyProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRoleDefaultPolicyB19B7C29"
+    }
+  ]
+}

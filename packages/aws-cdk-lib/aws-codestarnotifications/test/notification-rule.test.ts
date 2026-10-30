@@ -219,6 +219,48 @@ describe('NotificationRule', () => {
   });
 });
 
+describe('NotificationRule addEvents', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('adds events after creation and ignores duplicates', () => {
+    const project = new FakeCodeBuild();
+
+    const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      source: project,
+      events: ['codebuild-project-build-state-succeeded'],
+    });
+    rule.addEvents([
+      'codebuild-project-build-state-succeeded',
+      'codebuild-project-build-state-failed',
+    ]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
+      EventTypeIds: [
+        'codebuild-project-build-state-succeeded',
+        'codebuild-project-build-state-failed',
+      ],
+    });
+  });
+
+  test('isNotificationRule', () => {
+    const rule = new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      source: new FakeCodeBuild(),
+      events: ['codebuild-project-build-state-succeeded'],
+    });
+    const imported = notifications.NotificationRule.fromNotificationRuleArn(stack, 'Imported',
+      'arn:aws:codestar-notifications::123456789012:notificationrule/1234567890abcdef');
+
+    expect(notifications.NotificationRule.isNotificationRule(rule)).toBe(true);
+    expect(notifications.NotificationRule.isNotificationRule(imported)).toBe(false);
+    expect(notifications.NotificationRule.isNotificationRule(undefined)).toBe(false);
+    expect(notifications.NotificationRule.isNotificationRule(null)).toBe(false);
+  });
+});
+
 describe('NotificationRule from imported', () => {
   let stack: cdk.Stack;
 
