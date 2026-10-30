@@ -36,12 +36,25 @@ export class ScheduleGroupGrants {
    * Grant list and get schedule permissions for schedules in this group to the given principal
    */
   public readSchedules(grantee: iam.IGrantable): iam.Grant {
-    const actions = ['scheduler:GetSchedule', 'scheduler:ListSchedules'];
-    return iam.Grant.addToPrincipal({
-      actions: actions,
+    // `scheduler:GetSchedule` supports resource-level permissions, so scope it to the
+    // schedules in this group.
+    const grant = iam.Grant.addToPrincipal({
+      actions: ['scheduler:GetSchedule'],
       grantee: grantee,
       resourceArns: [this.arnForScheduleInGroup('*')],
     });
+
+    // `scheduler:ListSchedules` does not support resource-level permissions; EventBridge
+    // Scheduler authorizes it against `schedule/*/*`, so a group-scoped ARN never matches
+    // and the call is denied. It must be granted on `*` to be usable.
+    // See https://github.com/aws/aws-cdk/issues/38201
+    grant.combine(iam.Grant.addToPrincipal({
+      actions: ['scheduler:ListSchedules'],
+      grantee: grantee,
+      resourceArns: ['*'],
+    }));
+
+    return grant;
   }
 
   /**
