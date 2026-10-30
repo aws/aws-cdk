@@ -151,6 +151,25 @@ new MyStack(app, 'MyStack', {
 });
 ```
 
+If your file asset bucket uses a customer-managed KMS key, you can advertise
+its ARN to asset readers through the synthesizer:
+
+```ts
+new MyStack(app, 'EncryptedAssets', {
+  synthesizer: new DefaultStackSynthesizer({
+    fileAssetsBucketName: 'amzn-s3-demo-encrypted-assets',
+    fileAssetsBucketKmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/11111111-2222-3333-4444-555555555555',
+  }),
+});
+```
+
+Asset readers using `Asset.grantRead()`, including `BucketDeployment` handlers,
+then receive read permissions on this specific key through the existing bucket
+grant. The property does not configure bucket encryption, change the publishing
+role, or modify the key policy. It must identify the key actually used by the
+bootstrap bucket. Cross-account keys also need a suitable key policy. Omitting
+the property preserves the existing behavior and adds no KMS permissions.
+
 For more information on bootstrapping accounts and customizing synthesis,
 see [Bootstrapping in the CDK Developer Guide](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
