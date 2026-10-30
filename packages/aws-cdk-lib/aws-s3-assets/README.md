@@ -112,6 +112,22 @@ new Asset(this, 'BundledAsset', {
 });
 ```
 
+In Python, implement `ILocalBundling` using the `@jsii.implements` decorator. Note that the `try_bundle` method receives `options` as a single `BundlingOptions` object rather than expanded keyword arguments:
+
+```python
+import jsii
+import aws_cdk as cdk
+
+@jsii.implements(cdk.ILocalBundling)
+class MyBundle:
+    def try_bundle(self, output_dir: str, options: cdk.BundlingOptions) -> bool:
+        can_run_locally = True  # replace with actual logic
+        if can_run_locally:
+            # perform local bundling here
+            return True
+        return False
+```
+
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
 
