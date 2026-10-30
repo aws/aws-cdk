@@ -2,6 +2,7 @@ import type { Construct, IDependable } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
 import type { StackSetStack } from './stackset-stack';
 import * as iam from '../../aws-iam';
+import * as s3_assets from '../../aws-s3-assets';
 import type { IResource } from '../../core';
 import {
   Arn,
@@ -36,30 +37,83 @@ export abstract class StackSetTemplate {
   }
 
   /**
-   * The S3 URL of the StackSet template
+   * Uses a template that is already stored in Amazon S3
+   *
+   * @param url the S3 URL of the template
+   * @returns StackSetTemplate
    */
-  public abstract readonly templateUrl: string;
+  public static fromUrl(url: string): StackSetTemplate {
+    return new StackSetUrlTemplate(url);
+  }
 
   /**
-   * Resources that must be deployed before a StackSet that uses this template
+   * Uses a local template file, uploaded as an asset of the StackSet's stack
    *
+   * @param path the path to the template file
+   * @param options options for the asset
+   * @returns StackSetTemplate
+   */
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): StackSetTemplate {
+    return new StackSetAssetTemplate(path, options);
+  }
+
+  /**
+   * Binds the template to the StackSet that uses it
+   *
+   * @param scope the StackSet that uses this template
    * @internal
    */
-  public _dependencies(): IDependable[] {
-    return [];
-  }
+  public abstract _bind(scope: Construct): StackSetTemplateConfig;
+}
+
+/**
+ * The result of binding a StackSetTemplate to a StackSet
+ */
+interface StackSetTemplateConfig {
+  /**
+   * The S3 URL of the template
+   */
+  readonly templateUrl: string;
+
+  /**
+   * Resources that must be deployed before the StackSet
+   *
+   * @default - no dependencies
+   */
+  readonly dependencies?: IDependable[];
 }
 
 class StackSetStackTemplate extends StackSetTemplate {
-  public readonly templateUrl: string;
-
   constructor(private readonly stack: StackSetStack) {
     super();
-    this.templateUrl = stack._getTemplateUrl();
   }
 
-  public _dependencies(): IDependable[] {
-    return [this.stack._getAssetDeployments()];
+  public _bind(scope: Construct): StackSetTemplateConfig {
+    return this.stack._bind(scope);
+  }
+}
+
+class StackSetUrlTemplate extends StackSetTemplate {
+  constructor(private readonly url: string) {
+    super();
+  }
+
+  public _bind(_scope: Construct): StackSetTemplateConfig {
+    return { templateUrl: this.url };
+  }
+}
+
+class StackSetAssetTemplate extends StackSetTemplate {
+  constructor(private readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
+    super();
+  }
+
+  public _bind(scope: Construct): StackSetTemplateConfig {
+    const asset = new s3_assets.Asset(scope, 'TemplateAsset', {
+      path: this.path,
+      ...this.options,
+    });
+    return { templateUrl: asset.httpUrl };
   }
 }
 
@@ -802,6 +856,7 @@ export class StackSet extends Resource implements IStackSet {
     if (props.target) {
       this.addTarget(props.target);
     }
+    const template = props.template._bind(this);
     const stackSet = new CfnStackSet(this, 'Resource', {
       autoDeployment: undefinedIfNoKeys({
         enabled: deploymentTypeConfig.autoDeployEnabled,
@@ -825,7 +880,7 @@ export class StackSet extends Resource implements IStackSet {
       capabilities: props.capabilities,
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
-      templateUrl: props.template.templateUrl,
+      templateUrl: template.templateUrl,
       stackInstancesGroup: Lazy.any({
         produce: () => {
           return this.stackInstances;
@@ -847,8 +902,8 @@ export class StackSet extends Resource implements IStackSet {
       stackSet.node.addDependency(this._role);
     }
 
-    // the file asset bucket deployment needs to complete before the stackset can deploy
-    stackSet.node.addDependency(...props.template._dependencies());
+    // e.g. the file asset bucket deployments need to complete before the stackset can deploy
+    stackSet.node.addDependency(...template.dependencies ?? []);
   }
 
   public get stackSetRef(): StackSetReference {

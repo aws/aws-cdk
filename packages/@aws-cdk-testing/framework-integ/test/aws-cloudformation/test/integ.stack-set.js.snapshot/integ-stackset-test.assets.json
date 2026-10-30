@@ -2,8 +2,9 @@
   "version": "55.0.0",
   "files": {
     "fc39dcfb61ca7db050a8c6cf440dde97c2c051f0965e9094eaad4bf1157e63cf": {
+      "displayName": "integ-stack-set Template",
       "source": {
-        "path": "integstacksettestintegstackset3E755748.stackset.template.json",
+        "path": "integstackset.stackset.template.json",
         "packaging": "file"
       },
       "destinations": {

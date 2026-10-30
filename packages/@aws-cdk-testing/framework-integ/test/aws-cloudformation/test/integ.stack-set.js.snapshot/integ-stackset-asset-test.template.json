@@ -1,6 +1,121 @@
 {
  "Resources": {
-  "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0AwsCliLayerC5715512": {
+  "StackSetAdminRoleFDB48078": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudformation:*:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stackset/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudformation.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StackSetAdminRoleDefaultPolicy96A312F6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-test"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StackSetAdminRoleDefaultPolicy96A312F6",
+    "Roles": [
+     {
+      "Ref": "StackSetAdminRoleFDB48078"
+     }
+    ]
+   }
+  },
+  "StackSet6E6355CF": {
+   "Type": "AWS::CloudFormation::StackSet",
+   "Properties": {
+    "AdministrationRoleARN": {
+     "Fn::GetAtt": [
+      "StackSetAdminRoleFDB48078",
+      "Arn"
+     ]
+    },
+    "Capabilities": [
+     "CAPABILITY_IAM"
+    ],
+    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-test",
+    "ManagedExecution": {
+     "Active": true
+    },
+    "PermissionModel": "SELF_MANAGED",
+    "StackInstancesGroup": [
+     {
+      "DeploymentTargets": {
+       "Accounts": [
+        "12345678"
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     }
+    ],
+    "StackSetName": "integ-stackset-asset-test",
+    "TemplateURL": {
+     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6b910e83cd1f0f9875b16e47631a0a21a715868ac5ec131c56ed5b75a19614d.json"
+    }
+   },
+   "DependsOn": [
+    "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E",
+    "assetstacksetAssetBucketDeployment0CustomResource9D9B9436",
+    "StackSetAdminRoleDefaultPolicy96A312F6",
+    "StackSetAdminRoleFDB48078"
+   ]
+  },
+  "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -12,7 +127,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0CustomResource95864C0F": {
+  "assetstacksetAssetBucketDeployment0CustomResource9D9B9436": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -187,7 +302,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0AwsCliLayerC5715512"
+      "Ref": "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E"
      }
     ],
     "MemorySize": 1024,
@@ -223,121 +338,6 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
-  },
-  "StackSetAdminRoleFDB48078": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudformation:*:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":stackset/*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "cloudformation.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "StackSetAdminRoleDefaultPolicy96A312F6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-test"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "StackSetAdminRoleDefaultPolicy96A312F6",
-    "Roles": [
-     {
-      "Ref": "StackSetAdminRoleFDB48078"
-     }
-    ]
-   }
-  },
-  "StackSet6E6355CF": {
-   "Type": "AWS::CloudFormation::StackSet",
-   "Properties": {
-    "AdministrationRoleARN": {
-     "Fn::GetAtt": [
-      "StackSetAdminRoleFDB48078",
-      "Arn"
-     ]
-    },
-    "Capabilities": [
-     "CAPABILITY_IAM"
-    ],
-    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-test",
-    "ManagedExecution": {
-     "Active": true
-    },
-    "PermissionModel": "SELF_MANAGED",
-    "StackInstancesGroup": [
-     {
-      "DeploymentTargets": {
-       "Accounts": [
-        "12345678"
-       ]
-      },
-      "Regions": [
-       "us-east-1"
-      ]
-     }
-    ],
-    "StackSetName": "integ-stackset-asset-test",
-    "TemplateURL": {
-     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6b910e83cd1f0f9875b16e47631a0a21a715868ac5ec131c56ed5b75a19614d.json"
-    }
-   },
-   "DependsOn": [
-    "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0AwsCliLayerC5715512",
-    "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0CustomResource95864C0F",
-    "StackSetAdminRoleDefaultPolicy96A312F6",
-    "StackSetAdminRoleFDB48078"
-   ]
   }
  },
  "Parameters": {
