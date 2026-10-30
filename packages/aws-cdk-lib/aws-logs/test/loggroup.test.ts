@@ -7,6 +7,8 @@ import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
 import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
+const READ_ACTIONS = ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'];
+
 describe('log group', () => {
   test('set kms key when provided', () => {
     // GIVEN
@@ -524,14 +526,170 @@ describe('log group', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'],
+            Action: READ_ACTIONS,
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:',
+                  { Ref: 'LogGroupF5B46931' },
+                ]],
+              },
+              { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
+            ],
           },
         ],
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('grants.read uses both the log group ARN and the log stream ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    lg.grants.read(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: READ_ACTIONS,
+            Effect: 'Allow',
+            Resource: [
+              Match.objectLike({ 'Fn::Join': Match.anyValue() }),
+              { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants.read for an L1 log group uses both the log group ARN and the log stream ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cfnLogGroup = new CfnLogGroup(stack, 'CfnLogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    LogGroupGrants.fromLogGroup(cfnLogGroup).read(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: READ_ACTIONS,
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':log-group:',
+                  { Ref: 'CfnLogGroup' },
+                ]],
+              },
+              { 'Fn::GetAtt': ['CfnLogGroup', 'Arn'] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantRead on log group imported by name uses both ARN forms', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'User');
+    const imported = LogGroup.fromLogGroupName(stack, 'lg', 'my-log-group');
+
+    // WHEN
+    imported.grantRead(user);
+
+    // THEN
+    const arnPrefix = [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':logs:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+    ];
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: READ_ACTIONS,
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', [...arnPrefix, ':log-group:my-log-group']] },
+              { 'Fn::Join': ['', [...arnPrefix, ':log-group:my-log-group:*']] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  describe('grantRead on log group imported by ARN uses both ARN forms', () => void dataDrivenTests([
+    '',
+    ':*',
+  ], (suffix: string) => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'User');
+    const imported = LogGroup.fromLogGroupArn(stack, 'lg', `arn:aws:logs:us-west-1:123456789012:log-group:my-log-group${suffix}`);
+
+    // WHEN
+    imported.grantRead(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: READ_ACTIONS,
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group',
+              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
+            ],
+          },
+        ],
+      },
+    });
+  }));
+
+  test('grantRead to service principal puts both ARN forms in the resource policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+
+    // THEN
+    const policies = Template.fromStack(stack).findResources('AWS::Logs::ResourcePolicy');
+    const document = JSON.stringify(Object.values(policies)[0].Properties.PolicyDocument);
+    expect(document).toContain('log-group:');
+    expect(document).toContain('"Fn::GetAtt":["LogGroupF5B46931","Arn"]');
+    expect(document).toContain('{"Ref":"LogGroupF5B46931"}');
   });
 
   test('grant uses both the log group ARN and the log stream ARN', () => {
