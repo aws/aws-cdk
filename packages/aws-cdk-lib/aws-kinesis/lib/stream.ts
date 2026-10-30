@@ -5,7 +5,7 @@ import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps } from '../../core';
+import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps, Size } from '../../core';
 import { ArnFormat, Aws, CfnCondition, Fn, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -860,6 +860,18 @@ export interface StreamProps {
    * @default undefined - AWS Kinesis default is disabled
    */
   readonly shardLevelMetrics?: ShardLevelMetrics[];
+
+  /**
+   * The maximum size of a single record that can be written to, and read from, this stream.
+   *
+   * Must be between 1024 KiB (1 MiB) and 10240 KiB (10 MiB), expressed as a whole number
+   * of kibibytes.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-kinesis-stream.html#cfn-kinesis-stream-maxrecordsizeinkib
+   *
+   * @default - 1024 KiB (1 MiB)
+   */
+  readonly maxRecordSize?: Size;
 }
 
 /**
@@ -948,6 +960,13 @@ export class Stream extends StreamBase {
       }
     }
 
+    if (props.maxRecordSize !== undefined && !props.maxRecordSize.isUnresolved()) {
+      const maxRecordSizeInKiB = props.maxRecordSize.toKibibytes();
+      if (maxRecordSizeInKiB < 1024 || maxRecordSizeInKiB > 10240) {
+        throw new ValidationError(lit`MaxRecordSizeOutOfRange`, `maxRecordSize must be between 1024 and 10240 KiB. Received ${props.maxRecordSize}`, this);
+      }
+    }
+
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
     if (props.shardLevelMetrics) {
@@ -967,6 +986,7 @@ export class Stream extends StreamBase {
       shardCount,
       streamEncryption,
       desiredShardLevelMetrics: props.shardLevelMetrics,
+      maxRecordSizeInKiB: props.maxRecordSize?.toKibibytes(),
       ...(props.streamMode !== undefined
         ? {
           streamModeDetails: { streamMode: props.streamMode },
