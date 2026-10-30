@@ -298,7 +298,7 @@ describe('Agent', () => {
           account: ['123456789012'],
           region: ['us-east-1'],
           detail: {
-            test: 'value',
+            test: ['value'],
           },
         },
       });
@@ -311,6 +311,7 @@ describe('Agent', () => {
           source: ['aws.bedrock'],
           detail: {
             'agent-id': [{ 'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentId'] }],
+            'test': ['value'],
           },
           account: ['123456789012'],
           region: ['us-east-1'],
