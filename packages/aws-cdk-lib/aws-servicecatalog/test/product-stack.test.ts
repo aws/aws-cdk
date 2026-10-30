@@ -58,6 +58,66 @@ describe('ProductStack', () => {
     });
   });
 
+  test('assets are published by the parent stack when the asset bucket is in the parent stack', () => {
+    // GIVEN
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    new ProductWithAnAsset(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(fileAssetHashes(assembly, 'MyStack')).toContain(PRODUCT_ASSET_HASH);
+    Template.fromStack(mainStack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceObjectKeys: [`${PRODUCT_ASSET_HASH}.zip`],
+    });
+  });
+
+  test('assets are published by the asset bucket stack when the asset bucket is in another stack', () => {
+    // GIVEN
+    const app = new cdk.App({
+      postCliContext: {
+        '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+      },
+    });
+    const bucketStack = new cdk.Stack(app, 'BucketStack');
+    const productParentStack = new cdk.Stack(app, 'ProductParentStack');
+    const testAssetBucket = new s3.Bucket(bucketStack, 'TestAssetBucket', {
+      bucketName: 'test-asset-bucket',
+    });
+    const productStack = new ProductWithAnAsset(productParentStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    expect(fileAssetHashes(assembly, 'BucketStack')).toContain(PRODUCT_ASSET_HASH);
+    expect(fileAssetHashes(assembly, 'ProductParentStack')).not.toContain(PRODUCT_ASSET_HASH);
+    Template.fromStack(bucketStack).hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceObjectKeys: [`${PRODUCT_ASSET_HASH}.zip`],
+    });
+    Template.fromStack(productParentStack).resourceCountIs('Custom::CDKBucketDeployment', 0);
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
+    Template.fromJSON(template).hasResourceProperties('AWS::Lambda::Function', {
+      Code: {
+        S3Bucket: 'test-asset-bucket',
+        S3Key: `${PRODUCT_ASSET_HASH}.zip`,
+      },
+    });
+  });
+
   test('Use correct assetPath when outdir is absolute', () => {
     // GIVEN
     const app = new cdk.App({
@@ -529,6 +589,13 @@ describe('ProductStack', () => {
     });
   });
 });
+
+const PRODUCT_ASSET_HASH = 'd3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2';
+
+function fileAssetHashes(assembly: cxapi.CloudAssembly, stackName: string): string[] {
+  const manifest = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${stackName}.assets.json`), 'utf-8'));
+  return Object.keys(manifest.files ?? {});
+}
 
 class ProductWithAnAsset extends servicecatalog.ProductStack {
   constructor(scope: Construct, id: string, props: servicecatalog.ProductStackProps & { description?: string }) {
