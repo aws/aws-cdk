@@ -1186,7 +1186,8 @@ new apigateway.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
   endpointType: apigateway.EndpointType.EDGE, // default is REGIONAL
-  securityPolicy: apigateway.SecurityPolicy.TLS_1_2
+  securityPolicy: apigateway.SecurityPolicy.TLS13_2025_EDGE, // default is legacy policy TLS_1_2
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT // default is unset
 });
 ```
 
@@ -1544,6 +1545,19 @@ const api = new apigateway.RestApi(this, 'api', {
   endpointConfiguration: {
     types: [ apigateway.EndpointType.EDGE ]
   }
+});
+```
+
+Use `securityPolicy` to configure the REST API's TLS security policy. Enhanced policies
+(those starting with `SecurityPolicy_`) require `endpointAccessMode`; legacy policies
+(`TLS_1_0`, `TLS_1_2`, or the default when `securityPolicy` is omitted) must not specify it.
+The policy must also support the selected endpoint type:
+
+```ts
+const api = new apigateway.RestApi(this, 'api', {
+  endpointConfiguration: { types: [apigateway.EndpointType.REGIONAL] },
+  securityPolicy: apigateway.SecurityPolicy.TLS13_1_3_2025_09,
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT,
 });
 ```
 

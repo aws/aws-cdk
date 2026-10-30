@@ -7,7 +7,7 @@ import type { IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import type { CorsOptions } from './cors';
 import { Deployment } from './deployment';
-import type { DomainNameOptions } from './domain-name';
+import type { DomainNameOptions, EndpointAccessMode, SecurityPolicy } from './domain-name';
 import { DomainName } from './domain-name';
 import type { GatewayResponseOptions } from './gateway-response';
 import { GatewayResponse } from './gateway-response';
@@ -15,6 +15,7 @@ import type { Integration } from './integration';
 import type { Method, MethodOptions } from './method';
 import type { ModelOptions } from './model';
 import { Model } from './model';
+import { validateSecurityPolicyEndpointAccessMode, validateSecurityPolicyEndpointType } from './private/security-policy';
 import type { RequestValidatorOptions } from './requestvalidator';
 import { RequestValidator } from './requestvalidator';
 import type { IResource, ResourceOptions } from './resource';
@@ -197,6 +198,24 @@ export interface RestApiBaseProps {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * The endpoint access mode for this REST API.
+   *
+   * Required when using enhanced security policies (those starting with `SecurityPolicy_`).
+   * STRICT is recommended for production workloads.
+   *
+   * @default - No endpoint access mode is configured.
+   */
+  readonly endpointAccessMode?: EndpointAccessMode;
+
+  /**
+   * The Transport Layer Security (TLS) version + cipher suite for this REST API.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies-list.html#apigateway-security-policies-default
+   * @default - API Gateway uses TLS_1_0 for public APIs and TLS_1_2 for private APIs.
+   */
+  readonly securityPolicy?: SecurityPolicy;
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
@@ -1000,6 +1019,21 @@ export class RestApi extends RestApiBase {
       throw new ValidationError(lit`PropertiesMinCompressionSizeMinimum`, 'both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
+    const endpointTypes = props.endpointTypes ?? props.endpointConfiguration?.types ?? [EndpointType.EDGE];
+    const skipSecurityPolicyValidation =
+      Token.isUnresolved(props.securityPolicy) ||
+      Token.isUnresolved(props.endpointAccessMode) ||
+      Token.isUnresolved(endpointTypes) ||
+      endpointTypes.some(endpointType => Token.isUnresolved(endpointType));
+
+    if (!skipSecurityPolicyValidation) {
+      validateSecurityPolicyEndpointAccessMode(this, props.securityPolicy, props.endpointAccessMode);
+
+      for (const endpointType of endpointTypes) {
+        validateSecurityPolicyEndpointType(this, props.securityPolicy, endpointType);
+      }
+    }
+
     this._setResourcePolicy(props.policy);
 
     const resource = new CfnRestApi(this, 'Resource', {
@@ -1014,6 +1048,8 @@ export class RestApi extends RestApiBase {
       cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
       disableExecuteApiEndpoint: props.disableExecuteApiEndpoint,
+      endpointAccessMode: props.endpointAccessMode,
+      securityPolicy: props.securityPolicy,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
