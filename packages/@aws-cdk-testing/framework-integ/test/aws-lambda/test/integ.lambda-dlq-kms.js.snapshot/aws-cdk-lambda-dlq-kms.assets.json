@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "656ce7a23dd4f8f506b35e4e7364489672020a906434fc9d4f2c0fa14148c10c": {
+      "displayName": "aws-cdk-lambda-dlq-kms Template",
+      "source": {
+        "path": "aws-cdk-lambda-dlq-kms.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9d08e74a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "656ce7a23dd4f8f506b35e4e7364489672020a906434fc9d4f2c0fa14148c10c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

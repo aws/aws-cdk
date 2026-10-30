@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "lambda-dlq-kms/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-dlq-kms"
+      ],
+      "assertionStack": "lambda-dlq-kms/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdadlqkmsDefaultTestDeployAssert4D64CAFF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
