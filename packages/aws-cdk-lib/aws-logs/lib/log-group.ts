@@ -1,14 +1,15 @@
 import type { Construct } from 'constructs';
 import type { DataProtectionPolicy } from './data-protection-policy';
 import type { FieldIndexPolicy } from './field-index-policy';
+import { LogGroupGrants } from './log-group-grants';
 import { LogStream } from './log-stream';
-import { LogGroupGrants } from './logs-grants.generated';
 import type { ILogGroupRef, LogGroupReference } from './logs.generated';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import type { IFilterPattern } from './pattern';
 import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
+import { logGroupArnWithoutStreamSuffix } from './private/log-group-arn';
 import type { ILogSubscriptionDestination } from './subscription-filter';
 import { SubscriptionFilter } from './subscription-filter';
 import type { IProcessor } from './transformer';
@@ -272,25 +273,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       grantee,
       actions,
       // Include both the log group ARN and the log stream ARN (':*').
-      resourceArns: [this._logGroupArnWithoutStreamSuffix, this.logGroupArn],
+      resourceArns: [logGroupArnWithoutStreamSuffix(this), this.logGroupArn],
       resource: this,
     });
-  }
-
-  /**
-   * The ARN of this log group without the ':*' log stream suffix.
-   *
-   * @internal
-   */
-  protected get _logGroupArnWithoutStreamSuffix(): string {
-    return Arn.format({
-      service: 'logs',
-      resource: 'log-group',
-      resourceName: this.logGroupName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      account: this.env.account,
-      region: this.env.region,
-    }, Stack.of(this));
   }
 
   /**
@@ -665,11 +650,6 @@ export class LogGroup extends LogGroupBase {
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
       public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
-
-      protected get _logGroupArnWithoutStreamSuffix(): string {
-        // An unresolved token may or may not carry ':*', so rebuild it from the name instead.
-        return Token.isUnresolved(baseLogGroupArn) ? super._logGroupArnWithoutStreamSuffix : baseLogGroupArn;
-      }
     }
 
     return new Import(scope, id, {
