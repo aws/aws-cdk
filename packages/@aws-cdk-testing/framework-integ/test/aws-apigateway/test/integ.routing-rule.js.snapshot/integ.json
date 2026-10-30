@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "routing-rule/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigateway-routing-rule"
+      ],
+      "assertionStack": "routing-rule/DefaultTest/DeployAssert",
+      "assertionStackName": "routingruleDefaultTestDeployAssert3CA11B2B"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
