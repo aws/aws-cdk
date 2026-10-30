@@ -1,6 +1,6 @@
 // Fixture with packages imported, but nothing else
 import { Construct } from 'constructs';
-import { CfnOutput, Fn, Size, Stack } from 'aws-cdk-lib';
+import { CfnOutput, CfnResource, Fn, Size, Stack } from 'aws-cdk-lib';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';

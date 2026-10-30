@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksclusterprivateendpointDefaultTestDeployAssert3C16DBEA.template.json"
+    }
+  ],
   "/aws-cdk-eks-cluster-private-endpoint/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

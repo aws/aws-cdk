@@ -46,7 +46,6 @@ rules/
 │   ├── iam-role-no-broad-principals.guard
 │   └── iam-role-root-principal-needs-conditions.guard
 ├── kinesis/
-│   ├── kinesis-encryption-enabled.guard
 │   └── kinesis-firehose-encryption-enabled.guard
 ├── neptune/
 │   └── neptune-encryption-enabled.guard
@@ -141,6 +140,14 @@ yarn security-guardian
 >
 > - `--base_sha=origin/main`  
 > - `--rule_set_path=./custom-rules`
+
+### 3. Run Tests
+
+The tests run the rules with [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard), so install cfn-guard 3 and put it on your `PATH` first.
+
+```bash
+yarn test
+```
 
 ---
 
