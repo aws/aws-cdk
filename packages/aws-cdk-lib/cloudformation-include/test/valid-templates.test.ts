@@ -536,6 +536,10 @@ describe('CDK Include', () => {
   });
 
   test('correctly parses templates with parameters', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W1030',
+      reason: 'This test validates parameter ingestion, not the fixture bucket name',
+    });
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {

@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.275.0](https://github.com/aws/aws-cdk/compare/v2.274.0...v2.275.0) (2026-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-bedrockagentcore: AWS::BedrockAgentCore::Harness: HarnessAgentCoreMemoryRetrievalConfig.RelevanceScore type narrowed from number | string to number.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::Harness: HarnessAgentCoreMemoryRetrievalConfig.TopK type narrowed from integer | string to integer.  
+aws-codebuild: AWS::CodeBuild::ReportGroup: Id attribute removed.  
+aws-dax: AWS::DAX::SubnetGroup: Id attribute removed.  
+aws-dms: AWS::DMS::MigrationProject: InstanceProfileArn property removed (now a read-only attribute).  
+aws-dms: AWS::DMS::MigrationProject: InstanceProfileName property removed (now a read-only attribute).  
+aws-dms: AWS::DMS::MigrationProject: MigrationProjectCreationTime property removed (now a read-only attribute).  
+aws-emr: AWS::EMR::InstanceFleetConfig: Id attribute removed.  
+aws-fsx: AWS::FSx::Volume: AggregateConfiguration.Aggregates property is now immutable.  
+aws-fsx: AWS::FSx::Volume: AggregateConfiguration.ConstituentsPerAggregate property is now immutable.  
+aws-fsx: AWS::FSx::Volume: OntapConfiguration.AggregateConfiguration property is now immutable.  
+aws-fsx: AWS::FSx::Volume: OntapConfiguration.VolumeStyle property is now immutable.  
+aws-medialive: AWS::MediaLive::Input: InputNetworkLocation property type narrowed to enum (AWS | ON_PREMISES).  
+aws-medialive: AWS::MediaLive::Input: Type property type narrowed to enum (16 values).  
+aws-medialive: AWS::MediaLive::Input: Tags property type narrowed from json to Map<string, string>.  
+aws-medialive: AWS::MediaLive::Input: RouterDestinationSettings.AvailabilityZoneName property is now required.  
+aws-medialive: AWS::MediaLive::Input: RouterSettings.EncryptionType property type narrowed to enum (AUTOMATIC | SECRETS_MANAGER).  
+aws-medialive: AWS::MediaLive::InputSecurityGroup: Tags property type narrowed from json to Map<string, string>.  
+aws-mediapackagev2: AWS::MediaPackageV2::OriginEndpoint: LowLatencyHlsManifestConfiguration.FilterConfiguration type narrowed to LowLatencyHlsFilterConfiguration.  
+aws-mediapackagev2: AWS::MediaPackageV2::OriginEndpoint: MssManifestConfiguration.FilterConfiguration type narrowed to MssFilterConfiguration.
+
+### Features
+
+* **cloudfront:** add sigv4a always-amz-auth signing for origin access control ([#39216](https://github.com/aws/aws-cdk/issues/39216)) ([d9505e0](https://github.com/aws/aws-cdk/commit/d9505e0a2e3d1ef9532f4fe8c3607f6eb059d1b2)), closes [#39195](https://github.com/aws/aws-cdk/issues/39195) [#38629](https://github.com/aws/aws-cdk/issues/38629) [#39196](https://github.com/aws/aws-cdk/issues/39196) [#39195](https://github.com/aws/aws-cdk/issues/39195)
+* **core:** switch off built-in CloudFormation Validate using App prop ([#39452](https://github.com/aws/aws-cdk/issues/39452)) ([5f51a82](https://github.com/aws/aws-cdk/commit/5f51a82255436a59365cc93c38b894ad1fc6c136))
+* **lambda-nodejs:** support repeated esbuild arguments ([#39344](https://github.com/aws/aws-cdk/issues/39344)) ([d60598a](https://github.com/aws/aws-cdk/commit/d60598a6ac617e988f93598a3b051038beae5710)), closes [#32260](https://github.com/aws/aws-cdk/issues/32260) [/github.com/aws/aws-cdk/pull/39344#pullrequestreview-5638104896](https://github.com/aws//github.com/aws/aws-cdk/pull/39344/issues/pullrequestreview-5638104896)
+* update L1 CloudFormation resource definitions ([#39393](https://github.com/aws/aws-cdk/issues/39393)) ([8fb96fc](https://github.com/aws/aws-cdk/commit/8fb96fcb3f51c74fff07b60433d136fd0b63346b))
+
+
+### Bug Fixes
+
+* **core:** overly defensive plugin invocation leads to slowness ([#39451](https://github.com/aws/aws-cdk/issues/39451)) ([783a981](https://github.com/aws/aws-cdk/commit/783a981d34bc64c8130dd8d5403c4f4dec383130))
+* **stepfunctions-tasks:** use a dedicated Lambda function for each EvaluateExpression task ([#39436](https://github.com/aws/aws-cdk/issues/39436)) ([641ff6f](https://github.com/aws/aws-cdk/commit/641ff6fd4043898e2df2b585bfe1979a28d18e2d))
+* add graduate tool to lerna.json ([#39423](https://github.com/aws/aws-cdk/issues/39423)) ([3d6f9d3](https://github.com/aws/aws-cdk/commit/3d6f9d3880f3b33e32916675fe331b514164f6ed))
+* **lambda-nodejs:** preCompilation fails with TypeScript 6 or later ([#39401](https://github.com/aws/aws-cdk/issues/39401)) ([8ce48a6](https://github.com/aws/aws-cdk/commit/8ce48a6f485fef1c26241ba810e02ef693bcd0b2))
+
 ## [2.274.0](https://github.com/aws/aws-cdk/compare/v2.273.0...v2.274.0) (2026-10-20)
 
 

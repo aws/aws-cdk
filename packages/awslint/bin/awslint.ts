@@ -120,12 +120,10 @@ async function main() {
     const includeRules = new RuleFilterSet(args.include);
     const excludeRules = new RuleFilterSet(args.exclude);
 
-    const results = [];
-
-    results.push(...ALL_RULES_LINTER.eval(assembly, {
+    const results = ALL_RULES_LINTER.eval(assembly, {
       includeRules: includeRules,
       excludeRules: excludeRules,
-    }));
+    });
 
     // Sort errors to the top (highest severity first)
     results.sort((a, b) => b.level - a.level);
