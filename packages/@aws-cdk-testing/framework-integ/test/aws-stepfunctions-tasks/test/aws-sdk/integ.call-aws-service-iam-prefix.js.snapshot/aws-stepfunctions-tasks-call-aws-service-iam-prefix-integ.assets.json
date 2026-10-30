@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0bbd2eadf73cff948c9c4c8b5e4e1429f8cf96a9ea9fbd73c0e6372603a47402": {
+      "displayName": "aws-stepfunctions-tasks-call-aws-service-iam-prefix-integ Template",
+      "source": {
+        "path": "aws-stepfunctions-tasks-call-aws-service-iam-prefix-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1d15607f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0bbd2eadf73cff948c9c4c8b5e4e1429f8cf96a9ea9fbd73c0e6372603a47402.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
