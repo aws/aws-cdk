@@ -1,0 +1,161 @@
+{
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Alias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "version": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "metric": [
+          "*",
+          {
+            "statistic": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/ScalableTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "serviceNamespace": "lambda",
+        "minCapacity": "*",
+        "maxCapacity": "*",
+        "resourceId": "*",
+        "scalableDimension": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "scaleToTrackMetric": [
+          "*",
+          {
+            "policyName": "*",
+            "targetValue": "*",
+            "customMetric": {
+              "warnings": "*",
+              "warningsV2": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Alias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alias325C5727"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Alias/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/ScalableTarget/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/ScalableTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ScalableTarget07F0A026"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction76856677C48862D5"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/Function/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionCurrentVersion4E2B2261786c1d6233d2499d36d6dfb7ad94bfe7"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/ScalableTarget/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ScalableTargetRole53C0666F"
+    }
+  ],
+  "/aws-cdk-appscaling-target-tracking-metric-math/ScalableTarget/UtilizationTracking/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ScalableTargetUtilizationTrackingF8205D59"
+    }
+  ]
+}
