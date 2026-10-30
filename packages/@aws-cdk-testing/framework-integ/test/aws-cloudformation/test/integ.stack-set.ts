@@ -115,7 +115,7 @@ class TestCase extends Stack {
         }),
       },
     });
-    const stackSetStack = new MyStackSet(this, 'integ-stack-set');
+    const stackSetStack = new MyStackSet(scope, 'integ-stack-set');
     new cfn.StackSet(this, 'StackSet', {
       stackSetName,
       target: cfn.StackSetTarget.fromAccounts({
@@ -138,7 +138,7 @@ class AssetTestCase extends Stack {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id);
 
-    const stackSetStack = new LambdaStackSet(this, 'asset-stack-set', {
+    const stackSetStack = new LambdaStackSet(scope, 'asset-stack-set', {
       assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
       assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
     });

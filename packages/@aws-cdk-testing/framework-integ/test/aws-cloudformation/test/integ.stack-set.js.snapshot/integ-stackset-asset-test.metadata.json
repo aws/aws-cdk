@@ -6,13 +6,15 @@
       "trace": [
         "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
         "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "StackSetStackSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:179:58)",
-        "new Asset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:145:44)",
-        "AssetCode.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:564:26)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:673:37)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LambdaStackSet (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:105:9)",
-        "new AssetTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:156:31)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:204:47",
+        "Array.forEach (<anonymous>)",
+        "StackSetStackSynthesizer.stageAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:197:27)",
+        "StackSetStackSynthesizer._bindHost (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:147:18)",
+        "LambdaStackSet._bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:308:42)",
+        "StackSetStackTemplate._bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:161:27)",
+        "new StackSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:628:45)",
+        "new StackSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AssetTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:160:9)",
         "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:188:23)",
         "Module._compile (node:internal/modules/cjs/loader:1781:14)",
         "Object..js (node:internal/modules/cjs/loader:1913:10)",
@@ -29,6 +31,22 @@
     }
   ],
   "/integ-stackset-asset-test/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stackset-asset-test/StackSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stackset-asset-test/assetstackset-HostAssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -83,16 +101,6 @@
       "data": 2
     }
   ],
-  "/integ-stackset-asset-test/StackSet": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    }
-  ],
   "/integ-stackset-asset-test/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -105,13 +113,54 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/AwsCliLayer": [
+  "/integ-stackset-asset-test/StackSet/AdminRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-stackset-asset-test/StackSet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSet6E6355CF"
+    }
+  ],
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {}
     }
   ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/CustomResourceHandler": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -155,7 +204,7 @@
       }
     }
   ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/CustomResource": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -223,57 +272,52 @@
       }
     }
   ],
-  "/integ-stackset-asset-test/StackSet/AdminRole": [
+  "/integ-stackset-asset-test/StackSet/AdminRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetAdminRoleFDB48078"
+    }
+  ],
+  "/integ-stackset-asset-test/StackSet/AdminRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
       "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
+        "attachToRole": [
+          "*"
+        ]
       }
     },
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addToPrincipalPolicy": [
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
     }
   ],
-  "/integ-stackset-asset-test/StackSet/Resource": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "StackSet6E6355CF"
+      "data": "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E"
     }
   ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/AwsCliLayer/Resource": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0AwsCliLayerC5715512"
-    }
-  ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/CustomResource/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "integstacksetassettestassetstacksetB1BE16ADAssetBucketDeployment0CustomResource95864C0F"
+      "data": "assetstacksetAssetBucketDeployment0CustomResource9D9B9436"
     }
   ],
   "/integ-stackset-asset-test/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -332,43 +376,13 @@
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
     }
   ],
-  "/integ-stackset-asset-test/StackSet/AdminRole/Resource": [
+  "/integ-stackset-asset-test/StackSet/AdminRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "StackSetAdminRoleFDB48078"
+      "data": "StackSetAdminRoleDefaultPolicy96A312F6"
     }
   ],
-  "/integ-stackset-asset-test/StackSet/AdminRole/DefaultPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
-    }
-  ],
-  "/integ-stackset-asset-test/integstacksetassettestassetstacksetB1BE16AD-AssetBucketDeployment-0/AwsCliLayer/Code/AssetBucket": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -378,12 +392,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
-    }
-  ],
-  "/integ-stackset-asset-test/StackSet/AdminRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "StackSetAdminRoleDefaultPolicy96A312F6"
     }
   ]
 }
