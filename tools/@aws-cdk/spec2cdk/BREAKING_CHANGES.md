@@ -57,10 +57,19 @@ We do try to avoid these types of breaking changes; they are caused by our own
 choices, and we can't fault CloudFormation upstream for making changes that are
 transparent to CloudFormation users (that just happen to not be transparent to us).
 
-In practice, what that means is we capture enough data during the ingestion of specification
+In practice, what that means is we have enough data during the ingestion of specification
 updates that we can maintain some sort of history of previous specifications, and we take
-that history into account when generating code (I'm being deliberately vague about the actual
-mechanism here since the mechanism may change, but the intent is the same).
+that history into account when generating code.
+
+I'm being deliberately vague about the actual mechanism here since the mechanism may change, but the intent is the same:
+do not introduce breakage due to CDK translation choices. In practice *currently* the mechanisms
+we rely on are:
+
+- Keeping an old copy of the specification
+- Manually written patches to map new types to old types ([example](https://github.com/cdklabs/awscdk-service-spec/blob/main/packages/%40aws-cdk/aws-service-spec/build/patches/service-patches/batch.ts))
+
+In the future this could be extended to updating some persistent state when we ingest newer
+versions of the incoming schemas and compare old to new, either deterministic or AI-assisted.
 
 ### Case study: evolution of "Json data" type to a modeled type
 
@@ -168,6 +177,8 @@ interface DogHouseProps {
 }
 ```
 
-
 But we need additional information from the spec in order to do this correctly.
+
+Currently, we do *not* emit the second (typed) property, we just keep on emitting only
+the first one, but one could argue this is suboptimal behavior.
 
