@@ -293,11 +293,11 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
     if (FeatureFlags.of(this).isEnabled(cxapi.LAMBDA_VERSION_METRICS)) {
       return super.metric(metricName, {
-        ...props,
-        dimensionsMap: props.dimensionsMap ?? props.dimensions ?? {
+        dimensionsMap: {
           FunctionName: this.lambda.functionName,
           Resource: `${this.lambda.functionName}:${this.version}`,
         },
+        ...props,
       });
     }
     return super.metric(metricName, {
