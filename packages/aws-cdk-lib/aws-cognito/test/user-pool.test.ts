@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion, FeaturePlan, PasskeyFactorMode, PasskeyUserVerification, StandardThreatProtectionMode, CustomThreatProtectionMode } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -2291,6 +2291,35 @@ describe('User Pool', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       WebAuthnUserVerification: compareString,
+    });
+  });
+
+  test.each([
+    [PasskeyFactorMode.SINGLE_FACTOR, 'SINGLE_FACTOR'],
+    [PasskeyFactorMode.MULTI_FACTOR_WITH_USER_VERIFICATION, 'MULTI_FACTOR_WITH_USER_VERIFICATION'],
+  ])('passkeyFactorMode is configured correctly when set to (%s)', (passkeyFactorMode, compareString) => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', { passkeyFactorMode });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnFactorConfiguration: compareString,
+    });
+  });
+
+  test('passkeyFactorMode is absent from template when not set', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      WebAuthnFactorConfiguration: Match.absent(),
     });
   });
 });
