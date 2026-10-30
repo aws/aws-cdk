@@ -57,6 +57,11 @@ class VpcEndpointStack extends cdk.Stack {
       privateDnsEnabled: false,
     });
 
+    // Add an interface with a non-standard port
+    vpc.addInterfaceEndpoint('SESEndpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.EMAIL_SMTP,
+    });
+
     // Add an interface endpoint with ipAddressType and dnsRecordIpType
     vpc.addInterfaceEndpoint('CloudwatchLogsEndpoint', {
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
@@ -77,5 +82,7 @@ new VpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint');
 new IntegTest(app, 'VpcEndpointTest', {
   testCases: [app.node.tryFindChild('aws-cdk-ec2-vpc-endpoint') as cdk.Stack],
   // Exclude eu-west-1 to keep the cross-region interface endpoint (serviceRegion: 'eu-west-1') truly cross-region
-  regions: ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'ap-south-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-2', 'eu-west-3', 'sa-east-1', 'me-south-1'],
+  regions: ['us-east-2', 'ap-south-1', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'eu-central-1', 'eu-north-1', 'eu-west-2', 'eu-west-3', 'sa-east-1', 'me-south-1'],
 });
+
+app.synth();

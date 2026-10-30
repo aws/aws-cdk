@@ -1,0 +1,20 @@
+{
+  "/VpcEndpointTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "VpcEndpointTestDefaultTestDeployAssert7589C6E5.template.json"
+    }
+  ],
+  "/VpcEndpointTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/VpcEndpointTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
