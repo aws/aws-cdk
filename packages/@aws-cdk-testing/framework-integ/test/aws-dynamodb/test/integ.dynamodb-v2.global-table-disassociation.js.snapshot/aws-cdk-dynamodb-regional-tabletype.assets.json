@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "94ad055dc5a66e503a460f33a3e94bf98f83607452f70a6e4cc87267f2860ffe": {
+      "displayName": "aws-cdk-dynamodb-regional-tabletype Template",
+      "source": {
+        "path": "aws-cdk-dynamodb-regional-tabletype.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2-98aea5d6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "94ad055dc5a66e503a460f33a3e94bf98f83607452f70a6e4cc87267f2860ffe.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

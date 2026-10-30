@@ -1,0 +1,39 @@
+{
+  "/aws-cdk-dynamodb-regional-tabletype/RegionalTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "tableName": "*",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "RegionalTableB80CAEE8"
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-regional-tabletype/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-regional-tabletype/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-regional-tabletype/RegionalTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RegionalTableB80CAEE8"
+    }
+  ]
+}
