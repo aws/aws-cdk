@@ -1,0 +1,799 @@
+import type { Construct } from 'constructs';
+import type { ComparisonOperator, TreatMissingData } from './alarm';
+import type { IAlarmAction } from './alarm-action';
+import type { IAlarm } from './alarm-base';
+import { AlarmBase } from './alarm-base';
+import { CfnLogAlarm } from './cloudwatch.generated';
+import { isAnomalyDetectionOperator } from './private/anomaly-detection';
+import type { IRole } from '../../aws-iam';
+import { Grant, Role, ServicePrincipal } from '../../aws-iam';
+import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { ArnComponents, Duration } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+
+/**
+ * The action ARN shapes a log alarm dispatches, keyed by ARN service segment.
+ *
+ * An SNS topic ARN has no resource type, so a topic is an ARN with nothing after its
+ * name; a subscription ARN carries a trailing identifier. Lambda actions are functions,
+ * optionally qualified by version or alias, and Systems Manager actions are OpsItems.
+ */
+const DISPATCHABLE_ACTIONS: { [service: string]: (arn: ArnComponents) => boolean } = {
+  sns: arn => arn.resourceName === undefined,
+  lambda: arn => arn.resource === 'function',
+  ssm: arn => arn.resource === 'opsitem',
+};
+
+/**
+ * Schedule for the CloudWatch Logs scheduled query that backs a log alarm.
+ */
+export interface LogAlarmScheduledQuerySchedule {
+  /**
+   * How often the scheduled query runs.
+   *
+   * Rendered to a `rate(...)` schedule expression, so only whole numbers of
+   * minutes or hours are supported.
+   *
+   * A rate whose amount is only known at deploy time must be given in minutes,
+   * hours, or days, and is rendered in that unit.
+   */
+  readonly rate: Duration;
+
+  /**
+   * How far into the past the query window starts, relative to each run.
+   *
+   * Must be between 1 second and 2592000 seconds (30 days). This is required by
+   * the scheduled query service; omitting it causes the alarm creation to be
+   * rejected at deploy time.
+   *
+   * An offset whose amount is only known at deploy time must be given as
+   * `Duration.seconds()`.
+   */
+  readonly startTimeOffset: Duration;
+
+  /**
+   * How far into the past the query window ends, relative to each run.
+   *
+   * Must be between 0 seconds and 2592000 seconds (30 days).
+   *
+   * An offset whose amount is only known at deploy time must be given as
+   * `Duration.seconds()`.
+   *
+   * @default - no end offset
+   */
+  readonly endTimeOffset?: Duration;
+}
+
+/**
+ * Configuration of the scheduled query that a log alarm evaluates.
+ */
+export interface LogAlarmScheduledQueryConfiguration {
+  /**
+   * The query to run against the log groups.
+   */
+  readonly queryString: string;
+
+  /**
+   * The aggregation expression applied to the query results.
+   *
+   * For example `count(*)` or `avg(latency) by host`.
+   */
+  readonly aggregationExpression: string;
+
+  /**
+   * The log groups that the query runs against.
+   *
+   * Between 1 and 50 log groups. Omit this only when `queryString` selects the log
+   * groups itself; the service rejects a query at deploy time if neither names them.
+   *
+   * The query permissions granted to `scheduledQueryRole` follow this property. They
+   * are scoped to these log groups when it is set, and to every log group in the
+   * account and region when it is not, because a query that selects its own log
+   * groups resolves them each time it runs.
+   *
+   * A query that selects log groups outside this list fails at run time with an
+   * access-denied error. The permissions only cover the log groups named here.
+   *
+   * The list itself must be resolvable at synthesis time, because the log group names are
+   * rendered into the template. Individual log groups in it may be unresolved.
+   *
+   * Log groups defined outside the current app can be referenced with
+   * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`. A log group in another
+   * account must be referenced by ARN, because only an ARN carries the account. Set up
+   * cross-account observability between the monitoring account and the source account
+   * before querying across accounts.
+   *
+   * @default - no log groups; the query must select its own
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
+   */
+  readonly logGroups?: ILogGroupRef[];
+
+  /**
+   * The IAM role that grants CloudWatch permission to run the scheduled query.
+   *
+   * The construct adds the query permissions to this role, so it must be mutable.
+   * A role imported with `Role.fromRoleArn(..., { mutable: false })` discards those
+   * additions silently, and the query then fails at runtime; attach the permissions
+   * to such a role yourself.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
+   * `addToPrincipalPolicy`.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - a role that CloudWatch Logs can assume to run the query is created automatically
+   */
+  readonly scheduledQueryRole?: IRole;
+
+  /**
+   * The schedule on which the query runs and the time window it evaluates.
+   */
+  readonly schedule: LogAlarmScheduledQuerySchedule;
+
+  /**
+   * Tags to apply to the scheduled query that backs the alarm.
+   *
+   * The scheduled query is a separate CloudWatch Logs resource, so these are
+   * independent of the tags applied to the alarm itself through `LogAlarmProps.tags`.
+   * At most 50 tags.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
+}
+
+/**
+ * Properties for creating a log alarm.
+ */
+export interface LogAlarmProps {
+  /**
+   * The value against which the aggregated query result is compared.
+   */
+  readonly threshold: number;
+
+  /**
+   * The comparison used to test the aggregated query result against the threshold.
+   *
+   * Must be one of the static-threshold operators:
+   * - GREATER_THAN_OR_EQUAL_TO_THRESHOLD
+   * - GREATER_THAN_THRESHOLD
+   * - LESS_THAN_THRESHOLD
+   * - LESS_THAN_OR_EQUAL_TO_THRESHOLD
+   */
+  readonly comparisonOperator: ComparisonOperator;
+
+  /**
+   * The number of most recent query results to evaluate.
+   *
+   * This is the "N" of the M-out-of-N evaluation and must be between 1 and 100.
+   */
+  readonly queryResultsToEvaluate: number;
+
+  /**
+   * The number of breaching query results within the evaluation window that put the alarm into ALARM state.
+   *
+   * This is the "M" of the M-out-of-N evaluation and must not exceed
+   * `queryResultsToEvaluate`.
+   */
+  readonly queryResultsToAlarm: number;
+
+  /**
+   * Configuration of the scheduled query that this alarm evaluates.
+   */
+  readonly scheduledQueryConfiguration: LogAlarmScheduledQueryConfiguration;
+
+  /**
+   * Name of the alarm.
+   *
+   * Must be between 1 and 255 characters. Changing the name of an existing
+   * alarm replaces it, because the name is the alarm's physical identifier.
+   *
+   * @default - Automatically generated name
+   */
+  readonly alarmName?: string;
+
+  /**
+   * Description for the alarm.
+   *
+   * @default - No description
+   */
+  readonly alarmDescription?: string;
+
+  /**
+   * Whether the actions for this alarm are enabled.
+   *
+   * @default true
+   */
+  readonly actionsEnabled?: boolean;
+
+  /**
+   * How the alarm treats missing query results.
+   *
+   * @default - the service default of MISSING
+   */
+  readonly treatMissingData?: TreatMissingData;
+
+  /**
+   * Matching log lines to include in alarm notifications.
+   *
+   * @default - no log lines are included in notifications
+   */
+  readonly actionLogLines?: LogAlarmActionLogLines;
+
+  /**
+   * Actions to invoke when the alarm transitions to ALARM state.
+   *
+   * @default - no alarm actions; actions can also be added with addAlarmAction()
+   */
+  readonly alarmActions?: IAlarmAction[];
+
+  /**
+   * Actions to invoke when the alarm transitions to OK state.
+   *
+   * @default - no OK actions; actions can also be added with addOkAction()
+   */
+  readonly okActions?: IAlarmAction[];
+
+  /**
+   * Actions to invoke when the alarm transitions to INSUFFICIENT_DATA state.
+   *
+   * @default - no insufficient-data actions; actions can also be added with addInsufficientDataAction()
+   */
+  readonly insufficientDataActions?: IAlarmAction[];
+
+  /**
+   * Tags to apply to the alarm.
+   *
+   * These do not apply to the scheduled query that backs the alarm, which is tagged
+   * through `LogAlarmScheduledQueryConfiguration.tags`. At most 50 tags.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
+
+  /**
+   * Delays alarm evaluation after the alarm is created or updated.
+   *
+   * A warm-up period reduces alarm noise while a new resource or service starts
+   * publishing data.
+   *
+   * @default - the alarm evaluates as soon as it has data
+   */
+  readonly warmUpConfiguration?: LogAlarmWarmUpConfiguration;
+}
+
+/**
+ * Warm-up behavior for a log alarm.
+ *
+ * During the warm-up period the alarm stays in `INSUFFICIENT_DATA` and does not
+ * perform alarm actions.
+ */
+export interface LogAlarmWarmUpConfiguration {
+  /**
+   * The length of the warm-up period.
+   *
+   * Between 1 minute and 2880 minutes, which is 48 hours. Changing this after the
+   * warm-up period has ended does not restart it.
+   *
+   * A period whose amount is only known at deploy time must be given as
+   * `Duration.minutes()`, because a duration built from a token cannot be converted
+   * between units.
+   */
+  readonly warmUpPeriod: Duration;
+
+  /**
+   * Whether the alarm waits for the whole warm-up period before it starts evaluating.
+   *
+   * When true the alarm waits for the full period even if data arrives earlier. When
+   * false the alarm ends the warm-up period as soon as it has enough data to fill its
+   * evaluation window.
+   *
+   * @default false
+   */
+  readonly onlyStartEvaluatingAfterWarmUpPeriodEnds?: boolean;
+}
+
+/**
+ * Matching log lines to include in the notifications of a log alarm.
+ */
+export interface LogAlarmActionLogLines {
+  /**
+   * The number of matching log lines to include in alarm notifications.
+   *
+   * Must be between 1 and 50.
+   *
+   * The included log lines are delivered verbatim to the alarm action targets
+   * (e.g. an SNS topic or Lambda), which may reach a wider audience than the
+   * source log group. Shape the output with `fields`, apply CloudWatch Logs data
+   * protection / masking for sensitive data, and restrict and encrypt the targets.
+   */
+  readonly count: number;
+
+  /**
+   * The IAM role used to read the log lines included in notifications.
+   *
+   * The construct adds the log-line read permission to this role, so it must be
+   * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
+   * discards that addition silently.
+   *
+   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
+   * `addToPrincipalPolicy`.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - a role that CloudWatch can assume to read the log lines is created automatically
+   */
+  readonly role?: IRole;
+}
+
+/**
+ * A CloudWatch log alarm. Marker interface so `fromLogAlarmArn`/`fromLogAlarmName`
+ * can return a log-alarm-specific type; optional members can be added later without
+ * a breaking change (adding to an interface is additive).
+ */
+export interface ILogAlarm extends IAlarm {}
+
+/**
+ * A CloudWatch alarm evaluated against the results of a scheduled Logs query.
+ *
+ * Unlike a metric alarm, a log alarm runs a query against one or more log
+ * groups on a schedule and alarms on the aggregated results.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
+ * @resource AWS::CloudWatch::LogAlarm
+ */
+@propertyInjectable
+export class LogAlarm extends AlarmBase implements ILogAlarm {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.LogAlarm';
+
+  /**
+   * Import an existing log alarm provided an ARN.
+   */
+  public static fromLogAlarmArn(scope: Construct, id: string, logAlarmArn: string): ILogAlarm {
+    class Import extends AlarmBase implements ILogAlarm {
+      public readonly alarmArn = logAlarmArn;
+      public readonly alarmName = Stack.of(scope).splitArn(logAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing log alarm provided a Name.
+   */
+  public static fromLogAlarmName(scope: Construct, id: string, logAlarmName: string): ILogAlarm {
+    const stack = Stack.of(scope);
+    return this.fromLogAlarmArn(scope, id, stack.formatArn({
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: logAlarmName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    }));
+  }
+
+  /**
+   * The IAM role that CloudWatch Logs assumes to run the scheduled query.
+   *
+   * This is the role passed via `scheduledQueryConfiguration.scheduledQueryRole`, or the role
+   * created automatically when none was provided.
+   */
+  public readonly scheduledQueryRole: IRole;
+
+  /**
+   * The IAM role that CloudWatch assumes to read log lines for notifications.
+   *
+   * This is the role passed via `actionLogLines.role`, or the role created automatically when
+   * `actionLogLines` is set and no role was provided. Undefined when no log lines are included
+   * in notifications.
+   */
+  public readonly actionLogLineRole?: IRole;
+
+  private readonly alarm: CfnLogAlarm;
+
+  constructor(scope: Construct, id: string, props: LogAlarmProps) {
+    super(scope, id, {
+      physicalName: props.alarmName,
+    });
+
+    addConstructMetadata(this, props);
+
+    if (isAnomalyDetectionOperator(props.comparisonOperator)) {
+      throw new ValidationError(lit`InvalidComparisonOperator`, `comparisonOperator ${JSON.stringify(props.comparisonOperator)} is not supported by log alarms; use one of the static-threshold operators`, this);
+    }
+
+    if (!Token.isUnresolved(props.queryResultsToEvaluate)
+      && (!Number.isInteger(props.queryResultsToEvaluate) || props.queryResultsToEvaluate < 1 || props.queryResultsToEvaluate > 100)) {
+      throw new ValidationError(lit`InvalidQueryResultsToEvaluate`, `queryResultsToEvaluate must be an integer between 1 and 100, got ${props.queryResultsToEvaluate}`, this);
+    }
+
+    if (!Token.isUnresolved(props.queryResultsToAlarm) && (!Number.isInteger(props.queryResultsToAlarm) || props.queryResultsToAlarm < 1)) {
+      throw new ValidationError(lit`InvalidQueryResultsToAlarm`, `queryResultsToAlarm must be a positive integer, got ${props.queryResultsToAlarm}`, this);
+    }
+
+    if (!Token.isUnresolved(props.queryResultsToEvaluate) && !Token.isUnresolved(props.queryResultsToAlarm)
+      && props.queryResultsToAlarm > props.queryResultsToEvaluate) {
+      throw new ValidationError(lit`InvalidQueryResults`, `queryResultsToAlarm must not exceed queryResultsToEvaluate, got ${props.queryResultsToAlarm} > ${props.queryResultsToEvaluate}`, this);
+    }
+
+    const logLines = props.actionLogLines;
+    if (logLines !== undefined && !Token.isUnresolved(logLines.count)
+      && (!Number.isInteger(logLines.count) || logLines.count < 1 || logLines.count > 50)) {
+      throw new ValidationError(lit`InvalidActionLogLineCount`, `actionLogLines.count must be an integer between 1 and 50, got ${logLines.count}`, this);
+    }
+
+    const sqc = props.scheduledQueryConfiguration;
+
+    if (props.alarmName !== undefined && !Token.isUnresolved(props.alarmName)
+      && (props.alarmName.length < 1 || props.alarmName.length > 255)) {
+      throw new ValidationError(lit`InvalidAlarmName`, `alarmName must be between 1 and 255 characters, got ${props.alarmName.length}`, this);
+    }
+
+    this.validateTagCount('tags', props.tags);
+    this.validateTagCount('scheduledQueryConfiguration.tags', sqc.tags);
+
+    // The scheduled query service requires between 1 and 50 log groups when the
+    // property is present; an empty array is rejected at deploy time.
+    const logGroups = sqc.logGroups;
+    if (logGroups !== undefined && !Token.isUnresolved(logGroups) && (logGroups.length < 1 || logGroups.length > 50)) {
+      throw new ValidationError(lit`InvalidLogGroups`, `logGroups must contain between 1 and 50 entries, got ${logGroups.length}`, this);
+    }
+
+    if (logGroups !== undefined && Token.isUnresolved(logGroups)) {
+      throw new ValidationError(lit`UnresolvedLogGroups`, 'logGroups must be a resolved list because the log group names are rendered at synthesis time, got an unresolved list; pass the log groups individually or omit logGroups and select them in queryString', this);
+    }
+
+    if (!Token.isUnresolved(sqc.queryString) && (sqc.queryString.length < 1 || sqc.queryString.length > 10000)) {
+      throw new ValidationError(lit`InvalidQueryString`, `queryString must be between 1 and 10000 characters, got ${sqc.queryString.length}`, this);
+    }
+
+    if (!Token.isUnresolved(sqc.aggregationExpression) && (sqc.aggregationExpression.length < 1 || sqc.aggregationExpression.length > 2048)) {
+      throw new ValidationError(lit`InvalidAggregationExpression`, `aggregationExpression must be between 1 and 2048 characters, got ${sqc.aggregationExpression.length}`, this);
+    }
+
+    if (!sqc.schedule.startTimeOffset.isUnresolved()) {
+      const startOffsetSeconds = sqc.schedule.startTimeOffset.toSeconds({ integral: false });
+      if (!Number.isInteger(startOffsetSeconds) || startOffsetSeconds < 1 || startOffsetSeconds > 2592000) {
+        throw new ValidationError(lit`InvalidStartTimeOffset`, `startTimeOffset must be a whole number of seconds between 1 and 2592000 (30 days), got ${startOffsetSeconds} seconds`, this);
+      }
+    }
+
+    if (sqc.schedule.endTimeOffset !== undefined && !sqc.schedule.endTimeOffset.isUnresolved()) {
+      const endOffsetSeconds = sqc.schedule.endTimeOffset.toSeconds({ integral: false });
+      if (!Number.isInteger(endOffsetSeconds) || endOffsetSeconds < 0 || endOffsetSeconds > 2592000) {
+        throw new ValidationError(lit`InvalidEndTimeOffset`, `endTimeOffset must be a whole number of seconds between 0 and 2592000 (30 days), got ${endOffsetSeconds} seconds`, this);
+      }
+    }
+
+    // The query window is [now - startTimeOffset, now - endTimeOffset], so an end offset at or
+    // beyond the start offset produces an empty window and the alarm evaluates no data.
+    if (sqc.schedule.endTimeOffset !== undefined
+      && !sqc.schedule.startTimeOffset.isUnresolved() && !sqc.schedule.endTimeOffset.isUnresolved()
+      && sqc.schedule.endTimeOffset.toSeconds() >= sqc.schedule.startTimeOffset.toSeconds()) {
+      throw new ValidationError(lit`InvalidTimeOffsetRange`, `startTimeOffset must be greater than endTimeOffset, got ${sqc.schedule.startTimeOffset.toSeconds()} and ${sqc.schedule.endTimeOffset.toSeconds()} seconds`, this);
+    }
+
+    this.scheduledQueryRole = sqc.scheduledQueryRole
+      ?? this.createServiceRole('ScheduledQueryRole', 'logs.amazonaws.com', 'logs', 'scheduled-query');
+    this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
+    if (sqc.logGroups === undefined) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions',
+        'logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them');
+    }
+
+    this.actionLogLineRole = logLines === undefined
+      ? undefined
+      : logLines.role ?? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm',
+        props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined);
+    if (this.actionLogLineRole !== undefined) {
+      this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
+    }
+
+    this.alarm = new CfnLogAlarm(this, 'Resource', {
+      alarmName: this.physicalName,
+      alarmDescription: props.alarmDescription,
+      actionsEnabled: props.actionsEnabled,
+      comparisonOperator: props.comparisonOperator,
+      threshold: props.threshold,
+      queryResultsToEvaluate: props.queryResultsToEvaluate,
+      queryResultsToAlarm: props.queryResultsToAlarm,
+      treatMissingData: props.treatMissingData,
+      actionLogLineCount: logLines?.count,
+      actionLogLineRoleArn: this.actionLogLineRole?.roleArn,
+      alarmActions: Token.asList(this._alarmActionArns),
+      insufficientDataActions: Token.asList(this._insufficientDataActionArns),
+      okActions: Token.asList(this._okActionArns),
+      tags: this.renderTags(props.tags),
+      scheduledQueryConfiguration: this.renderScheduledQuery(sqc),
+      warmUpConfiguration: this.renderWarmUp(props.warmUpConfiguration),
+    });
+
+    props.alarmActions?.forEach(action => this.addAlarmAction(action));
+    props.okActions?.forEach(action => this.addOkAction(action));
+    props.insufficientDataActions?.forEach(action => this.addInsufficientDataAction(action));
+  }
+
+  /**
+   * ARN of this alarm.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmArn(): string {
+    return this.getResourceArnAttribute(this.alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
+   * Name of this alarm.
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get alarmName(): string {
+    return this.getResourceNameAttribute(this.alarm.ref);
+  }
+
+  /**
+   * Trigger these actions when the alarm transitions to ALARM state.
+   *
+   * Log alarms dispatch a narrower set of action types than metric alarms. An
+   * action the service does not dispatch is ignored rather than rejected, so
+   * adding one emits a synthesis-time warning where the type can be determined.
+   */
+  public addAlarmAction(...actions: IAlarmAction[]) {
+    this.addActions('alarmActions', this._alarmActionArns, actions);
+  }
+
+  /**
+   * Trigger these actions when the alarm transitions to OK state.
+   *
+   * Log alarms dispatch a narrower set of action types than metric alarms. An
+   * action the service does not dispatch is ignored rather than rejected, so
+   * adding one emits a synthesis-time warning where the type can be determined.
+   */
+  public addOkAction(...actions: IAlarmAction[]) {
+    this.addActions('okActions', this._okActionArns, actions);
+  }
+
+  /**
+   * Trigger these actions when the alarm transitions to INSUFFICIENT_DATA state.
+   *
+   * Log alarms dispatch a narrower set of action types than metric alarms. An
+   * action the service does not dispatch is ignored rather than rejected, so
+   * adding one emits a synthesis-time warning where the type can be determined.
+   */
+  public addInsufficientDataAction(...actions: IAlarmAction[]) {
+    this.addActions('insufficientDataActions', this._insufficientDataActionArns, actions);
+  }
+
+  private addActions(propName: string, arns: IArrayBox<string>, actions: IAlarmAction[]): void {
+    if (arns.length + actions.length > 5) {
+      throw new ValidationError(lit`TooManyAlarmActions`, `${propName} can contain at most 5 actions, got ${arns.length + actions.length}`, this);
+    }
+    arns.push(...actions.map(a => this.bindAndWarn(a)));
+  }
+
+  private bindAndWarn(action: IAlarmAction): string {
+    const arn = action.bind(this, this).alarmActionArn;
+    const components = this.actionArnComponents(arn);
+    const dispatches = components && DISPATCHABLE_ACTIONS[components.service];
+    if (components !== undefined && (dispatches === undefined || !dispatches(components))) {
+      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
+        `log alarms do not dispatch this action type, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
+    }
+    return arn;
+  }
+
+  /**
+   * Components of an action ARN, or `undefined` when it cannot be classified.
+   *
+   * A value that resolves at deploy time cannot be checked, and a value that is not an
+   * ARN is not this check's concern. A value that starts with `arn:` commits to being an
+   * ARN, so a malformed one fails synthesis.
+   */
+  private actionArnComponents(arn: string): ArnComponents | undefined {
+    if (Token.isUnresolved(arn) || !arn.startsWith('arn:')) {
+      return undefined;
+    }
+    return Stack.of(this).splitArn(arn, ArnFormat.COLON_RESOURCE_NAME);
+  }
+
+  private validateTagCount(propName: string, tags?: { [key: string]: string }): void {
+    if (tags !== undefined && Object.keys(tags).length > 50) {
+      throw new ValidationError(lit`TooManyTags`, `${propName} can contain at most 50 tags, got ${Object.keys(tags).length}`, this);
+    }
+  }
+
+  private renderTags(tags?: { [key: string]: string }): Array<{ key: string; value: string }> | undefined {
+    return tags && Object.entries(tags).map(([key, value]) => ({ key, value }));
+  }
+
+  private renderScheduledQuery(config: LogAlarmScheduledQueryConfiguration): CfnLogAlarm.ScheduledQueryConfigurationProperty {
+    return {
+      queryString: config.queryString,
+      aggregationExpression: config.aggregationExpression,
+      logGroupIdentifiers: this.renderLogGroupIdentifiers(config.logGroups),
+      scheduledQueryRoleArn: this.scheduledQueryRole.roleArn,
+      scheduleConfiguration: {
+        scheduleExpression: this.renderRate(config.schedule.rate),
+        startTimeOffset: this.renderOffset('startTimeOffset', config.schedule.startTimeOffset),
+        endTimeOffset: config.schedule.endTimeOffset !== undefined
+          ? this.renderOffset('endTimeOffset', config.schedule.endTimeOffset)
+          : undefined,
+      },
+      tags: this.renderTags(config.tags),
+    };
+  }
+
+  private renderOffset(name: string, offset: Duration): number {
+    if (offset.isUnresolved() && offset.unitLabel() !== 'seconds') {
+      throw new ValidationError(lit`UnresolvedTimeOffsetUnit`, `${name} must be given as Duration.seconds() when its amount comes from a token, got Duration.${offset.unitLabel()}`, this);
+    }
+    return offset.toSeconds({ integral: false });
+  }
+
+  /**
+   * Create a role that a CloudWatch service principal can assume, restricted to
+   * this account and to the given source ARN pattern to prevent confused-deputy
+   * access.
+   *
+   * The source is named when its name is known at synthesis time, and matched by
+   * wildcard otherwise.
+   */
+  private createServiceRole(id: string, servicePrincipal: string, sourceService: string, sourceResource: string, sourceName?: string): IRole {
+    const stack = Stack.of(this);
+    return new Role(this, id, {
+      assumedBy: new ServicePrincipal(servicePrincipal, {
+        conditions: {
+          StringEquals: { 'aws:SourceAccount': stack.account },
+          ArnLike: {
+            // The scheduled query's name is generated by the service, and a generated alarm
+            // name is only known once the alarm exists, which depends on the role. Neither
+            // can be named here, so those sources are matched by wildcard.
+            'aws:SourceArn': stack.formatArn({
+              service: sourceService,
+              resource: sourceResource,
+              resourceName: sourceName ?? '*',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            }),
+          },
+        },
+      }),
+    });
+  }
+
+  /**
+   * Grant a role the permissions needed to run the scheduled query.
+   *
+   * Applied to the role this construct creates and to a role passed in by the
+   * caller. Passing an imported immutable role (`Role.fromRoleArn` with
+   * `mutable: false`) turns these additions into no-ops.
+   *
+   * `logs:StartQuery` and `logs:GetQueryResults` are scoped to the log groups, as the
+   * CloudWatch Log Alarms documentation prescribes. When the query selects its own log
+   * groups, `logs:GetQueryResults` and `logs:DescribeLogGroups` are granted on every
+   * resource instead, because the service enumerates the log groups on the role's
+   * behalf and `logs:DescribeLogGroups` supports no resource types.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
+   */
+  private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
+    const selectsOwnLogGroups = logGroups === undefined;
+    const resourceArns = this.logGroupPolicyResources(logGroups);
+    Grant.addToPrincipal({
+      grantee: role,
+      actions: ['logs:StartQuery'],
+      resourceArns,
+    });
+    Grant.addToPrincipal({
+      grantee: role,
+      actions: selectsOwnLogGroups ? ['logs:GetQueryResults', 'logs:DescribeLogGroups'] : ['logs:GetQueryResults'],
+      resourceArns: selectsOwnLogGroups ? ['*'] : resourceArns,
+    });
+  }
+
+  /**
+   * Grant a role the permission CloudWatch needs to read the log lines it includes in
+   * notifications, scoped to the log groups when they are known.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
+   */
+  private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
+    Grant.addToPrincipal({
+      grantee: role,
+      actions: ['logs:GetQueryResults'],
+      resourceArns: logGroups === undefined ? ['*'] : this.logGroupPolicyResources(logGroups),
+    });
+  }
+
+  private renderWarmUp(warmUp?: LogAlarmWarmUpConfiguration): CfnLogAlarm.WarmUpConfigurationProperty | undefined {
+    if (warmUp === undefined) {
+      return undefined;
+    }
+    if (warmUp.warmUpPeriod.isUnresolved() && warmUp.warmUpPeriod.unitLabel() !== 'minutes') {
+      throw new ValidationError(lit`UnresolvedWarmUpPeriodUnit`, `warmUpPeriod must be given as Duration.minutes() when its amount comes from a token, got Duration.${warmUp.warmUpPeriod.unitLabel()}`, this);
+    }
+    const minutes = warmUp.warmUpPeriod.toMinutes({ integral: false });
+    if (!warmUp.warmUpPeriod.isUnresolved() && (!Number.isInteger(minutes) || minutes < 1 || minutes > 2880)) {
+      throw new ValidationError(lit`InvalidWarmUpPeriod`, `warmUpPeriod must be a whole number of minutes between 1 and 2880 (48 hours), got ${warmUp.warmUpPeriod.toSeconds()} seconds`, this);
+    }
+    return {
+      warmUpPeriodDurationInMinutes: minutes,
+      onlyStartEvaluatingAfterWarmUpPeriodEnds: warmUp.onlyStartEvaluatingAfterWarmUpPeriodEnds,
+    };
+  }
+
+  /**
+   * Log group identifiers for the scheduled query.
+   *
+   * The scheduled query accepts a log group name or ARN, and only an ARN carries an
+   * account, so the ARN is always passed through to keep cross-account queries working.
+   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed. An
+   * ARN that is still a token has the suffix removed at deploy time instead.
+   */
+  private renderLogGroupIdentifiers(logGroups?: ILogGroupRef[]): string[] | undefined {
+    return logGroups?.map(logGroup => {
+      const arn = logGroup.logGroupRef.logGroupArn;
+      return Token.isUnresolved(arn) ? Fn.select(0, Fn.split(':*', arn)) : arn.replace(/:\*$/, '');
+    });
+  }
+
+  /**
+   * Resource ARNs to scope log group permissions to.
+   *
+   * Uses `logGroupArn`, which carries the trailing `:*` that IAM expects for log
+   * group resources. Falls back to every log group in the region when the query
+   * selects its log groups inline.
+   */
+  private logGroupPolicyResources(logGroups?: ILogGroupRef[]): string[] {
+    if (logGroups === undefined) {
+      return [Stack.of(this).formatArn({ service: 'logs', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
+    }
+    return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);
+  }
+
+  /**
+   * Render the schedule rate as a `rate(...)` expression.
+   *
+   * An unresolved rate is read before any other conversion, because a duration built
+   * from a token can only be read in the unit it was created with. It is rendered in
+   * that unit, which is singularised at deploy time when the amount resolves to 1.
+   */
+  private renderRate(rate: Duration): string {
+    if (rate.isUnresolved()) {
+      const unit = rate.unitLabel();
+      if (unit !== 'minutes' && unit !== 'hours' && unit !== 'days') {
+        throw new ValidationError(lit`InvalidScheduleRateUnit`, `schedule rate must be given as Duration.minutes(), Duration.hours(), or Duration.days() when its amount comes from a token, got Duration.${unit}`, this);
+      }
+      const amount = unit === 'minutes'
+        ? rate.toMinutes({ integral: false })
+        : unit === 'hours'
+          ? rate.toHours({ integral: false })
+          : rate.toDays({ integral: false });
+      const amountToken = Tokenization.stringifyNumber(amount);
+      const rateUnitIsOne = new CfnCondition(this, 'ScheduleRateUnitIsOne', {
+        expression: Fn.conditionEquals(amountToken, '1'),
+      });
+      const scheduleUnit = Fn.conditionIf(rateUnitIsOne.logicalId, unit.slice(0, -1), unit).toString();
+      return `rate(${amountToken} ${scheduleUnit})`;
+    }
+    const minutes = rate.toMinutes({ integral: false });
+    if (!Number.isInteger(minutes) || minutes < 1) {
+      throw new ValidationError(lit`InvalidScheduleRate`, `schedule rate must be a whole number of minutes and at least 1 minute, got ${rate.toSeconds()} seconds`, this);
+    }
+    if (minutes % 60 === 0) {
+      const hours = minutes / 60;
+      return `rate(${hours} ${hours === 1 ? 'hour' : 'hours'})`;
+    }
+    return `rate(${minutes} ${minutes === 1 ? 'minute' : 'minutes'})`;
+  }
+}
