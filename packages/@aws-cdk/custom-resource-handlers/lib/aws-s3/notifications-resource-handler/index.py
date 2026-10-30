@@ -2,6 +2,7 @@ import boto3  # type: ignore
 import json
 import logging
 import urllib.request
+from botocore.exceptions import ClientError  # type: ignore
 
 s3 = boto3.client("s3")
 
@@ -24,11 +25,17 @@ def handler(event: dict, context):
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
     s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
   except Exception as e:
-    logging.exception("Failed to put bucket notification configuration")
-    response_status = "FAILED"
-    error_message = f"Error: {str(e)}. "
+    if event.get("RequestType") == "Delete" and is_missing_bucket(e):
+      print("Bucket no longer exists, nothing to clean up")
+    else:
+      logging.exception("Failed to put bucket notification configuration")
+      response_status = "FAILED"
+      error_message = f"Error: {str(e)}. "
   finally:
     submit_response(event, context, response_status, error_message)
+
+def is_missing_bucket(error):
+  return isinstance(error, ClientError) and error.response.get("Error", {}).get("Code") == "NoSuchBucket"
 
 def handle_managed(request_type, notification_configuration):
   if request_type == 'Delete':
