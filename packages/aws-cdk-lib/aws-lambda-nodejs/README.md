@@ -45,6 +45,10 @@ new nodejs.NodejsFunction(this, 'MyFunction', {
 });
 ```
 
+`entry` may be specified as an absolute path, or a path relative to the current working directory
+(i.e., the directory from which CDK was invoked), or a path relative to the project root (if that
+is different to the current working directory).
+
 The handler value will be automatically prefixed with the bundled output file name, `index.`,
 unless the handler value contains a `.` character, in which case the handler value is used as-is to
 allow for values needed by some Lambda extensions.
