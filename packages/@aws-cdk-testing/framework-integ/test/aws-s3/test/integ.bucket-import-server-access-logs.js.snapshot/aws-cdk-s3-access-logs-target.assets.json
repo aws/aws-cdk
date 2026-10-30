@@ -1,30 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+    "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5": {
       "displayName": "aws-cdk-s3-access-logs-target/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "path": "asset.05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-094cbf39": {
+        "current_account-current_region-a1532e82": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "objectKey": "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "fe9a38508d3604657a73436c94dd68e098b62d92bd252045f3fe90fda33e7fa3": {
+    "becd56079b22cb0a6b6115aabcfd8595f03b20c2e7f18a014e25ff8aec085713": {
       "displayName": "aws-cdk-s3-access-logs-target Template",
       "source": {
         "path": "aws-cdk-s3-access-logs-target.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-eb5994e1": {
+        "current_account-current_region-318bb4d1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fe9a38508d3604657a73436c94dd68e098b62d92bd252045f3fe90fda33e7fa3.json",
+          "objectKey": "becd56079b22cb0a6b6115aabcfd8595f03b20c2e7f18a014e25ff8aec085713.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

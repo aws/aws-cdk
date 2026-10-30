@@ -108,9 +108,15 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 
 // invoked when completion retries are exhaused.
 async function onTimeout(timeoutEvent: any) {
-  log('timeoutHandler', timeoutEvent);
-
+  // the timeout event carries the full isComplete request (including the presigned
+  // ResponseURL) in `Cause`, so log the parsed request in sanitized form instead.
   const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  const sanitizedRequest = { ...isCompleteRequest, ResponseURL: '...' };
+  if (isCompleteRequest.NoEcho) {
+    log('redacted timeoutHandler request', cfnResponse.redactDataFromPayload(sanitizedRequest));
+  } else {
+    log('timeoutHandler request', sanitizedRequest);
+  }
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out',
   });

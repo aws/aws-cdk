@@ -1,30 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+    "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5": {
       "displayName": "FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "path": "asset.05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-094cbf39": {
+        "current_account-current_region-a1532e82": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "objectKey": "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "c53d94996c7590b7688e0a998c3eaaa10f6fb3511a32481ac1a42cb3c26087f2": {
+    "8566d4059eeb79f035e3ef378452f673b3470132192a8a84ebafeff09f2a4b3a": {
       "displayName": "FlowLogsTestStack Template",
       "source": {
         "path": "FlowLogsTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-67dd44b0": {
+        "current_account-current_region-7efc61ea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c53d94996c7590b7688e0a998c3eaaa10f6fb3511a32481ac1a42cb3c26087f2.json",
+          "objectKey": "8566d4059eeb79f035e3ef378452f673b3470132192a8a84ebafeff09f2a4b3a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

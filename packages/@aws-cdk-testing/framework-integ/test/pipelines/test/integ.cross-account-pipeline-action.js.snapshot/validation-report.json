@@ -1,12 +1,11 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "title": "Validation Report",
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.6.0",
+      "pluginVersion": "1.14.0",
       "conclusion": "success",
-      "metadata": {},
       "violations": [
         {
           "ruleName": "F0001",
@@ -24,22 +23,22 @@
           ]
         },
         {
-          "ruleName": "E1156",
-          "description": "Stages.3.Actions.1.RoleArn: 'arn:aws:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region' does not match format 'AWS::IAM::Role.Arn'",
+          "ruleName": "E3510",
+          "description": "PolicyDocument.Statement.2.Resource: 'arn:*:iam::12345678:role/*' does not match '^(arn:(aws[A-Za-z\\-]*?|[A-Za-z?*\\-]*[?*][A-Za-z?*\\-]*):[^:*?]+:[^:]*(:(?:\\d{12}|\\*|aws)?:.+|)|\\*)$'",
           "severity": "warning",
           "ruleMetadata": {
-            "category": "Intrinsic Function"
+            "category": "Resource"
           },
           "violatingConstructs": [
             {
-              "constructPath": "CdkPipelineInvestigationStack/Pipeline/Pipeline/Resource",
-              "constructFqn": "aws-cdk-lib.aws_codepipeline.CfnPipeline",
+              "constructPath": "CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource",
+              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "CdkPipelineInvestigationStack.template.json",
-                "logicalId": "Pipeline9850B417",
+                "logicalId": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
                 "propertyPaths": [
-                  "Properties.Stages.3.Actions.1.RoleArn"
+                  "Properties.PolicyDocument.Statement.2.Resource"
                 ]
               }
             }

@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "2d00bbfacb10de77df39fc7db667e7c5af294a72bebac036ee66081b848202b8": {
       "displayName": "FlowLogsFeatureFlag Template",

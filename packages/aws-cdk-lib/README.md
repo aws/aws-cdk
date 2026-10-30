@@ -920,6 +920,24 @@ exports.handler = async function(event) {
 }
 ```
 
+The provider logs each incoming event, including `ResourceProperties` and
+`OldResourceProperties`, to the function's log group. CloudFormation resolves
+references before invoking the provider, so a property that refers to a
+sensitive value (for example a `NoEcho` parameter) is logged in plaintext.
+To keep such properties out of the log, export their top-level names as
+`redactProperties` next to `handler`. The handler still receives the real
+values:
+
+```js
+exports.redactProperties = ['Password'];
+exports.handler = async function(event) {
+  // event.ResourceProperties.Password holds the real value
+};
+```
+
+Only top-level property names are supported; a name containing `.` fails the
+deployment with an explicit error.
+
 Here is an complete example of a custom resource that summarizes two numbers:
 
 `sum-handler/index.js`:

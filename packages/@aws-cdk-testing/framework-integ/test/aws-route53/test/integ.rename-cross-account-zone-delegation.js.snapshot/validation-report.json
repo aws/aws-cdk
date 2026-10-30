@@ -1,0 +1,50 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9012",
+          "description": "Invalid pseudo-parameter override(s): AWS::AccountId override '12345678' is not a 12-digit AWS account ID",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "parent-stack",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "E3510",
+          "description": "PolicyDocument.Statement.0.Resource: 'arn:aws:iam::12345678:role/MyUniqueDelegationRole' does not match '^(arn:(aws[A-Za-z\\-]*?|[A-Za-z?*\\-]*[?*][A-Za-z?*\\-]*):[^:*?]+:[^:]*(:(?:\\d{12}|\\*|aws)?:.+|)|\\*)$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Resource"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource",
+              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "child-stack.template.json",
+                "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197",
+                "propertyPaths": [
+                  "Properties.PolicyDocument.Statement.0.Resource"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

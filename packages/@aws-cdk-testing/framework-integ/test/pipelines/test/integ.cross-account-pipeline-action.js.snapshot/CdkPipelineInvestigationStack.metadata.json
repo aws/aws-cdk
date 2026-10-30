@@ -1,27 +1,33 @@
 {
+  "/CdkPipelineInvestigationStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineInvestigationStack.template.json"
+    }
+  ],
   "/CdkPipelineInvestigationStack/Pipeline": [
     {
       "type": "aws:cdk:warning",
       "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
       "trace": [
-        "Annotations.addMessage (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "CodePipeline.doBuildPipeline (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:203:47)",
-        "CodePipeline.buildPipeline (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
-        "CodePipeline.buildJustInTime (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
-        "Object.visit (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
-        "recurse (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:196:38)",
-        "recurse (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
-        "recurse (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
-        "invokeAspectsV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:168:5)",
-        "synthesize (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:9)",
-        "App.synth (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
-        "Object.<anonymous> (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:153:5)",
-        "Module._compile (node:internal/modules/cjs/loader:1829:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1969:10)",
-        "Module.load (node:internal/modules/cjs/loader:1552:32)",
-        "Module._load (node:internal/modules/cjs/loader:1354:12)",
+        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "CodePipeline.doBuildPipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:206:47)",
+        "CodePipeline.buildPipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:196:38)",
+        "recurse (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
+        "recurse (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:210:43)",
+        "invokeAspectsV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:168:5)",
+        "synthesize (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:65:9)",
+        "App.synth (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:153:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
         "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
@@ -46,6 +52,7 @@
       "data": {
         "pipelineName": "*",
         "pipelineType": "V1",
+        "executionMode": "*",
         "crossAccountKeys": true,
         "crossRegionReplicationBuckets": "*",
         "reuseCrossRegionSupportStacks": "*",

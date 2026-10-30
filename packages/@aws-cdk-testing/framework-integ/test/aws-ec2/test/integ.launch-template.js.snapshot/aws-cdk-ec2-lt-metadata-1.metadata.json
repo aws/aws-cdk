@@ -1,4 +1,24 @@
 {
+  "/aws-cdk-ec2-lt-metadata-1": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.launch-template.js:41:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-ec2-lt-metadata-1.template.json"
+    }
+  ],
   "/aws-cdk-ec2-lt-metadata-1/MyVpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -89,7 +109,12 @@
   "/aws-cdk-ec2-lt-metadata-1/LTWithCpuOptions": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": {
+        "cpuOptions": {
+          "coreCount": "*",
+          "threadsPerCore": "*"
+        }
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [

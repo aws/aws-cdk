@@ -157,6 +157,128 @@ describe('nodejs entrypoint', () => {
       LogicalResourceId: '<LogicalResourceId>',
     });
   });
+
+  describe('log redaction', () => {
+    const PRESIGNED_URL = 'https://cfn-response.s3.amazonaws.com/path?X-Amz-Signature=PRESIGNED-SECRET';
+
+    test('listed properties are redacted from the logged event, other properties are logged', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Update',
+        PhysicalResourceId: 'phys',
+        ResourceProperties: { ServiceToken: '<ServiceToken>', Secret: 'NEW-SECRET', Plain: 'plain-value' },
+        OldResourceProperties: { Secret: 'OLD-SECRET', Plain: 'old-plain-value' },
+      } as any);
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Secret'] });
+
+      // THEN
+      const logged = logs.join('\n');
+      expect(logged).not.toContain('NEW-SECRET');
+      expect(logged).not.toContain('OLD-SECRET');
+      expect(logged).toContain('plain-value');
+      expect(logged).toContain('old-plain-value');
+      const loggedEvent = JSON.parse(logs[0]);
+      expect(loggedEvent.ResourceProperties).toEqual({ ServiceToken: '<ServiceToken>', Secret: '*****', Plain: 'plain-value' });
+      expect(loggedEvent.OldResourceProperties).toEqual({ Secret: '*****', Plain: 'old-plain-value' });
+    });
+
+    test('the user handler receives the real property values', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Secret: 'REAL-SECRET' } });
+      let received: any;
+
+      // WHEN
+      await invokeHandler(event, async e => {
+        received = e.ResourceProperties;
+      }, { redactProperties: ['Secret'] });
+
+      // THEN
+      expect(received.Secret).toEqual('REAL-SECRET');
+    });
+
+    test('properties that are not present are not added to the logged event', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Missing'] });
+
+      // THEN
+      const loggedEvent = JSON.parse(logs[0]);
+      expect(loggedEvent.ResourceProperties).toEqual({ ServiceToken: '<ServiceToken>' });
+      expect(loggedEvent).not.toHaveProperty('OldResourceProperties');
+    });
+
+    test('without options, properties are logged as before', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Secret: 'VISIBLE' } });
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => undefined);
+
+      // THEN
+      expect(JSON.parse(logs[0]).ResourceProperties.Secret).toEqual('VISIBLE');
+    });
+
+    test('malformed event log hides the ResponseURL and redacted properties', async () => {
+      // GIVEN - an Update without a PhysicalResourceId, and a failing handler
+      const event = makeEvent({
+        RequestType: 'Update',
+        ResponseURL: PRESIGNED_URL,
+        ResourceProperties: { ServiceToken: '<ServiceToken>', Secret: 'NEW-SECRET' },
+        OldResourceProperties: { Secret: 'OLD-SECRET' },
+      } as any);
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => {
+        throw new Error('boom');
+      }, { redactProperties: ['Secret'] });
+
+      // THEN
+      expect(response.Status).toEqual('FAILED');
+      const malformed = logs.find(l => l.startsWith('ERROR: Malformed event.'));
+      expect(malformed).toBeDefined();
+      const logged = logs.join('\n');
+      expect(logged).not.toContain('PRESIGNED-SECRET');
+      expect(logged).not.toContain('NEW-SECRET');
+      expect(logged).not.toContain('OLD-SECRET');
+    });
+
+    test('response Data is redacted from the log when NoEcho is set, but sent to cloudformation', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => ({ NoEcho: true, Data: { Attr: 'SECRET-ATTR' } }));
+
+      // THEN
+      expect(response.Data).toEqual({ Attr: 'SECRET-ATTR' });
+      expect(logs.join('\n')).not.toContain('SECRET-ATTR');
+      expect(logs.join('\n')).toContain('"Attr":"*****"');
+    });
+
+    test('response Data is logged when NoEcho is not set', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => ({ Data: { Attr: 'VISIBLE-ATTR' } }));
+
+      // THEN
+      expect(logs.join('\n')).toContain('VISIBLE-ATTR');
+    });
+
+    test.each([
+      [['Config.Nested'], /^Invalid makeHandler option "redactProperties": "Config\.Nested" contains '\.'; only top-level property names are supported, nested paths are not supported yet$/],
+      [[''], /entries must be non-empty strings/],
+      [[42], /entries must be non-empty strings, got 42/],
+      ['Config', /expected an array of top-level property names, got string/],
+    ])('invalid redactProperties %j fails when the handler is created', (redactProperties, error) => {
+      expect(() => entrypoint.makeHandler(async _ => undefined, { redactProperties: redactProperties as any })).toThrow(error);
+    });
+  });
 });
 
 function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
@@ -175,7 +297,11 @@ function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): A
   } as any;
 }
 
-async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, userHandler: entrypoint.Handler) {
+async function invokeHandler(
+  req: AWSLambda.CloudFormationCustomResourceEvent,
+  userHandler: entrypoint.Handler,
+  handlerOptions?: entrypoint.MakeHandlerOptions,
+) {
   const parsedResponseUrl = url.parse(req.ResponseURL);
 
   // stage entry point and user handler.
@@ -189,9 +315,10 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
   // do not include stack traces in failure responses so we can assert against them.
   entrypoint.external.includeStackTraces = false;
 
-  // disable logging
-  entrypoint.external.log = () => {
-    return;
+  // capture logs instead of printing them
+  const logs = new Array<string>();
+  entrypoint.external.log = (fmt: string, ...params: any[]) => {
+    logs.push([fmt, ...params.map(p => typeof p === 'string' ? p : JSON.stringify(p))].join(' '));
   };
 
   let actualResponse;
@@ -204,7 +331,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     actualRequest = options;
   };
 
-  const handler = entrypoint.makeHandler(userHandler);
+  const handler = entrypoint.makeHandler(userHandler, handlerOptions);
   await handler(req);
   if (!actualRequest || !actualResponse) {
     throw new Error('no response sent to cloudformation');
@@ -213,6 +340,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
   return {
     response: JSON.parse(actualResponse) as AWSLambda.CloudFormationCustomResourceResponse,
     request: actualRequest as https.RequestOptions,
+    logs,
   };
 }
 

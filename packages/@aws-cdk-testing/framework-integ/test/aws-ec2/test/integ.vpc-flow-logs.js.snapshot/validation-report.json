@@ -1,0 +1,173 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [],
+      "suppressedViolations": [
+        {
+          "ruleName": "F3002",
+          "description": "DestinationOptions.fileFormat: Additional properties are not allowed ('fileFormat' was unexpected. Did you mean 'FileFormat'?)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions.fileFormat"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:870:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        },
+        {
+          "ruleName": "F3002",
+          "description": "DestinationOptions.perHourPartition: Additional properties are not allowed ('perHourPartition' was unexpected. Did you mean 'PerHourPartition'?)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions.perHourPartition"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:870:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        },
+        {
+          "ruleName": "F3002",
+          "description": "DestinationOptions.hiveCompatiblePartitions: Additional properties are not allowed ('hiveCompatiblePartitions' was unexpected. Did you mean 'HiveCompatiblePartitions'?)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions.hiveCompatiblePartitions"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:870:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        },
+        {
+          "ruleName": "F3003",
+          "description": "DestinationOptions: 'FileFormat' is a required property",
+          "suggestedFix": "Add the required property 'FileFormat'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3003",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:874:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        },
+        {
+          "ruleName": "F3003",
+          "description": "DestinationOptions: 'HiveCompatiblePartitions' is a required property",
+          "suggestedFix": "Add the required property 'HiveCompatiblePartitions'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3003",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:874:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        },
+        {
+          "ruleName": "F3003",
+          "description": "DestinationOptions: 'PerHourPartition' is a required property",
+          "suggestedFix": "Add the required property 'PerHourPartition'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions/FlowLog",
+              "constructFqn": "aws-cdk-lib.aws_ec2.CfnFlowLog",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "FlowLogsFeatureFlag.template.json",
+                "logicalId": "VPCFlowLogsS3WithDestinationOptionsFlowLog030C15B2",
+                "propertyPaths": [
+                  "Properties.DestinationOptions"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3003",
+          "reason": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec",
+          "acknowledgedAt": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at new FlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:874:43)\n    at PropertyInjectable.addFlowLog (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)\n    at new FeatureFlagStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:55:13)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs.js:140:25)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}
