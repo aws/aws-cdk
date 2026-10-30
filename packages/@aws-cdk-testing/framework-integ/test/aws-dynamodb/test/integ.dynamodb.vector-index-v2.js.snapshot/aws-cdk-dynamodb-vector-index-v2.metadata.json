@@ -1,0 +1,36 @@
+{
+  "/aws-cdk-dynamodb-vector-index-v2/VectorTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "VectorTableB2143AA2"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-vector-index-v2/VectorTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VectorTableB2143AA2"
+    }
+  ]
+}
