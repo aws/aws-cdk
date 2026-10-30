@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
-import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
+import { AnyPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { App, RemovalPolicy, Stack, Validations } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
 import type { CfnBucketPolicy } from '../lib';
 
@@ -37,6 +38,28 @@ describe('bucket policy', () => {
         ],
       },
     });
+  });
+
+  test.each([
+    [true, { Id: 'bucket-policy-1' }],
+    [false, {}],
+  ])('keeps the Id of a document from PolicyDocument.fromJson() when the feature flag is %s', (enabled, expectedId) => {
+    const app = new App({ context: { [cxapi.IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID]: enabled } });
+    const stack = new Stack(app, 'Stack');
+    const statement = {
+      Effect: 'Allow',
+      Principal: { AWS: 'arn:aws:iam::123456789012:root' },
+      Action: 's3:GetObject',
+      Resource: 'arn:aws:s3:::my-bucket/*',
+    };
+
+    new s3.BucketPolicy(stack, 'MyBucketPolicy', {
+      bucket: new s3.Bucket(stack, 'MyBucket'),
+      document: PolicyDocument.fromJson({ Version: '2012-10-17', Id: 'bucket-policy-1', Statement: [statement] }),
+    });
+
+    const policies = Template.fromStack(stack).findResources('AWS::S3::BucketPolicy');
+    expect(Object.values(policies)[0].Properties.PolicyDocument).toEqual({ ...expectedId, Version: '2012-10-17', Statement: [statement] });
   });
 
   test('when specifying a removalPolicy at creation', () => {

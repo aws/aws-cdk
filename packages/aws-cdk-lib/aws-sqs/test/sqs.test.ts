@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as sqs from '../lib';
 import { QueueGrants } from '../lib';
 import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
@@ -999,6 +1000,32 @@ describe('metricApproximateNumberOfMessagesOutstanding', () => {
       ]),
     });
   });
+});
+
+test.each([
+  [true, { Id: 'queue-policy-1' }],
+  [false, {}],
+])('a queue policy keeps the Id of a document from PolicyDocument.fromJson() when the feature flag is %s', (enabled, expectedId) => {
+  // GIVEN
+  const app = new App({ context: { [cxapi.IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID]: enabled } });
+  const stack = new Stack(app, 'my-stack');
+  const queue = new sqs.Queue(stack, 'Queue');
+  const statement = {
+    Effect: 'Allow',
+    Principal: { Service: 'sns.amazonaws.com' },
+    Action: 'sqs:SendMessage',
+    Resource: '*',
+  };
+
+  // WHEN
+  new sqs.CfnQueuePolicy(stack, 'QueuePolicy', {
+    queues: [queue.queueUrl],
+    policyDocument: iam.PolicyDocument.fromJson({ Version: '2012-10-17', Id: 'queue-policy-1', Statement: [statement] }),
+  });
+
+  // THEN
+  const policies = Template.fromStack(stack).findResources('AWS::SQS::QueuePolicy');
+  expect(Object.values(policies)[0].Properties.PolicyDocument).toEqual({ ...expectedId, Version: '2012-10-17', Statement: [statement] });
 });
 
 test('fails if queue policy has no actions', () => {
