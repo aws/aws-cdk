@@ -3,12 +3,14 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { RemovalPolicy, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
+import { EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED } from '../../cx-api';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
 describe('vpc flow logs', () => {
-  test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
+  test('scopes cloudwatch logs permissions when the feature flag is enabled', () => {
     const stack = getTestStack();
+    stack.node.setContext(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED, true);
 
     new FlowLog(stack, 'FlowLogs', {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
@@ -31,21 +33,164 @@ describe('vpc flow logs', () => {
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
-          Action: [
-            'logs:CreateLogStream',
-            'logs:PutLogEvents',
-            'logs:DescribeLogStreams',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['FlowLogsLogGroup9853A85F', 'Arn'],
-          },
-        }],
+        Statement: Match.arrayEquals([
+          Match.objectEquals({
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['FlowLogsLogGroup9853A85F', 'Arn'],
+            },
+          }),
+          Match.objectEquals({
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:',
+                  { Ref: 'FlowLogsLogGroup9853A85F' },
+                ],
+              ],
+            },
+          }),
+        ]),
       },
     });
     Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 0);
   });
+
+  const assertLegacyCloudWatchLogsPermissions = (featureFlagValue?: boolean) => {
+    const stack = getTestStack();
+    if (featureFlagValue !== undefined) {
+      stack.node.setContext(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED, featureFlagValue);
+    }
+
+    const logGroup = new logs.LogGroup(stack, 'TestLogGroup');
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toCloudWatchLogs(
+        logGroup,
+        new iam.Role(stack, 'TestRole', {
+          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+        }),
+      ),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayEquals([
+          Match.objectEquals({
+            Action: [
+              'logs:CreateLogStream',
+              'logs:PutLogEvents',
+              'logs:DescribeLogStreams',
+            ],
+            Effect: 'Allow',
+            Resource: stack.resolve(logGroup.logGroupArn),
+          }),
+        ]),
+      },
+    });
+  };
+
+  test('preserves legacy cloudwatch logs permissions when the feature flag is unset', () => {
+    assertLegacyCloudWatchLogsPermissions();
+  });
+
+  test('preserves legacy cloudwatch logs permissions when the feature flag is disabled', () => {
+    assertLegacyCloudWatchLogsPermissions(false);
+  });
+
+  test('uses the imported log group account and region for scoped permissions', () => {
+    const stack = getTestStack();
+    stack.node.setContext(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED, true);
+    const logGroup = logs.LogGroup.fromLogGroupArn(
+      stack,
+      'ImportedLogGroup',
+      'arn:aws:logs:us-west-2:111122223333:log-group:imported-log-group',
+    );
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toCloudWatchLogs(
+        logGroup,
+        new iam.Role(stack, 'TestRole', {
+          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+        }),
+      ),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayEquals([
+          Match.objectEquals({
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: 'arn:aws:logs:us-west-2:111122223333:log-group:imported-log-group:*',
+          }),
+          Match.objectEquals({
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-west-2:111122223333:log-group:imported-log-group',
+                ],
+              ],
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('reads the feature flag from the stack containing the flow log', () => {
+    const app = new App();
+    const logGroupStack = new Stack(app, 'LogGroupStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    logGroupStack.node.setContext(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED, false);
+    const logGroup = new logs.LogGroup(logGroupStack, 'TestLogGroup');
+
+    const flowLogStack = new Stack(app, 'FlowLogStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    flowLogStack.node.setContext(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED, true);
+    new FlowLog(flowLogStack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toCloudWatchLogs(
+        logGroup,
+        new iam.Role(flowLogStack, 'TestRole', {
+          assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+        }),
+      ),
+    });
+
+    Template.fromStack(flowLogStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayEquals([
+          Match.objectLike({
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+          }),
+          Match.objectLike({
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
 

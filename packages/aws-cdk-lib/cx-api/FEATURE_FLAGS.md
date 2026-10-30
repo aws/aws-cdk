@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped](#aws-cdkaws-ec2flowlogscloudwatchlogspermissionsscoped) | Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -155,6 +156,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
@@ -2661,6 +2663,27 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped
+
+*Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the `DescribeLogStreams` permission is granted on the log group ARN,
+while `CreateLogStream` and `PutLogEvents` remain granted on the log stream ARN pattern.
+
+When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
+previous behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to keep the previous combined permission statement.
 
 
 <!-- END details -->
