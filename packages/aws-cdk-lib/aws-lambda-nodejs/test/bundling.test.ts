@@ -7,7 +7,7 @@ import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
-import { Bundling } from '../lib/bundling';
+import { Bundling, needsWindowsShell } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
@@ -809,6 +809,186 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
+test('esbuild local bundling uses resolved binPath directly with node', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  detectPackageInstallationMock.mockReturnValueOnce({
+    isWorkspacePackage: true,
+    version: '0.8.8',
+    binPath: '/project/node_modules/esbuild/bin/esbuild',
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    process.execPath,
+    expect.arrayContaining([
+      '/project/node_modules/esbuild/bin/esbuild',
+      '--bundle', entry,
+      `--target=${STANDARD_TARGET}`,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+    ]),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
+test('esbuild local bundling uses custom esbuildBinaryPath', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildBinaryPath: '/custom/bin/esbuild',
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    '/custom/bin/esbuild',
+    expect.arrayContaining([
+      '--bundle', entry,
+      `--target=${STANDARD_TARGET}`,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+    ]),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
+test('needsWindowsShell correctly identifies commands requiring shell', () => {
+  expect(needsWindowsShell('foo.cmd')).toBe(true);
+  expect(needsWindowsShell('foo.bat')).toBe(true);
+  expect(needsWindowsShell('C:\\tools\\esbuild.CMD')).toBe(true);
+  expect(needsWindowsShell('C:\\tools\\esbuild.BAT')).toBe(true);
+  expect(needsWindowsShell('foo.exe')).toBe(false);
+  expect(needsWindowsShell('C:\\bin\\esbuild.exe')).toBe(false);
+  expect(needsWindowsShell(process.execPath)).toBe(false);
+  expect(needsWindowsShell('esbuild')).toBe(true);
+  expect(needsWindowsShell('npx')).toBe(true);
+});
+
+test('esbuild local bundling on Windows spawns process.execPath directly without powershell when binPath is resolved', () => {
+  const osMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  detectPackageInstallationMock.mockReturnValueOnce({
+    isWorkspacePackage: true,
+    version: '0.8.8',
+    binPath: 'C:\\project\\node_modules\\esbuild\\bin\\esbuild',
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    process.execPath,
+    expect.arrayContaining([
+      'C:\\project\\node_modules\\esbuild\\bin\\esbuild',
+      '--bundle',
+      entry,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+    ]),
+    expect.anything(),
+  );
+  expect(spawnSyncMock).not.toHaveBeenCalledWith(
+    'powershell.exe',
+    expect.anything(),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+  osMock.mockRestore();
+});
+
+test('esbuild local bundling on Windows routes through powershell when runner command is a .cmd shim', () => {
+  const osMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildBinaryPath: 'C:\\custom\\bin\\esbuild.cmd',
+  });
+
+  expect(bundler.local).toBeDefined();
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  expect(tryBundle).toBe(true);
+
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'powershell.exe',
+    expect.arrayContaining([
+      '-NoProfile',
+      '-Command',
+      expect.stringContaining('esbuild.cmd'),
+    ]),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+  osMock.mockRestore();
+});
+
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isWorkspacePackage: true,
@@ -1545,6 +1725,35 @@ test('Local bundling with preCompilation spawns tsc directly', () => {
   expect(esbuildArgs).toEqual(expect.arrayContaining([
     expect.stringMatching(/\.js$/),
   ]));
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling with preCompilation uses resolved tsc binPath with node', () => {
+  detectPackageInstallationMock.mockImplementation((module: string) => module === 'typescript'
+    ? { isWorkspacePackage: true, version: '5.9.3', binPath: '/project/node_modules/typescript/bin/tsc' }
+    : { isWorkspacePackage: true, version: '0.8.8', binPath: '/project/node_modules/esbuild/bin/esbuild' });
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    preCompilation: true,
+    architecture: Architecture.X86_64,
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const tscCall = spawnSyncMock.mock.calls.find(c => {
+    const args = c[1] as string[];
+    return args?.some(a => a.endsWith('.ts'));
+  });
+  expect(tscCall).toBeDefined();
+  expect(tscCall![0]).toBe(process.execPath);
+  expect((tscCall![1] as string[])[0]).toBe('/project/node_modules/typescript/bin/tsc');
 
   spawnSyncMock.mockRestore();
 });
