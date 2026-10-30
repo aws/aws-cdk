@@ -43,6 +43,46 @@ export class PolicyValidationMode {
 }
 
 /**
+ * Enforcement mode for a policy.
+ *
+ * Determines whether the policy's decision is enforced by the policy engine or
+ * only evaluated and logged.
+ */
+export class PolicyEnforcementMode {
+  /**
+   * The policy is evaluated and its decision is enforced by the policy engine.
+   */
+  public static readonly ACTIVE = new PolicyEnforcementMode('ACTIVE');
+
+  /**
+   * The policy is evaluated but its decision is only logged, not enforced.
+   * Use this to validate a policy against real traffic before switching it to `ACTIVE`.
+   */
+  public static readonly LOG_ONLY = new PolicyEnforcementMode('LOG_ONLY');
+
+  /**
+   * An enforcement mode that this version of the CDK does not model.
+   *
+   * Prefer the static members above. Use this when the service has added a mode
+   * that the CDK has no member for yet.
+   *
+   * @param value the raw enforcement mode value to pass to CloudFormation
+   */
+  public static of(value: string): PolicyEnforcementMode {
+    return new PolicyEnforcementMode(value);
+  }
+
+  /**
+   * The string value of the enforcement mode.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
  * Options for adding a policy via PolicyEngine.addPolicy()
  */
 export interface AddPolicyOptions {
@@ -77,4 +117,11 @@ export interface AddPolicyOptions {
    * @default PolicyValidationMode.FAIL_ON_ANY_FINDINGS
    */
   readonly validationMode?: PolicyValidationMode;
+
+  /**
+   * Enforcement mode for the policy.
+   *
+   * @default - No enforcement mode is set, and the service uses `ACTIVE`
+   */
+  readonly enforcementMode?: PolicyEnforcementMode;
 }

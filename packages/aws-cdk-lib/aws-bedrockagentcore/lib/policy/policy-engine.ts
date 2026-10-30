@@ -296,6 +296,7 @@ export class PolicyEngine extends PolicyEngineBase {
       statement: options.statement,
       description: options.description,
       validationMode: options.validationMode,
+      enforcementMode: options.enforcementMode,
     });
 
     // Automatically chain to previous policy if exists

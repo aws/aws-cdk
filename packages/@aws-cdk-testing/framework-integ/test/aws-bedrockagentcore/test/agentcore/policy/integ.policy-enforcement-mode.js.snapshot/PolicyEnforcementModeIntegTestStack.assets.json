@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "eb17b6e0a79962d60820409ac559fbbcf80c05cb25ba1d9ed52fd26dde6f773a": {
+      "displayName": "PolicyEnforcementModeIntegTestStack Template",
+      "source": {
+        "path": "PolicyEnforcementModeIntegTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6721b31a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "eb17b6e0a79962d60820409ac559fbbcf80c05cb25ba1d9ed52fd26dde6f773a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
