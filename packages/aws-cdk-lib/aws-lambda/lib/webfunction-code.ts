@@ -1,0 +1,1138 @@
+import type { Construct } from 'constructs';
+import { CfnWebFunctionRevision } from './lambda.generated';
+import type * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
+import type * as logs from '../../aws-logs';
+import * as s3 from '../../aws-s3';
+import * as s3_assets from '../../aws-s3-assets';
+import * as cdk from '../../core';
+import { S3ObjectCopy, copyFunctionIdentity } from './private/s3-object-copy';
+import { ValidationError } from '../../core/lib/errors';
+import { md5hash } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
+
+/**
+ * S3 location for WebFunction code
+ */
+export interface WebFunctionS3Location {
+  /**
+   * The S3 bucket name
+   */
+  readonly bucketName: string;
+
+  /**
+   * The S3 object key
+   */
+  readonly objectKey: string;
+
+  /**
+   * The S3 object version (optional)
+   *
+   * @default - the version that is latest when the revision is created
+   */
+  readonly objectVersion?: string;
+}
+
+/**
+ * WebFunction code configuration result
+ */
+export interface WebFunctionCodeConfig {
+  /**
+   * The S3 location of the code
+   */
+  readonly s3Location: WebFunctionS3Location;
+}
+
+/**
+ * Options passed by `WebFunction` when binding code.
+ */
+export interface WebFunctionCodeBindOptions {
+  /**
+   * The ARN of the WebFunction the code is bound to.
+   *
+   * Used to scope the code-read policy to this function's revisions.
+   */
+  readonly webFunctionArn: string;
+}
+
+/**
+ * Code for a `WebFunction`.
+ *
+ * WebFunction always reads its code from S3 at runtime, on every sandbox start, using the
+ * Lambda service principal. The bucket holding the code must therefore have S3 versioning
+ * enabled — enforced at synth time for buckets defined in the same app — and grant
+ * `lambda.amazonaws.com` read access to the code object. The construct adds that grant
+ * automatically on owned buckets (best-effort — imported buckets emit a warning instead).
+ *
+ * Bucket encryption compatibility:
+ *
+ * - `BucketEncryption.S3_MANAGED` (SSE-S3, AES256) — works, no key policy needed
+ * - `BucketEncryption.KMS` or `BucketEncryption.DSSE` with a customer managed key —
+ *   works; `kms:Decrypt` is granted to the Lambda service principal automatically
+ *   (best-effort for imported keys)
+ * - `BucketEncryption.KMS_MANAGED` (SSE-KMS with `aws/s3`) and
+ *   `BucketEncryption.DSSE_MANAGED` — do not work: an AWS-managed key policy cannot
+ *   be modified to authorize the Lambda service principal. For a bucket defined in
+ *   this app this fails at synthesis; an imported bucket exposes no encryption
+ *   settings, so there it surfaces as a read failure at runtime
+ *
+ * Use one of the static factory methods to create an instance.
+ *
+ * Unlike `lambda.Code`, there is deliberately no plain `fromAsset()`: each asset factory
+ * names the bucket the code is staged to, so the choice is explicit at the call site.
+ */
+export abstract class WebFunctionCode {
+  /**
+   * Create WebFunction code from an S3 bucket.
+   *
+   * This method configures the bucket on a best-effort basis so it satisfies
+   * WebFunction's runtime requirements:
+   *
+   * - It adds a resource policy statement granting `lambda.amazonaws.com`
+   *   `s3:GetObject` and `s3:GetObjectVersion`, scoped to the given object key,
+   *   to the deploying account and to the revisions of the bound WebFunction.
+   *   For buckets imported by attributes (e.g.
+   *   `Bucket.fromBucketName`) the policy cannot be modified from this app;
+   *   ensure the bucket already carries an equivalent statement.
+   * - This method does not change the bucket's versioning setting, so it is
+   *   validated instead: a bucket defined in this app without
+   *   `versioned: true` fails at synthesis. Imported buckets cannot be
+   *   inspected, so for those the requirement is only enforced at deployment
+   *   time, where WebFunction rejects a bucket that reports no object version.
+   * - Encryption with an AWS-managed KMS key is asserted against for the same
+   *   reason: a bucket defined in this app using `BucketEncryption.KMS_MANAGED`
+   *   or `BucketEncryption.DSSE_MANAGED` fails at synthesis, since that key's
+   *   policy cannot be modified to authorize the service principal. Imported
+   *   buckets cannot be inspected and are assumed to be compatible.
+   */
+  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): WebFunctionCode {
+    return new BucketCode(bucket, key, objectVersion);
+  }
+
+  /**
+   * Create WebFunction code from a local file or directory, staged into a bucket that CDK
+   * creates and configures for you.
+   *
+   * One bucket is created per stack and shared by every WebFunction in it that uses this
+   * factory. It is configured with everything WebFunction requires: versioning, AES256
+   * (SSE-S3) encryption, and a bucket policy granting `lambda.amazonaws.com` read access.
+   *
+   * The bucket is removed and emptied along with the stack that owns it. If a revision whose
+   * code it holds is retained, the bucket is retained as well, with a warning.
+   *
+   * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
+   */
+  public static fromAssetToManagedBucket(path: string, options?: WebFunctionManagedBucketAssetOptions): WebFunctionCode {
+    return new ManagedBucketAssetCode(path, options ?? {});
+  }
+
+  /**
+   * Create WebFunction code from a local file or directory, staged into a bucket you own.
+   *
+   * You own the bucket, so CDK only makes the narrowest change it needs: it adds a resource
+   * policy statement granting `lambda.amazonaws.com` read access to this function's code, and
+   * `kms:Decrypt` on the bucket's key if it is encrypted with a customer managed key. Both
+   * are best-effort — on an imported bucket or key they are no-ops and a warning is emitted
+   * instead, since the policy cannot be modified from this app.
+   *
+   * You are responsible for the bucket settings CDK cannot change:
+   *
+   * - S3 versioning must be enabled. This is validated at synth time for a bucket defined in
+   *   the same app; an imported bucket is only caught at deployment time, where WebFunction
+   *   rejects a bucket that reports no object version.
+   * - Encryption must not be `BucketEncryption.KMS_MANAGED` (SSE-KMS with `aws/s3`) or
+   *   `BucketEncryption.DSSE_MANAGED`, whose key policy cannot be modified to authorize the
+   *   Lambda service principal. SSE-S3 and a customer managed key both work.
+   *
+   * Not supported in an environment bootstrapped with a customer managed KMS key; see the README.
+   */
+  public static fromAssetToProvidedBucket(
+    bucket: s3.IBucket,
+    path: string,
+    options?: WebFunctionProvidedBucketAssetOptions,
+  ): WebFunctionCode {
+    return new ProvidedBucketAssetCode(bucket, path, options ?? {});
+  }
+
+  /**
+   * Binds the code to a construct and returns the S3 location.
+   *
+   * @param scope - The construct scope to bind to
+   * @param options - Identity of the WebFunction, used to scope the read policy
+   * @returns The S3 location configuration for the code
+   */
+  public abstract bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig;
+
+  /**
+   * Called after the CloudFormation resource has been created, to let the code object bind
+   * to it. A no-op for every current code source.
+   *
+   * `lambda.Code` has the same hook, and its `AssetCode` uses it to attach asset metadata
+   * (`aws:asset:path` etc.) for tooling. That is deliberately not done here: of the consumers
+   * of that metadata, SAM CLI local invoke does not support WebFunction, and
+   * `cdk deploy --hotswap` would be semantically wrong — it performs an in-place code
+   * update, whereas WebFunction's model is "create a new revision, then shift traffic".
+   * An override can be added once a consumer is verified to handle WebFunction correctly.
+   */
+  public bindToResource(_resource: cdk.CfnResource): void {
+    return;
+  }
+}
+
+/**
+ * Code that already lives in a compliant S3 bucket. No staging is performed.
+ *
+ * Not exported: consumers reach this through `WebFunctionCode.fromBucket()`, which declares
+ * `WebFunctionCode` as its return type. This class adds no API beyond the base class.
+ */
+class BucketCode extends WebFunctionCode {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    private readonly key: string,
+    private readonly objectVersion?: string,
+  ) {
+    super();
+  }
+
+  /**
+   * Binds the code to a construct and returns the S3 location.
+   *
+   * Grants the Lambda service principal read access to the code object and, for a
+   * bucket defined in this app, asserts that it has versioning enabled and is not
+   * encrypted with an AWS-managed KMS key.
+   *
+   * @param scope - The construct scope to bind to
+   * @param options - Identity of the WebFunction, used to scope the read policy
+   * @returns The S3 location configuration for the code
+   */
+  public bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
+    scope.node.addValidation({
+      validate: () => [
+        ...validateBucketVersioned(this.bucket, 'fromBucket'),
+        ...validateBucketEncryption(this.bucket, 'fromBucket'),
+      ],
+    });
+    validateCodeKey(this.key, scope);
+    grantServiceRead(this.bucket, this.key, scope, options);
+
+    return {
+      s3Location: {
+        bucketName: this.bucket.bucketName,
+        objectKey: this.key,
+        objectVersion: this.objectVersion,
+      },
+    };
+  }
+}
+
+/**
+ * Configuration for the Lambda function that copies staged code into its destination bucket.
+ *
+ * The function is a stack-level singleton: every copy whose options resolve to the same
+ * configuration shares one function. Supplying different options produces a separate
+ * function, since a single Lambda cannot hold two conflicting configurations.
+ */
+export interface WebFunctionCodeCopyOptions {
+  /**
+   * Execution role for the Lambda function that performs the copy.
+   *
+   * @default - a role is created with permissions to read the source object and write the
+   * destination object
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * The VPC to run the Lambda function in.
+   *
+   * Only needed if your organization requires all functions to run inside a VPC. The function
+   * calls S3, so the VPC needs either a NAT gateway or an S3 VPC endpoint.
+   *
+   * @default - the function is not placed in a VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to place the Lambda function in.
+   *
+   * Only used if `vpc` is supplied.
+   *
+   * @default - the VPC's private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Security groups for the Lambda function.
+   *
+   * Only used if `vpc` is supplied.
+   *
+   * @default - a dedicated security group is created
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The log group the Lambda function sends logs to.
+   *
+   * @default - a log group is created in the stack, shared by every copy that uses the same function
+   */
+  readonly logGroup?: logs.ILogGroupRef;
+}
+
+/**
+ * Options common to the asset-based factories.
+ *
+ * The asset is a staging copy in the CDK asset bucket; the function serves the object the copy
+ * writes to the destination bucket. So `readers` and `deployTime` apply to that staged object
+ * only — read access to the code the function runs is granted on the destination bucket.
+ */
+export interface WebFunctionAssetOptions extends s3_assets.AssetOptions {
+  /**
+   * Configuration for the custom resource that copies the staged asset into the destination
+   * bucket. Use this if your organization requires the copy to run in a VPC, or to supply
+   * your own execution role.
+   *
+   * @default - the copy runs outside a VPC with a role created for it
+   */
+  readonly copyOptions?: WebFunctionCodeCopyOptions;
+}
+
+/**
+ * Options for `WebFunctionCode.fromAssetToManagedBucket()`.
+ */
+export interface WebFunctionManagedBucketAssetOptions extends WebFunctionAssetOptions {
+}
+
+/**
+ * Options for `WebFunctionCode.fromAssetToProvidedBucket()`.
+ */
+export interface WebFunctionProvidedBucketAssetOptions extends WebFunctionAssetOptions {
+  /**
+   * Prefix for the object key written into your bucket.
+   *
+   * The object is written at `<keyPrefix>web-function/<unique id>/<hash>.zip`. The prefix is
+   * used as given, so include a trailing `/` to place the object under a folder-like prefix.
+   *
+   * The prefix also scopes the copy function's write and delete permissions on your bucket, so
+   * it must not start with `/` or contain `*`, `?` or `${`, which IAM would read as a wildcard
+   * or a policy variable. For the same reason it must be a literal string: a deploy-time value
+   * cannot be checked, and is rejected.
+   *
+   * @default - objects are written under `web-function/` at the root of the bucket
+   */
+  readonly keyPrefix?: string;
+}
+
+/**
+ * Shared implementation for code staged from a local asset.
+ *
+ * Both subclasses stage the asset the normal CDK way, which lands it in the bootstrap bucket,
+ * and then copy it into a bucket that satisfies WebFunction's runtime requirements. The
+ * bootstrap copy is a plain deploy-time asset; only the destination copy is read at runtime.
+ */
+abstract class StagedAssetCode extends WebFunctionCode {
+  private asset?: s3_assets.Asset;
+  /**
+   * The copy made by the last `bind()`, waiting for the revision that reads it, and the holder
+   * that revision is put in.
+   *
+   * The holder belongs to that one copy, not to this code object: one code object can be bound to
+   * several functions, and each copy has to read its own function's revision.
+   */
+  private pending?: { readonly copy: S3ObjectCopy; readonly holder: { revision?: cdk.CfnResource } };
+
+  constructor(private readonly path: string, private readonly options: WebFunctionAssetOptions) {
+    super();
+  }
+
+  public bind(scope: Construct, options: WebFunctionCodeBindOptions): WebFunctionCodeConfig {
+    // The asset belongs to this one function, so it hangs off `scope` rather than the stack.
+    this.asset = new s3_assets.Asset(scope, 'Code', {
+      path: this.path,
+      ...this.options,
+    });
+    if (!this.asset.isZipArchive) {
+      throw new ValidationError(lit`WebFunctionAssetMustBeZipFile`, `Asset must be a .zip file or a directory (${this.path})`, scope);
+    }
+
+    const destination = this.destinationBucket(scope);
+    const prefix = this.destinationPrefix();
+    // Everything this function's code is ever written to, across deployments.
+    const functionPrefix = `${prefix}${cdk.Names.uniqueId(scope)}/`;
+
+    // Let the subclass make sure the service principal can read the object it is about to
+    // write, and that nothing reading it is created before that grant exists. The managed
+    // bucket carries a wildcard statement already and only needs the ordering; a caller-provided
+    // bucket gets a statement scoped to this function's objects. The grant covers the folder
+    // rather than the one key so that it stays the same when the code changes: the revision
+    // being replaced keeps reading its own object until the deployment completes.
+    this.grantDestinationRead(destination, `${functionPrefix}*`, scope, options);
+
+    // The copy represents the code object of one revision. A revision is replaced whenever any
+    // of its properties changes, since they are all create-only, so the destination key is a
+    // hash of the content and of the revision's other configuration. The copy function computes
+    // it at deploy time, because some of that configuration (a connector's latest version, a
+    // replaced role or key) is only known then. A changed key gives the copy a new physical ID,
+    // so it is replaced in the same deployment as the revision, under the same removal policy.
+    //
+    // The construct id depends on the copy function only, not on the content: a resource's
+    // ServiceToken cannot change, so a copy that needs another function has to be a new
+    // resource, while a code change updates this one.
+    const holder: { revision?: cdk.CfnResource } = {};
+    const copyProps = {
+      destinationBucket: destination,
+      destinationKeyPattern: `${prefix}*`,
+      ...this.options.copyOptions,
+    };
+    const copy = new S3ObjectCopy(scope, `CodeCopy${copyFunctionIdentity(copyProps).slice(0, 8)}`, {
+      ...copyProps,
+      sourceBucket: this.asset.bucket,
+      sourceKey: this.asset.s3ObjectKey,
+      destinationKeyPrefix: functionPrefix,
+      contentHash: this.asset.assetHash,
+      configuration: cdk.Lazy.any({ produce: () => holder.revision && revisionConfiguration(holder.revision) }),
+    });
+    this.pending = { copy, holder };
+
+    return {
+      // The full address comes from the copy's outputs — what was actually written — rather
+      // than being reassembled from this method's inputs.
+      s3Location: {
+        bucketName: copy.destinationBucketName,
+        objectKey: copy.destinationObjectKey,
+        objectVersion: copy.versionId,
+      },
+    };
+  }
+
+  /**
+   * Ties the copy made by `bind()` to the revision that reads it: the revision's configuration
+   * feeds the copy's key, and its removal policy decides the copy's.
+   */
+  public bindToResource(resource: cdk.CfnResource): void {
+    const pending = this.pending;
+    this.pending = undefined;
+    if (!pending) {
+      return;
+    }
+    const copy = pending.copy;
+    pending.holder.revision = resource;
+    // The copy's policies follow the revision's. They are resolved at synthesis, after every
+    // aspect has run and wherever the revision's policy was set: an aspect visits one node at a
+    // time, in tree order, and the copy is visited before the revision it belongs to.
+    copy.resource.addOverride('UpdateReplacePolicy',
+      cdk.Lazy.string({ produce: () => replacePolicyName(retentionOf(resource).onReplace) }));
+    copy.resource.addOverride('DeletionPolicy',
+      cdk.Lazy.string({ produce: () => deletionPolicyName(retentionOf(resource).any) }));
+    this.retainDestinationFor(resource);
+  }
+
+  /**
+   * Lets the destination follow a revision that may be retained. The default does nothing,
+   * for destinations whose lifecycle is the caller's.
+   */
+  protected retainDestinationFor(_revision: cdk.CfnResource): void {
+    return;
+  }
+
+  /** The bucket the code is copied into. */
+  protected abstract destinationBucket(scope: Construct): s3.IBucket;
+
+  /**
+   * The key prefix everything this module writes to the destination bucket lives under.
+   *
+   * The copy function may write, delete and list under it. It is shared by every function
+   * copying into the bucket, so the copy function's policy has one set of statements per
+   * bucket rather than one per function.
+   */
+  protected abstract destinationPrefix(): string;
+
+  /**
+   * Grant the Lambda service principal read access to the copied objects matching `keyPattern`.
+   *
+   * The default does nothing, for destinations that already carry a suitable statement.
+   */
+  protected grantDestinationRead(
+    _bucket: s3.IBucket, _keyPattern: string, _scope: Construct, _options: WebFunctionCodeBindOptions,
+  ): void {
+    return;
+  }
+}
+
+/**
+ * Code staged into a per-stack bucket that CDK creates and configures.
+ */
+class ManagedBucketAssetCode extends StagedAssetCode {
+  constructor(path: string, options: WebFunctionManagedBucketAssetOptions) {
+    super(path, options);
+  }
+
+  protected destinationBucket(scope: Construct): s3.IBucket {
+    return getOrCreateAssetBucket(scope);
+  }
+
+  protected grantDestinationRead(bucket: s3.IBucket, _keyPattern: string, scope: Construct): void {
+    // The statement is already on the bucket, added once when the bucket was created. What
+    // each function still needs is the ordering: the service reads the code through that
+    // policy when the revision is created, so the revision must not exist before the policy
+    // does. The bucket is always one this module created, so its policy is always present.
+    if (bucket.policy) {
+      scope.node.addDependency(bucket.policy);
+    }
+  }
+
+  protected destinationPrefix(): string {
+    // The bucket is CDK-owned and holds only WebFunction code, so this covers all of it.
+    return CODE_KEY_SEGMENT;
+  }
+
+  protected retainDestinationFor(revision: cdk.CfnResource): void {
+    const bucket = getOrCreateAssetBucket(revision);
+    managedBucketRevisions(bucket).push(revision);
+    // A validation rather than an aspect: it runs after every aspect, so rendering the revision
+    // here cannot resolve, and cache, a value a later aspect would still change.
+    revision.node.addValidation({
+      validate: () => {
+        if (retentionOf(revision).any > Retention.DELETE) {
+          cdk.Annotations.of(revision).addWarningV2('@aws-cdk/aws-lambda:webFunctionManagedBucketRetained',
+            `This revision is retained, so the code bucket ${bucket.node.path} and its policy are retained too, with the ` +
+            'code of every retained revision in it. Deleting the stack leaves them in place, and they are ' +
+            'yours to clean up. To manage them yourself, stage the code with ' +
+            'WebFunctionCode.fromAssetToProvidedBucket() into a bucket you own.');
+        }
+        return [];
+      },
+    });
+  }
+}
+
+/**
+ * Code staged into a bucket supplied by the customer.
+ */
+class ProvidedBucketAssetCode extends StagedAssetCode {
+  constructor(
+    private readonly bucket: s3.IBucket,
+    path: string,
+    private readonly providedOptions: WebFunctionProvidedBucketAssetOptions,
+  ) {
+    super(path, providedOptions);
+  }
+
+  protected destinationBucket(scope: Construct): s3.IBucket {
+    validateKeyPrefix(this.providedOptions.keyPrefix, scope);
+    scope.node.addValidation({
+      validate: () => [
+        ...validateBucketVersioned(this.bucket, 'fromAssetToProvidedBucket'),
+        ...validateBucketEncryption(this.bucket, 'fromAssetToProvidedBucket'),
+      ],
+    });
+    return this.bucket;
+  }
+
+  protected destinationPrefix(): string {
+    // Only what this module writes under the caller's prefix; the caller's own objects under
+    // the same prefix stay out of reach.
+    return `${this.providedOptions.keyPrefix ?? ''}${CODE_KEY_SEGMENT}`;
+  }
+
+  /**
+   * A retained revision keeps reading its code through the bucket policy, so the policy is
+   * retained with it. Otherwise the policy keeps its own removal policy. An imported bucket has
+   * no policy resource here, and its policy is the caller's to keep.
+   */
+  protected retainDestinationFor(revision: cdk.CfnResource): void {
+    const policy = this.bucket.policy?.node.defaultChild;
+    if (!(policy instanceof cdk.CfnResource)) {
+      return;
+    }
+    let revisions = PROVIDED_POLICY_REVISIONS.get(policy);
+    if (!revisions) {
+      revisions = [];
+      PROVIDED_POLICY_REVISIONS.set(policy, revisions);
+      retainWithRevisions(policy, revisions);
+    }
+    revisions.push(revision);
+  }
+
+  /**
+   * The caller owns this bucket, so CDK adds only the one statement the service needs to read
+   * this function's code — scoped to its objects, not to the whole bucket.
+   */
+  protected grantDestinationRead(
+    bucket: s3.IBucket, keyPattern: string, scope: Construct, options: WebFunctionCodeBindOptions,
+  ): void {
+    grantServiceRead(bucket, keyPattern, scope, options);
+  }
+}
+
+/**
+ * Grant the Lambda service principal read access to code objects.
+ *
+ * The statement is scoped to `key` — one object key, or a pattern such as a function's folder —
+ * and conditioned on `aws:SourceAccount`
+ * and `aws:SourceArn`. The service reads the object on behalf
+ * of a revision and presents the revision ARN as the source, so the condition matches
+ * `<webFunctionArn>/revision/*`. For imported buckets `addToResourcePolicy` is a no-op, so this
+ * is best-effort by construction: for those the caller has to carry an equivalent statement
+ * already, otherwise `CreateWebFunctionRevision` rejects the deployment.
+ */
+function grantServiceRead(
+  bucket: s3.IBucket, key: string, scope: Construct, options: WebFunctionCodeBindOptions,
+): void {
+  const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
+    principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+    actions: ['s3:GetObject', 's3:GetObjectVersion'],
+    resources: [bucket.arnForObjects(key)],
+    conditions: {
+      StringEquals: {
+        'aws:SourceAccount': cdk.Stack.of(scope).account,
+      },
+      ArnLike: { 'aws:SourceArn': `${options.webFunctionArn}/revision/*` },
+    },
+  }));
+
+  // Make sure the revision is not created before the policy exists,
+  // since the service reads the code object through this policy.
+  if (result.policyDependable) {
+    scope.node.addDependency(result.policyDependable);
+  }
+
+  if (!result.statementAdded) {
+    cdk.Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-lambda:webFunctionImportedCodeBucketPolicy',
+      `Cannot inspect or modify the imported bucket '${bucket.node.path}', so none of the ` +
+      'requirements WebFunction places on a code bucket are checked for it. Ensure yourself ' +
+      'that it has versioning enabled, that it is not encrypted with an AWS managed KMS key ' +
+      '(the key policy cannot be changed to let Lambda decrypt), and that it grants ' +
+      'lambda.amazonaws.com s3:GetObject and s3:GetObjectVersion on the code object.',
+    );
+  }
+
+  // For a CMK-encrypted bucket, the Lambda service principal also needs
+  // kms:Decrypt on the bucket's key. The service reads the object every
+  // time a sandbox starts, so this is a permanent dependency, not a
+  // create-time one. `encryptionKey` is undefined for SSE-S3 and SSE-KMS
+  // (aws/s3), so this only runs on CMK buckets.
+  const encryptionKey = bucket.encryptionKey;
+  if (encryptionKey !== undefined) {
+    encryptionKey.grantDecrypt(new iam.ServicePrincipal('lambda.amazonaws.com', {
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': cdk.Stack.of(scope).account,
+        },
+        // Scope to WebFunction revisions in this account, matching the S3 code-read grant.
+        // Use the account-wide `web-function/*/revision/*` wildcard rather than this
+        // function's concrete ARN: a per-function condition would add one distinct statement
+        // per function to a shared key's policy (growth toward the size limit), whereas the
+        // wildcard is identical across functions and collapses to a single statement.
+        ArnLike: {
+          'aws:SourceArn': cdk.Stack.of(scope).formatArn({
+            service: 'lambda',
+            resource: 'web-function',
+            resourceName: '*/revision/*',
+            arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+          }),
+        },
+      },
+    }));
+    if (!cdk.Resource.isOwnedResource(encryptionKey)) {
+      cdk.Annotations.of(scope).addWarningV2(
+        '@aws-cdk/aws-lambda:webFunctionImportedCodeBucketKmsKey',
+        'Cannot grant kms:Decrypt to lambda.amazonaws.com on the imported KMS key ' +
+        'used by the code bucket. Grant it manually on the key policy.',
+      );
+    }
+  }
+}
+
+/**
+ * How strongly a resource is kept, ordered so that the strongest of several can be taken.
+ */
+enum Retention {
+  DELETE = 0,
+  RETAIN_EXCEPT_ON_CREATE = 1,
+  RETAIN = 2,
+}
+
+function retentionLevel(policy: unknown): Retention {
+  switch (policy) {
+    case cdk.CfnDeletionPolicy.RETAIN: return Retention.RETAIN;
+    case cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE: return Retention.RETAIN_EXCEPT_ON_CREATE;
+    default: return Retention.DELETE;
+  }
+}
+
+function deletionPolicyName(level: Retention): string {
+  return [cdk.CfnDeletionPolicy.DELETE, cdk.CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE, cdk.CfnDeletionPolicy.RETAIN][level];
+}
+
+/** `UpdateReplacePolicy` has no `RetainExceptOnCreate`: a replacement is never a first create. */
+function replacePolicyName(level: Retention): string {
+  return level > Retention.DELETE ? cdk.CfnDeletionPolicy.RETAIN : cdk.CfnDeletionPolicy.DELETE;
+}
+
+/**
+ * The revision as it is rendered, escape-hatch overrides included.
+ */
+function renderedRevision(resource: cdk.CfnResource): { properties: any; deletionPolicy?: string; updateReplacePolicy?: string } {
+  const template = cdk.Stack.of(resource).resolve(resource._toCloudFormation());
+  const rendered: any = Object.values(template.Resources)[0];
+  return {
+    properties: rendered.Properties ?? {},
+    deletionPolicy: rendered.DeletionPolicy,
+    updateReplacePolicy: rendered.UpdateReplacePolicy,
+  };
+}
+
+/**
+ * How strongly a revision is retained on replacement, and at all, read from its rendered form
+ * when the template is resolved.
+ *
+ * `any` is what resources the revision depends on take as their `DeletionPolicy`. A revision
+ * retained only on replacement makes that `RetainExceptOnCreate` rather than `Retain`: a
+ * replacement never happens on a first create, so nothing has to survive a failed one.
+ */
+function retentionOf(resource: cdk.CfnResource): { onReplace: Retention; any: Retention } {
+  const { deletionPolicy, updateReplacePolicy } = renderedRevision(resource);
+  const onReplace = retentionLevel(updateReplacePolicy);
+  const forReplace = onReplace > Retention.DELETE ? Retention.RETAIN_EXCEPT_ON_CREATE : Retention.DELETE;
+  return { onReplace, any: Math.max(forReplace, retentionLevel(deletionPolicy)) };
+}
+
+/**
+ * The configuration of a revision that the copy's key is derived from: every rendered property
+ * except the code location, which comes from the copy itself.
+ *
+ * The key only has to depend on the configuration, not carry it, so it is passed as a
+ * fingerprint (see `fingerprint`): the copy's properties, its invocation event and its log
+ * hold no environment values or dynamic references.
+ */
+function revisionConfiguration(resource: cdk.CfnResource): any {
+  if (!CfnWebFunctionRevision.isCfnWebFunctionRevision(resource)) {
+    return undefined;
+  }
+  const properties = { ...renderedRevision(resource).properties };
+  if (properties.BuildConfig) {
+    const { CodeConfig: _code, ...buildConfig } = properties.BuildConfig;
+    properties.BuildConfig = buildConfig;
+  }
+  const references: any[] = [];
+  const result = { Properties: fingerprint(properties, references), References: references };
+  if (JSON.stringify(result).includes('{{resolve:')) {
+    throw new ValidationError(lit`WebFunctionCodeCopyDynamicReference`,
+      'A dynamic reference in the revision\'s configuration would reach the code copy. Please report this as a bug.',
+      resource);
+  }
+  return result;
+}
+
+const REFERENCE_INTRINSICS = ['Ref', 'Fn::GetAtt', 'Fn::ImportValue'];
+
+function intrinsicName(value: any): string | undefined {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+    return undefined;
+  }
+  const keys = Object.keys(value);
+  return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::')) ? keys[0] : undefined;
+}
+
+/**
+ * Replaces every literal string in a resolved template value with its hash.
+ *
+ * CloudFormation rejects secure dynamic references (`{{resolve:secretsmanager:...}}`,
+ * `{{resolve:ssm-secure:...}}`) in a custom resource's properties, and plain values would be
+ * copied into its invocation event. Both are literal strings at synthesis, so hashing them keeps
+ * the key's dependency on them without passing them on.
+ *
+ * Only references are kept: `Ref`, `Fn::GetAtt` and `Fn::ImportValue`, so a value only known at
+ * deployment, such as a replaced role, still changes the key. `Fn::Join`, `Fn::Sub` and `Fn::If`
+ * keep their shape, with their literals hashed (an `Fn::Sub` keeps its `${...}` placeholders,
+ * and an `Fn::If` its condition, so a conditional reference stays conditional). Any other
+ * intrinsic is replaced by the hash of its whole value, and the references inside it are added
+ * to `references`, so they still count without being evaluated in place.
+ */
+function fingerprint(value: any, references: any[]): any {
+  if (typeof value === 'string') {
+    return md5hash(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => fingerprint(v, references));
+  }
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+  const name = intrinsicName(value);
+  if (name === undefined) {
+    return Object.fromEntries(Object.keys(value).map((k) => [k, fingerprint(value[k], references)]));
+  }
+  const args = value[name];
+  if (REFERENCE_INTRINSICS.includes(name)) {
+    return value;
+  }
+  switch (name) {
+    case 'Fn::Join':
+      return { 'Fn::Join': [args[0], fingerprint(args[1], references)] };
+    case 'Fn::Sub':
+      return {
+        'Fn::Sub': Array.isArray(args)
+          ? [fingerprintSubTemplate(args[0], references), fingerprint(args[1], references)]
+          : fingerprintSubTemplate(args, references),
+      };
+    case 'Fn::If': {
+      const whenTrue: any[] = [];
+      const whenFalse: any[] = [];
+      const result = { 'Fn::If': [args[0], fingerprint(args[1], whenTrue), fingerprint(args[2], whenFalse)] };
+      addConditional(references, args[0], whenTrue, whenFalse);
+      return result;
+    }
+    default:
+      collectReferences(value, references);
+      return md5hash(JSON.stringify(value));
+  }
+}
+
+/** Adds the references found inside an intrinsic that is replaced by its hash. */
+function collectReferences(value: any, references: any[]): void {
+  if (Array.isArray(value)) {
+    value.forEach((v) => collectReferences(v, references));
+    return;
+  }
+  if (value === null || typeof value !== 'object') {
+    return;
+  }
+  const name = intrinsicName(value);
+  if (name !== undefined && REFERENCE_INTRINSICS.includes(name)) {
+    references.push(value);
+  } else if (name === 'Fn::Sub') {
+    references.push(fingerprint(value, references));
+  } else if (name === 'Fn::If') {
+    const [condition, a, b] = value[name];
+    const whenTrue: any[] = [];
+    const whenFalse: any[] = [];
+    collectReferences(a, whenTrue);
+    collectReferences(b, whenFalse);
+    addConditional(references, condition, whenTrue, whenFalse);
+  } else {
+    Object.values(value).forEach((v) => collectReferences(v, references));
+  }
+}
+
+function addConditional(references: any[], condition: any, whenTrue: any[], whenFalse: any[]): void {
+  if (whenTrue.length > 0 || whenFalse.length > 0) {
+    references.push({ 'Fn::If': [condition, whenTrue, whenFalse] });
+  }
+}
+
+/**
+ * Replaces the literal segments of an `Fn::Sub` template with their hashes and keeps its
+ * placeholders. `${!Literal}` is an escaped literal, so it is hashed with its segment.
+ */
+function fingerprintSubTemplate(template: any, references: any[]): any {
+  if (typeof template !== 'string') {
+    return fingerprint(template, references);
+  }
+  return template.split(/(\$\{(?!!)[^}]*\})/)
+    .map((segment, i) => (i % 2 === 1 || segment === '' ? segment : md5hash(segment)))
+    .join('');
+}
+
+const MANAGED_BUCKET_REVISIONS = new WeakMap<s3.IBucket, cdk.CfnResource[]>();
+
+/**
+ * The revisions whose code is in the managed bucket. If any of them is retained, so is the
+ * bucket: deleting it, or emptying it, would take their code.
+ */
+function managedBucketRevisions(bucket: s3.IBucket): cdk.CfnResource[] {
+  let revisions = MANAGED_BUCKET_REVISIONS.get(bucket);
+  if (!revisions) {
+    revisions = [];
+    MANAGED_BUCKET_REVISIONS.set(bucket, revisions);
+    // The auto-delete resource is retained with the bucket, so it is never sent the Delete
+    // that would empty it, and so is the bucket policy, which holds the service's read grant.
+    const autoDelete = bucket.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
+    for (const resource of [bucket.node.defaultChild, autoDelete]) {
+      if (resource instanceof cdk.CfnResource) {
+        retainWithRevisions(resource, revisions);
+      }
+    }
+    const policy = bucket.policy?.node.defaultChild;
+    if (policy instanceof cdk.CfnResource) {
+      retainWithRevisions(policy, revisions);
+    }
+  }
+  return revisions;
+}
+
+const PROVIDED_POLICY_REVISIONS = new WeakMap<cdk.CfnResource, cdk.CfnResource[]>();
+
+/**
+ * Makes `resource` retained as strongly as the most strongly retained of `revisions`, and
+ * otherwise leaves its own policy. Resolved at synthesis, so revisions added later and policies
+ * set by aspects are seen.
+ */
+function retainWithRevisions(resource: cdk.CfnResource, revisions: cdk.CfnResource[]): void {
+  const strongest = () => Math.max(Retention.DELETE, ...revisions.map((r) => retentionOf(r).any));
+  const policy = (own: unknown, name: (level: Retention) => string) => {
+    const level = strongest();
+    return level === Retention.DELETE ? own : name(Math.max(level, retentionLevel(own)));
+  };
+  // The resource's own policy is an override already on it, if any, or else its `cfnOptions`.
+  // Overrides are read before this one replaces them; CfnResource exposes no getter for them.
+  const existing = (resource as unknown as { rawOverrides?: Record<string, unknown> }).rawOverrides ?? {};
+  for (const [key, name, option] of [
+    ['DeletionPolicy', deletionPolicyName, () => resource.cfnOptions.deletionPolicy],
+    ['UpdateReplacePolicy', replacePolicyName, () => resource.cfnOptions.updateReplacePolicy],
+  ] as const) {
+    const overridden = existing[key];
+    resource.addOverride(key, cdk.Lazy.any({
+      produce: () => policy(overridden !== undefined ? cdk.Stack.of(resource).resolve(overridden) : option(), name),
+    }));
+  }
+}
+
+// Namespaced like other stack-level singletons (`AWSCDKCfnUtilsProvider`) so a customer
+// construct is unlikely to occupy it. The id feeds the bucket's logical ID, so it is permanent.
+const ASSET_BUCKET_ID = 'AWSCDKWebFunctionAssetBucket';
+
+/**
+ * Segment that every code object is written under, whichever bucket it goes to. It gives the
+ * copy function's delete grant something narrower than the whole bucket to attach to, while
+ * still covering every key this module has ever written there — including the one a renamed
+ * construct leaves behind, which the grant must be able to remove.
+ */
+const CODE_KEY_SEGMENT = 'web-function/';
+
+/**
+ * Stamped on buckets created by `getOrCreateAssetBucket`, so adoption can verify identity rather
+ * than type. A customer construct occupying
+ * the reserved id — even an `s3.Bucket` — would skip the configuration (versioning, encryption,
+ * service-principal policy) this module relies on. `Symbol.for` makes the marker shared across
+ * copies of this library in one app, so a second copy recognizes the bucket instead of
+ * reporting a collision.
+ */
+const ASSET_BUCKET_SYMBOL = Symbol.for('@aws-cdk/aws-lambda.WebFunctionAssetBucket');
+
+/**
+ * Get or create the stack's code bucket.
+ *
+ * The bucket is created under the stack, not under whichever WebFunction happened to need it
+ * first. If it hung off a function, its logical ID would depend on declaration order, and
+ * reordering or removing that function would make CloudFormation read the change as "delete
+ * one bucket, create another" - breaking every revision that pins an object version in it.
+ */
+function getOrCreateAssetBucket(scope: Construct): s3.IBucket {
+  const stack = cdk.Stack.of(scope);
+
+  const existing = stack.node.tryFindChild(ASSET_BUCKET_ID);
+  if (existing) {
+    if (!(existing as any)[ASSET_BUCKET_SYMBOL]) {
+      throw new ValidationError(
+        lit`WebFunctionAssetBucketIdCollision`,
+        `The construct id '${ASSET_BUCKET_ID}' at the stack root is reserved for the code bucket ` +
+        'created by WebFunctionCode.fromAssetToManagedBucket(). Rename the conflicting construct, ' +
+        'or use WebFunctionCode.fromAssetToProvidedBucket() to stage code into your own bucket.',
+        scope,
+      );
+    }
+    return existing as s3.Bucket;
+  }
+
+  const bucket = new s3.Bucket(stack, ASSET_BUCKET_ID, {
+    // Each revision pins one object version for its lifetime.
+    versioned: true,
+    // The AWS managed key (aws/s3) is unusable: its key policy cannot be changed to grant the
+    // Lambda service principal, and the service reads the code at runtime.
+    encryption: s3.BucketEncryption.S3_MANAGED,
+    blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    enforceSSL: true,
+    // Not configurable: the bucket follows the revisions whose code it holds. It is retained,
+    // auto-delete included, when any of them is (see managedBucketRevisions).
+    removalPolicy: cdk.RemovalPolicy.DESTROY,
+    autoDeleteObjects: true,
+  });
+
+  // Granted on the whole code segment rather than per function: a shared bucket would
+  // otherwise accumulate one statement per function and approach the 20 KB bucket policy
+  // limit. The source condition is widened to match, to any WebFunction revision in this
+  // account, so the statement still refuses reads the service performs on behalf of anything
+  // else.
+  //
+  // It does not isolate functions from each other: any revision in the account matches, and
+  // the bucket uses SSE-S3, so there is no key policy behind it. What keeps one function from
+  // using another's code is a check the service makes when a revision is created: it reads the
+  // object with the caller's own credentials (a forward access session) and rejects the request
+  // if the caller cannot, before it checks the service principal's access. A principal can
+  // therefore only create a revision on code it can already read.
+  bucket.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['s3:GetObject', 's3:GetObjectVersion'],
+    principals: [new iam.ServicePrincipal('lambda.amazonaws.com')],
+    resources: [bucket.arnForObjects(`${CODE_KEY_SEGMENT}*`)],
+    conditions: {
+      StringEquals: {
+        'aws:SourceAccount': cdk.Aws.ACCOUNT_ID,
+      },
+      ArnLike: {
+        'aws:SourceArn': stack.formatArn({
+          service: 'lambda',
+          resource: 'web-function',
+          resourceName: '*/revision/*',
+          arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
+        }),
+      },
+    },
+  }));
+
+  Object.defineProperty(bucket, ASSET_BUCKET_SYMBOL, { value: true });
+
+  return bucket;
+}
+
+/**
+ * Rejects a `fromBucket()` key that would widen the Lambda service principal's read grant.
+ *
+ * The key goes into the grant's resource ARN, where `*` and `?` are wildcards and `${` starts a
+ * policy variable. A deploy-time key cannot be checked and is passed through.
+ */
+function validateCodeKey(key: string, scope: Construct): void {
+  if (cdk.Token.isUnresolved(key)) {
+    return;
+  }
+  if (key.startsWith('/') || /[*?]|\$\{/.test(key)) {
+    throw new ValidationError(lit`WebFunctionCodeKeyInvalid`,
+      `The code object key '${key}' must not start with '/' or contain '*', '?' or '\${'. It scopes ` +
+      'the Lambda service principal\'s read access to your bucket, where these would widen it.', scope);
+  }
+}
+
+/**
+ * Reject a key prefix that would widen the copy function's grants on the caller's bucket.
+ *
+ * The prefix is used verbatim in the IAM resource ARNs and the `s3:prefix` condition that scope
+ * the copy function's writes, deletes and version listing. There, `*` and `?` are wildcards and
+ * `${` starts a policy variable, so any of them reaches beyond `web-function/`. A leading `/`
+ * gives keys that start with an empty path segment, which is never intended.
+ *
+ * A token is rejected as well. Its value is only known at deployment, when the grants are
+ * already in the template, and nothing at that point can check it: CloudFormation Rules apply
+ * only to parameters and cannot inspect characters, and IAM wildcard escapes need the value at
+ * synthesis.
+ */
+function validateKeyPrefix(keyPrefix: string | undefined, scope: Construct): void {
+  if (keyPrefix === undefined) {
+    return;
+  }
+  if (cdk.Token.isUnresolved(keyPrefix)) {
+    throw new ValidationError(lit`WebFunctionKeyPrefixUnresolved`,
+      'keyPrefix must be a literal string, not a deploy-time value. It scopes the copy function\'s ' +
+      'permissions on your bucket, and a value that cannot be checked at synthesis could widen them.', scope);
+  }
+  if (keyPrefix.startsWith('/') || /[*?]|\$\{/.test(keyPrefix)) {
+    throw new ValidationError(lit`WebFunctionKeyPrefixInvalid`,
+      `keyPrefix '${keyPrefix}' must not start with '/' or contain '*', '?' or '\${'. It scopes the copy ` +
+      'function\'s permissions on your bucket, where these would widen them.', scope);
+  }
+}
+
+/**
+ * Whether a bucket's KMS key id names the AWS-managed `aws/s3` key by its alias, either as
+ * `alias/aws/s3` or as an alias ARN.
+ *
+ * An alias ARN built from the stack's partition, Region or account is a token, as it is for
+ * `kms.Alias.fromAliasName()`. It resolves to an `Fn::Join` whose literal tail still ends with
+ * the alias name, so that tail is checked instead.
+ */
+function namesAwsManagedS3Key(bucket: s3.IBucket, kmsMasterKeyId: string): boolean {
+  const AWS_MANAGED_ALIAS = 'alias/aws/s3';
+  if (!cdk.Token.isUnresolved(kmsMasterKeyId)) {
+    return kmsMasterKeyId.endsWith(AWS_MANAGED_ALIAS);
+  }
+  const resolved = cdk.Stack.of(bucket).resolve(kmsMasterKeyId);
+  const parts = resolved?.['Fn::Join']?.[1];
+  const last = Array.isArray(parts) ? parts[parts.length - 1] : undefined;
+  return typeof last === 'string' && last.endsWith(AWS_MANAGED_ALIAS);
+}
+
+function validateBucketEncryption(bucket: s3.IBucket, factory: string): string[] {
+  const cfnBucket = bucket.node.defaultChild;
+  if (!s3.CfnBucket.isCfnBucket(cfnBucket)) {
+    // Imported bucket (or an exotic construct tree): nothing to inspect.
+    return [];
+  }
+
+  const encryption = cfnBucket.bucketEncryption;
+  if (encryption === undefined || !cdk.Token.isResolved(encryption)) {
+    return [];
+  }
+
+  const rules = encryption.serverSideEncryptionConfiguration;
+  if (rules === undefined || !cdk.Token.isResolved(rules)) {
+    return [];
+  }
+
+  for (const rule of rules) {
+    if (!cdk.Token.isResolved(rule)) {
+      continue;
+    }
+    const applied = rule.serverSideEncryptionByDefault;
+    if (applied === undefined || !cdk.Token.isResolved(applied)) {
+      continue;
+    }
+
+    const { sseAlgorithm, kmsMasterKeyId } = applied;
+    if (!cdk.Token.isResolved(sseAlgorithm)) {
+      continue;
+    }
+
+    // Under a KMS algorithm, no key id means the AWS-managed key, covering both `KMS_MANAGED`
+    // (`aws:kms`) and `DSSE_MANAGED` (`aws:kms:dsse`). The same key can also be named
+    // explicitly through its alias. Any other key id is taken to be a customer managed key,
+    // whose policy can be granted on; the AWS-managed key's own key ARN cannot be recognized.
+    if (sseAlgorithm.startsWith('aws:kms') &&
+      (kmsMasterKeyId === undefined || namesAwsManagedS3Key(bucket, kmsMasterKeyId))) {
+      return [
+        `The bucket '${bucket.node.path}' used with WebFunctionCode.${factory}() is encrypted with an ` +
+        'AWS-managed KMS key, whose key policy cannot be modified to authorize lambda.amazonaws.com to read ' +
+        'the code object. Use `BucketEncryption.S3_MANAGED`, or a customer managed key.',
+      ];
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Validate that a code bucket defined in this app has versioning enabled.
+ *
+ * Versioning is a create-time bucket setting that cannot be changed through
+ * `IBucket`, so it is validated rather than configured. Imported buckets
+ * expose no versioning information and are skipped; for those the requirement
+ * is only enforced at deployment time, where WebFunction rejects a bucket that
+ * reports no object version.
+ *
+ * @param factory the `WebFunctionCode` factory to name in the error message
+ */
+function validateBucketVersioned(bucket: s3.IBucket, factory: string): string[] {
+  const cfnBucket = bucket.node.defaultChild;
+  if (!s3.CfnBucket.isCfnBucket(cfnBucket)) {
+    // Imported bucket (or an exotic construct tree): nothing to inspect.
+    return [];
+  }
+
+  const versioning = cfnBucket.versioningConfiguration;
+  if (cdk.Token.isUnresolved(versioning)) {
+    // Configuration is a token; cannot be inspected at synth time.
+    return [];
+  }
+
+  const status = (versioning as s3.CfnBucket.VersioningConfigurationProperty | undefined)?.status;
+  if (cdk.Token.isUnresolved(status)) {
+    return [];
+  }
+
+  if (status !== 'Enabled') {
+    return [
+      `The bucket '${bucket.node.path}' used with WebFunctionCode.${factory}() must have versioning enabled ` +
+      '(set `versioned: true` on the Bucket).',
+    ];
+  }
+
+  return [];
+}

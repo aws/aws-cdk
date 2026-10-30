@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionNetworkConnectorTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionNetworkConnectorStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "WebFunctionNetworkConnectorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionNetworkConnectorTestDefaultTestDeployAssert18DC0309"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "51b944905f939c72f2e3f1b195abdd28b736d035fbd71eed92fb900f3cb95f57": {
+      "source": {
+        "path": "asset.51b944905f939c72f2e3f1b195abdd28b736d035fbd71eed92fb900f3cb95f57.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-d3646850": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "51b944905f939c72f2e3f1b195abdd28b736d035fbd71eed92fb900f3cb95f57.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4d11b10f03db842d861be3da63774f57d182c9f11fdd221007b3126e81464fb0": {
+      "displayName": "WebFunctionNetworkConnectorTestDefaultTestDeployAssert18DC0309 Template",
+      "source": {
+        "path": "WebFunctionNetworkConnectorTestDefaultTestDeployAssert18DC0309.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-fa215d6b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4d11b10f03db842d861be3da63774f57d182c9f11fdd221007b3126e81464fb0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
