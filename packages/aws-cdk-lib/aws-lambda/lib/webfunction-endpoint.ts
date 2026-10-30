@@ -270,8 +270,6 @@ export interface IWebFunctionEndpoint extends IResource, IWebFunctionEndpointRef
   /**
    * The domain name of the endpoint: the host clients send requests to.
    *
-   * For a `PER_REGION` endpoint this is the home Region's domain name.
-   *
    * @attribute
    */
   readonly domainName: string;
@@ -431,8 +429,6 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
 
   /**
    * The domain name of the endpoint: the host clients send requests to.
-   *
-   * For a `PER_REGION` endpoint this is the home Region's domain name.
    *
    * @attribute
    */
