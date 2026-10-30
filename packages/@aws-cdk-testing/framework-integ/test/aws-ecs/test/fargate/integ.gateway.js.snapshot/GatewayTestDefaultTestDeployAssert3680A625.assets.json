@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0": {
+      "source": {
+        "path": "asset.3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-1cf95fec": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3ba31fe8a087145bde36be062d01d74dbc69394a8bec0d3b66c4dca974e6a6e0.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "56eef64617440041661d85ebb63998154f9bc96f51cd52a0ad891523c608bebc": {
+      "displayName": "GatewayTestDefaultTestDeployAssert3680A625 Template",
+      "source": {
+        "path": "GatewayTestDefaultTestDeployAssert3680A625.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b8f322b3": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "56eef64617440041661d85ebb63998154f9bc96f51cd52a0ad891523c608bebc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

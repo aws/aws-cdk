@@ -149,6 +149,10 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new ValidationError(lit`CapacityProvidersSupportedExternal`, 'Capacity Providers are not supported for External service', scope);
     }
 
+    if (props.gatewayConnector !== undefined) {
+      throw new ValidationError(lit`GatewayConnectorSupportedExternal`, 'Gateway connectors are not supported for External service', scope);
+    }
+
     const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
