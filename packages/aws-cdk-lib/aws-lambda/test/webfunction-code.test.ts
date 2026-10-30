@@ -1125,12 +1125,55 @@ describe('WebFunctionCode', () => {
       expect(copyPolicies(stack)).toEqual(expect.arrayContaining([DELETE, RETAIN]));
     });
 
-    test('a revision retained on replacement only retains its copy in both cases', () => {
+    test('a revision retained on replacement only keeps its copy except after a failed first create', () => {
       cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'the policies differ on purpose' });
       const fn = managed(stack);
       fn.resourceRevision.cfnOptions.updateReplacePolicy = cdk.CfnDeletionPolicy.RETAIN;
 
-      expect(copyPolicies(stack)).toEqual([RETAIN]);
+      expect(copyPolicies(stack)).toEqual([{ DeletionPolicy: 'RetainExceptOnCreate', UpdateReplacePolicy: 'Retain' }]);
+    });
+
+    test('RETAIN_ON_UPDATE_OR_DELETE keeps RetainExceptOnCreate for everything the revision depends on', () => {
+      const fn = managed(stack);
+      fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
+
+      const EXCEPT_ON_CREATE = { DeletionPolicy: 'RetainExceptOnCreate', UpdateReplacePolicy: 'Retain' };
+      expect(copyPolicies(stack)).toEqual([EXCEPT_ON_CREATE]);
+      expect(bucketPolicies(stack)).toEqual(EXCEPT_ON_CREATE);
+      expect(autoDeletePolicies(stack)).toEqual([EXCEPT_ON_CREATE]);
+      expect(bucketPolicyPolicies(stack)).toEqual([EXCEPT_ON_CREATE]);
+    });
+
+    test('a later aspect still sets a value on the revision that the retention warning has rendered', () => {
+      const app = new cdk.App();
+      const s = new cdk.Stack(app, 'Stack');
+      let value = 'before';
+      const fn = new WebFunction(s, 'Fn', {
+        code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
+        runtime: WebFunctionRuntime.NODEJS_24_X,
+        defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+        environment: { VALUE: cdk.Lazy.string({ produce: () => value }) },
+      });
+      fn.resourceRevision.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
+      // The endpoint comes after the revision in the tree, so this runs after the revision is visited.
+      cdk.Aspects.of(s).add({ visit: (node) => { if (node === fn.endpoint) { value = 'after'; } } });
+
+      const [revision] = Object.values(Template.fromStack(s).findResources('AWS::Lambda::WebFunctionRevision'));
+      expect(revision.Properties.ServiceConfig.EnvironmentVariables.VALUE).toEqual('after');
+      Annotations.fromStack(s).hasWarning('*', Match.stringLikeRegexp('code bucket .* are retained'));
+    });
+
+    test('keeps an override already on a provided bucket policy', () => {
+      const bucket = new s3.Bucket(stack, 'MyBucket', { versioned: true });
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject'], principals: [new iam.AccountRootPrincipal()], resources: [bucket.arnForObjects('*')],
+      }));
+      cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3011', reason: 'only the deletion policy is set' });
+      (bucket.policy!.node.defaultChild as cdk.CfnResource).addOverride('DeletionPolicy', 'Retain');
+      provided(stack, bucket);
+
+      expect(Object.values(Template.fromStack(stack).findResources('AWS::S3::BucketPolicy'))[0].DeletionPolicy)
+        .toEqual('Retain');
     });
 
     test('a revision retained on deletion only keeps its copy on deletion, not on replacement', () => {

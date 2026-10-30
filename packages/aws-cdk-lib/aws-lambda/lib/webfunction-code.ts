@@ -487,17 +487,20 @@ class ManagedBucketAssetCode extends StagedAssetCode {
   protected retainDestinationFor(revision: cdk.CfnResource): void {
     const bucket = getOrCreateAssetBucket(revision);
     managedBucketRevisions(bucket).push(revision);
-    cdk.Aspects.of(revision).add({
-      visit: (node) => {
-        if (node === revision && retentionOf(revision).any > Retention.DELETE) {
+    // A validation rather than an aspect: it runs after every aspect, so rendering the revision
+    // here cannot resolve, and cache, a value a later aspect would still change.
+    revision.node.addValidation({
+      validate: () => {
+        if (retentionOf(revision).any > Retention.DELETE) {
           cdk.Annotations.of(revision).addWarningV2('@aws-cdk/aws-lambda:webFunctionManagedBucketRetained',
             `This revision is retained, so the code bucket ${bucket.node.path} and its policy are retained too, with the ` +
             'code of every retained revision in it. Deleting the stack leaves them in place, and they are ' +
             'yours to clean up. To manage them yourself, stage the code with ' +
             'WebFunctionCode.fromAssetToProvidedBucket() into a bucket you own.');
         }
+        return [];
       },
-    }, { priority: cdk.AspectPriority.READONLY });
+    });
   }
 }
 
@@ -682,11 +685,16 @@ function renderedRevision(resource: cdk.CfnResource): { properties: any; deletio
 /**
  * How strongly a revision is retained on replacement, and at all, read from its rendered form
  * when the template is resolved.
+ *
+ * `any` is what resources the revision depends on take as their `DeletionPolicy`. A revision
+ * retained only on replacement makes that `RetainExceptOnCreate` rather than `Retain`: a
+ * replacement never happens on a first create, so nothing has to survive a failed one.
  */
 function retentionOf(resource: cdk.CfnResource): { onReplace: Retention; any: Retention } {
   const { deletionPolicy, updateReplacePolicy } = renderedRevision(resource);
   const onReplace = retentionLevel(updateReplacePolicy);
-  return { onReplace, any: Math.max(onReplace, retentionLevel(deletionPolicy)) };
+  const forReplace = onReplace > Retention.DELETE ? Retention.RETAIN_EXCEPT_ON_CREATE : Retention.DELETE;
+  return { onReplace, any: Math.max(forReplace, retentionLevel(deletionPolicy)) };
 }
 
 /**
@@ -862,16 +870,22 @@ const PROVIDED_POLICY_REVISIONS = new WeakMap<cdk.CfnResource, cdk.CfnResource[]
  */
 function retainWithRevisions(resource: cdk.CfnResource, revisions: cdk.CfnResource[]): void {
   const strongest = () => Math.max(Retention.DELETE, ...revisions.map((r) => retentionOf(r).any));
-  const policy = (own: cdk.CfnDeletionPolicy | undefined, name: (level: Retention) => string) => {
+  const policy = (own: unknown, name: (level: Retention) => string) => {
     const level = strongest();
     return level === Retention.DELETE ? own : name(Math.max(level, retentionLevel(own)));
   };
-  resource.addOverride('DeletionPolicy', cdk.Lazy.string({
-    produce: () => policy(resource.cfnOptions.deletionPolicy, deletionPolicyName),
-  }));
-  resource.addOverride('UpdateReplacePolicy', cdk.Lazy.string({
-    produce: () => policy(resource.cfnOptions.updateReplacePolicy, replacePolicyName),
-  }));
+  // The resource's own policy is an override already on it, if any, or else its `cfnOptions`.
+  // Overrides are read before this one replaces them; CfnResource exposes no getter for them.
+  const existing = (resource as unknown as { rawOverrides?: Record<string, unknown> }).rawOverrides ?? {};
+  for (const [key, name, option] of [
+    ['DeletionPolicy', deletionPolicyName, () => resource.cfnOptions.deletionPolicy],
+    ['UpdateReplacePolicy', replacePolicyName, () => resource.cfnOptions.updateReplacePolicy],
+  ] as const) {
+    const overridden = existing[key];
+    resource.addOverride(key, cdk.Lazy.any({
+      produce: () => policy(overridden !== undefined ? cdk.Stack.of(resource).resolve(overridden) : option(), name),
+    }));
+  }
 }
 
 // Namespaced like other stack-level singletons (`AWSCDKCfnUtilsProvider`) so a customer
