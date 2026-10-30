@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "UnnamedStateMachineWithCMKEncryptionConfiguration/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-unnamed-statemachine-with-cmk"
+      ],
+      "assertionStack": "UnnamedStateMachineWithCMKEncryptionConfiguration/DefaultTest/DeployAssert",
+      "assertionStackName": "UnnamedStateMachineWithCMKEncryptionConfigurationDefaultTestDeployAssertDC4076B6"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
