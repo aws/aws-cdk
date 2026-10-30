@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import type { ISource, SourceConfig } from './source';
+import type { ISource, MarkersConfig, SourceConfig } from './source';
 import { Source } from './source';
 import type * as cloudfront from '../../aws-cloudfront';
 import type * as ec2 from '../../aws-ec2';
@@ -472,9 +472,13 @@ export class BucketDeployment extends Construct {
           }
           return undefined;
         })),
-        SourceMarkersConfig: sanitize(this.sources.map((source) => {
+        SourceMarkersConfig: sanitize(this.sources.map((source): MarkersConfig | undefined => {
           if (source.markersConfig) {
-            return source.markersConfig;
+            const config = { ...source.markersConfig };
+            if (config.markerEncodings && Object.keys(config.markerEncodings).length === 0) {
+              delete config.markerEncodings;
+            }
+            return config;
           } else if (this.sources.length > 1) {
             return {};
           }

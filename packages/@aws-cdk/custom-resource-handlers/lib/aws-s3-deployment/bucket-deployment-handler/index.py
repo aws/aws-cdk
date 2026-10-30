@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import tempfile
 import urllib.parse
+import re
 from urllib.request import Request, urlopen
 from uuid import uuid4
 from zipfile import ZipFile
@@ -389,31 +390,16 @@ def extract_and_replace_markers(archive, contents_dir, markers, markers_config):
             if os.path.isdir(file_path): continue
             replace_markers(file_path, markers, markers_config)
 
-def prepare_json_safe_markers(markers):
-    """Pre-process markers to ensure JSON-safe values"""
-    safe_markers = {}
-    for key, value in markers.items():
-        # Serialize the value as JSON to handle escaping if the value is a string
-        serialized = json.dumps(value)
-        if serialized.startswith('"') and serialized.endswith('"'):
-            json_safe_value = json.dumps(value)[1:-1]  # Remove surrounding quotes
-        else:
-            json_safe_value = serialized
-        safe_markers[key.encode('utf-8')] = json_safe_value.encode('utf-8')
-    return safe_markers
 
 def replace_markers(filename, markers, markers_config):
     """Replace markers in a file, with special handling for JSON files."""
     # if there are no markers, skip
     if not markers:
         return
-    
+
     outfile = filename + '.new'
-    json_escape = markers_config.get('jsonEscape', 'false').lower()
-    if json_escape == 'true':
-        replace_tokens = prepare_json_safe_markers(markers)
-    else:
-        replace_tokens = dict([(k.encode('utf-8'), v.encode('utf-8')) for k, v in markers.items()])
+
+    replace_tokens = { k.encode('utf-8'): encode_marker_value(k, v, markers_config).encode('utf-8') for k, v in markers.items() }
 
     # Handle content with line-by-line binary replacement
     with open(filename, 'rb') as fi, open(outfile, 'wb') as fo:
@@ -427,27 +413,33 @@ def replace_markers(filename, markers, markers_config):
     os.remove(filename)
     os.rename(outfile, filename)
 
-def replace_markers_in_json(json_object, replace_tokens):
-    """Replace markers in JSON content with proper escaping."""
-    try:
-        def replace_in_structure(obj):
-            if isinstance(obj, str):
-                # Convert string to bytes for consistent replacement
-                result = obj.encode('utf-8')
-                for token, replacement in replace_tokens.items():
-                    result = result.replace(token, replacement)
-                # Convert back to string
-                return result.decode('utf-8')
-            elif isinstance(obj, dict):
-                return {k: replace_in_structure(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
-                return [replace_in_structure(item) for item in obj]
-            return obj
 
-        # Process the whole structure
-        processed = replace_in_structure(json_object)
-        return json.dumps(processed)
-    except Exception as e:
-        logger.error("| error processing JSON: %s" % sanitize_message(str(e)))
-        logger.exception("| error processing JSON: %s" % sanitize_message(str(e)))
-        return json_object
+def encode_marker_value(marker_name, value, markers_config):
+    """Encode a marker value based on the markers configuration."""
+    json_escape = markers_config.get('jsonEscape', 'false').lower() == 'true'
+    default_encoding = 'UNQUOTED_JSON_VALUE' if json_escape else 'LITERAL'
+
+    encoding = markers_config.get('markerEncodings', {}).get(marker_name, default_encoding)
+
+    if encoding == 'LITERAL':
+        if not isinstance(value, str):
+            raise ValueError(f"Expected a string for LITERAL encoding for marker {marker_name}, got {type(value).__name__}")
+        return value
+    elif encoding == 'UNQUOTED_JSON_VALUE':
+        serialized = json.dumps(value)
+        if serialized.startswith('"') and serialized.endswith('"'):
+            return json.dumps(value)[1:-1]
+        return serialized
+    elif encoding == 'JSON_VALUE':
+        return json.dumps(value)
+    elif encoding == 'YAML_STRING':
+        if not isinstance(value, str):
+            raise ValueError(f"Expected a string for YAML_STRING encoding for marker {marker_name}, got {type(value).__name__}")
+        if SAFE_PLAIN_YAML.match(value) and value.lower() not in YAML_RESERVED:
+            return value
+        return json.dumps(value)
+    else:
+        raise ValueError(f"Unknown marker encoding: {encoding}")
+
+SAFE_PLAIN_YAML = re.compile(r'^[A-Za-z][A-Za-z0-9._-]*$')
+YAML_RESERVED = {'y', 'n', 'yes', 'no', 'true', 'false', 'on', 'off', 'null'}
