@@ -1,4 +1,5 @@
 import type * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import { Token } from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
@@ -68,17 +69,18 @@ class TextInferenceConfiguration extends PromptInferenceConfiguration {
     super();
 
     // Validate maxTokens if provided
-    if (props.maxTokens !== undefined && props.maxTokens <= 0) {
+    if (props.maxTokens !== undefined && !Token.isUnresolved(props.maxTokens) && props.maxTokens <= 0) {
       throw new UnscopedValidationError(lit`MaxTokensNotPositive`, 'maxTokens must be a positive number');
     }
 
     // Validate temperature range if provided
-    if (props.temperature !== undefined && (props.temperature < 0.0 || props.temperature > 1.0)) {
+    if (props.temperature !== undefined && !Token.isUnresolved(props.temperature) &&
+      (props.temperature < 0.0 || props.temperature > 1.0)) {
       throw new UnscopedValidationError(lit`TemperatureOutOfRange`, 'temperature must be between 0.0 and 1.0');
     }
 
     // Validate topP range if provided
-    if (props.topP !== undefined && (props.topP < 0.0 || props.topP > 1.0)) {
+    if (props.topP !== undefined && !Token.isUnresolved(props.topP) && (props.topP < 0.0 || props.topP > 1.0)) {
       throw new UnscopedValidationError(lit`TopPOutOfRange`, 'topP must be between 0.0 and 1.0');
     }
   }

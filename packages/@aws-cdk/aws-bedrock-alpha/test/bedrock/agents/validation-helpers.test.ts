@@ -45,6 +45,16 @@ describe('validation-helpers', () => {
       });
       expect(result).toEqual([]);
     });
+
+    test('skips validation when only the value is an unresolved token', () => {
+      const result = validateStringFieldLength({
+        value: Token.asString({ Ref: 'SomeParameter' }),
+        fieldName: 'testField',
+        minLength: 2,
+        maxLength: 10,
+      });
+      expect(result).toEqual([]);
+    });
   });
 
   describe('validateFieldPattern', () => {
