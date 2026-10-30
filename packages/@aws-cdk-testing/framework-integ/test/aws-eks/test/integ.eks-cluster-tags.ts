@@ -5,6 +5,12 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
+/*
+ * Stack verification steps:
+ * * deploy a cluster with multiple tags
+ * * update the stack by removing one tag while keeping the others
+ * * confirm the cluster custom resource no longer calls TagResource with an empty tags map
+ */
 class EksClusterTagsStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -16,7 +22,8 @@ class EksClusterTagsStack extends Stack {
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_31),
       defaultCapacity: 0,
       tags: {
-        foo: 'world',
+        foo: 'bar',
+        hello: 'world',
       },
     },
     );
