@@ -12,6 +12,12 @@ let s3_bucket_policies = Resources.*[
   Metadata.guard.SuppressedRules.* != "S3_NO_WORLD_READABLE"
 ]
 
+# The actions this rule checks: S3 actions whose names start with Get or List, and patterns
+# that can expand to such a name, where ? stands for one character and * for any characters,
+# such as "*", "s3:*", "s3:G*" or "s3:?etObject". A name that starts with * can expand to any
+# name, so it also matches S3_NO_WORLD_WRITABLE. IAM compares action names case-insensitively.
+let s3_read_actions = /(?i)^(\*|s3:(\*|[G?](\*|[e?](\*|[t?]))|[L?](\*|[i?](\*|[s?](\*|[t?])))).*)$/
+
 # EA015: No world readable bucket policies
 rule S3_NO_WORLD_READABLE when %s3_bucket_policies !empty {
     %s3_bucket_policies {
@@ -19,37 +25,39 @@ rule S3_NO_WORLD_READABLE when %s3_bucket_policies !empty {
             when Effect == "Allow" {
                 when Action exists {
                     when Action is_string {
-                        when Action in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                        when Action == %s3_read_actions {
                             when Principal exists {
-                                when Principal != "*" {
-                                    when Principal.AWS exists {
-                                        when Principal.AWS is_string {
-                                            Principal.AWS != "*"
-                                                <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                        }
-                                        when Principal.AWS is_list {
-                                            Principal.AWS[*] != "*"
-                                                <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                        }
-                                    }
+                                when Principal is_string {
+                                    Principal != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                                }
+                                when Principal.AWS is_string {
+                                    Principal.AWS != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                                }
+                                # Only string elements are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
+                                when Principal.AWS is_list {
+                                    Principal.AWS[*][ this is_string ] != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                 }
                             }
                         }
                     }
                     when Action is_list {
-                        when Action[*] in ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket", "*"] {
+                        when some Action[*] == %s3_read_actions {
                             when Principal exists {
-                                when Principal != "*" {
-                                    when Principal.AWS exists {
-                                        when Principal.AWS is_string {
-                                            Principal.AWS != "*"
-                                                <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                        }
-                                        when Principal.AWS is_list {
-                                            Principal.AWS[*] != "*"
-                                                <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                        }
-                                    }
+                                when Principal is_string {
+                                    Principal != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                                }
+                                when Principal.AWS is_string {
+                                    Principal.AWS != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                                }
+                                # Only string elements are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
+                                when Principal.AWS is_list {
+                                    Principal.AWS[*][ this is_string ] != "*"
+                                        <<##ERROR:S3 bucket policy must not grant world-readable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                 }
                             }
                         }
