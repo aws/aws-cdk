@@ -1922,6 +1922,26 @@ describe('function', () => {
         fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com'));
       }).not.toThrow();
     });
+
+    test('on an imported function (different account & w/ skipPermissions) can be applied before other resources', () => {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { account: '111111111111' },
+      });
+      const fn = lambda.Function.fromFunctionAttributes(stack, 'Function', {
+        functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+        skipPermissions: true,
+      });
+      const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent::Resource' });
+
+      // WHEN
+      fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')).applyBefore(dependent);
+
+      // THEN
+      Template.fromStack(stack).hasResource('Test::Dependent::Resource', {
+        DependsOn: Match.absent(),
+      });
+    });
   });
 
   describe('grantInvokeCompositePrincipal', () => {
