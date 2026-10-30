@@ -1,0 +1,22 @@
+{
+  "Description": "SQS_NO_WORLD_ACCESSIBLE_INLINE passes: the inline queue policy lets one named role send messages",
+  "Resources": {
+    "ScopedSendQueueInlinePolicy": {
+      "Type": "AWS::SQS::QueueInlinePolicy",
+      "Properties": {
+        "Queue": "https://sqs.us-west-2.amazonaws.com/123456789012/example-queue",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/Producer" },
+              "Action": "sqs:SendMessage",
+              "Resource": "arn:aws:sqs:us-west-2:123456789012:example-queue"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

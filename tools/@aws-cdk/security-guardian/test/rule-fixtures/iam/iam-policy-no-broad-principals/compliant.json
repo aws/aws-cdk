@@ -1,0 +1,21 @@
+{
+  "Description": "IAM_POLICY_NO_BROAD_PRINCIPALS passes: the policy statement names one role",
+  "Resources": {
+    "ScopedPrincipalPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/TrustedRole" },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
