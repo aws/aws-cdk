@@ -1998,6 +1998,13 @@ if (!Token.isUnresolved(props.minCapacity) && props.minCapacity < 1) {
 All CDK errors are unrecoverable. If a method wishes to signal a recoverable
 error, this should be modeled in a return value and not through exceptions.
 
+Equally, don't `try`/`catch` a validation or parse error to treat malformed
+input as absent. When a value *self-identifies* as a type — for example a string
+that begins with `arn:` — a malformed instance is a caller error that should
+fail fast; branch on the discriminator up front (accounting for unresolved
+`Token`s) to decide whether the value is yours to parse, rather than
+parsing-and-catching.
+
 #### Attaching (lazy) Validators
 
 In the rare case where the integrity of your construct can only be checked
