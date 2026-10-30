@@ -162,6 +162,7 @@ export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefa
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
+export const IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID = '@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2018,6 +2019,30 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, `PolicyDocument.fromJson()` keeps the policy `Id` element',
+    detailsMd: `
+      \`PolicyDocument.fromJson()\` only reads the \`Statement\` element of the object it is given, so an
+      \`Id\` in the input is dropped and never reaches the synthesized template.
+
+      When this flag is enabled, a document created with \`PolicyDocument.fromJson()\` renders the \`Id\`
+      from the input next to \`Statement\` and \`Version\` when it is resolved, for example as a key policy,
+      a bucket policy or a queue policy. Documents without an \`Id\` render as before.
+
+      The \`Id\` element is not allowed in identity-based policies, so it is never rendered for an
+      \`iam.Policy\`, an \`iam.ManagedPolicy\` or the inline policies of an \`iam.Role\`, even when the
+      same document is also used as a resource-based policy.
+
+      When this flag is disabled, the \`Id\` is dropped.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep dropping the `Id` element in `PolicyDocument.fromJson()`.',
   },
 };
 

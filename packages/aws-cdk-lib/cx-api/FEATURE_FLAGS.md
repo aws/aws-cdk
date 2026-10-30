@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId](#aws-cdkaws-iampolicydocumentfromjsonkeepsid) | When enabled, `PolicyDocument.fromJson()` keeps the policy `Id` element | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -179,6 +180,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/aws-iam:policyDocumentFromJsonKeepsId": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
     "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
@@ -2661,6 +2663,34 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-iam:policyDocumentFromJsonKeepsId
+
+*When enabled, `PolicyDocument.fromJson()` keeps the policy `Id` element*
+
+Flag type: Backwards incompatible bugfix
+
+`PolicyDocument.fromJson()` only reads the `Statement` element of the object it is given, so an
+`Id` in the input is dropped and never reaches the synthesized template.
+
+When this flag is enabled, a document created with `PolicyDocument.fromJson()` renders the `Id`
+from the input next to `Statement` and `Version` when it is resolved, for example as a key policy,
+a bucket policy or a queue policy. Documents without an `Id` render as before.
+
+The `Id` element is not allowed in identity-based policies, so it is never rendered for an
+`iam.Policy`, an `iam.ManagedPolicy` or the inline policies of an `iam.Role`, even when the
+same document is also used as a resource-based policy.
+
+When this flag is disabled, the `Id` is dropped.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to keep dropping the `Id` element in `PolicyDocument.fromJson()`.
 
 
 <!-- END details -->
