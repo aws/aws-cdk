@@ -137,8 +137,22 @@ describe('S3OriginAccessControl', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
       OriginAccessControlConfig: {
-        SigningBehavior: 'always-amz-auth',
+        SigningBehavior: SigningBehavior.ALWAYS_AMZ_AUTH,
         SigningProtocol: SigningProtocol.SIGV4,
+        OriginAccessControlOriginType: OriginAccessControlOriginType.LAMBDA,
+      },
+    });
+  });
+
+  test('creates a FunctionUrlOriginAccessControl with the sigv4a signing protocol and the always-amz-auth signing behavior', () => {
+    new FunctionUrlOriginAccessControl(stack, 'Sigv4aAlwaysAmzAuthOriginAccessControl', {
+      signing: Signing.SIGV4A_ALWAYS_AMZ_AUTH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        SigningBehavior: SigningBehavior.ALWAYS_AMZ_AUTH,
+        SigningProtocol: SigningProtocol.SIGV4A,
         OriginAccessControlOriginType: OriginAccessControlOriginType.LAMBDA,
       },
     });

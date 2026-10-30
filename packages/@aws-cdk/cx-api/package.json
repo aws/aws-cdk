@@ -8,18 +8,24 @@
     "targets": {
       "build": {
         "outputs": [
-          "{projectRoot}/**/*.js",
-          "{projectRoot}/**/*.d.ts",
-          "{projectRoot}/.jsii",
-          "{projectRoot}/.warnings.jsii.js",
-          "{projectRoot}/.gitignore",
-          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/lib/**/*",
+          "{projectRoot}/test/**/*",
+          "{projectRoot}/build-tools/**/*",
+          "{projectRoot}/design/**/*",
+          "{projectRoot}/rosetta/**/*",
           "{projectRoot}/README.md",
-          "{projectRoot}/rosetta",
+          "{projectRoot}/FEATURE_FLAGS.md",
+          "{projectRoot}/.jsiirc.json",
+          "{projectRoot}/.jsii",
+          "{projectRoot}/.jsii.gz",
+          "{projectRoot}/.warnings.jsii.js",
+          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/tsconfig.tsbuildinfo",
           "!{projectRoot}/node_modules/**/*"
         ]
       }
-    }
+    },
+    "$comment": "This package is a cdk-copy of the same-named aws-cdk-lib submodule: nearly its entire content, including its .ts sources, is a build output. Inputs come from aws-cdk-lib via the ^default input in nx.json."
   },
   "jsii": {
     "excludeTypescript": [
@@ -81,7 +87,7 @@
   },
   "dependencies": {
     "semver": "^7.8.5",
-    "@aws-cdk/cloud-assembly-api": "^2.2.6"
+    "@aws-cdk/cloud-assembly-api": "^2.5.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": ">=54.24.0"
@@ -89,11 +95,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "^55.0.0",
+    "@aws-cdk/cloud-assembly-schema": "^55.2.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "@types/mock-fs": "^4.13.4",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "^7.8.0",
     "jest": "^29.7.0",
     "madge": "^5.0.2",
     "mock-fs": "^4.14.0"
