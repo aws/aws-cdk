@@ -33876,7 +33876,7 @@ async function onTimeout(timeoutEvent) {
   const provider = createResourceHandler(isCompleteRequest, standardContext);
   await provider.respond({
     status: "FAILED",
-    reason: "Operation timed out: " + JSON.stringify(isCompleteRequest)
+    reason: "Operation timed out: " + JSON.stringify({ ...isCompleteRequest, ResponseURL: "..." })
   });
 }
 async function isComplete(event, context) {
