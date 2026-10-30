@@ -511,6 +511,9 @@
    "sa-east-1": {
     "endpoint": "s3-website-sa-east-1.amazonaws.com"
    },
+   "sa-west-1": {
+    "endpoint": "s3-website.sa-west-1.amazonaws.com"
+   },
    "us-east-1": {
     "endpoint": "s3-website-us-east-1.amazonaws.com"
    },
