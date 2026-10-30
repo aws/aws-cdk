@@ -1,0 +1,234 @@
+{
+  "/integ-userdata-deploy-time-values-windows": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1348:47)",
+        "    at get availabilityZones (/Users/aemada/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
+        "    at new Vpc (/Users/aemada/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at <anonymous> (/Users/aemada/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.userdata-deploy-time-values.js:116:20)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/LocalFile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFile"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/ArgValue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArgValue"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/QuotedArgValue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QuotedArgValue"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Script/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceInstanceProfileAB5AEF02"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceC1063A87"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/LaunchTemplate": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceLaunchTemplateFB1C3D8B"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1SubnetE48C5737"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceInstanceSecurityGroupF0E2D5BE"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceInstanceRoleE9785DE5"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-userdata-deploy-time-values-windows/Instance/InstanceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceInstanceRoleDefaultPolicy4ACE9290"
+    }
+  ]
+}
