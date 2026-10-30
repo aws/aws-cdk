@@ -1,0 +1,20 @@
+{
+  "/WebFunctionMinimalTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionMinimalTestDefaultTestDeployAssertEB86BEC8.template.json"
+    }
+  ],
+  "/WebFunctionMinimalTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionMinimalTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

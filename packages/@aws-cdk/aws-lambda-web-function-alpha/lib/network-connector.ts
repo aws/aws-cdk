@@ -1,0 +1,246 @@
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnNetworkConnector } from 'aws-cdk-lib/aws-lambda';
+import type { INetworkConnectorRef, NetworkConnectorReference } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
+import { WebFunctionValidationError } from './private/errors';
+
+/**
+ * The network protocol of a network connector
+ */
+export enum NetworkProtocol {
+  /**
+   * IPv4 only
+   */
+  IPV4 = 'IPv4',
+
+  /**
+   * IPv4 and IPv6
+   */
+  DUAL_STACK = 'DualStack',
+}
+
+/**
+ * A Lambda Network Connector, which gives web functions egress into a VPC
+ */
+export interface INetworkConnector extends cdk.IResource, INetworkConnectorRef {
+  /**
+   * The unqualified ARN of the network connector. It identifies the connector across its versions.
+   *
+   * @attribute
+   */
+  readonly networkConnectorArn: string;
+
+  /**
+   * The qualified ARN of the latest version of the network connector.
+   *
+   * A web function revision is pinned to this version. An update to the connector creates a new
+   * version and replaces the revision that references it.
+   *
+   * @attribute
+   */
+  readonly latestVersionArn: string;
+}
+
+/**
+ * Properties for a Network Connector
+ */
+export interface NetworkConnectorProps {
+  /**
+   * The name of the network connector. It cannot be changed once created.
+   *
+   * @default - no name
+   */
+  readonly networkConnectorName?: string;
+
+  /**
+   * The VPC in which the connector provisions its network interfaces.
+   *
+   * [disable-awslint:prefer-ref-interface] The connector reads the subnets of the VPC; there is no VPC reference type.
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * The subnets in which the connector provisions its network interfaces. Between 1 and 16 subnets.
+   *
+   * @default - the private subnets with egress of the VPC
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The security groups attached to the network interfaces. They must be in the VPC.
+   *
+   * @default - a new security group that allows all outbound traffic
+   */
+  readonly securityGroups?: ec2.ISecurityGroupRef[];
+
+  /**
+   * The network protocol of the connector.
+   *
+   * @default NetworkProtocol.IPV4
+   */
+  readonly networkProtocol?: NetworkProtocol;
+
+  /**
+   * The role that the service assumes to manage the network interfaces. It must have the
+   *
+   * [disable-awslint:prefer-ref-interface] A role created in the app gets the operator managed policy attached, which needs the full IRole.
+   * `AWSLambdaNetworkConnectorOperatorPolicy` managed policy and trust `lambda.amazonaws.com`.
+   *
+   * @default - a new role with the `AWSLambdaNetworkConnectorOperatorPolicy` managed policy
+   */
+  readonly operatorRole?: iam.IRole;
+
+  /**
+   * Tags applied to the network connector.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
+}
+
+/**
+ * A Lambda Network Connector, which gives web functions egress into a VPC.
+ *
+ * The network interfaces are provisioned once for the connector, not per function.
+ *
+ * @resource AWS::Lambda::NetworkConnector
+ */
+export class NetworkConnector extends cdk.Resource implements INetworkConnector {
+  /**
+   * Imports a specific version of a network connector by its qualified ARN.
+   *
+   * A web function that uses this connector stays on this version until the ARN changes, even when the
+   * connector is updated. The connector can be in another stack.
+   *
+   * A literal ARN is checked for a version suffix when the app is synthesized. A token, such as a value
+   * imported from another stack, cannot be checked until deployment.
+   *
+   * @param scope the construct scope
+   * @param id the construct ID
+   * @param networkConnectorVersionArn a qualified ARN, `arn:...:network-connector:nc-<id>:<version>`
+   */
+  public static fromNetworkConnectorVersionArn(scope: Construct, id: string, networkConnectorVersionArn: string): INetworkConnector {
+    return new ImportedNetworkConnector(scope, id, networkConnectorVersionArn);
+  }
+
+  /**
+   * The unqualified ARN of the network connector
+   */
+  public readonly networkConnectorArn: string;
+
+  /**
+   * The qualified ARN of the latest version of the network connector
+   */
+  public readonly latestVersionArn: string;
+
+  /**
+   * The role that the service assumes to manage the network interfaces
+   */
+  public readonly operatorRole: iam.IRole;
+
+  /**
+   * The underlying `AWS::Lambda::NetworkConnector` resource
+   */
+  public readonly cfnNetworkConnector: CfnNetworkConnector;
+
+  /**
+   * A reference to this network connector, for use in other constructs
+   */
+  public get networkConnectorRef(): NetworkConnectorReference {
+    return { networkConnectorArn: this.networkConnectorArn };
+  }
+
+  constructor(scope: Construct, id: string, props: NetworkConnectorProps) {
+    super(scope, id, { physicalName: props.networkConnectorName });
+
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS });
+    const securityGroups: ec2.ISecurityGroupRef[] = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        vpc: props.vpc,
+        description: `Network connector ${id}`,
+        allowAllOutbound: true,
+      }),
+    ];
+
+    // The operator role is trusted by the service. The managed policy lets it create the network interfaces.
+    // A role created in this app gets the policy attached; an imported role must already have it.
+    const operatorPolicy = iam.ManagedPolicy.fromAwsManagedPolicyName('AWSLambdaNetworkConnectorOperatorPolicy');
+    if (props.operatorRole) {
+      this.operatorRole = props.operatorRole;
+      if (cdk.Resource.isOwnedResource(props.operatorRole) && typeof (props.operatorRole as iam.Role).addManagedPolicy === 'function') {
+        (props.operatorRole as iam.Role).addManagedPolicy(operatorPolicy);
+      } else {
+        cdk.Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-lambda-web-function-alpha:importedOperatorRole',
+          'The operator role is imported, so AWSLambdaNetworkConnectorOperatorPolicy cannot be attached to it. Attach the policy to the role.',
+        );
+      }
+    } else {
+      this.operatorRole = new iam.Role(this, 'OperatorRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        managedPolicies: [operatorPolicy],
+      });
+    }
+
+    this.cfnNetworkConnector = new CfnNetworkConnector(this, 'Resource', {
+      name: props.networkConnectorName,
+      configuration: {
+        vpcEgressConfiguration: {
+          subnetIds: subnets.subnetIds,
+          securityGroupIds: securityGroups.map((sg) => sg.securityGroupRef.securityGroupId),
+          networkProtocol: props.networkProtocol ?? NetworkProtocol.IPV4,
+          associatedComputeResourceTypes: ['WebFunction'],
+        },
+      },
+      operatorRole: this.operatorRole.roleArn,
+    });
+
+    this.networkConnectorArn = this.cfnNetworkConnector.attrArn;
+    this.latestVersionArn = this.cfnNetworkConnector.attrLatestVersionArn;
+
+    for (const [key, value] of Object.entries(props.tags ?? {})) {
+      cdk.Tags.of(this).add(key, value);
+    }
+  }
+}
+
+/**
+ * A network connector version that exists outside this app, or in another stack
+ */
+class ImportedNetworkConnector extends cdk.Resource implements INetworkConnector {
+  public readonly networkConnectorArn: string;
+  public readonly latestVersionArn: string;
+
+  public get networkConnectorRef(): NetworkConnectorReference {
+    return { networkConnectorArn: this.networkConnectorArn };
+  }
+
+  constructor(scope: Construct, id: string, versionArn: string) {
+    super(scope, id, { environmentFromArn: versionArn });
+
+    const parsed = cdk.Arn.split(versionArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    let connectorId: string;
+    if (cdk.Token.isUnresolved(versionArn)) {
+      // On a token, the segment after the resource type is the connector ID; the version follows it
+      connectorId = parsed.resourceName ?? '';
+    } else {
+      const resourceName = parsed.resourceName ?? '';
+      const separator = resourceName.lastIndexOf(':');
+      if (separator < 0 || !/^\d+$/.test(resourceName.slice(separator + 1))) {
+        throw new WebFunctionValidationError(
+          `Expected a qualified network connector ARN ending in ':<version>', got '${versionArn}'`,
+        );
+      }
+      connectorId = resourceName.slice(0, separator);
+    }
+
+    this.networkConnectorArn = cdk.Stack.of(scope).formatArn({
+      ...parsed,
+      resourceName: connectorId,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
+    this.latestVersionArn = versionArn;
+  }
+}

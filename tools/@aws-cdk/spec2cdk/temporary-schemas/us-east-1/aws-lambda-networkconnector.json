@@ -1,0 +1,269 @@
+{
+    "typeName": "AWS::Lambda::NetworkConnector",
+    "description": "Resource Type definition for AWS::Lambda::NetworkConnector",
+    "primaryIdentifier": [
+        "/properties/Arn"
+    ],
+    "additionalIdentifiers": [
+        [
+            "/properties/Name"
+        ]
+    ],
+    "readOnlyProperties": [
+        "/properties/Arn",
+        "/properties/State",
+        "/properties/LatestVersionArn",
+        "/properties/LatestVersion"
+    ],
+    "createOnlyProperties": [
+        "/properties/Name"
+    ],
+    "definitions": {
+        "Arn": {
+            "description": "The Amazon Resource Name (ARN) of the network connector.",
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1,
+            "pattern": "^(arn:aws[a-zA-Z-]*:lambda:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:network-connector:[a-zA-Z0-9-_]+(:[1-9][0-9]*)?)$"
+        },
+        "LatestVersionArn": {
+            "description": "The qualified Amazon Resource Name (ARN) of the network connector's latest version. Includes the immutable version suffix and can be used to pin to a specific version.",
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1,
+            "pattern": "^(arn:aws[a-zA-Z-]*:lambda:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:network-connector:[a-zA-Z0-9-_]+(:[1-9][0-9]*)?)$"
+        },
+        "LatestVersion": {
+            "description": "The version number of the network connector's latest version. Updates to the connector's configuration create a new immutable version; this attribute exposes the most recent one.",
+            "type": "integer",
+            "minimum": 1
+        },
+        "Name": {
+            "description": "A unique name for the network connector within your account and Region. Must be 1 to 64 alphanumeric characters, hyphens, or underscores.",
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1,
+            "pattern": "^(arn:aws[a-zA-Z-]*:lambda:(eusc-)?[a-z]{2}((-gov)|(-iso([a-z]?)))?-[a-z]+-\\d{1}:\\d{12}:network-connector:[a-zA-Z0-9-_]+(:[1-9][0-9]*)?)|[a-zA-Z0-9_-]{1,64}$"
+        },
+        "VpcEgressConfiguration": {
+            "description": "The VPC egress configuration for the network connector. Specifies the subnets, security groups, and network protocol for routing outbound traffic through your VPC.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "SubnetIds": {
+                    "description": "The IDs of the VPC subnets where Lambda provisions elastic network interfaces (ENIs). Specify 1 to 16 subnets. All subnets must be in the same VPC.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string",
+                        "maxLength": 1024,
+                        "minLength": 0,
+                        "pattern": "^subnet-[0-9a-z]*$"
+                    },
+                    "maxItems": 16,
+                    "minItems": 1
+                },
+                "SecurityGroupIds": {
+                    "description": "The IDs of the VPC security groups to attach to the ENIs. All security groups must be in the same VPC as the subnets.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string",
+                        "maxLength": 1024,
+                        "minLength": 0,
+                        "pattern": "^sg-[0-9a-zA-Z]*$"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                },
+                "NetworkProtocol": {
+                    "description": "The network protocol for the connector. Specify IPv4 for IPv4-only networking, or DualStack for both IPv4 and IPv6.",
+                    "type": "string",
+                    "enum": [
+                        "IPv4",
+                        "DualStack"
+                    ]
+                },
+                "AssociatedComputeResourceTypes": {
+                    "description": "The types of Lambda compute resources that can use this connector. Supported values are MicroVm and WebFunction.",
+                    "type": "array",
+                    "insertionOrder": false,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "MicroVm",
+                            "WebFunction"
+                        ]
+                    },
+                    "maxItems": 1,
+                    "minItems": 1
+                }
+            },
+            "required": [
+                "SubnetIds",
+                "SecurityGroupIds",
+                "NetworkProtocol",
+                "AssociatedComputeResourceTypes"
+            ]
+        },
+        "RoleArn": {
+            "description": "The ARN of the IAM role that Lambda assumes to manage elastic network interfaces in your VPC. This role must have permissions for ec2:CreateNetworkInterface and related describe operations.",
+            "type": "string",
+            "maxLength": 10000,
+            "minLength": 0,
+            "pattern": "^arn:(aws[a-zA-Z-]*)?:iam::\\d{12}:role/?[a-zA-Z_0-9+=,.@\\-_/]+$"
+        },
+        "State": {
+            "description": "The current state of the network connector.",
+            "type": "string",
+            "enum": [
+                "PENDING",
+                "ACTIVE",
+                "INACTIVE",
+                "FAILED",
+                "DELETING",
+                "DELETE_FAILED"
+            ]
+        },
+        "Tag": {
+            "description": "A key-value pair that provides metadata for the network connector.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "description": "The key name of the tag.",
+                    "minLength": 1,
+                    "maxLength": 128
+                },
+                "Value": {
+                    "type": "string",
+                    "description": "The value for the tag.",
+                    "minLength": 0,
+                    "maxLength": 256
+                }
+            },
+            "required": [
+                "Key"
+            ]
+        },
+        "Config": {
+            "description": "The network configuration for the connector. Specify a VpcEgressConfiguration to enable outbound traffic routing through your VPC.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "VpcEgressConfiguration": {
+                    "$ref": "#/definitions/VpcEgressConfiguration"
+                }
+            },
+            "required": [
+                "VpcEgressConfiguration"
+            ]
+        }
+    },
+    "properties": {
+        "Arn": {
+            "$ref": "#/definitions/Arn"
+        },
+        "Name": {
+            "$ref": "#/definitions/Name"
+        },
+        "Configuration": {
+            "$ref": "#/definitions/Config"
+        },
+        "OperatorRole": {
+            "$ref": "#/definitions/RoleArn"
+        },
+        "State": {
+            "$ref": "#/definitions/State"
+        },
+        "LatestVersionArn": {
+            "$ref": "#/definitions/LatestVersionArn"
+        },
+        "LatestVersion": {
+            "$ref": "#/definitions/LatestVersion"
+        },
+        "Tags": {
+            "description": "A list of tags to apply to the network connector. Use tags to categorize network connectors for cost allocation, access control, or operational management.",
+            "type": "array",
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/Tag"
+            }
+        }
+    },
+    "required": [
+        "Configuration"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "lambda:CreateNetworkConnector",
+                "lambda:GetNetworkConnector",
+                "lambda:TagResource",
+                "iam:PassRole",
+                "iam:CreateServiceLinkedRole",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "lambda:GetNetworkConnector",
+                "lambda:ListTags"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "lambda:DeleteNetworkConnector",
+                "lambda:GetNetworkConnector"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "lambda:UpdateNetworkConnector",
+                "lambda:GetNetworkConnector",
+                "lambda:TagResource",
+                "lambda:UntagResource",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "iam:PassRole"
+            ]
+        },
+        "list": {
+            "handlerSchema": {
+                "properties": {
+                    "State": {
+                        "description": "The current state of the network connector.",
+                        "type": "string",
+                        "enum": [
+                            "PENDING",
+                            "ACTIVE",
+                            "INACTIVE",
+                            "FAILED",
+                            "DELETING",
+                            "DELETE_FAILED"
+                        ]
+                    }
+                }
+            },
+            "permissions": [
+                "lambda:ListNetworkConnectors"
+            ]
+        }
+    },
+    "tagging": {
+        "taggable": true,
+        "tagOnCreate": true,
+        "tagUpdatable": true,
+        "cloudFormationSystemTags": true,
+        "tagProperty": "/properties/Tags",
+        "permissions": [
+            "lambda:TagResource",
+            "lambda:UntagResource"
+        ]
+    },
+    "additionalProperties": false
+}
+

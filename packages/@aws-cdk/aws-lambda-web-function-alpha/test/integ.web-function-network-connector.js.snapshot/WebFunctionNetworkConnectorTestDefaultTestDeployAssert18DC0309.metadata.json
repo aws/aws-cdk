@@ -1,0 +1,20 @@
+{
+  "/WebFunctionNetworkConnectorTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionNetworkConnectorTestDefaultTestDeployAssert18DC0309.template.json"
+    }
+  ],
+  "/WebFunctionNetworkConnectorTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionNetworkConnectorTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,268 @@
+{
+    "typeName": "AWS::Lambda::WebFunctionRevision",
+    "description": "Resource Type definition for AWS::Lambda::WebFunctionRevision. An immutable revision of a Lambda web function, containing the function code and configuration.",
+    "properties": {
+        "FunctionName": {
+            "type": "string",
+            "description": "The name of the web function this revision belongs to. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.",
+            "minLength": 1,
+            "maxLength": 256
+        },
+        "FunctionArn": {
+            "type": "string",
+            "description": "The Amazon Resource Name (ARN) of the function.",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^arn:(aws[a-z-]*):lambda:[a-z0-9-]+:[0-9]{12}:web-function/.+$"
+        },
+        "RevisionId": {
+            "type": "string",
+            "description": "The unique identifier of the revision.",
+            "minLength": 1,
+            "maxLength": 256
+        },
+        "RevisionArn": {
+            "type": "string",
+            "description": "The Amazon Resource Name (ARN) of the revision.",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^arn:(aws[a-z-]*):lambda:[a-z0-9-]+:[0-9]{12}:web-function/.+/revision/.+$"
+        },
+        "Description": {
+            "type": "string",
+            "description": "A description of the revision.",
+            "minLength": 0,
+            "maxLength": 256
+        },
+        "KmsKeyArn": {
+            "type": "string",
+            "description": "The ARN of the KMS key used to encrypt the revision.",
+            "minLength": 20,
+            "maxLength": 2048,
+            "pattern": "^arn:(aws[a-z-]*){1}:kms:[a-z0-9-]+:[0-9]{12}:key/.*$"
+        },
+        "BuildConfig": {
+            "type": "object",
+            "description": "The build configuration for the revision.",
+            "properties": {
+                "CodeConfig": {
+                    "type": "object",
+                    "description": "The code configuration for the revision.",
+                    "properties": {
+                        "S3Object": {
+                            "description": "The Amazon S3 location of the deployment artifact.",
+                            "$ref": "#/definitions/S3Object"
+                        }
+                    },
+                    "required": ["S3Object"],
+                    "additionalProperties": false
+                },
+                "RuntimeConfig": {
+                    "type": "object",
+                    "description": "The runtime configuration for the revision.",
+                    "properties": {
+                        "Runtime": {
+                            "type": "string",
+                            "description": "The runtime identifier.",
+                            "minLength": 1,
+                            "maxLength": 30,
+                            "pattern": "^[a-z][a-z0-9]*[0-9]+(\\.[a-z0-9]+)*$"
+                        }
+                    },
+                    "required": ["Runtime"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["CodeConfig", "RuntimeConfig"],
+            "additionalProperties": false
+        },
+        "ServiceConfig": {
+            "type": "object",
+            "description": "The service configuration for the revision.",
+            "properties": {
+                "ExecutionRoleArn": {
+                    "type": "string",
+                    "description": "The ARN of the execution role.",
+                    "minLength": 20,
+                    "maxLength": 2048,
+                    "pattern": "^arn:(aws[a-z-]*){1}:iam::[0-9]{12}:role/.*$"
+                },
+                "TimeoutSeconds": {
+                    "type": "integer",
+                    "description": "The function timeout in seconds.",
+                    "minimum": 3,
+                    "maximum": 900
+                },
+                "EgressNetworkConnectorArn": {
+                    "type": "string",
+                    "description": "The versioned ARN of the network connector used for outbound network access from the revision.",
+                    "minLength": 1,
+                    "maxLength": 2048,
+                    "pattern": "^arn:(aws[a-z-]*):lambda:[a-z0-9-]+:[0-9]{12}:network-connector:[a-zA-Z0-9_-]+:[0-9]+$"
+                },
+                "MaxConcurrencyPerEnvironment": {
+                    "type": "integer",
+                    "description": "The maximum concurrency per environment.",
+                    "minimum": 1,
+                    "maximum": 128
+                },
+                "EnvironmentVariables": {
+                    "type": "object",
+                    "description": "Environment variables for the function.",
+                    "patternProperties": {
+                        "^[a-zA-Z]([a-zA-Z0-9_])*$": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 4096
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "TelemetryConfig": {
+                    "type": "object",
+                    "description": "The telemetry configuration.",
+                    "properties": {
+                        "LoggingConfig": {
+                            "description": "The logging configuration for the web function.",
+                            "$ref": "#/definitions/LoggingConfig"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "required": ["ExecutionRoleArn"],
+            "additionalProperties": false
+        },
+        "State": {
+            "type": "string",
+            "description": "The current state of the revision.",
+            "enum": ["Pending", "Active", "Failed"]
+        },
+        "StateReason": {
+            "type": "string",
+            "description": "The reason for the revision's current state."
+        },
+        "CreatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the revision was created."
+        }
+    },
+    "definitions": {
+        "S3Object": {
+            "type": "object",
+            "description": "The S3 location of the function code.",
+            "properties": {
+                "Bucket": {
+                    "type": "string",
+                    "description": "The S3 bucket name.",
+                    "minLength": 3,
+                    "maxLength": 63,
+                    "pattern": "^([a-z0-9][a-z0-9\\.\\-]{1,61}[a-z0-9])$"
+                },
+                "Key": {
+                    "type": "string",
+                    "description": "The S3 object key.",
+                    "minLength": 1,
+                    "maxLength": 1024
+                },
+                "VersionId": {
+                    "type": "string",
+                    "description": "The S3 object version ID."
+                }
+            },
+            "required": ["Bucket", "Key"],
+            "additionalProperties": false
+        },
+        "LoggingConfig": {
+            "type": "object",
+            "description": "The logging configuration.",
+            "properties": {
+                "LogGroup": {
+                    "type": "string",
+                    "description": "The CloudWatch log group name.",
+                    "minLength": 1,
+                    "maxLength": 500,
+                    "pattern": "^[a-zA-Z0-9\\.\\-_/#]+$"
+                },
+                "ApplicationLogLevel": {
+                    "type": "string",
+                    "description": "The application log level.",
+                    "enum": ["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"]
+                },
+                "SystemLogLevel": {
+                    "type": "string",
+                    "description": "The system log level.",
+                    "enum": ["DEBUG", "INFO", "WARN"]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": ["FunctionName", "BuildConfig", "ServiceConfig"],
+    "additionalProperties": false,
+    "primaryIdentifier": ["/properties/RevisionArn"],
+    "readOnlyProperties": [
+        "/properties/FunctionArn",
+        "/properties/RevisionId",
+        "/properties/RevisionArn",
+        "/properties/State",
+        "/properties/StateReason",
+        "/properties/CreatedAt"
+    ],
+    "createOnlyProperties": [
+        "/properties/FunctionName",
+        "/properties/Description",
+        "/properties/KmsKeyArn",
+        "/properties/BuildConfig",
+        "/properties/ServiceConfig"
+    ],
+    "tagging": {
+        "taggable": false
+    },
+    "handlers": {
+        "create": {
+            "permissions": [
+                "lambda:CreateWebFunctionRevision",
+                "lambda:GetWebFunctionRevision",
+                "lambda:PassNetworkConnector",
+                "iam:PassRole",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "kms:CreateGrant",
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:GenerateDataKey"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "lambda:GetWebFunctionRevision",
+                "kms:Decrypt"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "lambda:DeleteWebFunctionRevision",
+                "lambda:GetWebFunctionRevision",
+                "kms:Decrypt"
+            ]
+        },
+        "list": {
+            "handlerSchema": {
+                "properties": {
+                    "FunctionName": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                    }
+                },
+                "required": ["FunctionName"]
+            },
+            "permissions": [
+                "lambda:ListWebFunctionRevisions"
+            ]
+        }
+    }
+}
+
