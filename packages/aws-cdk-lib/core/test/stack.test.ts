@@ -2322,6 +2322,51 @@ describe('stack', () => {
     }));
   });
 
+  describe('stacks that do not support cross-stack references', () => {
+    class NoCrossStackReferencesStack extends Stack {
+      public _supportsCrossStackReferences(): boolean {
+        return false;
+      }
+    }
+
+    test('fails when such a stack consumes a reference', () => {
+      const app = makeCrossStackApp();
+      const producer = new Stack(app, 'Producer');
+      const consumer = new NoCrossStackReferencesStack(app, 'Consumer');
+      const resource = new CfnResource(producer, 'Resource', { type: 'Resource::Producer' });
+      new CfnResource(consumer, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
+
+      expect(() => app.synth()).toThrow(expect.objectContaining({
+        name: 'CrossStackReferenceNotSupported',
+        message: 'Stack "Consumer" cannot reference {Producer/Resource[Ref]} in stack "Producer": the consumer stack "Consumer" ' +
+          'does not support cross-stack references',
+      }));
+    });
+
+    test('fails when such a stack produces a reference', () => {
+      const app = makeCrossStackApp();
+      const producer = new NoCrossStackReferencesStack(app, 'Producer');
+      const consumer = new Stack(app, 'Consumer');
+      const resource = new CfnResource(producer, 'Resource', { type: 'Resource::Producer' });
+      new CfnResource(consumer, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
+
+      expect(() => app.synth()).toThrow(expect.objectContaining({
+        name: 'CrossStackReferenceNotSupported',
+        message: 'Stack "Consumer" cannot reference {Producer/Resource[Ref]} in stack "Producer": the producer stack "Producer" ' +
+          'does not support cross-stack references',
+      }));
+    });
+
+    test('references within such a stack are unaffected', () => {
+      const app = makeCrossStackApp();
+      const stack = new NoCrossStackReferencesStack(app, 'Stack');
+      const resource = new CfnResource(stack, 'Resource', { type: 'Resource::Producer' });
+      new CfnResource(stack, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
+
+      expect(toCloudFormation(stack).Resources.Consumer.Properties).toEqual({ Prop: { Ref: 'Resource' } });
+    });
+  });
+
   test('cross-stack reference (substack references parent stack)', () => {
     // GIVEN
     const app = makeCrossStackApp({ [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });

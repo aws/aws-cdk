@@ -1377,6 +1377,15 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Whether this stack's template can produce or consume cross-stack references.
+   *
+   * @internal
+   */
+  public _supportsCrossStackReferences(): boolean {
+    return true;
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.

@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-stack-set-template-from-asset-test/DefaultTest": {
+      "stacks": [
+        "integ-stack-set-template-from-asset"
+      ],
+      "assertionStack": "integ-stack-set-template-from-asset-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integstacksettemplatefromassettestDefaultTestDeployAssert700CC8D7"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

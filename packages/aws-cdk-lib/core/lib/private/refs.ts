@@ -153,6 +153,15 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
+  // unsupported: stacks whose template is deployed outside of the app's own deployment
+  for (const [side, stack] of [['consumer', consumer], ['producer', producer]] as const) {
+    if (!stack._supportsCrossStackReferences()) {
+      throw new UnscopedValidationError(lit`CrossStackReferenceNotSupported`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
+        `the ${side} stack "${stack.node.path}" does not support cross-stack references`);
+    }
+  }
+
   // ----------------------------------------------------------------------
   // consumer is nested in the producer (directly or indirectly)
   // ----------------------------------------------------------------------

@@ -79127,6 +79127,14 @@ function resolveValue(consumer, reference, strengthOverride) {
   if (producer.node.root !== consumer.node.root) {
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, "Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.");
   }
+  for (const [side, stack] of [["consumer", consumer], ["producer", producer]]) {
+    if (!stack._supportsCrossStackReferences()) {
+      throw new UnscopedValidationError(
+        lit`CrossStackReferenceNotSupported`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": the ${side} stack "${stack.node.path}" does not support cross-stack references`
+      );
+    }
+  }
   if (consumer.nestedStackParent && isNested(consumer, producer)) {
     const parameterValue = resolveValue(consumer.nestedStackParent, reference);
     return createNestedStackParameter(consumer, reference, parameterValue);
@@ -86602,6 +86610,14 @@ var init_stack = __esm({
        * @internal
        */
       get _isTopLevelStack() {
+        return true;
+      }
+      /**
+       * Whether this stack's template can produce or consume cross-stack references.
+       *
+       * @internal
+       */
+      _supportsCrossStackReferences() {
         return true;
       }
       /**
