@@ -22,14 +22,14 @@ export function assemblyBuilderOf(stage: Stage): cxapi.CloudAssemblyBuilder {
   return (stage as any)._assemblyBuilder;
 }
 
-export function pipelineSynth(stage: Stage) {
+export function pipelineSynth(stage: Stage): cxapi.CloudAssembly {
   return stage.synth({ validateOnSynthesis: true });
 }
 
 /**
  * Return the relative path from the app assembly to the scope's (nested) assembly
  */
-export function embeddedAsmPath(scope: IConstruct) {
+export function embeddedAsmPath(scope: IConstruct): string {
   const appAsmRoot = assemblyBuilderOf(appOf(scope)).outdir;
   const stage = Stage.of(scope) ?? appOf(scope);
   const stageAsmRoot = assemblyBuilderOf(stage).outdir;
@@ -39,7 +39,7 @@ export function embeddedAsmPath(scope: IConstruct) {
 /**
  * Determine the directory where the cloud assembly will be written, for use in a BuildSpec
  */
-export function cloudAssemblyBuildSpecDir(scope: IConstruct) {
+export function cloudAssemblyBuildSpecDir(scope: IConstruct): string {
   return assemblyBuilderOf(appOf(scope)).outdir;
 }
 
