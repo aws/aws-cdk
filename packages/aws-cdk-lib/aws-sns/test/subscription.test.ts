@@ -153,6 +153,32 @@ describe('Subscription', () => {
     });
   });
 
+  test('with filter policy sets filter policy scope to MessageAttributes', () => {
+    // Switching a deployed subscription from filterPolicyWithMessageBody to filterPolicy used to
+    // drop FilterPolicyScope from the template. CloudFormation sends a removed property as null,
+    // and SNS rejects null with "FilterPolicyScope: Invalid value [null]". Always emitting the
+    // scope is what makes that transition safe.
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        color: sns.SubscriptionFilter.stringFilter({ allowlist: ['red'] }),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: { color: ['red'] },
+      FilterPolicyScope: 'MessageAttributes',
+    });
+  });
+
   test('with filter policy and filter policy scope MessageBody', () => {
     // GIVEN
     const stack = new cdk.Stack();
