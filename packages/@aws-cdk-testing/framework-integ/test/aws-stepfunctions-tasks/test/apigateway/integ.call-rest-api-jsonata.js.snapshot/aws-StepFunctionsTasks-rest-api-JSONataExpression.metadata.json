@@ -1,0 +1,142 @@
+{
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapi2B22AE87"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiEndpoint9942D237"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiDeploymentA06E43AD85a1acfb00c77d0a0782f87a5ba7b421"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiDeploymentStageprod0494BB5F"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiGET18556D73"
+    }
+  ],
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ]
+}

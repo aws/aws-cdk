@@ -46,7 +46,6 @@ rules/
 │   ├── iam-role-no-broad-principals.guard
 │   └── iam-role-root-principal-needs-conditions.guard
 ├── kinesis/
-│   ├── kinesis-encryption-enabled.guard
 │   └── kinesis-firehose-encryption-enabled.guard
 ├── neptune/
 │   └── neptune-encryption-enabled.guard
@@ -141,6 +140,16 @@ yarn security-guardian
 >
 > - `--base_sha=origin/main`  
 > - `--rule_set_path=./custom-rules`
+
+### 3. Run Tests
+
+The tests run the rules with [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard), so install cfn-guard 3 and put it on your `PATH` first.
+
+```bash
+yarn test
+```
+
+Every rule in `rules/` needs two fixtures in `test/rule-fixtures/<rule path without .guard>/`: `non-compliant.json`, which the rule must fail, and `compliant.json`, which the rule must evaluate and pass. The tests fail for a rule that has no fixtures.
 
 ---
 

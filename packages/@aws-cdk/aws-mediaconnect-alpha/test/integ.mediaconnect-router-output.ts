@@ -23,7 +23,7 @@ const networkInterface = new RouterNetworkInterface(stack, 'network', {
 
 // Test 1: Standard RTP Output
 new RouterOutput(stack, 'rtpOutput', {
-  routerOutputName: 'test-rtp-output',
+  routerOutputName: 'test_rtp_output',
   maximumBitrate: cdk.Bitrate.mbps(10),
   routingScope: RoutingScope.GLOBAL,
   tier: RouterOutputTier.OUTPUT_100,
@@ -80,8 +80,8 @@ new RouterOutput(stack, 'mediaLiveOutput', {
   routingScope: RoutingScope.GLOBAL,
   tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.mediaLiveInput({
-    mediaLiveInputArn: mediaLiveInput.attrArn, // needs updating when MediaLive has an L2
-    mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+    input: mediaLiveInput,
+    pipeline: MediaLivePipeline.PIPELINE_0,
   }),
 });
 
@@ -102,7 +102,6 @@ const routerOutput = new RouterOutput(stack, 'mediaLiveNoInput', {
 
 // Test 5: MediaConnect Flow Output (using created flow)
 const flow = new Flow(stack, 'TestFlow2', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
   flowName: 'source-flow',
   availabilityZone: `${stack.region}a`,
   source: SourceConfiguration.router({

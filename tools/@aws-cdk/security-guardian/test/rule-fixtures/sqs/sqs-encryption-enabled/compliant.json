@@ -1,0 +1,11 @@
+{
+  "Description": "SQS_ENCRYPTION_ENABLED passes: the queue enables SQS-managed encryption",
+  "Resources": {
+    "EncryptedQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "SqsManagedSseEnabled": true
+      }
+    }
+  }
+}
