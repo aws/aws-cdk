@@ -71,3 +71,7 @@ Path patterns can use the following variables:
 
 Note that %moduleName% and %serviceName% can be different if multiple services are generated into a single module.
 ```
+
+## Dealing with schema changes
+
+See [BREAKING_CHANGES.md](./BREAKING_CHANGES.md) for a description of the philosophy of how we deal with breaking changes here and in the schema.
