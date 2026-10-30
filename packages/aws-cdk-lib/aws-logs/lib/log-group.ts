@@ -1,14 +1,15 @@
 import type { Construct } from 'constructs';
 import type { DataProtectionPolicy } from './data-protection-policy';
 import type { FieldIndexPolicy } from './field-index-policy';
+import { LogGroupGrants } from './log-group-grants';
 import { LogStream } from './log-stream';
-import { LogGroupGrants } from './logs-grants.generated';
 import type { ILogGroupRef, LogGroupReference } from './logs.generated';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import type { IFilterPattern } from './pattern';
 import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
+import { logGroupArnWithoutStreamSuffix } from './private/log-group-arn';
 import type { ILogSubscriptionDestination } from './subscription-filter';
 import { SubscriptionFilter } from './subscription-filter';
 import type { IProcessor } from './transformer';
@@ -271,9 +272,8 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
-      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
-      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      resourceArns: [this.logGroupArn],
+      // Include both the log group ARN and the log stream ARN (':*').
+      resourceArns: [logGroupArnWithoutStreamSuffix(this), this.logGroupArn],
       resource: this,
     });
   }
