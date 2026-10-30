@@ -389,10 +389,23 @@ describe('resource-based policy', () => {
       expect(() => app.synth()).not.toThrow();
     });
 
-    test('rejects a grant when the endpoint name is a deploy-time value', () => {
+    test('rejects a grant in the function\'s policy when the endpoint name is a deploy-time value', () => {
       const { endpoint } = setup(Fn.importValue('Name'));
       expect(() => endpoint.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com')))
         .toThrow(/endpoint name is a deploy-time value/);
+    });
+
+    test('grants a role in the same account in its own policy even when the endpoint name is a deploy-time value', () => {
+      const { app, endpoint } = setup(Fn.importValue('Name'));
+      const roleStack = new Stack(app, 'RoleStack', { env: { account: '111111111111', region: 'us-east-1' } });
+      const role = new Role(roleStack, 'Role', { assumedBy: new ServicePrincipal('ec2.amazonaws.com') });
+
+      endpoint.grants.invoke(role);
+
+      expect(() => app.synth()).not.toThrow();
+      Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: { Statement: [Match.objectLike({ Action: 'lambda:InvokeWebFunctionEndpoint' })] },
+      });
     });
 
     test('an endpoint in the function\'s stack is named by its own ARN', () => {

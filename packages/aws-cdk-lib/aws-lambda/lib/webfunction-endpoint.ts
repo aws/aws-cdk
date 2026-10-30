@@ -576,13 +576,23 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       return this.endpointArn;
     }
     const { webFunctionArn, endpointName } = this.crossStackPolicyArn;
-    if (Token.isUnresolved(endpointName)) {
-      throw new ValidationError(lit`WebFunctionEndpointCrossStackGrantName`,
-        'Cannot grant on an endpoint in a different stack from its WebFunction when the endpoint name is ' +
-        'a deploy-time value: the grant goes into the function\'s resource-based policy, which names the ' +
-        'endpoint by its name. Use a literal endpointName, or define the endpoint in the function\'s stack.', this);
-    }
     return `${webFunctionArn}/endpoint/${endpointName}`;
+  }
+
+  /**
+   * Adds a statement to the resource-based policy of the WebFunction the endpoint serves.
+   *
+   * For an endpoint in another stack than its function, the statement names the endpoint by the
+   * function's ARN and the endpoint name, so the name must be a literal.
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (this.crossStackPolicyArn && Token.isUnresolved(this.crossStackPolicyArn.endpointName)) {
+      throw new ValidationError(lit`WebFunctionEndpointCrossStackGrantName`,
+        'Cannot add to the resource-based policy for an endpoint in a different stack from its WebFunction ' +
+        'when the endpoint name is a deploy-time value: the function\'s policy names the endpoint by its ' +
+        'name. Use a literal endpointName, or define the endpoint in the function\'s stack.', this);
+    }
+    return super.addToResourcePolicy(statement);
   }
 
   /**
