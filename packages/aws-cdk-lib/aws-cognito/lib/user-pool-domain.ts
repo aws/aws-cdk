@@ -27,6 +27,54 @@ export enum ManagedLoginVersion {
 }
 
 /**
+ * The security policy for a user pool custom domain.
+ *
+ * Defines the minimum TLS version and cipher suites that Amazon CloudFront
+ * supports when communicating with clients.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html
+ */
+export class UserPoolDomainSecurityPolicy {
+  /**
+   * Permits fallback to TLS 1.0 for compatibility with legacy clients.
+   *
+   * Strongly discouraged: allows TLS versions and cryptographic algorithms that
+   * are no longer considered safe for commercial use.
+   */
+  public static readonly TLS_V1 = new UserPoolDomainSecurityPolicy('TLS_V1');
+
+  /**
+   * Prefers TLS 1.3 but allows fallback to TLS 1.2 for older clients.
+   *
+   * The recommended minimum for typical consumer applications.
+   */
+  public static readonly TLS_V1_2_2021 = new UserPoolDomainSecurityPolicy('TLS_V1_2_2021');
+
+  /**
+   * Requires TLS 1.3.
+   *
+   * The strictest policy, for workloads where all clients are on current versions.
+   */
+  public static readonly TLS_V1_3_2025 = new UserPoolDomainSecurityPolicy('TLS_V1_3_2025');
+
+  /**
+   * A security policy that is not yet available as a constant.
+   *
+   * @param value the security policy name, for example `TLS_V1_2_2021`
+   */
+  public static of(value: string): UserPoolDomainSecurityPolicy {
+    return new UserPoolDomainSecurityPolicy(value);
+  }
+
+  /** The security policy name */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
  * Represents a user pool domain.
  */
 export interface IUserPoolDomain extends IResource, IUserPoolDomainRef {
@@ -53,6 +101,14 @@ export interface CustomDomainOptions {
    * The certificate to associate with this domain.
    */
   readonly certificate: ICertificateRef;
+
+  /**
+   * The security policy for the custom domain, which defines the minimum TLS
+   * version and cipher suites that clients can use.
+   *
+   * @default - no security policy is set and Amazon Cognito applies its default
+   */
+  readonly securityPolicy?: UserPoolDomainSecurityPolicy;
 }
 
 /**
@@ -172,7 +228,10 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this.resource = new CfnUserPoolDomain(this, 'Resource', {
       userPoolId: props.userPool.userPoolRef.userPoolId,
       domain: domainName,
-      customDomainConfig: props.customDomain ? { certificateArn: props.customDomain.certificate.certificateRef.certificateArn } : undefined,
+      customDomainConfig: props.customDomain ? {
+        certificateArn: props.customDomain.certificate.certificateRef.certificateArn,
+        securityPolicy: props.customDomain.securityPolicy?.value,
+      } : undefined,
       managedLoginVersion: props.managedLoginVersion,
     });
 
