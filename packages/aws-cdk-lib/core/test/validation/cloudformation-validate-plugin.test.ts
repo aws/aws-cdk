@@ -19,6 +19,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.clearAllMocks();
   disposePlugins();
+  cleanUpTmpDirs();
 });
 
 afterAll(() => {
@@ -44,7 +45,7 @@ afterAll(() => {
 describe('CloudFormationValidatePlugin', () => {
   test('_dispose frees the engine exactly once', () => {
     const plugin = newPlugin();
-    const free = jest.spyOn((plugin as any).engine, 'free');
+    const free = jest.spyOn(engineFor(plugin), 'free');
 
     plugin._dispose();
     plugin._dispose();
@@ -52,10 +53,24 @@ describe('CloudFormationValidatePlugin', () => {
     expect(free).toHaveBeenCalledTimes(1);
   });
 
+  test('_dispose is a no-op if no engine was ever created', () => {
+    const plugin = newPlugin();
+
+    expect(() => plugin._dispose()).not.toThrow();
+  });
+
+  test('validating after _dispose fails', () => {
+    const plugin = newPlugin();
+    plugin._dispose();
+
+    expect(() => plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket'))))
+      .toThrow(/already disposed/);
+  });
+
   test('_configureSingleton frees the previous engine', () => {
     core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
     const previous = core.CloudFormationValidatePlugin._singletonInstance();
-    const free = jest.spyOn((previous as any).engine, 'free');
+    const free = jest.spyOn(engineFor(previous), 'free');
 
     try {
       core.CloudFormationValidatePlugin._configureSingleton({ includeDefaultRules: false });
@@ -290,6 +305,15 @@ describe('CloudFormationValidatePlugin', () => {
     expect(plugin.ruleIds).toBeDefined();
   });
 
+  test('ruleIds reports the engine version without initializing the engine', () => {
+    const plugin = newPlugin();
+
+    // The rule IDs are analytics-only, and initializing the engine just to list them is
+    // not worth the ~150ms, so the engine version stands in for the rule set it implies.
+    expect(plugin.ruleIds).toEqual([plugin.version]);
+    expect(engineOf(plugin)).toBeUndefined();
+  });
+
   test('plugin evaluates custom Guard rules', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-guard-'));
     const templatePath = path.join(tmpDir, 'template.json');
@@ -413,7 +437,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     try {
       const plugin = newPlugin();
-      const validateTemplate = jest.spyOn((plugin as any).engine, 'validateTemplate')
+      const validateTemplate = jest.spyOn(engineFor(plugin), 'validateTemplate')
         .mockReturnValueOnce({
           diagnostics: [
             { ruleId: 'F0001', severity: 'FATAL', message: 'fatal diagnostic' },
@@ -476,7 +500,7 @@ describe('CloudFormationValidatePlugin', () => {
 
     function validateWithDiagnostics(diagnostics: any[]) {
       const plugin = newPlugin();
-      jest.spyOn((plugin as any).engine, 'validateTemplate').mockReturnValueOnce({ diagnostics });
+      jest.spyOn(engineFor(plugin), 'validateTemplate').mockReturnValueOnce({ diagnostics });
       return plugin.validate({
         templatePaths: [templatePath],
         stackTemplates: [{ stackConstructPath: 'TestStack', templatePath, accountId: undefined, region: undefined }],
@@ -644,6 +668,7 @@ describe('CloudFormationValidatePlugin', () => {
 
       expect(plugin.name).toBe('CloudFormation Validate');
       expect(plugin.version).toBeDefined();
+      expect(() => engineFor(plugin)).not.toThrow();
     });
 
     test('schemas in nested subdirectories are discovered', () => {
@@ -697,25 +722,25 @@ describe('CloudFormationValidatePlugin', () => {
       }
 
       // Should throw — symlinks are not allowed in schema directories
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/Symbolic link found in schema directory/);
+      }))).toThrow(/Symbolic link found in schema directory/);
     });
 
     test('malformed JSON files cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'bad.json'), 'not valid json {{{');
 
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/Invalid JSON in schema file.*bad\.json/);
+      }))).toThrow(/Invalid JSON in schema file.*bad\.json/);
     });
 
     test('schema files missing typeName cause a hard failure', () => {
       fs.writeFileSync(path.join(schemaDir, 'no-typename.json'), JSON.stringify({ properties: {} }));
 
-      expect(() => newPlugin({
+      expect(() => engineFor(newPlugin({
         _additionalSchemasDirectory: schemaDir,
-      })).toThrow(/missing required "typeName" field.*no-typename\.json/);
+      }))).toThrow(/missing required "typeName" field.*no-typename\.json/);
     });
 
     test('non-JSON files are safely ignored', () => {
@@ -744,6 +769,62 @@ describe('CloudFormationValidatePlugin', () => {
 
       // Non-JSON files (.keep, .md) are ignored, only .json files are processed
       expect(() => app.synth()).not.toThrow();
+    });
+  });
+
+  describe('engine initialization', () => {
+    test('no engine is created until the first validation', () => {
+      const plugin = newPlugin();
+
+      expect(engineOf(plugin)).toBeUndefined();
+
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+
+      expect(engineOf(plugin)).toBeDefined();
+    });
+
+    test('the engine is reused if a later template adds no resource types', () => {
+      const plugin = newPlugin();
+      plugin.validate(validationContext(writeTemplate('AWS::GameLift::Fleet', 'AWS::S3::Bucket')));
+      const engine = engineOf(plugin);
+
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+
+      expect(engineOf(plugin)).toBe(engine);
+    });
+
+    test('the engine is replaced and freed if a later template adds a resource type', () => {
+      const plugin = newPlugin();
+      plugin.validate(validationContext(writeTemplate('AWS::S3::Bucket')));
+      const engine = engineOf(plugin);
+      const free = jest.spyOn(engine, 'free');
+
+      // A default rule applies to GameLift fleets, so the rule set is no longer the right one
+      plugin.validate(validationContext(writeTemplate('AWS::GameLift::Fleet')));
+
+      expect(engineOf(plugin)).not.toBe(engine);
+      expect(free).toHaveBeenCalledTimes(1);
+    });
+
+    test('templates that cannot be parsed do not fail engine initialization', () => {
+      const plugin = newPlugin();
+      const templatePath = writeTemplate();
+      fs.writeFileSync(templatePath, 'this is not json');
+
+      // The validation run itself reports on the broken template; reading resource types must not throw
+      expect(() => plugin.validate(validationContext(templatePath))).not.toThrow();
+    });
+
+    test('every default rule file is covered by the generated index', () => {
+      const rulesDirectory = path.join(__dirname, '..', '..', 'lib', 'validation', 'rules');
+      const ruleFiles = fs.readdirSync(rulesDirectory).filter(f => f.endsWith('.rego')).sort();
+      const index = JSON.parse(fs.readFileSync(path.join(rulesDirectory, 'index.generated.json'), 'utf-8'));
+
+      expect(index.rules.map((r: any) => r.file).sort()).toEqual(ruleFiles);
+      for (const rule of index.rules) {
+        // Either explicitly always-applicable, or a non-empty list of resource types
+        expect(rule.types === null || rule.types.length > 0).toBe(true);
+      }
     });
   });
 
@@ -866,6 +947,47 @@ function loadValidationReport(asm: cxapi.CloudAssembly) {
 }
 
 let constructedPlugins: core.CloudFormationValidatePlugin[] = [];
+
+/**
+ * The engine the plugin is currently holding on to, if any.
+ */
+function engineOf(plugin: core.CloudFormationValidatePlugin) {
+  return (plugin as any).engine;
+}
+
+/**
+ * Materialize the plugin's engine.
+ *
+ * Engines are created on first validation, so tests that need to spy on the
+ * engine (or on the side effects of creating one) have to ask for it first.
+ * The templates in these tests contain no resource types covered by a default
+ * rule, so `validate()` reuses the engine created here.
+ */
+function engineFor(plugin: core.CloudFormationValidatePlugin) {
+  return (plugin as any).initializeEngine(new Set<string>());
+}
+
+/**
+ * A template in a temporary directory with one resource per given resource type.
+ */
+function writeTemplate(...resourceTypes: string[]): string {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-template-'));
+  tmpDirs.push(tmpDir);
+  const templatePath = path.join(tmpDir, 'template.json');
+  fs.writeFileSync(templatePath, JSON.stringify({
+    Resources: Object.fromEntries(resourceTypes.map((type, i) => [`Resource${i}`, { Type: type }])),
+  }));
+  return templatePath;
+}
+
+let tmpDirs: string[] = [];
+
+function cleanUpTmpDirs() {
+  for (const tmpDir of tmpDirs) {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+  tmpDirs = [];
+}
 
 function newPlugin(props?: core.CloudFormationValidatePluginProps) {
   const constructed = new core.CloudFormationValidatePlugin(props);
