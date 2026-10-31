@@ -96,9 +96,6 @@ const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
     provisionedResourceCleanup: true,
   });
 
-const puppeteer52 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_5_2);
-const puppeteer62 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2);
-const puppeteer70 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0);
 const puppeteer80 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_8_0);
 const puppeteer90 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_0);
 const puppeteer91 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1);
@@ -106,15 +103,14 @@ const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT
 const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
 const playwright20 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0);
 const playwright20_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0, 'playwright/canary.handler');
-
-const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
-const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
-const selenium40 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_0);
-const selenium41 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_4_1);
-const selenium50 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_0);
-const selenium51 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1);
 const selenium60 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0);
 const selenium70 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0);
+const selenium80 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_8_0);
+const selenium90 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_9_0);
+const selenium100 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_10_0);
+const selenium110 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_11_0);
+const selenium111 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_11_1);
+const selenium120 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_12_0);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -126,9 +122,6 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   directoryAsset,
   folderAsset,
   zipAsset,
-  puppeteer52,
-  puppeteer62,
-  puppeteer70,
   puppeteer80,
   puppeteer90,
   puppeteer91,
@@ -136,14 +129,14 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   playwright10_with_handler_name,
   playwright20,
   playwright20_with_handler_name,
-  selenium21,
-  selenium30,
-  selenium40,
-  selenium41,
-  selenium50,
-  selenium51,
   selenium60,
   selenium70,
+  selenium80,
+  selenium90,
+  selenium100,
+  selenium110,
+  selenium111,
+  selenium120,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,
