@@ -331,6 +331,7 @@ const provider = ec2.NatProvider.instanceV2({
   instanceType: new ec2.InstanceType('t3.small'),
   creditSpecification: ec2.CpuCredits.UNLIMITED,
   defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+  userData,
 });
 
 const vpc = new ec2.Vpc(this, 'TheVPC', {
