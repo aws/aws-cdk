@@ -20,6 +20,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Fargate profiles](#fargate-profiles)
     - [Self-managed nodes](#self-managed-nodes)
       - [Spot Instances](#spot-instances)
+      - [Amazon Linux 2023](#amazon-linux-2023)
       - [Bottlerocket](#bottlerocket)
     - [Endpoint Access](#endpoint-access)
     - [Alb Controller](#alb-controller)
@@ -699,6 +700,53 @@ terminated.
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
 To disable the installation of the termination handler, set the `spotInterruptHandler` property to `false`. This applies both to `addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity`.
+
+#### Amazon Linux 2023
+
+Self-managed capacity can run the EKS optimized [Amazon Linux 2023](https://docs.aws.amazon.com/eks/latest/userguide/al2023.html) AMI,
+which is the only Amazon Linux AMI published for Kubernetes 1.33 and later. Set `machineImageType` to
+`MachineImageType.AMAZON_LINUX_2023`. The AMI variant (standard, NVIDIA or Neuron, x86_64 or arm64) is selected from the instance type.
+
+Amazon Linux 2023 nodes are bootstrapped by [nodeadm](https://awslabs.github.io/amazon-eks-ami/nodeadm/), which needs the
+cluster's service CIDR. For a new cluster, set `serviceIpv4Cidr` and it is used automatically:
+
+```ts
+import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+
+const cluster = new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_36,
+  kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+  defaultCapacity: 0,
+  serviceIpv4Cidr: '172.20.0.0/16',
+});
+
+cluster.addAutoScalingGroupCapacity('AL2023Nodes', {
+  instanceType: new ec2.InstanceType('m5.large'),
+  machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  minCapacity: 2,
+});
+```
+
+For an existing cluster, pass the service CIDR in `bootstrapOptions.serviceCidr` instead. You can read it with
+`aws eks describe-cluster --name <cluster> --query cluster.kubernetesNetworkConfig.serviceIpv4Cidr`.
+Do not add `serviceIpv4Cidr` to an existing cluster: changing it replaces the cluster.
+
+```ts
+declare const cluster: eks.Cluster;
+
+cluster.addAutoScalingGroupCapacity('AL2023Nodes', {
+  instanceType: new ec2.InstanceType('m6g.large'),
+  machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  bootstrapOptions: {
+    serviceCidr: '10.100.0.0/16',
+    kubeletExtraArgs: '--node-labels=team=platform',
+  },
+});
+```
+
+Spot instances get the same `lifecycle=Ec2Spot` label and `PreferNoSchedule` taint as on Amazon Linux 2.
+Of the `bootstrapOptions`, only `serviceCidr`, `kubeletExtraArgs` and `dnsClusterIp` apply to Amazon Linux 2023;
+the options of the Amazon Linux 2 `bootstrap.sh` script are rejected. Nodes do not send a CloudFormation signal.
 
 #### Bottlerocket
 
