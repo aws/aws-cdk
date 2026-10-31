@@ -425,6 +425,21 @@ test('can specify backup policy', () => {
   });
 });
 
+describe.each([true, false, undefined])('automatic backup policy with flag %p', (flag) => {
+  test.each([true, false, undefined])('renders enableAutomaticBackups=%p', (enabled) => {
+    const backupStack = new Stack();
+    if (flag !== undefined) {
+      backupStack.node.setContext(cxapi.EFS_EXPLICIT_BACKUP_POLICY, flag);
+    }
+    const backupVpc = new ec2.Vpc(backupStack, 'VPC');
+    new FileSystem(backupStack, 'EfsFileSystem', { vpc: backupVpc, enableAutomaticBackups: enabled });
+
+    Template.fromStack(backupStack).hasResourceProperties('AWS::EFS::FileSystem', {
+      BackupPolicy: enabled ? { Status: 'ENABLED' } : flag ? { Status: 'DISABLED' } : Match.absent(),
+    });
+  });
+});
+
 test('can create when using a VPC with multiple subnets per availability zone', () => {
   // create a vpc with two subnets in the same availability zone.
   const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
