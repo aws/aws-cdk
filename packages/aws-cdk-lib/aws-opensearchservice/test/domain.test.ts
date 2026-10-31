@@ -1865,6 +1865,44 @@ each(testedOpenSearchVersions).describe('custom endpoints', (engineVersion) => {
       ],
     });
   });
+
+  test('custom domain with hosted zone and dual-stack uses the dual-stack endpoint', () => {
+    const zone = new route53.HostedZone(stack, 'DummyZone', {
+      zoneName: 'example.com',
+    });
+    const domain = new Domain(stack, 'Domain', {
+      version: engineVersion,
+      nodeToNodeEncryption: true,
+      enforceHttps: true,
+      ipAddressType: IpAddressType.DUAL_STACK,
+      customEndpoint: {
+        domainName: customDomainName,
+        hostedZone: zone,
+      },
+    });
+
+    expect(stack.resolve(domain.domainEndpoint)).toEqual({
+      'Fn::GetAtt': [
+        'Domain66AC69E0',
+        'DomainEndpointV2',
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'search.example.com.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'DummyZone03E0FE81',
+      },
+      ResourceRecords: [
+        {
+          'Fn::GetAtt': [
+            'Domain66AC69E0',
+            'DomainEndpointV2',
+          ],
+        },
+      ],
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('TLS security policy', (engineVersion) => {
