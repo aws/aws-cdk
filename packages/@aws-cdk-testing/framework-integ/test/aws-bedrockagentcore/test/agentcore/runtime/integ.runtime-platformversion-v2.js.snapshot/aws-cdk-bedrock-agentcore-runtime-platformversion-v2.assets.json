@@ -1,0 +1,49 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "64568cc5b44e7bf607fbf3b9134f372285427f417329765512a3308576d13508": {
+      "displayName": "PlatformVersionVerifier/Code",
+      "source": {
+        "path": "asset.64568cc5b44e7bf607fbf3b9134f372285427f417329765512a3308576d13508",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-7477e06c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "64568cc5b44e7bf607fbf3b9134f372285427f417329765512a3308576d13508.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "93894de7a8a21fd3972b32d714cb6c67d3ffef440204021546a98a3e812ae74f": {
+      "displayName": "aws-cdk-bedrock-agentcore-runtime-platformversion-v2 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-runtime-platformversion-v2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-2d4100a0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "93894de7a8a21fd3972b32d714cb6c67d3ffef440204021546a98a3e812ae74f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "07b7a12398088b7bcbb522169b9566e857f16297486780deac37ac2d1258e1ac": {
+      "displayName": "TestRuntime/AgentRuntimeArtifact",
+      "source": {
+        "directory": "asset.07b7a12398088b7bcbb522169b9566e857f16297486780deac37ac2d1258e1ac",
+        "platform": "linux/arm64"
+      },
+      "destinations": {
+        "current_account-current_region-98b55d71": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "07b7a12398088b7bcbb522169b9566e857f16297486780deac37ac2d1258e1ac",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

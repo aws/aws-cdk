@@ -4,11 +4,12 @@
     "TableBucketIntegTest/DefaultTest": {
       "stacks": [
         "DefaultTestStack",
-        "UnreferencedFileRemovalTestStack"
+        "UnreferencedFileRemovalTestStack",
+        "AutoNamedTestStack"
       ],
       "assertionStack": "TableBucketIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "TableBucketIntegTestDefaultTestDeployAssertA1204D2E"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "minimumCliVersion": "2.1119.0"
 }

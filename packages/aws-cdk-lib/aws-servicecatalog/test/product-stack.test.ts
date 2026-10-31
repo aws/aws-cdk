@@ -10,6 +10,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as servicecatalog from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -504,6 +505,27 @@ describe('ProductStack', () => {
         // same asset so it only needs to be copied once.
         Match.anyValue(),
       ],
+    });
+  });
+
+  test('product stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new cdk.App({ stackTraces: false });
+    const parentStack = new cdk.Stack(app, 'ParentStack');
+    const productStack = new servicecatalog.ProductStack(parentStack, 'ProductStack');
+    new cdk.CfnResource(productStack, 'Resource', { type: 'AWS::Test::Resource' });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN — product stack metadata is collected in the parent stack artifact
+    const parentArtifact = assembly.getStackArtifact(parentStack.artifactId);
+    const entries = parentArtifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    const productEntry = entries.find(e => e.path.includes('ProductStack'));
+    expect(productEntry).toEqual({
+      path: '/' + productStack.node.path,
+      type: cxapi.CDK_TEMPLATE_FILE_KEY,
+      data: productStack.templateFile,
     });
   });
 });

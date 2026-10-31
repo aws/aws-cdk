@@ -6,7 +6,10 @@ import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
-jest.spyOn(DockerImage, 'fromBuild');
+// Stub `DockerImage.fromBuild` so these unit tests never run a real `docker build`.
+// (The `child_process` mock below is bypassed intermittently in CI.) The spy still
+// records calls, so the argument/call-count assertions below are unaffected.
+jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
@@ -29,7 +32,7 @@ test('Bundling a function without dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
   const assetCode = Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
     network: 'host',
   });
@@ -60,7 +63,7 @@ test('Bundling a function with requirements.txt', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   const assetCode = Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
   });
 
@@ -84,7 +87,7 @@ test('Bundling a function with requirements.txt using assetExcludes', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   const assetCode = Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
     assetExcludes: ['.ignorelist'],
   });
@@ -108,7 +111,7 @@ test('quotes assetExcludes entries containing special characters', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
     assetExcludes: ["it's *.log", 'build/**'],
   });
@@ -125,30 +128,11 @@ test('quotes assetExcludes entries containing special characters', () => {
   }));
 });
 
-test('Bundling Python 2.7 with requirements.txt installed', () => {
+test('Bundling with requirements.txt installed at the asset-output root', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_2_7,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with requirements.txt pip installed
-  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        "rsync -rLv '/asset-input/' '/asset-output' && cd '/asset-output' && python -m pip install -r requirements.txt -t '/asset-output'",
-      ],
-    }),
-  }));
-});
-
-test('Bundling Python 2.7 with requirements.txt installed', () => {
-  const entry = path.join(__dirname, 'lambda-handler');
-  Bundling.bundle({
-    entry: entry,
-    runtime: Runtime.PYTHON_2_7,
+    runtime: Runtime.PYTHON_3_12,
     architecture: Architecture.X86_64,
   });
 
@@ -500,7 +484,7 @@ test('Bundling with custom build args', () => {
   const testPypi = 'https://test.pypi.org/simple/';
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
@@ -515,7 +499,7 @@ test('Bundling with custom environment vars`', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     environment: {
       KEY: 'value',
     },
@@ -534,7 +518,7 @@ test('Bundling with volumes from other container', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     volumesFrom: ['777f7dc92da7'],
   });
 
@@ -549,7 +533,7 @@ test('Bundling with custom volume paths', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
   });
 
@@ -564,7 +548,7 @@ test('Bundling with custom working directory', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     workingDirectory: '/my-dir',
 
   });
@@ -580,7 +564,7 @@ test('Bundling with custom user', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     user: 'user:group',
   });
 
@@ -595,7 +579,7 @@ test('Bundling with custom securityOpt', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     securityOpt: 'no-new-privileges',
   });
 
@@ -610,7 +594,7 @@ test('Bundling with custom network', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     network: 'host',
   });
 
@@ -625,7 +609,7 @@ test('Bundling with docker copy variant', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
   });
 
@@ -640,7 +624,7 @@ test('Do not build docker image when skipping bundling', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     skip: true,
   });
 
@@ -651,7 +635,7 @@ test('Build docker image when bundling is not skipped', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     skip: false,
   });
 
@@ -662,7 +646,7 @@ test('with command hooks', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_3_7,
+    runtime: Runtime.PYTHON_3_12,
     skip: false,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {

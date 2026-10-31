@@ -1418,6 +1418,13 @@ export class AuroraPostgresEngineVersion {
   /** Version "17.9". */
   public static readonly VER_17_9 = AuroraPostgresEngineVersion.of('17.9', '17', { s3Import: true, s3Export: true });
 
+  /** Version "18.3". */
+  public static readonly VER_18_3 = AuroraPostgresEngineVersion.of('18.3', '18', { s3Import: true, s3Export: true });
+  /** Version "18.4" */
+  public static readonly VER_18_4 = AuroraPostgresEngineVersion.of('18.4', '18', { s3Import: true, s3Export: true });
+  /** Version "18.6". */
+  public static readonly VER_18_6 = AuroraPostgresEngineVersion.of('18.6', '18', { s3Import: true, s3Export: true });
+
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
    *
