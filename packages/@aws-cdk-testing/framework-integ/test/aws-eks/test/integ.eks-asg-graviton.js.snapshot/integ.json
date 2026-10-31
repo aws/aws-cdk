@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "aws-cdk-eks-asg-graviton/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-asg-graviton-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-asg-graviton/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksasggravitonDefaultTestDeployAssertEB35BC1A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
