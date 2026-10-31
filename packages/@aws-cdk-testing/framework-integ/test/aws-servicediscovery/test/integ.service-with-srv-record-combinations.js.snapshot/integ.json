@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ServiceWithSrvRecordCombinations/DefaultTest": {
+      "stacks": [
+        "aws-servicediscovery-srv-record-combinations"
+      ],
+      "assertionStack": "ServiceWithSrvRecordCombinations/DefaultTest/DeployAssert",
+      "assertionStackName": "ServiceWithSrvRecordCombinationsDefaultTestDeployAssert8CB92CAF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
