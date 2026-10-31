@@ -346,6 +346,12 @@ for (const gateway of provider.gatewayInstances) {
 }
 ```
 
+`NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS` retries the `iptables-services` install, because
+other boot-time processes can run `dnf clean all` during the install. The provider's own default user
+data only includes the retry when the `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall` feature flag
+is enabled, but user data built from `DEFAULT_USER_DATA_COMMANDS`, as in the example above, always
+includes it.
+
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
 The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
