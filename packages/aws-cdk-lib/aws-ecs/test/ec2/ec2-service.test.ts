@@ -4683,6 +4683,7 @@ describe('ec2 service', () => {
       template.hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: 'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
         LaunchType: 'EC2',
+        NetworkConfiguration: Match.absent(),
       });
     });
 
