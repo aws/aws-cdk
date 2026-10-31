@@ -1287,6 +1287,11 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+Use `applyRemovalPolicy` on a `VpcEndpointService` to control the lifetime of the
+underlying endpoint service. For example, `service.applyRemovalPolicy(RemovalPolicy.RETAIN)`
+retains the service when its stack is deleted. This policy applies to the endpoint
+service itself; configure the load balancers and permissions separately.
+
 You can also include a service principal in the `allowedPrincipals` property by specifying it as a parameter to the  `ArnPrincipal` constructor.
 The resulting VPC endpoint will have an allowlisted principal of type `Service`, instead of `Arn` for that item in the list.
 ```ts

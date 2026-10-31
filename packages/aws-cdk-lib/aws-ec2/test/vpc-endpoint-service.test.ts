@@ -1,7 +1,8 @@
 import { Template } from '../../assertions';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { ArnPrincipal } from '../../aws-iam';
-import { Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { RemovalPolicy, Stack } from '../../core';
 
 import type { IVpcEndpointServiceLoadBalancer } from '../lib';
 import { IpAddressType, Vpc, VpcEndpointService } from '../lib';
@@ -20,6 +21,24 @@ class DummyEndpointLoadBalacer implements IVpcEndpointServiceLoadBalancer {
 }
 
 describe('vpc endpoint service', () => {
+  test.each([RemovalPolicy.RETAIN, RemovalPolicy.DESTROY])('applies removal policy %s to the endpoint service', policy => {
+    const stack = new Stack();
+    const service = new VpcEndpointService(stack, 'EndpointService', {
+      vpcEndpointServiceLoadBalancers: [new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a')],
+    });
+    const resource = service.node.defaultChild as CfnResource;
+    expect(resource).toBe(service.node.findChild('EndpointService'));
+    const logicalId = stack.getLogicalId(resource);
+    service.applyRemovalPolicy(policy);
+    const resources = Template.fromStack(stack).findResources('AWS::EC2::VPCEndpointService');
+    expect(Object.keys(resources)).toEqual([logicalId]);
+    expect(logicalId).toBe('EndpointServiceED36BE1F');
+    Template.fromStack(stack).hasResource('AWS::EC2::VPCEndpointService', {
+      DeletionPolicy: policy === RemovalPolicy.RETAIN ? 'Retain' : 'Delete',
+      UpdateReplacePolicy: policy === RemovalPolicy.RETAIN ? 'Retain' : 'Delete',
+    });
+  });
+
   describe('test vpc endpoint service', () => {
     test('create endpoint service with no principals', () => {
       // GIVEN
