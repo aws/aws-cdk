@@ -282,6 +282,15 @@ export class NestedStack extends Stack {
   public get bundlingRequired() {
     return this._parentStack.bundlingRequired;
   }
+
+  /**
+   * Not a true top-level stack.
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return false;
+  }
 }
 
 /**

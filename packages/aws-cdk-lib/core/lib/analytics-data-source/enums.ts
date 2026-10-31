@@ -989,6 +989,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "INTERNET",
     "VPC_LINK"
   ],
+  "ConsumableResourceType": [
+    "REPLENISHABLE",
+    "NON_REPLENISHABLE"
+  ],
   "ContainerDependencyCondition": [
     "START",
     "COMPLETE",
@@ -2778,6 +2782,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "bun.lock",
     "pnpm-lock.yaml"
   ],
+  "LogDestinationType": [
+    "s3",
+    "cloudwatch"
+  ],
+  "LogExport": [
+    "connectionlog",
+    "useractivitylog",
+    "userlog"
+  ],
   "LogFormat": [
     "Text",
     "JSON"
@@ -4012,11 +4025,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "SigningBehavior": [
     "always",
+    "always-amz-auth",
     "never",
     "no-override"
   ],
   "SigningProtocol": [
-    "sigv4"
+    "sigv4",
+    "sigv4a"
   ],
   "SizeRoundingBehavior": [
     0,

@@ -37,7 +37,6 @@ Jump To:
 [Getting Help](#getting-help) |
 [Contributing](#contributing) |
 [RFCs](https://github.com/aws/aws-cdk-rfcs) |
-[Roadmap](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) |
 [More Resources](#more-resources)
 
 -------
@@ -136,10 +135,6 @@ You may also find help on these community resources:
 * The #aws-cdk Slack channel in [cdk.dev](https://cdk.dev)
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
-
-## Roadmap
-
-The AWS CDK Roadmap lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) for more information and FAQs.
 
 ## Contributing
 
