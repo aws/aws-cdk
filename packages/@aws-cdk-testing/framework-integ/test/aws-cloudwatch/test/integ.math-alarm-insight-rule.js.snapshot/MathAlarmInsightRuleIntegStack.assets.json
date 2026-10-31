@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "a3ddb43df7875e5db10a167f10bdcd7c2e168c60c8d601bb88103d0205206569": {
+      "displayName": "MathAlarmInsightRuleIntegStack Template",
+      "source": {
+        "path": "MathAlarmInsightRuleIntegStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ef8679be": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a3ddb43df7875e5db10a167f10bdcd7c2e168c60c8d601bb88103d0205206569.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "cdk-cloudwatch-math-alarm-insight-rule-integ/DefaultTest": {
+      "stacks": [
+        "MathAlarmInsightRuleIntegStack"
+      ],
+      "assertionStack": "cdk-cloudwatch-math-alarm-insight-rule-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkcloudwatchmathalarminsightruleintegDefaultTestDeployAssertCDBACF6D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}
