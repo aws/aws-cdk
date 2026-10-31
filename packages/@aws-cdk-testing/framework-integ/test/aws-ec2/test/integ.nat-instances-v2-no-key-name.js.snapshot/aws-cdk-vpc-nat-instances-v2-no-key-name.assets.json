@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "946ed9366f9a0abb264167a3987ed490dbfec8aa919879599d13ff8bd16d77fd": {
+    "35919f80f783717ac1cee6c0d274c3bdd222e9a810751679b425a23314269231": {
       "displayName": "aws-cdk-vpc-nat-instances-v2-no-key-name Template",
       "source": {
         "path": "aws-cdk-vpc-nat-instances-v2-no-key-name.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-288c629c": {
+        "current_account-current_region-55b609e8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "946ed9366f9a0abb264167a3987ed490dbfec8aa919879599d13ff8bd16d77fd.json",
+          "objectKey": "35919f80f783717ac1cee6c0d274c3bdd222e9a810751679b425a23314269231.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

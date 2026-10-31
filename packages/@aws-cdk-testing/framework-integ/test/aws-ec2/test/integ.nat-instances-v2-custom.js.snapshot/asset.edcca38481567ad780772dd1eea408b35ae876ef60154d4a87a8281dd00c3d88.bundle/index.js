@@ -12044,7 +12044,8 @@ var init_features = __esm({
       Other boot-time processes can run \`dnf clean all\` while the NAT instance installs
       \`iptables-services\`, which fails the install and leaves the instance without NAT rules.
       When this flag is enabled, the default user data retries the install up to 30 times,
-      10 seconds apart, and fails the user data script if every attempt fails.
+      10 seconds apart, and fails the user data script if every attempt fails or if any of
+      the NAT setup commands after the install fails.
 
       Enabling this changes the UserData of existing NAT instances that do not pass their own
       \`userData\`. CloudFormation restarts those instances once, and because the provider does not
