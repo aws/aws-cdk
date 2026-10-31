@@ -393,7 +393,9 @@ export interface NatInstanceProps {
   /**
    * Custom user data to run on the NAT instances
    *
-   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
+   * @default - Appropriate user data commands to initialize and configure the NAT instances:
+   * `NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS` if the `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall`
+   * feature flag is enabled. Otherwise, the same commands without the install retry and the failure checks.
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   readonly userData?: UserData;
