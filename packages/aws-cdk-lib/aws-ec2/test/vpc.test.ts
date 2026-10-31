@@ -2308,7 +2308,7 @@ describe('vpc', () => {
             'Fn::Base64': [
               '#!/bin/bash',
               'n=0; until yum install iptables-services -y; do n=$((n+1)); [ $n -ge 30 ] && exit 1; echo "yum install failed, retrying in 10 seconds..."; sleep 10; done',
-              ...iptablesSetupCommands,
+              ...iptablesSetupCommands.map(command => `${command} || exit 1`),
             ].join('\n'),
           },
         });

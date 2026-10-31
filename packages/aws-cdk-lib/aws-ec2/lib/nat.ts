@@ -742,11 +742,12 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    * Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
    *
    * The `iptables-services` install is retried up to 30 times, 10 seconds apart, and the
-   * script exits with an error if every attempt fails.
+   * script exits with an error if every attempt fails, or if any of the setup commands
+   * after the install fails.
    *
    * The provider only uses these commands for its default user data when the
    * `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall` feature flag is enabled. If you
-   * build your own `userData` from these commands, you get the retry whatever the flag says.
+   * build your own `userData` from these commands, you get this behavior whatever the flag says.
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
@@ -754,13 +755,15 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     // Retried: other boot-time processes can run `dnf clean all` during the install
     // and delete the downloaded packages.
     'n=0; until yum install iptables-services -y; do n=$((n+1)); [ $n -ge 30 ] && exit 1; echo "yum install failed, retrying in 10 seconds..."; sleep 10; done',
-    'systemctl enable iptables',
-    'systemctl start iptables',
-    'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
-    'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
-    "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE",
-    'sudo /sbin/iptables -F FORWARD',
-    'sudo service iptables save',
+    // Each command exits on failure so a half-configured instance fails the script. Not
+    // `set -e`, which would carry over to commands users append after these.
+    'systemctl enable iptables || exit 1',
+    'systemctl start iptables || exit 1',
+    'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf || exit 1',
+    'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf || exit 1',
+    "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE || exit 1",
+    'sudo /sbin/iptables -F FORWARD || exit 1',
+    'sudo service iptables save || exit 1',
   ];
 
   /**
