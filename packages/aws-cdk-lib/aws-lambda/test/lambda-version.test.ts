@@ -1,5 +1,6 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
+import type { MetricOptions } from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import * as lambda from '../lib';
 
@@ -431,6 +432,58 @@ describe('lambda version', () => {
           MaxExecutionEnvironments: { Ref: 'MaxEnvParam' },
         },
       });
+    });
+  });
+});
+
+describe('version metric Resource dimension', () => {
+  test.each([undefined, false, true])('uses the compatible dimensions with flag %s', (flag) => {
+    const app = new cdk.App({ context: flag === undefined ? {} : { '@aws-cdk/aws-lambda:versionMetrics': flag } });
+    const stack = new cdk.Stack(app, 'Stack');
+    const fn = new lambda.Function(stack, 'Function', {
+      functionName: 'worker',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+    });
+    const version = fn.currentVersion;
+    const dimensions = stack.resolve(version.metricInvocations().dimensions);
+    expect(dimensions).toEqual(flag ? {
+      FunctionName: stack.resolve(fn.functionName),
+      Resource: stack.resolve(`${fn.functionName}:${version.version}`),
+    } : { FunctionName: stack.resolve(`${fn.functionName}:${version.version}`) });
+    expect(version.metric('Errors', { dimensionsMap: { Custom: 'value' } }).dimensions).toEqual({ Custom: 'value' });
+    expect(stack.resolve(version.metric('Errors', { dimensions: { Legacy: 'value' } }).dimensions)).toEqual(flag ? {
+      FunctionName: stack.resolve(fn.functionName),
+      Resource: stack.resolve(`${fn.functionName}:${version.version}`),
+    } : { FunctionName: stack.resolve(`${fn.functionName}:${version.version}`) });
+    expect(version.metric('Errors', { dimensionsMap: { Preferred: 'map' }, dimensions: { Legacy: 'value' } }).dimensions).toEqual({ Preferred: 'map' });
+  });
+
+  test.each<[string, MetricOptions, Record<string, string> | undefined]>([
+    ['defaults', {}, undefined],
+    ['deprecated dimensions', { dimensions: { Legacy: 'value' } }, undefined],
+    ['dimensionsMap', { dimensionsMap: { Custom: 'value' } }, { Custom: 'value' }],
+    ['both options', { dimensionsMap: { Preferred: 'map' }, dimensions: { Legacy: 'value' } }, { Preferred: 'map' }],
+    ['empty dimensionsMap', { dimensionsMap: {} }, {}],
+  ])('matches alias override precedence for %s with unresolved function names', (_name, props, override) => {
+    const app = new cdk.App({ context: { '@aws-cdk/aws-lambda:versionMetrics': true } });
+    const stack = new cdk.Stack(app, 'Stack');
+    const fn = new lambda.Function(stack, 'Function', {
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+    });
+    const version = fn.currentVersion;
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'live', version });
+
+    expect(stack.resolve(version.metricErrors(props).dimensions)).toEqual(override ?? {
+      FunctionName: stack.resolve(fn.functionName),
+      Resource: stack.resolve(`${fn.functionName}:${version.version}`),
+    });
+    expect(stack.resolve(alias.metricErrors(props).dimensions)).toEqual(override ?? {
+      FunctionName: stack.resolve(fn.functionName),
+      Resource: stack.resolve(`${fn.functionName}:live`),
     });
   });
 });

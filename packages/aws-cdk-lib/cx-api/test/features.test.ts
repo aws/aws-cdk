@@ -40,6 +40,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE]: true,
     [feats.ASPECT_STABILIZATION]: true,
     [feats.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT]: true,
+    [feats.LAMBDA_VERSION_METRICS]: false,
     // Add new disabling feature flags below this line
     [feats.LOG_USER_POOL_CLIENT_SECRET_VALUE]: false,
     [feats.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
