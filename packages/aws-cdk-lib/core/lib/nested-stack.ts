@@ -107,6 +107,14 @@ export interface NestedStackProps {
  * nested stack will automatically be translated to stack parameters and
  * outputs.
  *
+ * `Tags.of(nestedStack)` applies tags to resources within the nested stack.
+ * These tags are also copied to the `AWS::CloudFormation::Stack` resource in the
+ * parent template at priority 0, without preserving the nested tag priority.
+ * Tags added from the parent scope have priority 100 by default and take
+ * precedence on that stack resource regardless of the nested tag priority.
+ * Removing a tag in the nested scope does not remove a parent-scope tag from
+ * that stack resource.
+ *
  */
 export class NestedStack extends Stack {
   /**
