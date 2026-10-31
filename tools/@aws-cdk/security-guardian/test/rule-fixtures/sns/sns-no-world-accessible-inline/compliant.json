@@ -1,0 +1,21 @@
+{
+  "Description": "SNS_NO_WORLD_ACCESSIBLE_INLINE passes: the topic's inline policy lets one named role publish",
+  "Resources": {
+    "ScopedPublishTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/Publisher" },
+              "Action": "sns:Publish",
+              "Resource": "arn:aws:sns:us-west-2:123456789012:example-topic"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

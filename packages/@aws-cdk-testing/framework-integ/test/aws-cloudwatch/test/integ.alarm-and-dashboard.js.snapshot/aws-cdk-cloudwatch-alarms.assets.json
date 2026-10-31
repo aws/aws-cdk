@@ -1,16 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "54.0.0",
   "files": {
-    "e67f6a09a927a571ca0657ecb81b20ef21bed19cf09cd155428d83a751ddf8db": {
+    "fbaced1ebeb069ca34b521c9ebd4711223457243da2b1031a347c6b99b62165d": {
       "displayName": "aws-cdk-cloudwatch-alarms Template",
       "source": {
         "path": "aws-cdk-cloudwatch-alarms.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-65ba5193": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e67f6a09a927a571ca0657ecb81b20ef21bed19cf09cd155428d83a751ddf8db.json",
+          "objectKey": "fbaced1ebeb069ca34b521c9ebd4711223457243da2b1031a347c6b99b62165d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
