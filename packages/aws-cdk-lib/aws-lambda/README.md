@@ -2042,3 +2042,16 @@ new lambda.Function(this, 'Function', {
   handler: 'index.handler',
 });
 ```
+
+
+### Imported alias metric dimensions
+
+Enable `@aws-cdk/aws-lambda:importedAliasMetrics` to make metrics on aliases imported
+with `Alias.fromAliasAttributes` use the same dimensions as created aliases:
+`FunctionName` is the unqualified function name and `Resource` is
+`function-name:alias-name`. Without the flag, existing applications retain the
+legacy `FunctionName` dimension. Review alarms and dashboards when enabling the
+flag because they will query a different metric. Explicit `dimensionsMap` options
+continue to override these defaults. As with created aliases, supplying only the
+deprecated `dimensions` option leaves the default alias dimensions in place;
+use `dimensionsMap` to override them.

@@ -61,6 +61,7 @@ export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:remov
 export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
 export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
+export const LAMBDA_IMPORTED_ALIAS_METRICS = '@aws-cdk/aws-lambda:importedAliasMetrics';
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 export const LAMBDA_RECOGNIZE_LAYER_VERSION = '@aws-cdk/aws-lambda:recognizeLayerVersion';
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
@@ -164,6 +165,14 @@ export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 
 export const FLAGS: Record<string, FlagInfo> = {
+  [LAMBDA_IMPORTED_ALIAS_METRICS]: {
+    type: FlagType.BugFix,
+    summary: 'Use alias-scoped metric dimensions for imported Lambda aliases.',
+    detailsMd: 'Enabling this flag changes alarms and dashboards for imported aliases to query the same dimensions as created aliases. Disable it to retain the previous dimensions.',
+    introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: false },
+    recommendedValue: true,
+  },
   //////////////////////////////////////////////////////////////////////
   [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
     type: FlagType.BugFix,
