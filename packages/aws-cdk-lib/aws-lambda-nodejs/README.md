@@ -385,6 +385,28 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 });
 ```
 
+## Symbolic links in bundled assets
+
+Use `bundling.followSymlinks` to configure the symlink handling passed to
+`lambda.Code.fromAsset`. For example, preserve symbolic links created by a command
+hook instead of following their targets while fingerprinting the bundle:
+
+```ts
+import { SymlinkFollowMode } from 'aws-cdk-lib';
+
+new nodejs.NodejsFunction(this, 'symlink-handler', {
+  bundling: {
+    followSymlinks: SymlinkFollowMode.NEVER,
+  },
+});
+```
+
+The default asset behavior is unchanged when this option is omitted. Preserved
+links must resolve in the Lambda execution environment. Following an external
+symlink can read files outside your project, so only follow links whose targets
+you intend to include in the asset. This setting does not change esbuild's module
+resolution; use esbuild's `--preserve-symlinks` option separately if needed.
+
 ## Asset hash
 
 By default the asset hash will be calculated based on the bundled output (`AssetHashType.OUTPUT`).
