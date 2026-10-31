@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "account-policy-field-index/DefaultTest": {
+      "stacks": [
+        "aws-cdk-account-policy-field-index-integ"
+      ],
+      "assertionStack": "account-policy-field-index/DefaultTest/DeployAssert",
+      "assertionStackName": "accountpolicyfieldindexDefaultTestDeployAssert4E01E9B2"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
