@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "DockerfileSpecificDockerignoreTest/DefaultTest": {
+      "stacks": [
+        "integ-assets-dockerfile-specific-dockerignore"
+      ],
+      "assertionStack": "DockerfileSpecificDockerignoreTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DockerfileSpecificDockerignoreTestDefaultTestDeployAssert90DBFA82"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
