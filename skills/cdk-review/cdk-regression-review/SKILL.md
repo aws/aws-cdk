@@ -33,14 +33,11 @@ Work the changed surface rules-first — a method, not a rigid script. Adapt it 
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Input validation**,
    **Token issues**, **JSII-related risks**, **Undefined regressions**, **API Surface Change**, **Behavior
-   Change**. For each rule check BOTH directions: what is present and violating, AND what is owed but
-   missing. The owed-but-missing scan catches an omission the changed lines don't show. Enumerate what the
-   change owes; flag each owed item that is absent.
+   Change**. For each candidate, name one concrete program that works today and breaks after this PR. If
+   you cannot write that program down, there is no regression.
 
 3. **Rate by harm and stop.** Rate every finding by the harm when its mechanism triggers, per
-   `cdk-review-principles` (its severity scale, "Confidence is not severity") — never demote a concrete
-   regression or break to OPTIONAL out of doubt it fires. Stop once you can name the mechanism and cite its
-   rule.
+   `cdk-review-principles`. Stop once you can name the mechanism and cite its rule.
 
 ## What NOT to flag
 
@@ -53,6 +50,11 @@ program. When a defect is in another dimension, leave it — it's outside your s
   input is an improvement). For the boolean-token false-positive guard (a `Token.isUnresolved()` guard on a
   boolean, enum, or construct reference is dead code, and a boolean prop needs no token guard at all), see
   `REG-TOKEN-UNRESOLVED-GUARD` in [`regression-rules.md`](references/regression-rules.md).
+- **Template changes that cannot break a deployment** — a fix that adds a condition, a scoping or a
+  `DependsOn` that only the construct's own resources need, and that cannot fail or change behavior for a
+  stack deploying it today. A changed template alone is not a break.
+- **Hypothetical future breakage** — "if a later refactor…", "if the service adds…". Only a break of
+  code that exists today counts.
 - **Performance and dependency-range opinions** — a micro-optimization or performance opinion with no
   measured regression; a dependency-range bump (`glob ^7 → ^11`) unless you can show it raises a floor
   CDK ships against and thereby breaks existing consumers.

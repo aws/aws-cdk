@@ -79,11 +79,11 @@ questions.
 |----------|--------------------|------|
 | `BLOCKING` | Always | Every blocking issue becomes a finding. |
 | `RECOMMENDED` | Usually | Emit when tied to specific code; consolidate related ones. |
-| `OPTIONAL` | Sparingly | Only if it is a quick fix and the total count is low. |
+| `OPTIONAL` | Sparingly | Only for a small, real defect with a cheap fix, and only if the total count is low. Never for a preference or a test request. |
 
 ### Budget rule
 
-Target **3-7 findings** per review. With more than 7 candidates:
+Post **at most 7 findings** per review; zero is fine. With more than 7 candidates:
 
 1. Keep all `BLOCKING` findings (non-negotiable).
 2. Keep the highest-impact `RECOMMENDED` findings.
