@@ -331,6 +331,7 @@ const provider = ec2.NatProvider.instanceV2({
   instanceType: new ec2.InstanceType('t3.small'),
   creditSpecification: ec2.CpuCredits.UNLIMITED,
   defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+  userData,
 });
 
 const vpc = new ec2.Vpc(this, 'TheVPC', {
@@ -345,6 +346,19 @@ for (const gateway of provider.gatewayInstances) {
   gateway.addSecurityGroup(securityGroup);
 }
 ```
+
+`NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS` retries the `iptables-services` install, because
+other boot-time processes can run `dnf clean all` during the install, and stops the user data script
+with an error if the install or any of the NAT setup commands fails. The provider's own default user
+data only includes this when the `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall` feature flag
+is enabled, but user data built from `DEFAULT_USER_DATA_COMMANDS`, as in the example above, always
+includes it, so commands you add after them don't run if the NAT setup fails.
+
+If your NAT instances already use user data built from `DEFAULT_USER_DATA_COMMANDS`, the first deployment
+after upgrading to a version with these commands changes it: CloudFormation restarts those instances once,
+they come back with new public IP addresses unless you attached Elastic IPs, and the new commands only run
+on instances launched after that. To keep your current user data, list the commands yourself instead of
+using the constant.
 
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
