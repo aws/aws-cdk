@@ -726,6 +726,9 @@ export class Role extends Resource implements IRole {
 
   /**
    * Grant permissions to the given principal to assume this role.
+   *
+   * This only adds an identity-based policy to the principal; it does not update
+   * the role trust policy. A role must explicitly trust itself to assume itself.
    */
   @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal) {
@@ -874,6 +877,9 @@ export interface IRole extends IIdentity, IRoleRef {
 
   /**
    * Grant permissions to the given principal to assume this role.
+   *
+   * This only adds an identity-based policy to the principal; it does not update
+   * the role trust policy. A role must explicitly trust itself to assume itself.
    */
   grantAssumeRole(grantee: IPrincipal): Grant;
 }
