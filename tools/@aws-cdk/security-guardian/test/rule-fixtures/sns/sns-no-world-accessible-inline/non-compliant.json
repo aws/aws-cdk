@@ -1,0 +1,21 @@
+{
+  "Description": "SNS_NO_WORLD_ACCESSIBLE_INLINE fires: the topic's inline policy lets any AWS principal publish",
+  "Resources": {
+    "WorldPublishableTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicPolicy": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "sns:Publish",
+              "Resource": "arn:aws:sns:us-west-2:123456789012:example-topic"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -855,6 +855,15 @@ export class KubernetesVersion {
   public static readonly V1_36 = KubernetesVersion.of('1.36');
 
   /**
+   * Kubernetes version 1.37
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV37Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v37`.
+   */
+  public static readonly V1_37 = KubernetesVersion.of('1.37');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1102,7 +1111,7 @@ export interface GrantAccessOptions {
    * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
    * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
    *
-   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * Note that HYBRID_LINUX and HYPERPOD_LINUX types cannot
    * have access policies attached per AWS EKS API constraints.
    *
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies

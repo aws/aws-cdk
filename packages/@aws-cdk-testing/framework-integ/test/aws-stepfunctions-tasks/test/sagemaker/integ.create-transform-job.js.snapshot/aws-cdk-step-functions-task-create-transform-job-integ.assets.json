@@ -1,15 +1,16 @@
 {
-  "version": "35.0.0",
+  "version": "54.0.0",
   "files": {
-    "17277a722928df6f2a0ba8c8d5225ee786b3be9598d636e6411609b626e5a099": {
+    "206feb74d2681d6cf49c78da2a324ba2d85c3d5bdb894c05dbba476534b3c2e4": {
+      "displayName": "aws-cdk-step-functions-task-create-transform-job-integ Template",
       "source": {
         "path": "aws-cdk-step-functions-task-create-transform-job-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d6a7d6c4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17277a722928df6f2a0ba8c8d5225ee786b3be9598d636e6411609b626e5a099.json",
+          "objectKey": "206feb74d2681d6cf49c78da2a324ba2d85c3d5bdb894c05dbba476534b3c2e4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
