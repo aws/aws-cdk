@@ -255,6 +255,7 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
       eventPattern: props.eventPattern,
       retention: props.retention,
       archiveName: props.archiveName,
+      kmsKey: props.kmsKey,
     });
   }
 
