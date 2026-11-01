@@ -10,7 +10,7 @@ const stack = new Stack(app, 'MetadataContextTestStack', {
 });
 
 // Template-level cross-cutting context
-CfnTemplateMetadataContext.of(stack).add({
+CfnTemplateMetadataContext.of(stack).set({
   arch: 'SQS buffer -> consumer; DLQ for poison msgs',
   must: ['all queues encrypted w/ SSE'],
   ref: [
@@ -19,12 +19,21 @@ CfnTemplateMetadataContext.of(stack).add({
   owner: 'framework-integ-team',
 });
 
+// Resource-level context for every queue; the queue-specific set() below
+// runs later and replaces this value on OrderQueue.
+CfnResourceMetadataContext.of(stack).set({
+  why: 'part of the order-processing subsystem',
+  deps: ['OrderProcessingSubsystem'],
+}, {
+  selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+});
+
 // Resource-level context on an L2: renders onto the primary AWS::SQS::Queue only
 const queue = new sqs.Queue(stack, 'OrderQueue', {
   // Explicit so the template states the encryption the template-level `must` promises.
   encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
-CfnResourceMetadataContext.of(queue).add({
+CfnResourceMetadataContext.of(queue).set({
   why: 'buffer order events async; std queue (throughput > ordering)',
   must: ['VisTimeout >= 6x consumer timeout, else dup on retry'],
   mutable: CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
@@ -32,10 +41,10 @@ CfnResourceMetadataContext.of(queue).add({
   trust: { src: CfnContextTrustSource.AUTHORED, conf: CfnContextTrustConfidence.HIGH },
 });
 
-// Scope-level context propagated to every resource beneath the scope
+// Context on every resource beneath the scope
 const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
-CfnResourceMetadataContext.of(subsystem).add({
+CfnResourceMetadataContext.of(subsystem).set({
   why: 'fan-out of alert events to oncall channels',
 }, {
   selector: ConstructSelector.all(),

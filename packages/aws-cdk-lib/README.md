@@ -1645,15 +1645,14 @@ Context comes in two flavors, each with its own entry point:
 
 ### Resource-level context
 
-Add resource-level context on any construct scope. `add()` is declarative: it
-records the declaration on the scope, and an Aspect resolves it during synthesis,
-so a declaration on a `Stack` also covers resources added to the stack after the
-call:
+Set resource-level context on any construct scope. `set()` stores the Context on
+the scope, and an Aspect applies it during synthesis, so its selector also sees
+resources added after the call. `clear()` records the removal in the same way:
 
 ```typescript
 declare const queue: sqs.Queue;
 
-CfnResourceMetadataContext.of(queue).add({
+CfnResourceMetadataContext.of(queue).set({
   why: 'buffer order events async; 14d retention = compliance window',
   must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
   mutable: CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
@@ -1683,98 +1682,84 @@ This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
 `mutable` is the resource's default change-safety level. `mutability` is a
 *sparse* per-property map: list only the properties that deviate from `mutable`
 (or that are otherwise high-stakes, e.g. replacement-triggering). When both are
-supplied, an entry that repeats the `mutable` value is rejected — the map records
-deviations only.
+supplied in the same `set()` call, an entry that repeats the `mutable` value fails
+synthesis — the map records deviations only. Both record what the team considers
+safe to change, not what CloudFormation can change in place.
 
 ### Targeting: exactly what receives context
 
-By default, `add()` targets the scope's *primary resource*:
+`set()` and `clear()` take the same `CfnResourceMetadataContextOptions`. With no
+options, `ConstructSelector.cfnResource()` selects:
 
 - the scope itself, when the scope is a `CfnResource`; or
-- the `CfnResource` at the end of the scope's
-  [`defaultChild`](https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild)
-  chain — e.g. the
-  `AWS::SQS::Queue` that an `sqs.Queue` L2 designates as its `defaultChild`, or
-  the `AWS::Lambda::Function` inside a `lambda.Function`.
+- the scope's immediate
+  [`defaultChild`](https://docs.aws.amazon.com/cdk/api/v2/docs/constructs.Node.html#defaultchild),
+  when that child is a `CfnResource` — e.g. the `AWS::SQS::Queue` that an
+  `sqs.Queue` L2 designates as its `defaultChild`, or the `AWS::Lambda::Function`
+  inside a `lambda.Function`.
 
-The chain is followed through intermediate constructs, not just one level. If a
-construct's `defaultChild` is itself a construct, CDK follows *that* construct's
-`defaultChild` next, until it reaches a `CfnResource`. For example,
-`cloudfront.experimental.EdgeFunction` designates its internal `lambda.Function`
-as its `defaultChild`, and `lambda.Function` designates its
-`AWS::Lambda::Function`, so context added on the `EdgeFunction` lands on the
-`AWS::Lambda::Function` and still skips the function's generated role.
+The default does not follow a chain through other constructs: if the scope's
+`defaultChild` is itself a construct, nothing is selected. Incidental helper
+resources (auto-created IAM roles/policies, log-retention functions,
+custom-resource plumbing) are never the `defaultChild`, so they are not selected
+by default. Using the default on a scope with no `CfnResource` default child —
+most L3 patterns, such as `ecs_patterns.ApplicationLoadBalancedFargateService`, a
+plain grouping `Construct`, or a `Stack` — fails synthesis.
 
-Incidental helper resources (auto-created IAM roles/policies, log-retention
-functions, custom-resource plumbing) are not on the `defaultChild` chain, so they
-never receive context by default. Applying context to a scope with no
-`defaultChild` — most L3 patterns, such as
-`ecs_patterns.ApplicationLoadBalancedFargateService`, a plain grouping
-`Construct`, or a `Stack` — fails unless `selector` is set (see below).
-
-To reach more than the primary resource, set `selector` to an
-`IConstructSelector`, the selector type that `Mixins.of()` also takes;
-`ConstructSelector` provides the built-in ones. Every selected construct
-contributes CloudFormation resources: a `CfnResource` contributes itself, and any
-other construct contributes its primary resource, if it has one.
-`ConstructSelector.all()` therefore applies the declaration to every resource
+To target other resources, set `selector` to an `IConstructSelector`, the
+selector type that `Mixins.of()` also takes; `ConstructSelector` provides the
+built-in ones. Only selected `CfnResource` constructs are changed; other selected
+constructs are ignored. `ConstructSelector.all()` targets every `CfnResource`
 beneath the scope, helpers included, and `ConstructSelector.resourcesOfType()`
-only to resources of the listed types:
+targets resources of the listed types:
 
 ```typescript
 declare const stack: Stack;
-
-// 1. Default: only the scope's primary resource.
 declare const queue: sqs.Queue;
-CfnResourceMetadataContext.of(queue).add({
+
+// 1. Default: the scope itself or its immediate CfnResource default child.
+CfnResourceMetadataContext.of(queue).set({
   why: 'buffers webhook events for async processing',
 });
 
 // 2. Every resource beneath the scope, helpers included.
-CfnResourceMetadataContext.of(stack).add({
+CfnResourceMetadataContext.of(stack).set({
   deps: ['NetworkStack'],
 }, {
   selector: ConstructSelector.all(),
 });
 
-// 3. Only resources of a specific type.
-CfnResourceMetadataContext.of(stack).add({
+// 3. Only resources of a specific type. The queue above also matches; see
+//    "Replacement and ordering" below for which value it keeps.
+CfnResourceMetadataContext.of(stack).set({
   must: ['delivery settings must preserve in-flight messages'],
 }, {
   selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
 });
-
-// 4. The resources of constructs with a matching ID: here the execution roles
-//    that lambda.Function creates.
-CfnResourceMetadataContext.of(stack).add({
-  must: ['execution roles keep the org permissions boundary'],
-}, {
-  selector: ConstructSelector.byId('ServiceRole'),
-});
 ```
 
-A selection that matches no resource fails synthesis like any other declaration
-that matches nothing.
+`resourcesOfType()`, `byId()`, and `byPath()` narrow the selection, and a custom
+`IConstructSelector` can do the same. Each `set()` or `clear()` call that selects
+no `CfnResource` fails synthesis.
 
-Propagation crosses `NestedStack` boundaries like `Tags` does, so context set on a
-scope containing a `NestedStack` reaches resources in the nested template. It does
-not cross `Stage` boundaries: each Stage is synthesized as its own cloud assembly
-and Aspects are invoked separately for each assembly, so a declaration on an `App`
-whose only children are Stages matches nothing and fails. Declare context inside
-each Stage; this also lets environments carry different guidance:
+Context can be set or cleared on resources in a `NestedStack`. Calls do not apply
+across a `Stage`: each Stage is synthesized as its own cloud assembly and Aspects
+are invoked separately for each assembly, so a call on an `App` whose only
+resources are inside Stages selects nothing and fails. Set context inside each
+Stage; this also lets environments carry different guidance:
 
 ```typescript
-// Each Stage is synthesized as its own cloud assembly and declares its own context.
+// Each Stage is synthesized as its own cloud assembly and sets its own context.
 const dev = new Stage(app, 'Dev');
 new sqs.Queue(new Stack(dev, 'Orders'), 'WebhookQueue');
-CfnResourceMetadataContext.of(dev).add({
+CfnResourceMetadataContext.of(dev).set({
   why: 'development environment; data is disposable',
   mutable: CfnContextMutability.FREE_TO_TUNE,
 }, { selector: ConstructSelector.all() });
 
 const prod = new Stage(app, 'Prod');
 new sqs.Queue(new Stack(prod, 'Orders'), 'WebhookQueue');
-CfnResourceMetadataContext.of(prod).add({
+CfnResourceMetadataContext.of(prod).set({
   must: ['deletion protection and backups stay enabled'],
   mutable: CfnContextMutability.REVIEW_REQUIRED,
 }, { selector: ConstructSelector.all() });
@@ -1783,41 +1768,43 @@ CfnResourceMetadataContext.of(prod).add({
 The queue in `Dev-Orders` renders the `why` and `mutable: free-to-tune`; the queue
 in `Prod-Orders` renders the `must` rule and `mutable: review-required`.
 
-Propagation is explicit because repeating one block on many resources makes it
+Targeting is always explicit because repeating one block on many resources makes it
 look more important than it is and can attach a rule to resources it does not
 govern. A fact that applies to every resource in the template belongs in
 `CfnTemplateMetadataContext` (see below).
 
 #### Helper resources
 
-Adding context on a `lambda.Function` targets the `AWS::Lambda::Function`, not
-its execution role or dead-letter queue. Helpers that the L2 exposes as constructs
-can be targeted through it:
+Setting context on a `lambda.Function` with the default selector targets its
+immediate default child, the `AWS::Lambda::Function`, not its execution role or
+dead-letter queue. Helpers that the L2 exposes as constructs can be targeted
+through those constructs:
 
 ```typescript
 declare const lambdaFunction: lambda.Function;
 
-// The primary resource: the AWS::Lambda::Function, not its generated role.
-CfnResourceMetadataContext.of(lambdaFunction).add({
+// The AWS::Lambda::Function, not its generated role.
+CfnResourceMetadataContext.of(lambdaFunction).set({
   why: 'processes order events from the queue; idempotent on order id',
 });
 
 // A helper the L2 exposes; set when the function was created with a dead-letter queue.
 if (lambdaFunction.deadLetterQueue) {
-  CfnResourceMetadataContext.of(lambdaFunction.deadLetterQueue).add({
+  CfnResourceMetadataContext.of(lambdaFunction.deadLetterQueue).set({
     why: 'stores failed order-processor invocations for replay',
   });
 }
 ```
 
-To target only an L2's helpers, select them by resource type or construct ID
-beneath the L2; a selector that does not match the primary resource leaves it out:
+To target only an L2's helpers, select their CloudFormation resource types
+beneath the L2; a selector that omits `AWS::Lambda::Function` leaves the function
+unchanged:
 
 ```typescript
 declare const lambdaFunction: lambda.Function;
 
 // The role and policies the function creates, not the function itself.
-CfnResourceMetadataContext.of(lambdaFunction).add({
+CfnResourceMetadataContext.of(lambdaFunction).set({
   why: 'created by lambda.Function for the order processor; change them through the function',
 }, {
   selector: ConstructSelector.resourcesOfType('AWS::IAM::Role', 'AWS::IAM::Policy'),
@@ -1832,72 +1819,66 @@ creates a load balancer, a service, and supporting resources:
 declare const service: Construct; // e.g. an ecs_patterns.ApplicationLoadBalancedFargateService
 
 // Apply this rule only to the Application Load Balancer created by the pattern.
-CfnResourceMetadataContext.of(service).add({
+CfnResourceMetadataContext.of(service).set({
   must: ['ALB idle timeout >= backend read timeout'],
 }, {
   selector: ConstructSelector.resourcesOfType('AWS::ElasticLoadBalancingV2::LoadBalancer'),
 });
 ```
 
-### Merging and clearing
+### Replacement and ordering
 
-When more than one applicable entry targets the same resource, entries merge with
-nearest-wins semantics: scalar fields (`why`, `mutable`, `trust`) from entries
-closer to the resource win, while list fields (`must`, `deps`) accumulate and
-de-duplicate. `mutability` maps merge per property, and entries that equal the
-merged `mutable` are dropped. For example:
+Context values are never merged. When a selected `CfnResource` is visited,
+`set()` replaces its complete Context value and `clear()` removes it. When several
+calls select the same resource, the call applied last determines the result.
+Calls are applied by the normal Aspect rules: lower `priority` values run first
+(the default is `AspectPriority.MUTATING`); at the same priority a call on a
+parent scope runs before one on a child scope, and calls on the same scope run in
+call order. For example:
 
 ```typescript
 declare const stack: Stack;
 declare const queue: sqs.Queue;
 
-// Declared on the Stack for every SQS queue.
-CfnResourceMetadataContext.of(stack).add({
+// Set on the Stack for every SQS queue.
+CfnResourceMetadataContext.of(stack).set({
   why: 'part of the order-processing subsystem',
   must: ['queues use the security team customer managed KMS key'],
 }, {
   selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
 });
 
-// Declared on one queue.
-CfnResourceMetadataContext.of(queue).add({
+// Set on one queue.
+CfnResourceMetadataContext.of(queue).set({
   why: 'buffers webhook events for async processing',
   must: ['VisibilityTimeout >= 6x consumer timeout'],
 });
 ```
 
-On that queue's `AWS::SQS::Queue` the closer `why` wins and the `must` entries
-combine, Stack entry first; other queues in the Stack render only the Stack
-declaration:
+On that queue's `AWS::SQS::Queue`, the second `set()` replaces the first; other
+queues in the Stack keep only the Context set on the Stack:
 
 ```json
 {
   "why": "buffers webhook events for async processing",
   "must": [
-    "queues use the security team customer managed KMS key",
     "VisibilityTimeout >= 6x consumer timeout"
   ]
 }
 ```
 
-Repeated `add()` calls on the same scope merge in call order: later calls take
-precedence for `why`, `mutable`, `trust`, and each `mutability` property name;
-`must` and `deps` entries combine.
-
-A declaration propagated from an ancestor also reaches the resources beneath a
-descendant that has its own declaration. To stop ancestor declarations at a scope,
-call `clear()` on it. The ancestor's selector decides which resources are
-candidates, and `clear()` removes every candidate beneath the cleared scope,
-whatever the ancestor selected; declarations on the cleared scope or beneath it
-still apply, and the result is the same whether `clear()` runs before or after
-`add()`:
+`clear()` removes Context from the resources chosen by its selector. A later
+`set()` writes Context again, while a later `clear()` removes it:
 
 ```typescript
 declare const legacyBucket: s3.Bucket;
+const legacyContext = CfnResourceMetadataContext.of(legacyBucket);
 
-// This legacy bucket is exempt from the customer managed KMS key requirement.
-CfnResourceMetadataContext.of(legacyBucket).clear();
-CfnResourceMetadataContext.of(legacyBucket).add({
+legacyContext.set({
+  must: ['buckets use the security team customer managed KMS key'],
+});
+legacyContext.clear();
+legacyContext.set({
   why: 'legacy public assets; migration tracked separately; approved encryption exception',
 });
 ```
@@ -1913,7 +1894,7 @@ A tool that lifts `why` from a source comment writes:
 declare const queue: sqs.Queue;
 
 // Written by an authoring tool from a comment in lib/queue.ts.
-CfnResourceMetadataContext.of(queue).add({
+CfnResourceMetadataContext.of(queue).set({
   why: 'retry buffer for an unreliable dependent payments service',
   trust: {
     src: CfnContextTrustSource.COMMENT,
@@ -1959,14 +1940,18 @@ CloudFormation `Description` (the `description` prop of `Stack`): `Description`
 is one short string (at most 1,024 bytes) that the console stack list and
 `DescribeStacks` show, while template context is a set of named fields returned
 only inside the template body via `GetTemplate`. Avoid repeating the `Description`
-in `arch`, and keep rules and references out of `Description`. Every
-template-context field is optional; supply any combination, and an empty
-declaration is a harmless no-op:
+in `arch`, and keep rules and references out of `Description`.
+
+`set()` replaces the complete template Context value and `clear()` removes it.
+Both change the stack's template metadata immediately, and `Stack.addMetadata()`
+on the same key has the same replacement behavior, so ordinary call order
+determines the result. Every template-context field is optional; supply any
+combination, and `set({})` writes an empty Context object:
 
 ```typescript
 declare const stack: Stack;
 
-CfnTemplateMetadataContext.of(stack).add({
+CfnTemplateMetadataContext.of(stack).set({
   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
   must: ['all data encrypted w/ security-team CMK'],
   ref: [
@@ -1988,9 +1973,8 @@ instructions, and continue with inline context if a reference is unavailable.
 
 ### Writing good context
 
-Every field is optional and CDK adds no requirements beyond the schema; an empty
-declaration is a harmless no-op. The following are recommendations, not enforced
-rules:
+Every field is optional and CDK adds no requirements beyond the schema. The
+following are recommendations, not enforced rules:
 
 - Provide a `why` for every non-trivial resource so consumers understand its
   purpose. Omit Context for a trivial resource whose purpose is already obvious
@@ -2002,8 +1986,7 @@ rules:
 - Pair `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS` with a `must` entry that
   states the rule behind the restriction.
 - A `trust` block describes the source of other content, so it reads best
-  alongside a `why` or `must`; using it alone is valid. An entry may omit `why`
-  or `must` when another applicable entry supplies them.
+  alongside a `why` or `must`; using it alone is valid.
 - A fact that applies to every resource in the template belongs in
   `CfnTemplateMetadataContext`, not on each resource.
 - Keep free-text values terse — drop articles and use symbols (`->`, `>=`, `w/`)
@@ -2012,8 +1995,11 @@ rules:
 
 CDK enforces only the schema's nested requirements: when `trust` is supplied,
 both `src` and `conf` are required (`cite` and `note` remain optional), and in the
-sparse `mutability` map an entry must not repeat `mutable` when both are supplied.
-`add()` never throws; these checks fail synthesis.
+sparse `mutability` map an entry must not repeat `mutable` when both are supplied
+in the same call. Blank strings, empty arrays, empty maps, and an empty Context
+object are written as given. Resource-level `set()` never throws; these checks
+fail synthesis. Template-level `set()` throws immediately when a `ref` entry has
+no `at`.
 
 ### Security
 
@@ -2031,13 +2017,11 @@ Toolkit authored a caller's context.
 
 `com.aws.cloudformation.Context` is a normal metadata key, so a construct library
 or a caller can also write it directly with `CfnResource.addMetadata()`. A block
-written directly is preserved as written unless a resource context declaration
-also targets that resource. It is then treated as a declaration made on that
-resource and takes part in the same merge: a declaration made through the API on
-the resource itself, or on a construct whose primary resource it is, takes
-precedence over it; against declarations made on any other ancestor scope it wins
-single-value fields; and its list fields combine with all of them. Context written
-by a library the caller cannot edit can therefore still be amended or overridden:
+written directly is preserved as written unless a `set()` or `clear()` call later
+selects that resource. `set()` performs the same complete-value write when its
+Aspect runs, and `clear()` removes the key, so Context written by a library the
+caller cannot edit can still be overridden. Conversely, an `addMetadata()` call
+made by an Aspect that runs later replaces a `set()` value:
 
 ```typescript
 declare const queue: sqs.Queue;
@@ -2049,19 +2033,17 @@ cfnQueue.addMetadata('com.aws.cloudformation.Context', {
   must: ['written directly'],
 });
 
-// A declaration on the queue, whose primary resource this is, overrides the directly
-// written `why`; the `must` entries combine.
-CfnResourceMetadataContext.of(queue).add({
+// Setting Context through the typed API replaces the complete Context written above.
+CfnResourceMetadataContext.of(queue).set({
   why: 'declared through the metadata-context API',
-  must: ['declared through the metadata-context API'],
 });
 ```
 
-At template level, a block added with `Stack.addMetadata()` is preserved as long
-as `CfnTemplateMetadataContext` does not target the same stack; if both do,
-synthesis fails with a scoped `ValidationError` — remove one to resolve it.
-Sibling metadata keys (such as your own reverse-DNS tool metadata) are never
-touched.
+The resource contains only the second object; its earlier `must` entry is gone.
+
+At template level, `Stack.addMetadata()` and `CfnTemplateMetadataContext` write
+the same key, and whichever runs last wins. Sibling metadata keys (such as your
+own reverse-DNS tool metadata) are never touched.
 
 The `com.aws.cloudformation.Context` block contains only the fields defined by
 the published schema and does not define extension fields for custom
