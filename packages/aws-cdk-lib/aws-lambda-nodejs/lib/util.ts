@@ -103,6 +103,20 @@ export function tryGetModuleVersionFromRequire(mod: string): string | undefined 
 }
 
 /**
+ * Whether the given TypeScript version needs `--ignoreConfig` to compile
+ * files passed on the command line while a `tsconfig.json` is present.
+ *
+ * TypeScript 6 introduced error TS5112 for this situation, while older
+ * versions reject `--ignoreConfig` as an unknown option.
+ *
+ * Accepts both a plain version (`6.0.3`) and the output of `tsc --version` (`Version 6.0.3`).
+ */
+export function tscRequiresIgnoreConfig(version: string): boolean {
+  const match = version.match(/(\d+)\.\d+/);
+  return match !== null && parseInt(match[1], 10) >= 6;
+}
+
+/**
  * Gets module version from package.json content
  */
 export function tryGetModuleVersionFromPkg(mod: string, pkgJson: { [key: string]: any }, pkgPath: string): string | undefined {
