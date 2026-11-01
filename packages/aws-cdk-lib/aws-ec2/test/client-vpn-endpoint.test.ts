@@ -1,7 +1,7 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { SamlMetadataDocument, SamlProvider } from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import { Stack } from '../../core';
+import { Stack, Tags } from '../../core';
 import * as ec2 from '../lib';
 import { ClientVpnUserBasedAuthentication } from '../lib/client-vpn-endpoint';
 
@@ -338,5 +338,49 @@ test.each([true, false])('client vpn endpoint with disconnectOnSessionTimeout se
 
   Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
     DisconnectOnSessionTimeout: disconnectOnSessionTimeout,
+  });
+});
+
+test('Tags.of applies tags to the Client VPN endpoint via TagSpecifications', () => {
+  const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+  });
+
+  Tags.of(endpoint).add('Name', 'MyClientVpn');
+  Tags.of(endpoint).add('Environment', 'test');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    TagSpecifications: [
+      {
+        ResourceType: 'client-vpn-endpoint',
+        Tags: [
+          {
+            Key: 'Environment',
+            Value: 'test',
+          },
+          {
+            Key: 'Name',
+            Value: 'MyClientVpn',
+          },
+        ],
+      },
+    ],
+  });
+});
+
+test('omits TagSpecifications when no tags are applied', () => {
+  // Construct under the stack (not via vpc.addClientVpnEndpoint) so the
+  // endpoint does not inherit the VPC's Name tag aspect.
+  new ec2.ClientVpnEndpoint(stack, 'Endpoint', {
+    vpc,
+    cidr: '10.100.0.0/16',
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::ClientVpnEndpoint', {
+    TagSpecifications: Match.absent(),
   });
 });
