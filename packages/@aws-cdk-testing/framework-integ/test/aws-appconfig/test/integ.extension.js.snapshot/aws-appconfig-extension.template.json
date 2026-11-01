@@ -149,6 +149,46 @@
     }
    }
   },
+  "MyApplicationAssociationResourceC4C28B1D73A07": {
+   "Type": "AWS::AppConfig::ExtensionAssociation",
+   "Properties": {
+    "ExtensionIdentifier": {
+     "Fn::GetAtt": [
+      "MyEncryptedQueueExtension566F3F9C",
+      "Id"
+     ]
+    },
+    "ExtensionVersionNumber": {
+     "Fn::GetAtt": [
+      "MyEncryptedQueueExtension566F3F9C",
+      "VersionNumber"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":appconfig:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":application/",
+       {
+        "Ref": "MyApplication5C63EC1D"
+       }
+      ]
+     ]
+    }
+   }
+  },
   "MyApplicationAssociationResource7F3E1F71FC034": {
    "Type": "AWS::AppConfig::ExtensionAssociation",
    "Properties": {
@@ -407,6 +447,76 @@
     "Name": "awsappconfigextension-MyQueueExtension-EF6112FA"
    }
   },
+  "MyEncryptedQueueD13FA596": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "KmsMasterKeyId": "alias/aws/sqs"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyEncryptedQueueExtensionRoleF504A2F676ED3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sqs:SendMessage",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "MyEncryptedQueueD13FA596",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigInvokeExtensionEventSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyEncryptedQueueExtension566F3F9C": {
+   "Type": "AWS::AppConfig::Extension",
+   "Properties": {
+    "Actions": {
+     "ON_DEPLOYMENT_START": [
+      {
+       "Name": "awsappconfigextension-MyEncryptedQueueExtension-AF8498CB-0",
+       "Uri": {
+        "Fn::GetAtt": [
+         "MyEncryptedQueueD13FA596",
+         "Arn"
+        ]
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyEncryptedQueueExtensionRoleF504A2F676ED3",
+         "Arn"
+        ]
+       }
+      }
+     ]
+    },
+    "Name": "awsappconfigextension-MyEncryptedQueueExtension-AF8498CB"
+   }
+  },
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic"
   },
@@ -528,6 +638,8 @@
     "Name": "awsappconfigextension-HostedConfiguration-15AED6EE"
    },
    "DependsOn": [
+    "MyEncryptedQueueExtension566F3F9C",
+    "MyEncryptedQueueExtensionRoleF504A2F676ED3",
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
     "MyLambdaExtensionRoleBC958D3F13B04",
@@ -550,6 +662,8 @@
     "ContentType": "application/json"
    },
    "DependsOn": [
+    "MyEncryptedQueueExtension566F3F9C",
+    "MyEncryptedQueueExtensionRoleF504A2F676ED3",
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
     "MyLambdaExtensionRoleBC958D3F13B04",
@@ -581,6 +695,8 @@
     }
    },
    "DependsOn": [
+    "MyEncryptedQueueExtension566F3F9C",
+    "MyEncryptedQueueExtensionRoleF504A2F676ED3",
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
     "MyLambdaExtensionRoleBC958D3F13B04",

@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest": {
       "stacks": [
@@ -15,5 +15,6 @@
       "assertionStack": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert",
       "assertionStackName": "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1023.0"
 }
