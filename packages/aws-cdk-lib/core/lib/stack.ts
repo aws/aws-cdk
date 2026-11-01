@@ -819,7 +819,15 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
+   * The `AWS::NotificationARNs` pseudo parameter for this stack.
+   *
+   * This is a list token that CloudFormation resolves at deployment time to the
+   * notification Amazon Resource Names (ARNs) of the stack. During synthesis it
+   * does not contain the ARNs passed in the `notificationArns` property.
+   *
+   * To configure notification ARNs, set the `notificationArns` property when
+   * creating the stack. Adding elements to the returned list does not configure
+   * notifications, and causes a synthesis error if the list is used afterwards.
    */
   public get notificationArns(): string[] {
     return new ScopedAws(this).notificationArns;
