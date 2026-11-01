@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_quicksight"
+    },
+    "ruby": {
+      "module": "AWSCDK::QuickSight"
     }
   }
 }

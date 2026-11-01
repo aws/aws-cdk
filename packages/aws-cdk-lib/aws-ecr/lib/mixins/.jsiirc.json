@@ -11,6 +11,9 @@
     },
     "go": {
       "packageName": "awsecrmixins"
+    },
+    "ruby": {
+      "module": "AWSCDK::ECR::Mixins"
     }
   }
 }

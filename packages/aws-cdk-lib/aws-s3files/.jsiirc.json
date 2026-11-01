@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_s3files"
+    },
+    "ruby": {
+      "module": "AWSCDK::S3Files"
     }
   }
 }
