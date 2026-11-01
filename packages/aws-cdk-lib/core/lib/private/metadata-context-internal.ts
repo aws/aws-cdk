@@ -1,38 +1,31 @@
-import { UnscopedValidationError } from '../errors';
+import type { IConstruct } from 'constructs';
+import { ValidationError } from '../errors';
 import type { CfnResourceContextProps, CfnTemplateContextProps, CfnContextRef } from '../metadata-context';
 import { lit } from './literal-string';
 
-/**
- * The construct-node metadata type used to stage resource context entries
- * until the rendering aspect writes them onto CloudFormation resources.
- */
-export const RESOURCE_CONTEXT_METADATA_TYPE = 'aws:cdk:metadata-context';
-
-/**
- * The construct-node metadata type that marks a scope where declarations made
- * on ancestor scopes stop.
- */
-export const RESOURCE_CONTEXT_CLEAR_METADATA_TYPE = 'aws:cdk:metadata-context-clear';
+/** The Amazon-owned key under which CloudFormation Context is stored. */
+export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
 
 /**
  * Render explicitly authored props into the advisory schema.
  *
  * The public property names are identical to the field names defined by the
  * published CloudFormation Metadata Context schema, so rendering only drops
- * absent fields and copies arrays/maps defensively.
+ * absent fields and copies arrays/maps defensively. Empty strings, arrays and
+ * maps are structurally valid and are kept.
  */
 export function renderResourceContext(context: CfnResourceContextProps): Record<string, any> {
   const out: Record<string, any> = {};
   if (context.why !== undefined) {
     out.why = context.why;
   }
-  if (context.must !== undefined && context.must.length > 0) {
+  if (context.must !== undefined) {
     out.must = [...context.must];
   }
   if (context.mutable !== undefined) {
     out.mutable = context.mutable;
   }
-  if (context.mutability !== undefined && Object.keys(context.mutability).length > 0) {
+  if (context.mutability !== undefined) {
     out.mutability = { ...context.mutability };
   }
   if (context.trust !== undefined) {
@@ -51,80 +44,33 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
     }
     out.trust = trust;
   }
-  if (context.deps !== undefined && context.deps.length > 0) {
+  if (context.deps !== undefined) {
     out.deps = [...context.deps];
   }
   return out;
 }
 
 /**
- * Merge two context blocks; fields in `overriding` win over `base` for
- * scalars, while list fields accumulate (base first) and the `mutability` map
- * merges per key.
- *
- * Either block may be one written directly with `addMetadata()`, which CDK
- * does not validate: a list field holding a single value joins the list, and
- * unknown fields are kept.
+ * Render template-level props into the advisory schema, keeping empty values.
  */
-export function mergeResourceContext(base: Record<string, any> | undefined, overriding: Record<string, any>): Record<string, any> {
-  if (base === undefined) {
-    return { ...overriding };
+export function renderTemplateContext(context: CfnTemplateContextProps): Record<string, any> {
+  const out: Record<string, any> = {};
+  if (context.arch !== undefined) {
+    out.arch = context.arch;
   }
-  const out: Record<string, any> = { ...base };
-  for (const [field, value] of Object.entries(overriding)) {
-    if (value === undefined) {
-      continue;
-    }
-    if (field === 'must' || field === 'deps') {
-      out[field] = dedupe([...asList(base[field]), ...asList(value)]);
-    } else if (field === 'mutability' && isPlainObject(value)) {
-      out[field] = { ...(isPlainObject(base[field]) ? base[field] : {}), ...value };
-    } else {
-      out[field] = value;
-    }
+  if (context.must !== undefined) {
+    out.must = [...context.must];
+  }
+  if (context.ref !== undefined) {
+    out.ref = context.ref.map(renderRef);
+  }
+  if (context.owner !== undefined) {
+    out.owner = context.owner;
   }
   return out;
 }
 
-function asList(value: unknown): unknown[] {
-  if (value === undefined) {
-    return [];
-  }
-  return Array.isArray(value) ? value : [value];
-}
-
-/**
- * Drop `mutability` entries equal to the merged `mutable`, and the map itself
- * when no entry is left.
- */
-export function dropRedundantMutability(context: Record<string, any>): Record<string, any> {
-  if (context.mutable === undefined || !isPlainObject(context.mutability)) {
-    return context;
-  }
-  const out: Record<string, any> = { ...context };
-  const mutability: Record<string, any> = {};
-  for (const [property, level] of Object.entries(context.mutability)) {
-    if (level !== context.mutable) {
-      mutability[property] = level;
-    }
-  }
-  if (Object.keys(mutability).length > 0) {
-    out.mutability = mutability;
-  } else {
-    delete out.mutability;
-  }
-  return out;
-}
-
-export function isPlainObject(value: unknown): value is Record<string, any> {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-  const prototype = Object.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
-}
-
-export function renderRef(ref: CfnContextRef): any {
+function renderRef(ref: CfnContextRef): any {
   if (ref.has === undefined && ref.scope === undefined) {
     // Bare-string form keeps templates terse.
     return ref.at;
@@ -137,10 +83,6 @@ export function renderRef(ref: CfnContextRef): any {
     out.scope = ref.scope;
   }
   return out;
-}
-
-export function dedupe<T>(entries: T[]): T[] {
-  return [...new Set(entries)];
 }
 
 export function validateResourceContext(context: CfnResourceContextProps): string[] {
@@ -177,15 +119,14 @@ function validateMutability(context: CfnResourceContextProps): string[] {
     .map(([property]) => `MetadataContext mutability entry '${property}' must not repeat mutable ${JSON.stringify(context.mutable)}; the map records deviations only`);
 }
 
-export function validateTemplateContext(context: CfnTemplateContextProps) {
+export function validateTemplateContext(scope: IConstruct, context: CfnTemplateContextProps) {
   // Every top-level field is optional and blank strings are structurally
-  // valid, so an empty declaration is a harmless no-op handled by the caller.
-  // The schema does require an `at` on every rich ref object, so enforce its
-  // presence and type — but not that it is non-blank (an empty string is a
-  // valid string).
+  // valid. The schema does require an `at` on every rich ref object, so
+  // enforce its presence and type — but not that it is non-blank (an empty
+  // string is a valid string).
   for (const ref of context.ref ?? []) {
     if (typeof ref.at !== 'string') {
-      throw new UnscopedValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext ref entries require an \'at\' path');
+      throw new ValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext ref entries require an \'at\' path', scope);
     }
   }
 }

@@ -1,32 +1,17 @@
 import type { IConstruct } from 'constructs';
-import type { AspectOptions, IAspect } from './aspect';
+import type { IAspect } from './aspect';
 import { Aspects, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
-import { ValidationError } from './errors';
 import type { IConstructSelector } from './mixins/selectors';
 import { ConstructSelector } from './mixins/selectors';
-import { STAGE_TYPE } from './private/core-construct-finders';
-import { lit } from './private/literal-string';
 import {
-  RESOURCE_CONTEXT_CLEAR_METADATA_TYPE,
-  RESOURCE_CONTEXT_METADATA_TYPE,
-  dedupe,
-  dropRedundantMutability,
-  isPlainObject,
-  mergeResourceContext,
-  renderRef,
+  METADATA_CONTEXT_KEY,
   renderResourceContext,
+  renderTemplateContext,
   validateResourceContext,
   validateTemplateContext,
 } from './private/metadata-context-internal';
-import {
-  METADATA_CONTEXT_KEY,
-  clearResourceMetadataContext,
-  getTemplateMetadataContext,
-  setResourceMetadataContext,
-  setTemplateMetadataContext,
-} from './private/metadata-context-metadata';
-import { Stack } from './stack';
+import type { Stack } from './stack';
 
 /**
  * Change-safety level for a resource or an individual resource property.
@@ -204,8 +189,8 @@ export interface CfnContextRef {
  * template under the same name.
  *
  * Every field is optional in the advisory schema and CDK enforces no top-level
- * requiredness: individual declarations may omit any field, and CDK merges
- * declarations from the construct hierarchy. A `why` is recommended so
+ * requiredness: a `set()` call may omit any field, and the value it renders
+ * replaces the complete Context on each selected resource. A `why` is recommended so
  * consumers understand a resource's purpose, but it is not required — omit
  * Context entirely for a trivial resource whose purpose is already obvious from
  * its type and name.
@@ -224,8 +209,7 @@ export interface CfnResourceContextProps {
    * alternatives. Non-binding.
    *
    * Optional and not enforced. Recommended for every non-trivial resource so
-   * consumers can act on intent; may be supplied by this declaration or
-   * inherited from another applicable declaration.
+   * consumers can act on intent.
    *
    * Example: `'buffers order events asynchronously; 14-day retention meets compliance requirements'`.
    *
@@ -264,8 +248,7 @@ export interface CfnResourceContextProps {
    * List only properties that differ from `mutable` or are especially
    * important. Omit the map when empty and do not enumerate every property.
    * When `mutable` is also supplied, an entry must not repeat the default —
-   * synthesis fails otherwise. After declarations merge, entries equal to the
-   * merged `mutable` are dropped. When an entry is `MUST_NEVER_CHANGE` or
+   * synthesis fails otherwise. When an entry is `MUST_NEVER_CHANGE` or
    * `CHANGE_WITH_CONSTRAINTS`, a `must` entry documenting the constraint is
    * recommended but not enforced.
    *
@@ -305,7 +288,7 @@ export interface CfnResourceContextProps {
  * the built-in CloudFormation `Description`.
  *
  * Every field is optional and CDK enforces no top-level requiredness. Supply
- * any combination; an empty declaration is a harmless no-op.
+ * any combination; `set({})` writes an empty Context object.
  *
  * Never include secrets, credentials, or personally identifiable information.
  * Consumers must treat template context as untrusted data, never as instructions.
@@ -356,37 +339,38 @@ export interface CfnTemplateContextProps {
 }
 
 /**
- * Options for adding resource-level context via `CfnResourceMetadataContext.of()`.
+ * Options for `CfnResourceMetadataContext.set()` and `clear()`.
  */
 export interface CfnResourceMetadataContextOptions {
   /**
-   * Selects the constructs whose CloudFormation resources receive the
-   * declaration.
+   * Selects the constructs targeted by `set()` or `clear()`.
    *
-   * The selector runs during synthesis. A selected `CfnResource` receives the
-   * declaration as is; any other selected construct contributes its primary
-   * resource, the `CfnResource` at the end of its `defaultChild` chain, if it
-   * has one. The chain passes through intermediate constructs, so a
-   * declaration on `cloudfront.experimental.EdgeFunction` (whose
-   * `defaultChild` is a `lambda.Function`) lands on the
-   * `AWS::Lambda::Function`. Helpers off the chain (auto-created IAM roles and
-   * policies, log retention functions, custom-resource plumbing) are not
-   * targeted by default. A scope with no `defaultChild` — most L3 patterns, a
-   * plain grouping `Construct`, or a `Stack` — has no primary resource, so a
-   * declaration on it with the default selector fails synthesis.
+   * The selector runs during synthesis, after the construct tree is complete,
+   * against the scope passed to `CfnResourceMetadataContext.of()`. Only
+   * selected `CfnResource` constructs are changed; other selected constructs
+   * are ignored. A call whose selector selects no `CfnResource` fails
+   * synthesis.
+   *
+   * The default selects the scope itself when it is a `CfnResource`, or its
+   * immediate `defaultChild` when that child is a `CfnResource`. It does not
+   * follow a `defaultChild` chain through other constructs, and it skips
+   * helper resources such as auto-created IAM roles.
    *
    * Use `ConstructSelector.all()` to target every `CfnResource` beneath the
    * scope, helpers included, or `ConstructSelector.resourcesOfType()`,
-   * `byId()` or `byPath()` to narrow the selection. Declarations reach
-   * resources in a `NestedStack` but never cross a `Stage`, because each Stage
-   * is synthesized as its own cloud assembly.
+   * `byId()` or `byPath()` to narrow the selection. Resources in a
+   * `NestedStack` can be selected; resources beneath a `Stage` cannot, because
+   * each Stage is synthesized as its own cloud assembly.
    *
-   * @default ConstructSelector.onlyItself()
+   * @default ConstructSelector.cfnResource()
    */
   readonly selector?: IConstructSelector;
 
   /**
-   * The priority to use when applying the underlying aspect.
+   * The priority of the underlying aspect.
+   *
+   * Lower priorities run first. When several calls select the same resource,
+   * the call applied last determines the result.
    *
    * @default AspectPriority.MUTATING
    */
@@ -394,8 +378,8 @@ export interface CfnResourceMetadataContextOptions {
 }
 
 /**
- * Manages resource-level `Metadata["com.aws.cloudformation.Context"]` blocks for CloudFormation
- * resources within a construct scope.
+ * Sets or clears resource-level `Metadata["com.aws.cloudformation.Context"]`
+ * on CloudFormation resources within a construct scope.
  *
  * `Metadata["com.aws.cloudformation.Context"]` is structured, advisory context embedded in
  * CloudFormation templates. It carries the *why* behind infrastructure —
@@ -403,17 +387,14 @@ export interface CfnResourceMetadataContextOptions {
  * that humans and automated tools modifying the deployed template later can
  * act with the author's intent instead of guessing it.
  *
- * By default context targets only the scope's primary resource (the scope
- * itself when it is a `CfnResource`, or the end of its `defaultChild` chain).
- * Set `selector` to target other resources beneath the scope. Every
- * declaration must match at least one CloudFormation resource; otherwise
- * synthesis fails.
- * When multiple applicable entries target the same resource, they merge with
- * nearest-wins semantics: scalar fields (`why`, `mutable`, `trust`) from
- * entries closer to the resource win, while list-valued fields (`must`,
- * `deps`) accumulate and de-duplicate, and the `mutability` map merges per
- * property. Entries equal to the merged `mutable` are dropped from the merged
- * `mutability` map.
+ * Each `set()` or `clear()` call registers an Aspect on the scope with the
+ * call's selector and priority. When the Aspect visits a selected
+ * `CfnResource`, `set()` replaces the complete Context value and `clear()`
+ * removes it. Values are never merged: lower Aspect priorities run first; at
+ * the same priority an Aspect on a parent scope runs before one on a child
+ * scope, and calls on the same scope run in call order. The last applied
+ * call determines the result, including over Context written directly with
+ * `CfnResource.addMetadata()` while the construct tree was built.
  *
  * Use `CfnTemplateMetadataContext` for template-level (stack-wide) context.
  *
@@ -421,7 +402,7 @@ export interface CfnResourceMetadataContextOptions {
  *
  * @example
  * declare const queue: sqs.Queue;
- * CfnResourceMetadataContext.of(queue).add({
+ * CfnResourceMetadataContext.of(queue).set({
  *   why: 'buffer order events async; 14d retention = compliance window',
  *   must: ['VisTimeout >= 6x fn timeout, else dup on retry'],
  *   mutable: CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
@@ -432,7 +413,7 @@ export class CfnResourceMetadataContext {
   /**
    * Returns the resource context API for the given scope.
    *
-   * @param scope The scope on which to add context
+   * @param scope The scope whose resources the returned API sets or clears Context on
    */
   public static of(scope: IConstruct): CfnResourceMetadataContext {
     return new CfnResourceMetadataContext(scope);
@@ -442,62 +423,53 @@ export class CfnResourceMetadataContext {
   }
 
   /**
-   * Add a resource-level context block targeting resources within this scope.
+   * Replaces the Context on the resources selected by `options`.
    *
-   * The declaration is resolved during synthesis, so it also covers
-   * constructs added beneath the scope after this call. This method never
-   * throws; invalid values and a declaration that matches no resource fail
-   * synthesis.
-   *
-   * Calling `add()` multiple times on the same scope merges the blocks:
-   * scalar fields (`why`, `mutable`, `trust`) from later calls override
-   * earlier ones; list fields and the `mutability` map accumulate.
+   * The selector runs during synthesis, so it also covers resources added
+   * beneath the scope after this call. This method never throws; invalid
+   * values and a call that selects no `CfnResource` fail synthesis.
    */
-  public add(context: CfnResourceContextProps, options: CfnResourceMetadataContextOptions = {}) {
-    const staged: StagedEntry = { context };
-    if (options.selector !== undefined) {
-      stagedSelectors.set(staged, options.selector);
-    }
-
-    // Stage the entry as construct-node metadata so the rendering aspect can
-    // walk ancestor scopes deterministically (nearest-wins) regardless of
-    // aspect invocation order.
-    this.scope.node.addMetadata(RESOURCE_CONTEXT_METADATA_TYPE, staged, { stackTrace: false });
-    this.scope.node.addValidation({
-      validate: () => [
-        ...validateResourceContext(context),
-        ...(matchedStagedEntries.has(staged)
-          ? []
-          : [
-            'resource context declaration matched no CloudFormation resources; '
-            + 'target a CfnResource or an L2 with a defaultChild, set a selector such as '
-            + 'ConstructSelector.all() or ConstructSelector.resourcesOfType() for an L3, grouping construct or Stack, '
-            + 'declare context inside each Stage, or adjust the selector',
-          ]),
-      ],
-    });
-
-    const aspectOptions: AspectOptions = { priority: options.priority ?? AspectPriority.MUTATING };
-    const aspects = Aspects.of(this.scope);
-    if (!aspects.all.some((aspect) => aspect instanceof MetadataContextAspect)) {
-      aspects.add(new MetadataContextAspect(), aspectOptions);
-    }
+  public set(context: CfnResourceContextProps, options: CfnResourceMetadataContextOptions = {}): void {
+    // Render now so the value written at synthesis is the one validated here,
+    // even if the caller mutates `context` afterwards.
+    const rendered: CfnResourceContextProps = renderResourceContext(context);
+    this.addResourceAspect(
+      (resource) => resource.addMetadata(METADATA_CONTEXT_KEY, renderResourceContext(rendered)),
+      options,
+      validateResourceContext(rendered),
+    );
   }
 
   /**
-   * Stops declarations made on ancestor scopes from reaching the resources
-   * beneath this scope.
+   * Removes the Context from the resources selected by `options`.
    *
-   * Declarations made on this scope or beneath it still apply, whether they
-   * are added before or after this call.
+   * The selector runs during synthesis. A call that selects no `CfnResource`
+   * fails synthesis.
    */
-  public clear() {
-    this.scope.node.addMetadata(RESOURCE_CONTEXT_CLEAR_METADATA_TYPE, true, { stackTrace: false });
+  public clear(options: CfnResourceMetadataContextOptions = {}): void {
+    this.addResourceAspect((resource) => deleteContext(resource.cfnOptions.metadata), options, []);
+  }
+
+  private addResourceAspect(
+    applyToResource: (resource: CfnResource) => void,
+    options: CfnResourceMetadataContextOptions,
+    valueErrors: string[],
+  ): void {
+    const aspect = new CfnResourceMetadataContextAspect(
+      this.scope,
+      options.selector ?? ConstructSelector.cfnResource(),
+      applyToResource,
+    );
+    Aspects.of(this.scope).add(aspect, { priority: options.priority ?? AspectPriority.MUTATING });
+    this.scope.node.addValidation({
+      validate: () => aspect.hasSelectedResource ? valueErrors : [...valueErrors, NO_RESOURCE_SELECTED_ERROR],
+    });
   }
 }
 
 /**
- * Manages the template-level `Metadata["com.aws.cloudformation.Context"]` block for a stack.
+ * Sets or clears the template-level `Metadata["com.aws.cloudformation.Context"]`
+ * block for a stack.
  *
  * Template-level context holds cross-cutting facts stated once: the
  * architecture overview, template-wide invariants, external context
@@ -505,11 +477,15 @@ export class CfnResourceMetadataContext {
  * the synthesized CloudFormation template. For per-resource context, use
  * `CfnResourceMetadataContext`.
  *
+ * `set()` and `clear()` change the stack's template metadata immediately, like
+ * `Stack.addMetadata()` on the same key, so ordinary call order determines
+ * the result.
+ *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema
  *
  * @example
  * declare const stack: Stack;
- * CfnTemplateMetadataContext.of(stack).add({
+ * CfnTemplateMetadataContext.of(stack).set({
  *   arch: 'SQS buffer -> Lambda -> DynamoDB; DLQ for poison msgs',
  *   must: ['all data encrypted w/ security-team CMK'],
  *   owner: 'order-processing-team',
@@ -529,204 +505,78 @@ export class CfnTemplateMetadataContext {
   }
 
   /**
-   * Add template-level context to this stack's template.
-   *
-   * Calling this method multiple times merges blocks: `arch` and `owner`
-   * from later calls win, `must` and `ref` entries accumulate.
+   * Replaces the template Context of this stack.
    */
-  public add(context: CfnTemplateContextProps) {
-    validateTemplateContext(context);
+  public set(context: CfnTemplateContextProps): void {
+    validateTemplateContext(this.stack, context);
+    this.stack.addMetadata(METADATA_CONTEXT_KEY, renderTemplateContext(context));
+  }
 
-    const existing = getTemplateMetadataContext(this.stack) ?? {};
-    const merged: Record<string, any> = { ...existing };
-
-    if (context.arch !== undefined) {
-      merged.arch = context.arch;
+  /**
+   * Removes the template Context of this stack.
+   */
+  public clear(): void {
+    const metadata = this.stack.templateOptions.metadata;
+    deleteContext(metadata);
+    // Unlike resource metadata, an empty template Metadata object is rendered
+    // as `Metadata: {}`; drop it so clearing leaves no trace in the template.
+    if (metadata !== undefined && Object.keys(metadata).length === 0) {
+      this.stack.templateOptions.metadata = undefined;
     }
-    if (context.must !== undefined && context.must.length > 0) {
-      merged.must = dedupe([...(existing.must ?? []), ...context.must]);
-    }
-    if (context.ref !== undefined && context.ref.length > 0) {
-      const rendered = context.ref.map(renderRef);
-      merged.ref = [...(existing.ref ?? []), ...rendered];
-    }
-    if (context.owner !== undefined) {
-      merged.owner = context.owner;
-    }
-
-    if (Object.keys(merged).length === 0) {
-      return;
-    }
-
-    setTemplateMetadataContext(this.stack, merged);
   }
 }
 
-/**
- * A staged context entry recovered from construct-node metadata.
- *
- * Kept as plain data because construct-node metadata is serialized into the
- * cloud assembly; the entry's selector is kept in `stagedSelectors` instead.
- */
-interface StagedEntry {
-  readonly context: CfnResourceContextProps;
-}
+const NO_RESOURCE_SELECTED_ERROR = 'metadata context set() or clear() selected no CfnResource; '
+  + 'target a CfnResource or a construct whose defaultChild is a CfnResource, set a selector such as '
+  + 'ConstructSelector.all() or ConstructSelector.resourcesOfType(), or call the API inside each Stage';
 
 /**
- * The resources a staged entry's selector resolved to.
+ * Applies one `CfnResourceMetadataContext.set()` or `clear()` call to the
+ * `CfnResource` constructs its selector selects beneath the scope.
  */
-interface Selection {
-  /** Every construct beneath the scope when the selector ran. */
-  readonly scanned: WeakSet<IConstruct>;
-  readonly resources: Set<CfnResource>;
-}
+class CfnResourceMetadataContextAspect implements IAspect {
+  private selection?: { readonly scanned: Set<IConstruct>; readonly selected: Set<IConstruct> };
+  private selectedResource = false;
 
-const stagedSelectors = new WeakMap<StagedEntry, IConstructSelector>();
-const selections = new WeakMap<StagedEntry, Selection>();
-const matchedStagedEntries = new WeakSet<StagedEntry>();
+  constructor(
+    private readonly scope: IConstruct,
+    private readonly selector: IConstructSelector,
+    private readonly applyToResource: (resource: CfnResource) => void,
+  ) {
+  }
 
-/**
- * The aspect that renders staged context entries into `Metadata["com.aws.cloudformation.Context"]`
- * blocks on CloudFormation resources.
- *
- * This is an internal implementation detail of `CfnResourceMetadataContext`;
- * it is registered automatically by `CfnResourceMetadataContext.of(scope).add()`.
- */
-class MetadataContextAspect implements IAspect {
+  public get hasSelectedResource(): boolean {
+    return this.selectedResource;
+  }
+
   public visit(node: IConstruct): void {
-    // Aspect traversal is pre-order. Reset declarations staged on this node
-    // before visiting descendants so repeated synthesis selects and validates
-    // against the current traversal only.
-    for (const metadataEntry of node.node.metadata) {
-      if (metadataEntry.type === RESOURCE_CONTEXT_METADATA_TYPE) {
-        matchedStagedEntries.delete(metadataEntry.data as StagedEntry);
-        selections.delete(metadataEntry.data as StagedEntry);
-      }
+    if (node === this.scope) {
+      this.selection = undefined;
+      this.selectedResource = false;
     }
 
-    if (!CfnResource.isCfnResource(node)) {
+    if (!CfnResource.isCfnResource(node) || !this.selects(node)) {
       return;
     }
+    this.selectedResource = true;
+    this.applyToResource(node);
+  }
 
-    clearResourceMetadataContext(node);
-
-    // Walk ancestor scopes inside the current assembly root -> leaf. A Stage is
-    // a cloud-assembly boundary, so declarations above the nearest Stage are
-    // intentionally excluded even when an in-stage aspect visits the resource.
-    // Declarations above the deepest cleared scope still count as matched but
-    // do not apply.
-    const scopes = node.node.scopes;
-    let assemblyRootIndex = 0;
-    let clearedIndex = 0;
-    for (let i = 0; i < scopes.length; i++) {
-      if (STAGE_TYPE.isMarked(scopes[i])) {
-        assemblyRootIndex = i;
-      }
-      if (scopes[i].node.metadata.some((entry) => entry.type === RESOURCE_CONTEXT_CLEAR_METADATA_TYPE)) {
-        clearedIndex = i;
-      }
+  private selects(resource: CfnResource): boolean {
+    // Other aspects may add resources while aspects run, so re-run the
+    // selector when visiting a construct it has not seen yet.
+    if (this.selection === undefined || !this.selection.scanned.has(resource)) {
+      this.selection = {
+        scanned: new Set(this.scope.node.findAll()),
+        selected: new Set(this.selector.select(this.scope)),
+      };
     }
-
-    const declarations: Array<{ readonly scopeIndex: number; readonly block: Record<string, any> }> = [];
-    for (let i = assemblyRootIndex; i < scopes.length; i++) {
-      for (const metadataEntry of scopes[i].node.metadata) {
-        if (metadataEntry.type !== RESOURCE_CONTEXT_METADATA_TYPE) {
-          continue;
-        }
-        const staged = metadataEntry.data as StagedEntry;
-        if (!selects(scopes[i], staged, node)) {
-          continue;
-        }
-        matchedStagedEntries.add(staged);
-        if (i >= clearedIndex) {
-          declarations.push({ scopeIndex: i, block: renderResourceContext(staged.context) });
-        }
-      }
-    }
-
-    if (declarations.length === 0) {
-      // A directly written block stays as written.
-      return;
-    }
-
-    // A directly written block is a declaration on the resource: it ranks just
-    // below declarations on the resource and on the constructs whose primary
-    // resource it is, and above every other ancestor's.
-    const direct = node.getMetadata(METADATA_CONTEXT_KEY);
-    if (direct !== undefined && !isPlainObject(direct)) {
-      throw new ValidationError(
-        lit`MetadataContextNotAnObject`,
-        `the '${METADATA_CONTEXT_KEY}' metadata written directly on this resource is not an object and cannot be merged with resource context declarations`,
-        node,
-      );
-    }
-    const ownIndex = direct === undefined ? scopes.length : primaryScopeIndex(scopes);
-    const blocks = [
-      ...declarations.filter((d) => d.scopeIndex < ownIndex).map((d) => d.block),
-      ...(direct === undefined ? [] : [direct]),
-      ...declarations.filter((d) => d.scopeIndex >= ownIndex).map((d) => d.block),
-    ];
-    const merged = dropRedundantMutability(blocks.reduce<Record<string, any> | undefined>(mergeResourceContext, undefined) ?? {});
-    if (Object.keys(merged).length === 0) {
-      return;
-    }
-
-    setResourceMetadataContext(node, merged);
+    return this.selection.selected.has(resource);
   }
 }
 
-/**
- * Whether `staged`, declared on `scope`, selects `resource`.
- *
- * The selection is cached per traversal and recomputed when `resource` was
- * added after the selector last ran.
- */
-function selects(scope: IConstruct, staged: StagedEntry, resource: CfnResource): boolean {
-  let selection = selections.get(staged);
-  if (selection === undefined || !selection.scanned.has(resource)) {
-    const resources = new Set<CfnResource>();
-    for (const construct of (stagedSelectors.get(staged) ?? ConstructSelector.onlyItself()).select(scope)) {
-      const primary = primaryResource(construct);
-      if (primary !== undefined) {
-        resources.add(primary);
-      }
-    }
-    selection = { scanned: new WeakSet(scope.node.findAll()), resources };
-    selections.set(staged, selection);
+function deleteContext(metadata: { [key: string]: any } | undefined): void {
+  if (metadata !== undefined) {
+    delete metadata[METADATA_CONTEXT_KEY];
   }
-  return selection.resources.has(resource);
-}
-
-/**
- * The `CfnResource` reached from `construct` by following `defaultChild`
- * links: the construct itself when it is a `CfnResource`, or the end of its
- * `defaultChild` chain (e.g. the `AWS::SQS::Queue` designated as the
- * `defaultChild` of an `sqs.Queue`).
- *
- * A Stack has no primary resource. Reading `defaultChild` throws (in the
- * constructs library) when a construct has both a `Resource` and a `Default`
- * child. The error is not caught: it names the construct at fault and is the
- * same error any CDK code reading `defaultChild` produces.
- */
-function primaryResource(construct: IConstruct): CfnResource | undefined {
-  let current: IConstruct | undefined = construct;
-  while (current !== undefined && !Stack.isStack(current)) {
-    if (CfnResource.isCfnResource(current)) {
-      return current;
-    }
-    current = current.node.defaultChild;
-  }
-  return undefined;
-}
-
-/**
- * Index in `scopes` (ending at a resource) of the outermost construct whose
- * primary resource is that resource.
- */
-function primaryScopeIndex(scopes: IConstruct[]): number {
-  let index = scopes.length - 1;
-  while (index > 0 && !Stack.isStack(scopes[index - 1]) && scopes[index - 1].node.defaultChild === scopes[index]) {
-    index--;
-  }
-  return index;
 }
