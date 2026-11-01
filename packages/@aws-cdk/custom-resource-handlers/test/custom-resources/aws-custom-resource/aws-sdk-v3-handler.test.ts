@@ -66,11 +66,13 @@ jest.mock('@aws-sdk/credential-providers', () => {
 jest.mock('https', () => {
   return {
     ...jest.requireActual('https'),
-    request: (_: any, callback: () => void) => {
+    request: (_: any, callback: (res: any) => void) => {
       return {
         on: () => undefined,
         write: () => true,
-        end: callback,
+        // Invoke the response callback with a successful response so the
+        // handler's status-code check (>= 400 => retry/reject) passes.
+        end: () => callback({ statusCode: 200, resume: () => undefined }),
       };
     },
   };
