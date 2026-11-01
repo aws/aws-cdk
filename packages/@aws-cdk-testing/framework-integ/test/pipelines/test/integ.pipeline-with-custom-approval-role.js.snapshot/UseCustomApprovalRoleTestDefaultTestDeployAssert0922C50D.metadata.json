@@ -1,0 +1,62 @@
+{
+  "/UseCustomApprovalRoleTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-with-custom-approval-role.js:44:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UseCustomApprovalRoleTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-with-custom-approval-role.js:48:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UseCustomApprovalRoleTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "visit (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/alexedwards/sourcecode/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexedwards/sourcecode/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-with-custom-approval-role.js:48:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
