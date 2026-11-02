@@ -1,26 +1,25 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
 import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
+import { iterateAssembliesPostorder, iterateAssembliesPreorder } from './construct-iteration';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
-import { App } from '../app';
+import type { App } from '../app';
 import { _aspectTreeRevisionReader } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
 import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
-import { STAGE_TYPE } from './core-construct-finders';
+import { APP_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
-import { DEFAULT_STACK_FRAME_FINDER } from './stack-trace';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { formatValidationReports, humanFriendlyFilename, stripAnsi } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation, ViolationStackTraces } from '../validation/private/report';
 import { ExtraObjectData, isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 import { namespaceFromPluginName, normalizeValidationId } from '../validation/private/validation-id';
@@ -31,28 +30,29 @@ const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
  * Invoke validation plugins for all stages in an App.
  */
 export function validateTemplates(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
-  if (!App.isApp(root)) return;
+  if (!APP_TYPE.isMarked(root)) return;
 
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
   const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
 
-  visitAssemblies(root, 'post', construct => {
-    if (STAGE_TYPE.isMarked(construct)) {
-      const stageAssembly = assemblies.get(construct.artifactId);
-      if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+  // The default plugin is configured at root level, but is auto-added to the list per stage.
+  const addDefaultPlugin = defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root);
 
-      const plugins = pluginsToEvaluate(root, construct);
-      for (const plugin of plugins) {
-        if (!stacksByPlugin.has(plugin)) {
-          stacksByPlugin.set(plugin, new Set());
-        }
-        for (const stack of stageAssembly.stacksRecursively) {
-          stacksByPlugin.get(plugin)!.add(stack);
-        }
+  for (const stage of iterateAssembliesPostorder(root)) {
+    const stageAssembly = assemblies.get(stage.artifactId);
+    if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${stage.stageName}`);
+
+    const plugins = pluginsToEvaluate(root, stage, addDefaultPlugin);
+    for (const plugin of plugins) {
+      if (!stacksByPlugin.has(plugin)) {
+        stacksByPlugin.set(plugin, new Set());
+      }
+      for (const stack of stageAssembly.stacksRecursively) {
+        stacksByPlugin.get(plugin)!.add(stack);
       }
     }
-  });
+  }
 
   if (stacksByPlugin.size === 0) return;
 
@@ -72,7 +72,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
   const suppressedByReport: Map<number, SuppressedViolation[]> = collectSuppressions(root, reports);
 
-  const formatter = new PolicyValidationReportFormatter(new ConstructTree(root));
+  const formatter = new PolicyValidationReportFormatter(tree);
   const reportJson = formatter.formatJson(reports, assembly.version, stackTraces, suppressedByReport);
 
   // Always write validation report to disk
@@ -118,8 +118,8 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   // with warnings, we fail.
   const constructLibStrictMode = getBooleanContext(root, cxapi.STRICT_CFN_VALIDATE_ERRORS, false);
   const validationFails = reports.some(r => !r.success) || (constructLibStrictMode && reports.some(r => r.violations.some(v => v.severity === 'warning')));
-  const reportText = formatValidationReports(process.cwd(), reportJson.pluginReports, DEFAULT_STACK_FRAME_FINDER);
-  const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
+
+  const fileLocationRenderer = private_cxapi.relativeFileLocationRenderer(process.cwd());
 
   let preamble = '';
   if (warningifiedAnyErrors) {
@@ -132,6 +132,10 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   }
 
   // Execution on the settings before starts here
+  const reportText = new private_cxapi.ValidationReportFormatter({ fileLocationRenderer }).formatReports(reportJson.pluginReports);
+  const reportPath = fileLocationRenderer.renderAbsoluteFilePath(reportFile);
+
+  // If there's nothing in the report, stop right now. Doing this here simplifies the preamble handling below.
   if (reportText.length === 0) {
     return;
   }
@@ -155,7 +159,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 
     if (throwException && exceptionContainsReport) {
       // The exception contains all information.
-      throw new UnscopedValidationError(lit`ValidationFailed`, stripAnsi(fullMessage.join('\n\n')));
+      throw new UnscopedValidationError(lit`ValidationFailed`, private_cxapi.stripAnsi(fullMessage.join('\n\n')));
     } else if (throwException && !exceptionContainsReport) {
       // We are running in some unclear mode. We get the best fidelity results
       // from printing the report (in color) but also making sure to exit with an
@@ -194,22 +198,22 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Map<string, private_cxapi.CloudAssembly> {
   const assemblies = new Map<string, private_cxapi.CloudAssembly>();
   assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
-    const stage = construct as Stage;
+  // Parents before children, so the parent assembly is always available here
+  for (const stage of iterateAssembliesPreorder(root)) {
     if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
       assemblies.set(
         stage.artifactId,
         assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
       );
     }
-  });
+  }
   return assemblies;
 }
 
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: App, stage: Stage, addDefaultPlugin: boolean): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -217,7 +221,7 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
 
   // 2. Default validation engine (runs unless the user registered one explicitly,
   // or disabled validation via the CDK_VALIDATION environment variable)
-  if (defaultValidationEnabled() && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  if (addDefaultPlugin) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
@@ -241,8 +245,8 @@ function pluginsToEvaluate(root: IConstruct, stage: Stage): IPolicyValidationPlu
  *
  * Explicitly user-registered validation plugins are not affected by this setting.
  */
-function defaultValidationEnabled(): boolean {
-  return process.env.CDK_VALIDATION !== 'false';
+function defaultValidationEnabled(app: App): boolean {
+  return app._builtinCloudFormationValidation && process.env.CDK_VALIDATION !== 'false';
 }
 
 function downgradeCfnValidateErrorsToWarnings(reports: NamedValidationPluginReport[]) {
@@ -437,7 +441,7 @@ function doInvokeValidationPlugins(
     .map(p => p[0])
     .filter(p => !isTrustedPlugin(p)));
 
-  const preExistingFileHashes = untrustedPlugins.size > 0 ? snapshotFileHashes(outdir) : undefined;
+  const preExistingFileHashes = untrustedPlugins.size > 0 && root._confirmValidationPluginsDoNotMutate ? snapshotFileHashes(outdir) : undefined;
 
   const ret = plugins.flatMap(([plugin, stacks]) => invokeSinglePlugin(plugin, Array.from(stacks)));
 
@@ -516,24 +520,6 @@ function doInvokeValidationPlugins(
  */
 function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
-}
-
-/**
- * Visit the given construct tree in either pre or post order, only looking at Assemblies
- */
-export function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
-  if (order === 'pre') {
-    cb(root);
-  }
-
-  for (const child of root.node.children) {
-    if (!STAGE_TYPE.isMarked(child)) { continue; }
-    visitAssemblies(child, order, cb);
-  }
-
-  if (order === 'post') {
-    cb(root);
-  }
 }
 
 function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
@@ -623,18 +609,17 @@ function fileOrSymlinkExists(p: string): boolean {
  * Returns true if the user registered exactly one valid instance, false if none.
  * Throws if the plugin is registered on a nested Stage or more than once.
  */
-function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolean {
+function hasUserRegisteredCloudFormationValidatePlugin(root: App): boolean {
   let count = 0;
-  visitAssemblies(root, 'post', construct => {
-    if (!STAGE_TYPE.isMarked(construct)) return;
-    for (const plugin of construct._validationPlugins) {
+  for (const stage of iterateAssembliesPostorder(root)) {
+    for (const plugin of stage._validationPlugins) {
       if (!(plugin instanceof CloudFormationValidatePlugin)) continue;
-      if (construct !== root) {
+      if (stage !== root) {
         throw new UnscopedValidationError(lit`CloudFormationValidatePluginNotAtApp`, 'CloudFormationValidatePlugin can only be registered at the App level, not on a Stage');
       }
       count++;
     }
-  });
+  }
   if (count > 1) {
     throw new UnscopedValidationError(lit`DuplicateCloudFormationValidatePlugin`, 'only one instance of CloudFormationValidatePlugin can be registered');
   }

@@ -7,6 +7,7 @@ import { quoteIdentifier, quoteLiteral } from './escape';
 import { executeStatement } from './redshift-data';
 import type { ClusterProps } from './types';
 import { makePhysicalId } from './util';
+import { validateUsername } from './validate';
 import type { UserHandlerProps } from '../handler-props';
 
 const secretsManager = new SecretsManager({});
@@ -41,6 +42,9 @@ async function dropUser(username: string, clusterProps: ClusterProps) {
 }
 
 async function createUser(username: string, passwordSecretArn: string, clusterProps: ClusterProps) {
+  // Existing users must remain removable during teardown.
+  validateUsername(username);
+
   const password = await getPasswordFromSecret(passwordSecretArn);
 
   await executeStatement(`CREATE USER ${quoteIdentifier(username)} PASSWORD ${quoteLiteral(password)}`, clusterProps);
@@ -69,6 +73,7 @@ async function updateUser(
   }
 
   if (password !== oldPassword) {
+    validateUsername(username);
     await executeStatement(`ALTER USER ${quoteIdentifier(username)} PASSWORD ${quoteLiteral(password)}`, clusterProps);
     return { replace: false };
   }
