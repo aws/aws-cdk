@@ -243,12 +243,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "DefaultHiveJsonOrcLogGroupE45B2BEC",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DefaultHiveJsonOrcLogGroupE45B2BEC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "DefaultHiveJsonOrcLogGroupE45B2BEC"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -501,12 +526,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "DefaultOpenXJsonParquetLogGroupEBB4026F",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "DefaultOpenXJsonParquetLogGroupEBB4026F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "DefaultOpenXJsonParquetLogGroupEBB4026F"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -759,12 +809,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomHiveJsonLogGroupB373D61F",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomHiveJsonLogGroupB373D61F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomHiveJsonLogGroupB373D61F"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1022,12 +1097,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomOpenXJsonLogGroup22FF7B23",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomOpenXJsonLogGroup22FF7B23",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomOpenXJsonLogGroup22FF7B23"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1286,12 +1386,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomOrcLogGroup0ECA964A",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomOrcLogGroup0ECA964A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomOrcLogGroup0ECA964A"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1557,12 +1682,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomOrcZlibLogGroup87CF80F5",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomOrcZlibLogGroup87CF80F5",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomOrcZlibLogGroup87CF80F5"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1818,12 +1968,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomOrcSnappyLogGroup4F6B90CA",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomOrcSnappyLogGroup4F6B90CA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomOrcSnappyLogGroup4F6B90CA"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -2078,12 +2253,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomParquetLogGroup676E9A45",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomParquetLogGroup676E9A45",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomParquetLogGroup676E9A45"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -2343,12 +2543,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomParquetGzipLogGroup504E4231",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomParquetGzipLogGroup504E4231",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomParquetGzipLogGroup504E4231"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -2604,12 +2829,37 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "CustomParquetSnappyLogGroup3EC6F154",
-         "Arn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CustomParquetSnappyLogGroup3EC6F154",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "CustomParquetSnappyLogGroup3EC6F154"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [

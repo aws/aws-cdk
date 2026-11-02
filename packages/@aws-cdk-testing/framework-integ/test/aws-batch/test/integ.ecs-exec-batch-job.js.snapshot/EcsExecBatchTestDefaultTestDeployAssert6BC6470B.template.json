@@ -29,7 +29,7 @@
     "outputPaths": [
      "computeEnvironments.0.ecsClusterArn"
     ],
-    "salt": "1779973607504"
+    "salt": "1793582315890"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -200,7 +200,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -209,6 +209,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -257,7 +261,7 @@
     "outputPaths": [
      "jobId"
     ],
-    "salt": "1779973607506"
+    "salt": "1793582315891"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeComputeEnvironments5ec6dfa5172f58141e1b4b8a564b2a0a"
@@ -486,7 +490,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -495,6 +499,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -528,7 +536,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -537,6 +545,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -578,7 +590,7 @@
      "jobs.0.status",
      "jobs.0.container.taskArn"
     ],
-    "salt": "1779973607510"
+    "salt": "1793582315893"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -750,7 +762,7 @@
      "command": "\"/bin/bash\""
     },
     "flattenResponse": "false",
-    "salt": "1779973607512"
+    "salt": "1793582315894"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeJobs3024f89ea6cbe73852b34b3ad4b788cf",
@@ -934,7 +946,7 @@
     "outputPaths": [
      "computeEnvironments.0.ecsClusterArn"
     ],
-    "salt": "1779973607514"
+    "salt": "1793582315895"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -984,7 +996,7 @@
     "outputPaths": [
      "jobId"
     ],
-    "salt": "1779973607515"
+    "salt": "1793582315895"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeComputeEnvironments384355fec4ab3cf9ea1cdc6261cea704"
@@ -1157,7 +1169,7 @@
      "jobs.0.status",
      "jobs.0.container.taskArn"
     ],
-    "salt": "1779973607516"
+    "salt": "1793582315896"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1329,7 +1341,7 @@
      "command": "\"/bin/bash\""
     },
     "flattenResponse": "false",
-    "salt": "1779973607518"
+    "salt": "1793582315896"
    },
    "DependsOn": [
     "AwsApiCallBatchdescribeJobsdce098d6da0d99b096d5480c1155f3b0",

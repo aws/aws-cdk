@@ -1,0 +1,28 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W7001",
+          "description": "Mappings/awscdkawskinesisfirehoseCidrBlocks: Mapping 'awscdkawskinesisfirehoseCidrBlocks' is not referenced by any Fn::FindInMap",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-firehose-delivery-stream-s3-all-properties",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "/BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.template.json"
+    }
+  ],
+  "/BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

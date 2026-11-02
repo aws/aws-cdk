@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "55.0.0",
   "testCases": {
     "BatchUniqueNameTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "BatchUniqueNameTest/DefaultTest/DeployAssert",
       "assertionStackName": "BatchUniqueNameTestDefaultTestDeployAssertA3886AB9"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
 }

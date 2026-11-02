@@ -1,0 +1,340 @@
+{
+  "/batch-events": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "batch-events.template.json"
+    }
+  ],
+  "/batch-events/ComputeEnvironment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/batch-events/MyQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/batch-events/MyJob": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*"
+      }
+    }
+  ],
+  "/batch-events/Timer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/batch-events/Timer2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/batch-events/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/batch-events/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/batch-events/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/batch-events/ComputeEnvironment/BatchServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ],
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/batch-events/ComputeEnvironment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeEnvironmentC570994D"
+    }
+  ],
+  "/batch-events/MyQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueueE6CA6235"
+    }
+  ],
+  "/batch-events/container/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/batch-events/MyJob/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyJob8719E923"
+    }
+  ],
+  "/batch-events/MyJob/EventsRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/batch-events/Timer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TimerBF6F831F"
+    }
+  ],
+  "/batch-events/Timer2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Timer2B6F162E9"
+    }
+  ],
+  "/batch-events/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    }
+  ],
+  "/batch-events/Queue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/batch-events/ComputeEnvironment/BatchServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ComputeEnvironmentBatchServiceRole3533BE31"
+    }
+  ],
+  "/batch-events/container/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "containerExecutionRoleFD602179"
+    }
+  ],
+  "/batch-events/container/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/batch-events/MyJob/EventsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyJobEventsRoleCF43C336"
+    }
+  ],
+  "/batch-events/MyJob/EventsRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/batch-events/Queue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueuePolicy25439813"
+    }
+  ],
+  "/batch-events/container/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "containerExecutionRoleDefaultPolicyF00DA4D6"
+    }
+  ],
+  "/batch-events/MyJob/EventsRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyJobEventsRoleDefaultPolicy7266D3A7"
+    }
+  ]
+}

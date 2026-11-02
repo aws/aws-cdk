@@ -1,0 +1,20 @@
+{
+  "/BatchUniqueNameTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BatchUniqueNameTestDefaultTestDeployAssertA3886AB9.template.json"
+    }
+  ],
+  "/BatchUniqueNameTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchUniqueNameTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "/BatchEcsJobDefinitionTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BatchEcsJobDefinitionTestDefaultTestDeployAssertE5BAAC9B.template.json"
+    }
+  ],
+  "/BatchEcsJobDefinitionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchEcsJobDefinitionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
         "    at get availabilityZones (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/workplace/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new Cluster (/workplace/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:37)",
+        "    at new Cluster (/workplace/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:935:37)",
         "    at <anonymous> (/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/emrcontainers/integ.job-submission-workflow.js:63:20)",
         "    ...node internals..."
       ]

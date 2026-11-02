@@ -1,0 +1,852 @@
+{
+  "/stack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-batch/test/integ.ecs-job-definition.js:49:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "stack.template.json"
+    }
+  ],
+  "/stack/vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/stack/myFileSystem": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/stack/mySecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/stack/anotherSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/stack/ssm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/stack/ECSJobDefn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*",
+        "skipDeregisterOnUpdate": true
+      }
+    }
+  ],
+  "/stack/ECSFargateJobDefn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*",
+        "jobDefinitionName": "*",
+        "parameters": "*",
+        "propagateTags": true,
+        "retryAttempts": "*",
+        "retryStrategies": "*",
+        "schedulingPriority": "*",
+        "timeout": "*",
+        "skipDeregisterOnUpdate": true
+      }
+    }
+  ],
+  "/stack/ECSDockerJobDefn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*",
+        "skipDeregisterOnUpdate": true
+      }
+    }
+  ],
+  "/stack/WindowsJobDefinitio": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "jobDefinitionName": "*",
+        "container": "*",
+        "skipDeregisterOnUpdate": true
+      }
+    }
+  ],
+  "/stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/stack/vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcA2121C38"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/stack/vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/stack/vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/stack/vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/stack/vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcIGWE57CBDCA"
+    }
+  ],
+  "/stack/vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcVPCGW7984C166"
+    }
+  ],
+  "/stack/myFileSystem/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFileSystem1DAA6862"
+    }
+  ],
+  "/stack/myFileSystem/EfsSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/stack/myFileSystem/EfsMountTarget-PrivateSubnet1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFileSystemEfsMountTargetPrivateSubnet1752908A7"
+    }
+  ],
+  "/stack/myFileSystem/EfsMountTarget-PrivateSubnet2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFileSystemEfsMountTargetPrivateSubnet245A93748"
+    }
+  ],
+  "/stack/mySecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mySecretE4D0A59C"
+    }
+  ],
+  "/stack/anotherSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "anotherSecret11974229"
+    }
+  ],
+  "/stack/ssm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ssm85049941"
+    }
+  ],
+  "/stack/myContainer/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/ECSJobDefn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSJobDefn48425E25"
+    }
+  ],
+  "/stack/myFargateContainer/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/stack/ECSFargateJobDefn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSFargateJobDefn327BE725"
+    }
+  ],
+  "/stack/EcsDockerContainer/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/ECSDockerJobDefn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ECSDockerJobDefnF388CFCF"
+    }
+  ],
+  "/stack/WindowsFargateContainer/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/stack/WindowsJobDefinitio/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WindowsJobDefinitio0652E08A"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1Subnet2E65531E"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1RouteTable48A2DF9B"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1DefaultRoute10708846"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1EIPDA49DCBE"
+    }
+  ],
+  "/stack/vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet1NATGateway9C16659E"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2Subnet009B674F"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2RouteTableEB40D4CB"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2RouteTableAssociation21F81B59"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2DefaultRouteA1EC0F60"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2EIP9B3743B1"
+    }
+  ],
+  "/stack/vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPublicSubnet2NATGateway9B8AE11A"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet1Subnet934893E8"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet1RouteTableB41A48CC"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet1RouteTableAssociation67945127"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet2Subnet7031C2BA"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet2RouteTable7280F23E"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+    }
+  ],
+  "/stack/vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "vpcPrivateSubnet2DefaultRouteB0E07F99"
+    }
+  ],
+  "/stack/myFileSystem/EfsSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFileSystemEfsSecurityGroup5809542D"
+    }
+  ],
+  "/stack/myContainer/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myContainerExecutionRoleEBACF86C"
+    }
+  ],
+  "/stack/myContainer/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/myFargateContainer/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFargateContainerExecutionRoleB9EB79EA"
+    }
+  ],
+  "/stack/myFargateContainer/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/EcsDockerContainer/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsDockerContainerExecutionRole7AA53A24"
+    }
+  ],
+  "/stack/EcsDockerContainer/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/WindowsFargateContainer/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WindowsFargateContainerExecutionRoleAE15A6C1"
+    }
+  ],
+  "/stack/WindowsFargateContainer/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/stack/myContainer/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myContainerExecutionRoleDefaultPolicy42DA929E"
+    }
+  ],
+  "/stack/myFargateContainer/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myFargateContainerExecutionRoleDefaultPolicy4FF431BF"
+    }
+  ],
+  "/stack/EcsDockerContainer/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsDockerContainerExecutionRoleDefaultPolicyF58C2301"
+    }
+  ],
+  "/stack/WindowsFargateContainer/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WindowsFargateContainerExecutionRoleDefaultPolicyA16F3283"
+    }
+  ]
+}

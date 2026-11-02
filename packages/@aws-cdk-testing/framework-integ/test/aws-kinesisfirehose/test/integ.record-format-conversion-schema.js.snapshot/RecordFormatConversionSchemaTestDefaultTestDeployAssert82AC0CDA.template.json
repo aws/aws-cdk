@@ -27,7 +27,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1779973495360"
+    "salt": "1793580335118"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -126,7 +126,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -135,6 +135,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -169,7 +173,7 @@
      "Prefix": "\"success/InlineSchema/\""
     },
     "flattenResponse": "false",
-    "salt": "1779973495362"
+    "salt": "1793580335119"
    },
    "DependsOn": [
     "AwsApiCallFirehoseputRecorda080e5befe77387da3b74baebc8bc352"
@@ -422,7 +426,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -431,6 +435,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -464,7 +472,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -473,6 +481,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -503,7 +515,7 @@
      "Record": "{\"Data\":\"{\\\"Column_A\\\":\\\"foo\\\",\\\"Column_B\\\":\\\"bar\\\"}\"}"
     },
     "flattenResponse": "false",
-    "salt": "1779973495366"
+    "salt": "1793580335121"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -539,7 +551,7 @@
      "Prefix": "\"success/RegistrySchema/\""
     },
     "flattenResponse": "false",
-    "salt": "1779973495367"
+    "salt": "1793580335122"
    },
    "DependsOn": [
     "AwsApiCallFirehoseputRecordcaf94609e364167c040da7a19d726360"

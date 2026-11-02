@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-firehose-delivery-stream-s3-all-properties": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-firehose-delivery-stream-s3-all-properties.template.json"
+    }
+  ],
   "/aws-cdk-firehose-delivery-stream-s3-all-properties/DeliveryStream": [
     {
       "type": "aws:cdk:analytics:construct",

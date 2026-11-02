@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-firehose-delivery-stream-s3-custom-time-zone": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-firehose-delivery-stream-s3-custom-time-zone.template.json"
+    }
+  ],
   "/aws-cdk-firehose-delivery-stream-s3-custom-time-zone/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",

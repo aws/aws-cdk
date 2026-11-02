@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "55.0.0",
   "testCases": {
     "BatchEcsJobDefinitionTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "BatchEcsJobDefinitionTest/DefaultTest/DeployAssert",
       "assertionStackName": "BatchEcsJobDefinitionTestDefaultTestDeployAssertE5BAAC9B"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
 }
