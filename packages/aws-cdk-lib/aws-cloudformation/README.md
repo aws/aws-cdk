@@ -220,8 +220,32 @@ new StackSet(stack, 'StackSet', {
 ```
 
 When you specify `serviceManaged` deployment type, automatic deployments are enabled by default.
-Automatic deployments allow the StackSet to be automatically deployed to or deleted from
-AWS accounts when they are added or removed from the specified organizational units.
+Automatic deployments allow the StackSet to be automatically deployed to AWS accounts when they
+are added to the specified organizational units. By default the Stack is retained in accounts
+that are removed from them. Use `autoDeployment` to delete the Stack from removed accounts
+instead, or to turn automatic deployments off with `StackSetAutoDeployment.disabled()`.
+
+By default a service managed StackSet is created from a delegated administrator account. Set
+`callAs` to `StackSetCallAs.MANAGEMENT_ACCOUNT` if you deploy it from the AWS Organizations
+management account instead (CloudFormation calls this `SELF`).
+
+```ts
+const app = new App();
+const stack = new Stack(app, 'Admin');
+const stackSetStack = new StackSetStack(app, 'MyStackSet');
+
+new StackSet(stack, 'StackSet', {
+  target: StackSetTarget.fromOrganizationalUnits({
+    regions: ['us-east-1'],
+    organizationalUnits: ['ou-1'],
+  }),
+  deploymentType: DeploymentType.serviceManaged({
+    autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
+    callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+  }),
+  template: StackSetTemplate.fromStackSetStack(stackSetStack),
+});
+```
 
 ##### Self Managed
 
@@ -381,9 +405,8 @@ class BootstrapStage extends Stage {
       managedExecution: true,
       stackSetName: props.stacksetName,
       deploymentType: DeploymentType.serviceManaged({
-        delegatedAdmin: true,
-        autoDeployEnabled: true,
-        autoDeployRetainStacks: false,
+        callAs: StackSetCallAs.DELEGATED_ADMIN,
+        autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
       }),
       operationPreferences: {
         regionConcurrencyType: RegionConcurrencyType.PARALLEL,

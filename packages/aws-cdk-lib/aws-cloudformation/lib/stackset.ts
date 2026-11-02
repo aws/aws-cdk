@@ -176,7 +176,7 @@ export interface OrganizationsTargetOptions extends TargetOptions {
    * This can be further filtered by specifying either `additionalAccounts`
    * or `excludeAccounts`.
    *
-   * If the `deploymentType` is specified with `autoDeployEnabled` then
+   * If the service managed `deploymentType` has `autoDeployment` enabled (the default),
    * the StackSet will automatically deploy the Stack to new accounts as they
    * are added to the specified `organizationalUnits`
    */
@@ -379,41 +379,124 @@ class OrganizationsTarget extends StackSetTarget {
 }
 
 /**
+ * Options for enabling automatic deployment of a service managed StackSet.
+ */
+export interface StackSetAutoDeploymentOptions {
+  /**
+   * Whether stacks are retained (not deleted) in AWS accounts that are removed
+   * from a target organizational unit.
+   *
+   * Set this to `false` to delete the stack from an account when the account
+   * is removed from the organizational unit.
+   *
+   * @default true
+   */
+  readonly retainStacksOnAccountRemoval?: boolean;
+}
+
+/**
+ * Whether a service managed StackSet automatically deploys the Stack to AWS accounts
+ * that are added to a target organizational unit.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html
+ */
+export class StackSetAutoDeployment {
+  /**
+   * Automatically deploy the Stack to AWS accounts that are added to a target
+   * organizational unit.
+   *
+   * By default the Stack is retained in accounts that are removed from the
+   * organizational unit; set `retainStacksOnAccountRemoval` to `false` to delete it instead.
+   */
+  public static enabled(options: StackSetAutoDeploymentOptions = {}): StackSetAutoDeployment {
+    return new StackSetAutoDeployment({
+      enabled: true,
+      retainStacksOnAccountRemoval: options.retainStacksOnAccountRemoval ?? true,
+    });
+  }
+
+  /**
+   * Do not deploy the Stack automatically to AWS accounts that are added to a
+   * target organizational unit, or remove it from accounts that are removed.
+   */
+  public static disabled(): StackSetAutoDeployment {
+    return new StackSetAutoDeployment({ enabled: false });
+  }
+
+  private constructor(private readonly config: CfnStackSet.AutoDeploymentProperty) { }
+
+  /**
+   * Render the CloudFormation auto-deployment configuration
+   *
+   * @internal
+   */
+  public _render(): CfnStackSet.AutoDeploymentProperty {
+    return this.config;
+  }
+}
+
+/**
+ * The account a service managed StackSet is created and managed from: the
+ * AWS Organizations management account or a delegated administrator account.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-delegated-admin.html
+ */
+export class StackSetCallAs {
+  /**
+   * The StackSet is managed from a delegated administrator account.
+   *
+   * This is the default behavior.
+   */
+  public static readonly DELEGATED_ADMIN = new StackSetCallAs('DELEGATED_ADMIN');
+
+  /**
+   * The StackSet is managed from the AWS Organizations management account.
+   *
+   * This renders the CloudFormation value `SELF`.
+   */
+  public static readonly MANAGEMENT_ACCOUNT = new StackSetCallAs('SELF');
+
+  /**
+   * Use a custom call-as value
+   *
+   * @param value the CloudFormation value of the call-as option
+   */
+  public static of(value: string): StackSetCallAs {
+    return new StackSetCallAs(value);
+  }
+
+  /**
+   * @param value the CloudFormation value of the call-as option
+   */
+  private constructor(public readonly value: string) { }
+}
+
+/**
  * Options for StackSets that are managed by AWS Organizations.
  */
 export interface ServiceManagedOptions {
   /**
-   * Whether or not the StackSet should automatically create/remove the Stack
-   * from AWS accounts that are added/removed from an organizational unit.
+   * Whether the StackSet automatically deploys the Stack to AWS accounts that are
+   * added to a target organizational unit, and whether it retains the Stack in
+   * accounts that are removed from it.
    *
    * This has no effect if {@link StackSetTarget.fromAccounts} is used
    *
-   * @default true
+   * @default StackSetAutoDeployment.enabled() - automatic deployment is enabled and stacks are retained in removed accounts
    */
-  readonly autoDeployEnabled?: boolean;
+  readonly autoDeployment?: StackSetAutoDeployment;
 
   /**
-   * Whether stacks should be removed from AWS accounts that are removed
-   * from an organizational unit.
+   * The account this StackSet is created and managed from.
    *
-   * By default the stack will be retained (not deleted)
-   *
-   * This has no effect if {@link StackSetTarget.fromAccounts} is used
-   *
-   * @default true
-   */
-  readonly autoDeployRetainStacks?: boolean;
-
-  /**
-   * Whether or not the account this StackSet is deployed from is the delegated admin account.
-   *
-   * Set this to `false` if you are using the AWS Organizations management account instead.
+   * Use `StackSetCallAs.MANAGEMENT_ACCOUNT` if you are using the AWS Organizations
+   * management account instead of a delegated administrator account.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-delegated-admin.html
    *
-   * @default true
+   * @default StackSetCallAs.DELEGATED_ADMIN
    */
-  readonly delegatedAdmin?: boolean;
+  readonly callAs?: StackSetCallAs;
 }
 
 /**
@@ -462,9 +545,8 @@ interface DeploymentTypeConfig {
   readonly permissionsModel: PermissionModel;
   readonly executionRoleName?: string;
   readonly adminRole?: iam.IRole;
-  readonly autoDeployEnabled?: boolean;
-  readonly autoDeployRetainStacks?: boolean;
-  readonly callAs?: CallAs;
+  readonly autoDeployment?: CfnStackSet.AutoDeploymentProperty;
+  readonly callAs?: string;
 }
 
 interface DeploymentTypeOptions {}
@@ -515,17 +597,11 @@ class ManagedDeploymentType extends DeploymentType {
     super();
   }
 
-  public _bind(scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
-    const autoDeployEnabled = this.options?.autoDeployEnabled ?? true;
-    if (!autoDeployEnabled && this.options?.autoDeployRetainStacks !== undefined) {
-      throw new ValidationError(lit`StackSetAutoDeployRetainStacksRequiresAutoDeploy`, 'autoDeployRetainStacks only applies if autoDeploy is enabled', scope);
-    }
+  public _bind(_scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
     return {
       permissionsModel: PermissionModel.SERVICE_MANAGED,
-      autoDeployEnabled,
-      callAs: (this.options?.delegatedAdmin ?? true) ? CallAs.DELEGATED_ADMIN : CallAs.SELF,
-      autoDeployRetainStacks: autoDeployEnabled ? (this.options?.autoDeployRetainStacks ?? true)
-        : undefined,
+      autoDeployment: (this.options?.autoDeployment ?? StackSetAutoDeployment.enabled())._render(),
+      callAs: (this.options?.callAs ?? StackSetCallAs.DELEGATED_ADMIN).value,
     };
   }
 }
@@ -628,26 +704,6 @@ export interface StackSetProps {
    * @default - no specific capabilities
    */
   readonly capabilities?: CfnCapabilities[];
-}
-
-/**
- * Indicates whether a service managed stackset is deployed from the
- * AWS Organizations management account or the delegated admin account
- *
- * @internal
- */
-enum CallAs {
-  /**
-   * The StackSet is deployed from the Delegated Admin account
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-delegated-admin.html
-   */
-  DELEGATED_ADMIN = 'DELEGATED_ADMIN',
-
-  /**
-   * The StackSet is deployed from the Management account
-   */
-  SELF = 'SELF',
 }
 
 /**
@@ -858,10 +914,7 @@ export class StackSet extends Resource implements IStackSet {
     }
     const template = props.template._bind(this);
     const stackSet = new CfnStackSet(this, 'Resource', {
-      autoDeployment: undefinedIfNoKeys({
-        enabled: deploymentTypeConfig.autoDeployEnabled,
-        retainStacksOnAccountRemoval: deploymentTypeConfig.autoDeployRetainStacks,
-      }),
+      autoDeployment: deploymentTypeConfig.autoDeployment,
       executionRoleName: deploymentTypeConfig.executionRoleName,
       administrationRoleArn: this._role?.roleArn,
       description: props.description,
