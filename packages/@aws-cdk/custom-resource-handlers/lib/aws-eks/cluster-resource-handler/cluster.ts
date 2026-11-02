@@ -148,43 +148,23 @@ export class ClusterResourceHandler extends ResourceHandler {
       try {
         // Describe the cluster to get the ARN for tagging APIs and to make sure Cluster exists
         const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-        if (this.oldProps.tags) {
-          if (this.newProps.tags) {
-            // This means there are old tags as well as new tags so get the difference
-            // Update existing tag keys and add newly added tags
-            const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
-            // TagResource requires a non-empty tags map; {} is truthy so check keys
-            if (Object.keys(tagsToAdd).length > 0) {
-              const tagConfig: EKS.TagResourceCommandInput = {
-                resourceArn: cluster?.arn,
-                tags: tagsToAdd,
-              };
-              await this.eks.tagResource(tagConfig);
-            }
-            // Remove the tags that were removed in newProps
-            const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
-            if (tagsToRemove.length > 0 ) {
-              const config: EKS.UntagResourceCommandInput = {
-                resourceArn: cluster?.arn,
-                tagKeys: tagsToRemove,
-              };
-              await this.eks.untagResource(config);
-            }
-          } else {
-            // This means newProps.tags is empty hence remove all tags
-            const config: EKS.UntagResourceCommandInput = {
-              resourceArn: cluster?.arn,
-              tagKeys: Object.keys(this.oldProps.tags),
-            };
-            await this.eks.untagResource(config);
-          }
-        } else if (this.newProps.tags && Object.keys(this.newProps.tags).length > 0) {
-          // This means oldProps.tags was empty hence add all tags from newProps.tags
-          const config: EKS.TagResourceCommandInput = {
+        const oldTags = this.oldProps.tags ?? {};
+        const newTags = this.newProps.tags ?? {};
+        const tagsToAdd = getTagsToUpdate(oldTags, newTags);
+        if (Object.keys(tagsToAdd).length > 0) {
+          const tagConfig: EKS.TagResourceCommandInput = {
             resourceArn: cluster?.arn,
-            tags: this.newProps.tags,
+            tags: tagsToAdd,
           };
-          await this.eks.tagResource(config);
+          await this.eks.tagResource(tagConfig);
+        }
+        const tagsToRemove = getTagsToRemove(oldTags, newTags);
+        if (tagsToRemove.length > 0) {
+          const config: EKS.UntagResourceCommandInput = {
+            resourceArn: cluster?.arn,
+            tagKeys: tagsToRemove,
+          };
+          await this.eks.untagResource(config);
         }
       } catch (e: any) {
         throw e;

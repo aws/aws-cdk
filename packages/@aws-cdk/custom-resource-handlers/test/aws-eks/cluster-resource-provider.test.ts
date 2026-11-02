@@ -1164,6 +1164,17 @@ describe('cluster resource provider', () => {
           expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
           expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
         });
+        test('does not call untagResource when old tags are an empty map and new tags are unset', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+          }, {
+            ...mocks.MOCK_PROPS,
+            tags: {},
+          }));
+          await handler.onEvent();
+          expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
+          expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
+        });
         test('add tags after creation of cluster', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
             // this is the new props
